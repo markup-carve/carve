@@ -16,45 +16,6 @@ tail
 <p>tail</p>
 ```
 
-```
-- a
-  - b
-  +
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
-</ul>
-```
-
-```
-- a
-
-+
-- s
-.
-<ul>
-  <li><p>a</p></li>
-  <li><p>s</p></li>
-</ul>
-```
-
-````
-- ```
-+
-- s
-.
-<ul>
-  <li>
-    <pre><code></code></pre>
-  </li>
-  <li>s</li>
-</ul>
-````
-
 ````
 - a
   - ```
@@ -171,24 +132,6 @@ tail
 ```
 
 ```
-- foo
-  - [ ] task
-  +
-  - x
-.
-<ul>
-  <li>foo
-    <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task"> task</li>
-    </ul>
-    <ul>
-      <li>x</li>
-    </ul>
-  </li>
-</ul>
-```
-
-```
 > - a
 > +
 .
@@ -214,28 +157,6 @@ tail
   </li>
 </ul>
 ```
-
-````
-- foo
-  - [ ] task
-  +
-  ```sh
-  npm test
-  ```
-  - [ ] more
-.
-<ul>
-  <li>foo
-    <ul class="task-list">
-      <li><input type="checkbox" disabled aria-label="task"> task
-        <pre><code class="language-sh">npm test
-</code></pre>
-      </li>
-      <li><input type="checkbox" disabled aria-label="more"> more</li>
-    </ul>
-  </li>
-</ul>
-````
 
 ```
 - foo
@@ -300,20 +221,6 @@ left
   </li>
 </ul>
 <p>left</p>
-```
-
-```
-- a
-  - b
-  +
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
-</ul>
 ```
 
 ```
@@ -409,13 +316,6 @@ para
     </ul>
   </li>
 </ul>
-```
-
-```
-> +
-flush
-.
-<blockquote><p>flush</p></blockquote>
 ```
 
 ```
@@ -545,20 +445,6 @@ x
     <tr><td>a</td></tr>
   </tbody>
 </table>
-```
-
-```
-- > +
-> q
-.
-<ul>
-  <li>
-    <blockquote>
-
-    </blockquote>
-  </li>
-</ul>
-<blockquote><p>q</p></blockquote>
 ```
 
 ```

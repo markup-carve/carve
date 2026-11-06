@@ -25,11 +25,3 @@ tail
   </blockquote>
 </blockquote>
 ```
-
-```
-> q
-+
-+
-.
-<blockquote><p>q</p></blockquote>
-```

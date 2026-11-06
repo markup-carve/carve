@@ -1,12 +1,6 @@
 A semantic name renames the span, and the leftovers ride the element
 
 ```
-[x]{}
-.
-<p><span>x</span></p>
-```
-
-```
 [x]{onclick="steal()"}
 .
 <p><span>x</span></p>

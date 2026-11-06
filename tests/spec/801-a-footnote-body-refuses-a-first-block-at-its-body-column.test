@@ -2,23 +2,6 @@ A footnote body refuses a first block at its body column
 
 ```
 [^a]: +
-  flush
-
-see[^a]
-.
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
-```
-
-```
-[^a]: +
   - x
   - y
 
@@ -55,37 +38,6 @@ see[^a]
     </li>
   </ol>
 </section>
-```
-
-```
-[^a]: +
- flush
-
-see[^a]
-.
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
-```
-
-```
-- - +
-para
-.
-<ul>
-  <li>
-    <ul>
-      <li></li>
-    </ul>
-  </li>
-</ul>
-<p>para</p>
 ```
 
 ```

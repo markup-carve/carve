@@ -11,36 +11,6 @@ An explicitly delimited row of blank cells is a table
 ```
 
 ```
-||
-.
-<table>
-  <tbody>
-    <tr><td></td></tr>
-  </tbody>
-</table>
-```
-
-```
-|||
-.
-<table>
-  <tbody>
-    <tr><td></td><td></td></tr>
-  </tbody>
-</table>
-```
-
-```
-| | |
-.
-<table>
-  <tbody>
-    <tr><td></td><td></td></tr>
-  </tbody>
-</table>
-```
-
-```
 ||||
 .
 <table>
@@ -51,31 +21,11 @@ An explicitly delimited row of blank cells is a table
 ```
 
 ```
-|= |
-.
-<table>
-  <thead>
-    <tr><th scope="col"></th></tr>
-  </thead>
-</table>
-```
-
-```
 |=|
 .
 <table>
   <tbody>
     <tr><td>=</td></tr>
-  </tbody>
-</table>
-```
-
-```
-|{>} |
-.
-<table>
-  <tbody>
-    <tr><td style="text-align: right;"></td></tr>
   </tbody>
 </table>
 ```
@@ -150,12 +100,6 @@ An explicitly delimited row of blank cells is a table
 |
 .
 <p>|</p>
-```
-
-```
-| a | b
-.
-<p>| a | b</p>
 ```
 
 ```

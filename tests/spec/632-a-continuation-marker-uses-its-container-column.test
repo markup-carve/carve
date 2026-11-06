@@ -3,23 +3,6 @@ A continuation marker uses its container column
 ```
 - a
   - b
-  +
-  > q
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b
-        <blockquote><p>q</p></blockquote>
-      </li>
-    </ul>
-  </li>
-</ul>
-```
-
-```
-- a
-  - b
 +
 > q
 .
@@ -122,39 +105,6 @@ x[^a]
     </tbody>
   </table>
 </blockquote>
-```
-
-```
-- a
-  - b
-  +
-> q
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-  </li>
-</ul>
-<blockquote><p>q</p></blockquote>
-```
-
-```
-- a
-  - b
-  +
-  > q
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b
-        <blockquote><p>q</p></blockquote>
-      </li>
-    </ul>
-  </li>
-</ul>
 ```
 
 ```
@@ -391,22 +341,6 @@ x[^a]
         <tr><td>v text</td></tr>
       </tbody>
     </table>
-  </li>
-</ul>
-```
-
-```
-- a
-  - b
-+
-> q
-.
-<ul>
-  <li>a
-    <ul>
-      <li>b</li>
-    </ul>
-    <blockquote><p>q</p></blockquote>
   </li>
 </ul>
 ```

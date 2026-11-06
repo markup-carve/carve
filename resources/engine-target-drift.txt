@@ -3,14 +3,14 @@
 # corpus row and target. A unanimous engine difference needs an expected fixture
 # and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
-ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve-rs#3375, pinned Rust predates the tab-hidden list fix
+ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve#5185, pinned Rust retains a tab before the literal marker while pinned JS omits it; target layout is under triage
 carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 ansi/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
-ansi/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve-rs#3864, carve-rs main writes the collected definition after the item where carve-js keeps CARVE-P11-079's layout
+ansi/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve#5185, pinned Rust and JS still serialize the collected definition differently; target layout is under triage
 markdown/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
-markdown/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve-rs#3864, carve-rs main writes the collected definition after the item where carve-js keeps CARVE-P11-079's layout
+markdown/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve#5185, pinned Rust and JS still serialize the collected definition differently; target layout is under triage
 plain/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
-plain/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve-rs#3864, carve-rs main writes the collected definition after the item where carve-js keeps CARVE-P11-079's layout
+plain/rust/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  markup-carve/carve#5185, pinned Rust and JS still serialize the collected definition differently; target layout is under triage
 ansi/rust/222-a-tab-as-the-first-character-of-a-definition-term  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 ansi/php/556-a-closed-block-leaves-no-frame-for-the-line-below-14  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 ansi/php/620-generated-container-documents-23  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.

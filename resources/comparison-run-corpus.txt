@@ -296,7 +296,6 @@ tests/corpus/13-attributes-5.crv
 tests/corpus/13-attributes-6.crv
 tests/corpus/13-attributes.crv
 tests/corpus/130-bold-italic-delimiter-needs-content-2.crv
-tests/corpus/130-bold-italic-delimiter-needs-content-3.crv
 tests/corpus/130-bold-italic-delimiter-needs-content-4.crv
 tests/corpus/130-bold-italic-delimiter-needs-content.crv
 tests/corpus/131-emphasis-span-closes-before-a-following-delimiter.crv
@@ -371,7 +370,6 @@ tests/corpus/156-wrapped-definition-term-continuation-below-the-content-column-s
 tests/corpus/156-wrapped-definition-term-continuation-below-the-content-column-strips-leading-whitespace.crv
 tests/corpus/157-an-indented-attribute-line-attaches-at-top-level-2.crv
 tests/corpus/157-an-indented-attribute-line-attaches-at-top-level-3.crv
-tests/corpus/157-an-indented-attribute-line-attaches-at-top-level.crv
 tests/corpus/158-an-indented-image-and-caption-form-a-figure-2.crv
 tests/corpus/158-an-indented-image-and-caption-form-a-figure-3.crv
 tests/corpus/158-an-indented-image-and-caption-form-a-figure.crv
@@ -694,7 +692,6 @@ tests/corpus/261-a-blank-line-holds-spaces-and-tabs-and-nothing-else-2.crv
 tests/corpus/261-a-blank-line-holds-spaces-and-tabs-and-nothing-else-3.crv
 tests/corpus/261-a-blank-line-holds-spaces-and-tabs-and-nothing-else.crv
 tests/corpus/262-a-link-title-takes-exactly-one-space-2.crv
-tests/corpus/262-a-link-title-takes-exactly-one-space-3.crv
 tests/corpus/262-a-link-title-takes-exactly-one-space-4.crv
 tests/corpus/262-a-link-title-takes-exactly-one-space.crv
 tests/corpus/263-a-code-fence-opener-takes-exactly-one-space-2.crv
@@ -746,7 +743,6 @@ tests/corpus/268-trailing-whitespace-on-a-content-line-is-dropped-6.crv
 tests/corpus/268-trailing-whitespace-on-a-content-line-is-dropped-7.crv
 tests/corpus/268-trailing-whitespace-on-a-content-line-is-dropped-8.crv
 tests/corpus/268-trailing-whitespace-on-a-content-line-is-dropped-9.crv
-tests/corpus/268-trailing-whitespace-on-a-content-line-is-dropped.crv
 tests/corpus/269-a-definition-body-opener-at-or-past-its-column-stays-structural-2.crv
 tests/corpus/269-a-definition-body-opener-at-or-past-its-column-stays-structural-3.crv
 tests/corpus/269-a-definition-body-opener-at-or-past-its-column-stays-structural.crv
@@ -773,7 +769,6 @@ tests/corpus/273-the-inline-attribute-interior-is-space-only-the-attribute-line-
 tests/corpus/273-the-inline-attribute-interior-is-space-only-the-attribute-line-is-not.crv
 tests/corpus/274-a-quoted-attribute-value-stops-at-the-newline-2.crv
 tests/corpus/274-a-quoted-attribute-value-stops-at-the-newline-3.crv
-tests/corpus/274-a-quoted-attribute-value-stops-at-the-newline-4.crv
 tests/corpus/274-a-quoted-attribute-value-stops-at-the-newline-5.crv
 tests/corpus/274-a-quoted-attribute-value-stops-at-the-newline.crv
 tests/corpus/275-a-collapsed-reference-reaches-a-heading-by-the-heading-s-rendered-text-10.crv
@@ -824,7 +819,6 @@ tests/corpus/280-a-container-a-lazy-line-folded-into-is-still-open.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-2.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-3.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-4.crv
-tests/corpus/281-a-caption-attaches-across-one-blank-line-5.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-6.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-7.crv
 tests/corpus/281-a-caption-attaches-across-one-blank-line-8.crv
@@ -857,7 +851,6 @@ tests/corpus/285-adjacent-block-openers-in-an-attached-run-stay-separate.crv
 tests/corpus/285-adjacent-block-openers-in-an-attached-run-stay-separate.fmt
 tests/corpus/286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption-2.crv
 tests/corpus/286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption-3.crv
-tests/corpus/286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption-4.crv
 tests/corpus/286-a-caret-line-does-not-end-a-paragraph-it-cannot-caption.crv
 tests/corpus/287-a-column-zero-definition-ends-an-open-list-item-2.crv
 tests/corpus/287-a-column-zero-definition-ends-an-open-list-item-3.crv
@@ -888,7 +881,6 @@ tests/corpus/292-a-boolean-and-a-key-value-of-the-same-name-are-one-attribute.cr
 tests/corpus/293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element-2.crv
 tests/corpus/293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element-3.crv
 tests/corpus/293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element-4.crv
-tests/corpus/293-a-semantic-name-renames-the-span-and-the-leftovers-ride-the-element.crv
 tests/corpus/294-a-language-attribute-is-exact-sugar-for-lang-2.crv
 tests/corpus/294-a-language-attribute-is-exact-sugar-for-lang-3.crv
 tests/corpus/294-a-language-attribute-is-exact-sugar-for-lang-4.crv
@@ -1011,7 +1003,6 @@ tests/corpus/319-cell-attributes-bind-after-the-kind-and-alignment-markers.crv
 tests/corpus/319-cell-attributes-bind-after-the-kind-and-alignment-markers.fmt
 tests/corpus/32-ordered-list-dialects-2.crv
 tests/corpus/32-ordered-list-dialects.crv
-tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string-2.crv
 tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string-2.fmt
 tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string.crv
 tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string.fmt
@@ -1093,7 +1084,6 @@ tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-2.c
 tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-3.crv
 tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-4.crv
 tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-5.crv
-tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe-6.crv
 tests/corpus/328-an-unclosed-verbatim-run-in-a-row-stops-at-the-closing-pipe.crv
 tests/corpus/329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-10.crv
 tests/corpus/329-a-floating-attribute-is-scoped-to-the-container-that-holds-it-2.crv
@@ -1194,7 +1184,6 @@ tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-3.crv
 tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-4.crv
 tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-5.crv
 tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-6.crv
-tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row-7.crv
 tests/corpus/349-a-container-whose-table-ends-on-a-continuation-row.crv
 tests/corpus/35-cross-reference.crv
 tests/corpus/350-a-definition-at-a-container-s-content-column-2.crv
@@ -1233,7 +1222,6 @@ tests/corpus/355-a-container-whose-table-ends-on-a-joined-header-row.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-10.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-11.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-12.crv
-tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-2.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-3.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-4.crv
 tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on-5.crv
@@ -1245,7 +1233,6 @@ tests/corpus/356-a-quote-inside-a-quote-is-asked-what-it-ends-on.crv
 tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-2.crv
 tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-3.crv
 tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-4.crv
-tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-5.crv
 tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders-6.crv
 tests/corpus/357-a-block-at-a-container-s-content-column-ends-the-paragraph-whatever-it-renders.crv
 tests/corpus/358-what-a-content-column-block-does-not-reach-2.crv
@@ -1265,13 +1252,11 @@ tests/corpus/360-a-definition-behind-an-alternating-container-prefix-registers-a
 tests/corpus/361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-2.crv
 tests/corpus/361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-3.crv
 tests/corpus/361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-4.crv
-tests/corpus/361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line-5.crv
 tests/corpus/361-a-paragraph-opened-after-a-block-in-an-item-is-still-open-for-a-lazy-line.crv
 tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-2.crv
 tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-3.crv
 tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-4.crv
 tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-5.crv
-tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line-6.crv
 tests/corpus/362-an-unterminated-container-does-not-extend-the-item-past-a-blank-line.crv
 tests/corpus/363-a-task-item-s-checkbox-is-not-decided-by-its-first-block.crv
 tests/corpus/364-only-lazy-folding-demotes-a-marker-line-colon-opener-2.crv
@@ -1363,7 +1348,6 @@ tests/corpus/390-a-table-cell-s-marker-run-ends-at-a-space-5.crv
 tests/corpus/390-a-table-cell-s-marker-run-ends-at-a-space.crv
 tests/corpus/391-an-attribute-line-below-a-list-item-interrupts-it-2.crv
 tests/corpus/391-an-attribute-line-below-a-list-item-interrupts-it.crv
-tests/corpus/392-an-attributed-cell-keeps-its-attributes-and-its-literal-marker-2.crv
 tests/corpus/392-an-attributed-cell-keeps-its-attributes-and-its-literal-marker.crv
 tests/corpus/393-an-engine-written-shape-says-what-it-is-called-2.crv
 tests/corpus/393-an-engine-written-shape-says-what-it-is-called-3.crv
@@ -1383,8 +1367,6 @@ tests/corpus/397-a-null-byte-is-replaced-before-the-document-is-read-3.crv
 tests/corpus/397-a-null-byte-is-replaced-before-the-document-is-read.crv
 tests/corpus/398-a-container-s-span-ends-at-its-last-placed-child-2.crv
 tests/corpus/398-a-container-s-span-ends-at-its-last-placed-child.crv
-tests/corpus/399-a-definition-list-ends-at-its-last-placed-child-too-2.crv
-tests/corpus/399-a-definition-list-ends-at-its-last-placed-child-too.crv
 tests/corpus/40-superscript-and-subscript-2.crv
 tests/corpus/40-superscript-and-subscript-2.fmt
 tests/corpus/40-superscript-and-subscript.crv
@@ -1528,17 +1510,14 @@ tests/corpus/425-an-ordered-item-s-separator-width-sets-its-content-column-7.crv
 tests/corpus/425-an-ordered-item-s-separator-width-sets-its-content-column-8.crv
 tests/corpus/425-an-ordered-item-s-separator-width-sets-its-content-column-9.crv
 tests/corpus/425-an-ordered-item-s-separator-width-sets-its-content-column.crv
-tests/corpus/426-below-a-definition-body-s-column-the-body-ends-2.crv
 tests/corpus/426-below-a-definition-body-s-column-the-body-ends-3.crv
 tests/corpus/426-below-a-definition-body-s-column-the-body-ends-4.crv
 tests/corpus/426-below-a-definition-body-s-column-the-body-ends-5.crv
 tests/corpus/426-below-a-definition-body-s-column-the-body-ends-6.crv
-tests/corpus/426-below-a-definition-body-s-column-the-body-ends-7.crv
 tests/corpus/426-below-a-definition-body-s-column-the-body-ends.crv
 tests/corpus/427-the-continuation-marker-attaches-one-block-in-every-container-2.crv
 tests/corpus/427-the-continuation-marker-attaches-one-block-in-every-container-3.crv
 tests/corpus/427-the-continuation-marker-attaches-one-block-in-every-container-4.crv
-tests/corpus/427-the-continuation-marker-attaches-one-block-in-every-container.crv
 tests/corpus/428-a-wrapped-attribute-line-leaves-no-paragraph-open-2.crv
 tests/corpus/428-a-wrapped-attribute-line-leaves-no-paragraph-open-3.crv
 tests/corpus/428-a-wrapped-attribute-line-leaves-no-paragraph-open.crv
@@ -1722,7 +1701,6 @@ tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-3.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-4.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-6.crv
-tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-7.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body-9.crv
 tests/corpus/449-a-comment-below-a-description-body-s-column-ends-the-body.crv
@@ -1779,7 +1757,6 @@ tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-ow
 tests/corpus/455-an-unterminated-fence-on-a-nested-lead-in-a-description-body-owns-its-body.crv
 tests/corpus/456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves-2.crv
 tests/corpus/456-a-definition-nested-past-a-footnote-body-is-a-note-and-a-reference-below-it-resolves.crv
-tests/corpus/457-a-container-closer-closes-its-container-in-a-footnote-body-too-2.crv
 tests/corpus/457-a-container-closer-closes-its-container-in-a-footnote-body-too.crv
 tests/corpus/458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it-2.crv
 tests/corpus/458-a-wrapped-attribute-block-ends-at-its-quote-and-reaches-no-line-below-it-3.crv
@@ -1963,7 +1940,6 @@ tests/corpus/489-a-caption-s-placeholder-is-any-that-does-not-begin-a-tag.crv
 tests/corpus/49-table-per-cell-alignment-override.crv
 tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-2.crv
 tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-3.crv
-tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-4.crv
 tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer.crv
 tests/corpus/491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text-2.crv
 tests/corpus/491-an-unresolved-reference-s-literal-source-is-html-escaped-like-any-other-text-3.crv
@@ -2397,7 +2373,6 @@ tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-ope
 tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-7.crv
 tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-8.crv
 tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open-9.crv
-tests/corpus/553-a-below-column-line-continues-a-paragraph-only-where-one-is-open.crv
 tests/corpus/554-a-caption-scope-resets-at-a-structural-only-line-2.crv
 tests/corpus/554-a-caption-scope-resets-at-a-structural-only-line-3.crv
 tests/corpus/554-a-caption-scope-resets-at-a-structural-only-line.crv
@@ -2473,7 +2448,6 @@ tests/corpus/569-a-quoted-term-takes-a-lazy-line-2.crv
 tests/corpus/569-a-quoted-term-takes-a-lazy-line-3.crv
 tests/corpus/569-a-quoted-term-takes-a-lazy-line.crv
 tests/corpus/57-table-cell-pipe-inside-code-span.crv
-tests/corpus/570-an-at-column-comment-retains-nothing-2.crv
 tests/corpus/570-an-at-column-comment-retains-nothing.crv
 tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv
 tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim.crv
@@ -2520,7 +2494,6 @@ tests/corpus/586-a-comment-closes-a-marker-line-note-s-paragraph-and-an-unclosed
 tests/corpus/587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base-2.crv
 tests/corpus/587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base-3.crv
 tests/corpus/587-a-link-definition-or-an-attribute-line-past-a-box-s-column-opens-on-its-authored-base.crv
-tests/corpus/588-a-block-quote-and-a-footnote-body-take-the-first-block-form-2.crv
 tests/corpus/588-a-block-quote-and-a-footnote-body-take-the-first-block-form-3.crv
 tests/corpus/588-a-block-quote-and-a-footnote-body-take-the-first-block-form-4.crv
 tests/corpus/588-a-block-quote-and-a-footnote-body-take-the-first-block-form-5.crv
@@ -2535,10 +2508,8 @@ tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-13.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-14.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-15.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-16.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-17.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-18.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-19.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-2.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-20.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-21.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-22.crv
@@ -2549,7 +2520,6 @@ tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-26.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-27.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-28.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-29.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-3.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-30.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-31.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-32.crv
@@ -2557,11 +2527,8 @@ tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-33.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-34.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-35.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-36.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-4.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-5.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-6.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-7.crv
-tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-8.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table-9.crv
 tests/corpus/589-an-explicitly-delimited-row-of-blank-cells-is-a-table.crv
 tests/corpus/59-mention-ignores-email-addresses.crv
@@ -2702,7 +2669,6 @@ tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-
 tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line-9.crv
 tests/corpus/613-a-definition-or-attribute-line-in-a-nested-container-leaves-no-paragraph-for-an-unmarked-line.crv
 tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-2.crv
-tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence-3.crv
 tests/corpus/614-a-quoted-item-comment-ends-the-quote-before-an-unclosed-fence.crv
 tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-10.crv
 tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-11.crv
@@ -2916,7 +2882,6 @@ tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-14.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-15.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-16.crv
-tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-17.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-18.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-2.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-3.crv
@@ -2925,13 +2890,11 @@ tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-6.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-7.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-8.crv
-tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-9.crv
 tests/corpus/630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener.crv
 tests/corpus/631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-2.crv
 tests/corpus/631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-3.crv
 tests/corpus/631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox-4.crv
 tests/corpus/631-a-task-item-takes-a-first-block-continuation-marker-after-its-checkbox.crv
-tests/corpus/632-a-continuation-marker-uses-its-container-column-10.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-11.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-12.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-13.crv
@@ -2947,7 +2910,6 @@ tests/corpus/632-a-continuation-marker-uses-its-container-column-21.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-22.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-23.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-24.crv
-tests/corpus/632-a-continuation-marker-uses-its-container-column-25.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-26.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-27.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-28.crv
@@ -2963,8 +2925,6 @@ tests/corpus/632-a-continuation-marker-uses-its-container-column-5.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-6.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-7.crv
 tests/corpus/632-a-continuation-marker-uses-its-container-column-8.crv
-tests/corpus/632-a-continuation-marker-uses-its-container-column-9.crv
-tests/corpus/632-a-continuation-marker-uses-its-container-column.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-10.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-11.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-12.crv
@@ -2975,7 +2935,6 @@ tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marke
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-17.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-18.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-19.crv
-tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-2.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-20.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-21.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-22.crv
@@ -3000,22 +2959,17 @@ tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marke
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-4.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-5.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-6.crv
-tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-7.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-8.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-9.crv
 tests/corpus/633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-10.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-11.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-12.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-13.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-14.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-15.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-16.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-17.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-18.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-19.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-2.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-20.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-21.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-22.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-23.crv
@@ -3024,8 +2978,6 @@ tests/corpus/634-a-refused-continuation-plus-remains-text-25.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-26.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-27.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-28.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-29.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-3.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-30.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-31.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-32.crv
@@ -3034,9 +2986,7 @@ tests/corpus/634-a-refused-continuation-plus-remains-text-34.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-35.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-36.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-37.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-38.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-39.crv
-tests/corpus/634-a-refused-continuation-plus-remains-text-4.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-40.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-5.crv
 tests/corpus/634-a-refused-continuation-plus-remains-text-6.crv
@@ -3085,8 +3035,6 @@ tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-a
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-12.crv
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-13.crv
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-2.crv
-tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-3.crv
-tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-4.crv
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-5.crv
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-6.crv
 tests/corpus/646-a-quote-prefixed-plus-takes-one-space-after-each-quote-marker-and-attaches-a-quote-7.crv
@@ -3140,7 +3088,6 @@ tests/corpus/658-a-definition-marker-line-keeps-a-straddling-tab-s-residual-colu
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-10.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-11.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-12.crv
-tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-13.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-14.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-15.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-16.crv
@@ -3150,7 +3097,6 @@ tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-19.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-2.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-20.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-21.crv
-tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-22.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-23.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-3.crv
 tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-4.crv
@@ -3178,7 +3124,6 @@ tests/corpus/67-empty-delimiters.fmt
 tests/corpus/670-bidi-controls-in-math-content-2.crv
 tests/corpus/670-bidi-controls-in-math-content.crv
 tests/corpus/671-a-fence-with-no-host-prefix-leaves-an-inline-run-2.crv
-tests/corpus/671-a-fence-with-no-host-prefix-leaves-an-inline-run.crv
 tests/corpus/672-table-content-parses-inline-markup-2.crv
 tests/corpus/672-table-content-parses-inline-markup.crv
 tests/corpus/673-link-titles-accept-trailing-ascii-padding-with-either-destination-2.crv

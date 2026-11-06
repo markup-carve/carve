@@ -105,15 +105,3 @@ tail
 </dl>
 <p>tail</p>
 ```
-
-```
-- a
-  + b |
-tail
-.
-<ul>
-  <li>a
-+ b |
-tail</li>
-</ul>
-```

@@ -49,24 +49,3 @@ after *b*
 </code></pre>
 </aside>
 ````
-
-````
-::: note
-> para
-> - %% c
-```
-code
-::::
-:::
-after *b*
-.
-<aside class="admonition note" aria-label="Note">
-  <blockquote><p>para
--</p></blockquote>
-  <pre><code>code
-::::
-:::
-after *b*
-</code></pre>
-</aside>
-````

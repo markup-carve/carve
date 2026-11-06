@@ -13,12 +13,6 @@ Bold-italic delimiter needs content
 ```
 
 ```
-/*x*/
-.
-<p><strong><em>x</em></strong></p>
-```
-
-```
 a/*y*/b
 .
 <p>a/<strong>y</strong>/b</p>

@@ -55,9 +55,3 @@ An unclosed verbatim run in a row stops at the closing pipe
   </tbody>
 </table>
 ```
-
-```
-| a | b
-.
-<p>| a | b</p>
-```

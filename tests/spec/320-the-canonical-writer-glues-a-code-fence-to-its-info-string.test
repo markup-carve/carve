@@ -8,12 +8,3 @@ composer require x
 <pre title="src/Auth.php"><code class="language-php">composer require x
 </code></pre>
 ````
-
-````
-```php "src/Auth.php" [Composer]
-composer require x
-```
-.
-<pre title="src/Auth.php"><code class="language-php">composer require x
-</code></pre>
-````

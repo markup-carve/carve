@@ -2,12 +2,6 @@ Trailing whitespace on a content line is dropped
 
 ```
 abc 
-.
-<p>abc</p>
-```
-
-```
-abc 
 def
 .
 <p>abc

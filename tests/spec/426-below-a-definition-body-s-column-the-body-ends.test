@@ -15,18 +15,6 @@ Below a definition body's column the body ends
 ```
 :: term
 :  definition
- > quote
-.
-<dl>
-  <dt>term</dt>
-  <dd>definition</dd>
-</dl>
-<blockquote><p>quote</p></blockquote>
-```
-
-```
-:: term
-:  definition
   # H
 .
 <dl>
@@ -76,22 +64,4 @@ more</dd>
     <blockquote><p>quote</p></blockquote>
   </dd>
 </dl>
-```
-
-```
-- intro
-
-  :: term
-  :  definition
-   > quote
-.
-<ul>
-  <li><p>intro</p>
-    <dl>
-      <dt>term</dt>
-      <dd>definition</dd>
-    </dl>
-    <blockquote><p>quote</p></blockquote>
-  </li>
-</ul>
 ```

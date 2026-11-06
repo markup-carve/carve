@@ -132,12 +132,10 @@
       whitespace clause happens to mention, would leave the rest to habit,
       which is the state this section replaces.
 
-      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE [CARVE-P9-062]. It is
-      REPLACED BY U+FFFD before the first line is read (PART 0 INPUT, A NULL
-      IS REPLACED BEFORE THE FIRST LINE IS READ), so never reaches the AST.
-      T1..T4 emit the resulting U+FFFD as ordinary text; the canonical `carve`
-      writer serializes it as source text. ANSI does not strip U+FFFD because
-      it is not a control. A NUL reaching a target violates the parse boundary.
+      U+0000 IS NOT ONE OF THOSE CONTROLS -- NORMATIVE [CARVE-P9-062]. The
+      input boundary handles it under CARVE-P0-002; T1..T4 receive only the
+      resulting ordinary text, not a NUL. The canonical `carve` writer writes
+      that text, and ANSI applies no control stripping to it.
 
       T1 HTML EMITS THEM. Non-whitespace C0 controls remain in rendered text.
          This differs from §26's removal of bidi overrides and isolates.

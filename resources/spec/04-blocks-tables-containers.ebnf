@@ -57,7 +57,7 @@ continuation_cell = {space}, cell_content, {space} ;
    (no intervening space) sets the row's `<tr>` attributes -- the row-level twin
    of a cell's attribute block (cell_attributes). The two are NOT in the same
    position: a row's block follows the row's LAST `|`, a cell's follows the
-   cell's marker run (CARVE-P2-036 below). The whole
+   cell's marker run (PART 9 §5 T10/T11). The whole
    payload must be valid attribute syntax (PART 9 §15); otherwise the `{` is ordinary
    content and the line is not a row attribute (see PART 9 §5, ROW
    ATTRIBUTES). *)
@@ -84,25 +84,8 @@ data_cell   =      [cell_attributes], cell_padding, cell_content, {space} ;
    ends with one space (PART 9 §5 T11). A cell with no prefix accepts unpadded
    content (`|a|`). A placeholder with an alignment-only block remains a
    span_cell; ordinary attributes make its glyph literal (T4). *)
-(* AN ATTRIBUTE BLOCK SETS THE CELL'S ATTRIBUTES -- NORMATIVE [CARVE-P2-036].
-   It follows the optional `=` and is glued to it or to the
-   opening `|` (`|={> .x} …`, `|{.x} …`). The rest of the cell, after
-   optional whitespace, is the content. A space before the brace (`| {.x}`) is
-   ordinary content, NOT attributes. The whole brace payload must be valid
-   attribute syntax (PART 9 §15); otherwise the '{' is literal content. A cell
-   carrying ordinary attributes is never a bare span_cell -- its content is
-   literal even if it is just '^' or '<', AND THE ATTRIBUTES STAY ON IT. The
-   `|{.x} < |` is `<td class="x">&lt;</td>`; `| {.x} < |` has ordinary
-   text `{.x} <` because the space precedes the brace.
-   Only the `^` and `<` span markers shape the grid, so an authored `rowspan`
-   or `colspan` is always dropped, whether or not a span is computed:
-   `|{rowspan=2} a | b |` over `| c | d |` gives a plain `<td>a</td>` in a grid
-   of two rows (carve#4715). An authored `align` follows PART 10 like any
-   other key: a cell is outside the text-block set, so it keeps the attribute,
-   and a computed alignment adds its `text-align` declaration beside it.
-
-   `|{#x}=R|` is a data cell whose content is `{#x}=R`; no marker run ends
-   without a space (T11). `|{#x} =R |` has id `x` and content `=R`. *)
+(* The productions above place the optional cell_attributes slot. PART 9 §5
+   T10/T11 owns how that slot is recognized and rendered. *)
 cell_attributes = alignment_attributes | attributes ;
 alignment_attributes = '{', cell_alignment, [space+, attribute_list], {space}, '}' ;
 (* The ordinary `attribute_list` is from PART 9 §15; it may be absent only
