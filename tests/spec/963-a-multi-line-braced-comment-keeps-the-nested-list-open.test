@@ -1,0 +1,58 @@
+A multi-line braced comment keeps the nested list open
+
+```
+- a
+  - b
+{% c
+  d %}
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+{% c
+  d %}
+
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li><p>b
+</p></li>
+      <li><p>c</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  - b
+{% c
+  d %}
+ x
+  - c
+.
+<ul>
+  <li>a
+    <ul>
+      <li>b
+
+x</li>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
