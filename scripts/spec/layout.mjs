@@ -7016,7 +7016,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (markerLinePlus && !qHost.fence && openComment === null && CONT_MARKER.test(trimWs(qm[1] ?? '')) && qLastMarked < 0 && i + 1 < n && !isBlank(lines[i + 1])) {
             const attached = takeOneBlock(lines, i + 1, state, ind(i + 1).L?.col ?? ind(i + 1).col, true)
             const fenceOpen = attachedLeavesFenceOpen(attached.rawMarker, inner)
-            inner.push('', ...attached.rawMarker)
+            const attachedColumn = ind(i + 1).col
+            inner.push('', ...attached.rawMarker.map(line => dedent(line, attachedColumn)))
             if (!fenceOpen) inner.push('')
             qLastMarked = i
             i = attached.next
