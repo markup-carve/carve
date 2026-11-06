@@ -3,8 +3,6 @@
 # corpus row and target. A unanimous engine difference needs an expected fixture
 # and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
-plain/js/965-unresolved-reference-fallback-folds-soft-breaks-on-plain-and-ansi-4  markup-carve/carve#5257: the pinned JS revision predates the merged authored hard-break fix; the current engine preserves this line feed.
-ansi/js/965-unresolved-reference-fallback-folds-soft-breaks-on-plain-and-ansi-4  markup-carve/carve#5257: the pinned JS revision predates the merged authored hard-break fix; the current engine preserves this line feed.
 ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve#5185, pinned Rust retains a tab before the literal marker while pinned JS omits it; target layout is under triage
 carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 ansi/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
