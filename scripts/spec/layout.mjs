@@ -6951,6 +6951,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
         // A description's first-block `+` opens no paragraph, as an item's does not (CARVE-P9-067).
         const descriptionPlus = blockStart && qHost.kinds.at(-1) === 'description' && CONT_MARKER.test(inner0.rest)
+        // A marker or note opened on this line carries a comment as its first block: it holds
+        // no paragraph, whatever the host held before (PART 0 S4, CARVE-P0-007, CARVE-P0-024).
+        const hostedComment = blockStart && COMMENT_LINE.test(inner0.rest)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
         // An item line under an item's paragraph starts the next item, so a
         // comment or attribute item closes that paragraph (corpus 610, carve#3268).
@@ -6968,7 +6971,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }), 0) !== null
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus || hostedComment ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
