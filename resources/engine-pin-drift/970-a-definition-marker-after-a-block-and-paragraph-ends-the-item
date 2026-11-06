@@ -1,0 +1,1 @@
+Spec model follows the PART 0 S4 definition-body marker-column boundary after a term, later block, and paragraph; the pinned carve-js build still folds the separator into the item (carve#5352).

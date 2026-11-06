@@ -19,3 +19,8 @@ test('without a definition list, the marker-column line stays in the open paragr
 test('a nested marker-column line leaves the inner item in its outer item', () => {
   assert.match(html('- outer\n  - a\n    :: t\n    # H\n    w\n  : z\n'), /<\/ul>\n    : z\n  <\/li>/)
 })
+
+test('term-shaped text in a code fence creates no definition boundary', () => {
+  const source = '- a\n  ```\n  :: t\n  ```\n  w\n: z\n'
+  assert.match(html(source), /w\n: z\n  <\/li>/)
+})
