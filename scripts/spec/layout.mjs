@@ -1092,7 +1092,7 @@ function findColonCloser(lines, openIdx, len) {
     // nothing and opens nothing (carve#450). The span is skipped from the line
     // AFTER its opener, because an opener with no info string is closer-shaped
     // itself and would otherwise end the span where it began.
-    const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)
+    const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j, true)
     if (span !== -1) {
       j = span
       continue
@@ -1168,7 +1168,7 @@ function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
  *  all (PART 9 §10 I4); an unterminated one is not a span here and the caller
  *  decides what its lines are. A comment block opens without a closer ahead
  *  and runs to its exact-length closer or the last line (§28, carve#4907). */
-function opaqueSpanEnd(lines, idx) {
+function opaqueSpanEnd(lines, idx, byColumn = false) {
   const line = lines[idx] ?? ''
   const fence = FENCE.exec(line)
   if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
@@ -1177,9 +1177,17 @@ function opaqueSpanEnd(lines, idx) {
   }
   const comment = COMMENT_FENCE.exec(line)
   if (comment) {
+    // Outside a line-block payload the walk wrote the opener at its owner's
+    // content column, so a visible line short of it misses the owner; only a
+    // comment line stays (PART 0 S1).
+    const column = byColumn ? indentCols(line).col : 0
     for (let j = idx + 1; j < lines.length; j++) {
       // A lazy line missed the span's owner and ended it (PART 0 S1).
       if (lines[j].startsWith(LAZY)) return j - 1
+      if (column > 0) {
+        const at = indentCols(lines[j])
+        if (at.col < column && at.rest !== '' && !at.rest.startsWith('%%')) return j - 1
+      }
       const c = COMMENT_FENCE.exec(lines[j])
       if (c && c[1].length === comment[1].length) return j
     }
@@ -3800,7 +3808,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (inner.kind === 'fence' && inner.family === 'comment' && missed && !inner.span && m.rest !== '' && inner.closes(m.rest, m.col)) {
       frames.pop()
       top().last = inner.entryLast ?? 'block'
-      result.push(out + ' '.repeat(frames[reached].col) + m.rest)
+      // It changes no ownership, so the readers meet it in the span's host.
+      let hostLead = ''
+      for (let k = reached + 1; k < frames.length; k++) {
+        if (frames[k].kind === 'quote') hostLead += ' '.repeat(frames[k - 1].canon) + '> '
+      }
+      result.push(out + hostLead + ' '.repeat(top().kind === 'quote' ? 0 : top().canon) + m.rest)
       if (trace) emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'closer', { cell: 'B-comment-end' })
       continue
     }
