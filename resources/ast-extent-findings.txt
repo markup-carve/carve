@@ -65,3 +65,9 @@ carve-php  empty-span-covers-more  list_item  22  markup-carve/carve-php#4724
 carve-php  ends-past-last-child  list_item  1  markup-carve/carve-php#4723
 carve-php  starts-past-opening-markup  abbreviation_def  26  markup-carve/carve-php#4722
 carve-php  starts-past-opening-markup  comment  3  markup-carve/carve-php#4721
+carve-js  ends-past-last-child  list_item  39  markup-carve/carve#5246
+carve-js  ends-past-last-child  definition_description  4  markup-carve/carve#5246
+carve-js  ends-past-last-child  block_quote  2  markup-carve/carve#5246
+carve-rs  ends-past-last-child  list_item  35  markup-carve/carve#5246
+carve-rs  ends-past-last-child  definition_description  4  markup-carve/carve#5246
+carve-rs  ends-past-last-child  block_quote  2  markup-carve/carve#5246
