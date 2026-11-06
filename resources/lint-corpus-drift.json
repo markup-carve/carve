@@ -3071,8 +3071,8 @@
     },
     {
       "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
       "diagnostics": {
         "js": [
           [
@@ -3099,8 +3099,8 @@
     },
     {
       "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
       "diagnostics": {
         "js": [
           [
