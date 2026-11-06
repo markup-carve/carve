@@ -2907,7 +2907,7 @@ function hostedBlockAt(h, inner, popped) {
   const continuation = isContinuationRow(text, h.tableColumn === column && h.tableOpen)
   h.tableColumn = column
   h.tableOpen = isTableRow(text) || continuation
-  return continuation || HEADING.test(text) || HR.test(text) || text[0] === '|' ||
+  return continuation || HEADING.test(text) || HR.test(text) || h.tableOpen ||
     isDefinitionOrAttributeLine(text)
 }
 
@@ -9495,6 +9495,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         if (fence.opaque?.endsAtBlank) fence.opaque = null
+        if (nestedOpaque?.endsAtBlank) nestedOpaque = null
         if (insideFence()) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
@@ -10372,9 +10373,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (!inNestedComment && !inDescendantSpan && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
             (fence.opaque || !noteClaimsBelow)) trackFence(dedented, opens, i)
         // A fence a descendant's `+` attaches below that descendant's content column
-        // ends at its first blank when it has no closer (§17 L3, carve#5304).
-        if (fence.opaque?.kind === 'code' && !fence.opaque.attachedChecked) {
-          fence.opaque.attachedChecked = true
+        // ends at its first blank when it has no closer (§17 L3, carve#5304), also
+        // when this item tracks it as a deeper descendant's fence (carve#5309).
+        for (const [opaque, floor] of [[fence.opaque, contentCol], [nestedOpaque, lm.col]]) {
+          if (opaque?.kind !== 'code' || opaque.attachedChecked) continue
+          opaque.attachedChecked = true
           let above = i - 1
           while (above > 0 && (COMMENT_LINE.test(ind(above).rest) || ind(above).rest[0] === '{' && tryAttrLine(dedentedWindow(lines, above, ind(above).col), 0))) above--
           let host = above >= 0 ? ind(previousVisible(above)) : null
@@ -10386,11 +10389,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
               for (let k = i + 1; k < n && !closed; k++) {
                 const at = ind(k)
                 if (at.rest === '') continue
-                if (at.col < contentCol) break
+                if (at.col < floor) break
                 const c = PURE_FENCE.exec(at.rest)
-                closed = !!c && c[1][0] === fence.opaque.run[0] && c[1].length >= fence.opaque.run.length
+                closed = !!c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length
               }
-              if (!closed) fence.opaque.endsAtBlank = true
+              if (!closed) opaque.endsAtBlank = true
               break
             }
           }
