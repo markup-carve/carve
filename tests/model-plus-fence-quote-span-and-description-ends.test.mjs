@@ -12,6 +12,7 @@ test('a description holding a list ends at its item marker column (carve#5321)',
   assert.match(html('- a\n  - b\n    :: t\n    : u\n      - x\n: b\n'), /<li>x<\/li><\/ul><\/dd><\/dl><\/li><\/ul><\/li><\/ul><p>: b<\/p>$/)
   assert.match(html('- a\n  - b\n    :: t\n    : u\n      - x\n   : b\n: c\n'), /<li>x: b<\/li>[\s\S]*<p>: c<\/p>$/)
   assert.match(html('- x\n  :: t\n  : desc\n  - b\n: z\n'), /<li>b: z<\/li>/)
+  assert.match(html('- a\n  :: t\n  - b\n  : u\n    - x\n: z\n'), /<li>x: z<\/li>/)
 })
 
 test('a quoted note span on a marker line takes no lazy line (carve#5322)', () => {

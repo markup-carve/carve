@@ -9987,7 +9987,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
         lastTermSourceCol = lm.L?.col ?? col
-      } else if (DESCRIPTION_TEXT.test(lm.rest) && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
+      } else if (definitionListOpen && DESCRIPTION_TEXT.test(lm.rest) && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         // A description at its term's column makes the list the item's last block again (carve#5321).
         lastListBlock = 'term'
