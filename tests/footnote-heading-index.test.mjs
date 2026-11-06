@@ -25,3 +25,10 @@ test('a used heading in a nested footnote body is indexed', () => {
   const result = html('x[^n]\n\n[^n]: ::: box\n      ## Nested\n      ::: box\n\n[Nested][]')
   assert.match(result, /href="#Nested"/)
 })
+
+test('an unused footnote heading reserves no generated id in the body namespace', () => {
+  const result = html('[^n]: # H\n\n# H\n\n[H][]')
+  assert.match(result, /<section id="H">/)
+  assert.match(result, /<a href="#H">H<\/a>/)
+  assert.doesNotMatch(result, /id="H-2"/)
+})

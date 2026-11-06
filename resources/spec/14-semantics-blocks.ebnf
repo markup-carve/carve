@@ -717,6 +717,10 @@
         has one exception: a footnote definition's headings take their ids
         after every body heading, in definition order, so `[^n]: # abc`
         written above `# abc` leaves the body `abc` and the note `abc-2`.
+        An unused footnote definition does not enter this id assignment:
+        its headings receive no generated id, reserve no dedup suffix,
+        and remain outside the reference indexes. An authored `{#id}`
+        remains an authored attribute on its heading.
       - Empty document or doc with no headings: zero <section> elements
         are emitted.
       - THE `sections` RENDER OPTION. A host MAY offer a boolean
