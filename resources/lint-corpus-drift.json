@@ -98,8 +98,8 @@
     },
     {
       "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -120,8 +120,8 @@
     },
     {
       "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -2983,8 +2983,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3005,8 +3005,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3027,8 +3027,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-5.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3049,8 +3049,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-6.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
