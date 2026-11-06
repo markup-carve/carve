@@ -1092,7 +1092,7 @@ function findColonCloser(lines, openIdx, len) {
     // nothing and opens nothing (carve#450). The span is skipped from the line
     // AFTER its opener, because an opener with no info string is closer-shaped
     // itself and would otherwise end the span where it began.
-    const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)
+    const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j, true)
     if (span !== -1) {
       j = span
       continue
@@ -1168,7 +1168,7 @@ function leavesParagraphOpen(lines, idx, wasOpen, inItem = false) {
  *  all (PART 9 §10 I4); an unterminated one is not a span here and the caller
  *  decides what its lines are. A comment block opens without a closer ahead
  *  and runs to its exact-length closer or the last line (§28, carve#4907). */
-function opaqueSpanEnd(lines, idx) {
+function opaqueSpanEnd(lines, idx, byColumn = false) {
   const line = lines[idx] ?? ''
   const fence = FENCE.exec(line)
   if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
@@ -1177,9 +1177,17 @@ function opaqueSpanEnd(lines, idx) {
   }
   const comment = COMMENT_FENCE.exec(line)
   if (comment) {
+    // Outside a line-block payload the walk wrote the opener at its owner's
+    // content column, so a visible line short of it misses the owner; only a
+    // comment line stays (PART 0 S1).
+    const column = byColumn ? indentCols(line).col : 0
     for (let j = idx + 1; j < lines.length; j++) {
       // A lazy line missed the span's owner and ended it (PART 0 S1).
       if (lines[j].startsWith(LAZY)) return j - 1
+      if (column > 0) {
+        const at = indentCols(lines[j])
+        if (at.col < column && at.rest !== '' && !at.rest.startsWith('%%')) return j - 1
+      }
       const c = COMMENT_FENCE.exec(lines[j])
       if (c && c[1].length === comment[1].length) return j
     }
@@ -2396,6 +2404,8 @@ function bodyLeavesParagraphOpen(bodyLines, quoted = false, depth = 0, quoteBody
   if (endsInRefusedRunParagraph(bodyLines, last)) return true
   // A line-block payload line is inline content whatever its shape, so its stanza stays open (PART 2 line_block).
   if (hostEndsInLineBlockStanza(bodyLines, depth, true)) return true
+  // An open `%%%` span ended the paragraph before it, and the next line ends the span (PART 0 S1).
+  if (bodyHoldsOpenCommentSpan(bodyLines)) return false
   // An attribute-shaped line without its nested quote marker, or short of an
   // item's content column, is a lazy continuation of that host's paragraph.
   // Its braces do not close the paragraph when the description asks whether
@@ -2914,8 +2924,9 @@ function hostedDefinitionAt(h, inner) {
 function hostColonStep(h, inner, commentOpens = false, markerLine = false, remainingDepth = MAX_NESTING_DEPTH, codeCloses = () => false) {
   if (!h.colonComment && !h.colons?.length && !inner.rest.startsWith(':::') && !inner.rest.startsWith('%%')) return false
   const comment = COMMENT_FENCE_BODY.exec(inner.rest)
-  // A line below the line block's base ends its span under S1 (PART 0).
-  if (h.colonComment && h.colonCommentFloor !== undefined && inner.rest !== '' && inner.col < h.colonCommentFloor) h.colonComment = null
+  // A line below the line block's base ends its span under S1 (PART 0); a comment line stays payload.
+  if (h.colonComment && h.colonCommentFloor !== undefined && inner.rest !== '' && inner.col < h.colonCommentFloor &&
+      !COMMENT_LINE.test(inner.rest)) h.colonComment = null
   else if (h.colonComment) {
     if (comment && comment[1].length === h.colonComment) h.colonComment = null
     return true
@@ -3800,7 +3811,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (inner.kind === 'fence' && inner.family === 'comment' && missed && !inner.span && m.rest !== '' && inner.closes(m.rest, m.col)) {
       frames.pop()
       top().last = inner.entryLast ?? 'block'
-      result.push(out + ' '.repeat(frames[reached].col) + m.rest)
+      // It changes no ownership, so the readers meet it in the span's host.
+      let hostLead = ''
+      for (let k = reached + 1; k < frames.length; k++) {
+        if (frames[k].kind === 'quote') hostLead += ' '.repeat(frames[k - 1].canon) + '> '
+      }
+      result.push(out + hostLead + ' '.repeat(top().kind === 'quote' ? 0 : top().canon) + m.rest)
       if (trace) emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'closer', { cell: 'B-comment-end' })
       continue
     }
@@ -5479,8 +5495,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if ((inItem || descriptionOwnerColumn !== null) &&
             measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !attachPending) break
         // A line that misses the note ends a comment span the body holds, and the body (PART 0 S1).
-        if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan() &&
-          !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
+        const verseSpanEnded = !isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN && !COMMENT_LINE.test(lines[i] ?? '') && !attachPending && missedLiveSpan()
+        if (verseSpanEnded && !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
         if (isBlank(lines[i])) afterComment = false
         if (measured.col >= FOOTNOTE_BODY_COLUMN || isBlank(lines[i])) {
           retainedParagraph = false
@@ -5581,7 +5597,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // Rule A: a payload line below the body column ends the fence and the body.
           break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
-            (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) &&
+            // A line that ended the span, or follows one, folds into the stanza it left open (PART 0 S4, carve#4956).
+            ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) || verseSpanEnded ||
+              hostEndsInLineBlockStanza(bodyLines, 0, true)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
             !opensFence(lines, i) &&

@@ -1126,8 +1126,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j)",
-          "replace": "const span = opaqueSpanEnd(lines, j)"
+          "find": "const span = top.mode === 'line-block' ? lineBlockSpanEnd(lines, j) : opaqueSpanEnd(lines, j, true)",
+          "replace": "const span = opaqueSpanEnd(lines, j, true)"
         }
       ]
     },
