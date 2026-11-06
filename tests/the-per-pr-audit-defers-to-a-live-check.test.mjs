@@ -129,6 +129,8 @@ test('per-PR relaxes exactly the engine-lag ledgers and the siblings own lag, no
       ['resources/ast-position-waivers.txt', 'split', 'split-declared'],
       ['resources/ast-span-divergence.txt', 'owed', 'declared'],
       ['resources/ast-value-divergence.txt', 'owed', 'declared'],
+      // carve#5246 exposes pinned parser spans before the engine fix can land.
+      ['tests/ast-positions.test.mjs', 'owed', 'declared'],
       ['resources/converter-drift.txt', 'owed', 'declared'],
       ['resources/engine-cross-read-drift.txt', 'owed', 'declared'],
       ['resources/engine-fmt-drift.txt', 'owed', 'declared'],

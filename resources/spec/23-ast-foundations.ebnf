@@ -399,6 +399,11 @@
       placed child before it, and one emptied of every child spans its own
       markup (CARVE-P12-018):
 
+      A refused structural `+` after a nonempty closerless container's last
+      placed child likewise adds no owned source: the container ends at that
+      child, even when the `+` is at its marker column. An empty host may span
+      its consumed `+` as its sole content (carve#5246, carve#5161).
+
           - :: term
             : payload
 

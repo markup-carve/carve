@@ -1468,9 +1468,9 @@ test('an emptied item reaching past its marker line markup still reports', () =>
   }
 })
 
-test('a container ends after a consumed plus that leaves no node (carve#5161)', () => {
-  // `- a` / `+` / `- x` and `> > q` / `> +`: all three engines end the host
-  // after the authored `+`.
+test('a refused plus after a placed child does not extend its host (carve#5246)', () => {
+  // The carve#5246 ruling limits carve#5161's consumed-plus span to an empty
+  // host. The placed child gives every nonempty host its end.
   const item = (source, end, childEnd) => ({
     type: 'document',
     children: [
@@ -1487,7 +1487,7 @@ test('a container ends after a consumed plus that leaves no node (carve#5161)', 
       },
     ],
   })
-  assert.deepEqual(stopFindings(item('- a\n+\n', 5, 3), '- a\n+\n'), [])
+  assert.equal(stopFindings(item('- a\n+\n', 5, 3), '- a\n+\n').length, 1)
   const quote = {
     type: 'document',
     children: [
@@ -1498,7 +1498,7 @@ test('a container ends after a consumed plus that leaves no node (carve#5161)', 
       },
     ],
   }
-  assert.deepEqual(stopFindings(quote, '> > q\n> +\npara\n'), [])
+  assert.equal(stopFindings(quote, '> > q\n> +\npara\n').length, 1)
   // A line holding anything besides the plus is not the container's markup.
   assert.equal(stopFindings(item('- a\n+ b\n', 7, 3), '- a\n+ b\n').length, 1)
   // A `> +` line opens a sibling quote; it is not the list's markup.
@@ -1509,6 +1509,38 @@ test('a container ends after a consumed plus that leaves no node (carve#5161)', 
     children: [{ type: 'paragraph', pos: pos(0, 4), children: [{ type: 'text', value: 'ab', pos: pos(0, 2) }] }],
   }
   assert.equal(stopFindings(para, 'ab\n+\n').length, 1)
+})
+
+test('corpus 868 and 947 pin the refused-plus AST extent (carve#5246)', () => {
+  const fixtures = [
+    ['868-a-refused-plus-after-a-block-a-quote-s-plus-attached-folds-into-the-open-paragraph.crv', 4, 7],
+    ['947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv', 6, 18],
+  ]
+  for (const [name, listStart, lastChildEnd] of fixtures) {
+    const source = readFileSync(resolve(repo, 'tests/corpus', name), 'utf8')
+    const refused = source.indexOf('\n+\n', lastChildEnd)
+    assert.ok(refused >= lastChildEnd, name)
+    const overlong = refused + 2
+    const doc = {
+      type: 'document',
+      children: [{
+        type: 'block_quote', pos: pos(0, overlong),
+        children: [{
+          type: 'list', pos: pos(listStart, overlong),
+          items: [{
+            type: 'list_item', pos: pos(listStart, overlong),
+            children: [{ type: 'code_block', pos: pos(listStart + 2, lastChildEnd) }],
+          }],
+        }],
+      }],
+    }
+    const nodes = [doc.children[0], doc.children[0].children[0], doc.children[0].children[0].items[0]]
+    for (const node of nodes.reverse()) {
+      assert.equal(stopFindings(doc, source).length, 1, name)
+      node.pos.endOffset = lastChildEnd
+    }
+    assert.deepEqual(stopFindings(doc, source), [], name)
+  }
 })
 
 test('a container holding an unplaced child is skipped rather than guessed at', () => {
@@ -2067,7 +2099,56 @@ test('a definition description ends at its last child ON THE REFERENCE, which is
  * carve-js main before the last three merged, which is why the list was
  * re-measured wholesale rather than struck row by row (carve#1589).
  */
-const DECLARED_OVER_REACH = []
+// These 45 pinned-JS rows become visible when the carve#5246 nonempty-host
+// exception is removed. Each is a measured existing engine span, not a new
+// permission in the checker. The engine pin update removes them.
+const DECLARED_OVER_REACH = [
+  '226-a-definition-attached-by-a-continuation-marker-is-collected-and-the-item-keeps-no-trace.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '327-a-continuation-marker-attaches-one-block-and-the-boundary-is-that-block-s-extent-5.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '435-the-continuation-marker-s-column-gate-reaches-every-container-16.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '435-the-continuation-marker-s-column-gate-reaches-every-container-7.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-2.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-4.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-5.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-6.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-7.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth-8.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '626-an-indented-plus-below-a-nested-fence-stays-content-at-every-depth.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-2.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-6.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-7.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener-7.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '630-a-continuation-marker-stands-alone-at-an-open-marker-column-or-right-after-a-block-opener.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '632-a-continuation-marker-uses-its-container-column-12.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '632-a-continuation-marker-uses-its-container-column-13.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '632-a-continuation-marker-uses-its-container-column-19.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '632-a-continuation-marker-uses-its-container-column-20.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-37.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-38.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '633-a-first-block-marker-on-an-indented-opener-reads-only-its-marker-column-39.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text-13.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text-14.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text-18.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text-19.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text-6.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '634-a-refused-continuation-plus-remains-text.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '650-a-wrapped-attribute-line-interrupts-like-a-one-line-attribute-line-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '726-a-second-plus-starts-its-own-paragraph-after-attachment-2.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '726-a-second-plus-starts-its-own-paragraph-after-attachment-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '821-an-attribute-run-after-a-lone-plus-leads-a-sublist-at-the-content-column.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter-5.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '854-a-refused-plus-before-an-attribute-run-and-a-sibling-is-a-letter.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '868-a-refused-plus-after-a-block-a-quote-s-plus-attached-folds-into-the-open-paragraph.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+  '947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv 1  carve#5246: pinned JavaScript span includes a refused trailing plus',
+]
 
 test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   // Declared as `<document> <count>`, so a document growing a second
@@ -2105,7 +2186,7 @@ test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   }
   assert.deepEqual(
     [...measured.entries()].map(([name, count]) => `${name} ${count}`).sort(),
-    [...DECLARED_OVER_REACH].sort(),
+    DECLARED_OVER_REACH.map((row) => row.split(/\s{2,}/)[0]).sort(),
     'update DECLARED_OVER_REACH in the commit that moves the engines, never to quiet a run',
   )
   assert.ok(examined > 2000, `only ${examined} node(s) reached the stops-at-its-children rule`)
