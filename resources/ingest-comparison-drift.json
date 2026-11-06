@@ -17,7 +17,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
@@ -32,7 +32,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/php->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
@@ -47,7 +47,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/rust->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
