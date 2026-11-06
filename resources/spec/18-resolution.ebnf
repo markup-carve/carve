@@ -57,6 +57,23 @@
       (PART 9 §14). A collapsed image `![alt][]` takes its alt text as the
       label, so the alt text must be non-empty; the full `![alt][ref]` form
       allows an empty one.
+      In plain and ANSI fallback for an unresolved reference or image, a soft
+      line feed folds to one space; authored hard breaks, verbatim content and
+      line-block promoted breaks survive. A local `::: \` block promotes only
+      an immediate `soft_break` child of its direct paragraph, so it does not
+      promote a break inside unresolved fallback text.
+
+        Carve                 plain and ANSI
+        [a                  [a b][missing]
+        b][missing]
+
+        ::: \                 [a b][missing]
+        [a
+        b][missing]
+        :::
+
+        [a\                 [a\
+        b][missing]          b][missing]
       IMPLICIT HEADING FALLBACK: a link (never an image) [text][] whose
       label matches no linkDefs entry falls back to the heading index -- the document's
       headings keyed by their rendered plain text -- and resolves to

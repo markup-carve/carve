@@ -1,0 +1,41 @@
+Unresolved reference fallback folds soft breaks on plain and ANSI
+
+```
+[a
+b][missing]
+.
+<p>[a
+b][missing]</p>
+```
+
+```
+::: \
+[a
+b][missing]
+:::
+.
+<div class="hardbreaks">
+  <p>[a
+b][missing]</p>
+</div>
+```
+
+```
+::: \
+![a
+b][missing]
+:::
+.
+<div class="hardbreaks">
+  <p>![a
+b][missing]</p>
+</div>
+```
+
+```
+[a\
+b][missing]
+.
+<p>[a\
+b][missing]</p>
+```
