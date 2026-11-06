@@ -1,18 +1,18 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-05",
-    "spec": "c6937da1e4bdb3ce24b011e316a24a7affff4036",
-    "js": "befaeef2161353dba565b3dfc5012d62fd47c1ea",
-    "php": "6f830e30908204b2a950a984b7d7efaf882992f0",
-    "rust": "751c904e67f16e6b7127b746a82e977053e5f9a1",
-    "documents": 4527
+    "date": "2026-11-06",
+    "spec": "6abfd62987c77960bbe6a7022d3a447fc55a9091",
+    "js": "59a9583249b84d43695a38f39771ad8461abf7cb",
+    "php": "6ab916ef28250fa3f2f398c4a47a1e5b3cd24de0",
+    "rust": "45b2ecbb97479633d0877b23248e5da52be10140",
+    "documents": 4464
   },
   "differences": [
     {
       "file": "tests/corpus/245-sibling-markers-that-reach-one-column-are-one-list.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a frame-relative tabbed sibling marker; the expected result and clause are in markup-carve/carve-php#4735.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4735",
       "diagnostics": {
         "js": [
           [
@@ -33,8 +33,8 @@
     },
     {
       "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -49,8 +49,8 @@
     },
     {
       "file": "tests/corpus/246-the-continuation-marker-at-an-item-s-own-column-and-what-follows-it.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -65,8 +65,8 @@
     },
     {
       "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -98,8 +98,8 @@
     },
     {
       "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line-3.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -120,8 +120,8 @@
     },
     {
       "file": "tests/corpus/352-a-bracketed-construct-s-identifiers-stay-on-one-line.crv",
-      "reason": "PHP omits the unresolved-reference-link warning on malformed multiline reference syntax.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4091",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -230,8 +230,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -313,8 +313,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -381,8 +381,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -434,8 +434,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -472,8 +472,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -510,8 +510,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -563,8 +563,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-4.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -601,8 +601,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -639,8 +639,8 @@
     },
     {
       "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -707,8 +707,8 @@
     },
     {
       "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -775,8 +775,8 @@
     },
     {
       "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -813,8 +813,8 @@
     },
     {
       "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -851,8 +851,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -919,8 +919,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1002,8 +1002,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1070,8 +1070,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1138,8 +1138,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1206,8 +1206,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1365,8 +1365,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -1423,8 +1423,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -1630,42 +1630,9 @@
       }
     },
     {
-      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-12.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            5
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/620-generated-container-documents-23.crv",
-      "reason": "The measured engines disagree on `unused-footnote-definition` and `duplicate-footnote-definition` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript lint ignores the first nested footnote definition and misses the losing duplicate; the expected findings and clause are in markup-carve/carve-js#4512.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4512",
       "diagnostics": {
         "js": [
           [
@@ -1717,8 +1684,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
@@ -1739,8 +1706,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
@@ -1761,8 +1728,8 @@
     },
     {
       "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div.crv",
-      "reason": "The measured engines disagree on `unclosed-container-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
       "diagnostics": {
         "js": [],
         "php": [
@@ -1783,8 +1750,8 @@
     },
     {
       "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-11.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -1799,8 +1766,8 @@
     },
     {
       "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-16.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -1815,8 +1782,8 @@
     },
     {
       "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-7.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` and `unclosed-code-fence` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [
           [
@@ -1916,8 +1883,8 @@
     },
     {
       "file": "tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-9.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript and Rust miss a braced table alignment overlap; the expected result and clause are in markup-carve/carve#5251.",
+      "issue": "https://github.com/markup-carve/carve/issues/5251",
       "diagnostics": {
         "js": [],
         "php": [
@@ -2093,22 +2060,6 @@
       }
     },
     {
-      "file": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            2,
-            4
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -2158,8 +2109,8 @@
     },
     {
       "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
       "diagnostics": {
         "js": [
           [
@@ -2191,8 +2142,8 @@
     },
     {
       "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
       "diagnostics": {
         "js": [
           [
@@ -2338,8 +2289,8 @@
     },
     {
       "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2354,8 +2305,8 @@
     },
     {
       "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2370,8 +2321,8 @@
     },
     {
       "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-4.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2386,8 +2337,8 @@
     },
     {
       "file": "tests/corpus/840-content-behind-a-lead-tab-offers-no-first-block-5.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2478,8 +2429,8 @@
     },
     {
       "file": "tests/corpus/855-a-comment-block-in-a-line-block-leaves-nothing-3.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2511,8 +2462,8 @@
     },
     {
       "file": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [
           [
@@ -2554,8 +2505,8 @@
     },
     {
       "file": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2630,8 +2581,8 @@
     },
     {
       "file": "tests/corpus/867-an-indented-comment-block-in-a-line-block-leaves-nothing-4.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2744,8 +2695,8 @@
     },
     {
       "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2837,8 +2788,8 @@
     },
     {
       "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2930,8 +2881,8 @@
     },
     {
       "file": "tests/corpus/873-an-item-on-a-note-marker-line-takes-its-plus-at-its-own-marker-column-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -2946,8 +2897,8 @@
     },
     {
       "file": "tests/corpus/874-a-lazy-line-in-a-note-does-not-keep-the-note-host-open-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -2984,8 +2935,8 @@
     },
     {
       "file": "tests/corpus/88-list-continuation-marker-6.crv",
-      "reason": "The measured engines disagree on `continuation-marker-refused` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -3000,8 +2951,8 @@
     },
     {
       "file": "tests/corpus/886-an-own-line-plus-is-measured-through-quote-prefixes-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
       "diagnostics": {
         "js": [],
         "php": [],
@@ -3016,8 +2967,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3038,8 +2989,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3060,8 +3011,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-5.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3082,8 +3033,8 @@
     },
     {
       "file": "tests/corpus/887-a-reference-label-across-a-line-stays-verbatim-in-every-form-6.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP misses a failed cross-line reference node and lint finding; the expected result and clause are in markup-carve/carve-php#4734.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4734",
       "diagnostics": {
         "js": [
           [
@@ -3104,8 +3055,8 @@
     },
     {
       "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
       "diagnostics": {
         "js": [
           [
@@ -3132,8 +3083,8 @@
     },
     {
       "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
       "diagnostics": {
         "js": [
           [
@@ -3464,6 +3415,22 @@
             3
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/963-a-multi-line-braced-comment-keeps-the-nested-list-open-4.crv",
+      "reason": "The new corpus row has a JavaScript parser and lint difference tracked in markup-carve/carve-js#4509.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4509",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            5,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
       }
     }
   ]

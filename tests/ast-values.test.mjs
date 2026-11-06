@@ -146,11 +146,11 @@ const shippedDeclaration = () =>
  *
  * Run 36552218597, on the next head, fails the same step again.
  */
-// Re-measured by AST conformance run 42111003988 at the final engine pins.
+// Re-measured 2026-11-06 in four AST shards at the current engine pins.
 const LAST_MEASURED = new Map([
-  ['text.value', 5],
-  ['comment.content', 6],
-  ['list.tight', 2],
+  ['text.value', 4],
+  ['comment.content', 5],
+  ['list.tight', 1],
   ['code_block.content', 6],
   ['heading.attrs.id', 2],
   ['code.value', 1],

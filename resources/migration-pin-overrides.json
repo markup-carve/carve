@@ -1,0 +1,85 @@
+{
+  "markdown-literal-edge-13": {
+    "php": {
+      "exit": 0,
+      "diagnostics": [
+        {
+          "code": "markdown-paragraph",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:1"
+        }
+      ]
+    }
+  },
+  "markdown-task-nested-four-spaces": {
+    "php": {
+      "diagnostics": [
+        {
+          "code": "markdown-bullet-list",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:1"
+        },
+        {
+          "code": "markdown-list-item",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:1"
+        },
+        {
+          "code": "markdown-paragraph",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:1"
+        },
+        {
+          "code": "markdown-ordered-list",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:2"
+        },
+        {
+          "code": "markdown-list-item",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:2"
+        },
+        {
+          "code": "structure-unspellable",
+          "severity": "warning",
+          "fidelity": "dropped",
+          "confidence": "exact",
+          "path": "line:2"
+        },
+        {
+          "code": "markdown-ordered-list",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:4"
+        },
+        {
+          "code": "markdown-list-item",
+          "severity": "info",
+          "fidelity": "preserved",
+          "confidence": "exact",
+          "path": "line:4"
+        },
+        {
+          "code": "structure-unspellable",
+          "severity": "warning",
+          "fidelity": "dropped",
+          "confidence": "exact",
+          "path": "line:4"
+        }
+      ]
+    }
+  }
+}
