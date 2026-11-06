@@ -8472,6 +8472,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // block, and the blank a blank-line branch pushes, which ends the run.
     let tableOpen = false
     let lastListBlock = DEFLIST_TERM.test(head.text) ? 'term' : 'item'
+    let itemHadDescription = false
     let lastTermSourceCol = DEFLIST_TERM.test(head.text) ? authoredMarkerCol + head.markerWidth : null
     const pushLine = (text, m = null, row = i) => {
       // A host's `+` boundary bounds the item's blocks too, as it does the host's (carve#5046).
@@ -10042,6 +10043,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       } else if (definitionListOpen && DESCRIPTION_TEXT.test(lm.rest) && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         // A description at its term's column makes the list the item's last block again (carve#5321).
+        itemHadDescription = true
         lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
       // The marker-column rule lasts only while the item's description is open.
@@ -10868,7 +10870,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         if (definitionListOpen && !headSubActive && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && definitionListOpen && !headSubActive && !bodyQuote.open) break
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {

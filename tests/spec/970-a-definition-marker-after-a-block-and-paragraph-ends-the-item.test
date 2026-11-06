@@ -1,0 +1,20 @@
+A definition marker after a block and paragraph ends the item
+
+```
+- a
+  :: t
+  # H
+  w
+: z
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <h1 id="H">H</h1>
+    w
+  </li>
+</ul>
+<p>: z</p>
+```
