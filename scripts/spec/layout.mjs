@@ -5988,6 +5988,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
               let end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k))
+              // A pulled paragraph stops where a block reaches the description's content column.
+              // The attachment is measured at its pulled column, so inspect the authored reach here.
+              const opener = attachedOpener(lines.slice(i, end), ind(i).col)
+              if (i + opener < end && foldablePlainLine(ind(i + opener).rest)) {
+                for (let k = i + opener + 1; k < end; k++) {
+                  if (reachesBody(k) && opensAuthoredBase(ind(k).rest)) { end = k; break }
+                }
+              }
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
