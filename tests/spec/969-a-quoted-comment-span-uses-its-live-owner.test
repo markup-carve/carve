@@ -1,0 +1,16 @@
+A quoted comment span uses its live owner
+
+```
+> - %%%%
+> x
+%%%%
+
+z
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+  <p>x</p>
+</blockquote>
+```

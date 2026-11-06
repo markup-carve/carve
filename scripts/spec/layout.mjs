@@ -3853,10 +3853,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const spanRun = inner.kind !== 'fence' ? null
       : inner.family === 'comment' && !inner.span ? true
         : inner.lineBlock && inner.span?.[0] === '%' ? inner.span : null
-    if (spanRun && missed && m.rest.startsWith('%%') && !frames.slice(reached + 1).some((f) => f.kind === 'quote')) {
+    if (spanRun && missed && m.rest.startsWith('%%')) {
       if (spanRun !== true && COMMENT_FENCE_BODY.exec(m.rest)?.[1].length === spanRun.length) inner.span = null
-      lead(m.col)
-      result.push(out + src)
+      // A quote-owned span keeps an unmarked comment payload in its quote.
+      // Preserve that prefix in the reader input as we do for a closer below
+      // the owner; otherwise the quote reader splits one span into two quotes.
+      let hostLead = ''
+      for (let k = reached + 1; k < frames.length; k++) {
+        if (frames[k].kind === 'quote') hostLead += ' '.repeat(frames[k - 1].canon) + '> '
+      }
+      result.push(out + hostLead + src)
       if (trace) emit(at, 'S1', ownerPath(), 'CARVE-P0-005', 'payload', { cell: `B-${inner.family}-keep` })
       continue
     }
@@ -6473,6 +6479,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // carry, because the column it was written at is what answers.
       const qHost = hostLadder()
       let openComment = null // exact-width comment fence opened inside the quote
+      let openCommentOwner = 0
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qRefusedThrough = { at: -1, depth: 0 } // the last line a refused brace run's paragraph keeps (CARVE-P2-035)
@@ -6805,12 +6812,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (openComment !== null) {
           // A closer matches at any indentation (PART 9 §28).
           const c = COMMENT_FENCE_BODY.exec(indentCols(l).rest)
-          if (c && c[1].length === openComment) openComment = null
-          qOpenPara = false
-          qTableOpen = false
-          clearNested()
-          qItemPara = false
-          return
+          if (c && c[1].length === openComment) {
+            openComment = null
+            qOpenPara = false
+            qTableOpen = false
+            clearNested()
+            qItemPara = false
+            return
+          }
+          // A non-comment line left of the span's owner ends it before the
+          // quote decides that line's block ownership (PART 0 S1).
+          const measured = indentCols(l)
+          if (measured.rest === '' || measured.rest.startsWith('%%') || measured.col >= openCommentOwner) {
+            qOpenPara = false
+            qTableOpen = false
+            clearNested()
+            qItemPara = false
+            return
+          }
+          openComment = null
         }
         // A HOST THAT ENDED ENDS ITS FENCE, and the line is then classified
         // normally: `> - a` / `>` / `>   ``` ` / `>   x` / `> after` leaves the
@@ -6867,7 +6887,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // After the advance: a span that misses a line block's column has left it.
         // A span on a marker line opens behind the markers (carve#5322).
         const comment = COMMENT_FENCE_BODY.exec(l) ?? (blockStart ? COMMENT_FENCE_BODY.exec(inner0.rest) : null)
-        if (comment && !qHost.colonComment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
+        if (comment && !qHost.colonComment && qHost.colons?.at(-1)?.mode !== 'line-block') {
+          openComment = comment[1].length
+          openCommentOwner = inner0.col
+        }
         if (qHost.kinds.at(-1) === 'description') qOpenPara = qHost.descriptionParagraph
         const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
         if (state.blockDepth + (qHost.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(qHost, inner0, openComment === null, blockStart, MAX_NESTING_DEPTH - state.blockDepth - (qHost.columns.length - 1), (run, column, past) => closerFollows(idx, 1, run, column, past))) {
