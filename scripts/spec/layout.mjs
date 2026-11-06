@@ -9349,9 +9349,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       end = attachedColonSiblingEnd(lines, i, end, opener, (k) => matchMarkerAt(ind(k))?.indent === baseIndent)
       const captionable = code ? hasCloser(attached, opener) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
-      // After a lone `+` the item stays open, so a block at its content column
-      // is the item's own and ends the attached paragraph (CARVE-P0-011).
-      const lonePara = !attachNext && foldablePlainLine(ind(i + opener).rest)
+      // The item stays open after the block a `+` attaches, so a block at its
+      // content column is the item's own and ends the paragraph (CARVE-P0-011, carve#5349).
+      const lonePara = foldablePlainLine(ind(i + opener).rest)
       if (lonePara) {
         // The line after a refused brace run continues the paragraph, a fence opener there through its closer (CARVE-P2-035).
         const braceCache = { commentScannedThrough: -1 }
