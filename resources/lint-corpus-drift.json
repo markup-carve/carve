@@ -2125,8 +2125,8 @@
     },
     {
       "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
       "diagnostics": {
         "js": [
           [
@@ -2158,8 +2158,8 @@
     },
     {
       "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
       "diagnostics": {
         "js": [
           [
