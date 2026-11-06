@@ -2907,7 +2907,7 @@ function hostedBlockAt(h, inner, popped) {
   const continuation = isContinuationRow(text, h.tableColumn === column && h.tableOpen)
   h.tableColumn = column
   h.tableOpen = isTableRow(text) || continuation
-  return continuation || HEADING.test(text) || HR.test(text) || text[0] === '|' ||
+  return continuation || HEADING.test(text) || HR.test(text) || h.tableOpen ||
     isDefinitionOrAttributeLine(text)
 }
 
