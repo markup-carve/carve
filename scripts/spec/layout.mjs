@@ -2270,13 +2270,17 @@ const pastMarkers = (at) => {
   }
   return at
 }
+// A term holds no body, so a deeper line after it ended the entry (carve#5289).
+const TERM_RUN = /^:: /
 // A description lead continues the entry above it, whose term may follow list markers.
 const descriptionAbove = (bodyLines, col, end) => {
+  let deeper = false
   for (let k = end - 1; k >= 0; k--) {
     const measured = indentCols(bodyLines[k])
-    if (measured.rest === '' || measured.col > col) continue
+    if (measured.rest === '') continue
+    if (measured.col > col) { deeper = true; continue }
     const at = pastMarkers(measured)
-    return at.col === col && DESCRIPTION_RUN.test(at.rest)
+    return at.col === col && DESCRIPTION_RUN.test(at.rest) && !(deeper && TERM_RUN.test(at.rest))
   }
   return false
 }
@@ -7380,10 +7384,12 @@ const attachedLeavesFenceOpen = (block, above = []) => {
   const context = (j) => j < above.length ? above[j] : block[j - above.length]
   // A `: ` line is a description only under an entry (`opensDescriptionAt`), whose term may stand above the `+`.
   const isDescription = (k, col) => {
+    let deeper = false
     for (let j = k - 1; j >= 0; j--) {
       const measured = behindMarkers(context(j))
-      if (measured.rest === '' || measured.col > col) continue
-      return measured.col === col && DESCRIPTION_RUN.test(measured.rest)
+      if (measured.rest === '') continue
+      if (measured.col > col) { deeper = true; continue }
+      return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
     }
     return false
   }
@@ -7618,10 +7624,8 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
 // every marker line of the host, so read the shorter side (carve#4017).
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 const DESCRIPTION_RUN = /^::? /
-const TERM_RUN = /^:: /
 // Whether a `: ` line at `col` is a description: the nearest line at or left of
 // that column is the entry's term or an earlier description of it.
-// A term holds no body, so a deeper line after it ended the entry (carve#5289).
 const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
   let deeper = false
   for (let k = end - 1; k >= 0; k--) {
@@ -7672,10 +7676,11 @@ function descriptionLeadSpanOpen(bodyLines) {
     const opener = lead && COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))
     if (!opener) continue
     // The entry above: the nearest line at or left of this column is its term (`opensDescriptionAt`).
-    for (let k = scan.at - 1; k >= 0; k--) {
+    for (let k = scan.at - 1, deeper = false; k >= 0; k--) {
       const above = quoteFreeMeasure(bodyLines[k])
-      if (above.rest === '' || above.col > measured.col) continue
-      if (above.col === measured.col && DESCRIPTION_RUN.test(above.rest)) {
+      if (above.rest === '') continue
+      if (above.col > measured.col) { deeper = true; continue }
+      if (above.col === measured.col && DESCRIPTION_RUN.test(above.rest) && !(deeper && TERM_RUN.test(above.rest))) {
         scan.span = { run: opener[1].length, owner: measured.col + lead[0].length, depth: measured.quotes.length }
       }
       break
@@ -8210,10 +8215,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (marker) return COMMENT_FENCE_BODY.exec(marker.text ?? '')?.[1] ?? null
     const lead = DESCRIPTION_LEAD.exec(measured.rest)
     if (!lead) return null
-    for (let j = k - 1; j >= from; j--) {
+    for (let j = k - 1, deeper = false; j >= from; j--) {
       const above = ind(j)
-      if (above.rest === '' || above.col > measured.col) continue
-      if (above.col !== measured.col || !DESCRIPTION_RUN.test(above.rest)) return null
+      if (above.rest === '') continue
+      if (above.col > measured.col) { deeper = true; continue }
+      if (above.col !== measured.col || !DESCRIPTION_RUN.test(above.rest) || deeper && TERM_RUN.test(above.rest)) return null
       break
     }
     return COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))?.[1] ?? null
