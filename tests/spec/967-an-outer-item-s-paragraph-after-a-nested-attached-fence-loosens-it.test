@@ -1,0 +1,21 @@
+An outer item's paragraph after a nested attached fence loosens it
+
+````
+- - +
+  ```
+
+  tail
+    ```
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <p>tail
+<code></code></p>
+  </li>
+</ul>
+````

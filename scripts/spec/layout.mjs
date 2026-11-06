@@ -9444,11 +9444,19 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
     let descendantBlockEnd = -1
+    let markerLineAttachedFence = null
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
+      if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') &&
+          markerLineAttachedFence === null && fence.opaque?.kind === 'code') {
+        const attached = itemLines.slice(1)
+        const first = attached[attachedOpener(attached, 0)] ?? ''
+        const opener = FENCE.exec(first)
+        markerLineAttachedFence = opener && parseFenceInfo(opener[2], opener[1]) !== null ? fence.opaque : false
+      }
       // A sublist item's `+` holds its block at that item's marker column, so that block ends no sublist.
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         const above = matchMarkerAt(ind(i - 1))
@@ -9537,6 +9545,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
+          // An attached fence in a marker-line child may keep this frame's
+          // fence open across its blank. A following block at this item's
+          // content column belongs to the item after its visible child list.
+          if (markerLineAttachedFence !== null && fence.opaque === markerLineAttachedFence &&
+              markerLineAttachedFence.closerAtBase !== true) {
+            const next = i + 1 < n ? ind(i + 1) : null
+            if (next && next.col === contentCol && foldablePlainLine(next.rest) && !itemShowsNothing()) list.tight = false
+          }
           // An absorbed fence is paragraph text. A blank before the next
           // paragraph makes the item loose even while the inline span is open.
           if (fence.opaque?.opens === false && subCol < 0 && headSubCol < 0) {
@@ -10439,13 +10455,18 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             host = CONT_MARKER.test(trimWs(marker.text)) && marker.indent === lm.col && marker.indent > baseIndent ? null : { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
             if (host === null) {
               let closed = false
-              for (let k = i + 1; k < n && !closed; k++) {
+              let closerAtBase = false
+              for (let k = i + 1; k < n && !closerAtBase; k++) {
                 const at = ind(k)
                 if (at.rest === '') continue
                 if (at.col < floor) break
                 const c = PURE_FENCE.exec(at.rest)
-                closed = !!c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length
+                if (c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length) {
+                  closed = true
+                  closerAtBase = at.col === floor
+                }
               }
+              opaque.closerAtBase = closerAtBase
               if (!closed) opaque.endsAtBlank = true
               break
             }
