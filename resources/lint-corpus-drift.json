@@ -2,11 +2,11 @@
   "version": 1,
   "measured": {
     "date": "2026-11-06",
-    "spec": "6abfd62987c77960bbe6a7022d3a447fc55a9091",
-    "js": "59a9583249b84d43695a38f39771ad8461abf7cb",
+    "spec": "b788b773cf495b88528ef47986e8d976b055c54a",
+    "js": "9e84ad11d8d9fe8c033d6067b3323010f54024b7",
     "php": "6ab916ef28250fa3f2f398c4a47a1e5b3cd24de0",
     "rust": "45b2ecbb97479633d0877b23248e5da52be10140",
-    "documents": 4464
+    "documents": 4468
   },
   "differences": [
     {
@@ -1630,125 +1630,6 @@
       }
     },
     {
-      "file": "tests/corpus/620-generated-container-documents-23.crv",
-      "reason": "JavaScript lint ignores the first nested footnote definition and misses the losing duplicate; the expected findings and clause are in markup-carve/carve-js#4512.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4512",
-      "diagnostics": {
-        "js": [
-          [
-            "unused-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "unused-link-reference-definition",
-            4,
-            6
-          ]
-        ],
-        "php": [
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "unused-footnote-definition",
-            2,
-            3
-          ],
-          [
-            "unused-link-reference-definition",
-            4,
-            6
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "unused-footnote-definition",
-            2,
-            3
-          ],
-          [
-            "unused-link-reference-definition",
-            4,
-            6
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-3.crv",
-      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "unclosed-container-fence",
-            1,
-            4
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-container-fence",
-            1,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div-4.crv",
-      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "unclosed-container-fence",
-            1,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-container-fence",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/628-a-column-zero-marker-below-an-open-div-attaches-beside-the-div.crv",
-      "reason": "JavaScript misses an unclosed colon div when plus attachment ends its host; the expected finding and clause are in markup-carve/carve-js#4511.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4511",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "unclosed-container-fence",
-            1,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-container-fence",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/634-a-refused-continuation-plus-remains-text-11.crv",
       "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
@@ -2103,87 +1984,6 @@
             "list-marker-below-content-column",
             4,
             4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv",
-      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
-      "diagnostics": {
-        "js": [
-          [
-            "duplicate-heading-id",
-            3,
-            1
-          ],
-          [
-            "unresolved-footnote",
-            1,
-            2
-          ]
-        ],
-        "php": [
-          [
-            "unresolved-footnote",
-            1,
-            2
-          ]
-        ],
-        "rust": [
-          [
-            "unresolved-footnote",
-            1,
-            2
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv",
-      "reason": "JavaScript lint counts an id dropped with an unresolved footnote; the expected result and clause are in markup-carve/carve-js#4508.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4508",
-      "diagnostics": {
-        "js": [
-          [
-            "duplicate-heading-id",
-            3,
-            1
-          ],
-          [
-            "heading-trailing-attribute",
-            3,
-            4
-          ],
-          [
-            "unresolved-footnote",
-            1,
-            2
-          ]
-        ],
-        "php": [
-          [
-            "heading-trailing-attribute",
-            3,
-            4
-          ],
-          [
-            "unresolved-footnote",
-            1,
-            2
-          ]
-        ],
-        "rust": [
-          [
-            "heading-trailing-attribute",
-            3,
-            4
-          ],
-          [
-            "unresolved-footnote",
-            1,
-            2
           ]
         ]
       }
@@ -3054,62 +2854,6 @@
       }
     },
     {
-      "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-2.crv",
-      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
-      "diagnostics": {
-        "js": [
-          [
-            "unresolved-reference-link",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unresolved-reference-link",
-            1,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unresolved-reference-link",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv",
-      "reason": "JavaScript loses the unresolved reference source column in a table cell; the expected result and clause are in markup-carve/carve-js#4507.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4507",
-      "diagnostics": {
-        "js": [
-          [
-            "unresolved-reference-link",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unresolved-reference-link",
-            1,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unresolved-reference-link",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -3143,11 +2887,6 @@
       "diagnostics": {
         "js": [
           [
-            "continuation-marker-refused",
-            6,
-            1
-          ],
-          [
             "unclosed-code-fence",
             2,
             1
@@ -3175,16 +2914,6 @@
       "diagnostics": {
         "js": [
           [
-            "continuation-marker-refused",
-            4,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
             "unclosed-code-fence",
             3,
             3
@@ -3206,11 +2935,6 @@
       "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
         "js": [
-          [
-            "continuation-marker-refused",
-            5,
-            1
-          ],
           [
             "unclosed-code-fence",
             1,
@@ -3415,22 +3139,6 @@
             3
           ]
         ]
-      }
-    },
-    {
-      "file": "tests/corpus/963-a-multi-line-braced-comment-keeps-the-nested-list-open-4.crv",
-      "reason": "The new corpus row has a JavaScript parser and lint difference tracked in markup-carve/carve-js#4509.",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4509",
-      "diagnostics": {
-        "js": [
-          [
-            "list-marker-without-blank-line",
-            5,
-            5
-          ]
-        ],
-        "php": [],
-        "rust": []
       }
     }
   ]
