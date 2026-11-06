@@ -4119,7 +4119,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
       if (form.kind === 'quote') {
         const quote = { kind: 'quote', col: 0, canon: 0, cut: 0, para: false, last: null, markerCol: col, markerCanon: canon,
-          docMarker: docColumn(lines[at], src), viewMarker: docColumn(lines[at], src) - viewDoc, line: at }
+          docMarker: docColumn(lines[at], src), viewMarker: docColumn(lines[at], src) - viewDoc, line: at,
+          // The readers drop a task box from the item's marker line (CARVE-P9-083), so a quote behind it reads left by the box.
+          box: owner.line === at && owner.marker?.task !== undefined ? taskTextOffset(owner.marker) : 0 }
         frames.push(quote)
         take(src.length - (QUOTE.exec(src)[1] ?? '').length)
         viewDoc = quote.viewEnd = docColumn(lines[at], src)
@@ -4360,7 +4362,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const basis = level ? lines[end] : lines[at]
     const rest = level?.rest ?? throughQuotes(lines[at], hostIndex)?.rest ?? lines[at]
     skipped = { host, at, end, hostIndex, column, fenced, brace: null,
-      lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon) }
+      lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon - (refused ? 0 : host.box ?? 0)) }
   }
 
   // A `%%%` span after a refused marker closes no item (PART 0 FAMILIES `invisible`, carve#5170),
