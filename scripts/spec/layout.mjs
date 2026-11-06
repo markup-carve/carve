@@ -5546,7 +5546,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           lazyParagraphOpen = null
           attachPending = false
           i = end
-        } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured) && !holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
+        } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) {
           // A list marker that misses a marker body closes it (PART 0 S3).
           break
         } else if (COMMENT_LINE.test(lines[i] ?? '') && holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
