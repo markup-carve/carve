@@ -69,3 +69,8 @@ test('a block-shaped line after a note stanza span still leaves the note', () =>
   assert.match(html('[^n]: ::: |\n  x\n  %%%\n# h\n\n[^n]\n'), /<h1>h<\/h1>/)
   assert.match(html('[^n]: ::: |\n  x\n  %%%\n:::\n\n[^n]\n'), /^<div>/)
 })
+
+test('a line after a note stanza span closed below the column folds into the stanza', () => {
+  assert.match(html('[^n]: ::: |\n  x\n  %%%\n%%%\nmore\n\n[^n]\n'), /<p>x<br>\nmore<\/p>/)
+  assert.match(html('[^n]: ::: |\n  x\n  %%%\n%% c\n%%%\nmore\n\n[^n]\n'), /<p>x<br>\nmore<\/p>/)
+})

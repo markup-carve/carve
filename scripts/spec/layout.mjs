@@ -5597,8 +5597,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // Rule A: a payload line below the body column ends the fence and the body.
           break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
-            // A line that ended the span folds into the stanza it left open (PART 0 S4, carve#4956).
-            (verseSpanEnded || (lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom))) &&
+            // A line that ended the span, or follows one, folds into the stanza it left open (PART 0 S4, carve#4956).
+            ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) || verseSpanEnded ||
+              hostEndsInLineBlockStanza(bodyLines, 0, true)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
             !opensFence(lines, i) &&
