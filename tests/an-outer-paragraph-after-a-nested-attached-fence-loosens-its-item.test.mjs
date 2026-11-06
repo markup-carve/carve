@@ -11,3 +11,10 @@ for (const outer of ['-', '*']) for (const inner of ['-', '*', '1.']) for (const
     assert.match(out, fence === '```' ? /<p>tail\n<code><\/code><\/p>/ : /<p>tail\n~~~<\/p>/, source)
   })
 }
+
+test('a later fence owned by the outer item keeps its payload blank', () => {
+  const source = '- - +\n  ```\n  ```\n  ```\n\n  payload\n  ```\n- sibling\n'
+  const out = renderDoc(parse(source))
+  assert.match(out, /<pre><code>\npayload\n<\/code><\/pre>/)
+  assert.match(out, /<li>sibling<\/li>/)
+})

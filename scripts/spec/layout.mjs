@@ -9444,11 +9444,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
     let descendantBlockEnd = -1
+    let markerLineAttachedFence = null
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
+      if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') &&
+          markerLineAttachedFence === null && fence.opaque?.kind === 'code') markerLineAttachedFence = fence.opaque
       // A sublist item's `+` holds its block at that item's marker column, so that block ends no sublist.
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         const above = matchMarkerAt(ind(i - 1))
@@ -9540,7 +9543,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // An attached fence in a marker-line child may keep this frame's
           // fence open across its blank. A following block at this item's
           // content column belongs to the item after its visible child list.
-          if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') && fence.opaque?.kind === 'code') {
+          if (markerLineAttachedFence !== null && fence.opaque === markerLineAttachedFence) {
             const next = i + 1 < n ? ind(i + 1) : null
             if (next && next.col === contentCol && foldablePlainLine(next.rest) && !itemShowsNothing()) list.tight = false
           }
