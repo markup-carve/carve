@@ -230,8 +230,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -313,8 +313,8 @@
     },
     {
       "file": "tests/corpus/557-a-line-retained-after-a-comment-opens-a-paragraph.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -381,8 +381,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -434,8 +434,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -472,8 +472,8 @@
     },
     {
       "file": "tests/corpus/558-a-container-boundary-is-read-at-the-container-s-own-column.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -510,8 +510,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -563,8 +563,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there-4.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -601,8 +601,8 @@
     },
     {
       "file": "tests/corpus/566-an-opener-past-a-hosted-container-s-column-opens-there.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -639,8 +639,8 @@
     },
     {
       "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -707,8 +707,8 @@
     },
     {
       "file": "tests/corpus/571-a-shifted-fence-in-a-quoted-container-s-body-stores-no-continuation-claim.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -775,8 +775,8 @@
     },
     {
       "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -813,8 +813,8 @@
     },
     {
       "file": "tests/corpus/572-an-opener-past-a-hosted-container-s-column-interrupts-its-open-paragraph.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -851,8 +851,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-10.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -919,8 +919,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1002,8 +1002,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-3.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1070,8 +1070,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-8.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1138,8 +1138,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in-9.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1206,8 +1206,8 @@
     },
     {
       "file": "tests/corpus/581-a-fence-that-leaves-a-closed-nested-item-opens-in-the-host-it-lands-in.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1365,8 +1365,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -1423,8 +1423,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
@@ -2913,8 +2913,8 @@
     },
     {
       "file": "tests/corpus/874-a-lazy-line-in-a-note-does-not-keep-the-note-host-open-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
+      "issue": "https://github.com/markup-carve/carve/issues/5242",
       "diagnostics": {
         "js": [
           [
