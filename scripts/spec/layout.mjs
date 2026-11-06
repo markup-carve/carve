@@ -7008,8 +7008,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             i++
             continue
           }
-          if (trimWs(qm[1] ?? '') === '') {
-            qStanzaCandidate = false
+          // A blank, at any quote depth, ends the stanza but not the line block.
+          if (trimWs(stanzaRow) === '') {
             qStanzaOpen = false
           } else if (!qOpenPara && qStanzaCandidate) {
             const row = qm[1] ?? ''
