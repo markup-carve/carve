@@ -20,6 +20,8 @@ for (const [name, source] of Object.entries({
   'in two items': '- - :: t\n     a\n    : ```\nz\n',
   'with a tilde run': '- :: t\n   a\n  : ~~~\nz\n',
   'with a list marker': '- :: t\n   a\n  : - ```\nz\n',
+  'with a colon run': '- :: t\n   a\n  : :::\nz\n',
+  'with a comment run': '- :: t\n   a\n  : %%%\nz\n',
 })) {
   test(`the line after a description-shaped text line folds ${name}`, () => {
     const out = html(source)
