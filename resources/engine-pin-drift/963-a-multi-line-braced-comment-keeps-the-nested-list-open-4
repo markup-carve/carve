@@ -1,0 +1,1 @@
+carve-js pin befaeef predates the nested-marker continuation fix; carve-js main renders this row as the spec model does (carve#5234).

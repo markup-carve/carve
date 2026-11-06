@@ -22,7 +22,7 @@ b][missing]</p>
 
 :::
 
-::: compare
+:::: compare
 
 ```carve
 ::: \
@@ -38,9 +38,9 @@ b][missing]</p>
 </div>
 ```
 
-:::
+::::
 
-::: compare
+:::: compare
 
 ```carve
 ::: \
@@ -56,7 +56,7 @@ b][missing]</p>
 </div>
 ```
 
-:::
+::::
 
 ::: compare
 
