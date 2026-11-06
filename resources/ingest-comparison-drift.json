@@ -512,7 +512,7 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/js->rust",
       "fingerprint": "786a580b134e5aeaa6f6aa1b3ae544abaf066d416f876e1db161c23b9c862b51",
-      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "reason": "Rust fails to keep a directive-shaped bare include token opaque, so inline parsing enters its tokens. Cause: markup-carve/carve-rs#3950.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it’s_x <span class=\"mention\"><strong>@lines</strong></span>:0-1 }} it’s_y }}</p>",
@@ -527,7 +527,7 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/php->rust",
       "fingerprint": "786a580b134e5aeaa6f6aa1b3ae544abaf066d416f876e1db161c23b9c862b51",
-      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "reason": "Rust fails to keep a directive-shaped bare include token opaque, so inline parsing enters its tokens. Cause: markup-carve/carve-rs#3950.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it’s_x <span class=\"mention\"><strong>@lines</strong></span>:0-1 }} it’s_y }}</p>",
@@ -542,7 +542,7 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/rust->js",
       "fingerprint": "7452930c0501388c11a8a593b12debde7780ba2ce70af07cd655296e2bb5afc3",
-      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "reason": "Rust fails to keep a directive-shaped bare include token opaque, so inline parsing enters its tokens. Cause: markup-carve/carve-rs#3950.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it's_x @lines:0-1 }} it’s_y }}</p>",
@@ -557,7 +557,7 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/rust->php",
       "fingerprint": "7452930c0501388c11a8a593b12debde7780ba2ce70af07cd655296e2bb5afc3",
-      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "reason": "Rust fails to keep a directive-shaped bare include token opaque, so inline parsing enters its tokens. Cause: markup-carve/carve-rs#3950.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it's_x @lines:0-1 }} it’s_y }}</p>",
@@ -1022,7 +1022,7 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/js->rust",
       "fingerprint": "2b07e1bbb1ec04d046bab4251b6aa726d5cc2542e0dec3af046c6984948544a7",
-      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "reason": "Rust fails to expand an abbreviation in the authored caption while the generated cross-reference text remains opaque. Cause: markup-carve/carve-rs#3951.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption>A 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
@@ -1037,7 +1037,7 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/php->rust",
       "fingerprint": "2b07e1bbb1ec04d046bab4251b6aa726d5cc2542e0dec3af046c6984948544a7",
-      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "reason": "Rust fails to expand an abbreviation in the authored caption while the generated cross-reference text remains opaque. Cause: markup-carve/carve-rs#3951.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption>A 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
@@ -1052,7 +1052,7 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/rust->js",
       "fingerprint": "caf97b27bfb3f54f540e642818e5402e9350724a9964504d2a63cf5cd143003c",
-      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "reason": "Rust fails to expand an abbreviation in the authored caption while the generated cross-reference text remains opaque. Cause: markup-carve/carve-rs#3951.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption><abbr title=\"x\">A</abbr> 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
@@ -1067,7 +1067,7 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/rust->php",
       "fingerprint": "caf97b27bfb3f54f540e642818e5402e9350724a9964504d2a63cf5cd143003c",
-      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "reason": "Rust fails to expand an abbreviation in the authored caption while the generated cross-reference text remains opaque. Cause: markup-carve/carve-rs#3951.",
       "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption><abbr title=\"x\">A</abbr> 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
