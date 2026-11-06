@@ -10868,7 +10868,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         if (definitionListOpen && !headSubActive && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && definitionListOpen && !headSubActive && !bodyQuote.open) break
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && itemHasTerm && !headSubActive && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
