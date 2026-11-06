@@ -3706,8 +3706,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A comment or one-line definition closes no indentation frame: the next
     // visible line picks the owner (CARVE-P9-013).
     if (movedSpan && at <= movedSpan.end) {
-      // The rest of a matched `%%%` span moves with its opener.
-      src = ' '.repeat(top().col) + m.rest
+      // A fenced comment's payload stays at its owner's column. A braced
+      // comment's continuation keeps its source-column distance from `{%`;
+      // otherwise CARVE-P2-035 may refuse a run the author actually indented.
+      const column = movedSpan.braceCol === null ? top().col
+        : top().col + m.col - movedSpan.braceCol
+      src = ' '.repeat(Math.max(0, column)) + m.rest
       m = walkIndent(src)
       reached = frames.length - 1
     } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at)) {
@@ -3718,7 +3722,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         m = walkIndent(src)
         reached = deeper
         const end = invisibleCommentEnd(trimLineEnd(m.rest), at)
-        movedSpan = end === -1 ? null : { end }
+        const braceCol = m.rest.startsWith('{%')
+          ? walkIndent(stripQuotes(lines[at], quotePrefix(lines[at]).depth)?.rest ?? lines[at]).col
+          : null
+        movedSpan = end === -1 ? null : { end, braceCol }
       }
     }
     // An off-column `+` is ordinary text. Shield it from the block readers,

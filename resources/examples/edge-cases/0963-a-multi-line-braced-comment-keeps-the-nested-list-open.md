@@ -84,3 +84,32 @@ x</li>
 ```
 
 :::
+
+A later marker can also open a deeper child under the surviving nested item.
+
+::: compare
+
+```carve
+- a
+  - b
+{% c
+  d %}
+    - c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b
+
+        <ul>
+          <li>c</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
+
+:::
