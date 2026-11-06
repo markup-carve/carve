@@ -232,7 +232,6 @@ const INVENTORY = [
   //
   // The `.html` column is empty wherever the rule is that the run is DROPPED:
   // the expected output has no trailing whitespace, by construction.
-  { base: '268-trailing-whitespace-on-a-content-line-is-dropped', crv: ['trailing-WS'], html: [] },
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-2', crv: ['trailing-WS'], html: [] },
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-3', crv: ['trailing-WS'], html: [] },
   { base: '268-trailing-whitespace-on-a-content-line-is-dropped-4', crv: ['trailing-WS'], html: [] },

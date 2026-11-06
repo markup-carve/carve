@@ -231,6 +231,7 @@ tests/corpus/11-fenced-code-6.crv
 tests/corpus/11-fenced-code-6.txt
 tests/corpus/11-fenced-code-7.ansi
 tests/corpus/11-fenced-code-7.crv
+tests/corpus/11-fenced-code-7.fmt
 tests/corpus/11-fenced-code-7.txt
 tests/corpus/11-fenced-code-8.crv
 tests/corpus/11-fenced-code-9.crv
@@ -1003,7 +1004,6 @@ tests/corpus/319-cell-attributes-bind-after-the-kind-and-alignment-markers.crv
 tests/corpus/319-cell-attributes-bind-after-the-kind-and-alignment-markers.fmt
 tests/corpus/32-ordered-list-dialects-2.crv
 tests/corpus/32-ordered-list-dialects.crv
-tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string-2.fmt
 tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string.crv
 tests/corpus/320-the-canonical-writer-glues-a-code-fence-to-its-info-string.fmt
 tests/corpus/321-delimited-comments-10.crv

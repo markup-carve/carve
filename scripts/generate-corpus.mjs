@@ -316,9 +316,11 @@ if (existingNumbers.size > 0 && process.env['CORPUS_RENUMBER'] !== '1') {
 // Number every authored example, then emit only one fixture for each input.
 // Distinct examples can demonstrate the same rule in prose without requiring
 // engines to run the same document more than once. Prefer a fixture with a
-// hand-written target sidecar so that target contract remains attached.
+// hand-written target sidecar so that target contract remains attached. The
+// tracked sidecar lock, not the current output directory, decides this: a
+// clean rebuild must pick exactly the same rows as an incremental rebuild.
 const fixtureName = (ex) => `${ex.idx}-${ex.slug}${ex.exampleIdx === 1 ? '' : `-${ex.exampleIdx}`}`
-const sidecarFiles = readdirSync(outDir).filter((f) => !f.endsWith('.crv') && !f.endsWith('.html'))
+const sidecarFiles = Object.keys(JSON.parse(readFileSync(resolve(repoRoot, 'resources/corpus-sidecars.lock.json'), 'utf8')))
 const sidecarCount = (ex) => sidecarFiles.filter((f) => f.startsWith(`${fixtureName(ex)}.`)).length
 const byInput = new Map()
 for (const ex of examples) {
