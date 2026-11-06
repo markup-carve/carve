@@ -5909,6 +5909,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (entryAtOwner(i)) break
             if (isBlank(cur)) {
               afterComment = false
+              // A blank inside a verse span leaves its earlier stanza open, even
+              // when the next line misses the description's column (CARVE-P9-047).
+              if (bodyHoldsLiveSpan() && hostEndsInLineBlockStanza(bodyLines, 0, true)) {
+                pushBody(dedent(cur, bodyColumn))
+                i++
+                continue
+              }
               // The whole blank run belongs to a continuation at the body column.
               if (reachesBody(afterBlankRun(i))) { pushBody(dedent(cur, bodyColumn)); i++; continue }
               // A blank inside a live span is payload; a comment line below the column still closes it (§28).
@@ -7101,7 +7108,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // A marker a body reaches, or one that misses a body in this quote, opens a list (PART 0 S3).
         const bodyTakesMarker = !lines[i]?.startsWith(LAZY) && !!matchMarkerAt(indentCols(unmarked)) &&
           (inItem || [qHost, ...qNestedHost.slice(0, qNestedPara.length)].some((host) => host?.kinds.some((kind) => kind === 'item' || kind === 'note' || kind === 'description')))
-        if (lines[i] !== undefined && !bodyTakesMarker && (qOpenPara || foldedColon) &&
+        if (lines[i] !== undefined && !bodyTakesMarker && (qOpenPara || foldedColon || (qStanzaSpanRun !== null && qStanzaOpen)) &&
             !bodyEndsWrappedAttr(inner) && !isBlank(lines[i]) &&
             (foldedColon || !descriptionLeadSpanOpen(inner)) &&
             !COMMENT_LINE.test(lines[i]) &&
