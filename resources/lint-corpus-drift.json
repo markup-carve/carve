@@ -65,8 +65,8 @@
     },
     {
       "file": "tests/corpus/291-a-fence-keeps-the-blank-line-at-the-end-of-its-content-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -1365,8 +1365,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base-2.crv",
-      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
-      "issue": "https://github.com/markup-carve/carve/issues/5242",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -1423,8 +1423,8 @@
     },
     {
       "file": "tests/corpus/591-a-code-line-left-of-an-authored-base-fence-opener-is-measured-from-that-base.crv",
-      "reason": "PHP and Rust report two overindent rules for one opener; the expected result and clause are in markup-carve/carve#5242.",
-      "issue": "https://github.com/markup-carve/carve/issues/5242",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2445,8 +2445,8 @@
     },
     {
       "file": "tests/corpus/855-a-comment-block-in-a-line-block-leaves-nothing-3.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2597,8 +2597,8 @@
     },
     {
       "file": "tests/corpus/867-an-indented-comment-block-in-a-line-block-leaves-nothing-4.crv",
-      "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2711,8 +2711,8 @@
     },
     {
       "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
@@ -2804,8 +2804,8 @@
     },
     {
       "file": "tests/corpus/871-a-div-closes-only-on-a-run-of-its-own-width-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "PHP and Rust omit an unclosed outer colon container when a child consumes its closer; the expected finding and clause are in markup-carve/carve#5254.",
+      "issue": "https://github.com/markup-carve/carve/issues/5254",
       "diagnostics": {
         "js": [
           [
