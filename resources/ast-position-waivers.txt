@@ -416,7 +416,6 @@ carve-js  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  lis
 carve-js  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list_item  1  markup-carve/carve-js#4495
 carve-js  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list  1  markup-carve/carve-js#4495
 carve-js  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list_item  1  markup-carve/carve-js#4495
-carve-js  951-an-unclosed-fence-in-a-marker-line-note-cannot-retain-the-following-line.crv  footnote  1  markup-carve/carve-js#4495
 carve-js  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-3.crv  definition_description  1  markup-carve/carve-js#4495
 carve-js  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-5.crv  definition_description  1  markup-carve/carve-js#4495
 carve-js  962-a-document-owned-comment-run-stays-between-list-items.crv  list  1  markup-carve/carve-js#4495
@@ -519,19 +518,14 @@ carve-php  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  pa
 carve-php  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  soft_break  1  permitted
 carve-php  662-a-tab-after-a-comment-marker-stays-in-its-text.crv  paragraph  1  permitted
 carve-php  662-a-tab-after-a-comment-marker-stays-in-its-text.crv  soft_break  1  permitted
-carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2.crv  cell_wrap  1  markup-carve/carve-php#4725
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2.crv  code  1  permitted
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2.crv  table_cell  1  permitted
-carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3.crv  cell_wrap  1  markup-carve/carve-php#4725
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3.crv  code  1  permitted
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3.crv  table_cell  2  permitted
-carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4.crv  cell_wrap  1  markup-carve/carve-php#4725
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4.crv  code  1  permitted
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-4.crv  table_cell  2  permitted
-carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5.crv  cell_wrap  1  markup-carve/carve-php#4725
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5.crv  code  1  permitted
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5.crv  table_cell  2  permitted
-carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  cell_wrap  1  markup-carve/carve-php#4725
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  code  1  permitted
 carve-php  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  table_cell  1  permitted
 carve-php  797-an-indented-continuation-row-continues-the-table-above-2.crv  table_cell  2  permitted
@@ -651,7 +645,6 @@ carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  par
 carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  soft_break  1  permitted
 carve-rs  662-a-tab-after-a-comment-marker-stays-in-its-text.crv  paragraph  1  permitted
 carve-rs  662-a-tab-after-a-comment-marker-stays-in-its-text.crv  soft_break  1  permitted
-carve-rs  776-an-attribute-block-that-attaches-to-nothing-is-text-from-the-first-pass-5.crv  emphasis  1  markup-carve/carve-rs#3934
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2.crv  code  1  permitted
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-2.crv  table_cell  1  permitted
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-3.crv  code  1  permitted
@@ -662,10 +655,6 @@ carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-c
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row-5.crv  table_cell  2  permitted
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  code  1  permitted
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  table_cell  1  permitted
-carve-rs  786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-2.crv  emphasis  1  markup-carve/carve-rs#3934
-carve-rs  786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-3.crv  emphasis  1  markup-carve/carve-rs#3934
-carve-rs  786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span-4.crv  emphasis  1  markup-carve/carve-rs#3934
-carve-rs  786-a-block-glued-to-a-combined-closer-inside-a-braced-emphasis-span.crv  emphasis  1  markup-carve/carve-rs#3934
 carve-rs  797-an-indented-continuation-row-continues-the-table-above-2.crv  table_cell  2  permitted
 carve-rs  797-an-indented-continuation-row-continues-the-table-above.crv  table_cell  1  permitted
 carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list  1  permitted

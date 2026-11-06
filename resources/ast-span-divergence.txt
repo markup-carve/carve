@@ -43,17 +43,16 @@
 # parent's content column. The pin still carries these extent differences;
 # each engine's own opening-markup findings name the side that must move.
 
-list (extent)  52  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
-list_item (extent)  60  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
+list (extent)  23  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
+list_item (extent)  35  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
 definition_list (extent)  2  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-text (extent)  9  Corpus 744 and 753 task separator text differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-soft_break (extent)  1  Corpus 744 and 753 task separator break differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
-abbreviation_def (extent)  26  Pin differential cause triage: markup-carve/carve#5231.
-paragraph (extent)  8  Pin differential cause triage: markup-carve/carve#5231.
-footnote (extent)  26  Pin differential cause triage: markup-carve/carve#5231.
-comment (extent)  6  Pin differential cause triage: markup-carve/carve#5231.
-cell_wrap (presence)  5  Pin differential cause triage: markup-carve/carve#5231.
-definition_description (extent)  18  Pin differential cause triage: markup-carve/carve#5231.
+text (extent)  4  Corpus 744 and 753 task separator text differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+soft_break (extent)  2  Corpus 744 and 753 task separator break differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.
+paragraph (extent)  10  Pin differential cause triage: markup-carve/carve#5231.
+footnote (extent)  25  Pin differential cause triage: markup-carve/carve#5231.
+comment (extent)  7  Pin differential cause triage: markup-carve/carve#5231.
+definition_description (extent)  17  Pin differential cause triage: markup-carve/carve#5231.
 list (presence)  4  Pin differential cause triage: markup-carve/carve#5231.
 list_item (presence)  3  Pin differential cause triage: markup-carve/carve#5231.
 link (presence)  3  Pin differential cause triage: markup-carve/carve#5231.
@@ -63,7 +62,6 @@ image (presence)  2  Pin differential cause triage: markup-carve/carve#5231.
 line_block (extent)  2  Pin differential cause triage: markup-carve/carve#5231.
 definition_list (presence)  2  Pin differential cause triage: markup-carve/carve#5231.
 definition_description (presence)  2  Pin differential cause triage: markup-carve/carve#5231.
-emphasis (presence)  5  Pin differential cause triage: markup-carve/carve#5231.
 paragraph (presence)  1  Pin differential cause triage: markup-carve/carve#5231.
 code (presence)  1  Pin differential cause triage: markup-carve/carve#5231.
 code_block (extent)  1  Pin differential cause triage: markup-carve/carve#5231.
