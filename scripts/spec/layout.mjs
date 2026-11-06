@@ -8510,6 +8510,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // before the next sibling marker - still applies when that sibling arrives,
     // so the blank is remembered rather than consumed by the attachment.
     let blankBeforeInvisible = false
+    // §17 L1, first clause: the item WAS followed by a blank line before
+    // this sibling marker - an invisible attachment in between does not
+    // undo that, because the clause is about the blank, not about what
+    // filled the gap.
+    const loosenBeforeSibling = (marker) => {
+      if ((blankBeforeInvisible || blankBehindInvisible(i, itemHead, codeBodyRow)) && marker.indent === baseIndent && sameAxes(list, marker)) {
+        list.tight = false
+      }
+    }
     // A blank line was seen, and only invisible lines have followed it so far
     // (§17 L1b). The next PARAGRAPH closes the separation and loosens.
     let pendingSeparation = false
@@ -9878,7 +9887,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
       }
       // A note's later list leaves no item paragraph for a below-column tail.
-      if (noteTailList && col < contentCol && lm.rest !== '' && !insideFence()) break
+      if (noteTailList && col < contentCol && lm.rest !== '' && !insideFence()) {
+        // A sibling still meets §17 L1's first clause on the way out (carve#5285).
+        const sibling = matchMarkerAt(lm, 0)
+        if (sibling && columnOwner(sibling.indent) === 'outer') loosenBeforeSibling(sibling)
+        break
+      }
       // A marker in a line-block payload is payload: it opens no sublist.
       // A span closer remains payload after trackFence clears the span.
       const inPayload = col >= contentCol && fence.colon.length !== 0 &&
@@ -10220,14 +10234,17 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // everything else is `opensSubBlock`. A PARAGRAPH is the branch above.
         // Fence payload attaches nothing: its lines are opaque (PART 0).
         if (dmeas.rest !== '' && !insideFence() && !nestedVerbatim() && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
-          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) &&
-            !(noteBodyBoundary !== null && col >= noteBodyBoundary) && !noteFrames.some(frame => col >= frame.body) &&
+          const inNoteBody = noteBodyBoundary !== null && col >= noteBodyBoundary || noteFrames.some(frame => col >= frame.body)
+          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) && !inNoteBody &&
             !attachedDescriptionBodies.some(body => col >= body) && !descriptionBodyColumns.some(body => col >= body)
           if (pendingSeparation && ownChild && !itemShowsNothing()) list.tight = false
           if (ownChild) childList = nm ?? null
           if (ownChild && nm) childListBlanks = 0
-          blankBeforeInvisible = false
-          pendingSeparation = false
+          // A block in a note's body is the invisible definition's own, so the separation survives it (carve#5285).
+          if (!inNoteBody) {
+            blankBeforeInvisible = false
+            pendingSeparation = false
+          }
         }
         // A bare `+` is left ALONE here, tagged neither as text nor as a
         // marker. Which one it is cannot be decided at push time: after the
@@ -10637,13 +10654,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null ||
           (fence.opaque && fence.opaque.opens !== false && !spanEndsAtSibling))) break
       if (nm && columnOwner(nm.indent) === 'outer') {
-        // §17 L1, first clause: the item WAS followed by a blank line before
-        // this sibling marker - an invisible attachment in between does not
-        // undo that, because the clause is about the blank, not about what
-        // filled the gap.
-        if ((blankBeforeInvisible || blankBehindInvisible(i, itemHead, codeBodyRow)) && nm.indent === baseIndent && sameAxes(list, nm)) {
-          list.tight = false
-        }
+        loosenBeforeSibling(nm)
         break // sibling or outer list
       }
       // A `: ` line that misses the item stays outside it after a term or its description (CARVE-P0-024).
