@@ -9543,7 +9543,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // An attached fence in a marker-line child may keep this frame's
           // fence open across its blank. A following block at this item's
           // content column belongs to the item after its visible child list.
-          if (markerLineAttachedFence !== null && fence.opaque === markerLineAttachedFence) {
+          if (markerLineAttachedFence !== null && fence.opaque === markerLineAttachedFence &&
+              markerLineAttachedFence.closerAtBase !== true) {
             const next = i + 1 < n ? ind(i + 1) : null
             if (next && next.col === contentCol && foldablePlainLine(next.rest) && !itemShowsNothing()) list.tight = false
           }
@@ -10455,6 +10456,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
                 if (at.col < floor) break
                 const c = PURE_FENCE.exec(at.rest)
                 closed = !!c && c[1][0] === opaque.run[0] && c[1].length >= opaque.run.length
+                if (closed) opaque.closerAtBase = at.col === floor
               }
               if (!closed) opaque.endsAtBlank = true
               break
