@@ -3876,8 +3876,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (inner.span?.[0] === '%') inner.span = null
       frames.push(inner)
       // The payload was moved by this frame's shift. A lazy follower keeps the
-      // same frame even though it stands short of the authored content column.
-      lead(Math.max(0, m.col - inner.cut))
+      // same frame even though it stands short of the authored content column,
+      // but the shift never moves it onto or past a missed marker column it
+      // stands right of (PART 0 S4, carve#5319).
+      let foldedAt = Math.max(0, m.col - inner.cut)
+      for (let k = reached + 1; k < frames.length; k++) {
+        const f = frames[k]
+        if (f.markerCol !== undefined && m.col >= f.markerCol) {
+          foldedAt = Math.max(foldedAt, (f.markerCanon ?? f.markerCol) + (m.col > f.markerCol ? 1 : 0))
+        }
+      }
+      lead(Math.min(foldedAt, m.col))
       result.push(out + src)
       if (trace) emit(at, 'S4', ownerPath(), 'CARVE-P0-006', 'lazy', { reached: ownerPath(reached) })
       continue
