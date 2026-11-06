@@ -31,3 +31,8 @@ test('stacked marker sibling variants retain their lazy line (carve#5281)', () =
             }
   assert.equal(count, 1024)
 })
+
+test('a sibling code fence still leaves no lazy paragraph (carve#5281)', () => {
+  const source = '- - - %%%\n    - ```\nc\n'
+  assert.match(renderDoc(parse(source)), /<p>c<\/p>$/)
+})

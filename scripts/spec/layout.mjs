@@ -10324,7 +10324,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             // verbatim, and a verbatim body holds no paragraph. A sibling marker
             // ends a comment span before opening its own paragraph (PART 0 S1).
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
-              nestedOpaque !== null || (wasNested !== null && !endedBelow && !(wasNested.kind === 'comment' && nm)), i, dmeas.col)
+              nestedOpaque !== null || (wasNested !== null && !endedBelow &&
+                !(wasNested.kind === 'comment' && nm && descendantLineOpensParagraph(nm.text, false, i))), i, dmeas.col)
           }
           if (keptByRefusal && descendantQ1.col >= 0 && dmeas.rest !== '') descendantQ1.open = true
           if (dmeas.rest !== '') {
