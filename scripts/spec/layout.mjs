@@ -3706,8 +3706,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A comment or one-line definition closes no indentation frame: the next
     // visible line picks the owner (CARVE-P9-013).
     if (movedSpan && at <= movedSpan.end) {
-      // The rest of a matched `%%%` span moves with its opener.
-      src = ' '.repeat(top().col) + m.rest
+      // A fenced comment's payload stays at its owner's column. A braced
+      // comment's continuation keeps its source-column distance from `{%`;
+      // otherwise CARVE-P2-035 may refuse a run the author actually indented.
+      const column = movedSpan.braceCol === null ? top().col
+        : top().col + m.col - movedSpan.braceCol
+      src = ' '.repeat(Math.max(0, column)) + m.rest
       m = walkIndent(src)
       reached = frames.length - 1
     } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at)) {
@@ -3717,8 +3721,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         src = ' '.repeat(frames[deeper].col) + m.rest
         m = walkIndent(src)
         reached = deeper
-        const end = commentSpanEnd(trimLineEnd(m.rest), at)
-        movedSpan = end === -1 ? null : { end }
+        const end = invisibleCommentEnd(trimLineEnd(m.rest), at)
+        const braceCol = m.rest.startsWith('{%')
+          ? walkIndent(stripQuotes(lines[at], quotePrefix(lines[at]).depth)?.rest ?? lines[at]).col
+          : null
+        movedSpan = end === -1 ? null : { end, braceCol }
       }
     }
     // An off-column `+` is ordinary text. Shield it from the block readers,
@@ -4384,7 +4391,22 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   function transparentLine(rest, k) {
     const text = trimLineEnd(rest)
     if (REGION_MARKER.test(text) || FOOTNOTE_DEF.test(text)) return false
-    return commentSpanEnd(text, k) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
+    return invisibleCommentEnd(text, k) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
+  }
+
+  // A paragraph made solely of braced comments has the same ownership effect
+  // as a %% line. Its continuation lines travel with the opener, but their
+  // authored columns remain available to CARVE-P2-035 in the block reader.
+  function invisibleCommentEnd(text, at, quoteDepth = quotePrefix(lines[at]).depth) {
+    const fence = commentSpanEnd(text, at)
+    if (fence !== -1) return fence
+    if (!text.startsWith('{%')) return -1
+    const view = new Proxy([], {
+      get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key))
+        ? stripQuotes(lines[Number(key)], quoteDepth)?.rest ?? '' : undefined,
+    })
+    const end = commentOnlyParaEnd(view, at, true, view)
+    return end === -1 ? -1 : end - 1
   }
 
   function commentSpanEnd(text, k) {
@@ -4400,13 +4422,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // How deep the next visible line reaches through the indentation frames below `from`.
   function nextVisibleReach(at, from) {
     if (nextVisible <= at) {
-      const own = commentSpanEnd(trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest), at)
+      const own = invisibleCommentEnd(trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest), at)
       nextVisible = (own === -1 ? at : own) + 1
       for (; nextVisible < lines.length; nextVisible++) {
         const stands = walkIndent(lines[nextVisible].replace(/^[ \t>]*(?=>)>? ?/, ''))
         const text = trimLineEnd(stands.rest)
         if (text === '') continue
-        const span = commentSpanEnd(text, nextVisible)
+        const span = invisibleCommentEnd(text, nextVisible)
         if (span !== -1) nextVisible = span
         else if (!transparentLine(text, nextVisible)) break
       }
