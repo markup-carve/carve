@@ -62,8 +62,8 @@
     {
       "key": "tests/corpus/222-a-tab-as-the-first-character-of-a-definition-term.crv/js->rust",
       "fingerprint": "6fa0b49266d108a29bb9f49d36468357747c77ccfc2c90326b5232b4e3aa7a44",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The leading content-tab loss was fixed on carve-rs main; the pinned Rust revision predates that fix. Cause: markup-carve/carve-rs#3936.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3936",
       "observation": {
         "expected": "<dl>\n  <dt>x</dt>\n</dl>",
         "status": 0,
@@ -77,8 +77,8 @@
     {
       "key": "tests/corpus/222-a-tab-as-the-first-character-of-a-definition-term.crv/php->rust",
       "fingerprint": "6fa0b49266d108a29bb9f49d36468357747c77ccfc2c90326b5232b4e3aa7a44",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The leading content-tab loss was fixed on carve-rs main; the pinned Rust revision predates that fix. Cause: markup-carve/carve-rs#3936.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3936",
       "observation": {
         "expected": "<dl>\n  <dt>x</dt>\n</dl>",
         "status": 0,
@@ -92,8 +92,8 @@
     {
       "key": "tests/corpus/222-a-tab-as-the-first-character-of-a-definition-term.crv/rust->js",
       "fingerprint": "80db12072b1ea8212f673c9316b739b43fdb03d86e2e927cd91cb644e8d322ed",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The leading content-tab loss was fixed on carve-rs main; the pinned Rust revision predates that fix. Cause: markup-carve/carve-rs#3936.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3936",
       "observation": {
         "expected": "<dl>\n  <dt>\tx</dt>\n</dl>",
         "status": 0,
@@ -107,8 +107,8 @@
     {
       "key": "tests/corpus/222-a-tab-as-the-first-character-of-a-definition-term.crv/rust->php",
       "fingerprint": "80db12072b1ea8212f673c9316b739b43fdb03d86e2e927cd91cb644e8d322ed",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The leading content-tab loss was fixed on carve-rs main; the pinned Rust revision predates that fix. Cause: markup-carve/carve-rs#3936.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3936",
       "observation": {
         "expected": "<dl>\n  <dt>\tx</dt>\n</dl>",
         "status": 0,
@@ -122,8 +122,8 @@
     {
       "key": "tests/corpus/439-a-colon-followed-by-only-whitespace-is-not-a-description-8.crv/js->rust",
       "fingerprint": "e4aacd96cf3962c62aca692cb6099b9750cd4d8a7095e4b1184567bc58e3a850",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses a leading tab in definition description content. Cause: markup-carve/carve-rs#3949.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3949",
       "observation": {
         "expected": "<dl>\n  <dt>t</dt>\n  <dd>text</dd>\n</dl>\n<p>flush</p>",
         "status": 0,
@@ -137,8 +137,8 @@
     {
       "key": "tests/corpus/439-a-colon-followed-by-only-whitespace-is-not-a-description-8.crv/php->rust",
       "fingerprint": "e4aacd96cf3962c62aca692cb6099b9750cd4d8a7095e4b1184567bc58e3a850",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses a leading tab in definition description content. Cause: markup-carve/carve-rs#3949.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3949",
       "observation": {
         "expected": "<dl>\n  <dt>t</dt>\n  <dd>text</dd>\n</dl>\n<p>flush</p>",
         "status": 0,
@@ -152,8 +152,8 @@
     {
       "key": "tests/corpus/439-a-colon-followed-by-only-whitespace-is-not-a-description-8.crv/rust->js",
       "fingerprint": "44b461ac0020fc8b1297e2d410bc784f568a3f50fc3fcb4dc0b1fac643b135da",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses a leading tab in definition description content. Cause: markup-carve/carve-rs#3949.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3949",
       "observation": {
         "expected": "<dl>\n  <dt>t</dt>\n  <dd>\ttext</dd>\n</dl>\n<p>flush</p>",
         "status": 0,
@@ -167,8 +167,8 @@
     {
       "key": "tests/corpus/439-a-colon-followed-by-only-whitespace-is-not-a-description-8.crv/rust->php",
       "fingerprint": "44b461ac0020fc8b1297e2d410bc784f568a3f50fc3fcb4dc0b1fac643b135da",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses a leading tab in definition description content. Cause: markup-carve/carve-rs#3949.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3949",
       "observation": {
         "expected": "<dl>\n  <dt>t</dt>\n  <dd>\ttext</dd>\n</dl>\n<p>flush</p>",
         "status": 0,
@@ -182,8 +182,8 @@
     {
       "key": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-14.crv/js->php",
       "fingerprint": "9a0a0533cef9b9ba28293733a9cc4e7a836c612bd12d55d20c7a13264e41074b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP keeps a line in a closed container frame. Cause: markup-carve/carve-php#4736.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4736",
       "observation": {
         "expected": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>x</p>",
         "status": 0,
@@ -197,8 +197,8 @@
     {
       "key": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-14.crv/php->js",
       "fingerprint": "4eba976bc93743d46c37f866f282c6d92e8f04b77639f31313802c44be084fab",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP keeps a line in a closed container frame. Cause: markup-carve/carve-php#4736.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4736",
       "observation": {
         "expected": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>",
         "status": 0,
@@ -212,8 +212,8 @@
     {
       "key": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-14.crv/php->rust",
       "fingerprint": "4eba976bc93743d46c37f866f282c6d92e8f04b77639f31313802c44be084fab",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP keeps a line in a closed container frame. Cause: markup-carve/carve-php#4736.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4736",
       "observation": {
         "expected": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>",
         "status": 0,
@@ -227,8 +227,8 @@
     {
       "key": "tests/corpus/556-a-closed-block-leaves-no-frame-for-the-line-below-14.crv/rust->php",
       "fingerprint": "9a0a0533cef9b9ba28293733a9cc4e7a836c612bd12d55d20c7a13264e41074b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP keeps a line in a closed container frame. Cause: markup-carve/carve-php#4736.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4736",
       "observation": {
         "expected": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>x</p>",
         "status": 0,
@@ -242,8 +242,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame-2.crv/js->rust",
       "fingerprint": "1338e29fba5ae8c41e2efac601455f82eb228f354e525e969c730a3ed66c5cb3",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ol start=\"10\">\n          <li>a</li>\n        </ol>\n        <p>b</p>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -257,8 +257,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame-2.crv/php->rust",
       "fingerprint": "1338e29fba5ae8c41e2efac601455f82eb228f354e525e969c730a3ed66c5cb3",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ol start=\"10\">\n          <li>a</li>\n        </ol>\n        <p>b</p>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -272,8 +272,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame-2.crv/rust->js",
       "fingerprint": "c6dca406d60a953738e7a47314a5d666ee2879dce8449e1b67e3b4b3c4c8028a",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ol start=\"10\">\n          <li><p>a</p>\n            <p>b</p>\n          </li>\n        </ol>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -287,8 +287,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame-2.crv/rust->php",
       "fingerprint": "c6dca406d60a953738e7a47314a5d666ee2879dce8449e1b67e3b4b3c4c8028a",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ul>\n      <li>\n        <ol start=\"10\">\n          <li><p>a</p>\n            <p>b</p>\n          </li>\n        </ol>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -302,8 +302,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv/js->rust",
       "fingerprint": "3cfaa576977abcaaed86614a23b4b8e05d7e741c60ae0ed3a7160807e9cd673b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ol>\n      <li>a</li>\n    </ol>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>",
         "status": 0,
@@ -317,8 +317,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv/php->rust",
       "fingerprint": "3cfaa576977abcaaed86614a23b4b8e05d7e741c60ae0ed3a7160807e9cd673b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ol>\n      <li>a</li>\n    </ol>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>",
         "status": 0,
@@ -332,8 +332,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv/rust->js",
       "fingerprint": "6dd71d26065596e99550a5eadafe705a45512c188dd251c5d63f9f59e2ac6546",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ol>\n      <li>a\n        <pre><code>x\n</code></pre>\n      </li>\n    </ol>\n  </li>\n</ul>",
         "status": 0,
@@ -347,8 +347,8 @@
     {
       "key": "tests/corpus/796-a-tab-past-an-off-stop-frame-column-is-measured-in-that-frame.crv/rust->php",
       "fingerprint": "6dd71d26065596e99550a5eadafe705a45512c188dd251c5d63f9f59e2ac6546",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust measures a marker-ladder tab in the wrong frame. Cause: markup-carve/carve-rs#3942.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3942",
       "observation": {
         "expected": "<ul>\n  <li>\n    <ol>\n      <li>a\n        <pre><code>x\n</code></pre>\n      </li>\n    </ol>\n  </li>\n</ul>",
         "status": 0,
@@ -362,8 +362,8 @@
     {
       "key": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv/js->php",
       "fingerprint": "9e74efcdf19a6ebec6dd735f67b060cbee6da17e361d33187b1acd1f47079224",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>+ w1\n9. w2</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -377,8 +377,8 @@
     {
       "key": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv/php->js",
       "fingerprint": "207fdb192939d626c909eb7a08f14638d009a38715f9ab1031a29834cd9bc29b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>+ w1</li>\n    </ul>\n    <ol start=\"9\">\n      <li>w2</li>\n    </ol>\n  </li>\n</ul>",
         "status": 0,
@@ -392,8 +392,8 @@
     {
       "key": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv/php->rust",
       "fingerprint": "207fdb192939d626c909eb7a08f14638d009a38715f9ab1031a29834cd9bc29b",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>+ w1</li>\n    </ul>\n    <ol start=\"9\">\n      <li>w2</li>\n    </ol>\n  </li>\n</ul>",
         "status": 0,
@@ -407,8 +407,8 @@
     {
       "key": "tests/corpus/806-a-marker-folds-into-the-paragraph-a-first-block-plus-took-3.crv/rust->php",
       "fingerprint": "9e74efcdf19a6ebec6dd735f67b060cbee6da17e361d33187b1acd1f47079224",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>+ w1\n9. w2</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -422,7 +422,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/js->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -437,7 +437,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/php->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -452,7 +452,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/rust->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -467,7 +467,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/js->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
@@ -482,7 +482,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/php->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
@@ -497,7 +497,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/rust->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
@@ -512,8 +512,8 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/js->rust",
       "fingerprint": "786a580b134e5aeaa6f6aa1b3ae544abaf066d416f876e1db161c23b9c862b51",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it’s_x <span class=\"mention\"><strong>@lines</strong></span>:0-1 }} it’s_y }}</p>",
         "status": 0,
@@ -527,8 +527,8 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/php->rust",
       "fingerprint": "786a580b134e5aeaa6f6aa1b3ae544abaf066d416f876e1db161c23b9c862b51",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it’s_x <span class=\"mention\"><strong>@lines</strong></span>:0-1 }} it’s_y }}</p>",
         "status": 0,
@@ -542,8 +542,8 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/rust->js",
       "fingerprint": "7452930c0501388c11a8a593b12debde7780ba2ce70af07cd655296e2bb5afc3",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it's_x @lines:0-1 }} it’s_y }}</p>",
         "status": 0,
@@ -557,8 +557,8 @@
     {
       "key": "tests/corpus/854-a-quote-in-a-bare-include-token-opens-no-run.crv/rust->php",
       "fingerprint": "7452930c0501388c11a8a593b12debde7780ba2ce70af07cd655296e2bb5afc3",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust parses an apostrophe in a refused bare include token as an opaque run. Cause: markup-carve/carve-rs#3950.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3950",
       "observation": {
         "expected": "<p>{{ it's_x @lines:0-1 }} it’s_y }}</p>",
         "status": 0,
@@ -572,8 +572,8 @@
     {
       "key": "tests/corpus/855-a-plus-after-a-table-with-an-indented-row-attaches.crv/js->rust",
       "fingerprint": "3dab5770d0d008f6edbd06758bc03829624022f5c205db105fc16f120ff1c0b5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <table>\n      <tbody>\n        <tr><td>x</td></tr>\n        <tr><td>y</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>+\nH</p>",
         "status": 0,
@@ -587,8 +587,8 @@
     {
       "key": "tests/corpus/855-a-plus-after-a-table-with-an-indented-row-attaches.crv/php->rust",
       "fingerprint": "3dab5770d0d008f6edbd06758bc03829624022f5c205db105fc16f120ff1c0b5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <table>\n      <tbody>\n        <tr><td>x</td></tr>\n        <tr><td>y</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>\n<p>+\nH</p>",
         "status": 0,
@@ -602,8 +602,8 @@
     {
       "key": "tests/corpus/855-a-plus-after-a-table-with-an-indented-row-attaches.crv/rust->js",
       "fingerprint": "1358a750b6ea903d0b841515077e99c097be145c3b3918d88b65f0a57ab2ccd5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <table>\n      <tbody>\n        <tr><td>x</td></tr>\n        <tr><td>y</td></tr>\n      </tbody>\n    </table>\n    H\n  </li>\n</ul>",
         "status": 0,
@@ -617,8 +617,8 @@
     {
       "key": "tests/corpus/855-a-plus-after-a-table-with-an-indented-row-attaches.crv/rust->php",
       "fingerprint": "1358a750b6ea903d0b841515077e99c097be145c3b3918d88b65f0a57ab2ccd5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <table>\n      <tbody>\n        <tr><td>x</td></tr>\n        <tr><td>y</td></tr>\n      </tbody>\n    </table>\n    H\n  </li>\n</ul>",
         "status": 0,
@@ -632,8 +632,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv/js->rust",
       "fingerprint": "2572818f7783c62b48145adfa7df8a0442d120bdb8863bdd5110beb83871f870",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>+\n</code></pre>",
         "status": 0,
@@ -647,8 +647,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv/php->rust",
       "fingerprint": "2572818f7783c62b48145adfa7df8a0442d120bdb8863bdd5110beb83871f870",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>+\n</code></pre>",
         "status": 0,
@@ -662,8 +662,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv/rust->js",
       "fingerprint": "4549c5d744e1c97c71e15c61ed739838365a038853acf7bc6b027045210fce73",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>+\n ```\n</code></pre>",
         "status": 0,
@@ -677,8 +677,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv/rust->php",
       "fingerprint": "4549c5d744e1c97c71e15c61ed739838365a038853acf7bc6b027045210fce73",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <pre><code></code></pre>\n      </li>\n    </ul>\n  </li>\n</ul>\n<pre><code>+\n ```\n</code></pre>",
         "status": 0,
@@ -692,8 +692,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv/js->rust",
       "fingerprint": "97a79fc398885b0de0cd5edd90990038d9f3923e1c6248b058cba7836c2b73db",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>o\n    <blockquote><p>q\n+\n&gt; r</p></blockquote>\n  </li>\n</ul>",
         "status": 0,
@@ -707,8 +707,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv/php->rust",
       "fingerprint": "97a79fc398885b0de0cd5edd90990038d9f3923e1c6248b058cba7836c2b73db",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>o\n    <blockquote><p>q\n+\n&gt; r</p></blockquote>\n  </li>\n</ul>",
         "status": 0,
@@ -722,8 +722,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv/rust->js",
       "fingerprint": "409bbed644b59041f91c4cd829209e6e186263d6e44b104b6209023772c1fa2e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>o\n    <blockquote><p>q\n+\nr</p></blockquote>\n  </li>\n</ul>",
         "status": 0,
@@ -737,8 +737,8 @@
     {
       "key": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing.crv/rust->php",
       "fingerprint": "409bbed644b59041f91c4cd829209e6e186263d6e44b104b6209023772c1fa2e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>o\n    <blockquote><p>q\n+\nr</p></blockquote>\n  </li>\n</ul>",
         "status": 0,
@@ -752,8 +752,8 @@
     {
       "key": "tests/corpus/871-a-widths-list-writes-one-col-per-entry-2.crv/php->js",
       "fingerprint": "c912a9412157f74a65161f6048fdc275df07331eab2e4b56e687fe48222d85ce",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP publishes an extra positional table column on AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col>\n    <col style=\"width: 50%;\">\n  </colgroup>\n  <tbody>\n    <tr><td>a</td><td>b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -767,8 +767,8 @@
     {
       "key": "tests/corpus/871-a-widths-list-writes-one-col-per-entry-2.crv/php->rust",
       "fingerprint": "c912a9412157f74a65161f6048fdc275df07331eab2e4b56e687fe48222d85ce",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP publishes an extra positional table column on AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col>\n    <col style=\"width: 50%;\">\n  </colgroup>\n  <tbody>\n    <tr><td>a</td><td>b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -782,8 +782,8 @@
     {
       "key": "tests/corpus/871-a-widths-list-writes-one-col-per-entry.crv/php->js",
       "fingerprint": "4d075053438e6813f7bb5c2e79d9b023217d2ef08a11829479c1dcbeacd34327",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP publishes an extra positional table column on AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col style=\"width: 25%;\">\n    <col style=\"width: 50%;\">\n  </colgroup>\n  <tbody>\n    <tr><td>a</td><td>b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -797,8 +797,8 @@
     {
       "key": "tests/corpus/871-a-widths-list-writes-one-col-per-entry.crv/php->rust",
       "fingerprint": "4d075053438e6813f7bb5c2e79d9b023217d2ef08a11829479c1dcbeacd34327",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP publishes an extra positional table column on AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col style=\"width: 25%;\">\n    <col style=\"width: 50%;\">\n  </colgroup>\n  <tbody>\n    <tr><td>a</td><td>b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -812,8 +812,8 @@
     {
       "key": "tests/corpus/872-a-table-writes-one-col-per-column-entry-2.crv/php->js",
       "fingerprint": "03470cf240703e1bf7c6d716702795964ea40564c41be1b483d7edf35338461f",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP emits an extra positional table column in source rendering and AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col style=\"width: 40%;\">\n    <col>\n  </colgroup>\n  <tbody>\n    <tr><td style=\"vertical-align: top;\">a</td><td style=\"vertical-align: bottom;\">b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -827,8 +827,8 @@
     {
       "key": "tests/corpus/872-a-table-writes-one-col-per-column-entry-2.crv/php->rust",
       "fingerprint": "03470cf240703e1bf7c6d716702795964ea40564c41be1b483d7edf35338461f",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP emits an extra positional table column in source rendering and AST JSON ingest. Cause: markup-carve/carve-php#4737.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4737",
       "observation": {
         "expected": "<table>\n  <colgroup>\n    <col style=\"width: 40%;\">\n    <col>\n  </colgroup>\n  <tbody>\n    <tr><td style=\"vertical-align: top;\">a</td><td style=\"vertical-align: bottom;\">b</td><td>c</td></tr>\n  </tbody>\n</table>",
         "status": 0,
@@ -842,8 +842,8 @@
     {
       "key": "tests/corpus/873-a-plus-after-an-attached-block-reaches-its-host-through-quote-prefixes-2.crv/js->php",
       "fingerprint": "e8e201fb74b95b64c5dcb8cbcf10ebb93d937ec04299251c43e5281b15cfae2d",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <h1 id=\"h\">h</h1>\n    </li>\n  </ul>\n  <p>+</p>\n  <h1 id=\"h-2\">h</h1>\n</blockquote>",
         "status": 0,
@@ -857,8 +857,8 @@
     {
       "key": "tests/corpus/873-a-plus-after-an-attached-block-reaches-its-host-through-quote-prefixes-2.crv/js->rust",
       "fingerprint": "e8e201fb74b95b64c5dcb8cbcf10ebb93d937ec04299251c43e5281b15cfae2d",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <h1 id=\"h\">h</h1>\n    </li>\n  </ul>\n  <p>+</p>\n  <h1 id=\"h-2\">h</h1>\n</blockquote>",
         "status": 0,
@@ -872,8 +872,8 @@
     {
       "key": "tests/corpus/873-a-plus-after-an-attached-block-reaches-its-host-through-quote-prefixes-2.crv/php->js",
       "fingerprint": "a7b6fefd04a311e6349bf890bc3199fa1d2b9af0974dd2ef6bbadd81df443af6",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <h1 id=\"h\">h</h1>\n      <h1 id=\"h-2\">h</h1>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -887,8 +887,8 @@
     {
       "key": "tests/corpus/873-a-plus-after-an-attached-block-reaches-its-host-through-quote-prefixes-2.crv/rust->js",
       "fingerprint": "a7b6fefd04a311e6349bf890bc3199fa1d2b9af0974dd2ef6bbadd81df443af6",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>a\n      <h1 id=\"h\">h</h1>\n      <h1 id=\"h-2\">h</h1>\n    </li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -902,8 +902,8 @@
     {
       "key": "tests/corpus/880-an-own-line-plus-reaches-a-marker-line-quote-at-its-authored-column-3.crv/js->rust",
       "fingerprint": "98a12cd2d533a2df914d0635e25ef161efe4b249d210e103407b43f34e3955c1",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <blockquote>\n        <blockquote><p>a\n+\nb</p></blockquote>\n      </blockquote>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
         "status": 0,
@@ -917,8 +917,8 @@
     {
       "key": "tests/corpus/880-an-own-line-plus-reaches-a-marker-line-quote-at-its-authored-column-3.crv/php->rust",
       "fingerprint": "98a12cd2d533a2df914d0635e25ef161efe4b249d210e103407b43f34e3955c1",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <blockquote>\n        <blockquote><p>a\n+\nb</p></blockquote>\n      </blockquote>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
         "status": 0,
@@ -932,8 +932,8 @@
     {
       "key": "tests/corpus/880-an-own-line-plus-reaches-a-marker-line-quote-at-its-authored-column-3.crv/rust->js",
       "fingerprint": "568df0ca72f2032bafb4c09737ae13a6de443f37bd931863617640ebf885c28d",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <blockquote>\n        <blockquote>\n          <p>a</p>\n          <p>b</p>\n        </blockquote>\n      </blockquote>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
         "status": 0,
@@ -947,8 +947,8 @@
     {
       "key": "tests/corpus/880-an-own-line-plus-reaches-a-marker-line-quote-at-its-authored-column-3.crv/rust->php",
       "fingerprint": "568df0ca72f2032bafb4c09737ae13a6de443f37bd931863617640ebf885c28d",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <blockquote>\n        <blockquote>\n          <p>a</p>\n          <p>b</p>\n        </blockquote>\n      </blockquote>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
         "status": 0,
@@ -962,8 +962,8 @@
     {
       "key": "tests/corpus/882-attributed-bracket-spans-share-the-inline-cap.crv/js->php",
       "fingerprint": "4c92ed08d4b08c78b0f661a43ac0e74b337865ae462121ec8df8edaf351fd995",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP forms an attributed bracket span past the shared inline depth cap. Cause: markup-carve/carve-php#4738.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4738",
       "observation": {
         "expected": "<p><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\">x</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>",
         "status": 0,
@@ -977,8 +977,8 @@
     {
       "key": "tests/corpus/882-attributed-bracket-spans-share-the-inline-cap.crv/php->js",
       "fingerprint": "d893a1b4b7d547a9acb7aa86193dc3922722bed474facf189d0bfae5eeffa370",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP forms an attributed bracket span past the shared inline depth cap. Cause: markup-carve/carve-php#4738.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4738",
       "observation": {
         "expected": "<p><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\">[x]{.a}</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>",
         "status": 0,
@@ -992,8 +992,8 @@
     {
       "key": "tests/corpus/882-attributed-bracket-spans-share-the-inline-cap.crv/php->rust",
       "fingerprint": "d893a1b4b7d547a9acb7aa86193dc3922722bed474facf189d0bfae5eeffa370",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP forms an attributed bracket span past the shared inline depth cap. Cause: markup-carve/carve-php#4738.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4738",
       "observation": {
         "expected": "<p><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\">[x]{.a}</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>",
         "status": 0,
@@ -1007,8 +1007,8 @@
     {
       "key": "tests/corpus/882-attributed-bracket-spans-share-the-inline-cap.crv/rust->php",
       "fingerprint": "4c92ed08d4b08c78b0f661a43ac0e74b337865ae462121ec8df8edaf351fd995",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP forms an attributed bracket span past the shared inline depth cap. Cause: markup-carve/carve-php#4738.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4738",
       "observation": {
         "expected": "<p><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\"><span class=\"a\">x</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></p>",
         "status": 0,
@@ -1022,8 +1022,8 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/js->rust",
       "fingerprint": "2b07e1bbb1ec04d046bab4251b6aa726d5cc2542e0dec3af046c6984948544a7",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption>A 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
         "status": 0,
@@ -1037,8 +1037,8 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/php->rust",
       "fingerprint": "2b07e1bbb1ec04d046bab4251b6aa726d5cc2542e0dec3af046c6984948544a7",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption>A 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
         "status": 0,
@@ -1052,8 +1052,8 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/rust->js",
       "fingerprint": "caf97b27bfb3f54f540e642818e5402e9350724a9964504d2a63cf5cd143003c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption><abbr title=\"x\">A</abbr> 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
         "status": 0,
@@ -1067,8 +1067,8 @@
     {
       "key": "tests/corpus/915-abbreviations-skip-caption-cross-reference-text-and-an-unresolved-cross-reference-2.crv/rust->php",
       "fingerprint": "caf97b27bfb3f54f540e642818e5402e9350724a9964504d2a63cf5cd143003c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust expands an abbreviation in caption cross-reference text. Cause: markup-carve/carve-rs#3951.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3951",
       "observation": {
         "expected": "<table id=\"t\">\n  <caption><abbr title=\"x\">A</abbr> 1: c</caption>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>See <a href=\"#t\">A 1</a>.</p>",
         "status": 0,
@@ -1082,8 +1082,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run-2.crv/js->rust",
       "fingerprint": "fa8de0f8616b6f9d12dde3bfd1005231f0f6fffa59fc2bdbdc3429e69c85a2a9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p><code></code></p>\n      <p><code>\nb</code></p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1097,8 +1097,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run-2.crv/php->rust",
       "fingerprint": "fa8de0f8616b6f9d12dde3bfd1005231f0f6fffa59fc2bdbdc3429e69c85a2a9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p><code></code></p>\n      <p><code>\nb</code></p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1112,8 +1112,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run-2.crv/rust->js",
       "fingerprint": "63809fb045f5d285a1c66218e73e4b9dba23f79bc3f51cc51728f721ced99502",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p><code>\n</code><br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1127,8 +1127,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run-2.crv/rust->php",
       "fingerprint": "63809fb045f5d285a1c66218e73e4b9dba23f79bc3f51cc51728f721ced99502",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p><code>\n</code><br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1142,8 +1142,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run.crv/js->rust",
       "fingerprint": "d1dc68a5629063d0b00a5abecc00266b50878f9876eb16a3b0e1079337f06da9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p>~~~</p>\n      <p>~~~<br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1157,8 +1157,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run.crv/php->rust",
       "fingerprint": "d1dc68a5629063d0b00a5abecc00266b50878f9876eb16a3b0e1079337f06da9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p>~~~</p>\n      <p>~~~<br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1172,8 +1172,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run.crv/rust->js",
       "fingerprint": "d87ff787901cc05d5263e59574a5079565f26d1b1164c75ae2f80ff2c4578d54",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p>~~~<br>\n~~~<br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1187,8 +1187,8 @@
     {
       "key": "tests/corpus/923-a-line-block-stanza-remains-open-after-a-paired-payload-run.crv/rust->php",
       "fingerprint": "d87ff787901cc05d5263e59574a5079565f26d1b1164c75ae2f80ff2c4578d54",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after paired payload runs. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<dl>\n  <dt>u</dt>\n  <dd>\n    <div class=\"line-block\">\n      <p>~~~<br>\n~~~<br>\nb</p>\n    </div>\n  </dd>\n</dl>",
         "status": 0,
@@ -1202,8 +1202,8 @@
     {
       "key": "tests/corpus/926-a-quote-holding-only-braced-comments-is-not-a-caption-host.crv/php->js",
       "fingerprint": "9e1cf08e97dd6b5a39667d3020b961f767dbde104949f3853d97792fb7954535",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<blockquote>\n\n</blockquote>\n<p>^ cap</p>",
         "status": 0,
@@ -1217,8 +1217,8 @@
     {
       "key": "tests/corpus/926-a-quote-holding-only-braced-comments-is-not-a-caption-host.crv/php->rust",
       "fingerprint": "9e1cf08e97dd6b5a39667d3020b961f767dbde104949f3853d97792fb7954535",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<blockquote>\n\n</blockquote>\n<p>^ cap</p>",
         "status": 0,
@@ -1232,8 +1232,8 @@
     {
       "key": "tests/corpus/928-a-multi-line-paragraph-of-only-braced-comments-is-an-invisible-line.crv/php->js",
       "fingerprint": "f4575b9b68a85dcb50b458f01ed697a159374ee9c7a9e7711cec709a3938e3d9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li></li>\n</ul>\n<section id=\"H\">\n  <h1>H</h1>\n</section>",
         "status": 0,
@@ -1247,8 +1247,8 @@
     {
       "key": "tests/corpus/928-a-multi-line-paragraph-of-only-braced-comments-is-an-invisible-line.crv/php->rust",
       "fingerprint": "f4575b9b68a85dcb50b458f01ed697a159374ee9c7a9e7711cec709a3938e3d9",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li></li>\n</ul>\n<section id=\"H\">\n  <h1>H</h1>\n</section>",
         "status": 0,
@@ -1262,8 +1262,8 @@
     {
       "key": "tests/corpus/931-a-trailing-comment-in-a-comment-only-paragraph-ends-at-its-line-3.crv/php->js",
       "fingerprint": "f5da60064b209d2b42173f3c042ec2de42bd390201797e41500fbc3da1da0a17",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<p>z</p>",
         "status": 0,
@@ -1277,8 +1277,8 @@
     {
       "key": "tests/corpus/931-a-trailing-comment-in-a-comment-only-paragraph-ends-at-its-line-3.crv/php->rust",
       "fingerprint": "f5da60064b209d2b42173f3c042ec2de42bd390201797e41500fbc3da1da0a17",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<p>z</p>",
         "status": 0,
@@ -1292,8 +1292,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-2.crv/php->js",
       "fingerprint": "bdc64a47e12a7b12b0e99ae070e6b00f03b70a596bf104f19467aae16ac3316f",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li>a</li>\n    </ul>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1307,8 +1307,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-2.crv/php->rust",
       "fingerprint": "bdc64a47e12a7b12b0e99ae070e6b00f03b70a596bf104f19467aae16ac3316f",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li>a</li>\n    </ul>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1322,8 +1322,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-3.crv/php->js",
       "fingerprint": "015fbe07acd67f45cb270c37b3b0e025869be4b0991e0fdebc7d6f79df28e84c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1337,8 +1337,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-3.crv/php->rust",
       "fingerprint": "015fbe07acd67f45cb270c37b3b0e025869be4b0991e0fdebc7d6f79df28e84c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1352,8 +1352,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph.crv/php->js",
       "fingerprint": "f58296c67da1a0fd2c9bc64e029d7ea3052d059e0bfb8021f38f2e2ce9cc3078",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li><p>a</p></li>\n      <li><p>b</p></li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1367,8 +1367,8 @@
     {
       "key": "tests/corpus/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph.crv/php->rust",
       "fingerprint": "f58296c67da1a0fd2c9bc64e029d7ea3052d059e0bfb8021f38f2e2ce9cc3078",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP AST JSON publishes an empty paragraph for an invisible comment-only run. Cause: markup-carve/carve-php#4739.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4739",
       "observation": {
         "expected": "<ul>\n  <li><p>p</p>\n    <ul>\n      <li><p>a</p></li>\n      <li><p>b</p></li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1382,8 +1382,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open-2.crv/js->rust",
       "fingerprint": "819b7696eee1471478732226f6f7b9096efcd7f5803890e453a7bf50c84aae0c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <div class=\"line-block\">\n          <p>x</p>\n        </div>\n      </dd>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>b</p>",
         "status": 0,
@@ -1397,8 +1397,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open-2.crv/php->rust",
       "fingerprint": "819b7696eee1471478732226f6f7b9096efcd7f5803890e453a7bf50c84aae0c",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <div class=\"line-block\">\n          <p>x</p>\n        </div>\n      </dd>\n    </dl>\n  </blockquote>\n</blockquote>\n<p>b</p>",
         "status": 0,
@@ -1412,8 +1412,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open-2.crv/rust->js",
       "fingerprint": "2db2b6a2faad7eb7c0e58ce50589ab4ec13b92847faa8a9c63a171144b242684",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <div class=\"line-block\">\n          <p>x<br>\nb</p>\n        </div>\n      </dd>\n    </dl>\n  </blockquote>\n</blockquote>",
         "status": 0,
@@ -1427,8 +1427,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open-2.crv/rust->php",
       "fingerprint": "2db2b6a2faad7eb7c0e58ce50589ab4ec13b92847faa8a9c63a171144b242684",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <blockquote>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <div class=\"line-block\">\n          <p>x<br>\nb</p>\n        </div>\n      </dd>\n    </dl>\n  </blockquote>\n</blockquote>",
         "status": 0,
@@ -1442,8 +1442,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open.crv/js->rust",
       "fingerprint": "31cdeb5aa0e61e8f97866efbb1c39e49c9f7d61ce1a98b9572649ba0312a3a70",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <div class=\"line-block\">\n        <p>x</p>\n      </div>\n    </dd>\n  </dl>\n</blockquote>\n<p>b</p>",
         "status": 0,
@@ -1457,8 +1457,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open.crv/php->rust",
       "fingerprint": "31cdeb5aa0e61e8f97866efbb1c39e49c9f7d61ce1a98b9572649ba0312a3a70",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <div class=\"line-block\">\n        <p>x</p>\n      </div>\n    </dd>\n  </dl>\n</blockquote>\n<p>b</p>",
         "status": 0,
@@ -1472,8 +1472,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open.crv/rust->js",
       "fingerprint": "1bc0fcbc0e5af0d501a28067c2c78b5c7b4f2294164e70a09076f1955b7dea51",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <div class=\"line-block\">\n        <p>x<br>\nb</p>\n      </div>\n    </dd>\n  </dl>\n</blockquote>",
         "status": 0,
@@ -1487,8 +1487,8 @@
     {
       "key": "tests/corpus/941-a-marked-blank-inside-a-quoted-verse-span-leaves-the-stanza-open.crv/rust->php",
       "fingerprint": "1bc0fcbc0e5af0d501a28067c2c78b5c7b4f2294164e70a09076f1955b7dea51",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "Rust loses line-block stanza boundaries after a marked blank. Cause: markup-carve/carve-rs#3952.",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/3952",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <div class=\"line-block\">\n        <p>x<br>\nb</p>\n      </div>\n    </dd>\n  </dl>\n</blockquote>",
         "status": 0,
@@ -1502,8 +1502,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv/js->php",
       "fingerprint": "78cb171237118b071e44462f94e5d742e72669ead5ebcab9eab656dbd1d4f181",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ol>\n    <li>\n      <pre><code>x\n\n</code></pre>\n    </li>\n  </ol>\n  <p>y</p>\n</blockquote>",
         "status": 0,
@@ -1517,8 +1517,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv/php->js",
       "fingerprint": "baa54bd419dbefc48f2e561d51c27630f5c835e766c23b3d320cfae782e06e7e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ol>\n    <li>\n      <pre><code>x\n</code></pre>\n    </li>\n  </ol>\n  <p>y</p>\n</blockquote>",
         "status": 0,
@@ -1532,8 +1532,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv/php->rust",
       "fingerprint": "baa54bd419dbefc48f2e561d51c27630f5c835e766c23b3d320cfae782e06e7e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ol>\n    <li>\n      <pre><code>x\n</code></pre>\n    </li>\n  </ol>\n  <p>y</p>\n</blockquote>",
         "status": 0,
@@ -1547,8 +1547,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-2.crv/rust->php",
       "fingerprint": "78cb171237118b071e44462f94e5d742e72669ead5ebcab9eab656dbd1d4f181",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ol>\n    <li>\n      <pre><code>x\n\n</code></pre>\n    </li>\n  </ol>\n  <p>y</p>\n</blockquote>",
         "status": 0,
@@ -1562,8 +1562,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv/js->php",
       "fingerprint": "71f30bc98f5ea4968b5fa5fb635a80d0d54514ee355ce058d5afb2a12205dfdd",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li><p>b</p>\n      <ul>\n        <li>\n          <pre><code>x\n\n</code></pre>\n        </li>\n      </ul>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1577,8 +1577,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv/php->js",
       "fingerprint": "362a38e21a6653175b186cdafbdfbec9ce976cfb073ac35df226993fe56d5670",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li><p>b</p>\n      <ul>\n        <li>\n          <pre><code>x\n</code></pre>\n        </li>\n      </ul>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1592,8 +1592,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv/php->rust",
       "fingerprint": "362a38e21a6653175b186cdafbdfbec9ce976cfb073ac35df226993fe56d5670",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li><p>b</p>\n      <ul>\n        <li>\n          <pre><code>x\n</code></pre>\n        </li>\n      </ul>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1607,8 +1607,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-3.crv/rust->php",
       "fingerprint": "71f30bc98f5ea4968b5fa5fb635a80d0d54514ee355ce058d5afb2a12205dfdd",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li><p>b</p>\n      <ul>\n        <li>\n          <pre><code>x\n\n</code></pre>\n        </li>\n      </ul>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1622,8 +1622,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv/js->php",
       "fingerprint": "3ca1c124d8f09c0c288cd05cd00afc70e311d7952951a6bd0182d35b4e8e84b8",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1637,8 +1637,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv/php->js",
       "fingerprint": "66eaca38c9cc5c1ace76035a21308b0c825bdd3271b4b69432dcec73b42cce22",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1652,8 +1652,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv/php->rust",
       "fingerprint": "66eaca38c9cc5c1ace76035a21308b0c825bdd3271b4b69432dcec73b42cce22",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1667,8 +1667,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open-4.crv/rust->php",
       "fingerprint": "3ca1c124d8f09c0c288cd05cd00afc70e311d7952951a6bd0182d35b4e8e84b8",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1682,8 +1682,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv/js->php",
       "fingerprint": "8e71e7b71e33a715750a74b87a7206dbc6a7bf14cb1c16d0faf4361fb23dd98e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">x\n\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1697,8 +1697,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv/php->js",
       "fingerprint": "c3e0c4c6b047be21f202b7096de53845d43fc56066312a6499ff4fbbe7648d53",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">x\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1712,8 +1712,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv/php->rust",
       "fingerprint": "c3e0c4c6b047be21f202b7096de53845d43fc56066312a6499ff4fbbe7648d53",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">x\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1727,8 +1727,8 @@
     {
       "key": "tests/corpus/947-a-quote-s-next-is-not-payload-of-an-item-fence-the-last-block-left-open.crv/rust->php",
       "fingerprint": "8e71e7b71e33a715750a74b87a7206dbc6a7bf14cb1c16d0faf4361fb23dd98e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\">x\n\n</code></pre>\n    </li>\n    <li><p>y</p></li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1742,8 +1742,8 @@
     {
       "key": "tests/corpus/948-a-blank-inside-a-attached-description-keeps-the-list-tight-3.crv/js->rust",
       "fingerprint": "80cf09fd3b9718cfde4bae87493d0c3f4354632c5d87c197d13b09de144d44f5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>d</p>\n        <p>x</p>\n      </dd>\n    </dl>\n  </li>\n</ul>",
         "status": 0,
@@ -1757,8 +1757,8 @@
     {
       "key": "tests/corpus/948-a-blank-inside-a-attached-description-keeps-the-list-tight-3.crv/php->rust",
       "fingerprint": "80cf09fd3b9718cfde4bae87493d0c3f4354632c5d87c197d13b09de144d44f5",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n    <dl>\n      <dt>t</dt>\n      <dd>\n        <p>d</p>\n        <p>x</p>\n      </dd>\n    </dl>\n  </li>\n</ul>",
         "status": 0,
@@ -1772,8 +1772,8 @@
     {
       "key": "tests/corpus/948-a-blank-inside-a-attached-description-keeps-the-list-tight-3.crv/rust->js",
       "fingerprint": "f614d9632c5523652f510a25cbb6d6290e33b78ed3a1028a5dc16608cc57feba",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <p>x</p>\n          </dd>\n        </dl>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1787,8 +1787,8 @@
     {
       "key": "tests/corpus/948-a-blank-inside-a-attached-description-keeps-the-list-tight-3.crv/rust->php",
       "fingerprint": "f614d9632c5523652f510a25cbb6d6290e33b78ed3a1028a5dc16608cc57feba",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <p>x</p>\n          </dd>\n        </dl>\n      </li>\n    </ul>\n  </li>\n</ul>",
         "status": 0,
@@ -1802,8 +1802,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv/js->rust",
       "fingerprint": "4b6f201397f89e4a39381851318f9ee898da520695d9634e55e6d5df4fb52c14",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x\nq</li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1817,8 +1817,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv/php->rust",
       "fingerprint": "4b6f201397f89e4a39381851318f9ee898da520695d9634e55e6d5df4fb52c14",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x\nq</li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1832,8 +1832,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv/rust->js",
       "fingerprint": "54ad775aadafa407aea4d945093e1157b2a3f960325b63779b60f108e9973dc4",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x</li>\n  </ul>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1847,8 +1847,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv/rust->php",
       "fingerprint": "54ad775aadafa407aea4d945093e1157b2a3f960325b63779b60f108e9973dc4",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x</li>\n  </ul>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1862,8 +1862,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv/js->rust",
       "fingerprint": "7ad0bea2ffaa7b95e361cbf49284495c37cc95c49128a48df69d7122c0664a4e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x\nq</li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1877,8 +1877,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv/php->rust",
       "fingerprint": "7ad0bea2ffaa7b95e361cbf49284495c37cc95c49128a48df69d7122c0664a4e",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x\nq</li>\n  </ul>\n</blockquote>",
         "status": 0,
@@ -1892,8 +1892,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv/rust->js",
       "fingerprint": "0b194d677372f6870d5008e4aadb855da4f72ac5da22f740b1fccc0bf8fd51cf",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x</li>\n  </ul>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1907,8 +1907,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv/rust->php",
       "fingerprint": "0b194d677372f6870d5008e4aadb855da4f72ac5da22f740b1fccc0bf8fd51cf",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "The one attach rule gives the wrong host to a continuation block. Cause: markup-carve/carve#5250.",
+      "issue": "https://github.com/markup-carve/carve/issues/5250",
       "observation": {
         "expected": "<blockquote>\n  <p>a</p>\n  <ul>\n    <li>\n      <pre><code class=\"language-js\"></code></pre>\n    </li>\n    <li>x</li>\n  </ul>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1922,8 +1922,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container.crv/js->php",
       "fingerprint": "4a7ec78d57a09bc8d284a2e620dedcfc29f88db25d6c2bcf97b8f56f5e9b6d43",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <ul>\n        <li>\n          <pre><code class=\"language-js\">\n</code></pre>\n        </li>\n      </ul>\n    </dd>\n  </dl>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1937,8 +1937,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container.crv/php->js",
       "fingerprint": "b2b72ea5c4bfc1e4c9046f7fe19be82b9fd866a8c6741ef82484d1e7cc7998d8",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <ul>\n        <li>\n          <pre><code class=\"language-js\"></code></pre>\n        </li>\n      </ul>\n    </dd>\n  </dl>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1952,8 +1952,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container.crv/php->rust",
       "fingerprint": "b2b72ea5c4bfc1e4c9046f7fe19be82b9fd866a8c6741ef82484d1e7cc7998d8",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <ul>\n        <li>\n          <pre><code class=\"language-js\"></code></pre>\n        </li>\n      </ul>\n    </dd>\n  </dl>\n  <p>q</p>\n</blockquote>",
         "status": 0,
@@ -1967,8 +1967,8 @@
     {
       "key": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container.crv/rust->php",
       "fingerprint": "4a7ec78d57a09bc8d284a2e620dedcfc29f88db25d6c2bcf97b8f56f5e9b6d43",
-      "reason": "The pinned AST reader/writer pair differs on this document; cause triage is tracked in markup-carve/carve#5229.",
-      "issue": "https://github.com/markup-carve/carve/issues/5229",
+      "reason": "PHP includes the following structural blank in an attached fence payload. Cause: markup-carve/carve-php#4740.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4740",
       "observation": {
         "expected": "<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>\n      <ul>\n        <li>\n          <pre><code class=\"language-js\">\n</code></pre>\n        </li>\n      </ul>\n    </dd>\n  </dl>\n  <p>q</p>\n</blockquote>",
         "status": 0,
