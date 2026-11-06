@@ -6685,6 +6685,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const before = qNestedTable[depth] ?? false
           qNestedTable[depth] = tableRunStep(before, text)
           const { inner, blockStart, popped } = hostAdvance(host, text, qNestedPara[depth] ?? false)
+          // A span on a marker line opens behind the markers (carve#5322).
+          if (blockStart && host.colons?.at(-1)?.mode !== 'line-block' && !host.colonComment &&
+              !QUOTE.test(inner.rest) && nestedCommentStep(inner.rest, depth, idx)) return settle(false, depth + 1)
           if (host.kinds.at(-1) === 'description') qNestedPara[depth] = host.descriptionParagraph
           const inLineBlock = host.colons?.at(-1)?.mode === 'line-block'
           if (state.blockDepth + depth + 1 + (host.columns.length - 1) < MAX_NESTING_DEPTH && hostColonStep(host, inner, true, blockStart, MAX_NESTING_DEPTH - state.blockDepth - depth - 1 - (host.columns.length - 1), (run, column, past) => closerFollows(idx, depth + 2, run, column, past))) {
@@ -6852,7 +6855,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2], belowRun[1]) === null)
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
         // After the advance: a span that misses a line block's column has left it.
-        const comment = COMMENT_FENCE_BODY.exec(l)
+        // A span on a marker line opens behind the markers (carve#5322).
+        const comment = COMMENT_FENCE_BODY.exec(l) ?? (blockStart ? COMMENT_FENCE_BODY.exec(inner0.rest) : null)
         if (comment && !qHost.colonComment && qHost.colons?.at(-1)?.mode !== 'line-block') openComment = comment[1].length
         if (qHost.kinds.at(-1) === 'description') qOpenPara = qHost.descriptionParagraph
         const inLineBlock = qHost.colons?.at(-1)?.mode === 'line-block'
@@ -7581,11 +7585,13 @@ function leadingNoteEnd(lines, at) {
 }
 function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   // A fence after a leading attribute run is still the attached block (carve#1238),
-  // and so is one after a footnote definition the host keeps (§17 L3, carve#5288).
+  // and so is one after a comment or a footnote definition the host keeps (§17 L3,
+  // carve#5288, carve#5324).
   let opener = start
   const column = indentCols(lines[start] ?? '').col
   for (let attrs, note; ; ) {
-    if ((attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0))) opener += attrs.next
+    if (isOneLineComment(lines[opener])) opener++
+    else if ((attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0))) opener += attrs.next
     else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
     else break
   }
@@ -8225,6 +8231,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     while (skipped.has(at)) at--
     return at
   }
+  // The footnote definition whose unbroken body runs through `at`, or -1.
+  const noteStartAbove = (at) => {
+    for (let k = at; k > 0 && ind(k).rest !== ''; k--) {
+      if (!FOOTNOTE_DEF.test(ind(k).rest)) continue
+      const body = ind(k).col + FOOTNOTE_BODY_COLUMN
+      for (let j = k + 1; j <= at; j++) if (ind(j).col < body && !foldablePlainLine(ind(j).rest)) return -1
+      return k
+    }
+    return -1
+  }
   const visibleDistance = (start, end) => {
     let count = end - start
     for (const index of skipped) if (index >= start && index < end) count--
@@ -8749,6 +8765,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // indented fence this item's own paragraph absorbed sits at a descendant's
     // column with no descendant open (carve#2746's absorbed-fence row).
     let descLive = false
+    let definitionListOpen = false
     // A fence folded into a child's paragraph keeps its lazy owner for later lines.
     let foldedChildParagraph = false
     /*
@@ -9503,6 +9520,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (lm.rest === '') {
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
+        // A fence that ends at this blank leaves the next block to this item (carve#5326).
+        const fenceEndedAtBlank = !!(fence.opaque?.endsAtBlank || nestedOpaque?.endsAtBlank)
         if (fence.opaque?.endsAtBlank) fence.opaque = null
         if (nestedOpaque?.endsAtBlank) nestedOpaque = null
         if (insideFence()) {
@@ -9773,7 +9792,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           }
           if (opensSubBlock(dedented)) {
             // A blank-separated child block after a visible one loosens the item (§17 L1, carve#5015).
-            if (!itemShowsNothing() && !descendantFence && !closedMarkerFence) list.tight = false
+            if (!itemShowsNothing() && (!descendantFence || fenceEndedAtBlank) && !closedMarkerFence) list.tight = false
             childList = null
             if (!descendantFence && !closedMarkerFence) pushGap()
             closePara()
@@ -9849,7 +9868,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             defBodyIndent !== null && noteBase !== null && col - noteBase >= defBodyIndent + FOOTNOTE_BODY_COLUMN
           if (continuesChildList(nm, visibleDistance(i, j))) childListBlanks = 0
           else if (!heldList && !insideChildList(nm)) {
-            if (!itemShowsNothing() && !descendantFence && !closedMarkerFence) list.tight = false
+            if (!itemShowsNothing() && (!descendantFence || fenceEndedAtBlank) && !closedMarkerFence) list.tight = false
             openChildList(nm)
           }
           if (defBodyIndent !== null && nm.indent >= (authoredBlockBase ?? contentCol) + defBodyIndent + FOOTNOTE_BODY_COLUMN) {
@@ -9968,7 +9987,15 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
         lastTermSourceCol = lm.L?.col ?? col
+      } else if (DESCRIPTION_TEXT.test(lm.rest) && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
+          !nestedVerbatim() && noteFrames.length === 0) {
+        // A description at its term's column makes the list the item's last block again (carve#5321).
+        lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
+      // Whether the item's definition list is still open: a later line at its term column ends it.
+      if (lastListBlock === 'term') definitionListOpen = true
+      else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
+          !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol) definitionListOpen = false
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
@@ -10297,7 +10324,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // Fence payload attaches nothing: its lines are opaque (PART 0).
         if (dmeas.rest !== '' && !insideFence() && !nestedVerbatim() && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
           const inNoteBody = noteBodyBoundary !== null && col >= noteBodyBoundary || noteFrames.some(frame => col >= frame.body)
-          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) && !inNoteBody &&
+          // A block a descendant's `+` holds is that descendant's, so it keeps the child list open (carve#5326).
+          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) && !inNoteBody && i >= descendantBlockEnd &&
             !attachedDescriptionBodies.some(body => col >= body) && !descriptionBodyColumns.some(body => col >= body)
           if (pendingSeparation && ownChild && !itemShowsNothing()) list.tight = false
           if (ownChild) childList = nm ?? null
@@ -10387,8 +10415,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         for (const [opaque, floor] of [[fence.opaque, contentCol], [nestedOpaque, lm.col]]) {
           if (opaque?.kind !== 'code' || opaque.attachedChecked) continue
           opaque.attachedChecked = true
+          // Comments, attribute runs and a kept note between the `+` and the fence (§17 L3, carve#5325).
           let above = i - 1
-          while (above > 0 && (COMMENT_LINE.test(ind(above).rest) || ind(above).rest[0] === '{' && tryAttrLine(dedentedWindow(lines, above, ind(above).col), 0))) above--
+          for (let note; ; ) {
+            if (above > 0 && (COMMENT_LINE.test(ind(above).rest) || ind(above).rest[0] === '{' && tryAttrLine(dedentedWindow(lines, above, ind(above).col), 0))) above--
+            else if ((note = noteStartAbove(above)) > 0) above = note - 1
+            else break
+          }
           let host = above >= 0 ? ind(previousVisible(above)) : null
           for (let marker; host && (marker = matchMarkerAt(host)); ) {
             const next = indentCols(marker.text)
@@ -10444,7 +10477,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
               if (foldedChildFence) foldedChildParagraph = true
               if (!foldedChildParagraph || !descendantParagraphBefore || mayOpenAuthoredBlock) {
                 // The child's paragraph stays the deepest one for the box columns (PART 0 S4).
-                childParagraphLazy = childParagraphOpen && !isBlank(lines[i - 1] ?? '') && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || CAPTION.test(dmeas.rest) || foldsIntoChild)
+                childParagraphLazy = childParagraphOpen && !isBlank(lines[i - 1] ?? '') && !mayOpenAuthoredBlock && (foldablePlainLine(dmeas.rest) || CAPTION.test(dmeas.rest) || DESCRIPTION_TEXT.test(dmeas.rest) || foldsIntoChild)
                 // A lazy fold keeps the child the deepest frame (PART 0 S4, carve#4291).
                 if (!childParagraphLazy || nestedOpaque || wasNested) descLive = false
                 foldedChildParagraph = false
@@ -10754,7 +10787,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // current description opened a line-block child (PART 0 S4). A completed
       // description followed by a new list leaves its lazy paragraph open.
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
-          descLive && authoredBlockBase !== null && lastTermSourceCol !== null && !bodyQuote.open) {
+          descLive && lastTermSourceCol !== null && !bodyQuote.open) {
         if (descriptionBoundaryScanAt > itemLines.length) {
           descriptionBoundaryScanAt = 0
           descriptionBoundaryLineBlock = false
@@ -10774,7 +10807,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
           }
         }
-        if (descriptionBoundaryLineBlock && !descriptionBoundaryHasSibling) break
+        if (descriptionBoundaryLineBlock ? !descriptionBoundaryHasSibling : definitionListOpen) break
       }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&

@@ -38,12 +38,15 @@ test('a description marker at the surviving item marker column ends a nested lin
   }
 })
 
+test('a list in a description ends the item at its marker column (carve#5321)', () => {
+  assert.match(render('- x\n  :: t\n  : prose ::: |\n       - item\n: z\n'), /<li>item<\/li>[\s\S]*<p>: z<\/p>\s*$/)
+})
+
 test('an ordinary nested list keeps a lazy definition-shaped line', () => {
   assert.match(render('- a\n  - b\n: c\n'), /<li>b\n: c<\/li>/)
   assert.match(render('- a\n    ::: note\n    - b\n: c\n'), /<li>b\n: c<\/li>/)
   assert.match(render('- x\n  :: t\n  : desc\n  - b\n: z\n'), /<li>b\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n  - b\n: z\n'), /<li>b\n: z<\/li>/)
-  assert.match(render('- x\n  :: t\n  : prose ::: |\n       - item\n: z\n'), /<li>item\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - item\n     - b\n: z\n'), /<li>b\n: z<\/li>/)
   assert.match(render('- x\n  :: t\n  : - ::: |\n       - deep\n      - less\n: z\n'), /<p>: z<\/p>\s*$/)
 })
