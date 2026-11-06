@@ -9537,6 +9537,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
+          // An attached fence in a marker-line child may keep this frame's
+          // fence open across its blank. A following block at this item's
+          // content column belongs to the item after its visible child list.
+          if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') && fence.opaque?.kind === 'code') {
+            const next = i + 1 < n ? ind(i + 1) : null
+            if (next && next.col === contentCol && foldablePlainLine(next.rest) && !itemShowsNothing()) list.tight = false
+          }
           // An absorbed fence is paragraph text. A blank before the next
           // paragraph makes the item loose even while the inline span is open.
           if (fence.opaque?.opens === false && subCol < 0 && headSubCol < 0) {
