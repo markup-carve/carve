@@ -1631,8 +1631,8 @@
     },
     {
       "file": "tests/corpus/620-generated-container-documents-23.crv",
-      "reason": "The measured engines disagree on `unused-footnote-definition` and `duplicate-footnote-definition` diagnostics.",
-      "issue": "https://github.com/markup-carve/carve/issues/3421",
+      "reason": "JavaScript lint ignores the first nested footnote definition and misses the losing duplicate; the expected findings and clause are in markup-carve/carve-js#4512.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4512",
       "diagnostics": {
         "js": [
           [
