@@ -7533,11 +7533,24 @@ function fencedBlockEnd(lines, start) {
  *  block-quote form, a sibling marker ends the list form), the fence rule does
  *  not. The caller hands lines[start..end) to parseBlocks, which owns the actual
  *  block classification. */
+// The line after a footnote definition at `at` and its unbroken body, or -1.
+function leadingNoteEnd(lines, at) {
+  const measured = indentCols(lines[at] ?? '')
+  if (!FOOTNOTE_DEF.test(measured.rest)) return -1
+  let k = at + 1
+  while (k < lines.length && !isBlank(lines[k]) && indentCols(lines[k]).col >= measured.col + FOOTNOTE_BODY_COLUMN) k++
+  return k
+}
 function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
-  // A fence after a leading attribute run is still the attached block (carve#1238).
+  // A fence after a leading attribute run is still the attached block (carve#1238),
+  // and so is one after a footnote definition the host keeps (§17 L3, carve#5288).
   let opener = start
   const column = indentCols(lines[start] ?? '').col
-  for (let attrs; (attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0)); ) opener += attrs.next
+  for (let attrs, note; ; ) {
+    if ((attrs = tryAttrLine(dedentedWindow(lines, opener, column), 0))) opener += attrs.next
+    else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
+    else break
+  }
   const fenced = fencedBlockEnd(lines, opener)
   if (fenced !== -1) return fenced + 1
   let end = start
