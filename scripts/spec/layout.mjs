@@ -10844,7 +10844,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // current description opened a line-block child (PART 0 S4). A completed
       // description followed by a new list leaves its lazy paragraph open.
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol &&
-          descLive && lastTermSourceCol !== null && !bodyQuote.open) {
+          definitionListOpen && lastTermSourceCol !== null) {
         if (descriptionBoundaryScanAt > itemLines.length) {
           descriptionBoundaryScanAt = 0
           descriptionBoundaryLineBlock = false
