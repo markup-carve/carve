@@ -1,0 +1,84 @@
+A block at a pulled description column opens in the description
+
+```
+:: t
+: +
+h
+  # H
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>h</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+```
+
+```
+:: t
+: +
+h
+  # H
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>h</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+<p>z</p>
+```
+
+```
+- item
+
+  :: t
+  : +
+  h
+    # H
+z
+.
+<ul>
+  <li><p>item</p>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>h</p>
+        <h1 id="H">H</h1>
+      </dd>
+    </dl>
+  </li>
+</ul>
+<p>z</p>
+```
+
+```
+- item
+  - item
+
+    :: t
+    : +
+    h
+      # H
+z
+.
+<ul>
+  <li>item
+    <ul>
+      <li><p>item</p>
+        <dl>
+          <dt>t</dt>
+          <dd>
+            <p>h</p>
+            <h1 id="H">H</h1>
+          </dd>
+        </dl>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>z</p>
+```

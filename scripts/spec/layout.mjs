@@ -5988,6 +5988,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
               let end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k))
+              // A pulled paragraph stops where a block reaches the description's content column.
+              // The attachment is measured at its pulled column, so inspect the authored reach here.
+              const opener = attachedOpener(lines.slice(i, end), ind(i).col)
+              if (i + opener < end && foldablePlainLine(ind(i + opener).rest)) {
+                for (let k = i + opener + 1; k < end; k++) {
+                  if (reachesBody(k) && opensAuthoredBase(ind(k).rest)) { end = k; break }
+                }
+              }
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
@@ -7008,7 +7016,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (markerLinePlus && !qHost.fence && openComment === null && CONT_MARKER.test(trimWs(qm[1] ?? '')) && qLastMarked < 0 && i + 1 < n && !isBlank(lines[i + 1])) {
             const attached = takeOneBlock(lines, i + 1, state, ind(i + 1).L?.col ?? ind(i + 1).col, true)
             const fenceOpen = attachedLeavesFenceOpen(attached.rawMarker, inner)
-            inner.push('', ...attached.rawMarker)
+            const attachedColumn = ind(i + 1).col
+            inner.push('', ...attached.rawMarker.map(line => dedent(line, attachedColumn)))
             if (!fenceOpen) inner.push('')
             qLastMarked = i
             i = attached.next
@@ -9992,10 +10001,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A description at its term's column makes the list the item's last block again (carve#5321).
         lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
-      // Whether the item's definition list is still open: a later line at its term column ends it.
-      if (lastListBlock === 'term') definitionListOpen = true
+      // The marker-column rule lasts only while the item's description is open.
+      if ((DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
+          (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
-          !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol) definitionListOpen = false
+          !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&
+          (isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm)) definitionListOpen = false
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
@@ -10807,11 +10818,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
           }
         }
-        if (descriptionBoundaryLineBlock ? !descriptionBoundaryHasSibling : definitionListOpen) break
+        if (definitionListOpen && !headSubActive && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && !bodyQuote.open) break
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastListBlock === 'term' && definitionListOpen && !headSubActive && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
-          lastListBlock === 'term' && (lm.L?.col ?? col) < lastTermSourceCol) break
+          lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
         // a marker BELOW the content column folds as lazy item text
         // (PART 9 §24 C3; list markers never interrupt, §10 I2)
