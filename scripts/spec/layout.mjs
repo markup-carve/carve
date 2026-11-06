@@ -5886,6 +5886,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // span open, so the fold questions below read the tail only.
           let ddScanFrom = 0
           let retainedParagraph = false
+          let blankSpanKeepsStanza = null
           const bodyHoldsLiveSpan = () => holdsOpenCommentSpanSince(bodyLines, ddScanFrom)
           const missedLiveSpan = liveSpanTest(bodyLines, bodyHoldsLiveSpan)
           let openFence = -1
@@ -5894,6 +5895,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           )
           while (i < n) {
             const cur = lines[i] ?? ''
+            // A new span needs its own answer; payload rows keep the prior one.
+            if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
             // A line in the body below that fence's column ends it (§24 C3), at every depth (carve#4162).
             if (!isBlank(cur) && reachesBody(i) && indentCols(cur).col < nestedLeadFenceColumn) nestedLeadFenceColumn = 0
@@ -5911,7 +5914,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               afterComment = false
               // A blank inside a verse span leaves its earlier stanza open, even
               // when the next line misses the description's column (CARVE-P9-047).
-              if (bodyHoldsLiveSpan() && hostEndsInLineBlockStanza(bodyLines, 0, true)) {
+              if (bodyHoldsLiveSpan() && (blankSpanKeepsStanza ??= hostEndsInLineBlockStanza(bodyLines, 0, true))) {
                 pushBody(dedent(cur, bodyColumn))
                 i++
                 continue
