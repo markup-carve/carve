@@ -1,12 +1,12 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-05",
-    "spec": "c6937da1e4bdb3ce24b011e316a24a7affff4036",
-    "js": "befaeef2161353dba565b3dfc5012d62fd47c1ea",
-    "php": "6f830e30908204b2a950a984b7d7efaf882992f0",
-    "rust": "751c904e67f16e6b7127b746a82e977053e5f9a1",
-    "documents": 4527
+    "date": "2026-11-06",
+    "spec": "bec993e673ad29a4c77b0bca04ab52460e6586fc",
+    "js": "59a9583249b84d43695a38f39771ad8461abf7cb",
+    "php": "6ab916ef28250fa3f2f398c4a47a1e5b3cd24de0",
+    "rust": "45b2ecbb97479633d0877b23248e5da52be10140",
+    "documents": 4533
   },
   "differences": [
     {
@@ -1627,39 +1627,6 @@
           ]
         ],
         "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/619-a-fence-run-that-dedents-out-of-a-child-keeps-the-outer-item-tight-12.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            5
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ]
       }
     },
     {
@@ -3464,6 +3431,22 @@
             3
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/963-a-multi-line-braced-comment-keeps-the-nested-list-open-4.crv",
+      "reason": "The new corpus row has a JavaScript parser and lint difference tracked in markup-carve/carve-js#4509.",
+      "issue": "https://github.com/markup-carve/carve-js/issues/4509",
+      "diagnostics": {
+        "js": [
+          [
+            "list-marker-without-blank-line",
+            5,
+            5
+          ]
+        ],
+        "php": [],
+        "rust": []
       }
     }
   ]
