@@ -1883,8 +1883,8 @@
     },
     {
       "file": "tests/corpus/659-table-spans-keep-alignment-defaults-in-physical-columns-9.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "reason": "JavaScript and Rust miss a braced table alignment overlap; the expected result and clause are in markup-carve/carve#5251.",
+      "issue": "https://github.com/markup-carve/carve/issues/5251",
       "diagnostics": {
         "js": [],
         "php": [
