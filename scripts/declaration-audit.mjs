@@ -236,7 +236,9 @@ const MANIFEST = [
   // entry is unreachable by construction - a cap marker, and a spec MAY at that
   // - and two name coverage that carve#1878 may or may not close.
   { repo: 'spec', path: 'tests/html-import-contract.check.mjs', name: 'NOT_COVERED_HERE', kind: 'js', policy: 'manual', guard: 'two-way', staleness: 'NOT_COVERED_HERE names code(s) something now produces:', owner: 'npm run html-import:check' },
-  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_OVER_REACH', kind: 'js', policy: 'owed', guard: 'two-way', staleness: 'update DECLARED_OVER_REACH in the commit that moves the engines', owner: 'tests/ast-positions.test.mjs' },
+  // A new normative position check can expose pinned-engine debt before the
+  // engine merges. Keep the exact two-way rows gated in PRs and owed at release.
+  { repo: 'spec', path: 'tests/ast-positions.test.mjs', name: 'DECLARED_OVER_REACH', kind: 'js', policy: 'owed', prPolicy: 'declared', guard: 'two-way', staleness: 'update DECLARED_OVER_REACH in the commit that moves the engines', owner: 'tests/ast-positions.test.mjs' },
   // carve#1928's ruling made a LEAF begin at its markup, so fourteen corpus
   // documents are owed by carve-js and carve-rs until they move. `manual` for
   // the reason DECLARED_UNREACHABLE below is: the count is judged by the test
