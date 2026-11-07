@@ -7246,6 +7246,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const itemContent = QUOTE.test(l) ? undefined : BULLET.exec(l)?.[6] ?? ORDERED.exec(l)?.[6]
         const itemClosesPara = qOpenPara && qItemPara && itemContent !== undefined &&
           leavesParagraphOpen([itemContent], 0, false) === false
+        const descriptionClosesPara = DESCRIPTION_LEAD.test(inner0.rest) &&
+          !descriptionCarriesParagraph(inner0.rest) &&
+          (qHost.kinds.at(-1) === 'description' || TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
         const quotedAttribute = l[0] === '{' && tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
@@ -7256,7 +7259,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }), 0) !== null
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
