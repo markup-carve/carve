@@ -7017,6 +7017,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (blockStart && host.kinds.at(-1) === 'description' && host.descriptionParagraph === false) {
             return settle(false, depth + 1)
           }
+          const descriptionLine = indentCols(text).rest
+          if (DESCRIPTION_LEAD.test(descriptionLine) && !descriptionCarriesParagraph(descriptionLine)) {
+            return settle(false, depth + 1)
+          }
           depth++
           if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
@@ -7293,6 +7297,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // a refused attachment marker rewritten as an invisible comment.
         const descriptionEndsPara = blockStart && qHost.kinds.at(-1) === 'description' &&
           qHost.descriptionParagraph === false
+        // A description line may sit inside an item while the host ladder is
+        // still tracking that item. Its invisible or refused body opens no
+        // paragraph for the enclosing quote to continue lazily.
+        const descriptionLine = indentCols(l).rest
+        const descriptionBodyEndsPara = DESCRIPTION_LEAD.test(descriptionLine) &&
+          !descriptionCarriesParagraph(descriptionLine)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
         // An item line under an item's paragraph starts the next item, so a
         // comment or attribute item closes that paragraph (corpus 610, carve#3268).
@@ -7315,7 +7325,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }), 0) !== null
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara || descriptionBodyEndsPara ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
