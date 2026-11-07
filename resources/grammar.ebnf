@@ -209,6 +209,58 @@
            line may close the frame because its column is owned by an ancestor;
            the closed block itself never closes its owner.
 
+   OPEN-STATE LIFETIMES. This table collects the existing end tests. "Blank
+   plus block" means a blank followed by a block outside the state, not a
+   blank inside an opaque payload. A missed line is classified again in its
+   surviving owner (S1-S5). The table does not give a closed leaf a lazy
+   paragraph merely because its containing frame survives (CARVE-P0-003).
+
+     open state        opens                 ends                         owns while open                         deciding rules
+     term              `:: ` with content     its line; the enclosing     its inline content; a following `: `   B-term-start/end,
+                                             definition list can accept  is read fresh in the owner while the    S2, carve#5368
+                                             a description until the     definition list remains open
+                                             first non-member block
+     description       `: ` with content,   next term or description  body blocks at its content column;     B-dd-start/end,
+                       after term/body in    marker in the same owner, a marker-column `: ` is a boundary      S2-S4, carve#5321,
+                       the same owner        missed nonfolding line,     only while its definition list is open carve#5323, carve#5346
+                                             host end or input end
+     list item         valid list marker     missed nonfolding line,     lines reaching its content column      B-item-start/end,
+                                             sibling or input end;       and lazy text from an open paragraph   S2-S4, PART 9 §17 L1
+                                             a blank stays if its host   and a `+` at its marker column; a `: `
+                                             survives and the next     at that column ends it only while its
+                                             nonblank line reaches      definition list has an open term or
+                                             its content column         description
+     line-block stanza `::: |` body line     blank stanza boundary,     verse lines, including lazy lines;     B-div-keep/end,
+                                             exact closer, host end or   column-0 `%%` leaves an empty line;    PART 9 §23,
+                                             input end                  a `%%%` span indented at most three    CARVE-P9-047
+                                                                          spaces leaves none; other block
+                                                                          constructs are verse
+     comment span      `%%%` alone or as      exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
+                       marker-line content   line missing that owner,                                          B-comment-end
+                                             host end or input end
+     attached block    accepted `+` and     closer, missed owner,      one next block in the marker's host;   PART 9 §17 L3,
+     (code fence)      a code opener         or host/input end; first  its opaque payload lasts to that       CARVE-P9-067,
+                                             blank only if unclosed      boundary                               carve#5304
+                                             after a marker-line `+`
+     attached block    accepted `+` and     exact closer or host/input one next block in the marker's host;   PART 9 §17 L3,
+     (colon body)      a colon opener        end; first blank only if   a closed body retains its interior    B-div-end,
+                                             unclosed after a           blanks                                 carve#5359
+                                             marker-line `+`
+     attached block    accepted `+` and     the attached block's own   one next block in the marker's host,   PART 9 §17 L3,
+     (other)           another block opener  boundary, then the host    parsed under its ordinary family row   CARVE-P9-067
+                                             resumes
+     pulled paragraph  accepted `+` and     an interrupting block at  paragraph text in its host, including  S4-S5,
+                       paragraph text        or past the host content   lazy lines until a block interrupts    CARVE-P0-011,
+                                             column, a blank, a missed                                       carve#5331
+                                             nonfolding line, host end
+                                             or input end
+     quote paragraph   `>` with paragraph   marked blank, unmarked    paragraph text and lazy folds through  B-quote-keep/end,
+                       text, or `> +`        blank/quote end, block     missed quote prefixes; a `: ` follows  S2-S4, PART 9 §10 I2,
+                       attaching a paragraph interruption or input end  the definition-body marker rule and    PART 9 §17 L3
+                                                                          an open item's marker-column rule
+
+   ============================================================================
+
    BLOCK STRUCTURE IS ONE ORDERED PROCEDURE -- NORMATIVE [CARVE-P0-024].
    One rule decides ownership for every container (markup-carve/carve#3885):
 
@@ -245,7 +297,9 @@
      S1 PAYLOAD. If a code, raw or comment fence is open, test the line
         against its closer first. A nonblank line that misses the fence's
         owner in S2 ends the fence; nothing else ends a code, raw or comment
-        fence without its closer, so an unclosed one runs to the end of its
+        fence without its closer, except that an unclosed code fence attached
+        by a marker-line `+` ends at its first blank (PART 9 §17 L3, carve#5304).
+        Otherwise an unclosed fence runs to the end of its
         container and a host's colon closer inside it is payload. Any other
         payload line opens nothing and changes no frame state. A colon body
         is not a payload: its lines go on to S2.
@@ -622,7 +676,9 @@
         plus       no: a lone `+` inside is text (PART 9 §17 L5)
         cells      [B-div-start] A valid run of three or more colons.
                    [B-div-end] It ends at an exact-length colon run read in
-                   the same owner, the host's end or end of input.
+                   the same owner, the host's end or end of input. An
+                   unclosed colon body attached by a marker-line `+` ends
+                   at its first blank (PART 9 §17 L3, carve#5359).
 
      6. line block (`::: |`, PART 9 §23)
         column     as a colon body; it shares the colon frame
