@@ -13,3 +13,9 @@ test('a direct item block after a blank-ended nested attachment loosens its list
     assert.match(html, /<div class="y">\s*<p>b<\/p>\s*<\/div>\s*(?:<p>.*?<\/p>\s*)?<\/li>/s, source)
   }
 })
+
+test('ordinary description-shaped text does not create a nested attachment boundary', () => {
+  const html = render('- outer\n  : +\n  ::: x\n\n  # h\n')
+  assert.match(html, /<li>outer\n: \+/)
+  assert.doesNotMatch(html, /<li><p>outer<\/p>/)
+})

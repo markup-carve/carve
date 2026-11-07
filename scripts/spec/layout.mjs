@@ -9821,7 +9821,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
       if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&
-          (FOOTNOTE_DEF.test(lm.rest) || DESCRIPTION_LEAD.test(lm.rest))) {
+          (FOOTNOTE_DEF.test(lm.rest) || DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(lines, lm.col, i))) {
         const attachedMarker = FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? lm.rest.replace(DESCRIPTION_LEAD, '')
         if (CONT_MARKER.test(attachedMarker) && i + 1 < n && !isBlank(lines[i + 1])) {
           nestedAttachedBlankEnd = attachedBlockEnd(lines, i + 1, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), ind(i + 1).col)
