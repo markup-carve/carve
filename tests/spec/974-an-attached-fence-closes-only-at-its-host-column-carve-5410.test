@@ -1,0 +1,63 @@
+An attached fence closes only at its host column (carve#5410)
+
+````
+- +
+```
+a
+
+  ```
+  c
+.
+<ul>
+  <li>
+    <pre><code>a
+</code></pre>
+    <pre><code>c
+</code></pre>
+  </li>
+</ul>
+````
+
+````
+:: t
+: +
+```
+a
+
+  ```
+  c
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>a
+</code></pre>
+    <pre><code>c
+</code></pre>
+  </dd>
+</dl>
+````
+
+````
+[^1]: +
+```
+a
+
+  ```
+  c
+[^1]
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <pre><code>a
+</code></pre>
+      <pre><code>c
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````

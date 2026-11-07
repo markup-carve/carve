@@ -27,10 +27,15 @@ test('a fence opened at the body column keeps the trailing blank', () => {
   const cases = [
     ['[^f]: n\n  ```\n  x\n\nsee[^f]\n', 'x\n\n'],
     [':: t\n: ```\n  x\n\nsee\n', 'x\n\n'],
-    ['[^f]: +\n```\na\n\n  ```\n\n  ```\n  d\n\nsee[^f]\n', 'a\n\n'],
   ]
   for (const [source, expected] of cases) assert.equal(payload(source), expected, source)
-  assert.match(render('[^f]: +\n```\na\n\n  ```\n\n  ```\n  d\n\nsee[^f]\n'), /<code>d\n\n<\/code>/)
+})
+
+test('an indented fence line cannot close a marker-column attached fence', () => {
+  const html = render('[^f]: +\n```\na\n\n  ```\n\n  ```\n  d\n\nsee[^f]\n')
+  assert.match(html, /<pre><code>a\n<\/code><\/pre>/)
+  assert.match(html, /<pre><code>\n<\/code><\/pre>/)
+  assert.match(html, /<p>d<a href="#fnref1"/)
 })
 
 // A comment line leaves the attachment as if it were absent, like an attribute run.

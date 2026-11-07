@@ -3252,7 +3252,15 @@ function endsAtFirstBlank(lines, start, end, bodyCol) {
   const opener = attachedOpener(host, 0)
   const colon = COLON_FENCE.exec(host[opener] ?? '')
   if (colon && parseColonOpener(colon[2]) !== null) return findColonCloser(host, opener, colon[1].length) === -1
-  return FENCE.test(host[opener] ?? '') && !hasCloser(host, opener)
+  const run = FENCE.exec(host[opener] ?? '')
+  if (!run || parseFenceInfo(run[2], run[1]) === null) return false
+  const column = indentCols(lines[start + opener]).col
+  for (let k = start + opener + 1; k < last; k++) {
+    const candidate = indentCols(lines[k])
+    const closer = PURE_FENCE.exec(candidate.rest)
+    if (candidate.col === column && closer && closer[1][0] === run[1][0] && closer[1].length >= run[1].length) return false
+  }
+  return true
 }
 
 function markAttachmentBoundary(state, bodyLines) {

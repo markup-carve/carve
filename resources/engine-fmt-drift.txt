@@ -25,3 +25,6 @@
 967-a-block-at-a-pulled-description-column-opens-in-the-description-2  The pinned JS formatter escapes the pulled heading before the document follower; the spec model rereads it as description text (carve#5331).
 967-a-block-at-a-pulled-description-column-opens-in-the-description-3  The pinned JS formatter escapes the pulled heading in an item; the spec model rereads it as description text (carve#5331).
 967-a-block-at-a-pulled-description-column-opens-in-the-description-4  The pinned JS formatter escapes the pulled heading in a nested item; the spec model rereads it as description text (carve#5331).
+868-a-paragraph-after-a-note-attached-fence-closed-past-a-blank-takes-a-lazy-line  The pinned JS formatter writes this attached fence for its older closer-column reading; the updated spec model reads the output differently (carve#5410).
+974-an-attached-fence-closes-only-at-its-host-column-carve-5410-2  The pinned JS formatter writes this attached fence for its older closer-column reading; the updated spec model reads the output differently (carve#5410).
+974-an-attached-fence-closes-only-at-its-host-column-carve-5410-3  The pinned JS formatter writes this attached fence for its older closer-column reading; the updated spec model reads the output differently (carve#5410).
