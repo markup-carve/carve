@@ -7800,6 +7800,24 @@ const fenceLineInfo = (line) => {
  *  spelling here has always given (`findCloser` returning -1 fell through the
  *  same way), and it leaves the unterminated case where it was: no clause names
  *  it for an ATTACHED block, so it is not settled here. */
+// Lines from `start` read at `column`, up to the first visible line below it.
+function columnView(lines, start, column, end = lines.length) {
+  const view = []
+  for (let k = start; k < end; k++) {
+    const measured = indentCols(lines[k])
+    if (measured.rest !== '' && measured.col < column) break
+    view.push(measured.rest === '' ? lines[k] : dedentMeasured(measured, lines[k], column).text)
+  }
+  return view
+}
+
+function indentedFenceEnd(lines, start, column) {
+  const opener = dedentMeasured(indentCols(lines[start] ?? ''), lines[start] ?? '', column).text
+  if (!FENCE.test(opener) && !COLON_FENCE.test(opener) && !COMMENT_FENCE.test(opener)) return -1
+  const end = fencedBlockEnd(columnView(lines, start, column), 0)
+  return end === -1 ? -1 : start + end
+}
+
 function fencedBlockEnd(lines, start) {
   const opaque = opaqueSpanEnd(lines, start)
   if (opaque !== -1) return opaque
@@ -7855,7 +7873,8 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
     else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
     else break
   }
-  const fenced = fencedBlockEnd(lines, opener)
+  // An indented fence is read at its own column, up to the first line below it (carve#5433).
+  const fenced = column === 0 ? fencedBlockEnd(lines, opener) : indentedFenceEnd(lines, opener, column)
   if (fenced !== -1) return fenced + 1
   let end = start
   const stopAt = Math.min(lines.length, cap)
@@ -8282,7 +8301,8 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
       if (blank === -1 && isBlank(lines[index])) blank = index
       if (!isBlank(lines[index]) && endsAttachment(index)) { hostEnd = index; break }
     }
-    const close = findColonCloser(lines.slice(opener, hostEnd), 0, colon[1].length)
+    // An indented opener's closer stands at its column (carve#5433).
+    const close = findColonCloser(columnView(lines, opener, indentCols(lines[opener]).col, hostEnd), 0, colon[1].length)
     if (close === -1 && blank !== -1 && blank < hostEnd) return blank
   }
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
