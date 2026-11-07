@@ -9729,13 +9729,16 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const deflistBlock = DEFLIST_TERM.test(ind(i + opener).rest)
       const taken = []
       const attachedStart = i
+      let captionShift = 0
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
         // source column; a nested item's lines are measured from its parent's.
         const measured = ind(i)
         const shift = (measured.L?.col ?? measured.col) - measured.col
-        const hostCaption = i > attachedStart && measured.col === contentCol && attachedQuoteCaption(taken, measured.rest)
-        const body = dedentMeasured(measured, lines[i], hostCaption ? measured.col - hostCaption.col : Math.max(0, blockColumn - shift))
+        const hostCaption = i > attachedStart && attachedQuoteCaption(taken, measured.rest)
+        // A continuation belongs to the same caption and keeps its host-to-quote column shift.
+        if (hostCaption) captionShift = contentCol - hostCaption.col
+        const body = dedentMeasured(measured, lines[i], captionShift || Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
         if (!deflistBlock || measured.rest === '') continue
