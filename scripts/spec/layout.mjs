@@ -4425,7 +4425,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A paragraph of only comments is skipped as a `%%` line is (carve#4799).
         const para = attr || rest[1] !== '%' ? -1 : commentOnlyParaEnd(fromHere, k, frames[hostIndex].kind === 'item')
         if (para !== -1) k = para
-        else if (!attr) return k
+        // After a refused `+` the item holds no block for an attribute line to wait for (CARVE-P0-011).
+        else if (!attr || refused) return k
         else k = attr.next
       }
     }
