@@ -49,3 +49,12 @@ for (const [name, host] of Object.entries(hosts)) {
 test('plain text after a plus-attached quote still folds into it', () => {
   assert.equal(render('- +\n> q\n  x\n'), '<ul><li><blockquote><p>q x</p></blockquote></li></ul>')
 })
+
+// Below the host's content column the line leaves the host, in the trace as in the HTML (carve#5430).
+for (const follower of [' # G', ' {.c}\n G', ' ::: w\n G\n :::']) {
+  test(`the trace leaves the host for ${JSON.stringify(follower.split('\n')[0])} below its column after a plus-attached quote`, () => {
+    const src = `- +\n> q\n${follower}\n`
+    assert.match(render(src), /<\/ul><(section|p|div)/)
+    assert.match(modelTrace(src).find((r) => r.line === 3).owner, /^doc(\/div:3)?$/)
+  })
+}
