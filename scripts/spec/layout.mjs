@@ -9491,6 +9491,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         markerLineAttachedFence = opener && parseFenceInfo(opener[2], opener[1]) !== null ? fence.opaque : false
       }
       // A sublist item's `+` holds its block at that item's marker column, so that block ends no sublist.
+      if (i >= descendantBlockEnd && subCol >= 0 && childList && CONT_MARKER.test(lm.rest) &&
+          lm.col === childList.indent && i + 1 < n && !isBlank(lines[i + 1])) {
+        descendantBlockEnd = attachedBlockEnd(lines, i + 1, state, (idx) =>
+          ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
+          matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
+      }
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         const above = matchMarkerAt(ind(i - 1))
         if (above && above.indent === lm.col && lm.col >= contentCol && CONT_MARKER.test(trimWs(above.text))) {
