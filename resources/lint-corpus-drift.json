@@ -3,9 +3,9 @@
   "measured": {
     "date": "2026-11-08",
     "spec": "731ec583b30cf764d65b363327e5cbefff903c92",
-    "js": "a01aa78284e0035bb63a94d2cdfcb50cc599789d",
-    "php": "11a17069774f039b38aa818b069f3861b2633105",
-    "rust": "d741a32223e6f27a222cc72648bf9382f8b650ba",
+    "js": "3f4aade88cad49c25ae6c9918824131c33e911ba",
+    "php": "25759013f5b96d1bed2273e5e13440886ae96c47",
+    "rust": "01a36468d3e4fcf5b9f3426a1f953e9ef09abdb2",
     "documents": 4540
   },
   "differences": [
@@ -1569,27 +1569,6 @@
             1
           ]
         ]
-      }
-    },
-    {
-      "file": "tests/corpus/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line.crv",
-      "reason": "The PHP parser now renders the closed nested attached fence, but PHP lint still reports both fence lines as unclosed; carve-php#4899 gives the expected diagnostic result.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/4899",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "rust": []
       }
     }
   ]

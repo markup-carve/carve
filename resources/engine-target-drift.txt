@@ -73,8 +73,3 @@ carve/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carv
 ansi/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
 markdown/js/970-a-definition-marker-after-a-block-and-paragraph-ends-the-item  markup-carve/carve#5185: current pinned engines disagree on this target; the linked issue owns the difference.
 markdown/js/973-open-state-lifetime-boundaries-2  markup-carve/carve#5185: current pinned engines disagree on this target; the linked issue owns the difference.
-html/php/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line  markup-carve/carve-php#4899: carve-php#4897 ends the closed nested attached fence at its blank; PHP output differs until #4899 is fixed.
-markdown/php/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line  markup-carve/carve-php#4899: carve-php#4897 ends the closed nested attached fence at its blank; PHP output differs until #4899 is fixed.
-plain/php/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line  markup-carve/carve-php#4899: carve-php#4897 ends the closed nested attached fence at its blank; PHP output differs until #4899 is fixed.
-carve/php/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line  markup-carve/carve-php#4899: carve-php#4897 ends the closed nested attached fence at its blank; PHP output differs until #4899 is fixed.
-ansi/php/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line  markup-carve/carve-php#4899: carve-php#4897 ends the closed nested attached fence at its blank; PHP output differs until #4899 is fixed.
