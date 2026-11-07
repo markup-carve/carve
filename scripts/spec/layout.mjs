@@ -1089,9 +1089,17 @@ function findColonCloser(lines, openIdx, len, ownership = null, accepted = null)
   const opened = ownership?.events.get(ownership.offset + openIdx)
   let hasAttachedColon = false
   if (opened?.form === 'div' && accepted) {
-    for (const at of accepted.byOwner.get(opened.owner) ?? []) {
-      const j = at - accepted.offset
-      if (j <= openIdx || j + 1 >= lines.length) continue
+    const markers = accepted.byOwner.get(opened.owner) ?? []
+    const afterOpen = accepted.offset + openIdx
+    let lo = 0; let hi = markers.length
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1
+      if (markers[mid] <= afterOpen) lo = mid + 1
+      else hi = mid
+    }
+    for (let m = lo; m < markers.length; m++) {
+      const j = markers[m] - accepted.offset
+      if (j + 1 >= lines.length) break
       const colon = COLON_FENCE.exec(lines[j + 1])
       if (colon && parseColonOpener(colon[2]) !== null) { hasAttachedColon = true; break }
     }
