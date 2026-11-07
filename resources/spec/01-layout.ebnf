@@ -112,22 +112,23 @@
    paragraph merely because its containing frame survives (CARVE-P0-003).
 
      open state        opens                 ends                         owns while open                         deciding rules
-     term              `:: ` in an owner     its line; the enclosing     its inline content; a following `: `   B-term-start/end,
+     term              `:: ` with content     its line; the enclosing     its inline content; a following `: `   B-term-start/end,
                                              definition list can accept  is read fresh in the owner while the    S2, carve#5368
                                              a description until the     definition list remains open
                                              first non-member block
-     description       `: ` following an     next term or description,  body blocks at its content column;     B-dd-start/end,
-                       open term/body        missed nonfolding line,     a marker-column `: ` is a boundary      S2-S4, carve#5321,
-                                             host end or input end       only while its definition list is open carve#5323, carve#5346
+     description       `: ` with content,   next term or description,  body blocks at its content column;     B-dd-start/end,
+                       after term/body in    missed nonfolding line,     a marker-column `: ` is a boundary      S2-S4, carve#5321,
+                       the same owner        host end or input end       only while its definition list is open carve#5323, carve#5346
      list item         valid list marker     missed nonfolding line,     lines reaching its content column      B-item-start/end,
                                              sibling or input end;       and lazy text from an open paragraph   S2-S4, PART 9 §17 L1
-                                             a blank stays if the next   below it; a `: ` at its marker column
-                                             line reaches its column     ends it only while its definition list
-                                                                          has an open term or description
+                                             a blank stays if its host   and a `+` at its marker column; a `: `
+                                             survives and the next     at that column ends it only while its
+                                             nonblank line reaches      definition list has an open term or
+                                             its content column         description
      line-block stanza `::: |` body line     blank stanza boundary,     verse lines, including lazy lines      B-div-keep/end,
-                                             exact closer, host end or   already assigned to it; comments       PART 9 §23,
-                                             input end                  leave empty verse lines; no other      CARVE-P9-047
-                                                                          block construct starts there
+                                             exact closer, host end or   already assigned to it; `%%` leaves    PART 9 §23,
+                                             input end                  an empty verse line, `%%%` leaves     CARVE-P9-047
+                                                                          none; no other block starts there
      comment span      `%%%` opener          exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
                                              line missing that owner,                                          B-comment-end
                                              host end or input end
@@ -144,12 +145,13 @@
                                              resumes
      pulled paragraph  accepted `+` and     an interrupting block at  paragraph text in its host, including  S4-S5,
                        paragraph text        or past the host content   lazy lines until a block interrupts    CARVE-P0-011,
-                                             column, a missed nonfolding                                       carve#5331
-                                             line, host end or input end
+                                             column, a blank, a missed                                       carve#5331
+                                             nonfolding line, host end
+                                             or input end
      quote paragraph   `>` with paragraph   marked blank, unmarked    paragraph text and lazy folds through  B-quote-keep/end,
-                       text, or `> +`        blank/quote end, block     missed quote prefixes; a `: ` folds    S2-S4, PART 9 §10 I2,
-                       attaching a paragraph interruption or input end  unless an open description's item       PART 9 §17 L3
-                                                                          marker-column boundary applies
+                       text, or `> +`        blank/quote end, block     missed quote prefixes; a `: ` follows  S2-S4, PART 9 §10 I2,
+                       attaching a paragraph interruption or input end  the definition-body marker rule and    PART 9 §17 L3
+                                                                          an open item's marker-column rule
 
    ============================================================================
 

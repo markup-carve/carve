@@ -336,3 +336,65 @@ q</li>
   <p>b</p>
 </blockquote>
 ```
+
+```
+:: t
+: 
+.
+<dl>
+  <dt>t</dt>
+</dl>
+<p>:</p>
+```
+
+```
+> - a
+
+  b
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+<p>b</p>
+```
+
+```
+- a
++
+# H
+.
+<ul>
+  <li>a
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+```
+
+```
+- +
+p
+
+  q
+.
+<ul>
+  <li><p>p</p>
+    <p>q</p>
+  </li>
+</ul>
+```
+
+```
+:: t
+: > q
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+  <dd>b</dd>
+</dl>
+```

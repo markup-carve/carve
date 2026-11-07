@@ -6,7 +6,7 @@ page: edge-lists
 
 ### term description
 
-::: compare
+::::: compare
 
 ````carve
 :: t
@@ -20,11 +20,11 @@ page: edge-lists
 </dl>
 ````
 
-:::
+:::::
 
 ### term nonmember
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -47,11 +47,11 @@ page: edge-lists
 </ul>
 ````
 
-:::
+:::::
 
 ### term blank nonmember
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -73,11 +73,11 @@ page: edge-lists
 </ul>
 ````
 
-:::
+:::::
 
 ### description sibling
 
-::: compare
+::::: compare
 
 ````carve
 :: t
@@ -93,11 +93,11 @@ page: edge-lists
 </dl>
 ````
 
-:::
+:::::
 
 ### description next term
 
-::: compare
+::::: compare
 
 ````carve
 :: t
@@ -115,11 +115,11 @@ page: edge-lists
 </dl>
 ````
 
-:::
+:::::
 
 ### description marker column
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -140,11 +140,11 @@ page: edge-lists
 <p>: x</p>
 ````
 
-:::
+:::::
 
 ### description after closure
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -168,11 +168,11 @@ page: edge-lists
 </ul>
 ````
 
-:::
+:::::
 
 ### item blank keep
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -188,11 +188,11 @@ page: edge-lists
 </ul>
 ````
 
-:::
+:::::
 
 ### item missed line
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -209,11 +209,11 @@ b
 <p>b</p>
 ````
 
-:::
+:::::
 
 ### item sibling
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -227,11 +227,11 @@ b
 </ul>
 ````
 
-:::
+:::::
 
 ### stanza blank
 
-::: compare
+::::: compare
 
 ````carve
 ::: |
@@ -248,11 +248,11 @@ beta
 </div>
 ````
 
-:::
+:::::
 
 ### stanza closer
 
-::: compare
+::::: compare
 
 ````carve
 ::: |
@@ -268,11 +268,11 @@ tail
 <p>tail</p>
 ````
 
-:::
+:::::
 
 ### stanza host end
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -292,11 +292,11 @@ alpha
 </ul>
 ````
 
-:::
+:::::
 
 ### comment closer
 
-::: compare
+::::: compare
 
 ````carve
 %%%
@@ -309,11 +309,11 @@ shown
 <p>shown</p>
 ````
 
-:::
+:::::
 
 ### comment owner miss
 
-::: compare
+::::: compare
 
 ````carve
 - a
@@ -329,11 +329,11 @@ outside
 <p>outside</p>
 ````
 
-:::
+:::::
 
 ### comment input end
 
-::: compare
+::::: compare
 
 ````carve
 %%%
@@ -344,11 +344,11 @@ hidden
 
 ````
 
-:::
+:::::
 
 ### attached code closer
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -368,11 +368,11 @@ tail
 <p>tail</p>
 ````
 
-:::
+:::::
 
 ### attached code blank
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -392,11 +392,11 @@ a
 </ul>
 ````
 
-:::
+:::::
 
 ### attached colon closer
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -417,11 +417,11 @@ tail
 <p>tail</p>
 ````
 
-:::
+:::::
 
 ### attached colon blank
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -442,11 +442,11 @@ inside
 </ul>
 ````
 
-:::
+:::::
 
 ### attached other boundary
 
-::: compare
+::::: compare
 
 ````carve
 > +
@@ -461,11 +461,11 @@ tail
 <p>tail</p>
 ````
 
-:::
+:::::
 
 ### pulled paragraph interrupt
 
-::: compare
+::::: compare
 
 ````carve
 :: t
@@ -484,11 +484,11 @@ p
 </dl>
 ````
 
-:::
+:::::
 
 ### pulled paragraph lazy
 
-::: compare
+::::: compare
 
 ````carve
 - +
@@ -503,11 +503,11 @@ q</li>
 </ul>
 ````
 
-:::
+:::::
 
 ### quote marked blank
 
-::: compare
+::::: compare
 
 ````carve
 > a
@@ -522,11 +522,11 @@ q</li>
 </blockquote>
 ````
 
-:::
+:::::
 
 ### quote unmarked blank
 
-::: compare
+::::: compare
 
 ````carve
 > a
@@ -539,11 +539,11 @@ q</li>
 <blockquote><p>b</p></blockquote>
 ````
 
-:::
+:::::
 
 ### quote nonmember
 
-::: compare
+::::: compare
 
 ````carve
 > a
@@ -559,5 +559,121 @@ q</li>
 </blockquote>
 ````
 
-:::
+:::::
+
+### term needs content
+
+::::: compare
+
+````carve
+:: 
+````
+
+````html
+<p>::</p>
+````
+
+:::::
+
+### description needs content
+
+::::: compare
+
+````carve
+:: t
+: 
+````
+
+````html
+<dl>
+  <dt>t</dt>
+</dl>
+<p>:</p>
+````
+
+:::::
+
+### item host ends at blank
+
+::::: compare
+
+````carve
+> - a
+
+  b
+````
+
+````html
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+</blockquote>
+<p>b</p>
+````
+
+:::::
+
+### item own line plus
+
+::::: compare
+
+````carve
+- a
++
+# H
+````
+
+````html
+<ul>
+  <li>a
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+````
+
+:::::
+
+### pulled paragraph blank
+
+::::: compare
+
+````carve
+- +
+p
+
+  q
+````
+
+````html
+<ul>
+  <li><p>p</p>
+    <p>q</p>
+  </li>
+</ul>
+````
+
+:::::
+
+### quote description sibling
+
+::::: compare
+
+````carve
+:: t
+: > q
+: b
+````
+
+````html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>q</p></blockquote>
+  </dd>
+  <dd>b</dd>
+</dl>
+````
+
+:::::
 
