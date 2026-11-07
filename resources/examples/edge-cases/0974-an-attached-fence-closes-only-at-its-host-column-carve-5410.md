@@ -1,3 +1,7 @@
+---
+page: edge-lists
+---
+
 ## An attached fence closes only at its host column (carve#5410)
 
 The indented fence line is outside the closer column of the fence opened by the marker-line `+`. Its first blank ends that fence. The indented line then opens a second fence in each host.
