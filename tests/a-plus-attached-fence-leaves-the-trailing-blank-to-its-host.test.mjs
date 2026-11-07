@@ -31,6 +31,18 @@ test('a fence opened at the body column keeps the trailing blank', () => {
   for (const [source, expected] of cases) assert.equal(payload(source), expected, source)
 })
 
+test('a body fence after an ended attached fence keeps its trailing blank', () => {
+  for (const host of ['[^f]: +', ':: t\n: +']) {
+    for (const [attached, body] of [['```', '~~~'], ['~~~', '```']]) {
+      const reference = host.startsWith('[^') ? '[^f]' : ''
+      const source = `${host}\n${attached}\na\n\n  ${body}\n  c\n\n${reference ? `${reference}\n` : ''}`
+      const html = render(source)
+      assert.match(html, /<pre><code>a\n<\/code><\/pre>/, source)
+      assert.match(html, /<pre><code>c\n\n<\/code><\/pre>/, source)
+    }
+  }
+})
+
 test('an indented fence line cannot close a marker-column attached fence', () => {
   const html = render('[^f]: +\n```\na\n\n  ```\n\n  ```\n  d\n\nsee[^f]\n')
   assert.match(html, /<pre><code>a\n<\/code><\/pre>/)
