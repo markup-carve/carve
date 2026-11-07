@@ -8145,6 +8145,9 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
     let hostEnd = lines.length
     let blank = -1
     for (let index = opener + 1; index < lines.length; index++) {
+      const opaqueEnd = opaqueSpanEnd(lines, index, true)
+      if (opaqueEnd !== -1) { index = opaqueEnd; continue }
+      if (isCodeBlockOpener(lines[index])) { blank = -1; break }
       if (blank === -1 && isBlank(lines[index])) blank = index
       if (!isBlank(lines[index]) && endsAttachment(index)) { hostEnd = index; break }
     }
@@ -10188,7 +10191,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (!quoteClaimsDefinitionLine && (DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
-          !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol)
+          !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&
+          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm))
         definitionListOpen = false
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'

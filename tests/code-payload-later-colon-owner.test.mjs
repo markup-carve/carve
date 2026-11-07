@@ -5,10 +5,10 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const render = (source) => renderDoc(parse(source))
 
-test('a quote-shaped code payload line leaves a later marker-column `: ` line outside the item (carve#5372)', () => {
+test('a quote-shaped code payload line does not keep an ended term-only boundary (carve#5368)', () => {
   assert.equal(render('- a\n  ```\n  > literal\n  ```\n  :: m\n\n  para\n: l\n'),
     '<ul>\n  <li><p>a</p>\n    <pre><code>&gt; literal\n</code></pre>\n    <dl>\n      <dt>m</dt>\n    </dl>\n' +
-    '    <p>para</p>\n  </li>\n</ul>\n<p>: l</p>')
+    '    <p>para\n: l</p>\n  </li>\n</ul>')
 })
 
 test('a code payload line does not change how the lines after its fence read (carve#5372)', () => {

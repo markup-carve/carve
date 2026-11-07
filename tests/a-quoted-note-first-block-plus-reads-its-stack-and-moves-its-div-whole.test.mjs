@@ -53,3 +53,9 @@ test('carve#5359 an unclosed attached colon ends at its blank before a later sib
   assert.match(out, /<\/aside>\n    <p>tail<\/p>/)
   assert.match(out, /<li><p>next<\/p><\/li>/)
 })
+
+test('carve#5359 a closed attached colon keeps marker-shaped code payload', () => {
+  const out = html('- +\n::: note\n```\n\n+\n```\n:::\n')
+  assert.match(out, /<aside class="admonition note"[\s\S]*<pre><code>\n\+\n<\/code><\/pre>\n    <\/aside>/)
+  assert.doesNotMatch(out, /<pre><code>:::/)
+})

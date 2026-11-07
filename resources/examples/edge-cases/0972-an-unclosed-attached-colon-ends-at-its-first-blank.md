@@ -6,7 +6,7 @@ page: edge-lists
 
 ### The item takes the line after the note (carve#5359)
 
-::: compare
+::::: compare
 
 ```carve
 - +
@@ -26,11 +26,11 @@ page: edge-lists
 </ul>
 ```
 
-:::
+:::::
 
 ### A nested item takes the block after the note (carve#5359)
 
-::: compare
+::::: compare
 
 ```carve
 - a
@@ -57,11 +57,11 @@ page: edge-lists
 </ul>
 ```
 
-:::
+:::::
 
 ### A blank inside an attached note loosens ordered siblings (carve#5356)
 
-::: compare
+::::: compare
 
 ```carve
 1. a
@@ -83,4 +83,4 @@ page: edge-lists
 </ol>
 ```
 
-:::
+:::::
