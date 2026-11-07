@@ -4425,7 +4425,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A paragraph of only comments is skipped as a `%%` line is (carve#4799).
         const para = attr || rest[1] !== '%' ? -1 : commentOnlyParaEnd(fromHere, k, frames[hostIndex].kind === 'item')
         if (para !== -1) k = para
-        else if (!attr) return k
+        // After a refused `+` the item holds no block for an attribute line to wait for (CARVE-P0-011).
+        else if (!attr || refused) return k
         else k = attr.next
       }
     }
@@ -10464,6 +10465,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // closer.
         const inNestedComment = commentHoldsLine(nestedOpaque, dmeas)
         const inCommentSpan = fence.opaque?.kind === 'comment' || inNestedComment
+        // A code body's lines are payload (B-code-keep): a `>` there opens no quote.
+        const inCodePayload = fence.opaque?.kind === 'code' && fence.opaque.opens !== false && !fence.opaque.payload
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
@@ -10609,6 +10612,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const lazyQuoteLine = bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1) && !QUOTE.test(dmeas.rest)
         const lazyChildLine = (!descendantOwned && deepestIsDescendant) || lazyQuoteLine
         if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
+        else if (inCodePayload) closePara()
         else if (inPayload || fence.opaque?.payload) {
           if (colonLineBlock.at(-1) === true) { if (verseSpanLine !== i) startPara() }
           else closePara()
@@ -10890,7 +10894,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
           }
         }
-        if (definitionListOpen && !headSubActive && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
+        if (definitionListOpen && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
