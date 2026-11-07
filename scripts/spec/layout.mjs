@@ -3603,7 +3603,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       frames.push({ ...host, para: false, last: 'colon' })
     } else {
       // After a closed attached block the host resumes at its content column too (CARVE-P0-024, carve#5407).
-      const ended = frames.findLastIndex((f) => f.host && f.once !== undefined && at >= f.once)
+      // The outermost ended block ends every block it holds (carve#5434).
+      const ended = frames.findIndex((f) => f.host && f.once !== undefined && at >= f.once)
       if (ended !== -1) {
         const { host, last } = frames[ended]
         frames.length = ended
@@ -4034,7 +4035,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A caption at its owner's block column attaches to a quote it follows and is never its
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
-    const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
+    // Under a marker-line `+` the host's content column is that block column too (carve#5432).
+    const captionColumn = m.col === frames[reached].col || (frames[reached].host && m.col === frames[reached].bodyCol)
+    const captionsQuote = form.caption && captionColumn && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
     // A term-only list loses this boundary when another block ends it (carve#5368).
@@ -5670,7 +5673,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         bodyLines[0] = ''
         // A follower the frame pass framed LAZY stands at the note's reader
         // column; the body reads it from column 0 like every other body line.
-        const taken = lines.slice(i, next).map(stripLazyLead)
+        const taken = []
+        for (let k = i; k < next; k++) {
+          const measured = ind(k)
+          const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
+          taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
+        }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
         // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
@@ -6222,7 +6230,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               end = attachedQuoteEnd(i, end, opener, (k) => ind(k).rest)
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
-              for (let k = i; k < end; k++) pushBody(lines[k], k)
+              const pulled = []
+              for (let k = i; k < end; k++) {
+                const caption = k > i && (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceBodyColumn && attachedQuoteCaption(pulled, ind(k).rest)
+                pulled.push(caption ? ' '.repeat(caption.col) + ind(k).rest : lines[k])
+                pushBody(pulled.at(-1), k)
+              }
               if (markerLinePlus && isBlank(lines[end] ?? '') && endsAtFirstBlank(lines, i, end, bodyColumn)) markAttachmentBoundary(state, bodyLines)
               markerLinePlus = false
               attachPending = false
@@ -7802,6 +7815,34 @@ const fenceLineInfo = (line) => {
  *  spelling here has always given (`findCloser` returning -1 fell through the
  *  same way), and it leaves the unterminated case where it was: no clause names
  *  it for an ATTACHED block, so it is not settled here. */
+// Lines from `start` read at `column`, up to the first visible line below it. Lazy, so
+// a closer search reads only the lines it reaches (PART 9 §9 LINEAR TIME).
+function columnView(lines, start, column, end = lines.length) {
+  let cut = end - start
+  return new Proxy([], {
+    get(_, key) {
+      if (key === 'length') return cut
+      const index = typeof key === 'string' && /^\d+$/.test(key) ? Number(key) : null
+      if (index === null || index >= cut) return undefined
+      const line = lines[start + index]
+      const measured = indentCols(line)
+      if (measured.rest === '') return line
+      if (measured.col < column) {
+        cut = index
+        return '\u0000'
+      }
+      return dedentMeasured(measured, line, column).text
+    },
+  })
+}
+
+function indentedFenceEnd(lines, start, column) {
+  const opener = dedentMeasured(indentCols(lines[start] ?? ''), lines[start] ?? '', column).text
+  if (!FENCE.test(opener) && !COLON_FENCE.test(opener) && !COMMENT_FENCE.test(opener)) return -1
+  const end = fencedBlockEnd(columnView(lines, start, column), 0)
+  return end === -1 ? -1 : start + end
+}
+
 function fencedBlockEnd(lines, start) {
   const opaque = opaqueSpanEnd(lines, start)
   if (opaque !== -1) return opaque
@@ -7857,7 +7898,8 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
     else if ((note = leadingNoteEnd(lines, opener)) !== -1) opener = note
     else break
   }
-  const fenced = fencedBlockEnd(lines, opener)
+  // An indented fence is read at its own column, up to the first line below it (carve#5433).
+  const fenced = column === 0 ? fencedBlockEnd(lines, opener) : indentedFenceEnd(lines, opener, column)
   if (fenced !== -1) return fenced + 1
   let end = start
   const stopAt = Math.min(lines.length, cap)
@@ -8284,7 +8326,8 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
       if (blank === -1 && isBlank(lines[index])) blank = index
       if (!isBlank(lines[index]) && endsAttachment(index)) { hostEnd = index; break }
     }
-    const close = findColonCloser(lines.slice(opener, hostEnd), 0, colon[1].length)
+    // An indented opener's closer stands at its column (carve#5433).
+    const close = findColonCloser(columnView(lines, opener, indentCols(lines[opener]).col, hostEnd), 0, colon[1].length)
     if (close === -1 && blank !== -1 && blank < hostEnd) return blank
   }
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
@@ -8312,6 +8355,16 @@ function attachedQuoteEnd(start, end, opener, rest) {
       (!foldablePlainLine(rest(k)) || isDefinitionOrAttributeLine(rest(k)))) return k
   }
   return end
+}
+
+// A caption at the host's content column follows the attached quote in the host, so it
+// is read at the quote's column, where it captions it (PART 0 S4, carve#5432).
+// `taken` holds the attached lines read so far; returns the quote's column or null.
+function attachedQuoteCaption(taken, rest) {
+  if (!CAPTION.test(rest)) return null
+  const opener = taken.find((line) => !isBlank(line) && !isOneLineComment(line) && !tryAttrLine([trimWsStart(line)], 0))
+  const at = opener === undefined ? null : indentCols(opener)
+  return at && QUOTE.test(at.rest) ? { col: at.col } : null
 }
 
 // A leading comment, attribute run or kept note belongs to the one block being attached.
@@ -9679,7 +9732,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // source column; a nested item's lines are measured from its parent's.
         const measured = ind(i)
         const shift = (measured.L?.col ?? measured.col) - measured.col
-        const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
+        const hostCaption = i > attachedStart && measured.col === contentCol && attachedQuoteCaption(taken, measured.rest)
+        const body = dedentMeasured(measured, lines[i], hostCaption ? measured.col - hostCaption.col : Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
         if (!deflistBlock || measured.rest === '') continue

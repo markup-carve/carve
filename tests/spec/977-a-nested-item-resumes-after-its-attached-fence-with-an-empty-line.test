@@ -1,0 +1,53 @@
+A nested item resumes after its attached fence with an empty line
+
+````
+- a
+  - +
+  ```
+  x
+
+  y
+  ```
+
+    # g
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>x
+
+y
+</code></pre>
+        <h1 id="g">g</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+```
+- a
+  - +
+  ::: w
+  x
+
+  y
+  :::
+
+    # g
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <div class="w">
+          <p>x</p>
+          <p>y</p>
+        </div>
+        <h1 id="g">g</h1>
+      </li>
+    </ul>
+  </li>
+</ul>
+```
