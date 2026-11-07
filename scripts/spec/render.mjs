@@ -2973,7 +2973,13 @@ export function renderInline(text, prevCtx = '', separateQuoteScope = false, mar
         } finally {
           spanPairs = savedPairs
         }
-        literals = literals.filter((d) => !pairs.some(([o, c]) => o < d.start && c >= d.start && c < d.end))
+        const protectedLiterals = []
+        literals = literals.filter((d) => {
+          const broken = pairs.some(([o, c]) => o < d.start && c >= d.start && c < d.end &&
+            !protectedLiterals.some((earlier) => o >= earlier.start && o < earlier.end))
+          if (!broken) protectedLiterals.push(d)
+          return !broken
+        })
         if (!literals.length) return root ? settleQuotes(html, quoteRun, prevCtx) : html
         html = undefined
       }

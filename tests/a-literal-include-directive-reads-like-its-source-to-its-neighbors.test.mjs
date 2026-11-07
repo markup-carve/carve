@@ -16,3 +16,7 @@ test('a backslash before a literal include directive escapes its brace', () => {
   assert.equal(html('\\\\{{ v@lines:2 }}\n'), '<p>\\{{ v@lines:2 }}</p>')
   assert.equal(html('`\\{{ v@lines:2 }}`\n'), '<p><code>\\{{ v@lines:2 }}</code></p>')
 })
+
+test('a token in one invalid directive cannot break the next invalid directive', () => {
+  assert.equal(html('{{ `@lines:1 }}{{ `@lines:1 }}\n'), '<p>{{ `@lines:1 }}{{ `@lines:1 }}</p>')
+})
