@@ -3479,6 +3479,10 @@ const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
  * column. A fence's payload loses at most the indentation it has. The block
  * readers below therefore only meet openers at a content column.
  */
+// An item on its parent's marker line reads the parent's column for a `+`. A quote
+// prefix is stripped before columns are measured, so it stacks nothing (carve#5399).
+const stackedOnMarker = (parent, host) => parent?.kind !== 'quote' && parent?.line === host.line
+
 function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
@@ -3635,8 +3639,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const hostLevel = prefixes > 0 ? stripQuotes(src, prefixes) : null
     const below = hostLevel ? walkIndent(hostLevel.rest) : m
     if ((plusHost.kind === 'item' || plusHost.kind === 'dd') && below.rest !== '' && below.col === plusHost.markerCol &&
-        below.col >= hostParent.col && followsMarkerLine && plusHost.line !== hostParent.line &&
-        !CONT_MARKER.test(below.rest) && (plusHost.kind === 'dd' || prefixes === 0)) {
+        below.col >= hostParent.col && followsMarkerLine && !stackedOnMarker(hostParent, plusHost) &&
+        !CONT_MARKER.test(below.rest)) {
       const follower = classifyAt(frames.length - 2, below.rest, hostParent, at, below.col)
       if (follower.interrupts && follower.kind !== 'item' && follower.kind !== 'colon-close') {
         const col = plusHost.markerCol
@@ -3650,7 +3654,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
         frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col, host: plusHost }
-        if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col }
+        if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col, depth: prefixes }
       }
     }
     // A `+` right after the block a `+` attached reaches the same host, whose
@@ -4189,7 +4193,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (form.kind === 'fence' || form.kind === 'colon') {
         let once
         if (form.family === 'code' && plusFollower && attachedTo?.host.kind === 'item' &&
-            attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1]?.line === attachedTo.host.line) {
+            stackedOnMarker(attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1], attachedTo.host)) {
           const depth = attachedTo.depth
           const openerCol = walkIndent(stripQuotes(lines[at], depth)?.rest ?? lines[at]).col
           let blank = -1
@@ -4335,12 +4339,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           return
         }
       }
-      const blank = isBlank(lines[index])
+      const level = (k) => stripQuotes(lines[k], afterPlusBlock.depth)?.rest ?? null
+      const blank = level(index) !== null && isBlank(level(index))
       // A blank run goes with the line after it.
       let next = index
-      while (next < lines.length && isBlank(lines[next])) next++
-      const ind = walkIndent(lines[next] ?? '')
-      if ((form === 'blank' || form === 'text' || form === 'payload') && next < lines.length &&
+      while (next < lines.length && level(next) !== null && isBlank(level(next))) next++
+      const ind = walkIndent(next < lines.length ? level(next) ?? '' : '')
+      if ((form === 'blank' || form === 'text' || form === 'payload') && next < lines.length && level(next) !== null &&
           ind.col >= afterPlusBlock.col && (form === 'text' || foldablePlainLine(ind.rest))) {
         trace.push({ line: index + 1, step: 'S5', owner: afterPlusBlock.path, rule: blank ? 'CARVE-P0-003' : 'CARVE-P0-024', form: blank ? 'blank' : 'text' })
         return
@@ -4405,14 +4410,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
 
   // The records of the lines from `from` at the item's content column, traced
   // as that item's own body and placed under its path.
-  function bodyTrace(from, { col, path }) {
-    let to = from
+  function bodyTrace(from, { col, path, depth }) {
+    // Inside a quote host the item's body is read behind its quote prefixes.
+    const levels = []
     for (let k = from; k < lines.length; k++) {
-      if (isBlank(lines[k])) continue
-      if (walkIndent(lines[k]).col < col) break
+      const level = stripQuotes(lines[k], depth)?.rest ?? null
+      if (level === null) break
+      levels.push(level)
+    }
+    let to = 0
+    for (let k = 0; k < levels.length; k++) {
+      if (isBlank(levels[k])) continue
+      if (walkIndent(levels[k]).col < col) break
       to = k + 1
     }
-    const body = lines.slice(from, to).map((line) => {
+    const body = levels.slice(0, to).map((line) => {
       const ind = walkIndent(line)
       return isBlank(line) ? '' : ' '.repeat(ind.col - col) + ind.rest
     })
