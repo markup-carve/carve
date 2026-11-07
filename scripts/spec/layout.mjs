@@ -10464,6 +10464,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // closer.
         const inNestedComment = commentHoldsLine(nestedOpaque, dmeas)
         const inCommentSpan = fence.opaque?.kind === 'comment' || inNestedComment
+        // A code body's lines are payload (B-code-keep): a `>` there opens no quote.
+        const inCodePayload = fence.opaque?.kind === 'code' && fence.opaque.opens !== false && !fence.opaque.payload
         // Read with the paragraph state this line ARRIVED with, exactly as
         // `bodyFenceOpens` above is; the chain below then answers for the line.
         const wasNested = nestedOpaque
@@ -10609,6 +10611,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const lazyQuoteLine = bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1) && !QUOTE.test(dmeas.rest)
         const lazyChildLine = (!descendantOwned && deepestIsDescendant) || lazyQuoteLine
         if (inCommentSpan) { /* opaque: the opener already closed the paragraph */ }
+        else if (inCodePayload) closePara()
         else if (inPayload || fence.opaque?.payload) {
           if (colonLineBlock.at(-1) === true) { if (verseSpanLine !== i) startPara() }
           else closePara()
