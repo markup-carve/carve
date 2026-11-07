@@ -1,1 +1,0 @@
-The pinned carve-js build ends the item before a marker-column line after a closed description and paragraph; PART 0 S4 folds that line (carve#5323).

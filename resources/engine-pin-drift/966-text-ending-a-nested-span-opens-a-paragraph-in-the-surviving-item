@@ -1,1 +1,0 @@
-Spec model now follows PART 0 S1/S4 when text ends a nested comment span; the pinned carve-js build still renders the lazy follower at document level (carve#5329).

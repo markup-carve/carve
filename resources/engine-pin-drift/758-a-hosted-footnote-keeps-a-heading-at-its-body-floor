@@ -1,1 +1,0 @@
-The pinned carve-js build gives the heading at the note's body column after its attached heading to the item; the spec model keeps it in the note, whose content column it reaches (CARVE-P0-024, carve#5407).

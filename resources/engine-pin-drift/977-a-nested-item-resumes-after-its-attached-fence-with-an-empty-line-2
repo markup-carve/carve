@@ -1,1 +1,0 @@
-Spec model now measures an indented fence a nested item's marker-line plus takes through its closer, so the item resumes after it (CARVE-P0-024); the pinned carve-js build drops the host (carve#5433).

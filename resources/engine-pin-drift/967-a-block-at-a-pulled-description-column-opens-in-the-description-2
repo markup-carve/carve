@@ -1,1 +1,0 @@
-Spec model now follows CARVE-P0-011 when a block at the pulled description content column ends the pulled paragraph; the pinned carve-js build still renders the older boundary (carve#5331).
