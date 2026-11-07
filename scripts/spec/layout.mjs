@@ -9807,6 +9807,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
     let descendantBlockEnd = -1
+    let nestedAttachedBlankEnd = -1
     let descendantAttachedColonDepth = 0
     let markerLineAttachedFence = null
     while (i < n) {
@@ -9814,6 +9815,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
+      if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&
+          (FOOTNOTE_DEF.test(lm.rest) || DESCRIPTION_LEAD.test(lm.rest))) {
+        const attachedMarker = FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? lm.rest.replace(DESCRIPTION_LEAD, '')
+        if (CONT_MARKER.test(attachedMarker) && i + 1 < n && !isBlank(lines[i + 1])) {
+          nestedAttachedBlankEnd = attachedBlockEnd(lines, i + 1, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), ind(i + 1).col)
+        }
+      }
       if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') &&
           markerLineAttachedFence === null && fence.opaque?.kind === 'code') {
         const attached = itemLines.slice(1)
@@ -9937,6 +9945,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (fence.opaque?.endsAtBlank) fence.opaque = null
         if (nestedOpaque?.endsAtBlank) nestedOpaque = null
         if (insideFence()) {
+          const next = i + 1 < n ? ind(i + 1) : null
+          if (i === nestedAttachedBlankEnd && next?.col === contentCol && opensSubBlock(next.rest) && !itemShowsNothing()) list.tight = false
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
