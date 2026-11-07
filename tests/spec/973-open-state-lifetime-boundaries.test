@@ -398,3 +398,26 @@ p
   <dd>b</dd>
 </dl>
 ```
+
+```
+- %%%
+  hidden
+  %%%
+- b
+.
+<ul>
+  <li></li>
+  <li>b</li>
+</ul>
+```
+
+```
+- %%%
+  hidden
+outside
+.
+<ul>
+  <li></li>
+</ul>
+<p>outside</p>
+```

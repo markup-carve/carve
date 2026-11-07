@@ -131,8 +131,8 @@
                                              input end                  a `%%%` span indented at most three    CARVE-P9-047
                                                                           spaces leaves none; other block
                                                                           constructs are verse
-     comment span      `%%%` opener          exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
-                                             line missing that owner,                                          B-comment-end
+     comment span      `%%%` alone or as      exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
+                       marker-line content   line missing that owner,                                          B-comment-end
                                              host end or input end
      attached block    accepted `+` and     closer, missed owner,      one next block in the marker's host;   PART 9 §17 L3,
      (code fence)      a code opener         or host/input end; first  its opaque payload lasts to that       CARVE-P9-067,

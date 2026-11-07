@@ -677,3 +677,42 @@ p
 
 :::::
 
+### comment marker line closer
+
+::::: compare
+
+````carve
+- %%%
+  hidden
+  %%%
+- b
+````
+
+````html
+<ul>
+  <li></li>
+  <li>b</li>
+</ul>
+````
+
+:::::
+
+### comment marker line owner miss
+
+::::: compare
+
+````carve
+- %%%
+  hidden
+outside
+````
+
+````html
+<ul>
+  <li></li>
+</ul>
+<p>outside</p>
+````
+
+:::::
+
