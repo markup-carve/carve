@@ -1085,6 +1085,15 @@ function parseValidColonOpener(tail) {
 function findColonCloser(lines, openIdx, len) {
   const first = COLON_FENCE.exec(lines[openIdx] ?? '')
   const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
+  const followsMarkerLinePlus = (index) => {
+    const previous = trimWsStart(lines[index - 1] ?? '')
+    const marker = matchMarkerAt(indentCols(previous))
+    const note = FOOTNOTE_DEF.exec(previous)
+    return CONT_MARKER.test(previous) ||
+      !!(marker && CONT_MARKER.test(trimWs(marker.text))) ||
+      !!(DESCRIPTION_TEXT.test(previous) && CONT_MARKER.test(previous.slice(2))) ||
+      !!(note && CONT_MARKER.test(note[2]))
+  }
   for (let j = openIdx + 1; j < lines.length; j++) {
     const top = stack.at(-1)
     // A code fence, a raw block and a comment block are OPAQUE: their contents
@@ -1107,10 +1116,9 @@ function findColonCloser(lines, openIdx, len) {
     }
     // An unclosed fence runs to the end of the input, colon lines included.
     if (isCodeBlockOpener(lines[j])) return -1
-    // A nested frame may be rebased by its host (for example, a list item
-    // whose attached block opened at column zero). Read its closer at that
-    // host's content column before deciding whether an outer frame ended.
-    const c = COLON_CLOSER.exec(stack.length > 1 ? trimWsStart(lines[j]) : lines[j])
+    // Only an attached frame may read a closer rebased at its host column.
+    // An ordinary indented run can open a child in that host instead.
+    const c = COLON_CLOSER.exec(top.attached ? trimWsStart(lines[j]) : lines[j])
     if (c) {
       const closeLen = c[1].length
       if (closeLen === top.length) {
@@ -1123,7 +1131,7 @@ function findColonCloser(lines, openIdx, len) {
     }
     const o = COLON_FENCE.exec(lines[j])
     const opener = o && parseColonOpener(o[2])
-    if (opener) stack.push({ length: o[1].length, mode: opener.mode })
+    if (opener) stack.push({ length: o[1].length, mode: opener.mode, attached: followsMarkerLinePlus(j) })
   }
   return -1
 }

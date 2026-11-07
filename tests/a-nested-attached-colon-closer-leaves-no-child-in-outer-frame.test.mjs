@@ -33,3 +33,19 @@ test('nested attached closers are read at the host column for different frame wi
     }
   }
 })
+
+test('an indented run in an ordinary list item opens its own child frame', () => {
+  const source = ':::: outer\n::: inner\n- item\n  :::\n  text\n  :::\n:::\n::::\n'
+  const html = render(source)
+  assert.match(html, /<li>item\s*<div>\s*<p>text<\/p>\s*<\/div>\s*<\/li>/)
+  assert.equal((html.match(/<div/g) ?? []).length, 3)
+  assert.equal((html.match(/<\/div>/g) ?? []).length, 3)
+})
+
+test('a description host also releases an attached inner frame before the outer closer', () => {
+  const source = '::::: outer\n:: t\n: +\n::: x\n\n  a\n  ::: \n:::::\n'
+  const html = render(source)
+  assert.match(html, /<dd>\s*<div class="x">\s*<p>a<\/p>\s*<\/div>\s*<\/dd>/)
+  assert.equal((html.match(/<div/g) ?? []).length, 2)
+  assert.ok(html.endsWith('</dl>\n</div>'))
+})
