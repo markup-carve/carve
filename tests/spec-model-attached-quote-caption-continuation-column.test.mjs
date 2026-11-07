@@ -13,3 +13,9 @@ test('a caption after a plus-attached quote uses its host column for continuatio
     assert.equal(caption(`${marker} +\n> q\n${column}^ cap\n${column}  more\n`), 'cap\n  more', source)
   }
 })
+
+test('a caret below the host column remains quoted text', () => {
+  const html = renderDoc(parse('- +\n> q\n ^ cap\n more\n'))
+  assert.doesNotMatch(html, /<figcaption>/)
+  assert.match(html, /<blockquote><p>q\n\^ cap\nmore<\/p><\/blockquote>/)
+})
