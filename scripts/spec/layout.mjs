@@ -3907,9 +3907,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
+    // A term with no description keeps that boundary too (carve#5317, carve#5352).
     const descriptionEndsItem = DESCRIPTION_TEXT.test(m.rest) && missedFrames.some((frame, index) =>
       frame.kind === 'item' && m.col === frame.markerCol &&
-      missedFrames.slice(index + 1).some((child) => child.kind === 'dd'))
+      (frame.openTerm || missedFrames.slice(index + 1).some((child) => child.kind === 'dd')))
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         !descriptionEndsItem &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
@@ -4121,8 +4122,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
         owner.termShift = col - owner.canon
+        owner.openTerm = true
       }
-      if (form.kind === 'dd') owner.ddShift = col - owner.canon
+      if (form.kind === 'dd') {
+        owner.ddShift = col - owner.canon
+        owner.openTerm = false
+      }
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
