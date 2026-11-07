@@ -10262,8 +10262,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
           !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&
-          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm))
+          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm)) {
         definitionListOpen = false
+        // The ended list is no longer the item's last block, so a later `: ` line cannot reopen it (carve#5373).
+        if (!nm && !DEFLIST_TERM.test(lm.rest)) lastListBlock = 'paragraph'
+      }
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {

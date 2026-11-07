@@ -80,10 +80,10 @@ page: edge-lists
       <dd>d</dd>
     </dl>
     <p>p</p>
-    <p>: x</p>
+    <p>: x
+: l</p>
   </li>
 </ul>
-<p>: l</p>
 ```
 
 :::
