@@ -3907,9 +3907,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
+    // So does a term with no description, unless a deeper quote or item holds the paragraph (carve#5317, carve#5352).
     const descriptionEndsItem = DESCRIPTION_TEXT.test(m.rest) && missedFrames.some((frame, index) =>
       frame.kind === 'item' && m.col === frame.markerCol &&
-      missedFrames.slice(index + 1).some((child) => child.kind === 'dd'))
+      (frame.openTerm && index === missedFrames.length - 1 || missedFrames.slice(index + 1).some((child) => child.kind === 'dd')))
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         !descriptionEndsItem &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
@@ -4121,8 +4122,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
       if (form.kind === 'term') {
         owner.termShift = col - owner.canon
+        owner.openTerm = true
       }
-      if (form.kind === 'dd') owner.ddShift = col - owner.canon
+      if (form.kind === 'dd') {
+        owner.ddShift = col - owner.canon
+        owner.openTerm = false
+      }
       if (form.kind === 'fence' || form.kind === 'colon') {
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
@@ -10069,6 +10074,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         itemHadDescription = true
         lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
+      if (DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
+          !nestedVerbatim() && noteFrames.length === 0) itemHadDescription = true
       // The marker-column rule lasts only while the item's description is open.
       if (!quoteClaimsDefinitionLine && (DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
@@ -10896,7 +10903,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         if (definitionListOpen && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive && !bodyQuote.open) break
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive &&
+          !(bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1))) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {
