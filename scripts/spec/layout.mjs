@@ -760,7 +760,8 @@ const framedLeadsFence = (lines, at, read) => {
 }
 
 // A fence a `+` attached below the body column ends at its block (§17 L3), so the run after it is the host's.
-const attachedFenceOpen = (body, from) => from !== -1 && leavesFenceOpen(body.slice(from))
+const attachedFenceOpen = (body, from, bounds) =>
+  from !== -1 && !bounds?.some((boundary) => boundary > from) && leavesFenceOpen(body.slice(from))
 
 function footnoteBlankRunEnd(lines, i, n) {
   const body = markerBodyPolicy(FOOTNOTE_BODY_COLUMN)
@@ -5835,7 +5836,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       }
       // PART 0 S2: a blank run reaches the body, so it is payload of a fence the
       // body leaves open. A block a `+` attached is bounded by §17, not by the run.
-      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine) && !attachedFenceOpen(bodyLines, attachedFrom)) {
+      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine) &&
+          !attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))) {
         const end = markerBodyPolicy(FOOTNOTE_BODY_COLUMN).blankRunEnd(lines, i, n)
         for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
       }
@@ -6177,7 +6179,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 continue
               }
               // PART 0 S2, as for a footnote body.
-              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at)) && !attachedFenceOpen(bodyLines, attachedFrom)) {
+              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at)) &&
+                  !attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))) {
                 for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
               }
               break
