@@ -3539,12 +3539,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       endedPulledFence = { col: top().pullCol, host: top().pullHost, at }
       frames.pop()
     }
-    // So is an unclosed colon block a marker-line `+` took: its first blank
-    // ends it with the host's one block (carve#5359), and later lines keep their columns.
-    const endedColon = frames.length - 2
-    if (top().kind === 'colon' && frames[endedColon].host && at >= frames[endedColon].once) {
-      const { host } = frames[endedColon]
-      frames.length = endedColon
+    // So is an unclosed colon or code block a marker-line `+` took: its first blank
+    // ends it with the host's one block (carve#5359, carve#5401), and later lines keep their columns.
+    const endedBlock = frames.length - 2
+    if ((top().kind === 'colon' || top().kind === 'fence') && frames[endedBlock].host && at >= frames[endedBlock].once) {
+      const { host } = frames[endedBlock]
+      frames.length = endedBlock
       frames.push({ ...host, para: false, last: 'colon' })
     }
     if (skipped) {
