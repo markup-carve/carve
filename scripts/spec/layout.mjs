@@ -1107,7 +1107,10 @@ function findColonCloser(lines, openIdx, len) {
     }
     // An unclosed fence runs to the end of the input, colon lines included.
     if (isCodeBlockOpener(lines[j])) return -1
-    const c = COLON_CLOSER.exec(lines[j])
+    // A nested frame may be rebased by its host (for example, a list item
+    // whose attached block opened at column zero). Read its closer at that
+    // host's content column before deciding whether an outer frame ended.
+    const c = COLON_CLOSER.exec(stack.length > 1 ? trimWsStart(lines[j]) : lines[j])
     if (c) {
       const closeLen = c[1].length
       if (closeLen === top.length) {
