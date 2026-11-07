@@ -8841,6 +8841,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A stanza holding no verse supplies none, whatever its spans left (carve#4956).
       if (ind(i)?.col < contentCol && leafStanzaEmpty()) return false
       if (ind(i)?.col < contentCol && !ind(i).rest.startsWith('%%') && descriptionLeadSpanOpen(itemLines)) return false
+      // A surviving child list is the last block here. Its leaf paragraph,
+      // not an older paragraph of this item, decides a below-column fold.
+      if (ind(i)?.col < contentCol && subCol >= 0 && childList && descendantQ1.col >= 0) {
+        const child = descendantQ1At(descendantQ1.col)
+        if (child?.open === false) return false
+      }
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
           !COLON_CLOSER.test(QUOTE.exec(ind(i - 1)?.rest ?? '')?.[1] ?? '')) return true
@@ -9574,6 +9580,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         continue
       }
       if (lm.rest === '') {
+        // A separator closes the child's paragraph too. Otherwise its Q1
+        // answer survives a blank and can claim a later below-column line.
+        advanceDescendantQ1('', null)
         // A blank line INSIDE any open fence is fence content: keep it in the
         // item body and stay tight (no looseness decision).
         // A fence that ends at this blank leaves the next block to this item (carve#5326).
