@@ -9632,6 +9632,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) || matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
         }
       }
+      // A marker that ends a descendant's attached block ends its unclosed colon too.
+      if (i === descendantBlockEnd && lm.rest !== '' && fence.colon.length > descendantAttachedColonDepth) {
+        fence.colon.length = descendantAttachedColonDepth
+        colonLineBlock.length = descendantAttachedColonDepth
+        colonBases.length = descendantAttachedColonDepth
+      }
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
         pushLine(body.text, body.meas)
