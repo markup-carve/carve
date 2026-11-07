@@ -10074,6 +10074,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         itemHadDescription = true
         lastListBlock = 'term'
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
+      if (DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
+          !nestedVerbatim() && noteFrames.length === 0) itemHadDescription = true
       // The marker-column rule lasts only while the item's description is open.
       if (!quoteClaimsDefinitionLine && (DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
@@ -10901,7 +10903,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         if (definitionListOpen && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive && !bodyQuote.open) break
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive &&
+          !(bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1))) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break
       if (nm && columnOwner(nm.indent) === 'below' && deepestParagraphOpen() && itemLines.length > 0) {

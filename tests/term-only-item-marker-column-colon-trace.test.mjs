@@ -33,3 +33,10 @@ test('a deeper quote or item after the term still takes the line lazily (carve#5
     assert.equal(modelTrace(source).at(-1).form, 'lazy', source)
   }
 })
+
+test('a quote before the term does not hold the boundary open (carve#5376)', () => {
+  const source = '- a\n  > q\n  :: t\n  w\n: l\n'
+  assert.match(render(source), /<\/ul>\n<p>: l<\/p>$/)
+  assert.equal(modelTrace(source).at(-1).owner, 'doc')
+  assert.match(render('- a\n  > q\n  :: t\n  : d\n\n  w\n: l\n'), /<p>w\n: l<\/p>/)
+})
