@@ -7335,7 +7335,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // not a quote marker, and an entry test that is stricter than the
         // consumption loop is how the two answers coexisted.
         layoutWork.quoteStrips += 1
-        const qm = QUOTE.exec(lines[i])
+        // A fence already opened in this quote keeps a shifted quote marker
+        // at the host's content column as payload, just as an unshifted marker.
+        const qm = QUOTE.exec(lines[i]) ??
+          (qHost.fence ? QUOTE.exec(trimWsStart(lines[i])) : null)
         if (qm) {
           const markerLinePlus = /^[> \t]*\+[ \t]*$/.test(qm[1] ?? '')
           // `+` on the line that opens this quote is its first-block marker: the walk accepted it.
