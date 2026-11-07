@@ -7813,15 +7813,25 @@ const fenceLineInfo = (line) => {
  *  spelling here has always given (`findCloser` returning -1 fell through the
  *  same way), and it leaves the unterminated case where it was: no clause names
  *  it for an ATTACHED block, so it is not settled here. */
-// Lines from `start` read at `column`, up to the first visible line below it.
+// Lines from `start` read at `column`, up to the first visible line below it. Lazy, so
+// a closer search reads only the lines it reaches (PART 9 §9 LINEAR TIME).
 function columnView(lines, start, column, end = lines.length) {
-  const view = []
-  for (let k = start; k < end; k++) {
-    const measured = indentCols(lines[k])
-    if (measured.rest !== '' && measured.col < column) break
-    view.push(measured.rest === '' ? lines[k] : dedentMeasured(measured, lines[k], column).text)
-  }
-  return view
+  let cut = end - start
+  return new Proxy([], {
+    get(_, key) {
+      if (key === 'length') return cut
+      const index = typeof key === 'string' && /^\d+$/.test(key) ? Number(key) : null
+      if (index === null || index >= cut) return undefined
+      const line = lines[start + index]
+      const measured = indentCols(line)
+      if (measured.rest === '') return line
+      if (measured.col < column) {
+        cut = index
+        return '\u0000'
+      }
+      return dedentMeasured(measured, line, column).text
+    },
+  })
 }
 
 function indentedFenceEnd(lines, start, column) {
