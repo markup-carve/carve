@@ -1089,8 +1089,9 @@ function findColonCloser(lines, openIdx, len, ownership = null, accepted = null)
   const opened = ownership?.events.get(ownership.offset + openIdx)
   let hasAttachedColon = false
   if (opened?.form === 'div' && accepted) {
-    for (let j = openIdx + 1; j + 1 < lines.length; j++) {
-      if (!accepted.set.has(accepted.offset + j)) continue
+    for (const at of accepted.byOwner.get(opened.owner) ?? []) {
+      const j = at - accepted.offset
+      if (j <= openIdx || j + 1 >= lines.length) continue
       const colon = COLON_FENCE.exec(lines[j + 1])
       if (colon && parseColonOpener(colon[2]) !== null) { hasAttachedColon = true; break }
     }
@@ -3559,7 +3560,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let attrRest = null
   // Every lone `+` the one rule refused; each is written as `%%` and renders nothing.
   const refusedPlus = []
-  const acceptedMarkerPluses = new Set()
+  const acceptedPlusesByOwner = new Map()
   // Later markers offering the block already claimed by an earlier marker.
   const claimedMarkers = new Set()
   // The trace path of a block the walk opens in a parent although an item's
@@ -4341,7 +4342,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           // Past the one space after a `>` the `+` is the quote's text (corpus 646).
           if (!(frame.kind === 'quote' && m.col > 0) && plusAttaches(frame, at)) {
             frame.plus = at
-            acceptedMarkerPluses.add(at)
+            const path = ownerPath()
+            for (let end = path.length; end >= 3; end = path.lastIndexOf('/', end - 1)) {
+              const parent = path.slice(0, end)
+              if (!acceptedPlusesByOwner.has(parent)) acceptedPlusesByOwner.set(parent, [])
+              acceptedPlusesByOwner.get(parent).push(at)
+              if (end === 3) break
+            }
             skipInvisible(frame, at, frame.docMarker)
             attachedTo = attachedBlock(frame, skipped?.end ?? at + 1)
           } else if (frame.kind === 'quote' && m.col > 0) {
@@ -4374,7 +4381,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   }
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
-  walked.acceptedMarkerPluses = acceptedMarkerPluses
+  walked.acceptedPlusesByOwner = acceptedPlusesByOwner
   return walked
 
   // `classify` as the line reads at frame `depth`.
@@ -5022,7 +5029,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     blockEndMemo: new Map(),
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
     ownershipEvents: new WeakMap([[lines, { events: ownershipEvents, offset: 0 }]]),
-    acceptedMarkerPluses: new WeakMap([[lines, { set: walked.acceptedMarkerPluses, offset: 0 }]]),
+    acceptedMarkerPluses: new WeakMap([[lines, { byOwner: walked.acceptedPlusesByOwner, offset: 0 }]]),
   }
   // The ownership walk can move a lazy line to a container's column. Keep its
   // authored column for CARVE-P2-035, after any quote prefix is read.
@@ -6461,7 +6468,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const end = close === -1 ? extent : close
           const body = lines.slice(i + 1, end)
           if (ownership) state.ownershipEvents.set(body, { events: ownership.events, offset: ownership.offset + i + 1 })
-          if (accepted) state.acceptedMarkerPluses.set(body, { set: accepted.set, offset: accepted.offset + i + 1 })
+          if (accepted) state.acceptedMarkerPluses.set(body, { byOwner: accepted.byOwner, offset: accepted.offset + i + 1 })
           const bodyBraceColumns = authoredBraceColumns.get(lines)?.slice(i + 1, end)
           if (bodyBraceColumns) authoredBraceColumns.set(body, bodyBraceColumns)
           markMeasuredContainerText(state, lines, i + 1, end, ind)
