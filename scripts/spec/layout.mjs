@@ -9594,6 +9594,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
     let descendantBlockEnd = -1
+    let descendantAttachedColonDepth = 0
     let markerLineAttachedFence = null
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
@@ -9610,6 +9611,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A sublist item's `+` holds its block at that item's marker column, so that block ends no sublist.
       if (i >= descendantBlockEnd && subCol >= 0 && childList && CONT_MARKER.test(lm.rest) &&
           lm.col === childList.indent && i + 1 < n && !isBlank(lines[i + 1])) {
+        descendantAttachedColonDepth = fence.colon.length
         descendantBlockEnd = attachedBlockEnd(lines, i + 1, state, (idx) =>
           ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
           matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
@@ -9617,6 +9619,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         const above = matchMarkerAt(ind(i - 1))
         if (above && above.indent === lm.col && lm.col >= contentCol && CONT_MARKER.test(trimWs(above.text))) {
+          descendantAttachedColonDepth = fence.colon.length
           descendantBlockEnd = attachedBlockEnd(lines, i, state, (idx) =>
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) || matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
         }
@@ -9695,6 +9698,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         continue
       }
       if (lm.rest === '') {
+        // A descendant's attached colon takes one block. Its unclosed body
+        // ends here, even when this ancestor's fence tracker still has it open.
+        const descendantAttachmentEnded = i === descendantBlockEnd && fence.colon.length > descendantAttachedColonDepth
+        if (descendantAttachmentEnded) {
+          fence.colon.length = descendantAttachedColonDepth
+          colonLineBlock.length = descendantAttachedColonDepth
+          colonBases.length = descendantAttachedColonDepth
+        }
         quotePlusList = false
         quoteAttachedChildList = false
         // A separator closes the child's paragraph too. Otherwise its Q1
@@ -9918,6 +9929,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (headSubActive && jReach < headSubCol &&
               (opensAuthoredBase(jm.rest) || jReach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
               !COMMENT_LINE.test(jm.rest)) headSubActive = false
+          if (descendantAttachmentEnded && opensSubBlock(jm.rest) && !itemShowsNothing()) list.tight = false
           if (!commentBelowChild && ((subCol >= 0 && jReach >= subCol) || (headSubActive && jReach >= headSubCol))) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must
