@@ -15,6 +15,12 @@ test('a heading after an attached fence leaves no paragraph for a flush-left tai
     closed: 2, reached: 'doc',
   })
   assert.match(render('- a\n  - +\n  ```\n\n    p\ntail\n'), /<p>p\ntail<\/p>/)
+  assert.equal(render('- ::: note\n  - x\n\ntail\n'),
+    '<ul>\n  <li>\n    <aside class="admonition note" aria-label="Note">\n' +
+    '      <ul>\n        <li>x</li>\n      </ul>\n    </aside>\n  </li>\n</ul>\n<p>tail</p>')
+  assert.equal(render('- d\n  - +\n  :::\nafter\n'),
+    '<ul>\n  <li>d\n    <ul>\n      <li>\n        <div>\n\n        </div>\n' +
+    '      </li>\n    </ul>\n  </li>\n</ul>\n<p>after</p>')
 })
 
 test('1,000 closed-child variants leave their tail outside the list (carve#5358)', () => {
