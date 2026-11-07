@@ -8137,6 +8137,20 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
 function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, quoteHost = false) {
+  // A colon container with no closer offers only its first blank to an
+  // attaching marker, just like an unclosed code fence (CARVE-P9-067).
+  const opener = leadRunEnd(lines, start)
+  const colon = COLON_FENCE.exec(trimWsStart(lines[opener] ?? ''))
+  if (colon && parseColonOpener(colon[2]) !== null) {
+    let hostEnd = lines.length
+    let blank = -1
+    for (let index = opener + 1; index < lines.length; index++) {
+      if (blank === -1 && isBlank(lines[index])) blank = index
+      if (!isBlank(lines[index]) && endsAttachment(index)) { hostEnd = index; break }
+    }
+    const close = findColonCloser(lines.slice(opener, hostEnd), 0, colon[1].length)
+    if (close === -1 && blank !== -1 && blank < hostEnd) return blank
+  }
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
   // The extent holds no blank line outside a fence, so a block that ends inside
   // the window ends there in the full extent too, unless a closer lies beyond.
@@ -9530,6 +9544,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         openPara = true
         return true
       }
+      if (colon && parseColonOpener(colon[2]) !== null && isBlank(lines[end] ?? ''))
+        markAttachmentBoundary(state, itemLines)
       // A separator after a fence the block leaves open would be its payload.
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
       // Below the content column the blank after the block is the host's

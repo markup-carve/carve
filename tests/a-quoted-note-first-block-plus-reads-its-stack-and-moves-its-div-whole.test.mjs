@@ -44,5 +44,12 @@ for (const host of ['', '> ', '> > ', '- > ', '> - x\n>   ']) {
 
 test('carve#4031 shape 4', () => {
   assert.match(notes('[^b]: +\n::: d\ny\n\nr[^b]\n'), /<div class="d">\n\s*<p>y<\/p>\n\s*<\/div>/)
+  assert.match(html('[^b]: +\n::: d\ny\n\nr[^b]\n'), /^<p>r<a /)
   assert.doesNotMatch(notes('> [^b]: +\n::: d\ny\n\nr[^b]\n'), /<p>\+<a href/)
+})
+
+test('carve#5359 an unclosed attached colon ends at its blank before a later sibling and closer', () => {
+  const out = html('- +\n::: note\n\n  tail\n- next\n:::\n')
+  assert.match(out, /<\/aside>\n    <p>tail<\/p>/)
+  assert.match(out, /<li><p>next<\/p><\/li>/)
 })
