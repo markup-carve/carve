@@ -9125,6 +9125,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // Body columns of descriptions a `+` attached below the content column, in source columns (carve#5056).
     const attachedDescriptionBodies = []
     let quotePlusList = false
+    let quoteAttachedChildList = false
     // Whether that block is a container (a quote or a definition list), whose
     // own last block answers for the line below once the block has ended.
     let authoredContainer = false
@@ -9610,6 +9611,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
         // A list a quote's `+` attaches is the quote's, and a blank ends it with the quote (§17 L3).
         if (DEFLIST_TERM.test(lm.rest) && /^[ \t]*(?:>[ \t]*)+\+[ \t]*$/.test(lines[previousVisible(i - 1)] ?? '')) quotePlusList = true
+        if (lm.col >= contentCol && matchMarkerAt(lm) &&
+            /^[ \t]*(?:>[ \t]*)+\+[ \t]*$/.test(lines[previousVisible(i - 1)] ?? '')) quoteAttachedChildList = true
         if (description && lm.col >= contentCol && !quotePlusList) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
       }
       if (markerNoteEligible && i > noteFenceEnd && lm.col >= markerNoteBodyColumn &&
@@ -9669,6 +9672,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
       if (lm.rest === '') {
         quotePlusList = false
+        quoteAttachedChildList = false
         // A separator closes the child's paragraph too. Otherwise its Q1
         // answer survives a blank and can claim a later below-column line.
         advanceDescendantQ1('', null)
@@ -10496,7 +10500,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (dmeas.rest !== '' && !insideFence() && !nestedVerbatim() && (opensSubBlock(dedented) || matchMarkerAt(dmeas))) {
           const inNoteBody = noteBodyBoundary !== null && col >= noteBodyBoundary || noteFrames.some(frame => col >= frame.body)
           // A block a descendant's `+` holds is that descendant's, so it keeps the child list open (carve#5326).
-          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) && !inNoteBody && i >= descendantBlockEnd &&
+          const ownChild = !(nm && (continuesChildList(nm, 0) || insideChildList(nm))) && !quoteAttachedChildList && !inNoteBody && i >= descendantBlockEnd &&
             !attachedDescriptionBodies.some(body => col >= body) && !descriptionBodyColumns.some(body => col >= body)
           if (pendingSeparation && ownChild && !itemShowsNothing()) list.tight = false
           if (ownChild) childList = nm ?? null
@@ -10689,7 +10693,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody && !stanzaPayload()) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen()
-          if (!continuesChildList(nm, 0)) openChildList(nm)
+          // A marker carried by an open quote belongs to the quote's list.
+          // Its later same-column sibling can be a new block of this item.
+          if (quoteAttachedChildList) childList = null
+          else if (!continuesChildList(nm, 0)) openChildList(nm)
         } else if (nm && nm.indent >= contentCol && !inDefBody && reach + nm.markerWidth < subCol && !insideFence()) {
           // A shallower descendant marker ended that sublist; its item's column now owns the body.
           subCol = reach + nm.markerWidth
