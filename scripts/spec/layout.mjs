@@ -3907,10 +3907,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
-    // A term with no description keeps that boundary too (carve#5317, carve#5352).
+    // So does a term with no description, unless a deeper quote or item holds the paragraph (carve#5317, carve#5352).
     const descriptionEndsItem = DESCRIPTION_TEXT.test(m.rest) && missedFrames.some((frame, index) =>
       frame.kind === 'item' && m.col === frame.markerCol &&
-      (frame.openTerm || missedFrames.slice(index + 1).some((child) => child.kind === 'dd')))
+      (frame.openTerm && index === missedFrames.length - 1 || missedFrames.slice(index + 1).some((child) => child.kind === 'dd')))
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
         !descriptionEndsItem &&
         // A marker at the missed list's column or at or left of the owner's content column opens a

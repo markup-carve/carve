@@ -26,3 +26,10 @@ test('a term-only item ends at a marker-column `: ` line in the trace too (carve
     }
   assert.equal(count, 21)
 })
+
+test('a deeper quote or item after the term still takes the line lazily (carve#5376)', () => {
+  for (const source of ['- a\n  :: t\n  > q\n: l\n', '- a\n  :: t\n  - i\n: l\n']) {
+    assert.doesNotMatch(render(source), /<p>: l<\/p>/, source)
+    assert.equal(modelTrace(source).at(-1).form, 'lazy', source)
+  }
+})
