@@ -1,0 +1,1 @@
+Spec model now captions a plus-attached quote with a caption at the host content column (PART 0 S4); the pinned carve-js build folds the caption into the quote (carve#5432).

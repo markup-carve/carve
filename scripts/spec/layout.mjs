@@ -4035,7 +4035,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A caption at its owner's block column attaches to a quote it follows and is never its
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
-    const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
+    // Under a marker-line `+` the host's content column is that block column too (carve#5432).
+    const captionColumn = m.col === frames[reached].col || (frames[reached].host && m.col === frames[reached].bodyCol)
+    const captionsQuote = form.caption && captionColumn && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
     // A term-only list loses this boundary when another block ends it (carve#5368).
@@ -5669,7 +5671,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         bodyLines[0] = ''
         // A follower the frame pass framed LAZY stands at the note's reader
         // column; the body reads it from column 0 like every other body line.
-        const taken = lines.slice(i, next).map(stripLazyLead)
+        const taken = []
+        for (let k = i; k < next; k++) {
+          const measured = ind(k)
+          const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
+          taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
+        }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
         // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
@@ -6221,7 +6228,12 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               end = attachedQuoteEnd(i, end, opener, (k) => ind(k).rest)
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
-              for (let k = i; k < end; k++) pushBody(lines[k], k)
+              const pulled = []
+              for (let k = i; k < end; k++) {
+                const caption = k > i && (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceBodyColumn && attachedQuoteCaption(pulled, ind(k).rest)
+                pulled.push(caption ? ' '.repeat(caption.col) + ind(k).rest : lines[k])
+                pushBody(pulled.at(-1), k)
+              }
               if (markerLinePlus && isBlank(lines[end] ?? '') && endsAtFirstBlank(lines, i, end, bodyColumn)) markAttachmentBoundary(state, bodyLines)
               markerLinePlus = false
               attachPending = false
@@ -8333,6 +8345,16 @@ function attachedQuoteEnd(start, end, opener, rest) {
   return end
 }
 
+// A caption at the host's content column follows the attached quote in the host, so it
+// is read at the quote's column, where it captions it (PART 0 S4, carve#5432).
+// `taken` holds the attached lines read so far; returns the quote's column or null.
+function attachedQuoteCaption(taken, rest) {
+  if (!CAPTION.test(rest)) return null
+  const opener = taken.find((line) => !isBlank(line) && !isOneLineComment(line) && !tryAttrLine([trimWsStart(line)], 0))
+  const at = opener === undefined ? null : indentCols(opener)
+  return at && QUOTE.test(at.rest) ? { col: at.col } : null
+}
+
 // A leading comment, attribute run or kept note belongs to the one block being attached.
 // Locate its actual opener before checking whether it is a colon frame.
 function attachedOpener(attached, column) {
@@ -9698,7 +9720,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // source column; a nested item's lines are measured from its parent's.
         const measured = ind(i)
         const shift = (measured.L?.col ?? measured.col) - measured.col
-        const body = dedentMeasured(measured, lines[i], Math.max(0, blockColumn - shift))
+        const hostCaption = i > attachedStart && measured.col === contentCol && attachedQuoteCaption(taken, measured.rest)
+        const body = dedentMeasured(measured, lines[i], hostCaption ? measured.col - hostCaption.col : Math.max(0, blockColumn - shift))
         pushLine(body.text, body.meas)
         taken.push(body.text)
         if (!deflistBlock || measured.rest === '') continue
