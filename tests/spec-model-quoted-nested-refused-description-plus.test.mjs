@@ -9,3 +9,9 @@ test('a refused description plus opens no paragraph for an unmarked quote follow
     assert.match(html, new RegExp(`</blockquote>\\n<p>${text}</p>`))
   }
 })
+
+test('a plus in an open description paragraph remains its text', () => {
+  const html = renderDoc(parse('> :: t\n> : text\n>   : +\n unmarked\n'))
+  assert.match(html, /<dd>text\n: \+\nunmarked<\/dd>/)
+  assert.doesNotMatch(html, /<\/blockquote>\n<p>unmarked/)
+})

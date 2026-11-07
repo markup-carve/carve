@@ -7248,7 +7248,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           leavesParagraphOpen([itemContent], 0, false) === false
         const descriptionClosesPara = DESCRIPTION_LEAD.test(inner0.rest) &&
           !descriptionCarriesParagraph(inner0.rest) &&
-          (qHost.kinds.at(-1) === 'description' || TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
+          (qHost.kinds.at(-1) === 'description' && inner0.col === qHost.markerCols.at(-1) ||
+           qHost.kinds.at(-1) === 'item' && inner0.col === qHost.columns.at(-1) &&
+           TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
         const quotedAttribute = l[0] === '{' && tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
