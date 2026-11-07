@@ -238,6 +238,8 @@
          prefixes select their quote level (`> +`, not `>+`). An accepted
          marker interrupts an open paragraph and its grant ends at the attached
          block's boundary.
+         An unclosed colon container attached by a marker-line `+` ends at its
+         first blank, as an unclosed code fence does (carve#5359).
 
          ONE ATTACH RULE FOR EVERY HOST -- NORMATIVE [CARVE-P9-067]. Lists,
          quotes, definition bodies and footnote bodies all use this one test.

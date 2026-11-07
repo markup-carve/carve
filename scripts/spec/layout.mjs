@@ -3954,7 +3954,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
     // A description at a missed item's marker column ends that item while its
     // description remains open. Its paragraph cannot claim the line lazily.
-    // So does a term with no description, unless a deeper quote or item holds the paragraph (carve#5317, carve#5352).
+    // A term-only list loses this boundary when another block ends it (carve#5368).
     const descriptionEndsItem = DESCRIPTION_TEXT.test(m.rest) && missedFrames.some((frame, index) =>
       frame.kind === 'item' && m.col === frame.markerCol &&
       (frame.openTerm && index === missedFrames.length - 1 || missedFrames.slice(index + 1).some((child) => child.kind === 'dd')))
@@ -4069,6 +4069,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       result.push(out + src)
       lonePlus.para = true
       lonePlus.last = 'para'
+      lonePlus.openTerm = false
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text', { plus: at })
       continue
     }
@@ -4116,6 +4117,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (owner.para && FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
       owner.para = true
       owner.last = 'para'
+      owner.openTerm = false
     } else if (plusLanding !== null) {
       lead(plusLanding)
       apply(owner, m.col, form, plusLanding)
@@ -4164,6 +4166,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (!invisibleInEntry) {
         owner.para = !!form.caption
         owner.last = form.kind
+        if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
       owner.tableLine = form.table ? at : undefined
       if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
@@ -8134,6 +8137,23 @@ function foldedDefinitionEnd(lines, start, end, seen) {
 const LOOKAHEAD_SHAPE = /`{3}|~{3}|:{3}|%%|\$\$/
 
 function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, quoteHost = false) {
+  // A colon container with no closer offers only its first blank to an
+  // attaching marker, just like an unclosed code fence (CARVE-P9-067).
+  const opener = leadRunEnd(lines, start)
+  const colon = COLON_FENCE.exec(trimWsStart(lines[opener] ?? ''))
+  if (colon && parseColonOpener(colon[2]) !== null) {
+    let hostEnd = lines.length
+    let blank = -1
+    for (let index = opener + 1; index < lines.length; index++) {
+      const opaqueEnd = opaqueSpanEnd(lines, index, true)
+      if (opaqueEnd !== -1) { index = opaqueEnd; continue }
+      if (isCodeBlockOpener(lines[index])) { blank = -1; break }
+      if (blank === -1 && isBlank(lines[index])) blank = index
+      if (!isBlank(lines[index]) && endsAttachment(index)) { hostEnd = index; break }
+    }
+    const close = findColonCloser(lines.slice(opener, hostEnd), 0, colon[1].length)
+    if (close === -1 && blank !== -1 && blank < hostEnd) return blank
+  }
   // Grow a window instead of measuring the whole extent per marker (carve#4017).
   // The extent holds no blank line outside a fence, so a block that ends inside
   // the window ends there in the full extent too, unless a closer lies beyond.
@@ -9527,6 +9547,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         openPara = true
         return true
       }
+      if (colon && parseColonOpener(colon[2]) !== null && isBlank(lines[end] ?? ''))
+        markAttachmentBoundary(state, itemLines)
       // A separator after a fence the block leaves open would be its payload.
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
       // Below the content column the blank after the block is the host's
@@ -10165,12 +10187,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       } else if (nm && col >= contentCol && !insideFence()) lastListBlock = 'item'
       if (DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) === lastTermSourceCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) itemHadDescription = true
-      // The marker-column rule lasts only while the item's description is open.
+      // The marker-column rule lasts only while this definition list is open.
       if (!quoteClaimsDefinitionLine && (DEFLIST_TERM.test(lm.rest) || DESCRIPTION_TEXT.test(lm.rest)) &&
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
           !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&
-          (isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm)) definitionListOpen = false
+          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm))
+        definitionListOpen = false
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {
@@ -10995,7 +11018,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         }
         if (definitionListOpen && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
-      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive &&
+      if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null &&
+          definitionListOpen && !itemHadDescription && lastListBlock !== 'item' && !headSubActive &&
           !(bodyQuote.open && (bodyQuote.at === i - 1 || quoteLazyAt === i - 1))) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
           lastListBlock === 'term' && definitionListOpen && !headSubActive && (lm.L?.col ?? col) < lastTermSourceCol) break

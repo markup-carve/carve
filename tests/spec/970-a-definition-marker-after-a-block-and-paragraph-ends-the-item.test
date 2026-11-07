@@ -14,7 +14,7 @@ A definition marker after a block and paragraph ends the item
     </dl>
     <h1 id="H">H</h1>
     w
+: z
   </li>
 </ul>
-<p>: z</p>
 ```
