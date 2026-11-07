@@ -1,0 +1,7 @@
+Adjacent invalid includes keep their tokens literal
+
+```
+{{ `@lines:1 }}{{ `@lines:1 }}
+.
+<p>{{ `@lines:1 }}{{ `@lines:1 }}</p>
+```
