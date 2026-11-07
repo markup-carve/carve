@@ -6762,6 +6762,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- block quote ---
     if (QUOTE.test(line)) {
       const inner = []
+      const quoteLines = inner
       const quoteBraceColumns = []
       authoredBraceColumns.set(inner, quoteBraceColumns)
       const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
@@ -7018,7 +7019,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             return settle(false, depth + 1)
           }
           const descriptionLine = indentCols(text).rest
+          const descriptionHistory = []
           if (DESCRIPTION_LEAD.test(descriptionLine) && !descriptionCarriesParagraph(descriptionLine)) {
+            for (let k = quoteLines.length - 2; k >= 0; k--) {
+              const prior = stripQuotes(quoteLines[k], depth + 1)
+              if (!prior) break
+              descriptionHistory.unshift(prior.rest)
+            }
+          }
+          if (descriptionHistory.length && entryAbove([...descriptionHistory, text], indentCols(text).col)) {
             return settle(false, depth + 1)
           }
           depth++
@@ -7302,7 +7311,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // paragraph for the enclosing quote to continue lazily.
         const descriptionLine = indentCols(l).rest
         const descriptionBodyEndsPara = DESCRIPTION_LEAD.test(descriptionLine) &&
-          !descriptionCarriesParagraph(descriptionLine)
+          !descriptionCarriesParagraph(descriptionLine) &&
+          entryAbove(inner, indentCols(l).col)
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
         // An item line under an item's paragraph starts the next item, so a
         // comment or attribute item closes that paragraph (corpus 610, carve#3268).

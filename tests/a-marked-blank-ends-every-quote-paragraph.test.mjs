@@ -19,6 +19,13 @@ test('a marked blank and refused description leave the next paragraph outside th
 <p>para</p>`)
 })
 
+for (const prefix of ['> ', '> > ']) {
+  test(`a colon line without a term remains paragraph text under ${JSON.stringify(prefix)}`, () => {
+    const source = `${prefix}x\n${prefix}: # H\npara\n`
+    assert.match(render(source), /<p>x\n: # H\npara<\/p>/)
+  })
+}
+
 for (const depth of [1, 2, 3]) {
   const quote = '> '.repeat(depth)
   for (const marker of ['- x', '1. x']) {
