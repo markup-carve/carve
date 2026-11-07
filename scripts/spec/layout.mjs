@@ -3905,7 +3905,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // lazy line (CARVE-P2-008, carve#4312); an indented one (§10 I7) or one past a note folds.
     const missedFrames = frames.slice(reached + 1)
     const captionsQuote = form.caption && m.col === frames[reached].col && missedFrames[0]?.kind === 'quote' && !missedFrames.some((f) => f.kind === 'note')
+    // A description at a missed item's marker column ends that item while its
+    // description remains open. Its paragraph cannot claim the line lazily.
+    const descriptionEndsItem = DESCRIPTION_TEXT.test(m.rest) && missedFrames.some((frame, index) =>
+      frame.kind === 'item' && m.col === frame.markerCol &&
+      missedFrames.slice(index + 1).some((child) => child.kind === 'dd'))
     if (missed && m.rest !== '' && top().para && !form.interrupts && !captionsQuote && form.kind !== 'dd' &&
+        !descriptionEndsItem &&
         // A marker at the missed list's column or at or left of the owner's content column opens a
         // list of its own, so its items measure against their own columns (S4, §11 N1; carve#4369).
         !(form.kind === 'item' && (BODY_FRAME.has(owner.kind) || missedFrames.some((f) => BODY_FRAME.has(f.kind))))) {
