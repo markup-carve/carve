@@ -3582,6 +3582,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // with the quote. The follower was read where it stood, so the walk may
     // hold its frames without the quote frame that owns them (CARVE-P0-019).
     if (attachedTo?.host.kind === 'quote' && isBlank(src) &&
+        top().kind !== 'fence' && top().kind !== 'colon' &&
         stripQuotes(src, attachedTo.depth + 1) === null && attachedTo.endsAt(at)) {
       frames.length = 0
       frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
