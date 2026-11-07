@@ -57,3 +57,26 @@ test('an attached frame does not take the closer of a deeper child list', () => 
   assert.ok(html.endsWith('</div>\n<p>after</p>'))
   assert.equal((html.match(/<div/g) ?? []).length, 3)
 })
+
+test('a description-shaped paragraph grants no attachment column without a term', () => {
+  const source = ':::: outer\n: +\n::: inner\n- item\n  :::\n:::\n::::\nafter\n'
+  const html = render(source)
+  assert.match(html, /<p>: \+<\/p>/)
+  assert.ok(html.endsWith('</div>\n<p>after</p>'))
+})
+
+test('a marker folded into a paragraph grants no attachment column', () => {
+  for (const prefix of ['p\n', 'p\n- x\n', 'p\n- x\n- y\n', 'p\n  q\n']) {
+    const source = `:::: outer\n${prefix}- +\n::: inner\n- item\n  :::\n:::\n::::\nafter\n`
+    const html = render(source)
+    assert.match(html, /- \+<\/p>/, source)
+    assert.ok(html.endsWith('</div>\n<p>after</p>'), source)
+  }
+})
+
+test('an accepted marker after another host keeps its own attached frame open', () => {
+  for (const prefix of ['- a\np\n', ':: t\n: a\n']) {
+    const source = `:::: outer\n${prefix}- +\n::: inner\n- item\n  :::\n:::\n::::\nafter\n`
+    assert.ok(render(source).endsWith('</div>\n<p>after</p>'), source)
+  }
+})
