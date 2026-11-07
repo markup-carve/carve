@@ -255,6 +255,8 @@
                        attaching a paragraph interruption or input end  unless an open description's item       PART 9 §17 L3
                                                                           marker-column boundary applies
 
+   ============================================================================
+
    BLOCK STRUCTURE IS ONE ORDERED PROCEDURE -- NORMATIVE [CARVE-P0-024].
    One rule decides ownership for every container (markup-carve/carve#3885):
 
