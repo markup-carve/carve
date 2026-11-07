@@ -7570,11 +7570,9 @@ const fenceLineInfo = (line) => {
  *  (both opaque, so `opaqueSpanEnd` already answers them together) and a COLON
  *  fence, whose closer search skips the opaque spans nested inside it.
  *
- *  A fence with no closer returns -1 and the caller falls back to its
- *  line-by-line scan. That keeps the answer identical to the one the code-fence
- *  spelling here has always given (`findCloser` returning -1 fell through the
- *  same way), and it leaves the unterminated case where it was: no clause names
- *  it for an ATTACHED block, so it is not settled here. */
+ *  A fence with no closer returns -1. The caller handles an unclosed colon
+ *  container's blank payload through its host boundary; an unclosed code
+ *  fence keeps its existing line-by-line fallback. */
 function fencedBlockEnd(lines, start) {
   const opaque = opaqueSpanEnd(lines, start)
   if (opaque !== -1) return opaque
@@ -7632,6 +7630,22 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   }
   const fenced = fencedBlockEnd(lines, opener)
   if (fenced !== -1) return fenced + 1
+  const colon = COLON_FENCE.exec(lines[opener] ?? '')
+  if (colon && parseColonOpener(colon[2]) !== null) {
+    // An unclosed colon block retains blank lines until its host boundary.
+    let end = opener + 1
+    let blankBeforeBoundary = -1
+    const stopAt = Math.min(lines.length, cap)
+    while (end < stopAt) {
+      if (isBlank(lines[end])) {
+        if (blankBeforeBoundary < 0) blankBeforeBoundary = end
+      } else if (endsBlock(end)) {
+        return blankBeforeBoundary < 0 ? end : blankBeforeBoundary
+      } else blankBeforeBoundary = -1
+      end++
+    }
+    return end
+  }
   let end = start
   const stopAt = Math.min(lines.length, cap)
   while (end < stopAt && !endsBlock(end)) end++
