@@ -7246,6 +7246,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const itemContent = QUOTE.test(l) ? undefined : BULLET.exec(l)?.[6] ?? ORDERED.exec(l)?.[6]
         const itemClosesPara = qOpenPara && qItemPara && itemContent !== undefined &&
           leavesParagraphOpen([itemContent], 0, false) === false
+        const descriptionClosesPara = DESCRIPTION_LEAD.test(inner0.rest) &&
+          !descriptionCarriesParagraph(inner0.rest) &&
+          (qHost.kinds.at(-1) === 'description' && inner0.col === qHost.markerCols.at(-1) ||
+           qHost.kinds.at(-1) === 'item' && inner0.col === qHost.columns.at(-1) &&
+           TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
         const quotedAttribute = l[0] === '{' && tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
@@ -7256,7 +7261,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }), 0) !== null
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
@@ -9807,6 +9812,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let markerNoteCommentEnd = -1
     let markerNoteCommentSeen = false
     let descendantBlockEnd = -1
+    let nestedAttachedBlankEnd = -1
     let descendantAttachedColonDepth = 0
     let markerLineAttachedFence = null
     while (i < n) {
@@ -9814,6 +9820,13 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
+      if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&
+          (FOOTNOTE_DEF.test(lm.rest) || DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(lines, lm.col, i))) {
+        const attachedMarker = FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? lm.rest.replace(DESCRIPTION_LEAD, '')
+        if (CONT_MARKER.test(attachedMarker) && i + 1 < n && !isBlank(lines[i + 1])) {
+          nestedAttachedBlankEnd = attachedBlockEnd(lines, i + 1, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), ind(i + 1).col)
+        }
+      }
       if (headSubCol > contentCol && CONT_MARKER.test(headSubMarker?.text ?? '') &&
           markerLineAttachedFence === null && fence.opaque?.kind === 'code') {
         const attached = itemLines.slice(1)
@@ -9937,6 +9950,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (fence.opaque?.endsAtBlank) fence.opaque = null
         if (nestedOpaque?.endsAtBlank) nestedOpaque = null
         if (insideFence()) {
+          const next = i + 1 < n ? ind(i + 1) : null
+          if (i === nestedAttachedBlankEnd && next?.col === contentCol && opensSubBlock(next.rest) && !itemShowsNothing()) list.tight = false
           fenceBlankRun++
           const dd = dedentMeasured(lm, line, authoredBlockBase ?? contentCol)
           pushLine(dd.text, dd.meas)
