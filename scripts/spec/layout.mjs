@@ -5744,9 +5744,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // An earlier marker may take a block past a later invisible note
         // definition. Its attachment does not take that definition's own
         // indented continuation, even when a blank separates the two.
-        if (passedNotes.length && isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
+        const passedRunEnd = passedNotes.length && isBlank(lines[i]) ? footnoteBlankRunEnd(lines, i, n) : -1
+        if (passedRunEnd !== -1) {
           passedNoteBody = passedNotes.at(-1)
-          i = footnoteBlankRunEnd(lines, i, n)
+          if (passedNoteBody.body.length) passedNoteBody.body.push(...Array(passedRunEnd - i).fill(''))
+          i = passedRunEnd
           continue
         }
         if (passedNoteBody && isFootnoteContinuationLine(lines[i])) {

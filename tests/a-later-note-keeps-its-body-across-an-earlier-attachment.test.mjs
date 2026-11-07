@@ -30,6 +30,15 @@ test('the later body keeps its paragraph continuation and later block', () => {
   assert.match(html, /<li id="fn2">\s*<p>own\nlazy<\/p>\s*<h1 id="headed">headed<\/h1>/)
 })
 
+test('a blank between later note body paragraphs remains a paragraph boundary', () => {
+  const source = '[^a]: +\n[^b]: +\npara\n\n  own\n\n  second\n\n[^a] [^b]\n'
+  assert.deepEqual(noteText(source, 'a'), [{ t: 'para', lines: ['para'] }])
+  assert.deepEqual(noteText(source, 'b'), [
+    { t: 'para', lines: ['own'] },
+    { t: 'para', lines: ['second'] },
+  ])
+})
+
 test('a quoted later note keeps its body across a quote blank line', () => {
   const source = '> [^a]: +\n> [^b]: +\n>\n>   own\n\n[^a] [^b]\n'
   assert.deepEqual(noteText(source, 'a'), [])
