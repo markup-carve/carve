@@ -3603,7 +3603,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       frames.push({ ...host, para: false, last: 'colon' })
     } else {
       // After a closed attached block the host resumes at its content column too (CARVE-P0-024, carve#5407).
-      const ended = frames.findLastIndex((f) => f.host && f.once !== undefined && at >= f.once)
+      // The outermost ended block ends every block it holds (carve#5434).
+      const ended = frames.findIndex((f) => f.host && f.once !== undefined && at >= f.once)
       if (ended !== -1) {
         const { host, last } = frames[ended]
         frames.length = ended

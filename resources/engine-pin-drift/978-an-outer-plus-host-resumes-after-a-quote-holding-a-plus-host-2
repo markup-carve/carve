@@ -1,0 +1,1 @@
+Spec model now resumes the outer plus host after an attached quote that holds a plus host (CARVE-P0-024); the pinned carve-js build puts the follower after the host (carve#5434).
