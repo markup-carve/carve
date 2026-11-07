@@ -84,3 +84,51 @@ page: edge-lists
 ```
 
 :::::
+
+### A closer in the host keeps an attached line block open past its blank (carve#5405)
+
+::::: compare
+
+```carve
+- +
+::: |
+
+  ::: x
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <div class="line-block">
+      <p>::: x</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::::
+
+### A closer in the host keeps an attached div open past its blank (carve#5405)
+
+::::: compare
+
+```carve
+- +
+::: x
+
+  a
+  :::
+```
+
+```html
+<ul>
+  <li>
+    <div class="x">
+      <p>a</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::::

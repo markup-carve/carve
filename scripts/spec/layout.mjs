@@ -9573,6 +9573,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const paraBlock = foldablePlainLine(ind(i + opener).rest)
       const deflistBlock = DEFLIST_TERM.test(ind(i + opener).rest)
       const taken = []
+      const attachedStart = i
       for (; i < end; i++) {
         // Measure the attached block from the marker column. `blockColumn` is a
         // source column; a nested item's lines are measured from its parent's.
@@ -9595,7 +9596,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         openPara = true
         return true
       }
-      if (colon && parseColonOpener(colon[2]) !== null && isBlank(lines[end] ?? ''))
+      // A later closer in the host keeps an unclosed-looking colon body open, as in a footnote body (carve#5405).
+      if (colon && parseColonOpener(colon[2]) !== null && isBlank(lines[end] ?? '') &&
+          (findColonCloser(attached, opener, colon[1].length) !== -1 || endsAtFirstBlank(lines, attachedStart, end, contentCol)))
         markAttachmentBoundary(state, itemLines)
       // A separator after a fence the block leaves open would be its payload.
       if (!leavesFenceOpen(taken)) pushLine('', BLANK_MEAS)
@@ -10262,8 +10265,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           (lm.L?.col ?? col) === lastTermSourceCol && lastListBlock === 'term') definitionListOpen = true
       else if (col >= contentCol && lm.rest !== '' && !insideFence() && !COMMENT_LINE.test(lm.rest) &&
           !DESCRIPTION_TEXT.test(lm.rest) && lastTermSourceCol !== null && (lm.L?.col ?? col) <= lastTermSourceCol &&
-          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm))
+          (!itemHadDescription || isBlank(lines[i - 1] ?? '') || pendingSeparation || opensAuthoredBase(lm.rest) || nm)) {
         definitionListOpen = false
+        // The ended list is no longer the item's last block, so a later `: ` line cannot reopen it (carve#5373).
+        if (!nm && !DEFLIST_TERM.test(lm.rest)) lastListBlock = 'paragraph'
+      }
       else if (pendingSeparation && col >= contentCol && !insideFence() &&
           lm.rest !== '' && !isDefinitionOrAttributeLine(lm.rest)) lastListBlock = 'paragraph'
       if (col >= contentCol) {

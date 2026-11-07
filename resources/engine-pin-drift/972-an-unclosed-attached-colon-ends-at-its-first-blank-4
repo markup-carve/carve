@@ -1,0 +1,1 @@
+The pinned carve-js build ends an item-attached line block at its first blank although the host holds its closer; the closer keeps it open, as in a footnote body (carve#5405).
