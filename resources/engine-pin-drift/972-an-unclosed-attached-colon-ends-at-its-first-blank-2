@@ -1,0 +1,1 @@
+The pinned carve-js build reads the block after the blank that ends a nested attached colon as the outer item's; the spec model gives it to the nested host, as after an unclosed attached fence (PART 9 §17 L3, carve#5359).

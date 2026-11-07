@@ -5,7 +5,7 @@ An outer item loosens after a nested attached colon ends
   * +
   ::: note
 
-    > q
+  > q
 .
 <ul>
   <li><p>a</p>
