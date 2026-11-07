@@ -12,7 +12,8 @@ test('a payload line at the body column does not move the trailing blank into th
     ['[^f]: +\n```\na\n  b\n\nsee[^f]\n', 'a\n  b\n'],
     ['[^f]: n\n+\n```\na\n  b\n\nsee[^f]\n', 'a\n  b\n'],
     ['[^f]: +\n```\na\n  b\n\n\nsee[^f]\n', 'a\n  b\n'],
-    ['[^f]: +\n```\na\n\n  b\n\nsee[^f]\n', 'a\n\nb\n'],
+    // An unclosed fence ends at its first blank (PART 0 S1, carve#5404).
+    ['[^f]: +\n```\na\n\n  b\n\nsee[^f]\n', 'a\n'],
     ['> [^f]: +\n> ```\n> a\n>   b\n>\n> see[^f]\n', 'a\n  b\n'],
     [':: t\n: +\n```\na\n  b\n\nsee\n', 'a\n  b\n'],
     [':: t\n: n\n+\n```\na\n  b\n\nsee\n', 'a\n  b\n'],
