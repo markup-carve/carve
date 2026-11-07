@@ -10890,7 +10890,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             if (measured.col < descriptionBoundaryPayloadCol && matchMarkerAt(measured)) descriptionBoundaryHasSibling = true
           }
         }
-        if (definitionListOpen && !headSubActive && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
+        if (definitionListOpen && (!descriptionBoundaryLineBlock || !descriptionBoundaryHasSibling)) break
       }
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && col === baseIndent && lastTermSourceCol !== null && !itemHadDescription && lastListBlock !== 'item' && !headSubActive && !bodyQuote.open) break
       if (!nm && DEFLIST_SEPARATOR.test(lm.rest) && (lm.L?.col ?? col) <= authoredMarkerCol && !bodyQuote.open &&
