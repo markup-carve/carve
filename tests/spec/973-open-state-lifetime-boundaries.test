@@ -1,0 +1,338 @@
+Open-state lifetime boundaries
+
+```
+:: t
+: d
+.
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+</dl>
+```
+
+```
+- a
+  :: t
+  # H
+  x
+: d
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <h1 id="H">H</h1>
+    x
+: d
+  </li>
+</ul>
+```
+
+```
+- a
+  :: t
+
+  p
+: d
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <p>p
+: d</p>
+  </li>
+</ul>
+```
+
+```
+:: t
+: a
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dd>b</dd>
+</dl>
+```
+
+```
+:: t
+: a
+:: u
+: b
+.
+<dl>
+  <dt>t</dt>
+  <dd>a</dd>
+  <dt>u</dt>
+  <dd>b</dd>
+</dl>
+```
+
+```
+- a
+  :: t
+  : d
+: x
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+  </li>
+</ul>
+<p>: x</p>
+```
+
+```
+- a
+  :: t
+  : d
+
+  p
+: x
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>t</dt>
+      <dd>d</dd>
+    </dl>
+    <p>p
+: x</p>
+  </li>
+</ul>
+```
+
+```
+- a
+  # H
+b
+.
+<ul>
+  <li>a
+    <h1 id="H">H</h1>
+  </li>
+</ul>
+<p>b</p>
+```
+
+```
+- a
+- b
+.
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
+```
+
+```
+::: |
+alpha
+
+beta
+:::
+.
+<div class="line-block">
+  <p>alpha</p>
+  <p>beta</p>
+</div>
+```
+
+```
+::: |
+alpha
+:::
+tail
+.
+<div class="line-block">
+  <p>alpha</p>
+</div>
+<p>tail</p>
+```
+
+```
+- +
+::: |
+alpha
+: z
+.
+<ul>
+  <li>
+    <div class="line-block">
+      <p>alpha<br>
+: z</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+%%%
+hidden
+%%%
+shown
+.
+<p>shown</p>
+```
+
+```
+- a
+  %%%
+  hidden
+outside
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>outside</p>
+```
+
+```
+%%%
+hidden
+.
+
+```
+
+````
+- +
+```
+a
+```
+tail
+.
+<ul>
+  <li>
+    <pre><code>a
+</code></pre>
+  </li>
+</ul>
+<p>tail</p>
+````
+
+````
+- +
+```
+a
+
+  tail
+.
+<ul>
+  <li>
+    <pre><code>a
+</code></pre>
+    <p>tail</p>
+  </li>
+</ul>
+````
+
+```
+- +
+::: note
+inside
+:::
+tail
+.
+<ul>
+  <li>
+    <aside class="admonition note" aria-label="Note">
+      <p>inside</p>
+    </aside>
+  </li>
+</ul>
+<p>tail</p>
+```
+
+```
+- +
+::: note
+inside
+
+  tail
+.
+<ul>
+  <li>
+    <aside class="admonition note" aria-label="Note">
+      <p>inside</p>
+    </aside>
+    <p>tail</p>
+  </li>
+</ul>
+```
+
+```
+> +
+# H
+tail
+.
+<blockquote>
+  <h1 id="H">H</h1>
+</blockquote>
+<p>tail</p>
+```
+
+```
+:: t
+: +
+p
+  # H
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>p</p>
+    <h1 id="H">H</h1>
+  </dd>
+</dl>
+```
+
+```
+- +
+p
+q
+.
+<ul>
+  <li>p
+q</li>
+</ul>
+```
+
+```
+> a
+>
+> b
+.
+<blockquote>
+  <p>a</p>
+  <p>b</p>
+</blockquote>
+```
+
+```
+> a
+
+> b
+.
+<blockquote><p>a</p></blockquote>
+<blockquote><p>b</p></blockquote>
+```
+
+```
+> a
+> # H
+> b
+.
+<blockquote>
+  <p>a</p>
+  <h1 id="H">H</h1>
+  <p>b</p>
+</blockquote>
+```
