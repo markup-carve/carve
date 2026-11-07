@@ -9045,6 +9045,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const descriptionBodyColumns = []
     // Body columns of descriptions a `+` attached below the content column, in source columns (carve#5056).
     const attachedDescriptionBodies = []
+    let quotePlusList = false
     // Whether that block is a container (a quote or a definition list), whose
     // own last block answers for the line below once the block has ended.
     let authoredContainer = false
@@ -9528,7 +9529,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         while (descriptionBodyColumns.length && lm.col < descriptionBodyColumns.at(-1)) descriptionBodyColumns.pop()
         while (attachedDescriptionBodies.length && lm.col < attachedDescriptionBodies.at(-1)) attachedDescriptionBodies.pop()
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(lm.rest)
-        if (description && lm.col >= contentCol) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
+        // A list a quote's `+` attaches is the quote's, and a blank ends it with the quote (§17 L3).
+        if (DEFLIST_TERM.test(lm.rest) && /^[ \t]*(?:>[ \t]*)+\+[ \t]*$/.test(lines[previousVisible(i - 1)] ?? '')) quotePlusList = true
+        if (description && lm.col >= contentCol && !quotePlusList) descriptionBodyColumns.push(lm.col + 1 + description[1].length)
       }
       if (markerNoteEligible && i > noteFenceEnd && lm.col >= markerNoteBodyColumn &&
           COMMENT_LINE.test(lm.rest) && !insideFence()) markerNoteCommentSeen = true
@@ -9586,6 +9589,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         continue
       }
       if (lm.rest === '') {
+        quotePlusList = false
         // A separator closes the child's paragraph too. Otherwise its Q1
         // answer survives a blank and can claim a later below-column line.
         advanceDescendantQ1('', null)
