@@ -3574,6 +3574,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (skipped) {
       const raw = throughQuotes(lines[at], skipped.hostIndex).rest
       let rest = trimWsStart(raw)
+      const nestedNote = FOOTNOTE_DEF.exec(rest)
+      if (nestedNote && CONT_MARKER.test(nestedNote[2])) {
+        rest = rest.slice(0, -nestedNote[2].length) + '%%'
+        refusedPlus.push(at)
+      }
       let bracePad = ''
       if (skipped.brace) {
         bracePad = ' '.repeat(Math.max(0, walkIndent(raw).col - skipped.brace.col))
