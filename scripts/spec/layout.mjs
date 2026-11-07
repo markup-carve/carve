@@ -5660,8 +5660,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const attached = takeOneBlock(lines, i, state, ind(i).L?.col ?? ind(i).col)
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
         let next = attached.next
-        if (foldablePlainLine(ind(i).rest)) {
-          for (let k = i + 1; k < next; k++) {
+        const leadingAttributes = tryAttrLine(dedentedWindow(lines, i, ind(i).col), 0)
+        const paragraphStart = i + (leadingAttributes?.next ?? 0)
+        if (paragraphStart < next && foldablePlainLine(ind(paragraphStart).rest)) {
+          for (let k = paragraphStart + 1; k < next; k++) {
             const measured = ind(k)
             if ((measured.L?.col ?? measured.col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN && opensAuthoredBase(measured.rest)) {
               next = k
@@ -10376,6 +10378,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (lm.rest !== '' && !(noteFrames.length && col < noteFrames.at(-1).body && spanPayload())) {
         while (noteFrames.length && col < noteFrames.at(-1).body) {
           const frame = noteFrames.at(-1)
+          if (i <= (frame.pulledThrough ?? -1)) break
           // A lazy line continues the note's open paragraph and keeps the note open.
           if (openPara && noteClaimsLazyLine(i) && foldablePlainLine(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) break
           noteFrames.pop()
@@ -11091,7 +11094,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             noteOpenerLine = i
             const outerNote = noteFrames.at(-1)
             if (outerNote) outerNote.ownerBase = outerNote.marker
-            noteFrames.push({ marker: col, base: localBase, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null, outerReach })
+            const nextLine = i + 1
+            const leading = CONT_MARKER.test(FOOTNOTE_DEF.exec(lm.rest)[2]) && nextLine < n
+              ? tryAttrLine(dedentedWindow(lines, nextLine, ind(nextLine).col), 0) : null
+            const pulledParagraph = nextLine + (leading?.next ?? 0)
+            noteFrames.push({ marker: col, base: localBase, body: noteBodyBoundary, ownerBase: outerNote?.marker ?? null, outerReach,
+              pulledThrough: leading && pulledParagraph < n && foldablePlainLine(ind(pulledParagraph).rest) ? pulledParagraph : -1 })
             // A footnote body takes a lazy line like every container (carve#3885).
             const noteText = FOOTNOTE_DEF.exec(lm.rest)[2]
             // A code fence opener starts a code block, not a paragraph (CARVE-P0-013).
