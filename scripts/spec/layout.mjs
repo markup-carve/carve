@@ -1084,15 +1084,15 @@ function parseValidColonOpener(tail) {
 
 function findColonCloser(lines, openIdx, len) {
   const first = COLON_FENCE.exec(lines[openIdx] ?? '')
-  const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]
-  const followsMarkerLinePlus = (index) => {
-    const previous = trimWsStart(lines[index - 1] ?? '')
-    const marker = matchMarkerAt(indentCols(previous))
-    const note = FOOTNOTE_DEF.exec(previous)
-    return CONT_MARKER.test(previous) ||
-      !!(marker && CONT_MARKER.test(trimWs(marker.text))) ||
-      !!(DESCRIPTION_TEXT.test(previous) && CONT_MARKER.test(previous.slice(2))) ||
-      !!(note && CONT_MARKER.test(note[2]))
+  const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div', column: 0 }]
+  const attachedHostColumn = (index) => {
+    const previous = indentCols(lines[index - 1] ?? '')
+    const marker = matchMarkerAt(previous)
+    const note = FOOTNOTE_DEF.exec(previous.rest)
+    if (marker && CONT_MARKER.test(trimWs(marker.text))) return marker.indent + marker.markerWidth
+    if (DESCRIPTION_TEXT.test(previous.rest) && CONT_MARKER.test(previous.rest.slice(2))) return previous.col + 2
+    if (note && CONT_MARKER.test(note[2])) return previous.col + FOOTNOTE_BODY_COLUMN
+    return null
   }
   for (let j = openIdx + 1; j < lines.length; j++) {
     const top = stack.at(-1)
@@ -1116,22 +1116,25 @@ function findColonCloser(lines, openIdx, len) {
     }
     // An unclosed fence runs to the end of the input, colon lines included.
     if (isCodeBlockOpener(lines[j])) return -1
-    // Only an attached frame may read a closer rebased at its host column.
-    // An ordinary indented run can open a child in that host instead.
-    const c = COLON_CLOSER.exec(top.attached ? trimWsStart(lines[j]) : lines[j])
+    // A frame reads at its own column, or at the content column of the host
+    // whose marker-line `+` attached it. A deeper child's column is not its
+    // closer, even if that child's bare run has the same width.
+    const measured = indentCols(lines[j])
+    const atOwner = measured.col === top.column || measured.col === top.attachedHostColumn
+    const c = atOwner ? COLON_CLOSER.exec(measured.rest) : null
     if (c) {
       const closeLen = c[1].length
       if (closeLen === top.length) {
         stack.pop()
         if (stack.length === 0) return j
       } else {
-        stack.push({ length: closeLen, mode: 'div' })
+        stack.push({ length: closeLen, mode: 'div', column: measured.col })
       }
       continue
     }
-    const o = COLON_FENCE.exec(lines[j])
+    const o = atOwner ? COLON_FENCE.exec(measured.rest) : COLON_FENCE.exec(lines[j])
     const opener = o && parseColonOpener(o[2])
-    if (opener) stack.push({ length: o[1].length, mode: opener.mode, attached: followsMarkerLinePlus(j) })
+    if (opener) stack.push({ length: o[1].length, mode: opener.mode, column: measured.col, attachedHostColumn: attachedHostColumn(j) })
   }
   return -1
 }

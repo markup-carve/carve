@@ -49,3 +49,11 @@ test('a description host also releases an attached inner frame before the outer 
   assert.equal((html.match(/<div/g) ?? []).length, 2)
   assert.ok(html.endsWith('</dl>\n</div>'))
 })
+
+test('an attached frame does not take the closer of a deeper child list', () => {
+  const source = '::::: outer\n- +\n::: x\n\n  - item\n    ::: child\n    body\n    :::\n  :::\n:::::\nafter\n'
+  const html = render(source)
+  assert.match(html, /<div class="child">\s*<p>body<\/p>\s*<\/div>/)
+  assert.ok(html.endsWith('</div>\n<p>after</p>'))
+  assert.equal((html.match(/<div/g) ?? []).length, 3)
+})
