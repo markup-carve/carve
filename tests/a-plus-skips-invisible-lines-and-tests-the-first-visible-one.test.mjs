@@ -61,6 +61,22 @@ test('a note definition keeps its lazy body, so nothing follows it', () => {
   assert.equal(html('- +\n[^q]: n\n# H\n'), '<ul><li><h1 id="H">H</h1></li></ul>')
 })
 
+test('an earlier note marker claims a paragraph offered through a later note', () => {
+  for (const [first, second, paragraph] of [
+    ['[^a]: +', '[^b]: +', 'para'],
+    ['> [^a]: +', '> [^b]: +', '> para'],
+    ['- [^a]: +', '  [^b]: +', '  para'],
+    ['- > [^a]: +', '  > [^b]: +', '  > para'],
+  ]) {
+    const source = `${first}\n${second}\n${paragraph}\n\n[^a] [^b]\n`
+    const rendered = html(source)
+    assert.match(rendered, /<li id="fn1"><p>para<a href="#fnref1"/, source)
+    assert.match(rendered, /<li id="fn2"><p><a href="#fnref2"/, source)
+  }
+  assert.equal(html('[^a]: +\n[^a]: +\n flush\n\nsee[^a]\n'),
+    '<p>flush</p><p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p><section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p></li></ol></section>')
+})
+
 test('a nested + sees past an erased line left of its marker', () => {
   assert.equal(html('- a\n  * +\n%% c\n  after\n'), html('- a\n  * +\n  after\n'))
 })

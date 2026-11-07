@@ -4603,8 +4603,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         if (k < lines.length && closes(k)) k++
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
       } else if (FOOTNOTE_DEF.test(rest)) {
+        const offered = CONT_MARKER.test(FOOTNOTE_DEF.exec(rest)[2]) && at === column
         k++
-        while (k < lines.length && foldablePlainLine(view(k))) k++
+        while (k < lines.length && foldablePlainLine(view(k)) &&
+            (!offered || docColumn(lines[k], view(k)) !== column)) k++
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
         const attr = rest[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
