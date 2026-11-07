@@ -5594,7 +5594,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (foldablePlainLine(ind(i).rest)) {
           for (let k = i + 1; k < next; k++) {
             const measured = ind(k)
-            if ((measured.L?.col ?? measured.col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN && startsParagraphBlock(measured.rest, false)) {
+            if ((measured.L?.col ?? measured.col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN && opensAuthoredBase(measured.rest)) {
               next = k
               break
             }
