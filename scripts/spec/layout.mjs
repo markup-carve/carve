@@ -3519,6 +3519,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // After the block a marker-line `+` takes, the item keeps a blank or a text
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
+  let endedPulledFence = null
+  const laterCloserCache = new Map()
   let start = 0
   if (allowFrontmatter && lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -3527,6 +3529,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
+    // A pulled, unpaired code fence is only the block before its first blank.
+    // Close its walk frame before deciding who owns that blank and the next line.
+    if (top().kind === 'fence' && top().once === at) {
+      endedPulledFence = { col: top().pullCol, host: top().pullHost, at }
+      frames.pop()
+    }
     if (skipped) {
       const raw = throughQuotes(lines[at], skipped.hostIndex).rest
       let rest = trimWsStart(raw)
@@ -3882,7 +3890,36 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (f.plusShift && m.col < f.plusShift.col) f.plusShift = undefined
       if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
     }
-    const form = classify(m.rest, owner, at, m.col, missed)
+    let form = classify(m.rest, owner, at, m.col, missed)
+    if (endedPulledFence && at > endedPulledFence.at && (form.kind === 'blank' || form.kind !== 'text' && form.family !== 'code')) endedPulledFence = null
+    const hasLaterCloser = endedPulledFence && form.family === 'code' && owner.para && (() => {
+      const depth = quotePrefix(lines[at]).depth
+      const run = FENCE.exec(m.rest)?.[1] ?? ''
+      const key = `${depth}:${owner.col}:${m.col}:${run}`
+      const cached = laterCloserCache.get(key)
+      if (cached && at < cached.through) return cached.paired
+      for (let next = at + 1; next < lines.length; next++) {
+        const level = stripQuotes(lines[next], depth)
+        if (!level) {
+          laterCloserCache.set(key, { through: next, paired: false })
+          return false
+        }
+        const ind = walkIndent(level.rest)
+        if (ind.rest !== '' && ind.col < owner.col) {
+          laterCloserCache.set(key, { through: next, paired: false })
+          return false
+        }
+        if (ind.rest !== '' && form.closes(ind.rest, ind.col)) {
+          laterCloserCache.set(key, { through: next, paired: true })
+          return true
+        }
+      }
+      laterCloserCache.set(key, { through: lines.length, paired: false })
+      return false
+    })()
+    const foldedFenceAfterPull = endedPulledFence && form.family === 'code' && !hasLaterCloser && owner.para &&
+      m.col > endedPulledFence.col && m.col >= endedPulledFence.host
+    if (foldedFenceAfterPull) form = { kind: 'text', interrupts: false, kept: true }
     // A lazy line folds into a line block's open stanza and closes nothing,
     // so the block's closer still finds it (PART 0 S4). An open payload span
     // cannot carry that stanza past a quote the line missed (carve#5062).
@@ -4071,7 +4108,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const attached = plusFollower && owner.termShift !== undefined && owner.last === 'dd'
       const cut = afterPlus || attached ? owner.termShift : Math.max(owner.cut, carried(owner), owner.closedList?.shift ?? 0)
       const moved = !(owner.para || !closedColumn || plusFollower)
-      lead(moved ? owner.canon : Math.max(m.col - cut, owner.canon))
+      lead(foldedFenceAfterPull ? m.col : moved ? owner.canon : Math.max(m.col - cut, owner.canon))
       owner.plusLine = moved && CONT_MARKER.test(m.rest) ? at : undefined
       // A lone `+` the walk closed an indented list at is still that list's
       // marker to the readers (PART 0 S3): what it attaches keeps the list's shift.
@@ -4139,7 +4176,39 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner.openTerm = false
       }
       if (form.kind === 'fence' || form.kind === 'colon') {
-        frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon,
+        let once
+        if (form.family === 'code' && plusFollower && attachedTo?.host.kind === 'item' &&
+            attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1]?.line === attachedTo.host.line) {
+          const depth = attachedTo.depth
+          const openerCol = walkIndent(stripQuotes(lines[at], depth)?.rest ?? lines[at]).col
+          let blank = -1
+          for (let next = at + 1; next < lines.length; next++) {
+            const level = stripQuotes(lines[next], depth)
+            if (!level) break
+            const ind = walkIndent(level.rest)
+            if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+            if (ind.rest === '') {
+              blank = next
+              break
+            }
+          }
+          if (blank !== -1) {
+            let paired = false
+            for (let next = at + 1; next < lines.length; next++) {
+              const level = stripQuotes(lines[next], depth)
+              if (!level) break
+              const ind = walkIndent(level.rest)
+              if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+              if (next >= blank && ind.col <= openerCol && form.closes(ind.rest, ind.col)) {
+                paired = true
+                break
+              }
+            }
+            if (!paired) once = blank
+          }
+        }
+        frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon, once,
+          pullCol: once === undefined ? undefined : col, pullHost: once === undefined ? undefined : attachedTo.host.markerCol,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
           entryLast: invisibleInEntry ? owner.last : undefined })
         return
