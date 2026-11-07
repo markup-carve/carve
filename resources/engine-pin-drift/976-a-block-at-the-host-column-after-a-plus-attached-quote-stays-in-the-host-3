@@ -1,0 +1,1 @@
+Spec model now ends a plus-attached quote at a block on the host content column (CARVE-P0-024); the pinned carve-js build still puts that block after the host (carve#5427).

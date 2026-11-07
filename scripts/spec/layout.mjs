@@ -3668,13 +3668,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const follower = classifyAt(frames.length - 2, below.rest, hostParent, at, below.col)
       if (follower.interrupts && follower.kind !== 'item' && follower.kind !== 'colon-close') {
         const col = plusHost.markerCol
-        const end = at + attachedBlockLength(lines, at, (line) => {
+        let end = at + attachedBlockLength(lines, at, (line) => {
           const level = stripQuotes(line, prefixes)
           if (level === null) return null
           const ind = walkIndent(level.rest)
           if (plusHost.kind === 'dd' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
+        const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
+        const opener = attachedOpener(lines.slice(at, end).map((line) => stripQuotes(line, prefixes)?.rest ?? ''), col)
+        end = attachedQuoteEnd(at, end, opener, (k) => level(k).col >= plusHost.col, (k) => level(k).rest)
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
         frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col, host: plusHost }
@@ -5600,6 +5603,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             }
           }
         }
+        next = attachedQuoteEnd(i, next, attachedOpener(lines.slice(i, next), ind(i).col),
+          (k) => (ind(k).L?.col ?? ind(k).col) >= sourceDefCol + FOOTNOTE_BODY_COLUMN, (k) => ind(k).rest)
         bodyLines[0] = ''
         // A follower the frame pass framed LAZY stands at the note's reader
         // column; the body reads it from column 0 like every other body line.
@@ -6150,6 +6155,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                   if (reachesBody(k) && opensAuthoredBase(ind(k).rest)) { end = k; break }
                 }
               }
+              end = attachedQuoteEnd(i, end, opener, reachesBody, (k) => ind(k).rest)
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
@@ -8223,6 +8229,16 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
   }
 }
 
+// A `+`-attached quote is reached only through its `>`: a later line at the host's
+// content column that cannot fold into the quote's paragraph is the host's (CARVE-P0-024, PART 0 S4).
+function attachedQuoteEnd(start, end, opener, reachesHost, rest) {
+  if (!QUOTE.test(rest(start + opener))) return end
+  for (let k = start + opener + 1; k < end; k++) {
+    if (!QUOTE.test(rest(k)) && reachesHost(k) && (!foldablePlainLine(rest(k)) || isDefinitionOrAttributeLine(rest(k)))) return k
+  }
+  return end
+}
+
 // A leading comment, attribute run or kept note belongs to the one block being attached.
 // Locate its actual opener before checking whether it is a colon frame.
 function attachedOpener(attached, column) {
@@ -9578,6 +9594,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           }
         }
       }
+      end = attachedQuoteEnd(i, end, opener, (k) => ind(k).col >= contentCol, (k) => ind(k).rest)
       const paraBlock = foldablePlainLine(ind(i + opener).rest)
       const deflistBlock = DEFLIST_TERM.test(ind(i + opener).rest)
       const taken = []

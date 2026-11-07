@@ -1,0 +1,68 @@
+A block at the host column after a plus-attached quote stays in the host
+
+```
+- +
+> q
+  # g
+.
+<ul>
+  <li>
+    <blockquote><p>q</p></blockquote>
+    <h1 id="g">g</h1>
+  </li>
+</ul>
+```
+
+```
+- +
+> q
+  ::: w
+  :::
+.
+<ul>
+  <li>
+    <blockquote><p>q</p></blockquote>
+    <div class="w">
+
+    </div>
+  </li>
+</ul>
+```
+
+```
+[^1]: +
+> q
+  # g
+
+[^1]
+.
+<p><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote><p>q</p></blockquote>
+      <h1 id="g">g</h1>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+:: t
+: +
+> q
+  ::: w
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <blockquote><p>q</p></blockquote>
+    <div class="w">
+
+    </div>
+  </dd>
+</dl>
+```
