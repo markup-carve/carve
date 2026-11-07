@@ -26,8 +26,8 @@ for (const opener of ['```', '~~~', '::: note']) {
   }
 }
 
-test('a closer past the blank still closes the attached fence', () => {
-  assert.match(renderDoc(parse('[^f]: +\n```\na\n\n  ```\n  c\n\nx[^f]\n')), /<pre><code>a\n\n<\/code><\/pre>/)
+test('an indented fence line past the blank opens a second fence', () => {
+  assert.match(renderDoc(parse('[^f]: +\n```\na\n\n  ```\n  c\n\nx[^f]\n')), /<pre><code>a\n<\/code><\/pre>\s*<pre><code>c\n\n<\/code><\/pre>/)
 })
 
 test('an own-line plus in a definition body keeps its fence open', () => {
