@@ -3076,14 +3076,17 @@ function bodyFenceEnd(bodyLines, k) {
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. A valid opener always
-// opens (§10 I4), under a paragraph too.
-function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt) {
+// opens (§10 I4), under a paragraph too. An attachment boundary in `bounds`
+// ends a fence opened before it (PART 0 S1, carve#5408).
+function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, bounds = undefined) {
   for (let k = 0; k < bodyLines.length; k++) {
     k = lineBlockEnd(bodyLines, k)
     if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
     if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2], f[1]) === null) continue
-    const end = bodyFenceEnd(bodyLines, k)
+    const closer = bodyFenceEnd(bodyLines, k)
+    const boundary = bounds?.find((b) => b > k && (closer === -1 || b <= closer))
+    const end = boundary === undefined ? closer : boundary - 1
     if (end !== -1) {
       k = end
       continue
@@ -5623,7 +5626,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (fenceSeen) break
         }
         if (fenceKnownShut === bodyLines.length) return -1
-        const k = descriptionOpenFenceAt(bodyLines, lines, at, FOOTNOTE_BODY_COLUMN, endsNoteAt)
+        const k = descriptionOpenFenceAt(bodyLines, lines, at, FOOTNOTE_BODY_COLUMN, endsNoteAt, state.attachmentBoundaries?.get(bodyLines))
         if (k === -1) fenceKnownShut = bodyLines.length
         return k
       }
@@ -6045,6 +6048,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // The marker-line content stands at the body column, not at the marker.
             pushBody(stripIndent(dm[2]).replace(/[ \t]+$/, ''), i - 1, sourceBodyColumn)
           }
+          // An attachment boundary ends the block before it, so the fold reads the lines after it (carve#5408).
+          const ddParagraphOpen = () => {
+            const from = state.attachmentBoundaries?.get(bodyLines)?.at(-1)
+            return bodyLeavesParagraphOpen(from === undefined ? bodyLines : bodyLines.slice(from))
+          }
           const endsBodyAt = (at) => {
             const cur = lines[at] ?? ''
             return entryAtOwner(at) ||
@@ -6222,7 +6230,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (verseSpanEnded && !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
             if (COMMENT_LINE.test(dedented) && !bodyHoldsLiveSpan()) {
               openFence = bodyHasFenceCandidate
-                ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt)
+                ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines))
                 : -1
               if (openFence !== -1) break
             }
@@ -6269,17 +6277,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (authoredCol > 0 && authoredCol < bodyColumn && (!inItem || QUOTE.test(lastBlock)) &&
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
                  QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented))) &&
-                descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) === -1 &&
-                bodyLeavesParagraphOpen(bodyLines)) {
+                descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) === -1 &&
+                ddParagraphOpen()) {
               pushBody(lazyFrame(dedented))
               i++
               continue
             }
-            openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt) : -1
+            openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) : -1
             if (openFence !== -1) break
             if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
                 (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
-                bodyLeavesParagraphOpen(bodyLines)) {
+                ddParagraphOpen()) {
               pushBody(lazyFrame(dedented))
               i++
               continue
@@ -6314,7 +6322,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (isTableRow(dedented)) break
             // A line folded into the open paragraph leaves it open, whatever its shape, so the scan is not repeated per line.
             if ((foldablePlain(dedented) || lazyFence || CAPTION.test(dedented) || isBulletLine(dedented) || isOrderedMarkerLine(dedented)) &&
-                (foldedParagraphAt === bodyLines.length || bodyLeavesParagraphOpen(bodyLines))) {
+                (foldedParagraphAt === bodyLines.length || ddParagraphOpen())) {
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
               const foldedMarker = matchMarkerAt(indentCols(dedented))
