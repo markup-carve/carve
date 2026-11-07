@@ -2,7 +2,7 @@
 page: edge-footnotes
 ---
 
-## An indented fence line after a note-attached fence opens a second fence
+## A paragraph after a note-attached fence closed past a blank takes a lazy line
 
 PART 9 §17 L3 (carve#5410). The indented fence line is not a closer at the attached fence's column. The first blank ends that fence, the indented line opens another, and the column-0 line leaves the note.
 
