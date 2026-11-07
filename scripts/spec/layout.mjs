@@ -3239,6 +3239,19 @@ function bodyOpenCommentRun(bodyLines) {
 
 // §17 L3: an accepted `+` ends any code, raw or colon fence its body holds, so
 // the fence parse stops at the separator the marker inserts next.
+// Whether the block a marker-line `+` took at `start` is a fence or colon body with no
+// closer in its host, which ends it at its first blank (PART 0 S1, §17 L3).
+// The host's lines run to the first nonblank line below `bodyCol` after the block.
+function endsAtFirstBlank(lines, start, end, bodyCol) {
+  let last = end
+  while (last < lines.length && (isBlank(lines[last]) || indentCols(lines[last]).col >= bodyCol)) last++
+  const host = lines.slice(start, last).map((line) => indentCols(line).rest === '' ? '' : trimWsStart(line))
+  const opener = attachedOpener(host, 0)
+  const colon = COLON_FENCE.exec(host[opener] ?? '')
+  if (colon && parseColonOpener(colon[2]) !== null) return findColonCloser(host, opener, colon[1].length) === -1
+  return FENCE.test(host[opener] ?? '') && !hasCloser(host, opener)
+}
+
 function markAttachmentBoundary(state, bodyLines) {
   const bounds = state.attachmentBoundaries ??= new WeakMap()
   bounds.set(bodyLines, [...(bounds.get(bodyLines) ?? []), bodyLines.length])
@@ -3638,7 +3651,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const prefixes = followsMarkerLine ? frames.filter((f) => f.kind === 'quote').length : 0
     const hostLevel = prefixes > 0 ? stripQuotes(src, prefixes) : null
     const below = hostLevel ? walkIndent(hostLevel.rest) : m
-    if ((plusHost.kind === 'item' || plusHost.kind === 'dd') && below.rest !== '' && below.col === plusHost.markerCol &&
+    if ((plusHost.kind === 'item' || plusHost.kind === 'dd' || plusHost.kind === 'note') && below.rest !== '' && below.col === plusHost.markerCol &&
         below.col >= hostParent.col && followsMarkerLine && !stackedOnMarker(hostParent, plusHost) &&
         !CONT_MARKER.test(below.rest)) {
       const follower = classifyAt(frames.length - 2, below.rest, hostParent, at, below.col)
@@ -5582,6 +5595,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const taken = lines.slice(i, next).map(stripLazyLead)
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
+        // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
+        if (isBlank(lines[next] ?? '') && endsAtFirstBlank(lines, i, next, sourceDefCol + FOOTNOTE_BODY_COLUMN)) markAttachmentBoundary(state, bodyLines)
         // S4 reads the lines after an attached paragraph against it (PART 0).
         if (!leavesFenceOpen(taken) && !bodyLeavesParagraphOpen(taken)) bodyLines.push('')
         i = next
@@ -6023,6 +6038,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           i++
           // Set by a `+` the walk accepted: the next line begins its block (§17 L3).
           let attachPending = !leadTab && CONT_MARKER.test(trimWs(dm[2]))
+          let markerLinePlus = attachPending
           let attachedFrom = -1
           if (leadTab) pushBody(lazyFrame(trimLineEnd(dm[2])), i - 1)
           else if (!attachPending) {
@@ -6121,6 +6137,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
               for (let k = i; k < end; k++) pushBody(lines[k], k)
+              if (markerLinePlus && isBlank(lines[end] ?? '') && endsAtFirstBlank(lines, i, end, bodyColumn)) markAttachmentBoundary(state, bodyLines)
+              markerLinePlus = false
               attachPending = false
               i = end
               continue
