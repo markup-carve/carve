@@ -1,11 +1,11 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-07",
+    "date": "2026-11-08",
     "spec": "731ec583b30cf764d65b363327e5cbefff903c92",
-    "js": "22d8754c6fbbdcde4a48ca74ead461e4754a684b",
-    "php": "998469b221f42d268b99e0347c058d566911124d",
-    "rust": "71aa4830541c5517d3bd0c41c97fd967866ee05f",
+    "js": "a01aa78284e0035bb63a94d2cdfcb50cc599789d",
+    "php": "11a17069774f039b38aa818b069f3861b2633105",
+    "rust": "d741a32223e6f27a222cc72648bf9382f8b650ba",
     "documents": 4540
   },
   "differences": [
@@ -386,39 +386,6 @@
             "unclosed-code-fence",
             4,
             2
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/758-a-hosted-footnote-keeps-a-heading-at-its-body-floor.crv",
-      "reason": "The hosted note boundary moved with carve-js#4655 and carve-php#4893; Rust still places an extra overindent diagnostic here.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "duplicate-heading-id",
-            4,
-            5
-          ]
-        ],
-        "php": [
-          [
-            "duplicate-heading-id",
-            4,
-            5
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-heading-id",
-            3,
-            3
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            5
           ]
         ]
       }
@@ -1365,28 +1332,6 @@
       }
     },
     {
-      "file": "tests/corpus/967-an-outer-item-s-paragraph-after-a-nested-attached-fence-loosens-it.crv",
-      "reason": "Nested attached-fence ownership moved with carve-js#4670 and carve-rs#4047; their fence diagnostics still differ from PHP.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ],
-        "php": [],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/972-an-unclosed-attached-colon-ends-at-its-first-blank-4.crv",
       "reason": "Attached colon lifetime moved with carve-js#4642, carve-php#4847, and carve-rs#4040; the current lint locations differ.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -1627,19 +1572,24 @@
       }
     },
     {
-      "file": "tests/corpus/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line-2.crv",
-      "reason": "Nested item resumption moved with carve-js#4670 and carve-rs#4051; Rust alone reports overindentation.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
+      "file": "tests/corpus/977-a-nested-item-resumes-after-its-attached-fence-with-an-empty-line.crv",
+      "reason": "The PHP parser now renders the closed nested attached fence, but PHP lint still reports both fence lines as unclosed; carve-php#4899 gives the expected diagnostic result.",
+      "issue": "https://github.com/markup-carve/carve-php/issues/4899",
       "diagnostics": {
         "js": [],
-        "php": [],
-        "rust": [
+        "php": [
           [
-            "list-item-block-overindented",
-            9,
-            5
+            "unclosed-code-fence",
+            3,
+            3
+          ],
+          [
+            "unclosed-code-fence",
+            7,
+            3
           ]
-        ]
+        ],
+        "rust": []
       }
     }
   ]

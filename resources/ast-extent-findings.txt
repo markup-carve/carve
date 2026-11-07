@@ -72,3 +72,4 @@ carve-rs  ends-past-last-child  block_quote  2  markup-carve/carve#5246
 carve-php  ends-past-last-child  block_quote  3  markup-carve/carve#5231
 carve-php  ends-past-last-child  definition_description  4  markup-carve/carve#5231
 carve-php  ends-past-last-child  footnote  4  markup-carve/carve#5231
+carve-php  empty-span-covers-more  block_quote  1  markup-carve/carve-php#4898
