@@ -13,7 +13,7 @@ page: edge-lists
   * +
   ::: note
 
-    > q
+  > q
 ```
 
 ```html

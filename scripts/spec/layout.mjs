@@ -3535,6 +3535,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       endedPulledFence = { col: top().pullCol, host: top().pullHost, at }
       frames.pop()
     }
+    // So is an unclosed colon block a marker-line `+` took: its first blank
+    // ends it with the host's one block (carve#5359), and later lines keep their columns.
+    const endedColon = frames.length - 2
+    if (top().kind === 'colon' && frames[endedColon].host && at >= frames[endedColon].once) {
+      const { host } = frames[endedColon]
+      frames.length = endedColon
+      frames.push({ ...host, para: false, last: 'colon' })
+    }
     if (skipped) {
       const raw = throughQuotes(lines[at], skipped.hostIndex).rest
       let rest = trimWsStart(raw)
@@ -3641,7 +3649,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         })
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
-        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col }
+        frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col, host: plusHost }
         if (trace) afterPlusBlock = { end, path: ownerPath(), col: plusHost.col }
       }
     }
@@ -9624,6 +9632,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) || matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
         }
       }
+      // A marker that ends a descendant's attached block ends its unclosed colon too.
+      if (i === descendantBlockEnd && lm.rest !== '' && fence.colon.length > descendantAttachedColonDepth) {
+        fence.colon.length = descendantAttachedColonDepth
+        colonLineBlock.length = descendantAttachedColonDepth
+        colonBases.length = descendantAttachedColonDepth
+      }
       if (i <= wrappedAttrEnd) {
         const body = dedentMeasured(lm, line, contentCol)
         pushLine(body.text, body.meas)
@@ -9929,7 +9943,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (headSubActive && jReach < headSubCol &&
               (opensAuthoredBase(jm.rest) || jReach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
               !COMMENT_LINE.test(jm.rest)) headSubActive = false
-          if (descendantAttachmentEnded && opensSubBlock(jm.rest) && !itemShowsNothing()) list.tight = false
+          if (descendantAttachmentEnded && opensSubBlock(jm.rest) && !itemShowsNothing() && !(subCol >= 0 && jReach >= subCol)) list.tight = false
           if (!commentBelowChild && ((subCol >= 0 && jReach >= subCol) || (headSubActive && jReach >= headSubCol))) {
             // Content at or past the first sub-list's content column belongs to
             // the SUB-LIST, not this item -- a blank inside the sub-list must

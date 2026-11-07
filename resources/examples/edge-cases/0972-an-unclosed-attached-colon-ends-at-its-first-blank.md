@@ -42,16 +42,16 @@ page: edge-lists
 
 ```html
 <ul>
-  <li><p>a</p>
+  <li>a
     <ul>
       <li>
         <aside class="admonition note" aria-label="Note">
 
         </aside>
+        <ul>
+          <li>q</li>
+        </ul>
       </li>
-    </ul>
-    <ul>
-      <li>q</li>
     </ul>
   </li>
 </ul>
