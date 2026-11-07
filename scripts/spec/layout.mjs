@@ -4562,8 +4562,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const level = end < lines.length ? throughQuotes(lines[end], hostIndex) : null
     const basis = level ? lines[end] : lines[at]
     const rest = level?.rest ?? throughQuotes(lines[at], hostIndex)?.rest ?? lines[at]
+    const prefix = basis.slice(0, basis.length - rest.length).replace(/>$/, '> ')
     skipped = { host, at, end, hostIndex, column, fenced, brace: null,
-      lead: markerLead ?? basis.slice(0, basis.length - rest.length) + ' '.repeat(host.markerCanon - (refused ? 0 : host.box ?? 0)) }
+      lead: markerLead ?? prefix + ' '.repeat(host.markerCanon - (refused ? 0 : host.box ?? 0)) }
   }
 
   // A `%%%` span after a refused marker closes no item (PART 0 FAMILIES `invisible`, carve#5170),
@@ -4607,6 +4608,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
       } else if (FOOTNOTE_DEF.test(rest)) {
         const offered = CONT_MARKER.test(FOOTNOTE_DEF.exec(rest)[2]) && at === column
+        // A later definition with an immediate body owns that body even when
+        // an earlier marker is looking through invisible definitions.
+        let body = k + 1
+        while (body < lines.length && isBlank(lines[body])) body++
+        if (offered && body < lines.length &&
+            docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN) return k
         k++
         while (k < lines.length && foldablePlainLine(view(k)) &&
             (!offered || docColumn(lines[k], view(k)) !== column)) k++
@@ -5655,6 +5662,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const inheritedFenceOpens = new Set()
       const defLine = i
       let attachedFrom = -1
+      const passedNotes = []
+      let passedNoteBody = null
+      const earlierDefinitions = new Set(state.footnoteDefs.keys())
+      earlierDefinitions.add(labelKey(label))
       i++
       if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i])) {
         const attached = takeOneBlock(lines, i, state, ind(i).L?.col ?? ind(i).col)
@@ -5680,6 +5691,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const measured = ind(k)
           const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
           taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
+        }
+        for (const line of taken) {
+          const note = FOOTNOTE_DEF.exec(line)
+          if (note && COMMENT_LINE.test(note[2])) {
+            const key = labelKey(note[1])
+            passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key) })
+            earlierDefinitions.add(key)
+          }
         }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
@@ -5722,6 +5741,26 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
+        // An earlier marker may take a block past a later invisible note
+        // definition. Its attachment does not take that definition's own
+        // indented continuation, even when a blank separates the two.
+        if (passedNotes.length && isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
+          passedNoteBody = passedNotes.at(-1)
+          i = footnoteBlankRunEnd(lines, i, n)
+          continue
+        }
+        if (passedNoteBody && isFootnoteContinuationLine(lines[i])) {
+          passedNoteBody.body.push(dedent(lines[i], FOOTNOTE_BODY_COLUMN))
+          i++
+          continue
+        }
+        if (passedNoteBody && foldablePlainLine(measured.rest) &&
+            bodyLeavesParagraphOpen(passedNoteBody.body)) {
+          passedNoteBody.body.push(lazyFrame(measured.rest))
+          i++
+          continue
+        }
+        passedNoteBody = null
         if (measured.col === 0 && FOOTNOTE_DEF.test(measured.rest)) break
         // A marker short of the note body floor returns to a surviving item
         // or description owner, where it opens a list instead of extending
@@ -5867,6 +5906,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       } else {
         // A losing note is invisible, so definitions in its body must still register.
         parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
+      }
+      for (const passed of passedNotes) {
+        if (passed.register && passed.body.length && state.footnoteDefs.get(passed.key)?.length === 0) {
+          state.footnoteDefs.set(passed.key, parseBlocks(passed.body, state, false, true))
+        }
       }
       continue
     }
