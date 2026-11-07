@@ -8869,6 +8869,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let colonDescriptionColumn = -1
     let colonDescriptionParagraph = false
     let subCol = -1
+    // The first sub-list is the one a quote's `+` attached, so a blank ends it with the quote (§17 L3).
+    let subColQuoteAttached = false
     // A comment below the child's column ends it in the body parse (carve#3985).
     let commentBelowChild = false
     /*
@@ -9909,6 +9911,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             continue
           }
           const jReach = reachOf(jm, lines[j])
+          if (subColQuoteAttached) {
+            subCol = -1
+            subColQuoteAttached = false
+          }
           if (headSubActive && jReach < headSubCol &&
               (opensAuthoredBase(jm.rest) || jReach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(jm.rest)) &&
               !COMMENT_LINE.test(jm.rest)) headSubActive = false
@@ -10716,6 +10722,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (subCol < 0 && nm && nm.indent >= contentCol && !inDefBody && !stanzaPayload()) {
           subCol = reach + nm.markerWidth
           paraBeforeSublist = paragraphIsOpen()
+          subColQuoteAttached = quoteAttachedChildList
           // A marker carried by an open quote belongs to the quote's list.
           // Its later same-column sibling can be a new block of this item.
           if (quoteAttachedChildList) childList = null
