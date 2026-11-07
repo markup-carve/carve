@@ -20,6 +20,7 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+758-a-hosted-footnote-keeps-a-heading-at-its-body-floor  The pinned JS formatter writes the second heading at the item's column; the spec model reads it in the note after the attached heading (carve#5407).
 967-a-block-at-a-pulled-description-column-opens-in-the-description  The pinned JS formatter escapes the pulled heading; the spec model rereads it as description text (carve#5331).
 967-a-block-at-a-pulled-description-column-opens-in-the-description-2  The pinned JS formatter escapes the pulled heading before the document follower; the spec model rereads it as description text (carve#5331).
 967-a-block-at-a-pulled-description-column-opens-in-the-description-3  The pinned JS formatter escapes the pulled heading in an item; the spec model rereads it as description text (carve#5331).

@@ -3562,6 +3562,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const { host } = frames[endedBlock]
       frames.length = endedBlock
       frames.push({ ...host, para: false, last: 'colon' })
+    } else {
+      // After a closed attached block the host resumes at its content column too (CARVE-P0-024, carve#5407).
+      const ended = frames.findLastIndex((f) => f.host && f.once !== undefined && at >= f.once)
+      if (ended !== -1) {
+        const { host, last } = frames[ended]
+        frames.length = ended
+        frames.push({ ...host, para: false, last })
+      }
     }
     if (skipped) {
       const raw = throughQuotes(lines[at], skipped.hostIndex).rest

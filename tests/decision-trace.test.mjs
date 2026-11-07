@@ -126,7 +126,7 @@ test('the block a marker-line + takes at its marker column is traced in that con
     '2 S5 doc/dd:2 dd',
     '3 S5 doc/dd:2/quote:3 quote',
     '4 S4 doc/dd:2/quote:3 lazy',
-    '5 S5 doc blank',
+    '5 S5 doc/dd:2 blank',
     '6 S5 doc text',
   ])
   // A table is one block over its rows; the next marker is the item's sibling.
