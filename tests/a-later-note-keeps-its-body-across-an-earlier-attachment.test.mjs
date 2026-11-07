@@ -50,3 +50,13 @@ test('a losing later definition does not move its body into the earlier note', (
   assert.deepEqual(noteText(source, 'a'), [{ t: 'para', lines: ['para'] }])
   assert.deepEqual(noteText(source, 'b'), [{ t: 'para', lines: ['x'] }])
 })
+
+test('a note-shaped code payload does not claim the following continuation', () => {
+  const source = ['[^a]: +', '```', '[^b]: %%', '```', '', '  own', '', '[^a] [^b]', ''].join('\n')
+  const doc = parse(source)
+  assert.equal(doc.footnoteDefs.has('b'), false)
+  assert.deepEqual(doc.footnoteDefs.get('a'), [
+    { t: 'code', lang: '', title: null, text: '[^b]: %%\n' },
+    { t: 'para', lines: ['own'] },
+  ])
+})

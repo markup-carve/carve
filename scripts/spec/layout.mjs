@@ -5692,13 +5692,21 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
           taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
         }
-        for (const line of taken) {
+        // Only definitions in the invisible lead of the attached block can
+        // pass an earlier claim. A note-shaped line in its fenced payload is
+        // code, not a definition with a later body.
+        for (let lead = 0; lead < taken.length;) {
+          const line = taken[lead]
           const note = FOOTNOTE_DEF.exec(line)
           if (note && COMMENT_LINE.test(note[2])) {
             const key = labelKey(note[1])
             passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key) })
             earlierDefinitions.add(key)
           }
+          if (note || isOneLineComment(line) || isDefinitionLine(line)) { lead++; continue }
+          const attrs = tryAttrLine(taken, lead)
+          if (attrs) lead = attrs.next
+          else break
         }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
