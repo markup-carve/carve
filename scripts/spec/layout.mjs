@@ -3578,6 +3578,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       continue
     }
     let src = lines[at]
+    // A blank outside the quote that granted a `+` ends its attached block
+    // with the quote. The follower was read where it stood, so the walk may
+    // hold its frames without the quote frame that owns them (CARVE-P0-019).
+    if (attachedTo?.host.kind === 'quote' && isBlank(src) &&
+        stripQuotes(src, attachedTo.depth + 1) === null && attachedTo.endsAt(at)) {
+      frames.length = 0
+      frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
+      attachedTo = null
+    }
     let out = ''
     // Where the innermost quote prefix taken so far ends, in document columns.
     let viewDoc = 0
