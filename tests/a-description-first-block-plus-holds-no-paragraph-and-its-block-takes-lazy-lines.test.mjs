@@ -6,12 +6,12 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const html = (src) => renderDoc(parse(src)).trim()
 const flat = (src) => html(src).replace(/\n *(?=<)/g, '')
 
-test('a line without the quote prefixes refuses a description first-block + and folds as text (carve#4409)', () => {
-  assert.equal(flat('> :: t\n> : +\npara\n'), '<blockquote><dl><dt>t</dt><dd></dd></dl><p>para</p></blockquote>')
-  assert.equal(flat('> :: t\n> :   +\npara\n'), '<blockquote><dl><dt>t</dt><dd></dd></dl><p>para</p></blockquote>')
+test('a line without the quote prefixes refuses a description first-block + and leaves the quote (carve#5013)', () => {
+  assert.equal(flat('> :: t\n> : +\npara\n'), '<blockquote><dl><dt>t</dt><dd></dd></dl></blockquote><p>para</p>')
+  assert.equal(flat('> :: t\n> :   +\npara\n'), '<blockquote><dl><dt>t</dt><dd></dd></dl></blockquote><p>para</p>')
   assert.equal(flat('> :: t\n> : +\n- y\n'), '<blockquote><dl><dt>t</dt><dd></dd></dl></blockquote><ul><li>y</li></ul>')
-  assert.equal(flat('> > :: t\n> > : +\npara\n'), '<blockquote><blockquote><dl><dt>t</dt><dd></dd></dl><p>para</p></blockquote></blockquote>')
-  assert.equal(flat('> > :: t\n> > : +\n> q\n'), '<blockquote><blockquote><dl><dt>t</dt><dd></dd></dl><p>q</p></blockquote></blockquote>')
+  assert.equal(flat('> > :: t\n> > : +\npara\n'), '<blockquote><blockquote><dl><dt>t</dt><dd></dd></dl></blockquote></blockquote><p>para</p>')
+  assert.equal(flat('> > :: t\n> > : +\n> q\n'), '<blockquote><blockquote><dl><dt>t</dt><dd></dd></dl></blockquote><p>q</p></blockquote>')
 })
 
 test('the item twin reads the same way', () => {
