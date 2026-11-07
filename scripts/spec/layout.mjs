@@ -1100,7 +1100,8 @@ function findColonCloser(lines, openIdx, len, ownership = null, accepted = null)
       const row = ownership.events.get(ownership.offset + j)
       if (row?.form === 'closer' && row.owner === opened.owner) return j
     }
-    return -1
+    // An equal-width attached child can make the walk classify this frame's
+    // closer as another child opener. Keep the lexical answer in that case.
   }
   const first = COLON_FENCE.exec(lines[openIdx] ?? '')
   const stack = [{ length: len, mode: first ? parseColonOpener(first[2])?.mode : 'div' }]

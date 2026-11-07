@@ -58,6 +58,12 @@ test('an attached frame does not take the closer of a deeper child list', () => 
   assert.equal((html.match(/<div/g) ?? []).length, 3)
 })
 
+test('equal-width attached and outer divs leave following text outside the outer div', () => {
+  const source = ':::: outer\n- +\n:::: x\n\n  a\n  :::: \n::::\nafter\n'
+  const html = render(source)
+  assert.ok(html.endsWith('</div>\n<p>after</p>'))
+})
+
 test('a description-shaped paragraph grants no attachment column without a term', () => {
   const source = ':::: outer\n: +\n::: inner\n- item\n  :::\n:::\n::::\nafter\n'
   const html = render(source)
