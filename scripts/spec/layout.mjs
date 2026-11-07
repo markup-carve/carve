@@ -8230,10 +8230,12 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
 
 // A `+`-attached quote is reached only through its `>`: a later line without one that
 // cannot fold into the quote's paragraph ends it, and its column picks the owner (CARVE-P0-024, PART 0 S4).
+// A caption still captions the quote.
 function attachedQuoteEnd(start, end, opener, rest) {
   if (!QUOTE.test(rest(start + opener))) return end
   for (let k = start + opener + 1; k < end; k++) {
-    if (!QUOTE.test(rest(k)) && !DESCRIPTION_TEXT.test(rest(k)) && (!foldablePlainLine(rest(k)) || isDefinitionOrAttributeLine(rest(k)))) return k
+    if (!QUOTE.test(rest(k)) && !DESCRIPTION_TEXT.test(rest(k)) && !CAPTION.test(rest(k)) &&
+      (!foldablePlainLine(rest(k)) || isDefinitionOrAttributeLine(rest(k)))) return k
   }
   return end
 }

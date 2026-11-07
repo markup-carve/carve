@@ -58,3 +58,8 @@ for (const follower of [' # G', ' {.c}\n G', ' ::: w\n G\n :::']) {
     assert.match(modelTrace(src).find((r) => r.line === 3).owner, /^doc(\/div:3)?$/)
   })
 }
+
+test('a caption under a plus-attached quote still captions it', () => {
+  assert.equal(render('- text\n+\n> q\n^ cap\n- c\n'),
+    '<ul><li>text <figure><blockquote><p>q</p></blockquote><figcaption>cap</figcaption></figure></li><li>c</li></ul>')
+})
