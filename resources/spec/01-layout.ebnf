@@ -131,13 +131,14 @@
      comment span      `%%%` opener          exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
                                              line missing that owner,                                          B-comment-end
                                              host end or input end
-     attached block    accepted `+` and     its block boundary under   one next block in the marker's host;   PART 9 §17 L3,
-     (code fence)      a code opener         S1, its closer, a missed   an unclosed attached fence stops at    CARVE-P9-067,
-                                             line, or host/input end;    its first blank only when the `+`     carve#5304
-                                             first blank if unclosed     was on a marker line
+     attached block    accepted `+` and     closer, missed owner,      one next block in the marker's host;   PART 9 §17 L3,
+     (code fence)      a code opener         or host/input end; first  its opaque payload lasts to that       CARVE-P9-067,
+                                             blank only if unclosed      boundary                               carve#5304
+                                             after a marker-line `+`
      attached block    accepted `+` and     exact closer or host/input one next block in the marker's host;   PART 9 §17 L3,
-     (colon body)      a colon opener        end; first blank if        a closed body retains its interior    B-div-end,
-                                             unclosed on a marker line blanks                                 carve#5359
+     (colon body)      a colon opener        end; first blank only if   a closed body retains its interior    B-div-end,
+                                             unclosed after a           blanks                                 carve#5359
+                                             marker-line `+`
      attached block    accepted `+` and     the attached block's own   one next block in the marker's host,   PART 9 §17 L3,
      (other)           another block opener  boundary, then the host    parsed under its ordinary family row   CARVE-P9-067
                                              resumes
