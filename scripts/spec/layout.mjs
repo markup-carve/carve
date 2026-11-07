@@ -9706,7 +9706,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !CONT_MARKER.test(lines[previousVisible(i - 1)] ?? '') &&
           (j >= n || ind(j).col < contentCol ||
             (ind(j).col === contentCol && !CONT_MARKER.test(ind(j).rest)))
-        const descendantFence = bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k]) || unfinishedDescendantFence
+        // A `+` attached fence that ended at this blank leaves no fence open (§17 L3, carve#5367).
+        const endsAtBoundary = state.attachmentBoundaries?.get(itemLines)?.includes(itemLines.length) ?? false
+        const descendantFence = !endsAtBoundary && bodyHasOpenCodeFence(itemLines, residueFence, itemLines.length, (k) => itemMeas[k]) || unfinishedDescendantFence
         if (descendantFence || closedMarkerFence) {
           // A descendant fence owns the full blank run, including one before
           // its closer. An unfinished fence also owns the run at its boundary.
