@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A definition marker after a block and paragraph ends the item
 
-PART 0 S4 (definition-body `markers`). A list item that holds a definition list ends at a description-shaped line on its marker column, even after a later block and paragraph.
+PART 0 S4 (definition-body `markers`). A later block ends a term-only definition list. A description-shaped line on the item's marker column then folds into the open paragraph.
 
 ::: compare
 
@@ -24,9 +24,9 @@ PART 0 S4 (definition-body `markers`). A list item that holds a definition list 
     </dl>
     <h1 id="H">H</h1>
     w
+: z
   </li>
 </ul>
-<p>: z</p>
 ```
 
 :::

@@ -435,9 +435,13 @@
                    container's marker column it ends that item, and with no
                    open term in the surviving context it is paragraph text:
                    `- item` / `  :: t` / `  : a` / `: b` renders `: b` as a
-                   paragraph after the list (corpus 657). This marker-column
-                   rule applies only while the item holds an open description;
-                   after it closes, a `: ` line is an ordinary lazy line
+                   paragraph after the list (corpus 657).
+                   The marker-column boundary holds only while the item's
+                   definition list is open, with an open term or description;
+                   the list ends at the first block outside it, or at a blank
+                   followed by such a block, after which a `: ` line at the
+                   item's marker column folds into the deepest open paragraph
+                   at every depth (carve#5368, carve#5373, carve#5379).
         invisible  as a list item: `:: t` / `%% c` / `: d` is one
                    description list (carve#4716). A comment line or `%%%`
                    span between a term and its description is the first

@@ -1,0 +1,148 @@
+An ended definition list releases its marker boundary
+
+```
+- a
+  :: t
+  x
+: d
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>t</dt>
+    </dl>
+    x
+: d
+  </li>
+</ul>
+```
+
+```
+- a
+  > +
+  :: t
+  x
+: d
+.
+<ul>
+  <li>a
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+      </dl>
+    </blockquote>
+    x
+: d
+  </li>
+</ul>
+```
+
+```
+- a
+  :: m
+  : d
+
+  p
+
+  : x
+: l
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>m</dt>
+      <dd>d</dd>
+    </dl>
+    <p>p</p>
+    <p>: x</p>
+  </li>
+</ul>
+<p>: l</p>
+```
+
+```
+- a
+  :: t
+
+  - n
+  - n
+
+  : u
+: z
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <ul>
+      <li>n</li>
+      <li>n</li>
+    </ul>
+    <p>: u
+: z</p>
+  </li>
+</ul>
+```
+
+```
+- a
+  :: m
+  - i
+: l
+.
+<ul>
+  <li>a
+    <dl>
+      <dt>m</dt>
+    </dl>
+    <ul>
+      <li>i
+: l</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+  :: t
+  > q
+
+  w
+: z
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <blockquote><p>q</p></blockquote>
+    <p>w
+: z</p>
+  </li>
+</ul>
+```
+
+```
+- a
+  > +
+  :: t
+    : d
+
+    q
+: d
+.
+<ul>
+  <li><p>a</p>
+    <blockquote>
+      <dl>
+        <dt>t</dt>
+        <dd>d</dd>
+      </dl>
+    </blockquote>
+    <p>q
+: d</p>
+  </li>
+</ul>
+```
