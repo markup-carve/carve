@@ -1,1 +1,0 @@
-The pinned carve-js build loosens the outer item when a blank ends a nested attached colon block; the spec model keeps that list tight under PART 9 §17 L1 and L3 (carve#5359).

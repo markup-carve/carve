@@ -42,7 +42,7 @@ page: edge-lists
 
 ```html
 <ul>
-  <li>a
+  <li><p>a</p>
     <ul>
       <li>
         <aside class="admonition note" aria-label="Note">
