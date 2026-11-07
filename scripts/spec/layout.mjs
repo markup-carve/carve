@@ -6940,7 +6940,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             qNestedTable[depth] = false
             return settle(false, depth + 1)
           }
-          if (blockStart && host.kinds.at(-1) === 'description' && CONT_MARKER.test(inner.rest)) return settle(false, depth + 1)
+          if (blockStart && host.kinds.at(-1) === 'description' && host.descriptionParagraph === false) {
+            return settle(false, depth + 1)
+          }
           depth++
           if (QUOTE.test(inner.rest)) text = inner.rest
           if (!QUOTE.test(text)) {
@@ -7212,8 +7214,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const nestedQuoteEnds = nestedQuoteText !== null && !nestedQuoteOpensParagraph(nestedQuoteText, blockStart || !qOpenPara, idx) && !keptNested
         const nestedItemEnds = !qOpenPara && !!matchMarkerAt(meas) &&
           !opensParagraph(l, true, false, prefixMemo(state, lines, idx).paragraph)
-        // A description's first-block `+` opens no paragraph, as an item's does not (CARVE-P9-067).
-        const descriptionPlus = blockStart && qHost.kinds.at(-1) === 'description' && CONT_MARKER.test(inner0.rest)
+        // The description host already decided whether its body left a
+        // paragraph open. Use that answer for every first body line, including
+        // a refused attachment marker rewritten as an invisible comment.
+        const descriptionEndsPara = blockStart && qHost.kinds.at(-1) === 'description' &&
+          qHost.descriptionParagraph === false
         const hostedBlock = hostedBlockAt(qHost, inner0, popped)
         // An item line under an item's paragraph starts the next item, so a
         // comment or attribute item closes that paragraph (corpus 610, carve#3268).
@@ -7231,7 +7236,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }), 0) !== null
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionPlus ||
+             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
