@@ -8762,6 +8762,11 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
 // pattern is anchored at exactly the same character, so the match is the same
 // match; the indent it would have reported is `col`, which the measurement
 // already carries.
+// A quote whose only content is a `+`: it attaches the next block at the quote's column (§17 L3).
+const quotePlusMarker = (meas) => /^>[ \t]/.test(meas.rest) && CONT_MARKER.test(trimWs(meas.rest.slice(1)))
+  ? { indent: meas.col, markerWidth: 1, text: meas.rest.slice(1) }
+  : null
+
 function matchMarkerAt(meas, tabOrigin = 0) {
   if (meas === undefined) return null
   // The thematic break is tested before a list marker, wherever the line stands (PART 2).
@@ -10145,7 +10150,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           matchMarkerAt(ind(idx))?.indent === lm.col, lm.col)
       }
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
-        const above = matchMarkerAt(ind(i - 1))
+        let above = matchMarkerAt(ind(i - 1))
+        // A `> +` quote, alone or after a list marker, attaches at its own column too (carve#5510).
+        const quoteHost = above ? { col: above.indent + above.markerWidth + indentCols(above.text).col, rest: indentCols(above.text).rest } : ind(i - 1)
+        above = (above && CONT_MARKER.test(trimWs(above.text)) ? null : quotePlusMarker(quoteHost)) ?? above
         if (above && above.indent === lm.col && lm.col >= contentCol && CONT_MARKER.test(trimWs(above.text))) {
           descendantAttachedColonDepth = fence.colon.length
           descendantBlockEnd = attachedBlockEnd(lines, i, state, (idx) =>
@@ -11186,7 +11194,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             else break
           }
           let host = above >= 0 ? ind(previousVisible(above)) : null
-          for (let marker; host && (marker = matchMarkerAt(host)); ) {
+          for (let marker; host && ((marker = matchMarkerAt(host)) || (marker = quotePlusMarker(host))); ) {
             const next = indentCols(marker.text)
             host = CONT_MARKER.test(trimWs(marker.text)) && marker.indent === lm.col && marker.indent > baseIndent ? null : { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
             if (host === null) {
