@@ -5792,10 +5792,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (note) {
             const key = labelKey(note[1])
             if (COMMENT_LINE.test(note[2])) {
-              const firstBody = taken.slice(lead + 1).find(next => !isBlank(next) && !isOneLineComment(next))
+              const firstBodyIndex = taken.findIndex((next, index) => index > lead && !isBlank(next) && !isOneLineComment(next))
+              const firstBodyColumn = firstBodyIndex === -1 ? null :
+                (authoredBraceColumns.get(lines)?.[i + firstBodyIndex] ?? ind(i + firstBodyIndex).col)
               passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key),
                 losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
-                hasFirstBody: firstBody !== undefined && indentCols(firstBody).col >= FOOTNOTE_BODY_COLUMN })
+                firstBodyColumn,
+                hasFirstBody: firstBodyColumn !== null && firstBodyColumn >= FOOTNOTE_BODY_COLUMN })
             }
             earlierDefinitions.add(key)
           }
@@ -6038,7 +6041,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const continuation = passed.body.map(line => {
             // The ownership walk used a sentinel for a marker it could not
             // assign to the outer note. At this note's column it is a marker.
-            const content = line === state.refusedNoteBody[2] ? '+' : line
+            const content = line === state.refusedNoteBody[2] && passed.firstBodyColumn === FOOTNOTE_BODY_COLUMN ? '+' : line
             return isBlank(content) ? content : ' '.repeat(FOOTNOTE_BODY_COLUMN) + content
           })
           bodyLines.splice(at, 0, ...continuation)

@@ -5,6 +5,7 @@ import { parse } from '../scripts/spec/layout.mjs'
 for (const [name, first, later] of [
   ['a loose list', '- a', '  - b'],
   ['a continuation marker', '- a', '  +\n  para'],
+  ['a marker below a deeper list', '  - a', '  +\n  para'],
   ['an open fence', '```', '  more'],
 ]) {
   test(`a passed note reads ${name} as one body`, () => {
