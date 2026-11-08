@@ -4747,7 +4747,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const own = lines.slice(from, last).map(view)
       // T6: a table's rows stay its rows at any indent, so the block ends where they do.
       const rows = own[0] !== null && isTableRow(own[0]) ? own.map((line) => (line !== null && (isTableRow(trimWsStart(line)) || CONT_ROW.test(trimWsStart(line))) ? trimWsStart(line) : line)) : own
-      return !own.includes(null) && takeOneBlock(rows, 0, {}, 0).next >= own.length
+      if (own.includes(null)) return false
+      // An open code payload keeps reading through the `+` (PART 0 S1, carve#5484).
+      const asking = last === at ? view(lines[at]) : null
+      const probe = rows === own && asking !== null && CONT_MARKER.test(trimWs(asking)) ? [...own, asking] : rows
+      const next = takeOneBlock(probe, 0, {}, 0).next
+      return next >= own.length && (probe === rows || next === own.length)
     }
     return { host, depth, endsAt, frames: frames.slice() }
   }
@@ -8007,7 +8012,9 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   if (fenced !== -1) return fenced + 1
   let end = start
   const stopAt = Math.min(lines.length, cap)
-  while (end < stopAt && !endsBlock(end)) end++
+  // An unclosed code fence's payload takes no `+` (PART 0 S1, §17 L3, carve#5484).
+  const code = isCodeBlockOpener(lines[opener] ?? '')
+  while (end < stopAt && !(endsBlock(end) && !(code && end > opener && CONT_MARKER.test(lines[end])))) end++
   return end
 }
 
