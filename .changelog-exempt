@@ -147,3 +147,8 @@
 3520: 0.1.11 - re-measures the AST conformance ledgers at the current engine pins. Measurement ledger.
 3539: 0.1.11 - moves the engine pins for the cut and re-measures the lint, AST and roundtrip ledgers. Pin bump.
 3541: 0.1.11 - moves the carve-php and carve-js pins and retires the AST span row the carve-php pin satisfies. Pin bump.
+5252: 0.1.14 - classifies AST ingest differences at the engine pins. Measurement ledger.
+5259: 0.1.14 - moves engine pins and reconciles resolved drift. Pin bump and measurement ledger.
+5280: 0.1.14 - moves the final engine pins and reconciles conformance ledgers. Pin bump and measurement ledger.
+5282: 0.1.14 - moves the carve-js pin past comment boundary fixes and retires drift rows. Pin bump and measurement ledger.
+5293: 0.1.14 - reconciles cross-engine ledgers after a carve-js pin. Measurement ledger.
