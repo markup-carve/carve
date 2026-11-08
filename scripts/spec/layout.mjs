@@ -4412,8 +4412,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A refused note marker has no paragraph to carry past a quote prefix
         // it did not receive. Its ordinary body lines still reach the note by
         // their own prefix and column (PART 9 §17 L3, carve#5524).
-        const quotedRefusedNote = frame.kind === 'note' && refusedPlus.at(-1) === at &&
-          frames.some((f) => f.kind === 'quote')
+        const quotedRefusedNote = frame.kind === 'note' && refusedPlus.at(-1) === at && skipped?.host === frame &&
+          frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
         frame.para = !quotedRefusedNote && frame.plus !== at &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
         frame.last = 'para'
