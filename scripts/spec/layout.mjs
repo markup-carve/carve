@@ -10556,7 +10556,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             !FENCE.test(lm.rest) && !nestedVerbatim() && i >= descendantBlockEnd &&
             !(nestedOpaque?.kind === 'comment' && COMMENT_FENCE.exec(lm.rest)?.[1].length === nestedOpaque.run.length)) {
           subCol = -1
-          if (!COMMENT_LINE.test(lm.rest) && !isDefinitionOrAttributeLine(lm.rest)) childList = null
+          // An attribute line opens the next list as its own, so it ends the child list (§17 L1).
+          if (!COMMENT_LINE.test(lm.rest) && !FOOTNOTE_DEF.test(lm.rest) && !isDefinitionLine(lm.rest)) childList = null
           // A line still in the marker-line child's column stays in that child (PART 0 S4).
           if (!(headSubActive && reach >= headSubCol)) {
             descLive = false
