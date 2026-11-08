@@ -5819,7 +5819,13 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
         if (isBlank(lines[next] ?? '') && endsAtFirstBlank(lines, i, next, sourceDefCol + FOOTNOTE_BODY_COLUMN)) markAttachmentBoundary(state, bodyLines)
         // S4 reads the lines after an attached paragraph against it (PART 0).
-        if (!leavesFenceOpen(taken) && !bodyLeavesParagraphOpen(taken)) {
+        // An attached container can itself hold an unclosed code fence. Its
+        // trailing blank is payload of that descendant, not a separator to
+        // synthesize between the attached block and the note body.
+        const nestedFenceOpen = bodyHasOpenCodeFence(taken,
+          { index: 0, opaque: null, columns: [0] }, taken.length,
+          (k) => indentCols(taken[k]))
+        if (!leavesFenceOpen(taken) && !nestedFenceOpen && !bodyLeavesParagraphOpen(taken)) {
           bodyLines.push('')
           attachedSeparator = true
         }
