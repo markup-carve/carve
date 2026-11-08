@@ -10,6 +10,10 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Changes
+
+- Plain text writes nothing for a cell a span covers, so `| Summe netto | < |` becomes `Summe netto` instead of `Summe netto |` (CARVE-P11-082, #5546).
+
 ## [0.1.14] - 2026-11-08
 
 The spec settles one attach rule for `+`, a four-step block layout, a braced table alignment spelling and a canonical `***` thematic break. The executable spec model now follows the layout clauses across lists, descriptions, quotes, notes and comments, and the corpus pins the readings the engines owe.
