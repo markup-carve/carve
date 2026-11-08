@@ -5766,8 +5766,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (note) {
             const key = labelKey(note[1])
             if (COMMENT_LINE.test(note[2])) {
+              const firstBody = taken.slice(lead + 1).find(next => !isBlank(next) && !isOneLineComment(next))
               passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key),
-                losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody })
+                losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
+                hasFirstBody: firstBody !== undefined && indentCols(firstBody).col >= FOOTNOTE_BODY_COLUMN })
             }
             earlierDefinitions.add(key)
           }
@@ -5996,7 +5998,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // attached block. Restore it at that definition's body column before
       // parsing, so lists and other blocks can span the blank as one body.
       for (const passed of passedNotes) {
-        if (passed.register && passed.body.length) {
+        if (passed.register && passed.hasFirstBody && passed.body.length) {
           const at = attachedEnd
           const continuation = passed.body.map(line => isBlank(line) ? line : ' '.repeat(FOOTNOTE_BODY_COLUMN) + line)
           bodyLines.splice(at, 0, ...continuation)
@@ -6014,6 +6016,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       } else {
         // A losing note is invisible, so definitions in its body must still register.
         parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
+      }
+      for (const passed of passedNotes) {
+        if (passed.register && !passed.hasFirstBody && passed.body.length && !state.footnoteDefs.get(passed.key)?.length) {
+          state.footnoteDefs.set(passed.key, parseBlocks(passed.body, state, false, true))
+        }
       }
       continue
     }
