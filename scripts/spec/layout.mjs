@@ -8138,9 +8138,11 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   if (fenced !== -1) return fenced + 1
   let end = start
   const stopAt = Math.min(lines.length, cap)
-  // An unclosed code fence's payload takes no `+` (PART 0 S1, §17 L3, carve#5484).
+  // An unclosed code fence keeps every nonblank line at its content column as
+  // payload, including sibling markers (PART 0 S1, carve#5499).
   const code = isCodeBlockOpener(lines[opener] ?? '')
-  while (end < stopAt && !(endsBlock(end) && !(code && end > opener && CONT_MARKER.test(lines[end])))) end++
+  while (end < stopAt && !(endsBlock(end) && !(code && end > opener &&
+    !isBlank(lines[end]) && indentCols(lines[end]).col >= column))) end++
   return end
 }
 
