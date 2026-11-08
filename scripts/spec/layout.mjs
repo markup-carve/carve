@@ -10592,7 +10592,8 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           const firstVisible = itemShowsNothing()
           if (entryAfterRun && !descendantFence && !closedMarkerFence) for (let k = 1; k < visibleDistance(i, j); k++) pushLine('', BLANK_MEAS)
           if (!descendantFence && !closedMarkerFence) pushLine('', BLANK_MEAS)
-          if (!firstVisible) list.tight = false
+          // A descendant fence's boundary blank belongs to its child item.
+          if (!firstVisible && !(descendantFence && col > contentCol)) list.tight = false
           if (col === contentCol) subCol = -1
           childList = null
           startPara()
@@ -11298,6 +11299,12 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         } else if (nm && nm.indent >= contentCol && !inDefBody && reach + nm.markerWidth < subCol && !insideFence()) {
           // A shallower descendant marker ended that sublist; its item's column now owns the body.
           subCol = reach + nm.markerWidth
+        }
+        if (nm && childList && nm.indent === childList.indent && !sameAxes(markerAxes(childList), nm) &&
+            !inDefBody && !insideFence() && !stanzaPayload()) {
+          // The latest same-column list is the child whose later sibling may
+          // continue across a blank. An earlier list with matching axes has ended.
+          openChildList(nm)
         }
         // A marker line the item's open quote folds is text (carve#4396).
         const foldedIntoQuote = nm && markerFoldsIntoItemQuote()

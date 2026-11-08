@@ -1,0 +1,47 @@
+A nested attached fence keeps list looseness at the owning item
+
+````
+- a
+  - +
+    ```
+  * z
+
+  - q
+.
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>
+        <pre><code></code></pre>
+      </li>
+    </ul>
+    <ul>
+      <li>z</li>
+    </ul>
+    <ul>
+      <li>q</li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- a
+  - +
+  ```
+  - z
+
+    q
+.
+<ul>
+  <li>a
+    <ul>
+      <li>
+        <pre><code>- z
+</code></pre>
+        <p>q</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
