@@ -4662,8 +4662,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const offered = CONT_MARKER.test(FOOTNOTE_DEF.exec(rest)[2]) && at === column
         // A later definition with an immediate body owns that body even when
         // an earlier marker is looking through invisible definitions.
+        // A blank is blank at the host's quote level: `>` alone is blank inside a quote (carve#5520).
         let body = k + 1
-        while (body < lines.length && isBlank(lines[body])) body++
+        while (body < lines.length && throughQuotes(lines[body], hostIndex) !== null && isBlank(view(body))) body++
         if (offered && body < lines.length &&
             (ownsNextLine(k, rest) || docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN)) return k
         passedLabels.add(labelKey(FOOTNOTE_DEF.exec(rest)[1]))
@@ -5371,7 +5372,43 @@ function inheritFinalBreak(parent, child, end, state) {
 // single counter on `state` bounds the nesting uniformly (PART 26). The
 // counter is incremented on entry and decremented on exit (try/finally) so
 // sibling containers never accumulate depth.
-function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop = undefined, descriptionOwnerColumn = null) {
+// The container cycle (parseBlocks, parseBlocksImpl, parseListRun, collectItems) runs as
+// generators: a nested parse is yielded and `drive` keeps the suspended parents on a heap
+// stack, so nesting up to MAX_NESTING_DEPTH never grows the JS call stack (carve#5547).
+function drive(root) {
+  const stack = [root]
+  let input
+  let failed = false
+  let error
+  for (;;) {
+    const gen = stack[stack.length - 1]
+    let step
+    try {
+      step = failed ? gen.throw(error) : gen.next(input)
+    } catch (thrown) {
+      stack.pop()
+      if (stack.length === 0) throw thrown
+      failed = true
+      error = thrown
+      continue
+    }
+    failed = false
+    if (step.done) {
+      stack.pop()
+      if (stack.length === 0) return step.value
+      input = step.value
+    } else {
+      stack.push(step.value)
+      input = undefined
+    }
+  }
+}
+
+function parseBlocks(...args) {
+  return drive(parseBlocksGen(...args))
+}
+
+function* parseBlocksGen(lines, state, top, inItem = false, meas = undefined, stop = undefined, descriptionOwnerColumn = null) {
   state.blockDepth = (state.blockDepth ?? 0) + 1
   if (state.depthReach < state.blockDepth) state.depthReach = state.blockDepth
   if (state.blockDepth > MAX_NESTING_DEPTH) {
@@ -5390,7 +5427,7 @@ function parseBlocks(lines, state, top, inItem = false, meas = undefined, stop =
     return flattenPastCap(lines)
   }
   try {
-    return parseBlocksImpl(lines, state, top, inItem, meas, stop, descriptionOwnerColumn)
+    return yield parseBlocksImpl(lines, state, top, inItem, meas, stop, descriptionOwnerColumn)
   } finally {
     state.blockDepth--
   }
@@ -5430,7 +5467,7 @@ function consumeLooseKey(node) {
   return found
 }
 
-function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined, descriptionOwnerColumn = null) {
+function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, stop = undefined, descriptionOwnerColumn = null) {
   const blocks = []
   let i = 0
   const n = lines.length
@@ -6113,14 +6150,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // one and spelled with an extra line. CARVE-P9-077 says the two ARE the
         // same body: neither reaches the reader, so nothing distinguishes them
         // downstream and the renderer needs no answer carried from the source.
-        state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))
+        state.footnoteDefs.set(key, yield parseBlocksGen(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))
       } else {
         // A losing note is invisible, so definitions in its body must still register.
-        parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
+        yield parseBlocksGen(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
       }
       for (const passed of passedNotes) {
         if (passed.register && !passed.hasFirstBody && passed.body.length && !state.footnoteDefs.get(passed.key)?.length) {
-          state.footnoteDefs.set(passed.key, parseBlocks(passed.body, state, false, true))
+          state.footnoteDefs.set(passed.key, yield parseBlocksGen(passed.body, state, false, true))
         }
       }
       continue
@@ -6688,7 +6725,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             (state.descriptionSourceColumns ??= new WeakMap()).set(bodyLines, bodySourceColumns)
           }
           if (openFence !== -1) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, new Set([openFence]))
-          node.items.push({ ddBlocks: bodyLines.length ? parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true, undefined, undefined, descriptionOwnerColumn ?? sourceBodyColumn) : [] })
+          node.items.push({ ddBlocks: bodyLines.length ? yield parseBlocksGen(inheritFinalBreak(lines, bodyLines, i, state), state, false, true, undefined, undefined, descriptionOwnerColumn ?? sourceBodyColumn) : [] })
           continue
         }
         // A blank or invisible line between entries is skipped when the next
@@ -6764,11 +6801,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             if (spanEnds.length) node.spanEnds = spanEnds
             push(node)
           } else if (opener.mode === 'hardbreaks') {
-            push({ t: 'hardbreaks', children: parseBlocks(body, state, false) })
+            push({ t: 'hardbreaks', children: yield parseBlocksGen(body, state, false) })
           } else if (opener.mode === 'quote') {
             // The node a `>`-prefixed quote produces; the spelling differs,
             // the tree does not (markup-carve/carve#1718).
-            const node = { t: 'quote', children: parseBlocks(body, state, false) }
+            const node = { t: 'quote', children: yield parseBlocksGen(body, state, false) }
             if (close !== -1) {
               // §4's seventh host: the slot hangs on the CLOSING fence, as
               // the figure group's does. A quote closed by end of input has
@@ -6786,7 +6823,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               t: 'footnotes-placement',
               title: opener.title,
               label: opener.label,
-              children: parseBlocks(body, state, false),
+              children: yield parseBlocksGen(body, state, false),
             })
           } else if (
             isFigureGroupOpener(opener) && !state.inFigureGroup
@@ -6800,7 +6837,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             state.inFigureGroup = true
             let children
             try {
-              children = parseBlocks(body, state, false)
+              children = yield parseBlocksGen(body, state, false)
             } finally {
               state.inFigureGroup = false
             }
@@ -6822,7 +6859,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
               type: opener.type,
               title: opener.title,
               label: opener.label,
-              children: parseBlocks(body, state, false),
+              children: yield parseBlocksGen(body, state, false),
             })
           }
           continue
@@ -7744,7 +7781,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         break
       }
-      const children = parseBlocks(inheritFinalBreak(lines, inner, i, state), state, false)
+      const children = yield parseBlocksGen(inheritFinalBreak(lines, inner, i, state), state, false)
       const node = { t: 'quote', children }
       // caption -> <figure><blockquote/><figcaption> (PART 9 §4).
       // A quote of nothing but structural-only `>` lines is not a captionable
@@ -7766,7 +7803,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     // --- lists ---
     if (matchMarkerAt(ind(i))) {
       const before = blocks.length
-      i = parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top)
+      i = yield parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top)
       if (blocks.length > before) {
         if (pending.length) flushAttrs(blocks[before])
         // PART 9 §17 L7: the consumed boolean loosens the list it rides.
@@ -8737,7 +8774,12 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
 }
 
 // --- lists: PART 9 §11 N1-N3, §17 L1-L4, §24 C3/C4 ----------------------
+// The list run's steps for `drive`; the generator is what keeps the container cycle off the JS stack.
 function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
+  return listRunSteps(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top)
+}
+
+function* listRunSteps(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
   const n = lines.length
   while (i < n) {
     const head = matchMarkerAt(ind(i))
@@ -8753,7 +8795,7 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
     if (head.isOrdered) {
       list.ord = { delim: head.delim, dialects: head.dialects }
     }
-    i = collectItems(lines, i, list, state, ind, meas, inItem, top)
+    i = yield collectItems(lines, i, list, state, ind, meas, inItem, top)
     finalizeOrdered(list)
     blocks.push(list)
     // a marker-mismatch sibling list continues the run (§11 N1)
@@ -8875,7 +8917,7 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
-function collectItems(lines, i, list, state, ind, meas, inItem, top) {
+function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
   const n = lines.length
   const skipped = new Set()
   const nextVisible = (at) => {
@@ -11849,7 +11891,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       (state.descriptionSourceColumns ??= new WeakMap()).set(itemLines, relativeColumns);
       (state.itemRelativeTermColumns ??= new WeakSet()).add(itemLines)
     }
-    item.blocks = state.measuringListExtent ? [] : parseBlocks(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
+    item.blocks = state.measuringListExtent ? [] : yield parseBlocksGen(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     // A literal directive ends its own line (PART 6 I2), so a paragraph after it is a genuine second block (§17 L1).
     if (item.blocks.some((b, k) => k > 0 && b.t === 'para' && item.blocks[k - 1].literalDirective)) list.tight = false
     let beforeBlock = item.blocks.length

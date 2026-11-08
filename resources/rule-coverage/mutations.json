@@ -926,8 +926,8 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))",
-          "replace": "state.footnoteDefs.set(key, parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))\n        pending.length = 0"
+          "find": "state.footnoteDefs.set(key, yield parseBlocksGen(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))",
+          "replace": "state.footnoteDefs.set(key, yield parseBlocksGen(inheritFinalBreak(lines, bodyLines, i, state), state, false, true))\n        pending.length = 0"
         }
       ]
     },
