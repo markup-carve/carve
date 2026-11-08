@@ -8763,9 +8763,9 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
 // match; the indent it would have reported is `col`, which the measurement
 // already carries.
 // A quote whose only content is a `+`: it attaches the next block at the quote's column (§17 L3).
-const quotePlusMarker = (meas) => /^>[ \t]/.test(meas.rest) && CONT_MARKER.test(trimWs(meas.rest.slice(1)))
-  ? { indent: meas.col, markerWidth: 1, text: meas.rest.slice(1) }
-  : null
+const QUOTE_PLUS = /^>[ \t]+\+[ \t]*$/
+const QUOTE_PLUS_AFTER_MARKER = /^[ \t]*>[ \t]+\+[ \t]*$/
+const quotePlusMarker = (meas) => QUOTE_PLUS.test(meas.rest) ? { indent: meas.col, markerWidth: 1, text: meas.rest.slice(1) } : null
 
 function matchMarkerAt(meas, tabOrigin = 0) {
   if (meas === undefined) return null
@@ -10152,8 +10152,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       if (i >= descendantBlockEnd && i > headIndex && lm.rest !== '') {
         let above = matchMarkerAt(ind(i - 1))
         // A `> +` quote, alone or after a list marker, attaches at its own column too (carve#5510).
-        const quoteHost = above ? { col: above.indent + above.markerWidth + indentCols(above.text).col, rest: indentCols(above.text).rest } : ind(i - 1)
-        above = (above && CONT_MARKER.test(trimWs(above.text)) ? null : quotePlusMarker(quoteHost)) ?? above
+        if (!above) above = quotePlusMarker(ind(i - 1))
+        else if (QUOTE_PLUS_AFTER_MARKER.test(above.text)) {
+          const after = indentCols(above.text)
+          above = quotePlusMarker({ col: above.indent + above.markerWidth + after.col, rest: after.rest })
+        }
         if (above && above.indent === lm.col && lm.col >= contentCol && CONT_MARKER.test(trimWs(above.text))) {
           descendantAttachedColonDepth = fence.colon.length
           descendantBlockEnd = attachedBlockEnd(lines, i, state, (idx) =>
