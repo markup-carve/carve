@@ -3339,7 +3339,7 @@ export function makeSlugger() {
       // no-break space (U+00A0, what `#  Title` renders its second space
       // as) became a `-` and was then trimmed. All three engines keep it.
       // The ASCII ranges below already cover space, tab and newline.
-      .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]+/g, '-')
+      .replace(/[\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g, '-')
       .replace(/^-+|-+$/g, '')
     if (slug === '') slug = 's'
     else if (/^\p{N}/u.test(slug)) slug = `s-${slug}`
