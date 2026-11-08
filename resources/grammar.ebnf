@@ -294,15 +294,26 @@
 
    STEP 1, PAYLOAD.
 
-     S1 PAYLOAD. If a code, raw or comment fence is open, test the line
-        against its closer first. A nonblank line that misses the fence's
-        owner in S2 ends the fence; nothing else ends a code, raw or comment
-        fence without its closer, except that an unclosed code fence attached
-        by a marker-line `+` ends at its first blank (PART 9 §17 L3, carve#5304).
-        Otherwise an unclosed fence runs to the end of its
-        container and a host's colon closer inside it is payload. Any other
-        payload line opens nothing and changes no frame state. A colon body
-        is not a payload: its lines go on to S2.
+     S1 PAYLOAD. Inside an open code, raw or comment fence, a line is
+        tested in this order:
+
+        1. the fence's closer ends it;
+        2. a nonblank line that misses the fence's owner in S2 ends it;
+        3. the first blank ends an unclosed code fence that a marker-line `+`
+           attached (PART 9 §17 L3, carve#5304);
+        4. every other line is payload: it opens nothing, takes no `+` and
+           changes no frame state.
+
+        Nothing else ends such a fence without its closer: otherwise an
+        unclosed fence runs to the end of its container, and a host's colon
+        closer inside it is payload. A colon body is not a payload: its lines
+        go on to S2.
+
+        Example (informative, carve#5494): `- +` / a fence opener / `+` /
+        blank / `y` gives a code block holding `+` inside the item, then a
+        paragraph `y`. The `+` stands at the fence's content column, so step 4
+        keeps it as payload; the later blank ends the fence under step 3 and
+        does not turn the `+` into a bound.
 
         COMMENTS ARE CLASSIFIED BEFORE BLOCK OWNERSHIP -- NORMATIVE [CARVE-P0-005].
         Honor an active payload first. In ordinary block content, erase a
@@ -6703,8 +6714,9 @@ EOF = (* end of file *) ;
          A `+` at a container's marker column is outside that container's code,
          raw or colon fence, and an accepted one ends that fence before the
          attached block begins. Separators inserted for attachment are not
-         fence payload. A `+` at the fence's content column stays payload. A
-         table `+ text` row follows §5 T6, rather than this rule.
+         fence payload. A `+` at the fence's content column stays payload;
+         PART 0 S1 PAYLOAD gives the one ordered test for every line inside an
+         open fence. A table `+ text` row follows §5 T6, rather than this rule.
 
       L4 CONTAINERS THAT TAKE THE MARKER: list items (`- +`, `1. +`, and task
          forms), definition bodies (`: +`), footnote bodies (`[^a]: +`, a body
