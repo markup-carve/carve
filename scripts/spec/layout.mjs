@@ -3618,9 +3618,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const raw = throughQuotes(lines[at], skipped.hostIndex).rest
       let rest = trimWsStart(raw)
       const nestedNote = FOOTNOTE_DEF.exec(rest)
+      // A skipped definition still registers, so a later duplicate loses (carve#5482).
+      const registers = nestedNote && !skipped.fenced.has(at)
+      const lost = registers && definedNotes.has(labelKey(nestedNote[1]))
+      if (registers) definedNotes.add(labelKey(nestedNote[1]))
       if (nestedNote && CONT_MARKER.test(nestedNote[2])) {
-        rest = rest.slice(0, -nestedNote[2].length) + refusedNoteBody(plusLetter)
-        refusedPlus.push(at)
+        rest = rest.slice(0, -nestedNote[2].length) + (lost ? losingNoteBody(plusLetter) : refusedNoteBody(plusLetter))
+        if (!lost) refusedPlus.push(at)
       }
       let bracePad = ''
       if (skipped.brace) {
