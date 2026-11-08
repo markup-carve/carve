@@ -1,0 +1,1 @@
+Spec model keeps a list item tight when its lead is only note definitions and their body lines (PART 9 §17 L1, CARVE-P9-013); the pinned carve-js build still loosens it (carve#5466).
