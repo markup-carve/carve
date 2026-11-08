@@ -3904,6 +3904,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         result.push(out + ' '.repeat(keepMarkerColumn ? 0 : Math.max(0, plus.canon - plus.markerCanon)) + '%%')
         refusedPlus.push(at)
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
+        // A note offered through a marker-line `+` has no body of its own
+        // after a refused second marker; the item reads the next block.
+        if (plus.kind === 'note' && plus.markerPlus && frames.at(-2)?.kind === 'item') frames.pop()
         continue
       }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
@@ -4352,6 +4355,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
+        if (form.kind === 'note') frame.markerPlus = CONT_MARKER.test(m.rest)
         // A marker-line item or note is measured from its source column (CARVE-P9-083); it lands at the body column, as other content does.
         if (form.kind === 'note') {
           const start = frame.col - m.col
