@@ -11,6 +11,12 @@ test('a losing duplicate does not take the body of an interleaved winning note',
   assert.match(expected, /<li id="fn2">\n      <p>para<a /)
 })
 
+test('an immediate follower after a losing duplicate stays with the winning note', () => {
+  const reduced = '[^m]: +\n[^n]: +\n  para\n\nsee[^m][^n]\n'
+  const duplicate = '[^m]: +\n[^n]: +\n[^n]: +\n  para\n\nsee[^m][^n]\n'
+  assert.equal(renderDoc(parse(duplicate)), renderDoc(parse(reduced)))
+})
+
 test('a later losing definition still ends a passed note with body content', () => {
   const source = '[^m]: +\n[^n]: +\n  para\n[^n]: +\n  more\n\nsee[^m][^n]\n'
   const html = renderDoc(parse(source))

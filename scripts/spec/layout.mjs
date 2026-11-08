@@ -5813,6 +5813,21 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (attrs) lead = attrs.next
           else break
         }
+        // A losing marker in the invisible lead takes nothing. Its immediate
+        // follower still belongs to the earlier winning definition of that
+        // label, even without a blank between the two (PART 9R R2).
+        const lastPassed = passedNotes.at(-1)
+        if (lastPassed?.losingPlus && !lastPassed.register && lastPassed.hasFirstBody) {
+          const winner = passedNotes.findLast((passed) => passed.key === lastPassed.key && passed.register)
+          if (winner) {
+            const follower = taken.findIndex((line, index) => index > 0 &&
+              !FOOTNOTE_DEF.test(line) && !isOneLineComment(line) && !isDefinitionLine(line) && !isBlank(line))
+            if (follower !== -1) {
+              winner.body.push(...taken.splice(follower))
+              lastPassed.hasFirstBody = false
+            }
+          }
+        }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
         attachedEnd = bodyLines.length
