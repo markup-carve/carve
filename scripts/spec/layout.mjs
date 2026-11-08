@@ -10062,6 +10062,11 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let nestedAttachedBlankEnd = -1
     let descendantAttachedColonDepth = 0
     let markerLineAttachedFence = null
+    // A marker-line note's `+` block may sit left of the note body; the note resumes after it (carve#5512).
+    const markerNotePlus = markerNoteEligible && CONT_MARKER.test(FOOTNOTE_DEF.exec(head.text)[2]) && i < n && !isBlank(lines[i])
+    const markerNotePlusEnd = markerNotePlus
+      ? attachedBlockEnd(lines, i, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), contentCol)
+      : -1
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       const line = lines[i]
@@ -10135,7 +10140,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         noteListBodyColumn = null
         noteListChildColumn = null
       }
-      if (i > noteFenceEnd && ((FOOTNOTE_DEF.test(lm.rest) && lm.col < markerNoteBodyColumn) ||
+      if (i > noteFenceEnd && i >= markerNotePlusEnd && ((FOOTNOTE_DEF.test(lm.rest) && lm.col < markerNoteBodyColumn) ||
           (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence()))) {
         markerNoteEligible = false
         noteMarkerSeen = false
