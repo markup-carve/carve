@@ -7728,7 +7728,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         continue
       }
       // A frame kept the column of a deeper container this line never reached (carve#4222).
-      const framed = stripLazyLead(lines[i])
+      // The layout walk can leave a synthetic quote prefix before a lazy
+      // frame after a missed note. In a paragraph, nothing before that
+      // unforgeable frame is authored text (§10 I5/I6).
+      const lazyAt = lines[i].indexOf(LAZY)
+      const framed = lazyAt >= 0 ? lines[i].slice(lazyAt) : lines[i]
       if (framed.startsWith(LAZY)) {
         para.push(framed.slice(LAZY.length).replace(/[ \t]+$/, ''))
         i++

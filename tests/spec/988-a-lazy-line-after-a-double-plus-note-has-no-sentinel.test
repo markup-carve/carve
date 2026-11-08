@@ -1,0 +1,23 @@
+A lazy line after a double-plus note has no sentinel
+
+```
+[^a]: +
++
+
+  > q
+lazy
+.
+<p>&gt; q
+lazy</p>
+```
+
+```
+[^a]: +
++
+
+  [^b]: > q
+lazy
+.
+<p>[^b]: &gt; q
+lazy</p>
+```
