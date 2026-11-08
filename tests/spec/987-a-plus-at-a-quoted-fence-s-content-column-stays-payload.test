@@ -1,0 +1,14 @@
+A plus at a quoted fence's content column stays payload
+
+````
+> +
+>  ```
+>  +
+.
+<blockquote>
+  <blockquote>
+    <pre><code>+
+</code></pre>
+  </blockquote>
+</blockquote>
+````
