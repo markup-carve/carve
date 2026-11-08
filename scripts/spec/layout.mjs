@@ -5734,6 +5734,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // column even when the whole attached block was captured at source
         // indentation (carve#5482).
         let losingPlusLead = false
+        // The follower's first line decides whether it still stands at source
+        // indentation; the whole run then moves by the same amount, so its
+        // nesting is kept.
+        let losingShift
         const seenTakenNotes = new Set(earlierDefinitions)
         for (let k = 0; k < taken.length; k++) {
           const nested = FOOTNOTE_DEF.exec(taken[k])
@@ -5743,9 +5747,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             // the walk. An interleaved label still has source indentation.
             losingPlusLead = nestedKey !== labelKey(label) && seenTakenNotes.has(nestedKey) &&
               (nested[2] === state.losingNoteBody || nested[2] === state.refusedNoteBody)
+            losingShift = undefined
             seenTakenNotes.add(nestedKey)
-          } else if (losingPlusLead && indentCols(taken[k]).col >= FOOTNOTE_BODY_COLUMN) {
-            taken[k] = dedent(taken[k], FOOTNOTE_BODY_COLUMN)
+          } else if (losingPlusLead && !isBlank(taken[k])) {
+            losingShift ??= indentCols(taken[k]).col >= FOOTNOTE_BODY_COLUMN ? FOOTNOTE_BODY_COLUMN : 0
+            if (losingShift) taken[k] = dedent(taken[k], losingShift)
           }
         }
         // Only definitions in the invisible lead of the attached block can

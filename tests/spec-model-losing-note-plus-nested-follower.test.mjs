@@ -16,3 +16,10 @@ test('a losing note after the winner attached a paragraph ends that note', () =>
   assert.match(html, /<li id="fn1">\n      <p>para<a/)
   assert.doesNotMatch(html, /<li id="fn1">\n      <p>para\n/)
 })
+
+test('a losing plus of another label keeps the attached block nesting and fence payload', () => {
+  const nested = renderDoc(parse('[^b]: x\n[^a]: +\n[^b]: +\n  - item\n    - sub\n\nsee[^a][^b]\n'))
+  assert.match(nested, /<li id="fn1">\n      <ul>\n        <li>item\n          <ul>\n            <li>sub<\/li>/)
+  const fence = renderDoc(parse('[^b]: x\n[^a]: +\n[^b]: +\n  ~~~\n    code\n  ~~~\n\nsee[^a][^b]\n'))
+  assert.match(fence, /<li id="fn1">\n      <pre><code>  code\n<\/code><\/pre>/)
+})
