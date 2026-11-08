@@ -3904,6 +3904,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         result.push(out + ' '.repeat(keepMarkerColumn ? 0 : Math.max(0, plus.canon - plus.markerCanon)) + '%%')
         refusedPlus.push(at)
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
+        // A refused marker in an item-hosted note ends the note frame. Its
+        // next block belongs to the item, with ordinary block classification.
+        if (plus.kind === 'note' && frames.at(-2)?.kind === 'item') frames.pop()
         continue
       }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
