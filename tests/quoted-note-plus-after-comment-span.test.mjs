@@ -9,3 +9,10 @@ test('an unprefixed line after an invisible span cannot lazily enter a quoted no
   assert.match(html, /<\/blockquote>\n<p>after<\/p>/)
   assert.match(html, /<li id="fn1">\n\s*<p><a href="#fnref1"/)
 })
+
+test('an immediate unprefixed paragraph still follows the existing lazy note rule', () => {
+  const source = '> [^m]: +\nafter\n\nsee[^m]\n'
+  const html = renderDoc(parse(source))
+  assert.doesNotMatch(html, /<p>after<\/p>/)
+  assert.match(html, /<li id="fn1">\n\s*<p>after<a href="#fnref1"/)
+})
