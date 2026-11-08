@@ -3619,7 +3619,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       let rest = trimWsStart(raw)
       const nestedNote = FOOTNOTE_DEF.exec(rest)
       if (nestedNote && CONT_MARKER.test(nestedNote[2])) {
-        rest = rest.slice(0, -nestedNote[2].length) + '%%'
+        rest = rest.slice(0, -nestedNote[2].length) + refusedNoteBody(plusLetter)
         refusedPlus.push(at)
       }
       let bracePad = ''
@@ -4379,7 +4379,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             src = src.replace('+', plusLetter)
             m = walkIndent(src)
           } else {
-            src = src.replace('+', '%%')
+            // Preserve that this invisible note body was authored as a `+`.
+            // The block reader may discover a duplicate the walk could not
+            // see inside an attached block, and then its follower is not the
+            // losing definition's body (carve#5482).
+            src = src.replace('+', frame.kind === 'note' ? refusedNoteBody(plusLetter) : '%%')
             m = walkIndent(src)
             refusedPlus.push(at)
             skipInvisible(frame, at, frame.docMarker, null, true)
@@ -5026,6 +5030,7 @@ function normalizeSource(src) {
 const authoredBraceColumns = new WeakMap()
 // What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
 const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
+const refusedNoteBody = (sentinel) => '%%' + sentinel + 'r'
 
 function restoreOrdinaryPlus(value, sentinel) {
   if (typeof value === 'string') return value.replaceAll(sentinel, '+')
@@ -5071,6 +5076,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     ownershipEvents: new WeakMap([[lines, { events: ownershipEvents, offset: 0 }]]),
     acceptedMarkerPluses: new WeakMap([[lines, { byOwner: walked.acceptedPlusesByOwner, offset: 0 }]]),
     losingNoteBody: losingNoteBody(sentinel),
+    refusedNoteBody: refusedNoteBody(sentinel),
   }
   // The ownership walk can move a lazy line to a container's column. Keep its
   // authored column for CARVE-P2-035, after any quote prefix is read.
@@ -5175,6 +5181,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   delete state.ownershipEvents
   delete state.acceptedMarkerPluses
   delete state.losingNoteBody
+  delete state.refusedNoteBody
   delete state.quoteAttachmentOrigins
   if (stateSink) stateSink.markerFenceProbeSteps = state.markerFenceProbeSteps
   delete state.markerFenceProbeSteps
@@ -5676,7 +5683,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     let m
     if ((m = FOOTNOTE_DEF.exec(line))) {
       const label = m[1]
-      if (state.losingNoteBody !== undefined && m[2] === state.losingNoteBody) {
+      if (state.losingNoteBody !== undefined && m[2] === state.losingNoteBody ||
+          m[2] === state.refusedNoteBody && state.footnoteDefs.has(labelKey(label))) {
         i++
         continue
       }
@@ -5717,15 +5725,37 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
           taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
         }
+        // The skipped definition has no body of its own. Its indented
+        // follower reaches this note's body column, so read it at that
+        // column even when the whole attached block was captured at source
+        // indentation (carve#5482).
+        let losingPlusLead = false
+        const seenTakenNotes = new Set(earlierDefinitions)
+        for (let k = 0; k < taken.length; k++) {
+          const nested = FOOTNOTE_DEF.exec(taken[k])
+          if (nested) {
+            const nestedKey = labelKey(nested[1])
+            // A duplicate of this note's own label was already rebased by
+            // the walk. An interleaved label still has source indentation.
+            losingPlusLead = nestedKey !== labelKey(label) && seenTakenNotes.has(nestedKey) &&
+              (nested[2] === state.losingNoteBody || nested[2] === state.refusedNoteBody)
+            seenTakenNotes.add(nestedKey)
+          } else if (losingPlusLead && indentCols(taken[k]).col >= FOOTNOTE_BODY_COLUMN) {
+            taken[k] = dedent(taken[k], FOOTNOTE_BODY_COLUMN)
+          }
+        }
         // Only definitions in the invisible lead of the attached block can
         // pass an earlier claim. A note-shaped line in its fenced payload is
         // code, not a definition with a later body.
         for (let lead = 0; lead < taken.length;) {
           const line = taken[lead]
           const note = FOOTNOTE_DEF.exec(line)
-          if (note && COMMENT_LINE.test(note[2])) {
+          if (note) {
             const key = labelKey(note[1])
-            passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key) })
+            if (COMMENT_LINE.test(note[2])) {
+              passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key),
+                losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody })
+            }
             earlierDefinitions.add(key)
           }
           if (note || isOneLineComment(line) || isDefinitionLine(line)) { lead++; continue }
@@ -5774,6 +5804,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
+        // A losing `+` on the same label inside this note is a boundary,
+        // not a new owner. Keep reading the follower at this note's column.
+        const nextNote = FOOTNOTE_DEF.exec(measured.rest)
+        if (attachedFrom === -1 && nextNote && labelKey(nextNote[1]) === labelKey(label) &&
+            (m[2] === '+' || m[2] === state.refusedNoteBody) &&
+            (nextNote[2] === state.losingNoteBody || nextNote[2] === state.refusedNoteBody)) {
+          i++
+          continue
+        }
         // An earlier marker may take a block past a later invisible note
         // definition. Its attachment does not take that definition's own
         // indented continuation, even when a blank separates the two.
@@ -5930,6 +5969,15 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       if (openFence !== -1) inheritedFenceOpens.add(openFence)
       if (inheritedFenceOpens.size) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, inheritedFenceOpens)
       const key = labelKey(label)
+      // A later marker in this note's invisible lead cannot claim the
+      // follower that the walk placed in this note. Put that follower back
+      // after the intervening source blocks, before the note body is parsed
+      // (carve#5482).
+      for (const passed of passedNotes) {
+        if (!passed.register && passed.losingPlus && passed.body.length) {
+          bodyLines.push(...passed.body)
+        }
+      }
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         // A `holdsAnInvisibleBlock` flag used to be set here, so that a body
@@ -8304,6 +8352,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
     measuringListExtent,
     losingNoteBody: state.losingNoteBody,
+    refusedNoteBody: state.refusedNoteBody,
   }
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
