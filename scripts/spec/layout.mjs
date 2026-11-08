@@ -9092,11 +9092,20 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             !isDefinitionOrAttributeLine(rests[k])) {
           measured ??= itemLines.map((text) => trimLineEnd(stripLazy(text)))
           const para = commentOnlyParaEnd(rests, k, true, measured)
-          if (para === -1) return true
+          if (para === -1) return !rests.slice(0, k).some((rest) => FOOTNOTE_DEF.test(rest)) || leadParseShows()
           k = para - 1
         }
       }
       return false
+    }
+    // A note's body lines (a `+` line, a lazy or indented continuation) are
+    // invisible like the note, so the item's own parse decides (PART 9 §17 L1, carve#5466).
+    const leadParseShows = () => {
+      if (state.leadProbe) return true
+      // Definitions decide no block structure, so the probe registers into its own maps.
+      const probe = { ...state, leadProbe: true, linkDefs: new Map(), footnoteDefs: new Map(), abbrDefs: new Map(),
+        prefixMemos: new WeakMap(), blockEndMemo: new Map() }
+      return parseBlocks(itemLines, probe, false, true, itemMeas).length > 0
     }
     let noteOpenerLine = null
     const noteClaimsLazyLine = (at) => {
