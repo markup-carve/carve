@@ -14,13 +14,14 @@
  * review. The spec lists come from this worktree; engine lists default to
  * each checkout's `origin/main`.
  *
- * THE ONE ESCAPE HATCH is .ast-span-exempt, in the shape .fleet-pin-exempt
+ * The standing conformance exemption is .ast-span-exempt, in the shape .fleet-pin-exempt
  * uses: an AST span row that is conformant on every side has no engine to wait
  * for, so `owed` would hold it forever. A line there declares one such row with
  * the clause or ruling that makes it conformant, keyed on the document count so
  * it expires when the reading moves, and every applied line prints on a passing
  * run. It covers the span ledger and its measurement twin together. Nothing
- * else is exemptible: a row an engine owes stays owed.
+ * The separate 0.1.14 release waiver names exact owed rows and expires at the
+ * next version. A row an engine owes remains owed outside that release.
  *
  * `release` mode requires owed lists to be empty and the carve-js pin to be
  * current. `per-pr` mode accepts well-formed rows in ledgers marked
@@ -70,6 +71,40 @@ const mode = (() => {
   return raw
 })()
 const strict = mode === 'release'
+
+const RELEASE_WAIVER_VERSION = '0.1.14'
+
+function releaseWaiver(version, file) {
+  if (version !== RELEASE_WAIVER_VERSION) return new Map()
+  const data = JSON.parse(readFileSync(file, 'utf8'))
+  if (data.version !== version || !Array.isArray(data.lists)) throw new Error('invalid release waiver version or lists')
+  const lists = new Map()
+  for (const list of data.lists) {
+    const key = `${list.repo}:${list.path}:${list.name ?? '-'}`
+    if (lists.has(key) || !Number.isSafeInteger(list.ticket) || list.ticket < 1 ||
+        !Array.isArray(list.rows) || list.rows.some(row => typeof row !== 'string' || row === '')) {
+      throw new Error(`invalid or duplicate release waiver list: ${key}`)
+    }
+    lists.set(key, list)
+  }
+  return lists
+}
+
+function matchWaiverRows(rows, list) {
+  const remaining = []
+  const applied = []
+  const counts = new Map(list.rows.map(row => [row, 0]))
+  for (const row of list.rows) counts.set(row, counts.get(row) + 1)
+  for (const row of rows) {
+    const count = counts.get(row) ?? 0
+    if (count > 0) {
+      counts.set(row, count - 1)
+      applied.push(row)
+    } else remaining.push(row)
+  }
+  const removable = [...counts].flatMap(([row, count]) => Array(count).fill(row))
+  return { remaining, applied, removable }
+}
 
 /* ------------------------------------------------------------------ repos */
 
@@ -938,7 +973,7 @@ function liveRows(entry, src) {
   const inner = outer.length === 1 && /^\[[\s\S]*\]$/.test(outer[0])
     ? topLevelEntries(outer[0].slice(1, -1))
     : outer
-  return inner.map((row) => collapseBetweenLiterals(row).slice(0, 120))
+  return inner.map((row) => collapseBetweenLiterals(row))
 }
 
 /* ------------------------------------------------------------------ input */
@@ -1054,7 +1089,7 @@ function perPrPolicy(entry) {
   return entry.policy
 }
 
-export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, readDirLedger, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, undeclaredExtentRows, spanRowKey, spanExemptions, stalenessCheck, MANIFEST }
+export const __internals = { blankComments, perPrPolicy, collapseBetweenLiterals, declarationIndex, bracketedBlock, topLevelEntries, liveRows, readDirLedger, classifyPinDistance, gitPinStatus, gitReferenceBuildStatus, isDeclarationName, undeclaredLedgerRows, undeclaredWaiverRows, undeclaredExtentRows, spanRowKey, spanExemptions, stalenessCheck, releaseWaiver, matchWaiverRows, MANIFEST }
 
 if (process.env.CARVE_DECL_AUDIT_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the audit.
@@ -1084,12 +1119,17 @@ const spanExemptFor = new Map(spanExempt.map((row) => [row.key, row]))
 // What the exemptible ledgers actually declare, for judging a stale line.
 const liveSpanCounts = new Map()
 let spanScopeRead = 0
+const packageVersion = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8')).version
+const waivedLists = strict
+  ? releaseWaiver(packageVersion, join(repoRoot, 'resources/release-waivers/0.1.14.json'))
+  : new Map()
+const seenWaiverLists = new Set()
 
 const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
 const MODE_BANNER = strict
-  ? 'RELEASE - is this tree clear to tag? Every owed list must be empty and the reference build current.'
+  ? 'RELEASE - is this tree clear to tag? Owed rows must be empty or explicitly waived for this version, and the reference build current.'
   : 'PER-PR - is this pull request defective? A declared engine-pin window passes; pin staleness reports.'
 console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
 console.log(`  ${MODE_BANNER}`)
@@ -1189,25 +1229,47 @@ for (const entry of MANIFEST) {
     }
   }
   const judgedRows = rows.filter((row) => !exemptRows.includes(row))
+  const waiverKey = `${entry.repo}:${entry.path}:${entry.name ?? '-'}`
+  const waiver = waivedLists.get(waiverKey)
+  let appliedWaiver = []
+  let removableWaiver = []
+  let activeRows = judgedRows
+  if (waiver) {
+    seenWaiverLists.add(waiverKey)
+    const eligible = entry.policy === 'split'
+      ? judgedRows.filter(row => row.trim().split(/\s+/).at(-1) !== 'permitted')
+      : judgedRows
+    const matched = matchWaiverRows(eligible, waiver)
+    appliedWaiver = matched.applied
+    removableWaiver = matched.removable
+    const appliedCounts = new Map()
+    for (const row of appliedWaiver) appliedCounts.set(row, (appliedCounts.get(row) ?? 0) + 1)
+    activeRows = judgedRows.filter(row => {
+      const count = appliedCounts.get(row) ?? 0
+      if (count === 0) return true
+      appliedCounts.set(row, count - 1)
+      return false
+    })
+  }
 
-  let owed = judgedRows.length
+  let owed = activeRows.length
   let permitted = 0
-  let detail = judgedRows
+  let detail = activeRows
   if (policy === 'split') {
-    permitted = judgedRows.filter((r) => r.trim().split(/\s+/).at(-1) === 'permitted').length
-    owed = judgedRows.length - permitted
+    permitted = activeRows.filter((r) => r.trim().split(/\s+/).at(-1) === 'permitted').length
+    owed = activeRows.length - permitted
   } else if (policy === 'permitted') {
-    permitted = judgedRows.length
+    permitted = activeRows.length
     owed = 0
   } else if (policy === 'manual') {
     owed = 0
   } else if (policy === 'declared' || policy === 'split-declared') {
     detail = policy === 'split-declared'
-      ? undeclaredWaiverRows(judgedRows)
+      ? undeclaredWaiverRows(activeRows)
       : entry.kind === 'json-flag' ? []
-        : entry.rows === 'extent' ? undeclaredExtentRows(judgedRows) : undeclaredLedgerRows(judgedRows)
+        : entry.rows === 'extent' ? undeclaredExtentRows(activeRows) : undeclaredLedgerRows(activeRows)
     owed = detail.length
-    permitted = judgedRows.length - owed
+    permitted = activeRows.length - owed
   }
 
   const counted = policy === 'split' || policy === 'declared' || policy === 'split-declared'
@@ -1217,6 +1279,8 @@ for (const entry of MANIFEST) {
   const bad = owed > 0
   const flag = bad ? (['declared', 'split-declared'].includes(policy) ? '   <== UNDECLARED' : '   <== OWED') : ''
   console.log(`${label} ${pad(verdict, width.rows)} ${pad(policy, 14)} ${entry.guard}${flag}`)
+  for (const row of appliedWaiver) console.log(`            WAIVED 0.1.14 (#${waiver.ticket}): ${row}`)
+  for (const row of removableWaiver) console.log(`            REMOVABLE 0.1.14 (#${waiver.ticket}): ${row}`)
   if (bad) {
     failed += 1
     for (const row of detail.slice(0, 25)) console.log(`${' '.repeat(12)}| ${row}`)
@@ -1241,6 +1305,13 @@ for (const entry of MANIFEST) {
       console.log(`${' '.repeat(12)}${check.message}`)
       failed += 1
     } else claimedGuards.push(entry)
+  }
+}
+
+for (const key of waivedLists.keys()) {
+  if (!seenWaiverLists.has(key)) {
+    console.log(`  [FAIL] release waiver names an unread manifest list: ${key}`)
+    failed += 1
   }
 }
 
@@ -1363,7 +1434,7 @@ if (failed > 0) {
   console.log(
     `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
       (strict
-        ? 'every owed list is empty, the reference build is current, and every guard is two-directional.'
+        ? 'every owed row is empty or explicitly waived for this version, the reference build is current, and every guard is two-directional.'
         : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
   )
 }
