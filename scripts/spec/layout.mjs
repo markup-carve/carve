@@ -10953,6 +10953,10 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const wasNested = nestedOpaque
         // A line below a code body's column ends that body and is read afresh.
         const endedBelow = wasNested?.kind === 'code' && dmeas.col < wasNested.col
+        // A body span ends before a shallower non-comment line is classified.
+        // That line may open the surviving descendant's next paragraph (PART 0 S1/S4).
+        const endedCommentBelow = wasNested?.kind === 'comment' && !wasNested.markerLine &&
+          dmeas.col < wasNested.col && !COMMENT_LINE.test(dmeas.rest)
         // Only a descendant LIST ITEM's fence, which is the host carve#2490
         // rules. An indented fence inside a colon container is that container's
         // question, and CARVE-P0-014 answers it the other way: a colon body CAN
@@ -11031,7 +11035,7 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
             // its surviving item. Marker-line descendants retain their own
             // paragraph decision (PART 0 S1/S4).
             advanceDescendantQ1(dmeas.rest, absorbedFenceSeen,
-              nestedOpaque !== null || (wasNested !== null && !endedBelow &&
+              nestedOpaque !== null || (wasNested !== null && !endedBelow && !endedCommentBelow &&
                 !(wasNested.kind === 'comment' && nestedOpaque === null &&
                   (nm ? descendantLineOpensParagraph(nm.text, false, i)
                     : subCol >= 0 && descendantLineOpensParagraph(dmeas.rest, false, i)))), i, dmeas.col)
