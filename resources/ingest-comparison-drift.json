@@ -17,7 +17,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "PART 9 \u00a716 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
@@ -32,7 +32,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/php->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "PART 9 \u00a716 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
@@ -47,7 +47,7 @@
     {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/rust->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
-      "reason": "PART 9 \u00a716 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
+      "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>Text[^a]{.ref}.</p>",
@@ -62,7 +62,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/js->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -77,7 +77,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/php->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -92,7 +92,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing-2.crv/rust->js",
       "fingerprint": "ec94b7d7f94e2b79347b972788a75bff8265b4bc297a3199d6bf28e0410d88ca",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>i</h2>\n</section>",
@@ -107,7 +107,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/js->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
@@ -122,7 +122,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/php->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
@@ -137,7 +137,7 @@
     {
       "key": "tests/corpus/822-an-id-dropped-with-an-unresolved-reference-reserves-nothing.crv/rust->js",
       "fingerprint": "9927e4f2f217e7c60a59846e6bce834ef4ec2e94c851aed70e9664bdf3ea648a",
-      "reason": "PART 9 \u00a716 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
+      "reason": "PART 9 §16 permits the trailing attribute run on an unresolved reference to drop on AST JSON ingest; PART 9R R2 preserves it in source rendering. Cause: markup-carve/carve#5229.",
       "issue": "https://github.com/markup-carve/carve/issues/5229",
       "observation": {
         "expected": "<p>x[^n]{#i}</p>\n<section id=\"i\">\n  <h2>{<span class=\"tag\"><strong>#i</strong></span>}</h2>\n</section>",
