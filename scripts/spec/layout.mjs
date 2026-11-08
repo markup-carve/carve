@@ -3570,6 +3570,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // Every lone `+` the one rule refused; each is written as `%%` and renders nothing.
   const refusedPlus = []
   const acceptedPlusesByOwner = new Map()
+  // Note labels in document order: a later definition's lone `+` takes nothing (PART 9R R2, carve#5474).
+  const definedNotes = new Set()
   // Later markers offering the block already claimed by an earlier marker.
   const claimedMarkers = new Set()
   // The trace path of a block the walk opens in a parent although an item's
@@ -3588,6 +3590,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
+    if (top().losing) frames.pop()
     // A pulled, unpaired code fence is only the block before its first blank.
     // Close its walk frame before deciding who owns that blank and the next line.
     if (top().kind === 'fence' && top().once === at) {
@@ -4329,6 +4332,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const shift = strippedColumn(segmentSrc, origins) - col
           if (shift) frame.tabShift = shift
         }
+        if (form.kind === 'note') {
+          const key = labelKey(/^\[\^([^\]]+)\]:/.exec(m.rest)[1])
+          frame.lost = definedNotes.has(key)
+          definedNotes.add(key)
+        }
         frames.push(frame)
         take(form.head)
         m = walkIndent(src)
@@ -4350,7 +4358,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // Content behind a lead tab is paragraph text, whatever it spells (corpus 684, 736).
       const form = leadTab ? { kind: 'text' } : classify(m.rest, frame, at, frame.kind === 'quote' ? m.col : start + m.col)
       if (form.kind === 'text') {
-        if (!leadTab && CONT_MARKER.test(m.rest)) {
+        if (!leadTab && frame.lost && CONT_MARKER.test(m.rest)) {
+          src = src.replace('+', losingNoteBody(plusLetter))
+          m = walkIndent(src)
+          frame.losing = true
+        } else if (!leadTab && CONT_MARKER.test(m.rest)) {
           // Past the one space after a `>` the `+` is the quote's text (corpus 646).
           if (!(frame.kind === 'quote' && m.col > 0) && plusAttaches(frame, at)) {
             frame.plus = at
@@ -5007,6 +5019,8 @@ function normalizeSource(src) {
 }
 
 const authoredBraceColumns = new WeakMap()
+// What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
+const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
 
 function restoreOrdinaryPlus(value, sentinel) {
   if (typeof value === 'string') return value.replaceAll(sentinel, '+')
@@ -5051,6 +5065,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
     ownershipEvents: new WeakMap([[lines, { events: ownershipEvents, offset: 0 }]]),
     acceptedMarkerPluses: new WeakMap([[lines, { byOwner: walked.acceptedPlusesByOwner, offset: 0 }]]),
+    losingNoteBody: losingNoteBody(sentinel),
   }
   // The ownership walk can move a lazy line to a container's column. Keep its
   // authored column for CARVE-P2-035, after any quote prefix is read.
@@ -5154,6 +5169,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   delete state.attachmentBoundaries
   delete state.ownershipEvents
   delete state.acceptedMarkerPluses
+  delete state.losingNoteBody
   delete state.quoteAttachmentOrigins
   if (stateSink) stateSink.markerFenceProbeSteps = state.markerFenceProbeSteps
   delete state.markerFenceProbeSteps
@@ -5655,6 +5671,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
     let m
     if ((m = FOOTNOTE_DEF.exec(line))) {
       const label = m[1]
+      if (state.losingNoteBody !== undefined && m[2] === state.losingNoteBody) {
+        i++
+        continue
+      }
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
       const noteBraceColumns = []
@@ -8276,6 +8296,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     depthSlack: 0,
     measuringAuthoredBlock: state.measuringAuthoredBlock ?? false,
     measuringListExtent,
+    losingNoteBody: state.losingNoteBody,
   }
   seen.opaqueMeasurement = { origins: new WeakMap([[measuredLines, start]]), sourceColumns, sourceLines: lines, markerFenceEnd: new WeakMap(), rows: new Set() }
   try {
