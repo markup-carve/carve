@@ -45,11 +45,11 @@
 
 list  (extent)  31  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
 list_item  (extent)  42  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.
-definition_list  (extent)  5  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
+definition_list  (extent)  4  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.
 abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.
 footnote (extent)  25  Pin differential cause triage: markup-carve/carve#5231.
 comment  (extent)  3  Pin differential cause triage: markup-carve/carve#5231.
-definition_description  (extent)  20  Pin differential cause triage: markup-carve/carve#5231.
+definition_description  (extent)  19  Pin differential cause triage: markup-carve/carve#5231.
 list (presence)  4  Pin differential cause triage: markup-carve/carve#5231.
 list_item (presence)  3  Pin differential cause triage: markup-carve/carve#5231.
 text  (presence)  3  Pin differential cause triage: markup-carve/carve#5231.
