@@ -5858,15 +5858,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // A losing `+` on the same label inside this note is a boundary,
         // not a new owner. Keep reading the follower at this note's column.
         const nextNote = FOOTNOTE_DEF.exec(measured.rest)
-        // A losing duplicate of a passed definition takes nothing. Keep that
-        // definition as the owner of its following body across the marker.
-        if (passedNotes.length && nextNote &&
-            labelKey(nextNote[1]) === passedNotes.at(-1).key &&
-            (nextNote[2] === state.losingNoteBody || nextNote[2] === state.refusedNoteBody)) {
-          passedNoteBody = passedBodyOwner
-          i++
-          continue
-        }
         if (attachedFrom === -1 && nextNote && labelKey(nextNote[1]) === labelKey(label) &&
             (m[2] === '+' || m[2] === state.refusedNoteBody) &&
             (nextNote[2] === state.losingNoteBody || nextNote[2] === state.refusedNoteBody)) {

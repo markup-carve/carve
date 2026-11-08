@@ -10,3 +10,11 @@ test('a losing duplicate does not take the body of an interleaved winning note',
   assert.equal(renderDoc(parse(duplicate)), expected)
   assert.match(expected, /<li id="fn2">\n      <p>para<a /)
 })
+
+test('a later losing definition still ends a passed note with body content', () => {
+  const source = '[^m]: +\n[^n]: +\n  para\n[^n]: +\n  more\n\nsee[^m][^n]\n'
+  const html = renderDoc(parse(source))
+  assert.match(html, /^<p>more<\/p>\n/)
+  assert.match(html, /<li id="fn2">\n      <p>para<a /)
+  assert.doesNotMatch(html, /<p>para\nmore/)
+})
