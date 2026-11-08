@@ -8082,6 +8082,11 @@ EOF = (* end of file *) ;
       be re-referenced). If definitions normalize to one key, the FIRST
       footnote definition wins and every later collision receives the same
       raw-spellings-and-key diagnostic required by R1.
+      A later definition registers nothing, and when its body is a lone `+`
+      that `+` takes nothing either: the losing line ends the blocks open
+      before it, as any footnote marker line does, and the block below
+      belongs to the container the losing line stands in (corpus
+      980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing).
       When rendering from Carve source, an unresolved reference writes the
       literal `[^label]` and keeps a trailing attribute run as the characters
       the author typed, as an unresolved reference link keeps its braces
