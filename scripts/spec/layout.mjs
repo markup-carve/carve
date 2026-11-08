@@ -5793,8 +5793,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
             const key = labelKey(note[1])
             if (COMMENT_LINE.test(note[2])) {
               const firstBodyIndex = taken.findIndex((next, index) => index > lead && !isBlank(next) && !isOneLineComment(next))
-              const firstBodyColumn = firstBodyIndex === -1 ? null :
-                (authoredBraceColumns.get(lines)?.[i + firstBodyIndex] ?? ind(i + firstBodyIndex).col)
+              const firstBodyColumn = firstBodyIndex === -1 ? null : Math.max(
+                authoredBraceColumns.get(lines)?.[i + firstBodyIndex] ?? 0,
+                ind(i + firstBodyIndex).col,
+              )
               passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key),
                 losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
                 firstBodyColumn,
