@@ -330,8 +330,9 @@
          A `+` at a container's marker column is outside that container's code,
          raw or colon fence, and an accepted one ends that fence before the
          attached block begins. Separators inserted for attachment are not
-         fence payload. A `+` at the fence's content column stays payload. A
-         table `+ text` row follows §5 T6, rather than this rule.
+         fence payload. A `+` at the fence's content column stays payload;
+         PART 0 S1 PAYLOAD gives the one ordered test for every line inside an
+         open fence. A table `+ text` row follows §5 T6, rather than this rule.
 
       L4 CONTAINERS THAT TAKE THE MARKER: list items (`- +`, `1. +`, and task
          forms), definition bodies (`: +`), footnote bodies (`[^a]: +`, a body
