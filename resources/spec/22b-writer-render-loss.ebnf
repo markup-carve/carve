@@ -110,9 +110,11 @@
    `colspan`, `rowspan` or both: each present exactly when the cell's count is
    greater than 1, holding that count. Its `message` is NAMED HERE and emitted
    verbatim: `Flattened a spanning table cell into separate cells`. These
-   targets have no span syntax, so the cell's content stays at its origin and
-   every position it covers is written as an empty cell. HTML and canonical
-   Carve keep the span and report no loss.
+   targets have no span syntax, so the cell's content stays at its origin.
+   Markdown and ANSI write every position it covers as an empty cell; the
+   Plain target writes nothing for a covered position (CARVE-P11-082) and
+   still reports the loss. HTML and canonical Carve keep the span and report
+   no loss.
 
    Each Carve header row after the first that the Markdown target writes as
    an ordinary body row (CARVE-P11-031) contributes one loss in document order

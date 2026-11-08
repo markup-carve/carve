@@ -11186,6 +11186,33 @@ EOF = (* end of file *) ;
       the header row's width nor the table's. Without the field the header is
       written with native `=` markers, including when a later body row is wider.
 
+  10b2. THE PLAIN-TEXT TARGET WRITES NOTHING FOR A COVERED CELL --
+      NORMATIVE [CARVE-P11-082]. A plain-text table row writes its cells
+      joined by ` | `. A cell that a column or row span COVERS (PART 9 §13 T5:
+      the walk absorbed its marker into the cell it extends) contributes no
+      text and no separator. The spanning cell's content is written once, in
+      its own position:
+
+        |= Pos |= Betrag |        is written as:   Pos | Betrag
+        | 1 | 1.200,00 € |                         1 | 1.200,00 €
+        | Summe netto | < |                        Summe netto
+
+      A row whose cells are all covered but its first writes that cell alone,
+      and a row a rowspan covers starts at its first uncovered cell. Plain
+      text has no columns to keep aligned, and an empty cell would read as a
+      value that is empty.
+
+      AN ORPHAN MARKER IS NOT A COVERED CELL. A marker T5 finds no origin
+      for, or whose span is blocked, stays a cell of the grid and writes as
+      an empty cell, as before.
+
+      THE LOSS ROW STAYS. The span is still flattened, so the target still
+      reports `table-span-flattened` under CARVE-P2-024, with its named
+      message unchanged; CARVE-P2-024 defers to this clause for what the
+      Plain target writes. ANSI and Markdown are outside this clause: a
+      bordered ANSI grid and a GFM pipe table both need the covered position
+      to keep their columns, and keep writing it as an empty cell.
+
   10c. ADJACENT BLOCKS THAT WOULD MERGE KEEP THE CONTINUATION MARKER --
        NORMATIVE [CARVE-P11-030]. In a tight list item, deciding whether to retain `+` is a
        property of the emitted BLOCK SEQUENCE, not only of each child in
@@ -12262,9 +12289,11 @@ EOF = (* end of file *) ;
    `colspan`, `rowspan` or both: each present exactly when the cell's count is
    greater than 1, holding that count. Its `message` is NAMED HERE and emitted
    verbatim: `Flattened a spanning table cell into separate cells`. These
-   targets have no span syntax, so the cell's content stays at its origin and
-   every position it covers is written as an empty cell. HTML and canonical
-   Carve keep the span and report no loss.
+   targets have no span syntax, so the cell's content stays at its origin.
+   Markdown and ANSI write every position it covers as an empty cell; the
+   Plain target writes nothing for a covered position (CARVE-P11-082) and
+   still reports the loss. HTML and canonical Carve keep the span and report
+   no loss.
 
    Each Carve header row after the first that the Markdown target writes as
    an ordinary body row (CARVE-P11-031) contributes one loss in document order
