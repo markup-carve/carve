@@ -1190,6 +1190,7 @@ const DECLARED_LIST_INDENT_START = [
   "930-a-list-marker-opens-a-list-in-every-marker-body.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-2.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "958-a-below-item-marker-continues-the-list-in-a-description.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
+  "990-a-passed-note-keeps-its-blank-separated-continuation-2.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
 ]
 
 test('no corpus document begins a span away from its opening markup', () => {
