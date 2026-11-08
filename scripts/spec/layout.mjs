@@ -5847,6 +5847,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         if (k === -1) fenceKnownShut = bodyLines.length
         return k
       }
+      const passedBodyOwner = passedNotes.findLast((passed) => passed.register) ?? passedNotes.at(-1)
       // Indented continuation: the line's leading run must reach COLUMN 2
       // (PART 9 §24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a
@@ -5868,7 +5869,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // indented continuation, even when a blank separates the two.
         const passedRunEnd = passedNotes.length && isBlank(lines[i]) ? footnoteBlankRunEnd(lines, i, n) : -1
         if (passedRunEnd !== -1) {
-          passedNoteBody = passedNotes.at(-1)
+          // A losing definition does not displace the last registered note.
+          passedNoteBody = passedBodyOwner
           passedNoteBody.body.push(...Array(passedRunEnd - i).fill(''))
           i = passedRunEnd
           continue
