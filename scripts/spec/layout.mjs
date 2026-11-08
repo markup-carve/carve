@@ -3590,7 +3590,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
-    if (top().losing) frames.pop()
+    if (top().losing) {
+      frames.pop()
+      if (attachedTo?.host.kind === 'note' && attachedTo.endsAt(at)) {
+        frames.length = 0
+        frames.push(...attachedTo.frames)
+      }
+    }
     // A pulled, unpaired code fence is only the block before its first blank.
     // Close its walk frame before deciding who owns that blank and the next line.
     if (top().kind === 'fence' && top().once === at) {
@@ -5711,6 +5717,25 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const attached = takeOneBlock(lines, i, state, ind(i).L?.col ?? ind(i).col)
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
         let next = attached.next
+        // A losing definition in the invisible lead takes no block. Measure
+        // the winning marker's actual first block from its first visible line,
+        // retaining the authored columns before the body reader rebases them.
+        const skippedNote = FOOTNOTE_DEF.exec(lines[i])
+        if (skippedNote && (skippedNote[2] === state.losingNoteBody || skippedNote[2] === state.refusedNoteBody)) {
+          let first = i + 1
+          while (first < next && (isBlank(lines[first]) || COMMENT_LINE.test(indentCols(lines[first]).rest))) first++
+          if (first < next && indentCols(lines[first]).col >= FOOTNOTE_BODY_COLUMN) {
+            const visible = takeOneBlock(lines, first, state, indentCols(lines[first]).col)
+            next = Math.min(next, visible.next)
+            for (let k = first + 1; k < next; k++) {
+              const measured = indentCols(lines[k])
+              if (measured.rest && measured.col < indentCols(lines[first]).col && matchMarkerAt(measured)) {
+                next = k
+                break
+              }
+            }
+          }
+        }
         const leadingAttributes = tryAttrLine(dedentedWindow(lines, i, ind(i).col), 0)
         const paragraphStart = i + (leadingAttributes?.next ?? 0)
         if (paragraphStart < next && foldablePlainLine(ind(paragraphStart).rest)) {
@@ -5746,9 +5771,9 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           const nested = FOOTNOTE_DEF.exec(taken[k])
           if (nested) {
             const nestedKey = labelKey(nested[1])
-            // A duplicate of this note's own label was already rebased by
-            // the walk. An interleaved label still has source indentation.
-            losingPlusLead = nestedKey !== labelKey(label) && seenTakenNotes.has(nestedKey) &&
+            // A losing definition can retain source indentation, whether it
+            // repeats this label or an interleaved one.
+            losingPlusLead = seenTakenNotes.has(nestedKey) &&
               (nested[2] === state.losingNoteBody || nested[2] === state.refusedNoteBody)
             losingShift = undefined
             seenTakenNotes.add(nestedKey)
