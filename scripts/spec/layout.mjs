@@ -4618,18 +4618,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length
         ? throughQuotes(lines[+key], hostIndex)?.rest : undefined,
     })
-    // A later note's own `+` takes the visible line right below it at any column, as it does
-    // without the earlier marker (carve#5542). A losing duplicate's `+` takes nothing.
+    // A later note's `+` keeps the paragraph line right below it that stands short of its body
+    // column but past the marker column, as it does without the earlier marker (carve#5542).
+    // A line at the marker column is still the earlier marker's. A losing duplicate takes nothing.
     const passedLabels = new Set()
     const ownsNextLine = (at, rest) => {
       const key = labelKey(FOOTNOTE_DEF.exec(rest)[1])
       if (definedNotes.has(key) || passedLabels.has(key) || at + 1 >= lines.length || throughQuotes(lines[at + 1], hostIndex) === null) return false
       const next = trimLineEnd(view(at + 1))
       return next !== '' && !FOOTNOTE_DEF.test(next) && !COMMENT_LINE.test(next) && !isDefinitionLine(next) &&
-        (docColumn(lines[at + 1], view(at + 1)) === docColumn(lines[at], view(at)) || foldablePlainLine(next) &&
-          !(next[0] === '{' && tryAttrLine(new Proxy(fromHere, {
-            get: (target, key) => key === String(at + 1) ? view(at + 1) : target[key],
-          }), at + 1, indentCols(fromHere[at + 1]).col)))
+        docColumn(lines[at + 1], view(at + 1)) > docColumn(lines[at], view(at)) && foldablePlainLine(next) &&
+        !(next[0] === '{' && tryAttrLine(new Proxy(fromHere, {
+          get: (target, key) => key === String(at + 1) ? view(at + 1) : target[key],
+        }), at + 1, indentCols(fromHere[at + 1]).col))
     }
     let k = from
     const attrFromHere = new Proxy(fromHere, {
@@ -5825,11 +5826,6 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
                 firstBodyColumn,
                 hasFirstBody: firstBodyColumn !== null && firstBodyColumn >= FOOTNOTE_BODY_COLUMN })
-            } else if (CONT_MARKER.test(note[2]) && !earlierDefinitions.has(key) && lead + 1 < taken.length &&
-                !isBlank(taken[lead + 1]) && !FOOTNOTE_DEF.test(taken[lead + 1])) {
-              // This note's own `+` took the attached block (carve#5542); its continuation is its body too.
-              passedNotes.push({ key, body: [], register: true, losingPlus: false, firstBodyColumn: null, hasFirstBody: true })
-              passedOwnsFollower = true
             }
             earlierDefinitions.add(key)
           }
