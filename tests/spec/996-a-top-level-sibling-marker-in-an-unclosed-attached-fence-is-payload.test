@@ -1,0 +1,17 @@
+A top-level sibling marker in an unclosed attached fence is payload
+
+````
+- +
+```
+- z
+
+q
+.
+<ul>
+  <li>
+    <pre><code>- z
+</code></pre>
+  </li>
+</ul>
+<p>q</p>
+````
