@@ -39,9 +39,4 @@
 # AN EMPTY FILE IS A REAL STATE, not a missing one: it says the three engines
 # agreed on every scalar the last run compared. It does not say they agree on
 # fields no corpus document reaches.
-text.value  4  Pinned Rust and PHP retain indentation in the task separator text in corpus 744 and 753; markup-carve/carve#3845 and markup-carve/carve-rs#3407 track its owner.
-comment.content  5  Pin differential cause triage: markup-carve/carve#5231.
-list.tight  1  Pin differential cause triage: markup-carve/carve#5231.
-code_block.content  6  Pin differential cause triage: markup-carve/carve#5231.
-heading.attrs.id  2  Pin differential cause triage: markup-carve/carve#5231.
-code.value  1  Pin differential cause triage: markup-carve/carve#5231.
+comment.content  2  Pin differential cause triage: markup-carve/carve#5231.
