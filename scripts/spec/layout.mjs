@@ -11231,6 +11231,9 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // (`- a` / `  [r]: /u` / `    "T"` publishes the quoted string). So
           // only the footnote kind opens a body run below.
           if (FOOTNOTE_DEF.test(lm.rest)) {
+            // A definition at the child list's marker column interrupts that
+            // list. A later marker starts an item-owned block (§17 L1).
+            if (childList !== null && col <= childList.indent) childList = null
             defBodyIndent = dmeas.col
             noteBodyBoundary = col + FOOTNOTE_BODY_COLUMN
             noteOpenerLine = i
