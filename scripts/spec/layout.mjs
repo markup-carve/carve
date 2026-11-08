@@ -4662,8 +4662,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const offered = CONT_MARKER.test(FOOTNOTE_DEF.exec(rest)[2]) && at === column
         // A later definition with an immediate body owns that body even when
         // an earlier marker is looking through invisible definitions.
+        // A blank is blank at the host's quote level: `>` alone is blank inside a quote (carve#5520).
         let body = k + 1
-        while (body < lines.length && isBlank(lines[body])) body++
+        while (body < lines.length && throughQuotes(lines[body], hostIndex) !== null && isBlank(view(body))) body++
         if (offered && body < lines.length &&
             (ownsNextLine(k, rest) || docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN)) return k
         passedLabels.add(labelKey(FOOTNOTE_DEF.exec(rest)[1]))
