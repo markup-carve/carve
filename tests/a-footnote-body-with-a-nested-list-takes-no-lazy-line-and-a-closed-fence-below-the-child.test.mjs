@@ -119,5 +119,5 @@ test("second note after a note list ends before item prose", () => {
 })
 
 test("item sublist after a comment-led note list owns its fence and tail", () => {
-  assert.equal(render("- [^b]: %% c\n    - c2\n\n  - e\n    ~~~\n    code\n    ~~~\n  more\ntail [^b]\n"), "<ul>\n  <li>\n    <ul>\n      <li>e\n        <pre><code>code\n</code></pre>\n      </li>\n    </ul>\n    <p>more\ntail <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n  </li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <ul>\n        <li>c2</li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
+  assert.equal(render("- [^b]: %% c\n    - c2\n\n  - e\n    ~~~\n    code\n    ~~~\n  more\ntail [^b]\n"), "<ul>\n  <li>\n    <ul>\n      <li>e\n        <pre><code>code\n</code></pre>\n      </li>\n    </ul>\n    more\ntail <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>\n  </li>\n</ul>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <ul>\n        <li>c2</li>\n      </ul>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>")
 })
