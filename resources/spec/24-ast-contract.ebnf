@@ -29,6 +29,15 @@
       A serializer that loses a field is not a lossy convenience; it is a
       consumer breaking silently one document later.
 
+      A `comment` authored on a quote-marked line MAY carry
+      `quoteMarkerColumns`: the nonempty array of one-based source columns of
+      its `>` markers, from outermost to innermost. It is absent when no quote
+      marker precedes that comment. The columns are strictly increasing. The
+      comment's `pos` begins at the comment, so it cannot recover the marker
+      columns: `  > %% c` and `>   %% c` can have the same `pos` and `content`.
+      A source-preserving writer MUST reproduce the marker columns in this
+      field; an AST reader MUST retain them through a round trip.
+
    7. THE DOCUMENT ROOT CARRIES THREE FIELDS AND AN OPTIONAL VERSION -- NORMATIVE [CARVE-P12-024]:
       `type`, `children`, `srcByteLength`, and on a bare tree an optional
       `astVersion` (CARVE-P12-056). Nothing else. An implementation MUST

@@ -1006,6 +1006,15 @@
         "content": {
           "type": "string"
         },
+        "quoteMarkerColumns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "One-based authored columns of the quote markers on a comment-only line, outermost first. Absent when the comment line has no quote markers. A writer uses these columns to preserve shifted and nested quote markers (PART 12 section 6)."
+        },
         "attrs": {
           "$ref": "#/$defs/attrs"
         },

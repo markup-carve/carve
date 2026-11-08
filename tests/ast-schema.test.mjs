@@ -43,6 +43,23 @@ const schema = JSON.parse(readFileSync(resolve(root, 'resources/ast-schema.json'
 const ajv = new Ajv2020({ allErrors: true, strict: true })
 const validate = ajv.compile(schema)
 
+test('quoted comment lines can publish authored marker columns', () => {
+  const document = (quoteMarkerColumns) => ({
+    type: 'document', srcByteLength: 12,
+    children: [{
+      type: 'block_quote', children: [{
+        type: 'comment', block: false, form: 'line', content: 'c',
+        quoteMarkerColumns,
+      }],
+    }],
+  })
+
+  assert.equal(validate(document([3])), true, firstErrors())
+  assert.equal(validate(document([1, 5])), true, firstErrors())
+  assert.equal(validate(document([])), false)
+  assert.equal(validate(document([0])), false)
+})
+
 test('citation items are typed nodes, positioned where they can be placed', () => {
   const pos = { startLine: 1, endLine: 1, startColumn: 2, endColumn: 12, startOffset: 1, endOffset: 11 }
   const citation = { type: 'citation', key: 'smith', suppressAuthor: false, pos }
