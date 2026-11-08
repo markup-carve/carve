@@ -5708,6 +5708,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const defLine = i
       let attachedFrom = -1
       let attachedEnd = -1
+      let attachedSeparator = false
       const passedNotes = []
       let passedNoteBody = null
       const earlierDefinitions = new Set(state.footnoteDefs.keys())
@@ -5809,7 +5810,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
         if (isBlank(lines[next] ?? '') && endsAtFirstBlank(lines, i, next, sourceDefCol + FOOTNOTE_BODY_COLUMN)) markAttachmentBoundary(state, bodyLines)
         // S4 reads the lines after an attached paragraph against it (PART 0).
-        if (!leavesFenceOpen(taken) && !bodyLeavesParagraphOpen(taken)) bodyLines.push('')
+        if (!leavesFenceOpen(taken) && !bodyLeavesParagraphOpen(taken)) {
+          bodyLines.push('')
+          attachedSeparator = true
+        }
         i = next
       }
       // Set by a `+` the walk accepted: the next line begins its block (§17 L3).
@@ -6025,7 +6029,18 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       for (const passed of passedNotes) {
         if (passed.register && passed.hasFirstBody && passed.body.length) {
           const at = attachedEnd
-          const continuation = passed.body.map(line => isBlank(line) ? line : ' '.repeat(FOOTNOTE_BODY_COLUMN) + line)
+          // The passed body's own blank run replaces the separator inserted
+          // for the outer attachment. Keeping both changes fence payload.
+          if (attachedSeparator) {
+            bodyLines.splice(at, 1)
+            attachedSeparator = false
+          }
+          const continuation = passed.body.map(line => {
+            // The ownership walk used a sentinel for a marker it could not
+            // assign to the outer note. At this note's column it is a marker.
+            const content = line === state.refusedNoteBody[2] ? '+' : line
+            return isBlank(content) ? content : ' '.repeat(FOOTNOTE_BODY_COLUMN) + content
+          })
           bodyLines.splice(at, 0, ...continuation)
           attachedEnd += continuation.length
         }
