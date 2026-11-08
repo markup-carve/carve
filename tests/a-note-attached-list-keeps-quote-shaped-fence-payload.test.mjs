@@ -30,3 +30,11 @@ for (const payload of ['+', 'another', '- sib', '> q']) {
     assert.match(html(source), new RegExp(`<pre><code>code\\n\\n${escaped.replace(/[+]/g, '\\$&')}\\n\\n<\\/code><\\/pre>`))
   })
 }
+
+test('an outdented plus misses the child fence and ends the attached list', () => {
+  const source = '[^a]: +\n- li\n  ```\n  code\n+\nnext\n\nsee[^a]\n'
+  const output = html(source)
+  assert.match(output, /<pre><code>code\n<\/code><\/pre>/)
+  assert.doesNotMatch(output, /<code>code\n\+|<code>code\nnext/)
+  assert.match(output, /<\/ul>\n\s*<p>next<a /)
+})

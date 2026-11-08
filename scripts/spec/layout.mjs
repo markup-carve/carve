@@ -8729,7 +8729,8 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
     // and quote-shaped lines that reach it (PART 0 S1), so none is an
     // attachment boundary. Rewind for a larger lookahead window.
     if (idx < fenceScan.index) fenceScan = { index: start, opaque: null, columns: [0] }
-    return !bodyHasOpenCodeFence(lines, fenceScan, idx, (k) => indentCols(lines[k]))
+    const open = bodyHasOpenCodeFence(lines, fenceScan, idx, (k) => indentCols(lines[k]))
+    return !open || measured.rest !== '' && measured.col < fenceScan.opaque.base
   }
   const one = attachedBlockEnd(lines, start, state, boundary, 0, quoteHost)
   return { rawMarker: lines.slice(start, one), next: one }
