@@ -8719,8 +8719,18 @@ function authoredBlockEnd(lines, start, base, state) {
 }
 function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
   const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
-  const boundary = (idx) => attachmentBoundary(lines)(idx) ||
-    (startsList && idx > start && indentCols(lines[idx]).col === column && QUOTE.test(indentCols(lines[idx]).rest))
+  let fenceScan = { index: start, opaque: null, columns: [0] }
+  const boundary = (idx) => {
+    const measured = indentCols(lines[idx])
+    const offered = attachmentBoundary(lines)(idx) ||
+      startsList && idx > start && measured.col === column && QUOTE.test(measured.rest)
+    if (!offered || !startsList || idx <= start) return offered
+    // An attached list is one block. Its descendant fence owns blank, plus,
+    // and quote-shaped lines that reach it (PART 0 S1), so none is an
+    // attachment boundary. Rewind for a larger lookahead window.
+    if (idx < fenceScan.index) fenceScan = { index: start, opaque: null, columns: [0] }
+    return !bodyHasOpenCodeFence(lines, fenceScan, idx, (k) => indentCols(lines[k]))
+  }
   const one = attachedBlockEnd(lines, start, state, boundary, 0, quoteHost)
   return { rawMarker: lines.slice(start, one), next: one }
 }
