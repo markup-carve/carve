@@ -66,10 +66,5 @@ plain/rust/853-a-whitespace-run-after-a-tab-sets-the-content-column-where-the-co
 plain/rust/853-a-whitespace-run-after-a-tab-sets-the-content-column-where-the-content-starts-3  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 plain/rust/864-a-leading-content-tab-sets-the-item-s-content-column-where-the-content-starts  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 ansi/php/869-a-braced-comment-line-after-a-plus-is-the-attached-paragraph  New pin comparison: php differs from the other two engines; triage in markup-carve/carve#5185.
-html/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
-markdown/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
-plain/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
-carve/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
-ansi/rust/851-a-first-block-plus-shape-reads-the-one-attach-rule-6  markup-carve/carve-rs#4071: current pinned engines disagree on this target; the linked issue owns the difference.
 markdown/js/970-a-definition-marker-after-a-block-and-paragraph-ends-the-item  markup-carve/carve#5185: current pinned engines disagree on this target; the linked issue owns the difference.
 markdown/js/973-open-state-lifetime-boundaries-2  markup-carve/carve#5185: current pinned engines disagree on this target; the linked issue owns the difference.
