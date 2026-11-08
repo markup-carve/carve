@@ -1,0 +1,21 @@
+A sibling marker in an unclosed attached fence is payload
+
+````
+- - +
+  ```
+  - z
+
+q
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>- z
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+<p>q</p>
+````

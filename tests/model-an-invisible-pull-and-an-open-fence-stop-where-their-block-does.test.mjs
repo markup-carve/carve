@@ -39,8 +39,8 @@ test('a fence at column 0 is refused by a nested +', () => {
   assert.ok(!html('- - +\n```\n- z\n').includes('+'))
 })
 
-test('a blank line still bounds that unclosed fence, as for the one-level item', () => {
-  assert.equal(html('- - +\n  ```\n  - z\n\nq\n'), '<ul><li><ul><li><pre><code></code></pre></li><li>z</li></ul></li></ul><p>q</p>')
+test('a sibling marker stays in an unclosed fence before its first blank, carve#5499', () => {
+  assert.equal(html('- - +\n  ```\n  - z\n\nq\n'), '<ul><li><ul><li><pre><code>- z</code></pre></li></ul></li></ul><p>q</p>')
 })
 
 test('a + inside the fence a nested + takes is payload', () => {
