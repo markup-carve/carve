@@ -1,0 +1,22 @@
+A shallower line ends a descendant comment span and opens a paragraph
+
+```
+- - - x
+      %%%%
+    b
+z
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>x</li>
+        </ul>
+        b
+z
+      </li>
+    </ul>
+  </li>
+</ul>
+```
