@@ -8774,7 +8774,12 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
 }
 
 // --- lists: PART 9 §11 N1-N3, §17 L1-L4, §24 C3/C4 ----------------------
-function* parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
+// The list run's steps for `drive`; the generator is what keeps the container cycle off the JS stack.
+function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
+  return listRunSteps(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top)
+}
+
+function* listRunSteps(lines, i, blocks, state, peekInterrupts, ind, meas, inItem, top) {
   const n = lines.length
   while (i < n) {
     const head = matchMarkerAt(ind(i))
