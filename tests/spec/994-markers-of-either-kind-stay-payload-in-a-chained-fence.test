@@ -1,0 +1,23 @@
+Markers of either kind stay payload in a chained fence
+
+````
+- 1. +
+  ```
+  2. z
+  - w
+
+q
+.
+<ul>
+  <li>
+    <ol>
+      <li>
+        <pre><code>2. z
+- w
+</code></pre>
+      </li>
+    </ol>
+  </li>
+</ul>
+<p>q</p>
+````

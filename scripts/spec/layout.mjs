@@ -3469,6 +3469,24 @@ function attachedBlockLength(lines, at, view) {
       if (line === null) break
       own.push(line)
     }
+    // The ownership walk bounds an unclosed attached fence where the block
+    // reader does: at a list marker in its column with a blank below it.
+    const openerAt = leadRunEnd(own, 0)
+    const first = FENCE.exec(own[openerAt] ?? '')
+    if (first && parseFenceInfo(first[2], first[1]) !== null) {
+      let markerAt = -1
+      let closed = false
+      let blankBelow = false
+      for (let j = openerAt + 1; j < own.length; j++) {
+        const measured = indentCols(own[j])
+        const closer = PURE_FENCE.exec(measured.rest)
+        if (measured.col === 0 && closer && closer[1][0] === first[1][0] && closer[1].length >= first[1].length) { closed = true; break }
+        if (markerAt < 0 && measured.col === 0 && matchMarkerAt(measured)) markerAt = j
+        // The view ends on the empty line after the last newline, which is no blank.
+        if (markerAt >= 0 && isBlank(own[j]) && j < own.length - 1) blankBelow = true
+      }
+      if (!closed && blankBelow && own.length < size) return markerAt
+    }
     const next = takeOneBlock(own, 0, {}, 0).next
     if (next < own.length || own.length < size) return Math.max(1, next)
   }
@@ -8138,11 +8156,9 @@ function oneBlockEnd(lines, start, endsBlock, cap = lines.length) {
   if (fenced !== -1) return fenced + 1
   let end = start
   const stopAt = Math.min(lines.length, cap)
-  // An unclosed code fence keeps every nonblank line at its content column as
-  // payload, including sibling markers (PART 0 S1, carve#5499).
+  // An unclosed code fence's payload takes no `+` (PART 0 S1, §17 L3, carve#5484).
   const code = isCodeBlockOpener(lines[opener] ?? '')
-  while (end < stopAt && !(endsBlock(end) && !(code && end > opener &&
-    !isBlank(lines[end]) && indentCols(lines[end]).col >= column))) end++
+  while (end < stopAt && !(endsBlock(end) && !(code && end > opener && CONT_MARKER.test(lines[end])))) end++
   return end
 }
 
@@ -9938,8 +9954,14 @@ function collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2], codeMatch[1]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
-      const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
-      if (unclosedAttached) end = n
+      const unclosed = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0)
+      // A fence right of the line its `+` stands on (a marker-line chain) keeps a sibling marker
+      // as payload; only its first blank or a line left of it ends it (PART 0 S1, carve#5499).
+      const fenceCol = ind(i + opener).L?.col ?? ind(i + opener).col
+      if (unclosed && fenceCol > (ind(headIndex).L?.col ?? ind(headIndex).col)) {
+        end = i + opener + 1
+        while (end < n && !isBlank(lines[end]) && ind(end).col >= ind(i + opener).col) end++
+      } else if (unclosed && !lines.slice(i).some(isBlank)) end = n
       end = attachedColonSiblingEnd(lines, i, end, opener, (k) => matchMarkerAt(ind(k))?.indent === baseIndent)
       const captionable = code ? hasCloser(attached, opener) : colon && isFigureGroupOpener(parseColonOpener(colon[2])) && COLON_CLOSER.test(attached.at(-1) ?? '')
       if (captionable && CAPTION.test(lines[end] ?? '')) end++
