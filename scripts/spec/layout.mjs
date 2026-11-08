@@ -5701,6 +5701,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       const inheritedFenceOpens = new Set()
       const defLine = i
       let attachedFrom = -1
+      let attachedEnd = -1
       const passedNotes = []
       let passedNoteBody = null
       const earlierDefinitions = new Set(state.footnoteDefs.keys())
@@ -5765,8 +5766,10 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           if (note) {
             const key = labelKey(note[1])
             if (COMMENT_LINE.test(note[2])) {
+              const firstBody = taken.slice(lead + 1).find(next => !isBlank(next) && !isOneLineComment(next))
               passedNotes.push({ key, body: [], register: !earlierDefinitions.has(key),
-                losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody })
+                losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
+                hasFirstBody: firstBody !== undefined && indentCols(firstBody).col >= FOOTNOTE_BODY_COLUMN })
             }
             earlierDefinitions.add(key)
           }
@@ -5777,6 +5780,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         }
         attachedFrom = bodyLines.length
         bodyLines.push(...taken)
+        attachedEnd = bodyLines.length
         // An unclosed fence or colon body ends at its first blank, and the body resumes (§17 L3, carve#5404).
         if (isBlank(lines[next] ?? '') && endsAtFirstBlank(lines, i, next, sourceDefCol + FOOTNOTE_BODY_COLUMN)) markAttachmentBoundary(state, bodyLines)
         // S4 reads the lines after an attached paragraph against it (PART 0).
@@ -5831,7 +5835,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         const passedRunEnd = passedNotes.length && isBlank(lines[i]) ? footnoteBlankRunEnd(lines, i, n) : -1
         if (passedRunEnd !== -1) {
           passedNoteBody = passedNotes.at(-1)
-          if (passedNoteBody.body.length) passedNoteBody.body.push(...Array(passedRunEnd - i).fill(''))
+          passedNoteBody.body.push(...Array(passedRunEnd - i).fill(''))
           i = passedRunEnd
           continue
         }
@@ -5990,6 +5994,17 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           bodyLines.push(...passed.body)
         }
       }
+      // The last passed definition may own the continuation after the
+      // attached block. Restore it at that definition's body column before
+      // parsing, so lists and other blocks can span the blank as one body.
+      for (const passed of passedNotes) {
+        if (passed.register && passed.hasFirstBody && passed.body.length) {
+          const at = attachedEnd
+          const continuation = passed.body.map(line => isBlank(line) ? line : ' '.repeat(FOOTNOTE_BODY_COLUMN) + line)
+          bodyLines.splice(at, 0, ...continuation)
+          attachedEnd += continuation.length
+        }
+      }
       if (!state.footnoteDefs.has(key)) {
         // FIRST definition wins (PART 9R state)
         // A `holdsAnInvisibleBlock` flag used to be set here, so that a body
@@ -6003,14 +6018,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
       }
       for (const passed of passedNotes) {
-        if (passed.register && passed.body.length) {
-          // The attached block may already have registered the first part of
-          // this note. Its later, blank-separated continuation still belongs
-          // to the same note rather than disappearing with the outer host.
-          const continuation = parseBlocks(passed.body, state, false, true)
-          const existing = state.footnoteDefs.get(passed.key)
-          if (existing) existing.push(...continuation)
-          else state.footnoteDefs.set(passed.key, continuation)
+        if (passed.register && !passed.hasFirstBody && passed.body.length && !state.footnoteDefs.get(passed.key)?.length) {
+          state.footnoteDefs.set(passed.key, parseBlocks(passed.body, state, false, true))
         }
       }
       continue
