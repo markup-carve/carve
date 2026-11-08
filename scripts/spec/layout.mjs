@@ -3743,8 +3743,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // Behind a quote host's own `>` the `+` continues that quote at its content column (carve#5132).
       const own = attachedTo.host.kind === 'quote' ? stripQuotes(src, attachedTo.depth + 1) : null
       const reaches = stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol
-      if ((reaches || own && CONT_MARKER.test(trimWs(own.rest)) &&
-          walkIndent(own.rest).col === attachedTo.host.markerCol) && attachedTo.endsAt(at)) {
+      const codePayloadPlus = own && top().kind === 'fence' && top().family === 'code' &&
+        walkIndent(own.rest).col > attachedTo.host.markerCol
+      if ((reaches || own && CONT_MARKER.test(trimWs(own.rest)) && !codePayloadPlus) && attachedTo.endsAt(at)) {
         frames.length = 0
         frames.push(...attachedTo.frames)
       }

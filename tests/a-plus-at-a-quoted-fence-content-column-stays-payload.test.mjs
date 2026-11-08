@@ -22,3 +22,8 @@ test('a plus at the quote marker column can still end an attached fence', () => 
   const source = '> +\n>  ```\n> +\n'
   assert.equal(code(source), '+\n')
 })
+
+test('an indented quote keeps plus content after a different attached block', () => {
+  const source = '  > +\n  # h\n  > +\n'
+  assert.match(renderDoc(parse(source)), /<p>\+<\/p>/)
+})
