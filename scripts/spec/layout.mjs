@@ -5729,6 +5729,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
       let attachedSeparator = false
       const passedNotes = []
       let passedNoteBody = null
+      let passedOwnsFollower = false
       const earlierDefinitions = new Set(state.footnoteDefs.keys())
       earlierDefinitions.add(labelKey(label))
       i++
@@ -5778,6 +5779,7 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
           // that line at the passed note's body column, so it stays there (carve#5542).
           const passedPlus = k > i && FOOTNOTE_DEF.exec(taken[k - i - 1])
           const ownFollower = passedPlus && !earlierDefinitions.has(labelKey(passedPlus[1])) && passedPlus[2] === state.refusedNoteBody
+          if (ownFollower) passedOwnsFollower = true
           taken.push(caption ? ' '.repeat(caption.col) + measured.rest : ownFollower ? lines[k] : stripLazyLead(lines[k]))
         }
         // The skipped definition has no body of its own. Its indented
@@ -5823,6 +5825,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
                 losingPlus: note[2] === state.losingNoteBody || note[2] === state.refusedNoteBody,
                 firstBodyColumn,
                 hasFirstBody: firstBodyColumn !== null && firstBodyColumn >= FOOTNOTE_BODY_COLUMN })
+            } else if (CONT_MARKER.test(note[2]) && !earlierDefinitions.has(key) && lead + 1 < taken.length &&
+                !isBlank(taken[lead + 1]) && !FOOTNOTE_DEF.test(taken[lead + 1])) {
+              // This note's own `+` took the attached block (carve#5542); its continuation is its body too.
+              passedNotes.push({ key, body: [], register: true, losingPlus: false, firstBodyColumn: null, hasFirstBody: true })
+              passedOwnsFollower = true
             }
             earlierDefinitions.add(key)
           }
@@ -5891,6 +5898,8 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         return k
       }
       const passedBodyOwner = passedNotes.findLast((passed) => passed.register) ?? passedNotes.at(-1)
+      // The passed note that took the attached follower keeps its indented continuation too.
+      if (passedOwnsFollower) passedNoteBody = passedBodyOwner
       // Indented continuation: the line's leading run must reach COLUMN 2
       // (PART 9 §24 C1 column arithmetic), not two literal space characters.
       // A tab from column 0 already reaches column 4, so a bare tab or a

@@ -19,6 +19,14 @@ test('a later note plus takes the line below it at any column past an earlier pl
   assert.equal(note('[^m]: +\n[^n]: +\n- x\n\nsee[^n][^m]\n', 1), '<ul>\n        <li>x</li>\n      </ul>\n      <p>')
 })
 
+test('the later note keeps its indented continuation past an earlier plus (carve#5542)', () => {
+  for (const follower of ['para', ' para']) {
+    assert.equal(note(`[^m]: +\n[^n]: +\n${follower}\n  - x\n\nsee[^n][^m]\n`, 1), '<p>para</p>\n      <ul>\n        <li>x</li>\n      </ul>\n      <p>')
+    assert.equal(note(`[^m]: +\n[^n]: +\n${follower}\n\n  next\n\nsee[^n][^m]\n`, 1), '<p>para</p>\n      <p>next')
+    assert.equal(note(`[^m]: +\n[^n]: +\n${follower}\n\n  next\n\nsee[^n][^m]\n`, 2), '<p>')
+  }
+})
+
 test('blocks the later note plus does not take keep their reading (carve#5542)', () => {
   // A blank refuses the later `+`; a list or an attribute line below its body column is not lazy text.
   assert.match(html('[^m]: +\n[^n]: +\n\n para\n\nsee[^n][^m]\n'), /^<p>para<\/p>/)
