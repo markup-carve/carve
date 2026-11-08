@@ -1,0 +1,20 @@
+A footnote definition between sub-lists separates them
+
+```
+- a
+  - b
+  [^n]: t
+
+  - c
+.
+<ul>
+  <li><p>a</p>
+    <ul>
+      <li>b</li>
+    </ul>
+    <ul>
+      <li>c</li>
+    </ul>
+  </li>
+</ul>
+```
