@@ -47,7 +47,8 @@ test('a quoted later note keeps its body across a quote blank line', () => {
 
 test('a losing later definition does not move its body into the earlier note', () => {
   const source = '[^b]: x\n[^a]: +\n[^b]: +\npara\n\n  own\n\n[^a] [^b]\n'
-  assert.deepEqual(noteText(source, 'a'), [{ t: 'para', lines: ['para'] }])
+  // PART 9R R2 and the #5474 ruling leave the losing `+` follower in `a`.
+  assert.deepEqual(noteText(source, 'a'), [{ t: 'para', lines: ['para'] }, { t: 'para', lines: ['own'] }])
   assert.deepEqual(noteText(source, 'b'), [{ t: 'para', lines: ['x'] }])
 })
 
