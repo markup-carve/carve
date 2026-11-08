@@ -1,0 +1,42 @@
+---
+page: edge-lists
+---
+
+## A note-attached list keeps its child fence payload
+
+A quote-shaped line at the note's attachment column is still payload of an open code fence in the attached list item (PART 0 S1, carve#5550).
+
+::: compare
+
+````carve
+- [^a]: +
+  - li
+    ```
+    > quoted
+    ```
+
+see[^a]
+````
+
+```html
+<ul>
+  <li></li>
+</ul>
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <ul>
+        <li>li
+          <pre><code>&gt; quoted
+</code></pre>
+        </li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
