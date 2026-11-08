@@ -4618,6 +4618,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length
         ? throughQuotes(lines[+key], hostIndex)?.rest : undefined,
     })
+    // A later note's own `+` takes the visible line right below it at any column, as it does
+    // without the earlier marker (carve#5542). A losing duplicate's `+` takes nothing.
+    const passedLabels = new Set()
+    const ownsNextLine = (at, rest) => {
+      const key = labelKey(FOOTNOTE_DEF.exec(rest)[1])
+      if (definedNotes.has(key) || passedLabels.has(key) || at + 1 >= lines.length || throughQuotes(lines[at + 1], hostIndex) === null) return false
+      const next = trimLineEnd(view(at + 1))
+      return next !== '' && !FOOTNOTE_DEF.test(next) && !COMMENT_LINE.test(next) && !isDefinitionLine(next) &&
+        (docColumn(lines[at + 1], view(at + 1)) === docColumn(lines[at], view(at)) || foldablePlainLine(next) &&
+          !(next[0] === '{' && tryAttrLine(new Proxy(fromHere, {
+            get: (target, key) => key === String(at + 1) ? view(at + 1) : target[key],
+          }), at + 1, indentCols(fromHere[at + 1]).col)))
+    }
     let k = from
     const attrFromHere = new Proxy(fromHere, {
       get: (target, key) => key === String(k) ? view(k) : target[key],
@@ -4645,7 +4658,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         let body = k + 1
         while (body < lines.length && isBlank(lines[body])) body++
         if (offered && body < lines.length &&
-            docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN) return k
+            (ownsNextLine(k, rest) || docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN)) return k
+        passedLabels.add(labelKey(FOOTNOTE_DEF.exec(rest)[1]))
         k++
         while (k < lines.length && foldablePlainLine(view(k)) &&
             (!offered || docColumn(lines[k], view(k)) !== column)) k++
@@ -5760,7 +5774,11 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         for (let k = i; k < next; k++) {
           const measured = ind(k)
           const caption = k > i && (measured.L?.col ?? measured.col) === sourceDefCol + FOOTNOTE_BODY_COLUMN && attachedQuoteCaption(taken, measured.rest)
-          taken.push(caption ? ' '.repeat(caption.col) + measured.rest : stripLazyLead(lines[k]))
+          // A passed note's own `+` takes the line right below it at any column; the walk framed
+          // that line at the passed note's body column, so it stays there (carve#5542).
+          const passedPlus = k > i && FOOTNOTE_DEF.exec(taken[k - i - 1])
+          const ownFollower = passedPlus && !earlierDefinitions.has(labelKey(passedPlus[1])) && passedPlus[2] === state.refusedNoteBody
+          taken.push(caption ? ' '.repeat(caption.col) + measured.rest : ownFollower ? lines[k] : stripLazyLead(lines[k]))
         }
         // The skipped definition has no body of its own. Its indented
         // follower reaches this note's body column, so read it at that
