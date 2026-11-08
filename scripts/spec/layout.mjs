@@ -8762,9 +8762,9 @@ function parseListRun(lines, i, blocks, state, peekInterrupts, ind, meas, inItem
 // pattern is anchored at exactly the same character, so the match is the same
 // match; the indent it would have reported is `col`, which the measurement
 // already carries.
-// A quote whose only content is a `+`: it attaches the next block at the quote's column (§17 L3).
-const QUOTE_PLUS = /^>[ \t]+\+[ \t]*$/
-const QUOTE_PLUS_AFTER_MARKER = /^[ \t]*>[ \t]+\+[ \t]*$/
+// A `> +` quote attaches the next block at its column (§17 L3); past the one space a `+` is text (corpus 646).
+const QUOTE_PLUS = /^> \+[ \t]*$/
+const QUOTE_PLUS_AFTER_MARKER = /^[ \t]*> \+[ \t]*$/
 const quotePlusMarker = (meas) => QUOTE_PLUS.test(meas.rest) ? { indent: meas.col, markerWidth: 1, text: meas.rest.slice(1) } : null
 
 function matchMarkerAt(meas, tabOrigin = 0) {
