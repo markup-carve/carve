@@ -6003,8 +6003,14 @@ function parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined, 
         parseBlocks(inheritFinalBreak(lines, bodyLines, i, state), state, false, true)
       }
       for (const passed of passedNotes) {
-        if (passed.register && passed.body.length && state.footnoteDefs.get(passed.key)?.length === 0) {
-          state.footnoteDefs.set(passed.key, parseBlocks(passed.body, state, false, true))
+        if (passed.register && passed.body.length) {
+          // The attached block may already have registered the first part of
+          // this note. Its later, blank-separated continuation still belongs
+          // to the same note rather than disappearing with the outer host.
+          const continuation = parseBlocks(passed.body, state, false, true)
+          const existing = state.footnoteDefs.get(passed.key)
+          if (existing) existing.push(...continuation)
+          else state.footnoteDefs.set(passed.key, continuation)
         }
       }
       continue
