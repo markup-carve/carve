@@ -3469,6 +3469,21 @@ function attachedBlockLength(lines, at, view) {
       if (line === null) break
       own.push(line)
     }
+    // A list marker at the attached fence's marker column bounds an
+    // unclosed fence (§17 L3). The block reader alone sees it as payload.
+    const openerAt = leadRunEnd(own, 0)
+    const first = FENCE.exec(own[openerAt] ?? '')
+    if (first && parseFenceInfo(first[2], first[1]) !== null) {
+      let markerAt = -1
+      let closed = false
+      for (let j = openerAt + 1; j < own.length; j++) {
+        const measured = indentCols(own[j])
+        const closer = PURE_FENCE.exec(measured.rest)
+        if (measured.col === 0 && closer && closer[1][0] === first[1][0] && closer[1].length >= first[1].length) { closed = true; break }
+        if (markerAt < 0 && measured.col === 0 && matchMarkerAt(measured)) markerAt = j
+      }
+      if (!closed && markerAt >= 0 && own.length < size) return markerAt
+    }
     const next = takeOneBlock(own, 0, {}, 0).next
     if (next < own.length || own.length < size) return Math.max(1, next)
   }

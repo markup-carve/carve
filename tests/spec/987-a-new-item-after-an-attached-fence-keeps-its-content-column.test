@@ -1,0 +1,20 @@
+A new item after an attached fence keeps its content column
+
+````
+1. +
+```
+- z
+
+  y
+.
+<ol>
+  <li>
+    <pre><code></code></pre>
+  </li>
+</ol>
+<ul>
+  <li><p>z</p>
+    <p>y</p>
+  </li>
+</ul>
+````
