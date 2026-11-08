@@ -1,1 +1,0 @@
-The pinned carve-js build keeps the line after a refused quoted description `+` inside the quote; the spec model closes it because the marker opens no paragraph (carve#5415, CARVE-P9-067 L3).

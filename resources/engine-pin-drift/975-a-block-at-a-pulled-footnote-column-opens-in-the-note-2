@@ -1,1 +1,0 @@
-Spec model now ends a pulled footnote paragraph at an attribute line on the note content column (CARVE-P0-011); the pinned carve-js build still folds it into the paragraph (carve#5421).

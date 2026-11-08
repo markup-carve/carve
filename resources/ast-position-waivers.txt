@@ -367,19 +367,9 @@ carve-js   856-a-continuation-cell-past-the-last-column-is-a-new-cell-4.crv  tab
 carve-js   856-a-continuation-cell-past-the-last-column-is-a-new-cell-5.crv  table_cell  2  permitted
 carve-js   856-a-continuation-cell-past-the-last-column-is-a-new-cell.crv  table_cell  3  permitted
 carve-js   857-an-html-attribute-is-written-once-whatever-its-case.crv  text  1  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination-2.crv  image  1  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination-3.crv  code  1  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination-3.crv  link  1  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination-3.crv  text  2  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination.crv  link  1  permitted
-carve-js   868-a-cell-s-escaped-pipe-reaches-a-link-destination.crv  text  1  permitted
 carve-js   870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds-2.crv  table_cell  1  permitted
 carve-js   870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds.crv  table_cell  1  permitted
 carve-js   873-a-delimited-body-s-overlapping-header-and-footer-make-no-header-cells-2.crv  table_cell  1  permitted
-carve-js   921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-2.crv  image  1  permitted
-carve-js   921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-3.crv  link  1  permitted
-carve-js   921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe-3.crv  text  1  permitted
-carve-js   921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv  link  1  permitted
 carve-js   921-an-unresolved-reference-in-a-cell-reads-the-unescaped-pipe.crv  text  1  permitted
 carve-js  183-a-comment-is-recognized-at-any-column.crv  list  1  markup-carve/carve-js#4495
 carve-js  183-a-comment-is-recognized-at-any-column.crv  list_item  1  markup-carve/carve-js#4495
@@ -544,7 +534,6 @@ carve-php  867-brackets-nested-past-the-cap-stay-literal.crv  text  1  markup-ca
 carve-php  870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds-2.crv  table_cell  1  permitted
 carve-php  870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds.crv  table_cell  1  permitted
 carve-php  873-a-delimited-body-s-overlapping-header-and-footer-make-no-header-cells-2.crv  table_cell  1  permitted
-carve-php  882-attributed-bracket-spans-share-the-inline-cap.crv  text  1  markup-carve/carve-php#4725
 carve-php  936-an-invisible-line-keeps-a-description-entry-open-2.crv  definition_list  1  permitted
 carve-php  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list  1  markup-carve/carve-php#4725
 carve-php  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list_item  1  markup-carve/carve-php#4725

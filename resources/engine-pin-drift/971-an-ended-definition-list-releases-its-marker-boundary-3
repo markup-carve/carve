@@ -1,1 +1,0 @@
-The pinned carve-js build ends the item after a paragraph opened by a released `: ` line; PART 0 S4 folds the marker-column line into that paragraph (carve#5373, carve#5411).

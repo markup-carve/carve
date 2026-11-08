@@ -1,1 +1,0 @@
-The pinned carve-js build ends the item after a term-only list and later paragraph; PART 0 S4 now folds the marker-column line into that paragraph (carve#5368).

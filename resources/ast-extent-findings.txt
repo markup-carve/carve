@@ -54,21 +54,15 @@
 # undo. A check that cannot pass is the same defect as a check that cannot fail.
 #
 # <engine>  <rule>  <type>  <count>  <owner/repo#N>
-carve-js  starts-past-opening-markup  list  10  markup-carve/carve#5063
-carve-js  starts-past-opening-markup  list_item  10  markup-carve/carve#5063
-carve-php  starts-past-opening-markup  list  21  markup-carve/carve#5063
-carve-php  starts-past-opening-markup  list_item  23  markup-carve/carve#5063
-carve-rs  starts-past-opening-markup  list  13  markup-carve/carve#5063
-carve-rs  starts-past-opening-markup  list_item  13  markup-carve/carve#5063
+carve-js  starts-past-opening-markup  list  11  markup-carve/carve#5063
+carve-js  starts-past-opening-markup  list_item  11  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list  12  markup-carve/carve#5063
+carve-php  starts-past-opening-markup  list_item  17  markup-carve/carve#5063
+carve-rs  starts-past-opening-markup  list  11  markup-carve/carve#5063
+carve-rs  starts-past-opening-markup  list_item  11  markup-carve/carve#5063
 carve-php  starts-past-opening-markup  block_quote  2  markup-carve/carve-php#4646
 carve-php  ends-past-last-child  list_item  30  markup-carve/carve-php#4723
 carve-php  starts-past-opening-markup  abbreviation_def  2  markup-carve/carve-php#4722
-carve-js  ends-past-last-child  list_item  39  markup-carve/carve#5246
-carve-js  ends-past-last-child  definition_description  4  markup-carve/carve#5246
-carve-js  ends-past-last-child  block_quote  2  markup-carve/carve#5246
-carve-rs  ends-past-last-child  list_item  35  markup-carve/carve#5246
-carve-rs  ends-past-last-child  definition_description  4  markup-carve/carve#5246
-carve-rs  ends-past-last-child  block_quote  2  markup-carve/carve#5246
 carve-php  ends-past-last-child  block_quote  3  markup-carve/carve#5231
 carve-php  ends-past-last-child  definition_description  4  markup-carve/carve#5231
 carve-php  ends-past-last-child  footnote  4  markup-carve/carve#5231

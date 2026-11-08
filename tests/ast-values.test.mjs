@@ -148,12 +148,7 @@ const shippedDeclaration = () =>
  */
 // Re-measured 2026-11-06 in four AST shards at the current engine pins.
 const LAST_MEASURED = new Map([
-  ['text.value', 4],
-  ['comment.content', 5],
-  ['list.tight', 1],
-  ['code_block.content', 6],
-  ['heading.attrs.id', 2],
-  ['code.value', 1],
+  ['comment.content', 2],
 ])
 
 /** A measurement of `count` distinct documents - the reconciler counts them. */

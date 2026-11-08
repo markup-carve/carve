@@ -329,30 +329,21 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // adds one document to each extent count.
 // Re-measured 2026-11-06 in four AST shards at the current engine pins.
 const LAST_MEASURED = new Map([
-  ['list (extent)', 23],
-  ['list_item (extent)', 35],
-  ['definition_list (extent)', 2],
-  ['text (extent)', 4],
-  ['soft_break (extent)', 2],
+  ['list (extent)', 31],
+  ['list_item (extent)', 42],
+  ['definition_list (extent)', 4],
   ['abbreviation_def (extent)', 2],
-  ['paragraph (extent)', 10],
   ['footnote (extent)', 25],
-  ['comment (extent)', 7],
-  ['definition_description (extent)', 17],
+  ['comment (extent)', 3],
+  ['definition_description (extent)', 19],
   ['list (presence)', 4],
   ['list_item (presence)', 3],
-  ['link (presence)', 3],
-  ['text (presence)', 6],
+  ['text (presence)', 3],
   ['block_quote (extent)', 7],
-  ['image (presence)', 2],
-  ['line_block (extent)', 2],
   ['definition_list (presence)', 2],
   ['definition_description (presence)', 2],
   ['paragraph (presence)', 1],
-  ['code (presence)', 1],
-  ['code_block (extent)', 1],
   ['figure_group (presence)', 1],
-  ['code (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
