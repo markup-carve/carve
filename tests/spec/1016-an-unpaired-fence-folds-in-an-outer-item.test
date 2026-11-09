@@ -1,0 +1,25 @@
+An unpaired fence folds in an outer item
+
+````
+- - - +
+    ```
+
+  tail
+     ~~~
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <ul>
+          <li>
+            <pre><code></code></pre>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <p>tail
+~~~</p>
+  </li>
+</ul>
+````

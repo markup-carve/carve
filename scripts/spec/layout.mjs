@@ -4308,7 +4308,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
     }
-    result.push(out + src)
+    // A fence line folded after a pulled fence is paragraph text in every
+    // surviving owner. Carry that reading to the nested block readers.
+    result.push(out + (foldedFenceAfterPull ? LAZY : '') + src)
     const blockPath = applied
     // A marker the walk opens as a frame inside a list the readers opened
     // (carve#4193) is read where the walk wrote it: at a level's column a
