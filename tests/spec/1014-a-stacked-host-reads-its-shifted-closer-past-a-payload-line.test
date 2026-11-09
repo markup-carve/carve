@@ -1,0 +1,81 @@
+A stacked host reads its shifted closer past a payload line
+
+````
+- - +
+  ```
+
+  x
+   ```
+.
+<ul>
+  <li>
+    <ul>
+      <li>
+        <pre><code>
+x
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+````
+
+````
+- 1. +
+  ```
+
+  tail
+    ```
+.
+<ul>
+  <li>
+    <ol>
+      <li>
+        <pre><code>
+tail
+</code></pre>
+      </li>
+    </ol>
+  </li>
+</ul>
+````
+
+````
+> - 1. +
+>   ```
+>
+>   tail
+>     ```
+.
+<blockquote>
+  <ul>
+    <li>
+      <ol>
+        <li>
+          <pre><code>
+tail
+</code></pre>
+        </li>
+      </ol>
+    </li>
+  </ul>
+</blockquote>
+````
+
+````
+1. +
+```
+
+ ```
+  # h
+.
+<ol>
+  <li>
+    <pre><code>
+</code></pre>
+  </li>
+</ol>
+<section id="h">
+  <h1>h</h1>
+</section>
+````

@@ -1,0 +1,49 @@
+A description's own-line plus fence keeps its trailing blank
+
+````
+:: t
+: p
++
+```
+code
+
+  tail
+
+x
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>p</p>
+    <pre><code>code
+
+tail
+
+</code></pre>
+  </dd>
+</dl>
+<p>x</p>
+````
+
+````
+:: t
+: n
++
+```
+a
+  b
+
+see
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>n</p>
+    <pre><code>a
+  b
+
+</code></pre>
+  </dd>
+</dl>
+<p>see</p>
+````

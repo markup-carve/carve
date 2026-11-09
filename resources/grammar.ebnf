@@ -304,6 +304,14 @@
         4. every other line is payload: it opens nothing, takes no `+` and
            changes no frame state.
 
+        Step 3 covers a marker-line `+` only. A fence an own-line `+`
+        attached reads like any fence in its host's body and keeps its
+        trailing blank (PART 9 §17 L4, carve#5560).
+
+        A host reads a closer at its column whatever stands between the
+        blank and the closer, so a payload line there does not end a fence
+        that a later line closes (PART 9 §17 L3, carve#5587).
+
         Nothing else ends such a fence without its closer: otherwise an
         unclosed fence runs to the end of its container, and a host's colon
         closer inside it is payload. A colon body is not a payload: its lines
@@ -824,12 +832,17 @@ blank_line = {whitespace}, newline ;
    line. If a continuation fails, the entire run is paragraph text, and the
    line after it continues that paragraph without interrupting it, even when
    it opens a heading, quote or fence (carve#5080); a fence opener there keeps
-   its closer in the paragraph too. The column
+   its closer in the paragraph too. That closer is read by its own column,
+   indented or not, whatever stands between it and the opener, a quote or
+   heading included (carve#5600). The column
    comparison uses the lines' source columns after quote prefixes are read.
    A `{%` opened on a lazy paragraph continuation keeps its written source
    column, even when it is short of its owner's content column. A continuation
    at or left of that `{` refuses the whole run in every owner; one or more
-   source columns past it continues the run. Inline
+   source columns past it continues the run. A line inside a still-open
+   inline code span of the paragraph starts no such multi-line run, at any
+   column: block position is not decided against text the paragraph's inline
+   pairing already holds (carve#5618). Inline
    attribute and comment runs remain governed by their inline productions.
    PART 4 `continuation` spells the attribute production; PART 9 §21a gives
    comment rendering. The importer now passes these runs through. *)
@@ -6627,7 +6640,11 @@ EOF = (* end of file *) ;
          A fence line closes a fence attached by a marker-line `+` only at the
          column where its host reads a closer; a closed fence keeps its interior
          blanks, and only a fence with no closer the host would read ends at its
-         first blank (carve#5410).
+         first blank (carve#5410). The host reads a closer at its column whatever
+         stands between the blank and the closer: a stacked host reads one left
+         of its content column as a column-0 host does, so `- - +` / a fence at
+         column 2 / blank / `  x` / a closer at column 3 is one fence holding the
+         blank and `x` (carve#5587).
          After an unclosed fence attached by a stacked marker-line `+` ends
          at that blank, an unpaired fence line indented into the following
          paragraph stays paragraph text in whichever owner holds the paragraph
@@ -6667,7 +6684,10 @@ EOF = (* end of file *) ;
          and so refuses the `+`. S1 erases `%%` lines and one-line link and
          abbreviation definitions before the next-line test. A `%%%` span and
          block-level invisible lines follow CARVE-P9-013, and a note
-         definition's body belongs to the note. A blank line, the end of input
+         definition's body belongs to the note. An attribute line left of a
+         note's body column is the host's, not the note's: it closes the note's
+         paragraph, and the next visible line is the attached block and takes
+         its attributes (carve#5576). A blank line, the end of input
          or a sibling after them refuses the `+`. Examples, with `/` for a line
          break:
 
@@ -6714,6 +6734,9 @@ EOF = (* end of file *) ;
          A refused marker renders nothing and
          `continuation-marker-refused` reports it. It does not become a
          letter, open a paragraph or change the next visible line's owner.
+         A description or note body that refuses it stays open: the next line
+         is read in that body, where a marker at its body column opens a block
+         (carve#5608, carve#5601).
          A `+` off every eligible marker column remains ordinary text.
 
          A `+` at a container's marker column is outside that container's code,

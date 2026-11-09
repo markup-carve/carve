@@ -1,0 +1,51 @@
+A line inside an open inline code span starts no brace run
+
+````
+p
+ `open
+ {.x
+ .y}
+ ```
+ z
+.
+<p>p
+<code>open
+{.x
+.y}</code></p>
+<pre><code>z
+</code></pre>
+````
+
+````
+p
+`open
+{.x
+.y}
+```
+z
+.
+<p>p
+<code>open
+{.x
+.y}</code></p>
+<pre><code>z
+</code></pre>
+````
+
+````
+> p
+>  `open
+>  {%
+>  c %}
+>  ```
+>  z
+.
+<blockquote>
+  <p>p
+<code>open
+{%
+c %}</code></p>
+  <pre><code>z
+</code></pre>
+</blockquote>
+````

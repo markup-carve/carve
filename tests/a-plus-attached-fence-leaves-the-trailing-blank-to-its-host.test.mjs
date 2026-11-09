@@ -17,7 +17,8 @@ test('the attachment form decides whether a trailing blank reaches an open fence
     ['[^f]: +\n```\na\n\n  b\n\nsee[^f]\n', 'a\n'],
     ['> [^f]: +\n> ```\n> a\n>   b\n>\n> see[^f]\n', 'a\n  b\n'],
     [':: t\n: +\n```\na\n  b\n\nsee\n', 'a\n  b\n'],
-    [':: t\n: n\n+\n```\na\n  b\n\nsee\n', 'a\n  b\n'],
+    // A description's own-line `+` fence keeps it too (carve#5560).
+    [':: t\n: n\n+\n```\na\n  b\n\nsee\n', 'a\n  b\n\n'],
     [':: t\n: +\n~~~\na\n  b\n\nsee\n', 'a\n  b\n'],
   ]
   for (const [source, expected] of cases) assert.equal(payload(source), expected, source)

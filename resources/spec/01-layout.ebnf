@@ -200,6 +200,14 @@
         4. every other line is payload: it opens nothing, takes no `+` and
            changes no frame state.
 
+        Step 3 covers a marker-line `+` only. A fence an own-line `+`
+        attached reads like any fence in its host's body and keeps its
+        trailing blank (PART 9 §17 L4, carve#5560).
+
+        A host reads a closer at its column whatever stands between the
+        blank and the closer, so a payload line there does not end a fence
+        that a later line closes (PART 9 §17 L3, carve#5587).
+
         Nothing else ends such a fence without its closer: otherwise an
         unclosed fence runs to the end of its container, and a host's colon
         closer inside it is payload. A colon body is not a payload: its lines
