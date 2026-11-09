@@ -8,7 +8,9 @@ for (const outer of ['-', '*']) for (const inner of ['-', '*', '1.']) for (const
     const lines = [`${outer} ${inner} +`, `  ${fence}`, '', '  tail', `    ${fence}`]
     const source = lines.map(line => quote ? `${quote}${line}`.trimEnd() : line).join('\n') + '\n'
     const out = renderDoc(parse(source))
-    assert.match(out, fence === '```' ? /<p>tail\n<code><\/code><\/p>/ : /<p>tail\n~~~<\/p>/, source)
+    // Under `1.` the closer at column 4 is left of the inner content column 5, so the host reads it (carve#5587).
+    if (inner === '1.') assert.match(out, /<pre><code>\ntail\n<\/code><\/pre>/, source)
+    else assert.match(out, fence === '```' ? /<p>tail\n<code><\/code><\/p>/ : /<p>tail\n~~~<\/p>/, source)
   })
 }
 

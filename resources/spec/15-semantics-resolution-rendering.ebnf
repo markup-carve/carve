@@ -243,8 +243,12 @@
          A fence line closes a fence attached by a marker-line `+` only at the
          column where its host reads a closer; a closed fence keeps its interior
          blanks, and only a fence with no closer the host would read ends at its
-         first blank (carve#5410).
-         After an unclosed fence attached by a stacked marker-line `+` ends
+         first blank (carve#5410). The host reads a closer at its column whatever
+         stands between the blank and the closer: a stacked host reads one left
+         of its content column as a column-0 host does, so `- - +` / a fence at
+         column 2 / blank / `  x` / a closer at column 3 is one fence holding the
+         blank and `x` (carve#5587).
+After an unclosed fence attached by a stacked marker-line `+` ends
          at that blank, an unpaired fence line indented into the following
          paragraph stays paragraph text in whichever owner holds the paragraph
          (carve#5606). This does not depend on that owner's distance from the

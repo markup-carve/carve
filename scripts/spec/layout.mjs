@@ -3626,8 +3626,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
-    if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
-        frames.at(-2)?.once > at && attachedTo) {
+    // A quoted blank is blank once its host's quote prefixes are read.
+    if (top().kind === 'fence' && top().family === 'code' && frames.at(-2)?.once > at && attachedTo &&
+        (isBlank(lines[at]) || isBlank(stripQuotes(lines[at], attachedTo.depth)?.rest ?? 'x'))) {
       pairedAttachedFence = top()
     }
     if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
@@ -4369,6 +4370,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const openerCol = walkIndent(stripQuotes(lines[at], depth)?.rest ?? lines[at]).col
           // A task box before the host's marker is content (CARVE-P0-008): the host's lines reach left to where its opener lands.
           const hostLeft = attachedTo.host.markerCol - (col - canon)
+          const hostContent = Math.max(openerCol + 1, attachedTo.host.col - (col - canon))
           let blank = -1
           for (let next = at + 1; next < lines.length; next++) {
             const level = stripQuotes(lines[next], depth)
@@ -4387,7 +4389,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
               if (!level) break
               const ind = walkIndent(level.rest)
               if (ind.rest !== '' && ind.col < hostLeft) break
-              if (next >= blank && ind.col <= openerCol && form.closes(ind.rest, ind.col)) {
+              // The host reads a closer left of its content column, whatever stands between the blank and it (carve#5587).
+              if (next >= blank && ind.col < hostContent && form.closes(ind.rest, Math.min(ind.col, openerCol))) {
                 paired = true
                 break
               }
