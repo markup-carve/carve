@@ -4442,14 +4442,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
     }
-    // A fence line folded after a pulled fence is paragraph text in every
-    // surviving owner. Carry that reading to the nested block readers. An
-    // off-base colon run is also text, but use an inline escape instead of a
-    // lazy marker: figure captions can render the latter as literal bytes.
-    const readerLine = form.colonPayload
-      ? src.slice(0, src.length - m.rest.length) + '\\' + m.rest
-      : src
-    result.push(out + (foldedFenceAfterPull ? LAZY : '') + readerLine)
+    // A fence line folded after a pulled fence, or a colon run that missed
+    // its opener's base, is paragraph text in the surviving owner. Carry
+    // that reading to the nested block readers without changing source bytes.
+    result.push(out + (foldedFenceAfterPull || form.colonPayload ? LAZY : '') + src)
     const blockPath = applied
     // A marker the walk opens as a frame inside a list the readers opened
     // (carve#4193) is read where the walk wrote it: at a level's column a

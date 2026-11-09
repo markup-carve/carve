@@ -36,4 +36,12 @@ test('a below-base run in a figure caption renders no parser marker', () => {
   const output = html('  ::: figure\n![one](a.png)\n^ One\n :::\n')
   assert.match(output, /<figcaption>One\n:::<\/figcaption>/)
   assert.ok(!output.includes('\0'))
+  assert.ok(!html('::: figure\n![one](a.png)\n^ One\n  :::\n').includes('\0'))
+})
+
+test('a below-base run inside a multiline code span keeps its source bytes', () => {
+  const output = html('  :::\n`a\n :::\nb`\n')
+  assert.match(output, /<code>a\n:::\nb<\/code>/)
+  assert.ok(!output.includes('\\:::'))
+  assert.ok(!output.includes('\0'))
 })
