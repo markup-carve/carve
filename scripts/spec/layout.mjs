@@ -5594,7 +5594,9 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
 // reader see the same visible stream. The first pass also collects definitions
 // in their authored order, before the erased lines lose their positions.
 export function parse(src, options = {}) {
-  if (!/(?:^|\n)[^\n]*(?:%%|\[[^\]\n]+\]:|\*\[[A-Za-z0-9]+\]:)/.test(src)) {
+  // Comments require %% and definitions require ]:. Literal probes keep this
+  // prefilter linear even when many unclosed brackets share one long line.
+  if (!src.includes('%%') && !src.includes(']:')) {
     return parseWithBoundaries(src, options)
   }
   const classified = []
