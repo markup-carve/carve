@@ -45,3 +45,15 @@ test('a deeper child keeps its path inside the attached colon', () => {
   assert.equal(trace[3].owner, 'doc/item:1/div:2/item:4')
   assert.equal(trace[4].owner, 'doc/item:1/div:2/item:4')
 })
+
+test('a body already owned by the colon is not prefixed twice', () => {
+  const trace = modelTrace('- +\n::: x\n  a\n  :::\n')
+  assert.equal(trace[2].owner, 'doc/item:1/div:2')
+})
+
+test('a nested code fence retains its payload decision fields', () => {
+  const trace = modelTrace('- +\n::: x\n\n  ```\n  hi\n  ```\n  :::\n')
+  assert.equal(trace[4].step, 'S1')
+  assert.equal(trace[4].cell, 'B-code-keep')
+  assert.equal(trace[4].owner, 'doc/item:1/div:2/code:4')
+})

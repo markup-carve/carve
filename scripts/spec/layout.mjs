@@ -4624,18 +4624,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (index === lines.length - 1 && lines[index] === '') return
     while (attachedColonTraces.at(-1)?.end <= index) attachedColonTraces.pop()
     const attachedColonTrace = attachedColonTraces.at(-1)
-    if (attachedColonTrace && index >= attachedColonTrace.start) {
-      if (index < attachedColonTrace.end) {
-        const closer = index === attachedColonTrace.end - 1
-        const blank = isBlank(lines[index])
-        const payload = attachedColonTrace.lineBlock && !closer
-        const tracedOwner = !closer && !attachedColonTrace.lineBlock && underPath(owner, attachedColonTrace.from)
-          ? attachedColonTrace.owner + owner.slice(attachedColonTrace.from.length) : attachedColonTrace.owner
-        trace.push({ line: index + 1, step: attachedColonTrace.lineBlock ? 'S1' : 'S5', owner: tracedOwner,
-          rule: attachedColonTrace.lineBlock ? 'CARVE-P0-005' : blank ? 'CARVE-P0-003' : 'CARVE-P0-024',
-          form: closer ? 'closer' : payload ? 'payload' : blank ? 'blank' : form,
-          ...(closer ? { cell: 'B-div-end' } : payload ? { cell: 'B-div-keep' } : {}) })
-        return
+    const inAttachedColon = attachedColonTrace && index >= attachedColonTrace.start
+    if (inAttachedColon) {
+      const closer = index === attachedColonTrace.end - 1
+      if (closer) {
+        owner = attachedColonTrace.owner
+        form = 'closer'
+        extra = { cell: 'B-div-end' }
+      } else if (attachedColonTrace.lineBlock) {
+        owner = attachedColonTrace.owner
+        step = 'S1'
+        rule = 'CARVE-P0-005'
+        form = 'payload'
+        extra = { cell: 'B-div-keep' }
+      } else if (underPath(owner, attachedColonTrace.from) && !underPath(owner, attachedColonTrace.owner)) {
+        owner = attachedColonTrace.owner + owner.slice(attachedColonTrace.from.length)
       }
     }
     const walkedOwner = owner
@@ -4657,7 +4660,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner = attached.to + owner.slice(attached.from.length)
       }
     }
-    if (afterPlusBlock && index >= afterPlusBlock.end) {
+    if (!inAttachedColon && afterPlusBlock && index >= afterPlusBlock.end) {
       // An unclosed fence leaves the walk reading payload; the readers end the
       // fence there and read the lines at the content column as the item's body.
       if (form === 'payload') {
