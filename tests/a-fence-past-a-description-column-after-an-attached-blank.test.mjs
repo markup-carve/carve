@@ -20,3 +20,20 @@ for (const run of ['```', '~~~']) {
     })
   }
 }
+
+test('a fence in a later description list item keeps its item indentation', () => {
+  const source = [':: t', ': +', '```', 'a', '', '  - item', '    ```', '    x', '    ```'].join('\n')
+  assert.equal(renderDoc(parse(source)), [
+    '<dl>',
+    '  <dt>t</dt>',
+    '  <dd>',
+    '    <pre><code>a\n</code></pre>',
+    '    <ul>',
+    '      <li>item',
+    '        <pre><code>x\n</code></pre>',
+    '      </li>',
+    '    </ul>',
+    '  </dd>',
+    '</dl>',
+  ].join('\n'))
+})

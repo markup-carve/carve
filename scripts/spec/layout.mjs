@@ -6800,7 +6800,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // its block form when rebasing extra authored indentation.
               const attachedFenceEnded = attachedFrom !== -1 && opensCodeFence(bodyLines[attachedFrom]) &&
                 state.attachmentBoundaries?.get(bodyLines)?.some((b) => b > attachedFrom)
-              pushBody(attachedFenceEnded && opensCodeFence(indentCols(cur).rest) &&
+              pushBody(attachedFenceEnded && !lastBodyListMarker && opensCodeFence(indentCols(cur).rest) &&
                 descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt,
                   state.attachmentBoundaries?.get(bodyLines)) === -1
                 ? indentCols(cur).rest : bodyLine)
