@@ -5913,6 +5913,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const passedPlus = k > i && FOOTNOTE_DEF.exec(taken[k - i - 1])
           const ownFollower = passedPlus && !earlierDefinitions.has(labelKey(passedPlus[1])) && passedPlus[2] === state.refusedNoteBody
           if (ownFollower) passedOwnsFollower = true
+          noteBraceColumns[bodyLines.length + taken.length] = authoredBraceColumns.get(lines)?.[k] ?? measured.col
           taken.push(caption ? ' '.repeat(caption.col) + measured.rest : ownFollower ? lines[k] : stripLazyLead(lines[k]))
         }
         // The skipped definition has no body of its own. Its indented
@@ -7738,6 +7739,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           }
           qLastMarked = i
           carryPrefixMemo(state, lines, i, inner, inner.length)
+          quoteBraceColumns[inner.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
           inner.push(qm[1] ?? '')
           if (LINE_BLOCK_SHAPED.test(qm[1] ?? '')) {
             qStanzaCandidate = true
