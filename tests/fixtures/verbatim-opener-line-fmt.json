@@ -183,7 +183,7 @@
       "id": "refused-22"
     },
     {
-      "host": "paragraph",
+      "source": "a`a\n  {.c}\n  c`\n",
       "value": "a\n{.c}\nc",
       "id": "refused-23"
     },

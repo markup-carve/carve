@@ -1,0 +1,1 @@
+Spec model keeps a complete attribute-shaped brace line inside an open inline code span; the pinned carve-js build still treats it as a block attribute (carve#5618).

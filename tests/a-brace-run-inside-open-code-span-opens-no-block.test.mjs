@@ -27,3 +27,11 @@ test('a valid attribute line stays inside an open inline code span (#5618)', () 
 test('a backtick in a link destination does not hide a refused brace run (#5618)', () => {
   assert.equal(html('p\n [x](`url)\n {.x\n .y}\n ```\n z\n'), '<p>p\n<a href="`url">x</a>\n{.x\n.y}\n<code>\nz</code></p>')
 })
+
+test('a backtick in a link title does not hide a refused brace run (#5618)', () => {
+  assert.equal(html('p\n [x](/u "`title")\n {.x\n .y}\n ```\n z\n'), '<p>p\n<a href="/u" title="`title">x</a>\n{.x\n.y}\n<code>\nz</code></p>')
+})
+
+test('a quoted parenthesis in a link title does not open inline code (#5618)', () => {
+  assert.equal(html('p [x](/u "a)b`c")\n{.x}\ntail\n'), '<p>p <a href="/u" title="a)b`c">x</a></p>\n<p class="x">tail</p>')
+})
