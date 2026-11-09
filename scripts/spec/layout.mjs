@@ -6042,7 +6042,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         // note as owner. Its invisible placeholder must not end the note body.
         const ownership = state.ownershipEvents?.get(lines)
         const event = ownership?.events.get(i + ownership.offset)
-        if (lines[i] === '%%' && event?.form === 'plus' && event.owner?.includes('/footnote:')) {
+        const follower = ownership?.events.get(i + 1 + ownership.offset)
+        if (i + 1 < n && lines[i] === '%%' && event?.form === 'plus' && event.owner?.includes('/footnote:') &&
+            isFootnoteContinuationLine(lines[i + 1]) && follower?.owner === event.owner) {
           i++
           continue
         }
@@ -7140,6 +7142,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     if (QUOTE.test(line)) {
       const inner = []
       const quoteLines = inner
+      const sourceOwnership = state.ownershipEvents?.get(lines)
+      const quoteOwnership = new Map()
       const quoteBraceColumns = []
       authoredBraceColumns.set(inner, quoteBraceColumns)
       const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
@@ -7758,6 +7762,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           }
           qLastMarked = i
           carryPrefixMemo(state, lines, i, inner, inner.length)
+          const event = sourceOwnership?.events.get(i + sourceOwnership.offset)
+          if (event) quoteOwnership.set(inner.length, event)
           inner.push(qm[1] ?? '')
           if (LINE_BLOCK_SHAPED.test(qm[1] ?? '')) {
             qStanzaCandidate = true
@@ -7927,6 +7933,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }
         break
       }
+      if (quoteOwnership.size) state.ownershipEvents.set(inner, { events: quoteOwnership, offset: 0 })
       const children = yield parseBlocksGen(inheritFinalBreak(lines, inner, i, state), state, false)
       const node = { t: 'quote', children }
       // caption -> <figure><blockquote/><figcaption> (PART 9 §4).
