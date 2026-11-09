@@ -3560,7 +3560,7 @@ function attachedColonBoundary(lines, from, view, ownLine = false, host = null) 
   const own = body.slice(0, hostEnd)
   const close = findColonCloser(own, opener, colon[1].length)
   const blank = own.findIndex((row, k) => k > opener && isBlank(row))
-  return from + (close !== -1 ? close + 1 : ownLine || blank === -1 ? own.length : blank + 1)
+  return from + (close !== -1 ? close + 1 : ownLine || blank === -1 ? own.length : blank)
 }
 
 const underPath = (path, root) => path === root || path.startsWith(`${root}/`)
@@ -9528,6 +9528,8 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
+const itemParentPaths = new WeakMap()
+
 function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
   const n = lines.length
   const skipped = new Set()
@@ -9772,7 +9774,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     carryPrefixMemo(state, lines, i, itemLines, 0)
     const headIndex = i
     const sourceOwnership = state.ownershipEvents?.get(lines)
-    const parentItemPath = state.itemOwnerPath?.get(lines) ?? 'doc'
+    const parentItemPath = itemParentPaths.get(lines) ?? 'doc'
     const markerOwner = sourceOwnership?.events.get(headIndex + sourceOwnership.offset)?.owner
     const itemAt = markerOwner?.indexOf('/item:', parentItemPath.length)
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
@@ -12586,7 +12588,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         return event ? [[index, event]] : []
       }))
       state.ownershipEvents.set(itemLines, { events, offset: 0 })
-      ;(state.itemOwnerPath ??= new WeakMap()).set(itemLines, itemOwnerPath)
+      itemParentPaths.set(itemLines, itemOwnerPath)
     }
     item.blocks = state.measuringListExtent ? [] : yield parseBlocksGen(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     // A literal directive ends its own line (PART 6 I2), so a paragraph after it is a genuine second block (§17 L1).

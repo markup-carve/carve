@@ -34,7 +34,8 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src)).replace(/\s+/g, ' ').replace(/> </g, '><').trim()
 
-// A code fence whose body holds a blank line. `a` and `b` are one code block.
+// A code fence whose body holds a blank line. An own-line attachment ends
+// before `b` when that line misses its host (PART 0 S1 step 2, carve#5658 F06).
 const CODE = ['```', 'a', '', 'b', '```']
 // A colon fence whose body holds a blank line. `a` and `b` are two paragraphs
 // of ONE admonition.
@@ -48,10 +49,10 @@ const doc = (...lines) => lines.join('\n') + '\n'
 // The largest severing group, and the one no corpus row could pin while the
 // oracle severed it too.
 
-test('a `+`-attached code fence stays whole inside a list item', () => {
+test('an own-line item attachment ends when a line after its blank misses the item', () => {
   assert.equal(
     html(doc('- x', '+', ...CODE, '', 'z')),
-    '<ul><li>x <pre><code>a b </code></pre></li></ul><p>z</p>',
+    '<ul><li>x <pre><code>a </code></pre></li></ul><p>b</p><pre><code> z </code></pre>',
   )
 })
 
@@ -117,10 +118,10 @@ const REF = '<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a
 const note = (body) =>
   `${REF}<section role="doc-endnotes" aria-label="Footnotes"><hr><ol><li id="fn1"><p>n</p>${body}</li></ol></section>`
 
-test('a `+`-attached code fence stays whole inside a footnote body', () => {
+test('an own-line note attachment ends when a line after its blank misses the note', () => {
   assert.equal(
     html(doc('[^f]: n', '+', ...CODE, '', 'see[^f]')),
-    note(`<pre><code>a b </code></pre>${NOTE_TAIL}`),
+    '<p>b</p><pre><code> see[^f] </code></pre>',
   )
 })
 
@@ -139,10 +140,10 @@ test('a `+`-attached comment fence stays whole inside a footnote body', () => {
   )
 })
 
-test('a `+`-attached code fence stays whole inside a `dd`', () => {
+test('an own-line description attachment ends when a line after its blank misses the description', () => {
   assert.equal(
     html(doc(':: t', ':  d', '+', ...CODE, '', 'z')),
-    '<dl><dt>t</dt><dd><p>d</p><pre><code>a b </code></pre></dd></dl><p>z</p>',
+    '<dl><dt>t</dt><dd><p>d</p><pre><code>a </code></pre></dd></dl><p>b</p><pre><code> z </code></pre>',
   )
 })
 
