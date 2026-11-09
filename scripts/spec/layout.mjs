@@ -3586,7 +3586,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   // The lines a refused brace run's paragraph keeps (CARVE-P2-035).
-  const refusedKept = { start: -1, through: -1 }
+  const refusedKept = { start: -1, through: -1, col: -1 }
   const top = () => frames[frames.length - 1]
   const carried = (f) => f.plusShift?.shift ?? 0
   // A lone `+` the walk does not read as an indented list's marker is still
@@ -4944,6 +4944,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
     if (missed) {
+      // A refused run's follower keeps its paragraph at the opening brace's
+      // source column even if it misses the attached host's content column.
+      if (at > refusedKept.start && at <= refusedKept.through && col >= refusedKept.col &&
+          !invisibleSiblingLine(rest) &&
+          !(matchMarkerAt(indentCols(rest)) && frames.some((f) => ['item', 'dd', 'note'].includes(f.kind)))) {
+        return { kind: 'text', interrupts: false, kept: true }
+      }
+      // The run itself can miss a child while standing at the reached owner's
+      // column. Classify it there before treating it as an ordinary opener.
+      if (rest[0] === '{' && col === owner.col && !frames.slice(frames.indexOf(owner) + 1).some((f) => f.para) &&
+          markRefusedRun(rest, owner, at, col)) {
+        return { kind: 'text', interrupts: false, kept: true }
+      }
       const form = classifyShape(rest, owner, at, col)
       if (form.kind !== 'text' && at > refusedKept.start && at <= refusedKept.through) refusedKept.through = -1
       return form
@@ -4951,23 +4964,27 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
     if (rest[0] === '{' && at !== refusedKept.start && !codeSpanOpenAbove(owner, at)) {
-      const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
-      const kept = refusedRunKeptThrough(new Proxy([], {
-        get(_, key) {
-          if (key === 'length') return lines.length - at
-          if (key === '0') return ' '.repeat(col) + rest
-          const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
-          return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
-        },
-        // A list marker in a body interrupts the run's paragraph as the block readers measure it (§24 C3).
-      }), 0, { commentScannedThrough: -1 }, 0, ['item', 'dd', 'note'].includes(owner.kind))
-      if (kept !== null) {
-        refusedKept.start = at
-        refusedKept.through = at + kept
-        return { kind: 'text', interrupts: false, kept: true }
-      }
+      if (markRefusedRun(rest, owner, at, col)) return { kind: 'text', interrupts: false, kept: true }
     } else if (rest[0] === '{' && at <= refusedKept.through) return { kind: 'text', interrupts: false, kept: true }
     return classifyShape(rest, owner, at, col)
+  }
+
+  function markRefusedRun(rest, owner, at, col) {
+    const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+    const kept = refusedRunKeptThrough(new Proxy([], {
+      get(_, key) {
+        if (key === 'length') return lines.length - at
+        if (key === '0') return ' '.repeat(col) + rest
+        const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
+        return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
+      },
+      // A list marker in a body interrupts the run's paragraph as the block readers measure it (§24 C3).
+    }), 0, { commentScannedThrough: -1 }, 0, ['item', 'dd', 'note'].includes(owner.kind))
+    if (kept === null) return false
+    refusedKept.start = at
+    refusedKept.through = at + kept
+    refusedKept.col = col
+    return true
   }
 
   // A line inside a still-open inline code span starts no block-position brace run (CARVE-P2-035, carve#5618).
