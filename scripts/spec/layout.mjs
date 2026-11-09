@@ -8051,7 +8051,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // run. Keep its matching closer in that paragraph too; otherwise the
       // closer would be reinterpreted as a fresh empty fence opener.
       if (forcedAfterRefusal && refusedFollowerFenceEnd < i && opensFence(lines, i)) {
-        refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1])
+        refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1], true)
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
@@ -8188,7 +8188,17 @@ function hasCloser(lines, idx) {
   return findCloser(lines, idx, m[1]) !== -1
 }
 
-function findCloser(lines, openIdx, run) {
+function findCloser(lines, openIdx, run, refusedFollower = false) {
+  if (refusedFollower) {
+    // A refused run's follower reads its closer at the closer's authored
+    // column, regardless of intervening block-shaped lines (CARVE-P2-035).
+    for (let j = openIdx + 1; j < lines.length; j++) {
+      layoutWork.closerScan++
+      const close = PURE_FENCE.exec(indentCols(lines[j]).rest)
+      if (close && close[1][0] === run[0] && close[1].length >= run.length) return j
+    }
+    return -1
+  }
   const ch = run[0]
   for (let j = openIdx + 1; j < lines.length; j++) {
     layoutWork.closerScan++
