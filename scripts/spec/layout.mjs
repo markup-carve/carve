@@ -1235,6 +1235,11 @@ const opensLineBlock = (line) => {
   const colon = COLON_FENCE.exec(stripLazy(line))
   return !!colon && parseColonOpener(colon[2])?.mode === 'line-block'
 }
+const opensSigilPayloadBlock = (line) => {
+  const colon = COLON_FENCE.exec(trimWsStart(stripLazy(line)))
+  const mode = colon && parseColonOpener(colon[2])?.mode
+  return mode === 'line-block' || mode === 'hardbreaks'
+}
 // A line block's payload opens no fence: from an opener at `k`, the index of its closer, or past the body.
 function lineBlockEnd(bodyLines, k) {
   if (bodyLines[k].includes(LAZY) || !opensLineBlock(bodyLines[k])) return k
@@ -6125,6 +6130,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
       const inheritedFenceOpens = new Set()
       const defLine = i
+      const noteOwnership = state.ownershipEvents?.get(lines)
+      const noteOwner = noteOwnership?.events.get(defLine + noteOwnership.offset)?.owner
       let attachedFrom = -1
       let attachedEnd = -1
       let attachedSeparator = false
@@ -6285,6 +6292,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let attachedFenceScan = { index: Math.max(0, attachedFrom), opaque: null, columns: [0] }
       let fenceKnownShut = 0
       let fenceSeen = false
+      let sigilPayloadChecked = 0
+      let noteSawSigilPayload = false
       const noteOpenFence = (at) => {
         for (; fenceKnownShut < bodyLines.length; fenceKnownShut++) {
           const l = bodyLines[fenceKnownShut]
@@ -6307,6 +6316,17 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
+        const lineOwner = noteOwnership?.events.get(i + noteOwnership.offset)?.owner
+        // A nested sigil payload stanza may look open to this reader after a
+        // C5 tab strip. It cannot claim a below-column line the walk placed
+        // outside the note (carve#4085).
+        if (noteOwner && lineOwner && lineOwner !== noteOwner && !lineOwner.startsWith(`${noteOwner}/`) &&
+            measured.col < FOOTNOTE_BODY_COLUMN) {
+          for (; sigilPayloadChecked < bodyLines.length; sigilPayloadChecked++) {
+            if (opensSigilPayloadBlock(bodyLines[sigilPayloadChecked])) noteSawSigilPayload = true
+          }
+          if (noteSawSigilPayload) break
+        }
         if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
         // The ownership walk has already refused this marker and retained the
         // note as owner. Its invisible placeholder must not end the note body.
