@@ -3809,9 +3809,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           if (level === null) return null
           const ind = walkIndent(level.rest)
           if (plusHost.kind === 'dd' && follower.family !== 'code' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
-          // A marker-line item's closer may stand before its content column.
+          // A marker-line host reads a closer before its content column.
           // The length probe reads that run at the attached fence's column.
-          if (follower.family === 'code' && plusHost.kind === 'item' &&
+          if (follower.family === 'code' &&
               ind.col > col && ind.col < plusHost.col && PURE_FENCE.test(ind.rest)) return ind.rest
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
@@ -4110,7 +4110,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
         if (c && c[1][0] === inner.span[0] &&
             (inner.span[0] === '%' ? c[1].length === inner.span.length : c[1].length >= inner.span.length)) inner.span = null
-      } else if (m.rest !== '' && inner.closes(m.rest, m.col)) {
+      } else if (m.rest !== '' && (inner.closes(m.rest, m.col) || shiftedCloser)) {
         frames.pop()
         top().last = inner.entryLast ?? 'block'
         payloadForm = 'closer'
