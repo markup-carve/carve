@@ -4943,6 +4943,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
+    // Inline pairing has already claimed this brace line as code text.
+    if (rest[0] === '{' && codeSpanOpenAbove(owner, at)) return { kind: 'text', interrupts: false }
     if (rest[0] === '{' && at !== refusedKept.start && !codeSpanOpenAbove(owner, at)) {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
       const kept = refusedRunKeptThrough(new Proxy([], {
@@ -8122,7 +8124,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
       if (!forcedAfterRefusal && CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
-      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
+      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
       if (!forcedAfterRefusal && ind(i).rest.startsWith('%%')) break // §10 I5 (comment line or fence)
       if (!forcedAfterRefusal && inItem && para.length > 0 && matchMarkerAt(ind(i))) break // §24 C3
       if (!forcedAfterRefusal && para.length > 0) {

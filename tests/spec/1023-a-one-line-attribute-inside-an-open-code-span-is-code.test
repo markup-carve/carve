@@ -1,0 +1,15 @@
+A one-line attribute inside an open code span is code
+
+```
+p
+`open
+{.x}
+close`
+z
+.
+<p>p
+<code>open
+{.x}
+close</code>
+z</p>
+```

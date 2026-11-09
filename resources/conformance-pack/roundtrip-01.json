@@ -169,7 +169,7 @@
 {"id":"roundtrip-1f73628775d5","source":"> | a |\n> + b |\n::: |\ntail\n","html":"<blockquote>\n  <table>\n    <tbody>\n      <tr><td>a b</td></tr>\n    </tbody>\n  </table>\n</blockquote>\n<div class=\"line-block\">\n  <p>tail</p>\n</div>"},
 {"id":"roundtrip-1f8e6f490f01","source":":: t\n : - ``` x\n+ ```\ncode\n","html":"<dl>\n  <dt>t</dt>\n  <dd>\n    <ul>\n      <li>\n        <pre><code class=\"language-x\"></code></pre>\n      </li>\n    </ul>\n  </dd>\n</dl>\n<p>+ <code>\ncode</code></p>"},
 {"id":"roundtrip-1fe3e29aec5e","source":"@@b\n: # a ![alt](i.png) b\n","html":"<p>@<span class=\"mention\"><strong>@b</strong></span>\n: # a <img src=\"i.png\" alt=\"alt\"> b</p>"},
-{"id":"roundtrip-1fecc86692d0","source":"``\n{:grc}\nΜῆνιν ἄειδε θεά\n","html":"<p><code></code></p>\n<p lang=\"grc\">Μῆνιν ἄειδε θεά</p>"},
+{"id":"roundtrip-1fecc86692d0","source":"``\n{:grc}\nΜῆνιν ἄειδε θεά\n","html":"<p><code>\n{:grc}\nΜῆνιν ἄειδε θεά</code></p>"},
 {"id":"roundtrip-206470690e1e","source":"  > +\n\n\n","html":"<blockquote>\n\n</blockquote>"},
 {"id":"roundtrip-20d2a979250b","source":"{.a\n.b}\n\nparagraph\n","html":"<p>{.a\n.b}</p>\n<p>paragraph</p>"},
 {"id":"roundtrip-20d630ab1141","source":"- > p\n+\n\n> z\n","html":"<ul>\n  <li>\n    <blockquote><p>p</p></blockquote>\n  </li>\n</ul>\n<blockquote><p>z</p></blockquote>"},
