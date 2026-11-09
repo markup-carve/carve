@@ -4444,7 +4444,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // A fence line folded after a pulled fence is paragraph text in every
     // surviving owner. Carry that reading to the nested block readers.
-    result.push(out + (foldedFenceAfterPull ? LAZY : '') + src)
+    result.push(out + (foldedFenceAfterPull || form.colonPayload ? LAZY : '') + src)
     const blockPath = applied
     // A marker the walk opens as a frame inside a list the readers opened
     // (carve#4193) is read where the walk wrote it: at a level's column a
@@ -4532,7 +4532,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             if (!paired) once = blank
           }
         }
-        frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon, once,
+        frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, base: col, cut: col - canon, once,
           openRun: form.family === 'code' ? FENCE.exec(m.rest)?.[1] : undefined,
           pullCol: once === undefined ? undefined : col, pullHost: once === undefined ? undefined : attachedTo.host.markerCol,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
@@ -5192,6 +5192,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // Only the innermost reached colon body can close. A different-width
       // run opens a nested body, even when it matches an outer colon.
       if (frames[reach]?.kind === 'colon' && frames[reach].run === colon[1].length) {
+        // The reader sees normalized indentation. Keep the source-column
+        // test here, before a shorter bare run can look like a closer.
+        if (col !== frames[reach].base) return { kind: 'text', interrupts: false, kept: true, colonPayload: true }
         return { kind: 'colon-close', frame: reach, interrupts: true }
       }
     }
