@@ -14,3 +14,8 @@ test('a later run at the item content column does not close a pulled fence (#560
   }
 })
 
+test('a blank inside a paired attached fence does not move a later independent fence', () => {
+  assert.match(html('- +\n```\nx\n\n```\n\ny\n  ~~~\n'),
+    /<p>y<\/p>\n<pre><code><\/code><\/pre>$/)
+})
+

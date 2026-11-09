@@ -3620,7 +3620,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
-    if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' && attachedTo) {
+    if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
+        frames.at(-2)?.once === at && attachedTo) {
       blankInAttachedCode = attachedTo.host
     }
     if (top().losing) {
