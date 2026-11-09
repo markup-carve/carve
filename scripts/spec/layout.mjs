@@ -3530,37 +3530,50 @@ function attachedBlockLength(lines, at, view) {
 function attachedColonBoundary(lines, from, view, ownLine = false, host = null) {
   const first = trimWsStart(view(lines[from] ?? '') ?? '')
   if (!/^(?::::|[%{]|\[\^)/.test(first)) return null
-  const body = []
-  let colonSeen = false
-  let opaquePossible = false
-  for (let k = from; k < lines.length; k++) {
-    const row = view(lines[k])
-    if (row === null) break
-    const measured = indentCols(row)
-    if (colonSeen && !opaquePossible && measured.col === 0 && (
-      host?.kind === 'item' && matchMarkerAt(measured) ||
-      host?.kind === 'dd' && (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) ||
-      host?.kind === 'note' && FOOTNOTE_DEF.test(measured.rest)
-    )) break
-    body.push(row)
-    if (COLON_FENCE.test(measured.rest)) colonSeen = true
-    if (colonSeen && (isCodeBlockOpener(row) || COMMENT_FENCE.test(row))) opaquePossible = true
+  // Most attachments close near their opener. Grow only when no boundary is
+  // visible yet; collecting the document tail for each short attachment makes
+  // a run of sibling attachments quadratic.
+  for (let size = 16; ; size *= 2) {
+    const body = []
+    let colonSeen = false
+    let opaquePossible = false
+    let reachedEnd = from + size >= lines.length
+    for (let k = from; k < Math.min(lines.length, from + size); k++) {
+      const row = view(lines[k])
+      if (row === null) { reachedEnd = true; break }
+      const measured = indentCols(row)
+      if (colonSeen && !opaquePossible && measured.col === 0 && (
+        host?.kind === 'item' && matchMarkerAt(measured) ||
+        host?.kind === 'dd' && (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) ||
+        host?.kind === 'note' && FOOTNOTE_DEF.test(measured.rest)
+      )) { reachedEnd = true; break }
+      body.push(row)
+      if (COLON_FENCE.test(measured.rest)) colonSeen = true
+      if (colonSeen && (isCodeBlockOpener(row) || COMMENT_FENCE.test(row))) opaquePossible = true
+    }
+    const opener = attachedOpener(body, 0)
+    const colon = COLON_FENCE.exec(trimWsStart(body[opener] ?? ''))
+    if (!colon || parseColonOpener(colon[2]) === null) {
+      if (reachedEnd) return null
+      continue
+    }
+    const hostEnd = attachedColonSiblingEnd(body, 0, body.length, opener, (k) => {
+      const measured = indentCols(body[k])
+      if (measured.col !== 0) return false
+      if (host?.kind === 'item') return !!matchMarkerAt(measured)
+      if (host?.kind === 'dd') return DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)
+      if (host?.kind === 'note') return FOOTNOTE_DEF.test(measured.rest)
+      return false
+    })
+    const own = body.slice(0, hostEnd)
+    const close = findColonCloser(own, opener, colon[1].length)
+    if (close !== -1) return from + close + 1
+    // A sibling-looking row inside an unfinished opaque fence is still body
+    // text. Resolve that case only after the entire fence is available.
+    if (!reachedEnd && (hostEnd === body.length || opaquePossible)) continue
+    const blank = own.findIndex((row, k) => k > opener && isBlank(row))
+    return from + (ownLine || blank === -1 ? own.length : blank)
   }
-  const opener = attachedOpener(body, 0)
-  const colon = COLON_FENCE.exec(trimWsStart(body[opener] ?? ''))
-  if (!colon || parseColonOpener(colon[2]) === null) return null
-  const hostEnd = attachedColonSiblingEnd(body, 0, body.length, opener, (k) => {
-    const measured = indentCols(body[k])
-    if (measured.col !== 0) return false
-    if (host?.kind === 'item') return !!matchMarkerAt(measured)
-    if (host?.kind === 'dd') return DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)
-    if (host?.kind === 'note') return FOOTNOTE_DEF.test(measured.rest)
-    return false
-  })
-  const own = body.slice(0, hostEnd)
-  const close = findColonCloser(own, opener, colon[1].length)
-  const blank = own.findIndex((row, k) => k > opener && isBlank(row))
-  return from + (close !== -1 ? close + 1 : ownLine || blank === -1 ? own.length : blank)
 }
 
 const underPath = (path, root) => path === root || path.startsWith(`${root}/`)
