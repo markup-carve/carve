@@ -5948,6 +5948,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         (isBlank(lines[at]) && footnoteBlankRunEnd(lines, at, n) === -1)
       // Lazy lines open no fence and only shorten the closer search, so a
       // "no open fence" answer holds until a non-lazy line joins the body.
+      let attachedFenceScan = { index: Math.max(0, attachedFrom), opaque: null, columns: [0] }
       let fenceKnownShut = 0
       let fenceSeen = false
       const noteOpenFence = (at) => {
@@ -6078,6 +6079,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
           const end = takeOneBlock(lines, i, state, measured.col).next
           attachedFrom = bodyLines.length
+          attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
           attachPending = false
@@ -6113,6 +6115,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // Rule A: a payload line below the body column ends the fence and the body.
           break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
+            // A blank kept as an attached descendant fence payload cannot leave
+            // a paragraph open for a below-column lazy continuation (carve#5581).
+            !(attachedFrom !== -1 && isBlank(bodyLines.at(-1)) &&
+              bodyHasOpenCodeFence(bodyLines, attachedFenceScan, bodyLines.length, k => indentCols(bodyLines[k]))) &&
             // A line that ended the span, or follows one, folds into the stanza it left open (PART 0 S4, carve#4956).
             ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom) ||
               endsInRefusedRunParagraph(bodyLines.map((line) => stripLazy(stripLazyLead(line))), bodyLines.length - 1, true)) || verseSpanEnded ||
