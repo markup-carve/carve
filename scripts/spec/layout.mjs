@@ -4497,9 +4497,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const laterRun = blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col
       const run = laterRun ? FENCE.exec(m.rest)?.[1] : null
       const keepColumn = run && !laterSourceCloser(at, run, m.col, quotePrefix(lines[at]).depth)
-      // A one-line opener keeps its owner only as spaces: the readers measure a tab per frame (§24 C5).
-      const oneLine = form.kind === 'quote' || form.kind === 'leaf'
-      lead(keepColumn ? m.col : owner.canon, form.kind === 'term' || form.kind === 'dd' || oneLine, oneLine)
+      // Sigil payload openers also need the frame column: a note reader must
+      // not remeasure their leading tab from the source-line origin (§24 C5).
+      const frameOpener = form.kind === 'quote' || form.kind === 'leaf' || form.perFrame
+      lead(keepColumn ? m.col : owner.canon, form.kind === 'term' || form.kind === 'dd' || frameOpener, frameOpener)
       if (laterRun) blankInAttachedCode = null
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
@@ -5269,10 +5270,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (colon && parseColonOpener(colon[2]) !== null) {
       const run = colon[1].length
       if (parseColonOpener(colon[2]).mode === 'line-block') {
-        return { kind: 'fence', family: 'div', interrupts: true, lineBlock: true, closes: (r, closerCol) =>
+        return { kind: 'fence', family: 'div', interrupts: true, lineBlock: true, perFrame: true, closes: (r, closerCol) =>
           closerCol <= col && COLON_CLOSER.exec(r)?.[1].length === run }
       }
-      return { kind: 'colon', run, interrupts: true }
+      return { kind: 'colon', run, interrupts: true, perFrame: parseColonOpener(colon[2]).mode === 'hardbreaks' }
     }
     const fence = FENCE.exec(rest)
     if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
