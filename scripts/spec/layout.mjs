@@ -1851,7 +1851,9 @@ function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody
   let interrupt = -1
   for (let j = runEnd + 1; j < lines.length; j++) {
     if (isBlank(lines[j])) return interrupt < 0 ? j - 1 : interrupt - 1
-    const rest = indentCols(lines[j]).rest
+    const { col, rest } = indentCols(lines[j])
+    // A block short of the run's container is read there (PART 0 S4), a fence-shaped line included.
+    if (col < containerCol && !readsAsProse(rest)) return interrupt < 0 ? j - 1 : interrupt - 1
     const closer = PURE_FENCE.exec(rest)
     if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return j
     if (interrupt < 0 && (startsParagraphBlock(rest) || isCodeBlockOpener(rest) || isColonBlockOpener(rest) ||
@@ -1885,7 +1887,7 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column. `containerCol` is where the
 // container `text` stands in begins, in the same coordinates.
-function refusedRunKeptInside(text, below, containerCol = 0) {
+function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
@@ -1896,9 +1898,11 @@ function refusedRunKeptInside(text, below, containerCol = 0) {
       tail = quote[1] ?? ''
       depth++
       containerCol = 0
+      markerBody = false
     } else if (marker) {
       const lead = indentCols(marker.text)
       containerCol = marker.indent + marker.markerWidth
+      markerBody = true
       tail = ' '.repeat(containerCol + lead.col) + lead.rest
     } else break
   }
@@ -1907,7 +1911,7 @@ function refusedRunKeptInside(text, below, containerCol = 0) {
     get: (_, key) => key === '0' ? tail : key === 'length' ? below.length
       : below[key] === undefined ? undefined : stripQuotes(below[key], depth)?.rest ?? '',
   })
-  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol)
+  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol, markerBody)
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -4006,7 +4010,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - sourceShift, inner.canon) :
+      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
         Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
@@ -4361,12 +4365,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             stackedOnMarker(attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1], attachedTo.host)) {
           const depth = attachedTo.depth
           const openerCol = walkIndent(stripQuotes(lines[at], depth)?.rest ?? lines[at]).col
+          // A task box before the host's marker is content (CARVE-P0-008): the host's lines reach left to where its opener lands.
+          const hostLeft = attachedTo.host.markerCol - (col - canon)
           let blank = -1
           for (let next = at + 1; next < lines.length; next++) {
             const level = stripQuotes(lines[next], depth)
             if (!level) break
             const ind = walkIndent(level.rest)
-            if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+            if (ind.rest !== '' && ind.col < hostLeft) break
             if (ind.rest === '') {
               blank = next
               break
@@ -4378,7 +4384,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
               const level = stripQuotes(lines[next], depth)
               if (!level) break
               const ind = walkIndent(level.rest)
-              if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+              if (ind.rest !== '' && ind.col < hostLeft) break
               if (next >= blank && ind.col <= openerCol && form.closes(ind.rest, ind.col)) {
                 paired = true
                 break
@@ -4899,7 +4905,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
           return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
         },
-      }), 0, { commentScannedThrough: -1 })
+        // A list marker in a body interrupts the run's paragraph as the block readers measure it (§24 C3).
+      }), 0, { commentScannedThrough: -1 }, 0, ['item', 'dd', 'note'].includes(owner.kind))
       if (kept !== null) {
         refusedKept.start = at
         refusedKept.through = at + kept
@@ -10113,7 +10120,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       advanceBodyQuote(head.text, headIndex)
     }
     if (/^[{>]|^[^ \t]/.test(head.text)) {
-      const kept = refusedRunKeptInside(head.text, dedentedWindow(lines, headIndex, contentCol))
+      const kept = refusedRunKeptInside(head.text, dedentedWindow(lines, headIndex, contentCol), 0, true)
       if (kept !== null) refusedParaThrough = headIndex + kept
     }
     {
@@ -10324,6 +10331,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       : -1
     while (i < n) {
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
+      // An unclosed span a refused run's paragraph kept ends with that paragraph (CARVE-P2-035).
+      if (fence.opaque?.refusedThrough !== undefined && i > fence.opaque.refusedThrough) fence.opaque = null
       const line = lines[i]
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
@@ -11252,7 +11261,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           (!QUOTE.test(dedented) && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest)))
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0)
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true)
           if (kept !== null) refusedParaThrough = i + kept
         }
         const keptByRefusal = i <= refusedParaThrough
@@ -11390,6 +11399,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // A line the note paragraph claims is note text; it opens no fence here.
         if (!inNestedComment && !inDescendantSpan && (!absorbedFenceSeen || fence.opaque) && !foldedChildFence &&
             (fence.opaque || !noteClaimsBelow)) trackFence(dedented, opens, i)
+        if (keptByRefusal && fence.opaque?.kind === 'code' && fence.opaque.opens === false && fence.opaque.refusedThrough === undefined) {
+          fence.opaque.refusedThrough = refusedParaThrough
+        }
         // A fence a descendant's `+` attaches below that descendant's content column
         // ends at its first blank when it has no closer (§17 L3, carve#5304), also
         // when this item tracks it as a deeper descendant's fence (carve#5309).
