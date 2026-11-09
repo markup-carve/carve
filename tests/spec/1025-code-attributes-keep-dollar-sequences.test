@@ -1,0 +1,7 @@
+Code attributes keep dollar sequences
+
+```
+`b`{k="$`"}
+.
+<p><code k="$`">b</code></p>
+```
