@@ -10738,6 +10738,27 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // An unclosed span a refused run's paragraph kept ends with that paragraph (CARVE-P2-035).
       if (fence.opaque?.refusedThrough !== undefined && i > fence.opaque.refusedThrough) fence.opaque = null
       const line = lines[i]
+      // The walk consumed a refused marker without changing the owner's
+      // frame (CARVE-P9-067). Its invisible placeholder is not a comment that
+      // can close this item. It does end an unclosed fence at the marker
+      // column, so the next content-column line opens in the retained item.
+      const ownership = state.ownershipEvents?.get(lines)
+      const decision = ownership?.events.get(i + ownership.offset)
+      if (line === '%%' && decision?.form === 'plus' && decision.refused &&
+          decision.owner?.endsWith(`/item:${headIndex + ownership.offset + 1}`)) {
+        if (fence.opaque?.kind === 'code') {
+          markAttachmentBoundary(state, itemLines)
+          fence.opaque = null
+        }
+        if (nestedOpaque?.kind === 'code') {
+          markAttachmentBoundary(state, itemLines)
+          nestedOpaque = null
+        }
+        if (subCol >= 0) pushLine('', BLANK_MEAS)
+        closePara()
+        i++
+        continue
+      }
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
       if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&

@@ -8,9 +8,9 @@ A refused marker leaves an open fence's blank payload
 <ul>
   <li>
     <pre><code></code></pre>
+    x
   </li>
 </ul>
-<p>x</p>
 ````
 
 ````
@@ -22,9 +22,9 @@ A refused marker leaves an open fence's blank payload
 <ul>
   <li>
     <pre><code></code></pre>
+    <p>x</p>
   </li>
 </ul>
-<p>x</p>
 ````
 
 ````
@@ -37,9 +37,9 @@ A refused marker leaves an open fence's blank payload
   <li>
     <pre><code>a
 </code></pre>
+    x
   </li>
 </ul>
-<p>x</p>
 ````
 
 ````

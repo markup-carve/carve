@@ -1,0 +1,1 @@
+CARVE-P9-067 / carve#5637: the pinned carve-js build leaves the post-refusal content-column line at document level; the ruled spec model keeps it in the item after the ended fence.

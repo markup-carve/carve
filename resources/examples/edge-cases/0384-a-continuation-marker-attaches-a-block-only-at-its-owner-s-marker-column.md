@@ -125,9 +125,8 @@ attaches `c` to that item (markup-carve/carve#3421).
 :::
 
 The same reading one column out. The marker sits at the outer item's marker
-column, so only a column-0 block could attach. The line at column 2 refuses it:
-the `+` is a letter in the sub-list item's open paragraph, and the line folds in
-after it (carve#4409).
+column, so the line at column 2 refuses it. The refused marker renders nothing
+and leaves the outer item as the line's owner (carve#5637).
 
 ::: compare
 
@@ -144,9 +143,9 @@ after it (carve#4409).
     <ul>
       <li>L</li>
     </ul>
+    p
   </li>
 </ul>
-<p>p</p>
 ```
 
 :::
