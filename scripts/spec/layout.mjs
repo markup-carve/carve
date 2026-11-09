@@ -3586,7 +3586,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   // The lines a refused brace run's paragraph keeps (CARVE-P2-035).
-  const refusedKept = { start: -1, through: -1, col: -1 }
+  const refusedKept = { start: -1, through: -1, col: -1, fenceRun: null }
   const top = () => frames[frames.length - 1]
   const carried = (f) => f.plusShift?.shift ?? 0
   // A lone `+` the walk does not read as an indented list's marker is still
@@ -4985,10 +4985,45 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (missed) {
       // A refused run's follower keeps its paragraph at the opening brace's
       // source column even if it misses the attached host's content column.
-      if (at > refusedKept.start && at <= refusedKept.through && col >= refusedKept.col &&
-          !invisibleSiblingLine(rest) &&
-          !(matchMarkerAt(indentCols(rest)) && frames.some((f) => ['item', 'dd', 'note'].includes(f.kind)))) {
-        return { kind: 'text', interrupts: false, kept: true }
+      if (at > refusedKept.start && at <= refusedKept.through && col >= refusedKept.col) {
+        const noteHost = frames.some((f) => f.kind === 'note')
+        let noteFenceKeeps = true
+        const closer = PURE_FENCE.exec(rest)?.[1]
+        const protectedCloser = closer && refusedKept.fenceRun &&
+          closer[0] === refusedKept.fenceRun[0] && closer.length >= refusedKept.fenceRun.length
+        if (noteHost && FENCE.test(rest) && !protectedCloser) {
+          const run = FENCE.exec(rest)?.[1]
+          let content = 0
+          let paired = false
+          let mismatchedFence = false
+          let otherBlock = false
+          for (let j = at + 1; j < lines.length && !isBlank(lines[j]); j++) {
+            const closer = PURE_FENCE.exec(trimWsStart(lines[j]))?.[1]
+            if (closer && run && closer[0] === run[0] && closer.length >= run.length) {
+              paired = true
+              break
+            }
+          }
+          if (!paired) for (let j = at + 1; j < lines.length; j++) {
+            const next = trimWsStart(lines[j] ?? '')
+            if (isBlank(next)) break
+            if (PURE_FENCE.test(next)) { mismatchedFence = true; break }
+            if (startsParagraphBlock(next) || COLON_FENCE.test(next) || matchMarkerAt(indentCols(next))) {
+              otherBlock = true
+              break
+            }
+            content++
+          }
+          const commentRun = trimWsStart(lines[refusedKept.start] ?? '').startsWith('{%')
+          noteFenceKeeps = paired || content > 0 && !mismatchedFence &&
+            (commentRun ? !otherBlock : !!run && run[0] === '`')
+        }
+        if (!invisibleSiblingLine(rest) && !COLON_FENCE.test(rest) &&
+            noteFenceKeeps &&
+            !(matchMarkerAt(indentCols(rest)) && frames.some((f) => ['item', 'dd', 'note'].includes(f.kind)))) {
+          if (noteHost && FENCE.test(rest) && !refusedKept.fenceRun) refusedKept.fenceRun = FENCE.exec(rest)?.[1]
+          return { kind: 'text', interrupts: false, kept: true }
+        }
       }
       // The run itself can miss a child while standing at the reached owner's
       // column. Classify it there before treating it as an ordinary opener.
@@ -5023,6 +5058,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     refusedKept.start = at
     refusedKept.through = at + kept
     refusedKept.col = col
+    refusedKept.fenceRun = null
     return true
   }
 
