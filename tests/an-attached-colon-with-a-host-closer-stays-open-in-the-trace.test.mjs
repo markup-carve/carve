@@ -71,3 +71,16 @@ test('a line-block colon before the first blank remains payload', () => {
   assert.equal(parse(source).blocks[0].items[0].blocks[0].t, 'line-block')
   assert.notEqual(trace[2].cell, 'B-div-end')
 })
+
+test('a list-shaped code payload does not end the attached colon scan', () => {
+  const trace = modelTrace('- +\n::: x\n\n  ```\n  - child\n  ```\n  :::\n')
+  assert.equal(trace[4].owner, 'doc/item:1/div:2/code:4')
+  assert.equal(trace.at(-1).owner, 'doc/item:1/div:2')
+  assert.equal(trace.at(-1).form, 'closer')
+})
+
+test('a list-shaped verse line remains line-block payload', () => {
+  const trace = modelTrace('- +\n::: |\n\n  - verse\n  :::\n')
+  assert.equal(trace[3].owner, 'doc/item:1/div:2')
+  assert.equal(trace[3].form, 'payload')
+})

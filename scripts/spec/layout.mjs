@@ -3829,11 +3829,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             if (!line) break
             const ind = walkIndent(line.rest)
             if (k > at + opener && ind.rest !== '' && ind.col < plusHost.col) break
-            // A sibling list marker at the host's content column ends an
-            // attached block before any later colon-shaped line.
-            if (k > at + opener && ind.col === plusHost.col &&
-                (isBulletLine(ind.rest) || isOrderedMarkerLine(ind.rest))) break
             viewed.push(ind.rest)
+          }
+          if (colonMode !== 'line-block') for (let j = 1; j < viewed.length; j++) {
+            const spanEnd = opaqueSpanEnd(viewed, j, true)
+            if (spanEnd !== -1) { j = spanEnd; continue }
+            const level = walkIndent(stripQuotes(lines[at + opener + j], prefixes)?.rest ?? '')
+            if (level.col === plusHost.col && (isBulletLine(viewed[j]) || isOrderedMarkerLine(viewed[j]))) {
+              viewed.length = j
+              break
+            }
           }
           // A line block treats colon-only lines before its first stanza
           // blank as verse payload, even when their run matches the opener.
