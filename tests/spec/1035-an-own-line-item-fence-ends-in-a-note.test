@@ -1,0 +1,23 @@
+An own-line item fence ends in a note
+
+````
+::: note
+- x
++
+```
+
+b
+  ```
+:::
+.
+<aside class="admonition note" aria-label="Note">
+  <ul>
+    <li>x
+      <pre><code>
+</code></pre>
+    </li>
+  </ul>
+  <p>b</p>
+  <pre><code></code></pre>
+</aside>
+````

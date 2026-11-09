@@ -204,6 +204,7 @@ The maintainer ruled three intersections in carve#5658 on 2026-11-09. R03: “A 
 - carve#5637: “A, the item keeps the line.”
 - carve#5638: “inside a still-open inline code span, `{.x}` is code text.”
 - carve#5639: “the `+` reaches the description or note body.”
+- carve#5658 ruling A: an unclosed marker-line colon keeps a later host-column `+` as text in quote and item hosts.
 
 ## Boundary controls
 
@@ -220,3 +221,5 @@ These cells name hosts whose source columns are measured through quote prefixes,
 | X08 | quote              | marker | paragraph         | content+1 fence         | plain    | quote, new fence     | PART 0 S3; PART 9 §10 I4                 | ````> +\na\n>  ```\n> zq````                    | `<p>a</p>\n  <pre><code>zq`                                               |
 | X09 | quote              | own    | attached quote    | caption                 | plain    | inner quote figure   | PART 9 §4; PART 0 S1-S4                  | `> p\n+\n> q\n^ caption`                        | `<blockquote><p>q</p></blockquote>\n    <figcaption>caption</figcaption>` |
 | X10 | description        | own    | attached quote    | caption                 | plain    | description figure   | PART 9 §4; PART 0 S1-S4                  | `:: term\n: p\n+\n> q\n^ caption`               | `<dd>\n    <p>p</p>\n    <figure>`                                        |
+| X11 | quote              | marker | unclosed colon    | host-column `+`         | plain    | colon text           | PART 0 P1/P8; PART 9 §17 L5; carve#5658  | `> +\n::: note\nx\n+\nzq`                       | `<p>x\n+\nzq</p>`                                                         |
+| X12 | item               | marker | unclosed colon    | host-column `+`         | plain    | colon text           | PART 0 P1/P8; PART 9 §17 L5; carve#5658  | `- +\n::: note\nx\n+\nzq`                       | `<p>x\n+\nzq</p>`                                                         |
