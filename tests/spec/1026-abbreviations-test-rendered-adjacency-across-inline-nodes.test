@@ -1,0 +1,17 @@
+Abbreviations test rendered adjacency across inline nodes
+
+```
+[w[HTML](u)]()
+
+*[HTML]: t
+.
+<p><a href="">wHTML</a></p>
+```
+
+```
+w{*HTML*}
+
+*[HTML]: t
+.
+<p>w<strong>HTML</strong></p>
+```
