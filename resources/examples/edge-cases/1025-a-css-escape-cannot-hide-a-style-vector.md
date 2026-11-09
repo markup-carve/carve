@@ -4,7 +4,7 @@ page: edge-security
 
 ## A CSS escape cannot hide a style vector
 
-The proposed reading of CARVE-P9-054 probes a CSS-decoded style value before deciding whether to blank it (carve#5660). The emitted spelling of an allowed value remains authored.
+The carve#5660 ruling decodes CSS escapes before the CARVE-P9-054 style probe. The emitted spelling of an allowed value remains authored.
 
 ::: compare
 
