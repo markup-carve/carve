@@ -57,3 +57,10 @@ test('a nested code fence retains its payload decision fields', () => {
   assert.equal(trace[4].cell, 'B-code-keep')
   assert.equal(trace[4].owner, 'doc/item:1/div:2/code:4')
 })
+
+test('the corrected closer reports a nested quote closure', () => {
+  const closer = modelTrace('- +\n::: x\n\n  > q\n  :::\n').at(-1)
+  assert.equal(closer.owner, 'doc/item:1/div:2')
+  assert.equal(closer.closed, 1)
+  assert.equal(closer.reached, 'doc/item:1/div:2')
+})

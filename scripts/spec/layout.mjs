@@ -4630,7 +4630,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (closer) {
         owner = attachedColonTrace.owner
         form = 'closer'
-        extra = { cell: 'B-div-end' }
+        extra = { cell: 'B-div-end', closed: extra.closed, reached: extra.closed ? attachedColonTrace.owner : undefined }
       } else if (attachedColonTrace.lineBlock) {
         owner = attachedColonTrace.owner
         step = 'S1'
