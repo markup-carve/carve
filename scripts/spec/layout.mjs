@@ -3608,6 +3608,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let afterPlus = false
   // The host of the last `+` and where the block it took ends.
   let attachedTo = null
+  // The reader keeps the whole block an accepted `+` claims in its host.
+  // The walk may read that block through a parent frame at its written column.
+  const attachedTraces = []
   // The invisible lines between an accepted `+` and its block (carve#4449).
   let skipped = null
   // The continuation lines of a wrapped attribute block the walk opened.
@@ -4001,6 +4004,23 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
       attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
+      if (trace) {
+        const start = skipped?.end ?? at + 1
+        const depth = attachedTo.depth
+        const view = (line) => {
+          const level = stripQuotes(line, depth)
+          if (level === null) return null
+          const measured = walkIndent(level.rest)
+          return ' '.repeat(Math.max(0, measured.col - plus.markerCol)) + measured.rest
+        }
+        const first = start < lines.length ? view(lines[start]) : null
+        if (first !== null && (DEFLIST_TERM.test(first) || attachedTraces.length > 0)) attachedTraces.push({
+          start,
+          end: start + attachedBlockLength(lines, start, view),
+          from: ownerPath(frames.indexOf(plus) - 1),
+          to: ownerPath(),
+        })
+      }
       result.push(out + src)
       afterPlus = true
       if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
@@ -4576,6 +4596,25 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
+    const walkedOwner = owner
+    for (let k = attachedTraces.length - 1; k >= 0; k--) {
+      const attached = attachedTraces[k]
+      if (index >= attached.end &&
+          !(attached.continuation && underPath(walkedOwner, attached.continuation))) {
+        attachedTraces.splice(k, 1)
+        continue
+      }
+      if (index === attached.end - 1 &&
+          underPath(walkedOwner, attached.from) && walkedOwner !== attached.from) {
+        attached.continuation = walkedOwner
+      }
+    }
+    for (let k = attachedTraces.length - 1; k >= 0; k--) {
+      const attached = attachedTraces[k]
+      if (index >= attached.start && underPath(owner, attached.from) && !underPath(owner, attached.to)) {
+        owner = attached.to + owner.slice(attached.from.length)
+      }
+    }
     if (afterPlusBlock && index >= afterPlusBlock.end) {
       // An unclosed fence leaves the walk reading payload; the readers end the
       // fence there and read the lines at the content column as the item's body.
