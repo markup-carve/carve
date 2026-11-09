@@ -3595,6 +3595,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let afterPlusBlock = null
   let endedPulledFence = null
   let blankInAttachedCode = null
+  let blankInAttachedCodeAt = -1
   let pairedAttachedFence = null
   const laterCloserCache = new Map()
   const laterSourceCloser = (at, run, col, depth) => {
@@ -3628,6 +3629,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
         frames.at(-2)?.once === at && attachedTo) {
       blankInAttachedCode = attachedTo.host
+      blankInAttachedCodeAt = at
     }
     if (top().losing) {
       frames.pop()
@@ -4048,7 +4050,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
     }
     let form = classify(m.rest, owner, at, m.col, missed)
-    if (blankInAttachedCode && attachedTo?.host !== blankInAttachedCode) blankInAttachedCode = null
+    if (blankInAttachedCode && (attachedTo?.host !== blankInAttachedCode ||
+        at > blankInAttachedCodeAt && (form.kind === 'blank' || form.kind !== 'text' && form.family !== 'code'))) {
+      blankInAttachedCode = null
+    }
     if (endedPulledFence && at > endedPulledFence.at && (form.kind === 'blank' || form.kind !== 'text' && form.family !== 'code')) endedPulledFence = null
     const hasLaterCloser = endedPulledFence && form.family === 'code' && owner.para && (() => {
       const depth = quotePrefix(lines[at]).depth
@@ -4290,6 +4295,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const keepColumn = run && !laterSourceCloser(at, run, m.col, quotePrefix(lines[at]).depth)
       lead(keepColumn ? m.col : owner.canon,
         form.kind === 'term' || form.kind === 'dd')
+      if (laterRun) blankInAttachedCode = null
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
     }
