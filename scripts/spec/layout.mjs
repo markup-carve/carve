@@ -3817,6 +3817,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
         const opener = attachedOpener(lines.slice(at, end).map((line) => stripQuotes(line, prefixes)?.rest ?? ''), col)
         end = attachedQuoteEnd(at, end, opener, (k) => level(k).rest)
+        // A colon closer in the host keeps the attached block open across a
+        // blank. Measure the same source-column view that the block reader uses.
+        const colon = COLON_FENCE.exec(level(at + opener).rest)
+        if (colon && parseColonOpener(colon[2]) !== null) {
+          const viewed = []
+          for (let k = at + opener; k < lines.length; k++) {
+            const line = stripQuotes(lines[k], prefixes)
+            if (!line) break
+            const ind = walkIndent(line.rest)
+            if (k > at + opener && ind.rest !== '' && ind.col < plusHost.col) break
+            viewed.push(ind.rest)
+          }
+          const close = findColonCloser(viewed, 0, colon[1].length)
+          if (close !== -1) end = Math.max(end, at + opener + close + 1)
+        }
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
         frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col, host: plusHost }
