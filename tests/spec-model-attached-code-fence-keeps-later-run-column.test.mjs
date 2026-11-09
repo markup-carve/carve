@@ -19,3 +19,10 @@ test('a blank inside a paired attached fence does not move a later independent f
     /<p>y<\/p>\n<pre><code><\/code><\/pre>$/)
 })
 
+test('a shifted closer keeps the authored indentation of its payload (#5603)', () => {
+  assert.equal(html('- +\n```\n\n x\n ```\n'),
+    '<ul>\n  <li>\n    <pre><code>\n x\n</code></pre>\n  </li>\n</ul>')
+  assert.equal(html('1. +\n```\n\n  x\n  ```\n'),
+    '<ol>\n  <li>\n    <pre><code>\n  x\n</code></pre>\n  </li>\n</ol>')
+})
+

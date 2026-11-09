@@ -3595,6 +3595,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let afterPlusBlock = null
   let endedPulledFence = null
   let blankInAttachedCode = null
+  let pairedAttachedFence = null
   const laterCloserCache = new Map()
   const laterSourceCloser = (at, run, col, depth) => {
     const key = `source:${at}:${col}:${depth}:${run}`
@@ -3620,6 +3621,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
+    if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
+        frames.at(-2)?.once > at && attachedTo) {
+      pairedAttachedFence = top()
+    }
     if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' &&
         frames.at(-2)?.once === at && attachedTo) {
       blankInAttachedCode = attachedTo.host
@@ -3765,6 +3770,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           if (level === null) return null
           const ind = walkIndent(level.rest)
           if (plusHost.kind === 'dd' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
+          // A marker-line item's closer may stand before its content column.
+          // The length probe reads that run at the attached fence's column.
+          if (follower.family === 'code' && plusHost.kind === 'item' &&
+              ind.col > col && ind.col < plusHost.col && PURE_FENCE.test(ind.rest)) return ' '.repeat(col) + ind.rest
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
         const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
@@ -3988,7 +3997,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const payloadPath = trace ? ownerPath() : null
       let payloadForm = 'payload'
       const spanBefore = inner.span
-      lead(Math.max(m.col - inner.cut, inner.canon))
+      const authoredPayload = inner === pairedAttachedFence && m.rest !== '' && !PURE_FENCE.test(m.rest)
+      const shiftedCloser = inner === pairedAttachedFence && PURE_FENCE.test(m.rest) &&
+        attachedTo && m.col < attachedTo.host.col
+      lead(shiftedCloser ? inner.canon : authoredPayload ? m.col : Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
         if (c && c[1][0] === inner.span[0] &&
