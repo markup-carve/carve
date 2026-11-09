@@ -24,6 +24,12 @@ test('safe raw inline is escaped text and the option does not leak between rende
   assert.equal(html(source, { safe: true }), '<p>&lt;b&gt;a &amp; b&lt;/b&gt;</p>')
 })
 
+test('safe raw inline keeps the same smart-quote boundary as passthrough', () => {
+  const source = '`a `{=html}"foo"'
+  assert.equal(html(source), '<p>a ”foo”</p>')
+  assert.equal(html(source, { safe: true }), '<p>a ”foo”</p>')
+})
+
 test('safe mode keeps raw content for a different format omitted', () => {
   assert.equal(html('```=latex\n\\cmd{}\n```', { safe: true }), '')
   assert.equal(html('`\\cmd{}`{=latex}', { safe: true }), '<p></p>')

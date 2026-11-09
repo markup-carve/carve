@@ -1322,7 +1322,7 @@ const sem = g.createSemantics().addOperation('h', {
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
     // PART 9 §20: emitted UNESCAPED for the html format, dropped otherwise
-    if (safeRawInline && fmt.sourceString === 'html') return rawFrame(escapeHtml(codeText(codeInner(code).child(1))))
+    if (safeRawInline && fmt.sourceString === 'html') return quoteOpaque(rawFrame(escapeHtml(codeText(codeInner(code).child(1)))))
     const text = rawFrame(codeText(codeInner(code).child(1)))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
