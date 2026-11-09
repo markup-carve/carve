@@ -64,3 +64,10 @@ test('the corrected closer reports a nested quote closure', () => {
   assert.equal(closer.closed, 1)
   assert.equal(closer.reached, 'doc/item:1/div:2')
 })
+
+test('a line-block colon before the first blank remains payload', () => {
+  const source = '- +\n::: |\n  :::\n  after\n'
+  const trace = modelTrace(source)
+  assert.equal(parse(source).blocks[0].items[0].blocks[0].t, 'line-block')
+  assert.notEqual(trace[2].cell, 'B-div-end')
+})

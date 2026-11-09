@@ -3821,7 +3821,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A colon closer in the host keeps the attached block open across a
         // blank. Measure the same source-column view that the block reader uses.
         const colon = COLON_FENCE.exec(level(at + opener).rest)
-        if (trace && colon && parseColonOpener(colon[2]) !== null) {
+        const colonMode = colon && parseColonOpener(colon[2])?.mode
+        if (trace && colonMode) {
           const viewed = []
           for (let k = at + opener; k < lines.length; k++) {
             const line = stripQuotes(lines[k], prefixes)
@@ -3834,13 +3835,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
                 (isBulletLine(ind.rest) || isOrderedMarkerLine(ind.rest))) break
             viewed.push(ind.rest)
           }
-          const close = findColonCloser(viewed, 0, colon[1].length)
+          // A line block treats colon-only lines before its first stanza
+          // blank as verse payload, even when their run matches the opener.
+          const firstBlank = viewed.findIndex((line, index) => index > 0 && line === '')
+          const paired = colonMode === 'line-block' && firstBlank !== -1
+            ? viewed.map((line, index) => index < firstBlank && COLON_CLOSER.test(line) ? 'verse payload' : line)
+            : viewed
+          const close = colonMode === 'line-block' && firstBlank === -1 ? -1
+            : findColonCloser(paired, 0, colon[1].length)
           if (close !== -1) attachedColonTraces.push({
             start: at + opener + 1,
             end: at + opener + close + 1,
             from: ownerPath(),
             owner: `${ownerPath()}/div:${at + opener + 1}`,
-            lineBlock: parseColonOpener(colon[2]).mode === 'line-block',
+            lineBlock: colonMode === 'line-block',
           })
         }
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
