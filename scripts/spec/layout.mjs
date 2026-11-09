@@ -3535,21 +3535,11 @@ function attachedColonBoundary(lines, from, view, ownLine = false, host = null) 
   // a run of sibling attachments quadratic.
   for (let size = 16; ; size *= 2) {
     const body = []
-    let colonSeen = false
-    let opaquePossible = false
     let reachedEnd = from + size >= lines.length
     for (let k = from; k < Math.min(lines.length, from + size); k++) {
       const row = view(lines[k])
       if (row === null) { reachedEnd = true; break }
-      const measured = indentCols(row)
-      if (colonSeen && !opaquePossible && measured.col === 0 && (
-        host?.kind === 'item' && matchMarkerAt(measured) ||
-        host?.kind === 'dd' && (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)) ||
-        host?.kind === 'note' && FOOTNOTE_DEF.test(measured.rest)
-      )) { reachedEnd = true; break }
       body.push(row)
-      if (COLON_FENCE.test(measured.rest)) colonSeen = true
-      if (colonSeen && (isCodeBlockOpener(row) || COMMENT_FENCE.test(row))) opaquePossible = true
     }
     const opener = attachedOpener(body, 0)
     const colon = COLON_FENCE.exec(trimWsStart(body[opener] ?? ''))
@@ -3568,9 +3558,19 @@ function attachedColonBoundary(lines, from, view, ownLine = false, host = null) 
     const own = body.slice(0, hostEnd)
     const close = findColonCloser(own, opener, colon[1].length)
     if (close !== -1) return from + close + 1
-    // A sibling-looking row inside an unfinished opaque fence is still body
-    // text. Resolve that case only after the entire fence is available.
-    if (!reachedEnd && (hostEnd === body.length || opaquePossible)) continue
+    if (!reachedEnd) {
+      if (hostEnd === body.length) continue
+      // An incomplete code span can make one of its payload rows look like a
+      // sibling. A closed span has no such ambiguity and cannot hold later
+      // siblings; an earlier opaque opener alone must not extend the search.
+      let unfinishedCode = false
+      for (let k = opener + 1; k < own.length; k++) {
+        const span = opaqueSpanEnd(own, k)
+        if (span !== -1) { k = span; continue }
+        if (isCodeBlockOpener(own[k])) { unfinishedCode = true; break }
+      }
+      if (unfinishedCode) continue
+    }
     const blank = own.findIndex((row, k) => k > opener && isBlank(row))
     return from + (ownLine || blank === -1 ? own.length : blank)
   }
