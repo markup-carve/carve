@@ -8415,6 +8415,14 @@ const heldMeasure = (lines, row) => {
 
 function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
   if (limit - start <= 1) return limit
+  // The ownership walk may frame a refused attribute closer as a lazy line.
+  // Reconstruct its authored column before measuring the paragraph it keeps.
+  const refusedSource = readColumn === 0 && indentCols(lines[start]).rest.startsWith('{')
+    ? lines.slice(start, limit).map((line, offset) => line.includes(LAZY)
+      ? ' '.repeat(authoredBraceColumns.get(lines)?.[start + offset] ?? heldMeasure(lines, start + offset).sourceCol ?? 0) + stripLazy(stripLazyLead(line))
+      : line)
+    : null
+  const refusedThrough = refusedSource === null ? null : refusedRunKeptThrough(refusedSource, 0, { commentScannedThrough: -1 })
   // Measure the block at the column it is read at: `  # H` is a heading there.
   // A line below that column can only fold lazily (§10 I2), and a fence there
   // folds only without a closer (§10 I4); any other line ends the block.
@@ -8478,7 +8486,7 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
   const depth = state.blockDepth ?? 0
   const memoKey = memo && [
     state.measuringAuthoredBlock ? 1 : 0, sourceColumns ? sourceColumns.slice(start, limit).join(',') : '',
-    measuredLines.join('\n'),
+    measuredLines.join('\n'), refusedSource?.join('\n') ?? '',
   ].join('\u0000')
   const known = memo && (memo.get(memoKey)?.[depth] ?? memo.get(memoKey)?.any)
   const deepest = (entry) => depth + entry.levels + entry.slack
@@ -8539,11 +8547,12 @@ function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0
     remember({ refused: true })
     return limit
   }
+  const next = Math.max(stop.next, refusedThrough === null ? 0 : refusedThrough + 1)
   remember({
-    next: stop.next, linkDefs: seen.linkDefs, footnoteDefs: seen.footnoteDefs,
+    next, linkDefs: seen.linkDefs, footnoteDefs: seen.footnoteDefs,
     rows: [...seen.opaqueMeasurement.rows].map((row) => row - start), noDefinition: measuringListExtent,
   })
-  return measuringListExtent ? start + stop.next : foldedDefinitionEnd(lines, start, start + stop.next, seen)
+  return measuringListExtent ? start + next : foldedDefinitionEnd(lines, start, start + next, seen)
 }
 
 function invisibleAuthoredEnd(lines, start, limit) {

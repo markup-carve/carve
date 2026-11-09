@@ -1,0 +1,34 @@
+---
+page: edge-lists
+---
+
+## A refused brace run keeps its follower in an attached note
+
+The continuation at the opening brace's source column refuses the attribute run. The next line continues its paragraph under CARVE-P2-035 (carve#5561).
+
+::: compare
+
+````carve
+[^a]: +
+{.x
+.y}
+# h
+
+see[^a]
+````
+
+```html
+<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>{.x
+.y}
+# h<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
