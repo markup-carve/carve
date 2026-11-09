@@ -1,0 +1,19 @@
+A refused plus before a description list sibling keeps it tight
+
+```
+:: t
+: +
+1. li
++
+1. sib
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <ol>
+      <li>li</li>
+      <li>sib</li>
+    </ol>
+  </dd>
+</dl>
+```

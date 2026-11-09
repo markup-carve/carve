@@ -6472,6 +6472,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           let noteBodyReach = null
           let noteBodyQuoted = false
           let lastBlockLine = ''
+          let lastBodyListMarker = null
           const pushBody = (text, row = i, column = null) => {
             // A host's `+` boundary bounds the description's blocks too, as it does an item's (carve#5182).
             if (sortedHas(state.attachmentBoundaries?.get(lines), row) && state.attachmentBoundaries.get(bodyLines)?.at(-1) !== bodyLines.length) {
@@ -6479,6 +6480,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             bodyLines.push(text)
             if (!text.startsWith(LAZY)) lastBlockLine = text
+            const bodyMarker = matchMarkerAt(indentCols(text))
+            if (bodyMarker) lastBodyListMarker = bodyMarker
+            else if (lastBodyListMarker && trimWs(text) !== '' && indentCols(text).col <= lastBodyListMarker.indent) lastBodyListMarker = null
             const source = ind(row)
             bodySourceColumns.push(column ?? sourceColumns?.[row] ?? source.L?.col ?? source.col)
             const raw = stripLazy(text)
@@ -6587,6 +6591,15 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               break
             }
             if (CONT_MARKER.test(cur)) {
+              // A marker offered to its sibling is refused. Do not turn that
+              // refusal into a blank separator inside the description's list.
+              const previous = lastBodyListMarker
+              const offered = matchMarkerAt(ind(i + 1))
+              if (previous && offered && previous.indent === offered.indent && sameAxes(markerAxes(previous), offered)) {
+                i++
+                attachPending = true
+                continue
+              }
               i++
               markAttachmentBoundary(state, bodyLines)
               pushBody('', i - 1)
