@@ -3561,22 +3561,14 @@ function inlineLinkSlot(body) {
   return /^ +(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*') *$/.test(body.slice(split))
 }
 
-function inlineAttrHasCarrier(text, at) {
-  const before = text.slice(0, at)
-  const last = before.at(-1)
-  if (last === ')' || last === ']') return before.includes('[')
-  if (last === '>') return before.lastIndexOf('<') > before.lastIndexOf('>', at - 2)
-  if (last === '`') return (before.match(/`/g)?.length ?? 0) % 2 === 0
-  if (last === '*' || last === '_' || last === '~' || last === '^') return before.indexOf(last) < at - 1
-  return false
-}
-
 // Both the ownership walk and paragraph reader ask whether inline pairing
 // holds a brace line. This scan keeps their answer in step (carve#5618).
 function advanceInlineCode(owner, text) {
   let run = owner.inlineCodeRun ?? 0
   let comment = owner.inlineCommentOpen ?? false
   let brackets = owner.inlineBrackets ?? 0
+  const delimiters = owner.inlineDelimiters ?? { '*': 0, '_': 0, '~': 0, '^': 0 }
+  let carrierAt = -1
   for (let k = 0; k < text.length; k++) {
     if (comment) {
       if (text[k] === '%' && text[k + 1] === '}') { comment = false; k++ }
@@ -3586,6 +3578,7 @@ function advanceInlineCode(owner, text) {
     if (!run && text[k] === '[') { brackets++; continue }
     if (!run && text[k] === ']' && brackets > 0) {
       brackets--
+      carrierAt = k + 1
       if (text[k + 1] === '(') {
         let depth = 1
         let end = k + 2
@@ -3605,7 +3598,7 @@ function advanceInlineCode(owner, text) {
         }
         if (depth === 0) {
           const destination = text.slice(k + 2, end - 1)
-          if (inlineLinkSlot(destination)) { k = end - 1; continue }
+          if (inlineLinkSlot(destination)) { k = end - 1; carrierAt = end; continue }
         }
       }
       continue
@@ -3621,19 +3614,24 @@ function advanceInlineCode(owner, text) {
         } else if (ch === '"' || ch === "'") quote = ch
         else if (ch === '{' || ch === '}') break
       }
-      if (k > 0 && inlineAttrHasCarrier(text, k) && text[end] === '}' && parseAttrBlock(text.slice(k, end + 1)) !== null) { k = end; continue }
+      if (carrierAt === k && text[end] === '}' && parseAttrBlock(text.slice(k, end + 1)) !== null) { k = end; carrierAt = end + 1; continue }
     }
     if (text[k] === '`') {
       let width = 1
       while (text[k + width] === '`') width++
       if (!run) run = width
-      else if (run === width) run = 0
+      else if (run === width) { run = 0; carrierAt = k + width }
       k += width - 1
     } else if (!run && text[k] === '{' && text[k + 1] === '%') { comment = true; k++ }
+    else if (!run && Object.hasOwn(delimiters, text[k])) {
+      delimiters[text[k]]++
+      if (delimiters[text[k]] % 2 === 0) carrierAt = k + 1
+    } else if (!run && text[k] === '>' && text.lastIndexOf('<', k) > text.lastIndexOf('>', k - 1)) carrierAt = k + 1
   }
   owner.inlineCodeRun = run
   owner.inlineCommentOpen = comment
   owner.inlineBrackets = brackets
+  owner.inlineDelimiters = delimiters
 }
 
 function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
@@ -4324,7 +4322,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // It meets the `+` where the walk moved it (PART 0 S3).
       lead(lonePlus.markerCanon)
       result.push(out + src)
-      if (!lonePlus.para) { lonePlus.inlineCodeRun = 0; lonePlus.inlineCommentOpen = false; lonePlus.inlineBrackets = 0 }
+      if (!lonePlus.para) { lonePlus.inlineCodeRun = 0; lonePlus.inlineCommentOpen = false; lonePlus.inlineBrackets = 0; lonePlus.inlineDelimiters = null }
       lonePlus.para = true
       advanceInlineCode(lonePlus, m.rest)
       lonePlus.last = 'para'
@@ -4355,6 +4353,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       owner.inlineCodeRun = 0
       owner.inlineCommentOpen = false
       owner.inlineBrackets = 0
+      owner.inlineDelimiters = null
       lead(m.col)
     } else if (form.kind === 'colon-close') {
       lead(frames[form.frame].canon)
@@ -4363,7 +4362,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       top().para = false
       top().last = 'block'
     } else if (form.kind === 'text') {
-      if (!owner.para) { owner.inlineCodeRun = 0; owner.inlineCommentOpen = false; owner.inlineBrackets = 0 }
+      if (!owner.para) { owner.inlineCodeRun = 0; owner.inlineCommentOpen = false; owner.inlineBrackets = 0; owner.inlineDelimiters = null }
       // A new paragraph starts at the owner's column, never inside a frame
       // that line did not reach.
       // A separator after a `+` moved onto the owner meets it where its term stood.
@@ -4439,6 +4438,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner.inlineCodeRun = 0
         owner.inlineCommentOpen = false
         owner.inlineBrackets = 0
+        owner.inlineDelimiters = null
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
@@ -4589,7 +4589,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
         frame.para = !quotedRefusedNote && frame.plus !== at &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
-        if (!frame.para) { frame.inlineCodeRun = 0; frame.inlineCommentOpen = false; frame.inlineBrackets = 0 }
+        if (!frame.para) { frame.inlineCodeRun = 0; frame.inlineCommentOpen = false; frame.inlineBrackets = 0; frame.inlineDelimiters = null }
         advanceInlineCode(frame, m.rest)
         frame.last = 'para'
         return
