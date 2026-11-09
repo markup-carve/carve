@@ -17,7 +17,7 @@
    column, even when it is short of its owner's content column. A continuation
    at or left of that `{` refuses the whole run in every owner; one or more
    source columns past it continues the run. A line inside a still-open
-   inline code span of the paragraph starts no block-position run, at any
+   inline code span of the paragraph starts no such multi-line run, at any
    column: block position is not decided against text the paragraph's inline
    pairing already holds (carve#5618). Inline
    attribute and comment runs remain governed by their inline productions.
