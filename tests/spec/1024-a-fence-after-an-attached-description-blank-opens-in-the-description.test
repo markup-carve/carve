@@ -1,0 +1,21 @@
+A fence after an attached description blank opens in the description
+
+````
+:: t
+: +
+```
+a
+
+   ```
+zz
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>a
+</code></pre>
+    <pre><code></code></pre>
+  </dd>
+</dl>
+<p>zz</p>
+````
