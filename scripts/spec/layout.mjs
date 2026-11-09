@@ -3561,6 +3561,16 @@ function inlineLinkSlot(body) {
   return /^ +(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*') *$/.test(body.slice(split))
 }
 
+function inlineAttrHasCarrier(text, at) {
+  const before = text.slice(0, at)
+  const last = before.at(-1)
+  if (last === ')' || last === ']') return before.includes('[')
+  if (last === '>') return before.lastIndexOf('<') > before.lastIndexOf('>', at - 2)
+  if (last === '`') return (before.match(/`/g)?.length ?? 0) % 2 === 0
+  if (last === '*' || last === '_' || last === '~' || last === '^') return before.indexOf(last) < at - 1
+  return false
+}
+
 // Both the ownership walk and paragraph reader ask whether inline pairing
 // holds a brace line. This scan keeps their answer in step (carve#5618).
 function advanceInlineCode(owner, text) {
@@ -3611,7 +3621,7 @@ function advanceInlineCode(owner, text) {
         } else if (ch === '"' || ch === "'") quote = ch
         else if (ch === '{' || ch === '}') break
       }
-      if (text[end] === '}' && parseAttrBlock(text.slice(k, end + 1)) !== null) { k = end; continue }
+      if (k > 0 && inlineAttrHasCarrier(text, k) && text[end] === '}' && parseAttrBlock(text.slice(k, end + 1)) !== null) { k = end; continue }
     }
     if (text[k] === '`') {
       let width = 1

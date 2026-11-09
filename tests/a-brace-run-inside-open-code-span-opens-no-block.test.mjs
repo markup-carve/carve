@@ -35,3 +35,14 @@ test('a backtick in a link title does not hide a refused brace run (#5618)', () 
 test('a quoted parenthesis in a link title does not open inline code (#5618)', () => {
   assert.equal(html('p [x](/u "a)b`c")\n{.x}\ntail\n'), '<p>p <a href="/u" title="a)b`c">x</a></p>\n<p class="x">tail</p>')
 })
+
+test('an unattached attribute-shaped run does not hide its backtick (#5618)', () => {
+  assert.equal(html('p {title="`"}\n{.x}\ntail\n'), '<p>p {title=“<code>"}\n{.x}\ntail</code></p>')
+})
+
+for (const prefix of ['p)', 'p]', 'p>', 'p*']) {
+  test(`an unattached attribute after ${prefix} leaves its backtick visible (#5618)`, () => {
+    const output = html(`${prefix}{title="\`"}\n{.x}\ntail\n`)
+    assert.ok(output.includes('\n{.x}\ntail</code>'), output)
+  })
+}
