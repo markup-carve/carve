@@ -1,0 +1,1 @@
+PART 0 S1 / carve#5560: the pinned JavaScript engine omits the trailing blank from the note-attached unclosed fence; the spec model and corpus keep it. Note ownership is already correct in the engine (carve#5581).
