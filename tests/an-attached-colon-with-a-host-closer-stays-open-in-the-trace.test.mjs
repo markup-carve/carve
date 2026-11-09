@@ -6,7 +6,7 @@ import { parse } from '../scripts/spec/layout.mjs'
 test('a matching host closer keeps a plus-attached colon open across a blank', () => {
   for (const [source, owner, lastForm] of [
     ['- +\n::: x\n\n  a\n  :::\n', 'doc/item:1/div:2', 'closer'],
-    ['- +\n::: |\n\n  ::: x\n  :::\n', 'doc/item:1/div:2', 'payload'],
+    ['- +\n::: |\n\n  ::: x\n  :::\n', 'doc/item:1/div:2', 'closer'],
     ['1. +\n::: note\n\n   a\n   :::\n', 'doc/item:1/div:2', 'closer'],
   ]) {
     const trace = modelTrace(source)
@@ -24,4 +24,19 @@ test('an attached colon without a host closer still ends at its first blank', ()
 test('a sibling item after the blank keeps the reader structure', () => {
   const blocks = parse('- +\n::: x\n\n  - child\n    :::').blocks
   assert.equal(blocks[0].items[0].blocks[0].children[0].t, 'list')
+})
+
+test('correcting the trace does not change list looseness or the parsed blocks', () => {
+  const source = '- +\n::: x\n\n  a\n  :::\n  after\n'
+  const trace = []
+  const withTrace = parse(source, { trace })
+  assert.deepEqual(withTrace.blocks, parse(source).blocks)
+  assert.equal(withTrace.blocks[0].tight, false)
+  assert.equal(trace[4].owner, 'doc/item:1/div:2')
+})
+
+test('a deeper child keeps its path inside the attached colon', () => {
+  const trace = modelTrace('- +\n::: x\n\n    - child\n      text\n  :::\n')
+  assert.equal(trace[3].owner, 'doc/item:1/div:2/item:4')
+  assert.equal(trace[4].owner, 'doc/item:1/div:2/item:4')
 })

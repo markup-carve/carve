@@ -3628,6 +3628,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // After the block a marker-line `+` takes, the item keeps a blank or a text
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
+  const attachedColonTraces = []
   let endedPulledFence = null
   let blankInAttachedCode = null
   let blankInAttachedCodeAt = -1
@@ -3836,7 +3837,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             if (ind.rest === '') blank = true
           }
           const close = findColonCloser(viewed, 0, colon[1].length)
-          if (close !== -1) end = Math.max(end, at + opener + close + 1)
+          if (trace && close !== -1) attachedColonTraces.push({
+            start: at + opener + 1,
+            end: at + opener + close + 1,
+            from: ownerPath(),
+            owner: `${ownerPath()}/div:${at + opener + 1}`,
+            lineBlock: parseColonOpener(colon[2]).mode === 'line-block',
+          })
         }
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
@@ -4617,6 +4624,22 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
+    while (attachedColonTraces.at(-1)?.end <= index) attachedColonTraces.pop()
+    const attachedColonTrace = attachedColonTraces.at(-1)
+    if (attachedColonTrace && index >= attachedColonTrace.start) {
+      if (index < attachedColonTrace.end) {
+        const closer = index === attachedColonTrace.end - 1
+        const blank = isBlank(lines[index])
+        const payload = attachedColonTrace.lineBlock && !closer
+        const tracedOwner = !closer && !attachedColonTrace.lineBlock && underPath(owner, attachedColonTrace.from)
+          ? attachedColonTrace.owner + owner.slice(attachedColonTrace.from.length) : attachedColonTrace.owner
+        trace.push({ line: index + 1, step: attachedColonTrace.lineBlock ? 'S1' : 'S5', owner: tracedOwner,
+          rule: attachedColonTrace.lineBlock ? 'CARVE-P0-005' : blank ? 'CARVE-P0-003' : 'CARVE-P0-024',
+          form: closer ? 'closer' : payload ? 'payload' : blank ? 'blank' : form,
+          ...(closer ? { cell: 'B-div-end' } : payload ? { cell: 'B-div-keep' } : {}) })
+        return
+      }
+    }
     const walkedOwner = owner
     for (let k = attachedTraces.length - 1; k >= 0; k--) {
       const attached = attachedTraces[k]
