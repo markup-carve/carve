@@ -135,6 +135,9 @@
 
    17. TIGHT vs LOOSE LISTS + CONTINUATION MARKER -- OPERATIONAL (governs
       `list` rendering and the continuation_marker productions in PART 2).
+      PART 0 P5 fixes body ownership and list looseness; P6 fixes the `+`
+      offer. L1-L7 retain their exact grouping, attachment and rendering
+      guards.
       L1 LOOSE(list) := some item is followed by a blank line before the
          next sibling marker, OR some item holds a blank-line-separated
          direct child BLOCK after an earlier visible block of that item;
@@ -231,13 +234,9 @@
          loosens the list as L1 states. To keep a list tight, write the
          sub-block without the blank line: a sub-list needs none (§24 C3), and
          neither does any block opener that interrupts a paragraph (§10).
-      L3 CONTINUATION MARKER `+` -- Carve addition. PART 0 S2 and its `+`
-         family entry define it (CARVE-P0-024). A lone `+` at the marker column of a host that takes it, or
-         as the whole content of a marker line, is always a continuation
-         marker. It offers one container its next block, parsed like any other. `- + text` keeps `+ text` as text. Quote
-         prefixes select their quote level (`> +`, not `>+`). An accepted
-         marker interrupts an open paragraph and its grant ends at the attached
-         block's boundary.
+      L3 CONTINUATION MARKER `+` -- Carve addition. P6 and PART 0 S2
+         define the offer (CARVE-P0-024). `- + text` keeps `+ text` as text;
+         quote prefixes select the level (`> +`, not `>+`).
          An unclosed colon container attached by a marker-line `+` ends at its
          first blank, as an unclosed code fence does (carve#5359).
          A fence line closes a fence attached by a marker-line `+` only at the
@@ -263,17 +262,17 @@
          a `+` on its own line the open container whose marker column it stands
          at. A child opened on a note's marker line stands at its authored
          marker column (CARVE-P9-083), not at the note's body column. The
-         marker attaches the next line's block when all of these hold:
+         marker attaches the next visible block only when every gate passes:
 
-         - that line is not blank, and a line of nothing but quote markers
-           counts as blank;
-         - it carries the prefixes of the quotes around the host, and a `>`
-           left of a container holding that quote is not its prefix;
-         - measured through those prefixes it stands at the host's marker
-           column, and a `+` on its own line at the `+`'s own column;
-         - it is not the host's sibling: a list marker under a list item, a
-           `: ` or `:: ` line under a definition body;
-         - it is not the closer of an open div.
+           gate      exact acceptance test
+           visible   nonblank; a line of only quote markers counts as blank
+           quote     carries every quote prefix around the host; a `>` left
+                     of a container holding that quote is not its prefix
+           column    through those prefixes, at the host marker column;
+                     for an own-line `+`, at that `+`'s own column
+           sibling   not a list marker under an item, nor `: ` or `:: `
+                     under a definition body
+           closer    not the closer of an open div
 
          So a list attaches in every host except a list item, and a quote
          follower nests. No other column reaches: not the content column, not
@@ -330,15 +329,10 @@
            content column. `- a` / `+` / `{x}` / `  - c` is refused the same
            way, and `{x}` labels the list outside the item (carve#4278).
 
-         Two markers may offer one block. The earliest marker whose gates pass
-         claims it. A later marker at that host's marker column is refused,
-         renders nothing and is linted: `- +` / `+` / `x` gives the item `x`
-         and reports the second marker. If neither attaches, both render
-         nothing: `- +` / `+` / a blank line / `x` gives an empty item and a
-         paragraph after the list.
-
-         A refused marker renders nothing and
-         `continuation-marker-refused` reports it. It does not become a
+         P6 gives the first valid marker the claim. `- +` / `+` / `x` gives
+         the item `x` and lints the second marker. If neither attaches,
+         both render nothing. A refused marker reports
+         `continuation-marker-refused`; it does not become a
          letter, open a paragraph or change the next visible line's owner.
          A description or note body that refuses it stays open: the next line
          is read in that body, where a marker at its body column opens a block
