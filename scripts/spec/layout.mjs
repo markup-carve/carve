@@ -6038,6 +6038,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
+        // The ownership walk has already refused this marker and retained the
+        // note as owner. Its invisible placeholder must not end the note body.
+        const ownership = state.ownershipEvents?.get(lines)
+        const event = ownership?.events.get(i + ownership.offset)
+        if (lines[i] === '%%' && event?.form === 'plus' && event.owner?.includes('/footnote:')) {
+          i++
+          continue
+        }
         // A losing `+` on the same label inside this note is a boundary,
         // not a new owner. Keep reading the follower at this note's column.
         const nextNote = FOOTNOTE_DEF.exec(measured.rest)
