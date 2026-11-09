@@ -3594,6 +3594,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
   let endedPulledFence = null
+  let blankInAttachedCode = null
   const laterCloserCache = new Map()
   let start = 0
   if (allowFrontmatter && lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
@@ -3603,6 +3604,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
+    if (isBlank(lines[at]) && top().kind === 'fence' && top().family === 'code' && attachedTo) {
+      blankInAttachedCode = attachedTo.host
+    }
     if (top().losing) {
       frames.pop()
       if (attachedTo?.host.kind === 'note' && attachedTo.endsAt(at)) {
@@ -4015,6 +4019,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (f.closedList && m.col < f.closedList.col) f.closedList = undefined
     }
     let form = classify(m.rest, owner, at, m.col, missed)
+    if (blankInAttachedCode && attachedTo?.host !== blankInAttachedCode) blankInAttachedCode = null
     if (endedPulledFence && at > endedPulledFence.at && (form.kind === 'blank' || form.kind !== 'text' && form.family !== 'code')) endedPulledFence = null
     const hasLaterCloser = endedPulledFence && form.family === 'code' && owner.para && (() => {
       const depth = quotePrefix(lines[at]).depth
@@ -4249,7 +4254,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       apply(owner, m.col, form, plusLanding)
       if (trace) applied = ownerPath()
     } else {
-      lead(owner.canon, form.kind === 'term' || form.kind === 'dd')
+      // A later fence-shaped line keeps the column at which the host reads it.
+      // Normalizing it to the document column can manufacture a closer.
+      lead(blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col ? m.col : owner.canon,
+        form.kind === 'term' || form.kind === 'dd')
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
     }
