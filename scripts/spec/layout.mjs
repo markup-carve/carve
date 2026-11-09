@@ -3629,6 +3629,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
   const attachedColonTraces = []
+  let attachedSiblingTrace = null
   let endedPulledFence = null
   let blankInAttachedCode = null
   let blankInAttachedCodeAt = -1
@@ -3658,6 +3659,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (trace) for (let k = 0; k < start; k++) emit(k, 'INPUT', 'doc', null, 'frontmatter')
   }
   for (let at = start; at < lines.length; at++) {
+    // An attached colon stops at the host item's next sibling. The walk may
+    // retain its colon frame to normalize reader input, so read the sibling's
+    // trace independently at the item's content column.
+    if (trace && !attachedSiblingTrace && attachedTo?.host.kind === 'item' && top().kind === 'colon') {
+      const level = stripQuotes(lines[at], attachedTo.depth)
+      const ind = level && walkIndent(level.rest)
+      if (ind?.col === attachedTo.host.col && matchMarkerAt(ind)) {
+        attachedSiblingTrace = traceAttachedSibling(at, attachedTo)
+      }
+    }
     // A quoted blank is blank once its host's quote prefixes are read.
     if (top().kind === 'fence' && top().family === 'code' && frames.at(-2)?.once > at && attachedTo &&
         (isBlank(lines[at]) || isBlank(stripQuotes(lines[at], attachedTo.depth)?.rest ?? 'x'))) {
@@ -4657,6 +4668,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner = attachedColonTrace.owner + owner.slice(attachedColonTrace.from.length)
       }
     }
+    if (attachedSiblingTrace) {
+      const sibling = attachedSiblingTrace.get(index)
+      if (sibling) {
+        trace.push(sibling)
+        return
+      }
+      attachedSiblingTrace = null
+    }
     const walkedOwner = owner
     for (let k = attachedTraces.length - 1; k >= 0; k--) {
       const attached = attachedTraces[k]
@@ -4778,6 +4797,28 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const records = []
     if (body.length) ownLines(body, records)
     const place = (owner) => path + owner.slice(3).replace(/:(\d+)/g, (_, n) => `:${+n + from}`)
+    return new Map(records.map((r) => [r.line - 1 + from, {
+      ...r, line: r.line + from, owner: place(r.owner), ...(r.reached ? { reached: place(r.reached) } : {}),
+    }]))
+  }
+
+  function traceAttachedSibling(from, attached) {
+    const hostIndex = attached.frames.indexOf(attached.host)
+    const parent = attached.frames[hostIndex - 1]
+    const parentPath = ownerPath(hostIndex - 1)
+    const body = []
+    for (let k = from; k < lines.length; k++) {
+      const level = stripQuotes(lines[k], attached.depth)?.rest
+      if (level === undefined) break
+      const ind = walkIndent(level)
+      if (ind.rest !== '' && ind.col < parent.col) break
+      if (k > from && ind.col <= attached.host.markerCol && matchMarkerAt(ind)) break
+      const cut = ind.col >= attached.host.col ? attached.host.col : parent.col
+      body.push(ind.rest === '' ? '' : ' '.repeat(Math.max(0, ind.col - cut)) + ind.rest)
+    }
+    const records = []
+    ownLines(body, records)
+    const place = (owner) => parentPath + owner.slice(3).replace(/:(\d+)/g, (_, n) => `:${+n + from}`)
     return new Map(records.map((r) => [r.line - 1 + from, {
       ...r, line: r.line + from, owner: place(r.owner), ...(r.reached ? { reached: place(r.reached) } : {}),
     }]))
