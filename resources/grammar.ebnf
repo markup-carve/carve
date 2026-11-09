@@ -6645,7 +6645,7 @@ EOF = (* end of file *) ;
          of its content column as a column-0 host does, so `- - +` / a fence at
          column 2 / blank / `  x` / a closer at column 3 is one fence holding the
          blank and `x` (carve#5587).
-After an unclosed fence attached by a stacked marker-line `+` ends
+         After an unclosed fence attached by a stacked marker-line `+` ends
          at that blank, an unpaired fence line indented into the following
          paragraph stays paragraph text in whichever owner holds the paragraph
          (carve#5606). This does not depend on that owner's distance from the
