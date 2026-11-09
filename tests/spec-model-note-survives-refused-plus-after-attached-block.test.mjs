@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { modelTrace } from '../scripts/spec/decision-trace.mjs'
+import { renderDoc } from '../scripts/spec/html.mjs'
 
 for (const marker of ['- li', '* li']) {
   for (const fence of ['```', '~~~']) {
@@ -17,3 +18,9 @@ for (const marker of ['- li', '* li']) {
     }
   }
 }
+
+test('a refused plus keeps a fence follower owned by the note', () => {
+  const source = 'x[^1]\n\n[^1]: > q\n+ \n\t   ```js\n\t   c\n\t   ```\n'
+  const html = renderDoc(parse(source))
+  assert.match(html, /<li id="fn1">[\s\S]*<pre><code class="language-js">c\n<\/code><\/pre>/)
+})

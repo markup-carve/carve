@@ -5186,9 +5186,11 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   const decisions = trace ?? []
   const traceStart = decisions.length
   const walked = ownLines(authored, decisions, sentinel, allowFrontmatter)
-  const ownershipEvents = new Map(decisions.slice(traceStart).map(row => [row.line - 1, row]))
-  src = walked.join('\n')
   const refusedPlusLines = walked.refusedPlus
+  const refusedPlusSet = new Set(refusedPlusLines)
+  const ownershipEvents = new Map(decisions.slice(traceStart).map(row =>
+    [row.line - 1, { ...row, refused: refusedPlusSet.has(row.line - 1) }]))
+  src = walked.join('\n')
   const hasOrdinaryPlus = src.includes(sentinel)
   const lines = src.split('\n')
   if (lines[lines.length - 1] === '') { lines.pop(); authored.pop() }
@@ -6043,8 +6045,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const ownership = state.ownershipEvents?.get(lines)
         const event = ownership?.events.get(i + ownership.offset)
         const follower = ownership?.events.get(i + 1 + ownership.offset)
-        if (i + 1 < n && lines[i] === '%%' && event?.form === 'plus' && event.owner?.includes('/footnote:') &&
-            isFootnoteContinuationLine(lines[i + 1]) && follower?.owner === event.owner) {
+        if (i + 1 < n && lines[i] === '%%' && event?.form === 'plus' && event.refused && event.owner?.includes('/footnote:') &&
+            isFootnoteContinuationLine(lines[i + 1]) &&
+            (follower?.owner === event.owner || follower?.owner?.startsWith(`${event.owner}/`))) {
           i++
           continue
         }
