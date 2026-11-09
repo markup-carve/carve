@@ -3992,7 +3992,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         refusedPlus.push(at)
         // A marker claimed by an earlier accepted `+` remains part of that
         // chain. Its follower still meets the same host at its marker column.
-        if (claimedMarkers.has(at)) afterPlus = true
+        if (claimedMarkers.has(at) && plus.plus !== undefined) afterPlus = true
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
         // A note offered through a marker-line `+` has no body of its own
         // after a refused second marker; the item reads the next block.

@@ -12,3 +12,8 @@ for (const [source, owner] of [
     assert.equal(trace.at(-1).form, 'text')
   })
 }
+
+test('a claimed marker without an accepted earlier attachment leaves its follower in the outer item', () => {
+  const trace = modelTrace('- - +\n  +\n   x\n')
+  assert.equal(trace.at(-1).owner, 'doc/item:1')
+})
