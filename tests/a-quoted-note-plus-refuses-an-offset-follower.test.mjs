@@ -27,3 +27,11 @@ test('an offset brace run and its lazy continuation stay in the deepest quote', 
   assert.match(output, /<blockquote><p>\{<span class="tag"><strong>#i<\/strong><\/span>\n\.y\}<\/p><\/blockquote>/)
   assert.doesNotMatch(output.slice(output.indexOf('<li id="fn1">')), /#i|\.y\}/)
 })
+
+test('a short-indented plus differs when the note carries a quote prefix', () => {
+  const plain = html('[^n]: +\n +\n p\n\nr[^n]\n')
+  const quoted = html('> [^n]: +\n>  +\n>  p\n>\n> r[^n]\n')
+  assert.match(plain.slice(plain.indexOf('<li id="fn1">')), /<p>\+\np<a href="#fnref1"/)
+  assert.match(quoted, /<blockquote>\s*<p>\+\np<\/p>/)
+  assert.doesNotMatch(quoted.slice(quoted.indexOf('<li id="fn1">')), /<p>\+\np/)
+})
