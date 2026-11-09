@@ -6550,8 +6550,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // fence's closer. A later opener starts another block, even when
               // the attached paragraph's ordinary block probe scanned past it.
               if (indentCols(lines[i]).rest[0] === '{') {
-                const kept = refusedRunKeptThrough(lines, i, { commentScannedThrough: -1 })
-                if (kept !== null && kept + 1 < end) end = kept + 1
+                const cache = { commentScannedThrough: -1 }
+                const kept = refusedRunKeptThrough(lines, i, cache)
+                const runEnd = refusedBlockBraceRun(lines, i, cache)
+                let follower = runEnd
+                while (follower !== null && invisibleSiblingLine(indentCols(lines[follower] ?? '').rest)) follower++
+                // An unclosed tilde follower is only its opener; the prose
+                // after it still belongs to the attached paragraph.
+                if (kept !== null && follower !== null && kept > follower && kept + 1 < end) end = kept + 1
               }
               // A pulled paragraph stops where a block reaches the description's content column.
               // The attachment is measured at its pulled column, so inspect the authored reach here.
@@ -7964,7 +7970,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // A fence-shaped first follower is paragraph text after a refused brace
       // run. Keep its matching closer in that paragraph too; otherwise the
       // closer would be reinterpreted as a fresh empty fence opener.
-      if (forcedAfterRefusal && opensFence(lines, i)) {
+      if (forcedAfterRefusal && refusedFollowerFenceEnd < i && opensFence(lines, i)) {
         refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1])
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
