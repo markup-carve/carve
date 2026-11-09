@@ -6370,6 +6370,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const end = blankRunBeforeSpanComment(lines, i, n)
           for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           i = end
+        } else if (isBlank(lines[i])) {
+          // A marker-column `+` reaches the note even after a blank. Keep the
+          // separator so the next loop can consume that marker (§17 L3/L4,
+          // carve#5639); an ordinary below-column line still ends the note.
+          let next = i
+          while (next < n && isBlank(lines[next])) next++
+          if (next < n && CONT_MARKER.test(lines[next]) && ind(next).col === 0) {
+            for (let k = i; k < next; k++) bodyLines.push('')
+            i = next
+            continue
+          }
+          break
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // Checked BEFORE lazy continuation, which would otherwise swallow the `+`.
           i++
@@ -6810,6 +6822,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (entryAtOwner(i)) break
             if (isBlank(cur)) {
               afterComment = false
+              const next = afterBlankRun(i)
+              if (CONT_MARKER.test(lines[next] ?? '') &&
+                  (sourceColumns?.[next] ?? ind(next).L?.col ?? ind(next).col) === sourceDescriptionCol) {
+                for (let k = i; k < next; k++) pushBody('', k)
+                i = next
+                continue
+              }
               // A blank inside a verse span leaves its earlier stanza open, even
               // when the next line misses the description's column (CARVE-P9-047).
               if (bodyHoldsLiveSpan() && (blankSpanKeepsStanza ??= hostEndsInLineBlockStanza(bodyLines, 0, true))) {
