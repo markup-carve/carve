@@ -6546,6 +6546,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
               let end = takeOneBlock(lines, i, state, indentCols(lines[i]).col, false, siblingAt).next
+              // The refused run keeps its first fence follower through that
+              // fence's closer. A later opener starts another block, even when
+              // the attached paragraph's ordinary block probe scanned past it.
+              if (indentCols(lines[i]).rest[0] === '{') {
+                const kept = refusedRunKeptThrough(lines, i, { commentScannedThrough: -1 })
+                if (kept !== null && kept + 1 < end) end = kept + 1
+              }
               // A pulled paragraph stops where a block reaches the description's content column.
               // The attachment is measured at its pulled column, so inspect the authored reach here.
               const opener = attachedOpener(lines.slice(i, end), ind(i).col)
