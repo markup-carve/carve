@@ -4706,7 +4706,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const rest = trimWs(level.rest)
     // A line of nothing but quote markers is blank at its own level: it holds no block.
     if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[next], trimWsStart(level.rest)) !== column) return false
-    if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
+    const innermostColon = frames.slice(0, hostIndex + 1).findLast((f) => f.kind === 'colon')
+    if (COLON_CLOSER.test(rest) && innermostColon?.run === COLON_FENCE.exec(rest)[1].length) return false
     if (kind === 'item' && matchMarkerAt({ col: 0, rest })) return false
     if (kind === 'dd' && (DEFLIST_TERM.test(rest) || /^:( +)(?=[ \t]*[^ \t])/.test(rest))) return false
     return true

@@ -20,3 +20,10 @@ test('a matching run still closes the innermost colon body', () => {
   assert.equal(trace[2].form, 'closer')
   assert.equal(trace[3].owner, 'doc/div:1')
 })
+
+test('a child colon run matching an outer div can attach to a plus', () => {
+  const trace = modelTrace(':::\n::::\n- +\n:::\nbody\n:::\n::::\n:::\n')
+  assert.equal(trace[3].form, 'div')
+  assert.equal(trace[3].owner, 'doc/div:1/div:2/item:3/div:4')
+  assert.equal(trace[4].owner, trace[3].owner)
+})
