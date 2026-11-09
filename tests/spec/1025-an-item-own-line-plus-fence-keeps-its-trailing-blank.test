@@ -1,0 +1,23 @@
+An item own line plus fence keeps its trailing blank
+
+````
+- p
++
+```
+code
+
+  tail
+
+see
+.
+<ul>
+  <li>p
+    <pre><code>code
+
+  tail
+
+</code></pre>
+  </li>
+</ul>
+<p>see</p>
+````

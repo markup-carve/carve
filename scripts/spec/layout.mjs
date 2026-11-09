@@ -10456,7 +10456,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       attachNext = true
       closePara()
     }
-    const attachFlushLeft = () => {
+    const attachFlushLeft = (ownLine = false) => {
       if (i >= n || isBlank(lines[i])) return false
       const blockColumn = ind(i).L?.col ?? ind(i).col
       const localColumn = ind(i).col
@@ -10487,12 +10487,31 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       let end = attachedBlockEnd(lines, i, state, (idx) =>
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, Math.min(ind(i).col, blockColumn))
-      const attached = lines.slice(i, end)
+      let attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       const opener = attachedOpener(attached, ind(i).col)
       const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2], codeMatch[1]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
+      // An own-line `+` gives its fence the same blank payload as a body
+      // fence. The first blank only bounds a marker-line attachment (S1,
+      // carve#5560 and carve#5635). Keep later lines that reach the item and
+      // the final blank before a line that leaves it.
+      if (ownLine && code && !hasCloser(attached, opener) && isBlank(lines[end] ?? '')) {
+        const run = code[1]
+        for (let k = end; k < n; k++) {
+          if (isBlank(lines[k])) { end = k + 1; continue }
+          const measured = ind(k)
+          if (measured.col < contentCol) {
+            const closer = PURE_FENCE.exec(measured.rest)
+            if (measured.col === localColumn && closer && closer[1][0] === run[0] && closer[1].length >= run.length)
+              end = k + 1
+            break
+          }
+          end = k + 1
+        }
+        attached = lines.slice(i, end)
+      }
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
       end = attachedColonSiblingEnd(lines, i, end, opener, (k) => matchMarkerAt(ind(k))?.indent === baseIndent)
@@ -10726,7 +10745,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           continue
         }
         i++
-        if (attachFlushLeft()) continue
+        if (attachFlushLeft(true)) continue
         // §17 L3: a refused `+` renders nothing; the walk already wrote it as `%%`.
         if (i < n && !isBlank(lines[i]) && (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) break
         continue
@@ -10932,7 +10951,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // none of them makes.
         if (CONT_MARKER.test(lines[j]) && jm.col === baseIndent) {
           i = j + 1
-          attachFlushLeft()
+          attachFlushLeft(true)
           continue
         }
         if (nm && nm.indent === baseIndent) {
