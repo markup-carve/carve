@@ -841,10 +841,15 @@ export function refFrame(payload) {
 export function flattenInnerLinks(text) {
   // A note's content renders in the endnotes, not in the link text, so links
   // inside a note frame keep their destinations (carve#3938).
-  const parts = text.split(new RegExp(`(${NOTE_FRAME.source})`))
-  if (parts.length > 1) {
-    return parts.map((part, i) => i % 3 === 0 ? flattenInnerLinks(part) : i % 3 === 1 ? part : '').join('')
-  }
+  // Keep each frame intact while removing anchors across its position. Splitting
+  // here separates the tags of a link whose label contains an inline note.
+  const notes = []
+  let marker = '\uE002'
+  while (text.includes(marker)) marker += '\uE002'
+  text = text.replace(NOTE_FRAME, (frame) => {
+    const index = notes.push(frame) - 1
+    return `${marker}${index}\uE003`
+  })
   // An inner crossref flattens to its resolved TEXT; it reaches here as a
   // sentinel because PART 9R resolves it in a later pass.
   let out = text
@@ -865,7 +870,7 @@ export function flattenInnerLinks(text) {
     }
     return parsed.img ? m : refFrame({ ...parsed, flat: true })
   })
-  return out
+  return out.replace(new RegExp(`${marker}(\\d+)\uE003`, 'g'), (_, index) => notes[Number(index)])
 }
 
 /*
