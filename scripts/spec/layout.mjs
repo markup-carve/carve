@@ -2857,7 +2857,8 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     popped = true
     const column = h.columns.pop()
     while (h.colons?.length && h.colons.at(-1).base >= column) h.colons.pop()
-    if (h.kinds.at(-1) === 'item' && meas.col <= h.markerCols.at(-1)) leftOfClosedItem = true
+    // A marker at or left of a note's marker column closes the note and its paragraph (CARVE-P0-024).
+    if ((h.kinds.at(-1) === 'item' || h.kinds.at(-1) === 'note') && meas.col <= h.markerCols.at(-1)) leftOfClosedItem = true
     h.markerCols.pop()
     h.markers.pop()
     h.kinds.pop()
