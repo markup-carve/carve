@@ -7144,6 +7144,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qRefusedThrough = { at: -1, depth: 0 } // the last line a refused brace run's paragraph keeps (CARVE-P2-035)
+      let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
       let qStanzaCandidate = false
       let qStanzaSpanSeen = false
       // The run of a `%%%` span open in the candidate stanza: a blank inside it is payload.
@@ -7559,6 +7560,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const belowRun = FENCE.exec(indentCols(l).rest)
         const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2], belowRun[1]) === null)
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
+        if (idx <= qAttributeThrough) {
+          qOpenPara = false
+          qItemPara = false
+          return
+        }
         // After the advance: a span that misses a line block's column has left it.
         // A span on a marker line opens behind the markers (carve#5322).
         const comment = COMMENT_FENCE_BODY.exec(l) ?? (blockStart ? COMMENT_FENCE_BODY.exec(inner0.rest) : null)
@@ -7694,17 +7700,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           (qHost.kinds.at(-1) === 'description' && inner0.col === qHost.markerCols.at(-1) ||
            qHost.kinds.at(-1) === 'item' && inner0.col === qHost.columns.at(-1) &&
            TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
-        const quotedAttribute = l[0] === '{' && tryAttrLine(new Proxy([], {
+        const quotedAttributeRun = inner0.rest[0] === '{' ? tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
             if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
             const offset = Number(key)
-            return offset === 0 ? l : QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? ''
+            return offset === 0 ? inner0.rest : dedent(QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? '', inner0.col)
           },
-        }), 0) !== null
+        }), 0) : null
+        if (quotedAttributeRun) qAttributeThrough = idx + quotedAttributeRun.next - 1
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
-             isTableRow(l) || quotedAttribute || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara || descriptionBodyEndsPara ||
+             isTableRow(l) || quotedAttributeRun || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara || descriptionBodyEndsPara ||
              (isDefinitionLine(l) && !FOOTNOTE_DEF.test(l)) || DEFLIST_TERM.test(trimWsStart(l)) || COMMENT_LINE.test(l) ||
              (FOOTNOTE_DEF.test(l) && (openerFenceRun(FOOTNOTE_DEF.exec(l)[2]) !== null ||
                !opensParagraph(FOOTNOTE_DEF.exec(l)[2], true))))) {
