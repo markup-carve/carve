@@ -3628,6 +3628,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // After the block a marker-line `+` takes, the item keeps a blank or a text
   // line at its content column, as the readers do (§17 L3, carve#4167).
   let afterPlusBlock = null
+  const attachedColonTraces = []
   let endedPulledFence = null
   let blankInAttachedCode = null
   let blankInAttachedCodeAt = -1
@@ -3817,6 +3818,47 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
         const opener = attachedOpener(lines.slice(at, end).map((line) => stripQuotes(line, prefixes)?.rest ?? ''), col)
         end = attachedQuoteEnd(at, end, opener, (k) => level(k).rest)
+        // A colon closer in the host keeps the attached block open across a
+        // blank. Measure the same source-column view that the block reader uses.
+        const colon = COLON_FENCE.exec(level(at + opener).rest)
+        const colonMode = colon && parseColonOpener(colon[2])?.mode
+        if (trace && colonMode) {
+          const viewed = []
+          const viewedCols = []
+          for (let k = at + opener; k < lines.length; k++) {
+            const line = stripQuotes(lines[k], prefixes)
+            if (!line) break
+            const ind = walkIndent(line.rest)
+            if (k > at + opener && ind.rest !== '' && ind.col < plusHost.col) break
+            viewed.push(ind.rest)
+            viewedCols.push(ind.col)
+          }
+          if (colonMode !== 'line-block') for (let j = 1; j < viewed.length; j++) {
+            const spanEnd = opaqueSpanEnd(viewed, j, true)
+            if (spanEnd !== -1) { j = spanEnd; continue }
+            const level = walkIndent(stripQuotes(lines[at + opener + j], prefixes)?.rest ?? '')
+            if (level.col === plusHost.col && (isBulletLine(viewed[j]) || isOrderedMarkerLine(viewed[j]))) {
+              viewed.length = j
+              break
+            }
+          }
+          // A line block treats colon-only lines before its first stanza
+          // blank as verse payload, even when their run matches the opener.
+          const firstBlank = viewed.findIndex((line, index) => index > 0 && line === '')
+          const paired = colonMode === 'line-block' && firstBlank !== -1
+            ? viewed.map((line, index) => (index < firstBlank || viewedCols[index] !== plusHost.col) &&
+              COLON_CLOSER.test(line) ? 'verse payload' : line)
+            : viewed
+          const close = colonMode === 'line-block' && firstBlank === -1 ? -1
+            : findColonCloser(paired, 0, colon[1].length)
+          if (close !== -1) attachedColonTraces.push({
+            start: at + opener + 1,
+            end: at + opener + close + 1,
+            from: ownerPath(),
+            owner: `${ownerPath()}/div:${at + opener + 1}`,
+            lineBlock: colonMode === 'line-block',
+          })
+        }
         // It keeps the marker's shift too, as does the parent after it (carve#4245).
         const cut = Math.max(hostParent.cut, plusHost.markerCol - plusHost.markerCanon)
         frames[frames.length - 1] = { ...hostParent, kind: plusHost.kind, line: plusHost.line, cut, para: false, last: null, once: end, bodyCol: plusHost.col, host: plusHost }
@@ -4596,6 +4638,25 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
+    while (attachedColonTraces.at(-1)?.end <= index) attachedColonTraces.pop()
+    const attachedColonTrace = attachedColonTraces.at(-1)
+    const inAttachedColon = attachedColonTrace && index >= attachedColonTrace.start
+    if (inAttachedColon) {
+      const closer = index === attachedColonTrace.end - 1
+      if (closer) {
+        owner = attachedColonTrace.owner
+        form = 'closer'
+        extra = { cell: 'B-div-end', closed: extra.closed, reached: extra.closed ? attachedColonTrace.owner : undefined }
+      } else if (attachedColonTrace.lineBlock) {
+        owner = attachedColonTrace.owner
+        step = 'S1'
+        rule = 'CARVE-P0-005'
+        form = 'payload'
+        extra = { cell: 'B-div-keep' }
+      } else if (underPath(owner, attachedColonTrace.from) && !underPath(owner, attachedColonTrace.owner)) {
+        owner = attachedColonTrace.owner + owner.slice(attachedColonTrace.from.length)
+      }
+    }
     const walkedOwner = owner
     for (let k = attachedTraces.length - 1; k >= 0; k--) {
       const attached = attachedTraces[k]
@@ -4615,7 +4676,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner = attached.to + owner.slice(attached.from.length)
       }
     }
-    if (afterPlusBlock && index >= afterPlusBlock.end) {
+    if (!inAttachedColon && afterPlusBlock && index >= afterPlusBlock.end) {
       // An unclosed fence leaves the walk reading payload; the readers end the
       // fence there and read the lines at the content column as the item's body.
       if (form === 'payload') {
