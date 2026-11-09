@@ -8189,12 +8189,20 @@ function hasCloser(lines, idx) {
 }
 
 function findCloser(lines, openIdx, run, refusedFollower = false) {
+  if (refusedFollower) {
+    // A refused run's follower reads its closer at the closer's authored
+    // column, regardless of intervening block-shaped lines (CARVE-P2-035).
+    for (let j = openIdx + 1; j < lines.length; j++) {
+      layoutWork.closerScan++
+      const close = PURE_FENCE.exec(indentCols(lines[j]).rest)
+      if (close && close[1][0] === run[0] && close[1].length >= run.length) return j
+    }
+    return -1
+  }
   const ch = run[0]
   for (let j = openIdx + 1; j < lines.length; j++) {
     layoutWork.closerScan++
-    // A refused brace run protects its fence follower through a matching
-    // closer at the closer's own source column (CARVE-P2-035).
-    const c = PURE_FENCE.exec(refusedFollower ? indentCols(lines[j]).rest : lines[j])
+    const c = PURE_FENCE.exec(lines[j])
     if (!c || c[1][0] !== ch) continue
     if (c[1].length < run.length) continue // shorter run: content (the `where` guard)
     return j

@@ -20,3 +20,4 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+1014-an-indented-closer-protects-a-refused-run-s-fence-follower  CARVE-P2-035 / carve#5600: the pinned JavaScript writer turns the protected fence follower into a one-backtick inline span whose indented quote line the spec model reads differently.
