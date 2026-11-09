@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, NUMBER_JOINER, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, withSafeRawInline, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, NUMBER_JOINER, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -111,11 +111,13 @@ function renderTextBlockAttrs(lists, tag) {
   })
 }
 
-export function renderDoc(doc) {
+export function renderDoc(doc, { safe = false } = {}) {
+  const render = () => withRawFrames(() => renderFramedDoc(doc, safe))
+  const renderWithPolicy = () => safe ? withSafeRawInline(render) : render()
   const shield = shieldAuthoredFrames(doc)
-  if (!shield) return withRawFrames(() => renderFramedDoc(doc))
+  if (!shield) return renderWithPolicy()
   try {
-    return shield.restore(withRawFrames(() => renderFramedDoc(doc)))
+    return shield.restore(renderWithPolicy())
   } finally {
     mapDocStrings(doc, shield.restore)
   }
@@ -180,8 +182,8 @@ function mapDocStrings(doc, map) {
   visit(doc)
 }
 
-function renderFramedDoc(doc) {
-  return renderDocPass(doc, false)
+function renderFramedDoc(doc, safe) {
+  return renderDocPass(doc, false, safe)
 }
 
 // PART 9R frames in rendered inline text, an inline note's content included.
@@ -314,7 +316,7 @@ function reserveHeadingIds(blocks) {
   return { byHeading, used }
 }
 
-function renderDocPass(doc, footnoteProbe) {
+function renderDocPass(doc, footnoteProbe, safe) {
   // A placed title takes an adm id before its authored children, and a marker
   // with no resolved note renders as a div one level deeper. Check whether a
   // note actually resolves first; only documents with a top-level marker or a
@@ -334,10 +336,11 @@ function renderDocPass(doc, footnoteProbe) {
   })
   const needsProbe = !footnoteProbe && (hasNoteHeading || doc.blocks.some((b) =>
     b.t === 'footnotes-placement'))
-  const probe = needsProbe ? renderDocPass(doc, true) : null
+  const probe = needsProbe ? renderDocPass(doc, true, safe) : null
   const hasResolvedNotes = probe?.hasResolvedNotes ?? null
   const reserved = reserveHeadingIds(doc)
   const ctx = {
+    safe,
     headingIdByBlock: reserved.byHeading,
     mintAdmId() {
       const base = `adm-${++this.admCount}`
@@ -936,6 +939,7 @@ function renderBlock(b, depth, ctx) {
       // something the source did not. Padding EVERY line was indistinguishable
       // from this on the single-line raw blocks the corpus used to hold, which
       // is how three engines gave three answers (carve#800).
+      if (ctx.safe && b.format === 'html') return renderBlock({ ...b, t: 'code', lang: b.format }, depth, ctx)
       return rawFrame(b.format === 'html' ? pad + rawPassthrough(b.text) : null)
     case 'heading': {
       // a heading inside a container: no section wrapper (§13 wraps

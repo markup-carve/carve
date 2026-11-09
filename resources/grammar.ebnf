@@ -5676,6 +5676,13 @@ EOF = (* end of file *) ;
       and combined spans are not atoms; P2 finds them, so an attribute block
       that a bare closer has not taken is visible to them: in ={_a={c_} the
       `{_` forms and the `=` closes nothing.
+      A literal bracket run still bounds its content. An attribute candidate
+      cut by that boundary cannot attach to a host inside the run and remains
+      text: [t[x](/u){title="]"}y](/z) renders the inner link without a
+      title and leaves `{title="]"}` literal. When a bracket run declines,
+      its failed attribute tail claims nothing. P1 may then take an editorial
+      comment beginning at the same brace: [[][[]]{#1}][]#} renders the
+      `{#1}][]#}` suffix as an editorial comment.
 
       KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
         emphasis        /      {/ /}      after the closer
@@ -7499,6 +7506,13 @@ EOF = (* end of file *) ;
         make safe handling the default for untrusted input; a processor that
         emits raw passthrough by default MUST document that its input is
         trusted.
+        This opt-out is SAFE MODE. It changes the disposition of raw content,
+        not URL or attribute hardening, which apply in both modes. A raw block
+        for the output format uses PART 10 §6's escaped code-block form with
+        its recorded format as the language; a raw inline for the output
+        format emits escaped literal text. Raw content for another format
+        remains omitted. The spec model's `renderDoc(doc, { safe: true })`
+        selects this mode; its default is raw passthrough for HTML.
       - URL TEMPLATE ENCODING. Any value taken from document content (mention
         name, tag, citation key, crossref id) and substituted into a
         configured URL template MUST be percent-encoded before substitution,

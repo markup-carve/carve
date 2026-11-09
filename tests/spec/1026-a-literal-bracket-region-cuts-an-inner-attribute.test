@@ -1,0 +1,7 @@
+A literal bracket region cuts an inner attribute
+
+```
+[t[x](/u){title="]"}y](/z)
+.
+<p>[t<a href="/u">x</a>{title=“]”}y](/z)</p>
+```
