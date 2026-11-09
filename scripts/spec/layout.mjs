@@ -6593,9 +6593,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (CONT_MARKER.test(cur)) {
               // A marker offered to its sibling is refused. Do not turn that
               // refusal into a blank separator inside the description's list.
+              // An empty first block has no open item paragraph; its `+`
+              // still belongs to the description and keeps its boundary.
               const previous = lastBodyListMarker
               const offered = matchMarkerAt(ind(i + 1))
-              if (previous && offered && previous.indent === offered.indent && sameAxes(markerAxes(previous), offered)) {
+              if (previous && opensParagraph(previous.text, true) && offered &&
+                  previous.indent === offered.indent && sameAxes(markerAxes(previous), offered)) {
                 i++
                 attachPending = true
                 continue
