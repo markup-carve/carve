@@ -3958,7 +3958,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A span in a line-block payload pairs past the column too (carve-php#3137).
         const f = FENCE.exec(m.rest)
         const comment = COMMENT_FENCE_BODY.exec(m.rest)
-        if (f && parseFenceInfo(f[2], f[1]) !== null && (closerRuns().widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
+        if (f && parseFenceInfo(f[2], f[1]) !== null && (closerRuns(quotePrefix(lines[at]).depth).widest[f[1][0]][at + 1] ?? 0) >= f[1].length) inner.span = f[1]
         else if (comment) inner.span = comment[1]
       }
       // A verse span leaves the stanza as it found it (CARVE-P9-047, carve#4956).
@@ -4918,17 +4918,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
 
   // Closer lookahead in one pass: the widest pure fence run of each character
   // at or after every line.
-  function closerRuns() {
-    if (runs) return runs
-    runs = { widest: { '`': new Array(lines.length + 1).fill(0), '~': new Array(lines.length + 1).fill(0) } }
+  function closerRuns(depth) {
+    runs ??= new Map()
+    if (runs.has(depth)) return runs.get(depth)
+    const indexed = { widest: { '`': new Array(lines.length + 1).fill(0), '~': new Array(lines.length + 1).fill(0) } }
     for (let j = lines.length - 1; j >= 0; j--) {
+      if (quotePrefix(lines[j]).depth < depth) continue
       const rest = quotedRest(lines[j])
-      runs.widest['`'][j] = runs.widest['`'][j + 1]
-      runs.widest['~'][j] = runs.widest['~'][j + 1]
+      indexed.widest['`'][j] = indexed.widest['`'][j + 1]
+      indexed.widest['~'][j] = indexed.widest['~'][j + 1]
       const c = PURE_FENCE.exec(rest)
-      if (c) runs.widest[c[1][0]][j] = Math.max(runs.widest[c[1][0]][j], c[1].length)
+      if (c) indexed.widest[c[1][0]][j] = Math.max(indexed.widest[c[1][0]][j], c[1].length)
     }
-    return runs
+    runs.set(depth, indexed)
+    return indexed
   }
 
   function quotedRest(line) {
