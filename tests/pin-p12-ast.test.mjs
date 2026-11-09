@@ -85,6 +85,13 @@ test('CARVE-P12-041 replaces NUL in ingested string values', () => {
   assert.equal(toAstJson(decoded).children[0].children[0].value, 'a\uFFFDb')
 })
 
+test('CARVE-P12-025 keeps frontmatter as raw source text', () => {
+  const frontmatter = tree('---\ntitle: [unclosed\n---\n').children[0]
+  assert.equal(frontmatter.type, 'frontmatter')
+  assert.equal(frontmatter.format, 'yaml')
+  assert.equal(frontmatter.content, 'title: [unclosed')
+})
+
 test('CARVE-P12-044 retains an ingested blockImage value', () => {
   const document = { type: 'document', srcByteLength: 0, children: [
     { type: 'paragraph', blockImage: true, children: [
