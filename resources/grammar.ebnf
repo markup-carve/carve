@@ -7479,7 +7479,15 @@ EOF = (* end of file *) ;
         `{title="Shell: bash"}` renders `title=""`; and MUST blank any `style`
         value containing `expression(`, `url(`, `@import`, `behavior:`, or
         `-moz-binding` (all whitespace removed first, so `ex pression(`
-        matches, and ASCII-case-insensitively, so `URL(` does). An authored value is one written in an attribute block or
+        matches, and ASCII-case-insensitively, so `URL(` does).
+        For the `style` probe, CSS escapes in the emitted value are decoded
+        before whitespace removal and pattern matching. A backslash followed
+        by one to six hexadecimal digits decodes that code point and consumes
+        one following whitespace terminator if present; a backslash followed
+        by another character decodes that character, and an escaped newline
+        contributes nothing. The decoded text is only the probe input: an
+        allowed value retains its authored spelling when emitted.
+        An authored value is one written in an attribute block or
         one an extension copies onto its wrapper element: an extension MUST
         route authored attributes through the same hardening and MUST NOT
         emit them raw. `id` and the id slot are not URL sinks and are not

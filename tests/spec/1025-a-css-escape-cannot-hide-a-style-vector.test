@@ -1,0 +1,25 @@
+A CSS escape cannot hide a style vector
+
+```
+[a]{style="background:u\rl(https://x/)"}
+.
+<p><span style="">a</span></p>
+```
+
+```
+[a]{style="background:\75 rl(x)"}
+.
+<p><span style="">a</span></p>
+```
+
+```
+[a]{style="background:URL\28 x)"}
+.
+<p><span style="">a</span></p>
+```
+
+```
+[a]{style="background:ex\70 ression(x)"}
+.
+<p><span style="">a</span></p>
+```

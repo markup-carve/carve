@@ -789,13 +789,27 @@ const urlListIsClean = (separator, value) =>
 // leading scheme is denylisted, and a URL-list value with a denylisted scheme
 // in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
+// CSS parses escapes before recognizing identifiers and functions. Probe that
+// interpretation, while retaining the authored spelling if it is allowed.
+const CSS_ESCAPE = /\\(?:([0-9a-f]{1,6})(?:\r\n|[ \t\r\n\f])?|(\r\n|[\r\n\f])|([\s\S]))/gi
+function decodeCssEscapes(value) {
+  return value.replace(CSS_ESCAPE, (_match, hex, newline, character) => {
+    if (hex) {
+      const codePoint = Number.parseInt(hex, 16)
+      return codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)
+        ? '\ufffd'
+        : String.fromCodePoint(codePoint)
+    }
+    return newline ? '' : character === '\0' ? '\ufffd' : character
+  })
+}
 function hardenAttr(name, value) {
   const n = name.toLowerCase()
   if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') return null
   if (value !== '' && checkUrl(value) === '') return { name, value: '' }
   const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
   if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
-  if (n === 'style' && STYLE_VECTOR.test(value.replace(STRIP_FRAMES, '').replace(/\s+/g, ''))) return { name, value: '' }
+  if (n === 'style' && STYLE_VECTOR.test(decodeCssEscapes(value.replace(STRIP_FRAMES, '')).replace(/\s+/g, ''))) return { name, value: '' }
   return { name, value }
 }
 
