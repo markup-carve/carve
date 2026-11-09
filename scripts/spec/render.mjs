@@ -105,12 +105,17 @@ function extensionClose(source, at) {
 }
 function softHiding(source) {
   const soft = new Uint8Array(source.length)
+  const crossrefs = forcedCrossrefs(source)
   const braces = [0]
   for (let i = 0; i < source.length; i++) braces.push(braces[i] + (source[i] === '{' || source[i] === '}' ? 1 : 0))
   const open = []
   for (let i = 0; i < source.length; ) {
     const c = source[i]
-    if (c === '\\') {
+    const refEnd = crossrefs.get(i) ?? -1
+    if (refEnd !== -1) {
+      soft.fill(1, i, refEnd)
+      i = refEnd
+    } else if (c === '\\') {
       i += 2
     } else if (c === '[' && opensExtension(source, i) && extensionClose(source, i) !== -1) {
       i = extensionClose(source, i) + 1
@@ -136,6 +141,44 @@ function softHiding(source) {
     } else i++
   }
   return soft
+}
+function forcedCrossrefs(source) {
+  const refs = new Map()
+  const marks = []
+  const nextStop = new Int32Array(source.length + 1)
+  nextStop[source.length] = source.length
+  for (let i = source.length - 1; i >= 0; i--) {
+    nextStop[i] = source[i] === '>' || source[i] === ' ' || source[i] === '\n' ? i : nextStop[i + 1]
+  }
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '`' && !escapedAt(source, i)) {
+      let width = 1
+      while (source[i + width] === '`') width++
+      let close = -1
+      for (let j = i + width; j < source.length && close === -1;) {
+        let run = 0
+        while (source[j + run] === '`') run++
+        if (run === width) close = j
+        j += run || 1
+      }
+      if (close === -1) break
+      i = close + width - 1
+      continue
+    }
+    const stop = nextStop[i + 3] ?? source.length
+    const end = source.startsWith('</#', i) && !escapedAt(source, i) && stop > i + 3 && source[stop] === '>' ? stop + 1 : -1
+    if (end !== -1 && NESTING_MARKS.has(marks.at(-1))) {
+      refs.set(i, end)
+      i = end - 1
+    } else if (source[i] === '{' && !escapedAt(source, i)) {
+      marks.push(source[i + 1])
+      i++
+    } else if (source[i + 1] === '}' && marks.at(-1) === source[i]) {
+      marks.pop()
+      i++
+    }
+  }
+  return refs
 }
 // PART 9 §22 DEPTH LIMIT: a braced span past the depth budget left to this run
 // is one literal atom, so neither the match nor its semantics recurse into it.
@@ -205,9 +248,15 @@ const indexClosers = (source) => {
     const openers = []
     const last = new Map()
     const soft = softHiding(source)
+    const crossrefs = forcedCrossrefs(source)
     const otherBefore = [0]
     for (let i = 0; i < source.length; i++) otherBefore.push(otherBefore[i] + (!soft[i] && HIDING.test(source[i]) ? 1 : 0))
     for (let i = 0; i < source.length; i++) {
+      const refEnd = crossrefs.get(i) ?? -1
+      if (refEnd !== -1) {
+        i = refEnd - 1
+        continue
+      }
       if (source[i] === '{' && source[i - 1] !== '\\') {
         const mark = source[i + 1]
         if (!stacks.has(mark)) stacks.set(mark, [])
