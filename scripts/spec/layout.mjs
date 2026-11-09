@@ -1835,7 +1835,7 @@ function refusedBlockBraceRun(lines, start, cache) {
 
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
-function refusedRunKeptThrough(lines, start, cache, containerCol = 0) {
+function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody = false) {
   let runEnd = refusedBlockBraceRun(lines, start, cache)
   if (runEnd === null) return null
   // PART 0 S1 erases a comment or link definition line first, so the follower is the line after it.
@@ -1846,14 +1846,22 @@ function refusedRunKeptThrough(lines, start, cache, containerCol = 0) {
   if (measured.col < containerCol && !readsAsProse(measured.rest)) return runEnd - 1
   const fence = FENCE.exec(measured.rest)
   if (!fence || parseFenceInfo(fence[2], fence[1]) === null) return runEnd
-  // The paragraph still ends at a blank; a fence with no closer at all is the follower alone.
-  let blank = -1
+  // A matching closer before the blank keeps every intervening line inside
+  // the inline span. Without one, ordinary I1-I5 can end the paragraph.
+  let interrupt = -1
   for (let j = runEnd + 1; j < lines.length; j++) {
-    if (blank < 0 && isBlank(lines[j])) blank = j
-    const closer = PURE_FENCE.exec(indentCols(lines[j]).rest)
-    if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return blank < 0 ? j : blank - 1
+    if (isBlank(lines[j])) return interrupt < 0 ? j - 1 : interrupt - 1
+    const rest = indentCols(lines[j]).rest
+    const closer = PURE_FENCE.exec(rest)
+    if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return j
+    if (interrupt < 0 && (startsParagraphBlock(rest) || isCodeBlockOpener(rest) || isColonBlockOpener(rest) ||
+        markerBody && matchMarkerAt(indentCols(lines[j])) ||
+        COMMENT_FENCE_BODY.test(rest) || rest[0] === '{' && tryAttrLine([rest], 0))) interrupt = j
   }
-  return runEnd
+  if (interrupt >= 0) return interrupt - 1
+  // With no closer, a backtick opener is an unclosed inline code run. Its
+  // payload remains in the paragraph up to its next boundary (CARVE-P2-035).
+  return fence[1][0] === '`' ? lines.length - 1 : runEnd
 }
 
 const readsAsProse = (rest) => opensParagraph(rest, true) && !FENCE.test(rest) && !COLON_FENCE.test(rest) && rest[0] !== '{'
@@ -8414,16 +8422,19 @@ const heldMeasure = (lines, row) => {
   return held && !held.tabs && line.length - held.rest.length === held.col ? held : indentCols(line)
 }
 
-function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false) {
+function firstBlockEnd(lines, start, limit, state, sourceColumns, readColumn = 0, quoteHost = false, markerBody = false) {
   if (limit - start <= 1) return limit
-  // The ownership walk may frame a refused attribute closer as a lazy line.
-  // Reconstruct its authored column before measuring the paragraph it keeps.
-  const refusedSource = readColumn === 0 && indentCols(lines[start]).rest.startsWith('{')
-    ? lines.slice(start, limit).map((line, offset) => line.includes(LAZY)
-      ? ' '.repeat(authoredBraceColumns.get(lines)?.[start + offset] ?? heldMeasure(lines, start + offset).sourceCol ?? 0) + stripLazy(stripLazyLead(line))
-      : line)
+  // The ownership walk can move the opener to a host's marker column and frame
+  // its closer as lazy text. Restore both authored columns before deciding
+  // whether the run refused and how far its paragraph reaches.
+  const refusedSource = indentCols(lines[start]).rest.startsWith('{')
+    ? lines.slice(start, limit).map((line, offset) => offset === 0
+      ? ' '.repeat(authoredBraceColumns.get(lines)?.[start] ?? heldMeasure(lines, start).sourceCol ?? indentCols(line).col) + indentCols(line).rest
+      : line.includes(LAZY)
+        ? ' '.repeat(authoredBraceColumns.get(lines)?.[start + offset] ?? heldMeasure(lines, start + offset).sourceCol ?? 0) + stripLazy(stripLazyLead(line))
+        : line)
     : null
-  const refusedThrough = refusedSource === null ? null : refusedRunKeptThrough(refusedSource, 0, { commentScannedThrough: -1 })
+  const refusedThrough = refusedSource === null ? null : refusedRunKeptThrough(refusedSource, 0, { commentScannedThrough: -1 }, 0, markerBody)
   // Measure the block at the column it is read at: `  # H` is a heading there.
   // A line below that column can only fold lazily (§10 I2), and a fence there
   // folds only without a closer (§10 I4); any other line ends the block.
@@ -8684,7 +8695,7 @@ function attachedBlockEnd(lines, start, state, endsAttachment, readColumn = 0, q
     // firstBlockEnd answers it (carve#4148).
     const cap = Math.min(lines.length, lines.length - 16 * Math.floor((lines.length - start - width) / 16))
     const limit = oneBlockEnd(lines, start, endsAttachment, cap)
-    const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn, quoteHost)
+    const end = firstBlockEnd(lines, start, limit, state, undefined, readColumn, quoteHost, !quoteHost)
     if (limit < cap || cap >= lines.length) return end
     if (end < limit && !lines.slice(start, limit).some((line) => LOOKAHEAD_SHAPE.test(line))) return end
   }

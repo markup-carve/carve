@@ -1,0 +1,1 @@
+CARVE-P2-035 / carve#5549: the pinned JavaScript engine keeps a trailing newline in the unclosed inline code span; the spec model and corpus omit it.
