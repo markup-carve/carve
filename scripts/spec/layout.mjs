@@ -4706,7 +4706,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const rest = trimWs(level.rest)
     // A line of nothing but quote markers is blank at its own level: it holds no block.
     if (/^(?:>[ \t]*)*$/.test(rest) || docColumn(lines[next], trimWsStart(level.rest)) !== column) return false
-    if (COLON_CLOSER.test(rest) && frames.some((f) => f.kind === 'colon' && f.run === COLON_FENCE.exec(rest)[1].length)) return false
+    const innermostColon = frames.slice(0, hostIndex + 1).findLast((f) => f.kind === 'colon')
+    if (COLON_CLOSER.test(rest) && innermostColon?.run === COLON_FENCE.exec(rest)[1].length) return false
     if (kind === 'item' && matchMarkerAt({ col: 0, rest })) return false
     if (kind === 'dd' && (DEFLIST_TERM.test(rest) || /^:( +)(?=[ \t]*[^ \t])/.test(rest))) return false
     return true
@@ -4983,10 +4984,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (QUOTE.test(rest)) return { kind: 'quote', interrupts: true }
     const colon = COLON_FENCE.exec(rest)
     if (colon && COLON_CLOSER.test(rest)) {
-      // A closer is read in its owner: only a colon body at the reached depth,
-      // or holding it directly, can take it.
-      for (let k = reach; k > 0 && frames[k].kind === 'colon'; k--) {
-        if (frames[k].run === colon[1].length) return { kind: 'colon-close', frame: k, interrupts: true }
+      // Only the innermost reached colon body can close. A different-width
+      // run opens a nested body, even when it matches an outer colon.
+      if (frames[reach]?.kind === 'colon' && frames[reach].run === colon[1].length) {
+        return { kind: 'colon-close', frame: reach, interrupts: true }
       }
     }
     if (colon && parseColonOpener(colon[2]) !== null) {
