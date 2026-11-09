@@ -11,6 +11,13 @@ test('reference labels contribute before resolution in headings and task names',
   assert.match(html('- [x] done [a][missing]'), /aria-label="done a"/)
 })
 
+test('nested reference labels contribute at every depth to heading text', () => {
+  assert.equal(html('# a [[x][]][]'), '<section id="a-x">\n  <h1>a [[x][]][]</h1>\n</section>')
+  assert.equal(html('# [[x][]][]'), '<section id="x">\n  <h1><a href="#x">x</a></h1>\n</section>')
+  assert.equal(html('# z [[[x][]][]][]'), '<section id="z-x">\n  <h1>z [[[x][]][]][]</h1>\n</section>')
+  assert.equal(html('# a [[x][]][]\n\n[a x][]'), '<section id="a-x">\n  <h1>a [[x][]][]</h1>\n  <p><a href="#a-x">a x</a></p>\n</section>')
+})
+
 test('a promoted image in a definition body uses block layout', () => {
   assert.match(html(':: term\n:  ![alt](url)'), /<dd>\n    <img src="url" alt="alt">\n  <\/dd>/)
   assert.match(html(':: term\n:  text'), /<dd>text<\/dd>/)

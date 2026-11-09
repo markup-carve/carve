@@ -1795,12 +1795,18 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
 function derivedText(source, render = renderInlineWithoutSymbols) {
-  const html = render(source)
-    .replace(REF_FRAME, (_frame, json) => {
+  let html = render(source)
+  // A reference's text can itself hold a reference frame. Unwrap each level
+  // before stripping tags or excluding the other atomic inline frames.
+  let previous
+  do {
+    previous = html
+    html = html.replace(REF_FRAME, (_frame, json) => {
       const ref = JSON.parse(json)
       return ref.img ? ref.alt : ref.text
     })
-    .replace(/\uE000[\s\S]*?\uE001/g, '')
+  } while (html !== previous)
+  html = html.replace(/\uE000[\s\S]*?\uE001/g, '')
     .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>(?:\\\((.*?)\\\)|\\\[(.*?)\\\])<\/span>/gs, '$1$2')
     // An image's plain-text projection is its alternative text. Preserve it
     // before the generic tag strip removes the `<img>` leaf altogether.
