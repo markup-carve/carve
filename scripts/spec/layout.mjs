@@ -3596,6 +3596,22 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let endedPulledFence = null
   let blankInAttachedCode = null
   const laterCloserCache = new Map()
+  const laterSourceCloser = (at, run, col, depth) => {
+    const key = `source:${at}:${col}:${depth}:${run}`
+    if (laterCloserCache.has(key)) return laterCloserCache.get(key)
+    for (let next = at + 1; next < lines.length; next++) {
+      const level = stripQuotes(lines[next], depth)
+      if (level === null) break
+      const measured = walkIndent(level.rest)
+      const close = measured.col <= col && PURE_FENCE.exec(measured.rest)
+      if (close && close[1][0] === run[0] && close[1].length >= run.length) {
+        laterCloserCache.set(key, true)
+        return true
+      }
+    }
+    laterCloserCache.set(key, false)
+    return false
+  }
   let start = 0
   if (allowFrontmatter && lines[0] !== undefined && FRONTMATTER_OPENER.test(lines[0])) {
     const close = lines.findIndex((line, k) => k > 0 && /^---[ \t]*$/.test(line))
@@ -4256,7 +4272,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     } else {
       // A later fence-shaped line keeps the column at which the host reads it.
       // Normalizing it to the document column can manufacture a closer.
-      lead(blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col ? m.col : owner.canon,
+      const laterRun = blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col
+      const run = laterRun ? FENCE.exec(m.rest)?.[1] : null
+      const keepColumn = run && !laterSourceCloser(at, run, m.col, quotePrefix(lines[at]).depth)
+      lead(keepColumn ? m.col : owner.canon,
         form.kind === 'term' || form.kind === 'dd')
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
