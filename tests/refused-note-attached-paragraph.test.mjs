@@ -22,3 +22,17 @@ test('a fence follower and its closer stay in the note paragraph', () => {
   assert.match(output, /<p>\{\.x\n\.y\}\n<code>\nwa\n<\/code><a href=/)
   assert.doesNotMatch(output, /<pre>/)
 })
+
+test('a refused run keeps plain text after its block-shaped follower in a note', () => {
+  for (const follower of ['# h', '{.z}', ':: d', '| a |']) {
+    const output = html(`r[^a]\n\n[^a]: +\n{.x\n.y}\n${follower}\nb\n`)
+    assert.match(output, /\.y\}\n[^<]*\nb<a href="#fnref1" role="doc-backlink"/)
+    assert.doesNotMatch(output, /<p>b<\/p>/)
+  }
+})
+
+test('a refused run keeps a marker-column follower in a nested note', () => {
+  const output = html('- x\n  [^a]: +\n  {.x\n  .y}\n  - li\n\nsee[^a]\n')
+  assert.match(output, /<p>\{\.x\n\.y\}\n- li<a href="#fnref1" role="doc-backlink"/)
+  assert.doesNotMatch(output, /<li>li<\/li>/)
+})
