@@ -75,8 +75,9 @@ attribute = language_attribute | id_attribute | class_attribute
    with no empty subtag and no leading or trailing hyphen. Tags are stored
    EXACTLY as authored -- BCP 47 comparison is case-insensitive but parsing and
    formatting do not change case. A candidate that fails this envelope is not
-   a partially consumed attribute: the whole block stays literal (PART 9 §14),
-   so `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` are literal source.
+   a partially consumed attribute: the whole block is not an attribute and
+   renders as text under the ordinary inline pass (PART 9 §14). This applies
+   to `{:en_US}`, `{:en--GB}`, `{:-en}` and `{:français}` alike.
 
    LANGUAGE NEVER IMPLIES WRITING DIRECTION. No tag produces `dir` in either
    direction. Authors use HTML's independent
