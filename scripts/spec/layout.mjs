@@ -3821,23 +3821,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // A colon closer in the host keeps the attached block open across a
         // blank. Measure the same source-column view that the block reader uses.
         const colon = COLON_FENCE.exec(level(at + opener).rest)
-        if (colon && parseColonOpener(colon[2]) !== null) {
+        if (trace && colon && parseColonOpener(colon[2]) !== null) {
           const viewed = []
-          let blank = false
           for (let k = at + opener; k < lines.length; k++) {
             const line = stripQuotes(lines[k], prefixes)
             if (!line) break
             const ind = walkIndent(line.rest)
             if (k > at + opener && ind.rest !== '' && ind.col < plusHost.col) break
             // A sibling list marker at the host's content column ends an
-            // unclosed attachment before any later colon-shaped line.
-            if (blank && ind.col === plusHost.col &&
+            // attached block before any later colon-shaped line.
+            if (k > at + opener && ind.col === plusHost.col &&
                 (isBulletLine(ind.rest) || isOrderedMarkerLine(ind.rest))) break
             viewed.push(ind.rest)
-            if (ind.rest === '') blank = true
           }
           const close = findColonCloser(viewed, 0, colon[1].length)
-          if (trace && close !== -1) attachedColonTraces.push({
+          if (close !== -1) attachedColonTraces.push({
             start: at + opener + 1,
             end: at + opener + close + 1,
             from: ownerPath(),

@@ -26,6 +26,11 @@ test('a sibling item after the blank keeps the reader structure', () => {
   assert.equal(blocks[0].items[0].blocks[0].children[0].t, 'list')
 })
 
+test('a sibling before the blank does not change parsed blocks with tracing', () => {
+  const source = '- +\n::: x\n  - child\n  :::\n'
+  assert.deepEqual(parse(source, { trace: [] }).blocks, parse(source).blocks)
+})
+
 test('correcting the trace does not change list looseness or the parsed blocks', () => {
   const source = '- +\n::: x\n\n  a\n  :::\n  after\n'
   const trace = []
