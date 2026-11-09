@@ -3569,7 +3569,16 @@ function advanceInlineCode(owner, text) {
   let brackets = owner.inlineBrackets ?? 0
   const delimiters = owner.inlineDelimiters ?? { '*': 0, '_': 0, '~': 0, '^': 0 }
   let carrierAt = -1
+  let linkSlot = owner.inlineLinkSlot ?? null
   for (let k = 0; k < text.length; k++) {
+    if (linkSlot) {
+      if (text[k] === '\\') { k++; continue }
+      if (linkSlot.quote) { if (text[k] === linkSlot.quote) linkSlot.quote = null; continue }
+      if (linkSlot.depth === 1 && text[k] === ' ' && (text[k + 1] === '"' || text[k + 1] === "'")) { linkSlot.quote = text[++k]; continue }
+      if (text[k] === '(') linkSlot.depth++
+      else if (text[k] === ')' && --linkSlot.depth === 0) { linkSlot = null; carrierAt = k + 1 }
+      continue
+    }
     if (comment) {
       if (text[k] === '%' && text[k + 1] === '}') { comment = false; k++ }
       continue
@@ -3599,6 +3608,10 @@ function advanceInlineCode(owner, text) {
         if (depth === 0) {
           const destination = text.slice(k + 2, end - 1)
           if (inlineLinkSlot(destination)) { k = end - 1; carrierAt = end; continue }
+        } else if (titleQuote) {
+          linkSlot = { depth, quote: titleQuote }
+          k = end - 1
+          continue
         }
       }
       continue
@@ -3632,6 +3645,7 @@ function advanceInlineCode(owner, text) {
   owner.inlineCommentOpen = comment
   owner.inlineBrackets = brackets
   owner.inlineDelimiters = delimiters
+  owner.inlineLinkSlot = linkSlot
 }
 
 function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
@@ -4322,7 +4336,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // It meets the `+` where the walk moved it (PART 0 S3).
       lead(lonePlus.markerCanon)
       result.push(out + src)
-      if (!lonePlus.para) { lonePlus.inlineCodeRun = 0; lonePlus.inlineCommentOpen = false; lonePlus.inlineBrackets = 0; lonePlus.inlineDelimiters = null }
+      if (!lonePlus.para) { lonePlus.inlineCodeRun = 0; lonePlus.inlineCommentOpen = false; lonePlus.inlineBrackets = 0; lonePlus.inlineDelimiters = null; lonePlus.inlineLinkSlot = null }
       lonePlus.para = true
       advanceInlineCode(lonePlus, m.rest)
       lonePlus.last = 'para'
@@ -4353,7 +4367,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       owner.inlineCodeRun = 0
       owner.inlineCommentOpen = false
       owner.inlineBrackets = 0
-      owner.inlineDelimiters = null
+      owner.inlineDelimiters = null; owner.inlineLinkSlot = null
       lead(m.col)
     } else if (form.kind === 'colon-close') {
       lead(frames[form.frame].canon)
@@ -4362,7 +4376,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       top().para = false
       top().last = 'block'
     } else if (form.kind === 'text') {
-      if (!owner.para) { owner.inlineCodeRun = 0; owner.inlineCommentOpen = false; owner.inlineBrackets = 0; owner.inlineDelimiters = null }
+      if (!owner.para) { owner.inlineCodeRun = 0; owner.inlineCommentOpen = false; owner.inlineBrackets = 0; owner.inlineDelimiters = null; owner.inlineLinkSlot = null }
       // A new paragraph starts at the owner's column, never inside a frame
       // that line did not reach.
       // A separator after a `+` moved onto the owner meets it where its term stood.
@@ -4438,7 +4452,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         owner.inlineCodeRun = 0
         owner.inlineCommentOpen = false
         owner.inlineBrackets = 0
-        owner.inlineDelimiters = null
+        owner.inlineDelimiters = null; owner.inlineLinkSlot = null
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
@@ -4589,7 +4603,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
         frame.para = !quotedRefusedNote && frame.plus !== at &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
-        if (!frame.para) { frame.inlineCodeRun = 0; frame.inlineCommentOpen = false; frame.inlineBrackets = 0; frame.inlineDelimiters = null }
+        if (!frame.para) { frame.inlineCodeRun = 0; frame.inlineCommentOpen = false; frame.inlineBrackets = 0; frame.inlineDelimiters = null; frame.inlineLinkSlot = null }
         advanceInlineCode(frame, m.rest)
         frame.last = 'para'
         return

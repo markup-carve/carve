@@ -50,3 +50,7 @@ for (const prefix of ['p)', 'p]', 'p>', 'p*']) {
 test('a multiline emphasis span owns the backtick in its attached attribute (#5618)', () => {
   assert.equal(html('p *hi\nthere*{title="`"}\n{.x}\ntail\n'), '<p>p <strong title="`">hi\nthere</strong></p>\n<p class="x">tail</p>')
 })
+
+test('a backtick in a multiline link title does not open code (#5618)', () => {
+  assert.equal(html('p [x](/url "a\n`b")\n{.x}\ntail\n'), '<p>p <a href="/url" title="a\n`b">x</a></p>\n<p class="x">tail</p>')
+})
