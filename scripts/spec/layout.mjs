@@ -941,6 +941,9 @@ function splitRow(line, openRun = 0, openRunAt = 0) {
       continue
     }
     if (c === '|' && (!inCode || i === closerIdx)) {
+      // The final `\|` closes the row, but an open code run keeps both
+      // characters verbatim in its cell (CARVE-P2-019 rule 3).
+      if (inCode && i === closerIdx && s[i - 1] === '\\') cur += '|'
       cells.push(cur)
       cur = ''
       // The closer opens no column, so a run still open there stays open.

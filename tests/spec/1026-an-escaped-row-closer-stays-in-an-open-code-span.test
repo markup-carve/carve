@@ -1,0 +1,32 @@
+An escaped row closer stays in an open code span
+
+```
+|`\|
+.
+<table>
+  <tbody>
+    <tr><td><code>\|</code></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a | ``b\|
+.
+<table>
+  <tbody>
+    <tr><td>a</td><td><code>b\|</code></td></tr>
+  </tbody>
+</table>
+```
+
+```
+| a `b |
++ c\|
+.
+<table>
+  <tbody>
+    <tr><td>a <code>b c\|</code></td></tr>
+  </tbody>
+</table>
+```
