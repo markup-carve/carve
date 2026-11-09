@@ -4379,6 +4379,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
       if (!invisibleInEntry) {
         owner.para = !!form.caption
+        if (form.caption) owner.paraFrom = at
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
