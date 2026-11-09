@@ -683,3 +683,42 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* Playground page: no sidebar or aside, so the tool takes the full width. */
+.playground-page .VPDoc:not(.has-sidebar) .container {
+  max-width: 1440px;
+}
+.playground-page .VPDoc:not(.has-sidebar) .content,
+.playground-page .VPDoc .content-container {
+  max-width: none;
+}
+.playground-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  gap: 24px;
+  align-items: start;
+  margin: 16px 0;
+}
+.playground-intro > p {
+  margin: 0;
+}
+.playground-notes {
+  display: grid;
+  gap: 8px;
+}
+.playground-notes > .custom-block.details {
+  margin: 0;
+  padding: 6px 12px;
+}
+.playground-notes > .custom-block.details > summary {
+  margin: 0;
+}
+.playground-notes > .custom-block.details[open] > summary {
+  margin-bottom: 8px;
+}
+@media (max-width: 767px) {
+  .playground-intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+}

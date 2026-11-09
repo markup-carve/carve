@@ -2,15 +2,19 @@
 title: Playground
 description: Live Carve to HTML preview, in your browser.
 aside: false
+sidebar: false
+pageClass: playground-page
 ---
 
 # Playground
 
-Type Carve on the left. The rendered result and generated HTML appear on the
-right. Processing happens in your browser; the document is not sent to a
-server. The playground uses the [JavaScript
-parser](https://github.com/markup-carve/carve-js) tested by this project's
-shared input/output tests.
+<div class="playground-intro">
+
+Type Carve on the left. The rendered result and generated HTML appear on the right.\
+Processing happens in your browser; the document is not sent to a server.\
+The playground uses the [JavaScript parser](https://github.com/markup-carve/carve-js) tested by this project's shared input/output tests.
+
+<div class="playground-notes">
 
 ::: details Formatting the source
 **Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The selected engine does the formatting: in Rust mode the bundled WASM build runs its own writer.
@@ -21,6 +25,10 @@ The **share button** in the toolbar puts the whole document in the URL fragment,
 
 **Opening someone else's link.** A document that arrives in a link renders with **raw HTML disabled**: raw blocks show as escaped text instead of running. A link is written by whoever sent it, and enabling raw HTML would make one a way to run script on this site. A link made in Rust mode opens on the JavaScript engine if the bundled Rust engine cannot disable raw HTML or fails to load. The output may then differ from what the sender saw. Reload the playground without the fragment for a normal session.
 :::
+
+</div>
+
+</div>
 
 <Playground />
 
