@@ -1,7 +1,3 @@
----yaml
-page: edge-lists
----
-
 ## A new list after a note-attached list
 
 PART 9 §17 L3 offers one block to the note, and §11 N1 makes a different marker type a new sibling list (carve#5559).

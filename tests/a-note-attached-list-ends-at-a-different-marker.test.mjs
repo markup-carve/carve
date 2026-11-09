@@ -26,3 +26,15 @@ test('a different marker inside an open child fence remains payload', () => {
   const output = html('[^a]: +\n- li\n  ```\n  * payload\n\nsee[^a]\n')
   assert.match(output, /<pre><code>\* payload\n\n<\/code><\/pre>/)
 })
+
+test('leading attributes remain with the first list, not its new sibling', () => {
+  const output = html('[^a]: +\n{#id}\n* li\n- sib\n\nsee[^a]\n')
+  assert.match(output, /^<ul>\n  <li>sib<\/li>\n<\/ul>/)
+  assert.match(output, /<li id="fn1">\n      <ul id="id">\n        <li>li<\/li>/)
+})
+
+test('a resolved ordered dialect ends before a different dialect', () => {
+  const output = html('[^a]: +\ni) one\nii) two\nj) three\n\nsee[^a]\n')
+  assert.match(output, /^<ol type="a" start="10" data-delim="\)">\n  <li>three<\/li>/)
+  assert.match(output, /<li id="fn1">\n      <ol type="i" data-delim="\)">\n        <li>one<\/li>\n        <li>two<\/li>/)
+})

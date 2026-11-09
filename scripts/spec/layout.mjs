@@ -8758,19 +8758,26 @@ function authoredBlockEnd(lines, start, base, state) {
   }
 }
 function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
-  const firstMarker = matchMarkerAt(indentCols(lines[start] ?? ''))
+  const opener = leadRunEnd(lines, start)
+  const firstMarker = matchMarkerAt(indentCols(lines[opener] ?? ''))
   const startsList = !!firstMarker
-  const firstAxes = startsList ? markerAxes(firstMarker) : null
+  let currentAxes = startsList ? markerAxes(firstMarker) : null
+  let lastIndex = start - 1
   let fenceScan = { index: start, opaque: null, columns: [0] }
   const boundary = (idx) => {
+    // attachedBlockEnd can measure larger windows from the same opener.
+    if (idx <= lastIndex) {
+      currentAxes = startsList ? markerAxes(firstMarker) : null
+      fenceScan = { index: start, opaque: null, columns: [0] }
+    }
+    lastIndex = idx
     const measured = indentCols(lines[idx])
-    const marker = startsList ? matchMarkerAt(measured) : null
+    const marker = startsList && idx > opener ? matchMarkerAt(measured) : null
+    const sameColumnMarker = marker && measured.col === firstMarker.indent
     // N1 makes a changed marker axis a new sibling list, outside the one
     // block offered by the host's continuation marker. A live child fence
     // below owns marker-shaped payload, so the fence scan still decides it.
-    const newSiblingList = marker && idx > start && measured.col === firstMarker.indent &&
-      !sameAxes(firstAxes, marker)
-    const offered = attachmentBoundary(lines)(idx) || newSiblingList ||
+    const offered = attachmentBoundary(lines)(idx) || sameColumnMarker ||
       startsList && idx > start && measured.col === column && QUOTE.test(measured.rest)
     if (!offered || !startsList || idx <= start) return offered
     // An attached list is one block. Its descendant fence owns blank, plus,
@@ -8778,7 +8785,16 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
     // attachment boundary. Rewind for a larger lookahead window.
     if (idx < fenceScan.index) fenceScan = { index: start, opaque: null, columns: [0] }
     const open = bodyHasOpenCodeFence(lines, fenceScan, idx, (k) => indentCols(lines[k]))
-    return !open || measured.rest !== '' && measured.col < fenceScan.opaque.base
+    if (open && !(measured.rest !== '' && measured.col < fenceScan.opaque.base)) return false
+    if (sameColumnMarker) {
+      if (!sameAxes(currentAxes, marker)) return true
+      if (currentAxes.ord) {
+        const heads = new Set(marker.dialects.map((d) => d.dialect))
+        currentAxes.ord.dialects = tieBreak(currentAxes.ord.dialects, marker).filter((d) => heads.has(d.dialect))
+      }
+      return false
+    }
+    return true
   }
   const one = attachedBlockEnd(lines, start, state, boundary, 0, quoteHost)
   return { rawMarker: lines.slice(start, one), next: one }
