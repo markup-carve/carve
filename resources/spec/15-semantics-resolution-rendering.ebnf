@@ -287,7 +287,10 @@ After an unclosed fence attached by a stacked marker-line `+` ends
          and so refuses the `+`. S1 erases `%%` lines and one-line link and
          abbreviation definitions before the next-line test. A `%%%` span and
          block-level invisible lines follow CARVE-P9-013, and a note
-         definition's body belongs to the note. A blank line, the end of input
+         definition's body belongs to the note. An attribute line left of a
+         note's body column is the host's, not the note's: it closes the note's
+         paragraph, and the next visible line is the attached block and takes
+         its attributes (carve#5576). A blank line, the end of input
          or a sibling after them refuses the `+`. Examples, with `/` for a line
          break:
 

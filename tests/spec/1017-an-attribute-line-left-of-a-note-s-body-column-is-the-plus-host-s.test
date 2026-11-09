@@ -1,0 +1,46 @@
+An attribute line left of a note's body column is the plus host's
+
+```
+- +
+[^m]: n
+{.x
+ .y}
+p
+.
+<ul>
+  <li><p class="x y">p</p></li>
+</ul>
+```
+
+```
+- +
+[^m]: n
+{.x .y}
+p
+.
+<ul>
+  <li><p class="x y">p</p></li>
+</ul>
+```
+
+```
+- +
+[^m]: n
+{.x .y}
+p
+
+y[^m]
+.
+<ul>
+  <li><p class="x y">p</p></li>
+</ul>
+<p>y<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

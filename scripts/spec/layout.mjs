@@ -4754,7 +4754,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             (ownsNextLine(k, rest) || docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN)) return k
         passedLabels.add(labelKey(FOOTNOTE_DEF.exec(rest)[1]))
         k++
-        while (k < lines.length && foldablePlainLine(view(k)) &&
+        // An attribute line left of the note's body column is the host's (carve#5576).
+        const hostAttr = (j) => view(j)[0] === '{' && docColumn(lines[j], view(j)) < at + FOOTNOTE_BODY_COLUMN &&
+          tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[j], hostIndex)?.rest ?? '').col)
+        while (k < lines.length && foldablePlainLine(view(k)) && !hostAttr(k) &&
             (!offered || docColumn(lines[k], view(k)) !== column)) k++
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
