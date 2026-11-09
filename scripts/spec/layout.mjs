@@ -1747,14 +1747,13 @@ function tryAttrLine(lines, i, openerColumn = 0) {
       buf += line.slice(j) + '\n'
       li++
       layoutWork.attrScan++
-      const continuation = li < lines.length ? lines[li] : undefined
-      if (continuation === undefined || isBlank(continuation)) return null // A5
+      if (li >= lines.length || lines[li] === undefined || isBlank(lines[li])) return null // A5
       // The indentation belongs to this run only when it passes the opening
       // brace's column. Compare source columns before stripping its padding.
-      if (indentCols(continuation).col <= blockColumn) return null
+      if (indentCols(lines[li]).col <= blockColumn) return null
       // A continuation starts a token or closes, and no token starts with `{`.
-      if (/^[ \t]*\{/.test(continuation)) return null
-      line = continuation
+      if (/^[ \t]*\{/.test(lines[li])) return null
+      line = lines[li]
       // No attribute list continues on a line that opens a block, so a run of
       // openers is scanned once (PART 9 §9 LINEAR TIME).
       if (/^[ \t]*\{/.test(line)) return null
