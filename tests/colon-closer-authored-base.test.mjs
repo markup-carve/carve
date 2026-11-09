@@ -45,3 +45,9 @@ test('a below-base run inside a multiline code span keeps its source bytes', () 
   assert.ok(!output.includes('\\:::'))
   assert.ok(!output.includes('\0'))
 })
+
+test('a below-base run folded through a child paragraph cannot close the parent div', () => {
+  const output = html('  :::\n  - a\n :::\n  tail\n')
+  assert.equal(output, '<div>\n  <ul>\n    <li>a\n:::\ntail</li>\n  </ul>\n</div>')
+  assert.ok(!output.includes('\0'))
+})

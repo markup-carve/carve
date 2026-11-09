@@ -4321,7 +4321,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
-      result.push(out + (form.codeHeld ? LAZY : '') + src)
+      result.push(out + (form.codeHeld || form.colonPayload ? LAZY : '') + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
