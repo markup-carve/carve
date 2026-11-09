@@ -1913,7 +1913,7 @@ function resolveFootnotes(html, ctx) {
         return carrier(`fnref${n}`, n, parsed.attrs)
       }
       const label = payload
-      const literal = () => escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`)
+      const literal = () => rawFrame(escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`))
       if (/[\r\n]/.test(label)) return literal()
       const key = labelKey(label)
       if (!ctx.footnoteDefs.has(key)) return literal() // unresolved -> literal

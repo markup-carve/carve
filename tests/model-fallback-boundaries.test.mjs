@@ -11,6 +11,18 @@ test('unresolved footnote labels use HTML text escaping', () => {
   }
 })
 
+test('unresolved footnote spellings are opaque to abbreviation expansion', () => {
+  for (const source of [
+    '[^HTML]\n*[HTML]: t\n',
+    'before [^HTML] after\n\n*[HTML]: t\n',
+    '> [^HTML]\n\n*[HTML]: t\n',
+  ]) {
+    assert.ok(html(source).includes('[^HTML]'), source)
+    assert.ok(!html(source).includes('<abbr'), source)
+  }
+  assert.equal(html('HTML [^HTML]\n\n*[HTML]: t\n'), '<p><abbr title="t">HTML</abbr> [^HTML]</p>')
+})
+
 test('a contentless description marker leaves a quoted term', () => {
   for (const tail of ['', ' ', '   ', '\t']) {
     assert.equal(html(`> :: t\n:${tail}\n`), '<blockquote>\n  <dl>\n    <dt>t</dt>\n  </dl>\n</blockquote>\n<p>:</p>')
