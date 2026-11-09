@@ -1,0 +1,16 @@
+A refused brace run keeps a following plus literal
+
+```
+- +
+{.x
+.y}
++
+  zq
+.
+<ul>
+  <li>{.x
+.y}
++
+zq</li>
+</ul>
+```

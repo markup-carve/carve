@@ -11,7 +11,8 @@ const TOKEN = 'zq'
 const HOSTS = ['item', 'note', 'dd', 'quote']
 const FORMS = ['marker', 'own', 'stacked']
 const BLOCKS = ['unclosed fence', 'closed fence', 'paragraph', 'table', 'attribute', 'brace']
-const FOLLOWERS = ['content', 'marker', 'col 0', 'refused `+`', 'shifted fence']
+const FOLLOWERS = ['content', 'marker', 'col 0', 'refused `+`', 'shifted fence',
+  'deep content', 'quote content', 'marker column', 'off-column `+`', 'content+1 fence']
 const SPAN_BLOCKS = new Set(['paragraph', 'attribute', 'brace'])
 
 const split = (v) => v.split(',').map((s) => s.trim())
@@ -23,7 +24,7 @@ const axis = (v, all) => (v === 'any' ? all : split(v).map((x) => {
 function readRows() {
   const rows = []
   for (const line of TABLE.split('\n')) {
-    if (!/^\| [A-Z]\d\d /.test(line)) continue
+    if (!/^\| [A-Z]\d{2,3} /.test(line) || /^\| X/.test(line)) continue
     const c = line.split('|').slice(1, -1).map((s) => s.trim())
     assert.equal(c.length, 9, `row ${c[0]} has ${c.length} cells`)
     rows.push({
@@ -53,6 +54,11 @@ function blockLines(block, ctx) {
 }
 
 export function cellSource({ host, form, block, follower, blank, ctx }) {
+  if (host === 'quote') follower = ({
+    'deep content': 'content', 'quote content': 'marker',
+    'marker column': 'col 0', 'off-column `+`': 'refused `+`',
+    'content+1 fence': 'shifted fence',
+  })[follower] ?? follower
   const m = form === 'stacked' ? 2 : 0
   const pad = ' '.repeat(m)
   const quote = host === 'quote'
@@ -63,8 +69,10 @@ export function cellSource({ host, form, block, follower, blank, ctx }) {
   if (form === 'own') lines.push(opener + lead + 'p', pad + '+')
   else lines.push(opener + lead + '+')
   const inHost = (t, extra = '') => (quote ? pad + '> ' + extra + t : pad + extra + t)
-  for (const t of blockLines(block, ctx)) lines.push(inHost(t))
-  if (blank) lines.push(quote ? pad + '>' : '')
+  // A quote's `+` attaches the block at its marker column. Prefixing these
+  // lines with `>` instead creates a nested quote, which tests another cell.
+  for (const t of blockLines(block, ctx)) lines.push(pad + t)
+  if (blank) lines.push('')
   const content = quote ? inHost(TOKEN, '  ') : pad + '  ' + TOKEN
   if (follower === 'content') lines.push(content)
   else if (follower === 'marker') lines.push(inHost(TOKEN))
@@ -84,9 +92,11 @@ export function ownerCode(cell, html) {
   if (at < 0) return 'gone'
   const before = html.slice(0, at)
   const stack = []
+  let closedQuotes = 0
   for (const [, close, tag, attrs] of before.matchAll(/<(\/?)([a-z0-9]+)([^>]*)>/g)) {
     if (VOID.has(tag)) continue
     if (close) {
+      if (tag === 'blockquote') closedQuotes++
       const k = stack.findLastIndex((s) => s.tag === tag)
       if (k >= 0) stack.splice(k)
     } else stack.push({ tag, attrs })
@@ -103,6 +113,7 @@ export function ownerCode(cell, html) {
   const span = stack.some((s) => s.tag === 'code') && !stack.some((s) => s.tag === 'pre') ? '~' : ''
   const outer = cell.form === 'stacked' ? 'doc/item' : 'doc'
   const hostPath = cell.host === 'note' ? 'doc/footnote' : `${outer}/${cell.host === 'dd' ? 'dd' : cell.host}`
+  if (cell.host === 'quote' && closedQuotes > 0 && path.includes('/quote')) return cell.form === 'stacked' ? 'P' : 'D'
   let lastBlock = -1
   for (const mb of before.matchAll(BLOCK_TAG)) lastBlock = mb.index
   const blockTag = lastBlock >= 0 ? before.slice(lastBlock, before.indexOf('>', lastBlock) + 1) : ''
@@ -130,6 +141,7 @@ function expected(rows, cell) {
     : o === 'Block' || o.startsWith('Block, Document') ? (o.startsWith('Block, Document') && stacked && cell.follower === 'col 0' ? 'D' : 'B')
       : o.startsWith('Block for column-0') ? (stacked ? 'D' : 'B')
         : o === 'Host' ? 'H'
+          : o === 'Host (span)' ? 'H~'
           : o === 'Parent' ? (stacked ? 'P' : 'D')
             : o === 'Parent, in a new fence' ? (stacked ? 'Pc' : 'Dc')
               : o === 'Document' ? 'D'
@@ -141,41 +153,12 @@ const key = (c) => [c.host, c.form, c.block, c.follower, c.blank ? 'blank' : '-'
 
 function* cells() {
   for (const host of HOSTS) for (const form of FORMS) for (const block of BLOCKS)
-    for (const follower of FOLLOWERS) for (const blank of [false, true]) for (const ctx of ['plain', 'span']) {
+    for (const follower of (host === 'quote' ? FOLLOWERS.slice(5) : FOLLOWERS.slice(0, 5)))
+      for (const blank of [false, true]) for (const ctx of ['plain', 'span']) {
       if (ctx === 'span' && !SPAN_BLOCKS.has(block)) continue
       yield { host, form, block, follower, blank, ctx }
     }
 }
-
-// Cells the model still renders against the table, with the ticket that tracks each.
-// A fix that brings a cell in line must drop it here.
-const KNOWN = new Map(Object.entries({
-  'note / own / unclosed fence / refused `+` / blank / plain': 'carve#5639',
-  'note / own / closed fence / refused `+` / blank / plain': 'carve#5639',
-  'note / own / paragraph / refused `+` / blank / plain': 'carve#5639',
-  'note / own / table / refused `+` / blank / plain': 'carve#5639',
-  'note / own / brace / refused `+` / blank / plain': 'carve#5639',
-  'note / own / paragraph / refused `+` / blank / span': 'carve#5639',
-  'note / own / attribute / refused `+` / blank / span': 'carve#5639',
-  'note / own / brace / refused `+` / blank / span': 'carve#5639',
-  'note / marker / unclosed fence / shifted fence / blank / plain': 'carve#5658 F05',
-  'note / stacked / unclosed fence / shifted fence / blank / plain': 'carve#5658 F05',
-  'dd / own / unclosed fence / refused `+` / blank / plain': 'carve#5639',
-  'dd / own / closed fence / refused `+` / blank / plain': 'carve#5639',
-  'dd / own / paragraph / refused `+` / blank / plain': 'carve#5639',
-  'dd / own / table / refused `+` / blank / plain': 'carve#5639',
-  'dd / own / brace / refused `+` / blank / plain': 'carve#5639',
-  'dd / own / paragraph / refused `+` / blank / span': 'carve#5639',
-  'dd / own / attribute / refused `+` / blank / span': 'carve#5639',
-  'dd / own / brace / refused `+` / blank / span': 'carve#5639',
-  'dd / marker / unclosed fence / shifted fence / blank / plain': 'carve#5658 F05',
-  'dd / stacked / unclosed fence / shifted fence / blank / plain': 'carve#5658 F05',
-  'item / own / unclosed fence / content / blank / plain': 'carve#5635',
-  'quote / marker / attribute / col 0 / - / span': 'carve#5658 Q01',
-  'quote / own / attribute / col 0 / - / span': 'carve#5658 Q01',
-  'quote / stacked / attribute / col 0 / - / span': 'carve#5658 Q01',
-  'quote / stacked / attribute / col 0 / - / plain': 'carve#5658 Q03',
-}))
 
 test('the ownership table covers every cell once its axes are walked', () => {
   const rows = readRows()
@@ -191,16 +174,37 @@ test('the ownership table covers every cell once its axes are walked', () => {
 test('the spec model gives every decided cell the owner the table names', () => {
   const rows = readRows()
   const wrong = []
-  const fixed = []
+  const sources = new Set()
   for (const cell of cells()) {
     const { id, code } = expected(rows, cell)
     if (code === null) continue
-    const got = ownerCode(cell, renderDoc(parse(cellSource(cell))))
+    const source = cellSource(cell)
+    sources.add(source)
+    const got = ownerCode(cell, renderDoc(parse(source)))
     const k = key(cell)
-    if (KNOWN.has(k)) {
-      if (got === code) fixed.push(`${k} (${KNOWN.get(k)})`)
-    } else if (got !== code) wrong.push(`${k}: row ${id} wants ${code}, model gives ${got}`)
+    if (got !== code) wrong.push(`${k}: row ${id} wants ${code}, model gives ${got}`)
+    // The alternative bullet has the same marker and body columns. It probes
+    // sibling list syntax without changing the cell's attachment geometry.
+    if (cell.host === 'item') {
+      const alternate = source.replace(/^-/, '*')
+      sources.add(alternate)
+      const alt = ownerCode(cell, renderDoc(parse(alternate)))
+      if (alt !== code) wrong.push(`${k}: row ${id} wants ${code}, * item gives ${alt}`)
+    }
   }
+  assert.ok(sources.size >= 1000, `${sources.size} distinct generated sources`)
   assert.deepEqual(wrong, [], wrong.join('\n'))
-  assert.deepEqual(fixed, [], `now match the table, drop from KNOWN:\n${fixed.join('\n')}`)
+})
+
+test('the root and quoted-host boundary controls render their named owner', () => {
+  const rows = TABLE.split('\n').filter(line => /^\| X\d\d /.test(line))
+  assert.equal(rows.length, 6)
+  const decode = value => value.slice(1, -1).replaceAll('\\n', '\n')
+  for (const line of rows) {
+    const cells = line.split('|').slice(1, -1).map(value => value.trim())
+    assert.equal(cells.length, 10, cells[0])
+    const source = decode(cells[8])
+    const fragment = decode(cells[9])
+    assert.ok(renderDoc(parse(source)).includes(fragment), `${cells[0]}: ${source}`)
+  }
 })

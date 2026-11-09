@@ -842,8 +842,14 @@ blank_line = {whitespace}, newline ;
    comparison uses the lines' source columns after quote prefixes are read.
    A `{%` opened on a lazy paragraph continuation keeps its written source
    column, even when it is short of its owner's content column. A continuation
-   at or left of that `{` refuses the whole run in every owner; one or more
-   source columns past it continues the run. A line inside a still-open
+   without a quote prefix after a quoted block-position run also supplies its
+   written source column: one column past the quote-inner opening `{` makes
+   a valid block attribute run, not inline text (carve#5619).
+   A continuation at or left of that `{` refuses the whole run in every owner;
+   one or more source columns past it continues the run. A lone `+` at the host
+   marker column on the line immediately after a refused run stays literal
+   paragraph text, and the following line continues the paragraph (carve#5658
+   R03, maintainer ruling, 2026-11-09). A line inside a still-open
    inline code span of the paragraph starts no block-position brace line, at any
    column: block position is not decided against text the paragraph's inline
    pairing already holds (carve#5618, carve#5638). Inline
