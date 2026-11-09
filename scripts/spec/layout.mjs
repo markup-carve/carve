@@ -3775,7 +3775,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           // A marker-line item's closer may stand before its content column.
           // The length probe reads that run at the attached fence's column.
           if (follower.family === 'code' && plusHost.kind === 'item' &&
-              ind.col > col && ind.col < plusHost.col && PURE_FENCE.test(ind.rest)) return ' '.repeat(col) + ind.rest
+              ind.col > col && ind.col < plusHost.col && PURE_FENCE.test(ind.rest)) return ind.rest
           return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
         })
         const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
@@ -4002,7 +4002,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const authoredPayload = inner === pairedAttachedFence && m.rest !== '' && !PURE_FENCE.test(m.rest)
       const shiftedCloser = inner === pairedAttachedFence && PURE_FENCE.test(m.rest) &&
         attachedTo && m.col < attachedTo.host.col
-      lead(shiftedCloser ? inner.canon : authoredPayload ? m.col : Math.max(m.col - inner.cut, inner.canon))
+      const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
+      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - sourceShift, inner.canon) :
+        Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
         if (c && c[1][0] === inner.span[0] &&

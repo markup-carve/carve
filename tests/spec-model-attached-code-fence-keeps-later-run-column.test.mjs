@@ -29,5 +29,9 @@ test('a shifted closer keeps the authored indentation of its payload (#5603)', (
     '<ul>\n  <li>\n    <pre><code>\n x\n</code></pre>\n  </li>\n</ul>')
   assert.equal(html('1. +\n```\n\n  x\n  ```\n'),
     '<ol>\n  <li>\n    <pre><code>\n  x\n</code></pre>\n  </li>\n</ol>')
+  assert.equal(html('  - +\n  ```\n\n   x\n  ```\n'),
+    '<ul>\n  <li>\n    <pre><code>\n x\n</code></pre>\n  </li>\n</ul>')
+  assert.equal(html(' - +\n ```\n\n  x\n  ```\n'),
+    '<ul>\n  <li>\n    <pre><code>\n x\n</code></pre>\n  </li>\n</ul>')
 })
 
