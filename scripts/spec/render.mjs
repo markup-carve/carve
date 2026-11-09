@@ -1091,7 +1091,7 @@ const sem = g.createSemantics().addOperation('h', {
   codeAttrd(code, attrs) {
     const a = renderAttrs(attrsOf(attrs))
     if (a === '') return code.h()
-    return code.h().replace('<code>', `<code${a}>`)
+    return code.h().replace('<code>', () => `<code${a}>`)
   },
   mathI(_d, code, attrs) {
     // `code` is the alternation node; its sole child is codeN(_o,content,_c)
