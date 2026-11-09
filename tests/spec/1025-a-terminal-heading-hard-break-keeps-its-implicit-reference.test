@@ -1,0 +1,22 @@
+A terminal heading hard break keeps its implicit reference
+
+```
+# [g][]\
+.
+<section id="g">
+  <h1><a href="#g">g</a><br>
+</h1>
+</section>
+```
+
+```
+# g\
+
+[g][]
+.
+<section id="g">
+  <h1>g<br>
+</h1>
+  <p><a href="#g">g</a></p>
+</section>
+```

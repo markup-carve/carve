@@ -1757,7 +1757,9 @@ function noteHeadingId(ctx, id, html) {
 
 function noteHeadingRef(ctx, text, id) {
   if (ctx.inBlockquote) return
-  const key = refKey(text)
+  // A terminal hard break renders as <br> plus a serialization newline. That
+  // newline is not heading text and must not become part of the lookup key.
+  const key = refKey(text.replace(/\n+$/, ''))
   if (key && !ctx.headingRefs.has(key)) ctx.headingRefs.set(key, id)
 }
 
