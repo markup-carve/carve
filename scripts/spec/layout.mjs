@@ -5854,6 +5854,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
       const noteBraceColumns = []
+      if (m[2].startsWith('{')) noteBraceColumns[0] = sourceDefCol + line.length - m[2].length
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
       const inheritedFenceOpens = new Set()
       const defLine = i
