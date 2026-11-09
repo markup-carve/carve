@@ -5860,6 +5860,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let attachedFrom = -1
       let attachedEnd = -1
       let attachedSeparator = false
+      let ownLineAttached = false
       const passedNotes = []
       let passedNoteBody = null
       let passedOwnsFollower = false
@@ -6143,6 +6144,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
           const end = takeOneBlock(lines, i, state, measured.col).next
           attachedFrom = bodyLines.length
+          ownLineAttached = true
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
@@ -6200,9 +6202,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         } else break
       }
       // PART 0 S2: a blank run reaches the body, so it is payload of a fence the
-      // body leaves open. A block a `+` attached is bounded by §17, not by the run.
-      if (i < n && isBlank(lines[i]) && reachedBefore(lines, i, defLine, isFootnoteContinuationLine) &&
-          !attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))) {
+      // body leaves open. Only a marker-line `+` bounds an unclosed fence at
+      // its first blank; an own-line `+` leaves its fence open in the note.
+      const openAttachedFence = attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))
+      if (i < n && isBlank(lines[i]) &&
+          (ownLineAttached && openAttachedFence ||
+            reachedBefore(lines, i, defLine, isFootnoteContinuationLine) && !openAttachedFence)) {
         const end = markerBodyPolicy(FOOTNOTE_BODY_COLUMN).blankRunEnd(lines, i, n)
         for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
       }

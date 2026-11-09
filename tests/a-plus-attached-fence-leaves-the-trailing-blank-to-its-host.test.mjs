@@ -6,11 +6,12 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 const render = (source) => renderDoc(parse(source))
 const payload = (source) => /<pre[^>]*><code[^>]*>([^]*?)<\/code>/.exec(render(source))?.[1]
 
-// PART 9 SS17 L3: the block ends the attachment, whatever column its payload lines stand at.
-test('a payload line at the body column does not move the trailing blank into the fence', () => {
+// PART 9 SS17 L3: a marker-line plus ends its fence at the attachment boundary.
+// The carve#5560 ruling keeps the trailing blank for an own-line plus.
+test('the attachment form decides whether a trailing blank reaches an open fence', () => {
   const cases = [
     ['[^f]: +\n```\na\n  b\n\nsee[^f]\n', 'a\n  b\n'],
-    ['[^f]: n\n+\n```\na\n  b\n\nsee[^f]\n', 'a\n  b\n'],
+    ['[^f]: n\n+\n```\na\n  b\n\nsee[^f]\n', 'a\n  b\n\n'],
     ['[^f]: +\n```\na\n  b\n\n\nsee[^f]\n', 'a\n  b\n'],
     // An unclosed fence ends at its first blank (PART 0 S1, carve#5404).
     ['[^f]: +\n```\na\n\n  b\n\nsee[^f]\n', 'a\n'],
