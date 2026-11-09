@@ -4006,7 +4006,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - sourceShift, inner.canon) :
+      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
         Math.max(m.col - inner.cut, inner.canon))
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
@@ -4361,12 +4361,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             stackedOnMarker(attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1], attachedTo.host)) {
           const depth = attachedTo.depth
           const openerCol = walkIndent(stripQuotes(lines[at], depth)?.rest ?? lines[at]).col
+          // A task box before the host's marker is content (CARVE-P0-008): the host's lines reach left to where its opener lands.
+          const hostLeft = attachedTo.host.markerCol - (col - canon)
           let blank = -1
           for (let next = at + 1; next < lines.length; next++) {
             const level = stripQuotes(lines[next], depth)
             if (!level) break
             const ind = walkIndent(level.rest)
-            if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+            if (ind.rest !== '' && ind.col < hostLeft) break
             if (ind.rest === '') {
               blank = next
               break
@@ -4378,7 +4380,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
               const level = stripQuotes(lines[next], depth)
               if (!level) break
               const ind = walkIndent(level.rest)
-              if (ind.rest !== '' && ind.col < attachedTo.host.markerCol) break
+              if (ind.rest !== '' && ind.col < hostLeft) break
               if (next >= blank && ind.col <= openerCol && form.closes(ind.rest, ind.col)) {
                 paired = true
                 break
