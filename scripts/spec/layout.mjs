@@ -6053,7 +6053,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           lazyParagraphOpen = false
           attachPending = true
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
-          const end = attachedBlockEnd(lines, i, state, attachmentBoundary(lines))
+          const end = takeOneBlock(lines, i, state, measured.col).next
           attachedFrom = bodyLines.length
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
@@ -8758,11 +8758,19 @@ function authoredBlockEnd(lines, start, base, state) {
   }
 }
 function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
-  const startsList = !!matchMarkerAt(indentCols(lines[start] ?? ''))
+  const firstMarker = matchMarkerAt(indentCols(lines[start] ?? ''))
+  const startsList = !!firstMarker
+  const firstAxes = startsList ? markerAxes(firstMarker) : null
   let fenceScan = { index: start, opaque: null, columns: [0] }
   const boundary = (idx) => {
     const measured = indentCols(lines[idx])
-    const offered = attachmentBoundary(lines)(idx) ||
+    const marker = startsList ? matchMarkerAt(measured) : null
+    // N1 makes a changed marker axis a new sibling list, outside the one
+    // block offered by the host's continuation marker. A live child fence
+    // below owns marker-shaped payload, so the fence scan still decides it.
+    const newSiblingList = marker && idx > start && measured.col === firstMarker.indent &&
+      !sameAxes(firstAxes, marker)
+    const offered = attachmentBoundary(lines)(idx) || newSiblingList ||
       startsList && idx > start && measured.col === column && QUOTE.test(measured.rest)
     if (!offered || !startsList || idx <= start) return offered
     // An attached list is one block. Its descendant fence owns blank, plus,
