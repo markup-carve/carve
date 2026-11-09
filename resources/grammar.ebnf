@@ -5679,7 +5679,10 @@ EOF = (* end of file *) ;
       A literal bracket run still bounds its content. An attribute candidate
       cut by that boundary cannot attach to a host inside the run and remains
       text: [t[x](/u){title="]"}y](/z) renders the inner link without a
-      title and leaves `{title="]"}` literal.
+      title and leaves `{title="]"}` literal. When a bracket run declines,
+      its failed attribute tail claims nothing. P1 may then take an editorial
+      comment beginning at the same brace: [[][[]]{#1}][]#} renders the
+      `{#1}][]#}` suffix as an editorial comment.
 
       KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
         emphasis        /      {/ /}      after the closer
