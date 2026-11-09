@@ -3858,13 +3858,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // The line as the current quote segment starts, for an opener's C5 column.
     let segmentSrc = src
     // The leading run of the current segment, written at `col`.
-    const lead = (target, spaces = false) => {
+    const lead = (target, spaces = false, perFrame = false) => {
       // Ownership only ever removes indentation. `spaces` writes a leading tab
       // as the columns it reaches, so a term and its body read alike in both
       // spellings; a post-marker tab stays as written.
-      const col = Math.min(target, m.col)
       const authored = src.slice(0, src.length - m.rest.length)
-      out += col === m.col && !(spaces && out === '' && authored.includes('\t')) ? authored : ' '.repeat(col)
+      const tabbed = spaces && out === '' && authored.includes('\t')
+      // The readers measure that tab per frame (§24 C5), so the spaces stand at that column.
+      const from = tabbed && perFrame ? segmentColumn() : m.col
+      const col = Math.min(target, from)
+      out += col === from && !tabbed ? authored : ' '.repeat(col)
       src = m.rest
     }
     const take = (count) => {
@@ -4002,6 +4005,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // The C5 column of the current quote segment, measured on demand.
     let stripped = null
     let segment = 1
+    const segmentColumn = () => {
+      if (stripped === null) {
+        const origins = []
+        for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
+        stripped = strippedColumn(src, origins)
+      }
+      return stripped
+    }
     const attachedHostIndex = afterPlus || followsMarkerLine ? frames.indexOf(attachedTo?.host) : -1
     const lastHostQuote = attachedHostIndex < 0 ? -1 : frames.findLastIndex((frame, index) => index < attachedHostIndex && frame.kind === 'quote')
     let attachedColumnPlaced = false
@@ -4051,12 +4062,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         continue
       }
       if (m.rest !== '' && m.col < f.col) {
-        if (stripped === null && src.length > m.rest.length && src.slice(0, src.length - m.rest.length).includes('\t')) {
-          const origins = []
-          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
-          stripped = strippedColumn(src, origins)
-        }
-        if (stripped === null || stripped < f.col + (f.tabShift ?? 0)) break
+        const tabbed = src.length > m.rest.length && src.slice(0, src.length - m.rest.length).includes('\t')
+        if (!tabbed || segmentColumn() < f.col + (f.tabShift ?? 0)) break
       }
       reached = k
     }
@@ -4490,8 +4497,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const laterRun = blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col
       const run = laterRun ? FENCE.exec(m.rest)?.[1] : null
       const keepColumn = run && !laterSourceCloser(at, run, m.col, quotePrefix(lines[at]).depth)
-      lead(keepColumn ? m.col : owner.canon,
-        form.kind === 'term' || form.kind === 'dd')
+      // A one-line opener keeps its owner only as spaces: the readers measure a tab per frame (§24 C5).
+      const oneLine = form.kind === 'quote' || form.kind === 'leaf'
+      lead(keepColumn ? m.col : owner.canon, form.kind === 'term' || form.kind === 'dd' || oneLine, oneLine)
       if (laterRun) blankInAttachedCode = null
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
