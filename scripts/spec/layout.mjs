@@ -3768,11 +3768,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (attachedTo?.ownLine && top().kind === 'fence' && isBlank(lines[at - 1] ?? '') && !isBlank(src)) {
       const through = stripQuotes(src, attachedTo.depth)
       const col = through === null ? -1 : walkIndent(through.rest).col
-      if (col > attachedTo.host.markerCol && col < attachedTo.host.col) {
-        attachedFenceMisses.push(at)
-        frames.length = 0
-        frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
-        attachedTo = null
+      if (col < attachedTo.host.col &&
+          !(col === attachedTo.host.markerCol && CONT_MARKER.test(through?.rest ?? ''))) {
+        const run = top().openRun
+        const closer = PURE_FENCE.exec(through?.rest ?? '')?.[1]
+        const closesHere = run && closer && closer[0] === run[0] && closer.length >= run.length
+        // One attached fence can retain many blanks before its closer. Cache
+        // the source-column search on the frame rather than rescanning them.
+        const closesLater = run && (top().ownLineHasLaterCloser ??=
+          laterSourceCloser(at, run, attachedTo.host.markerCol, attachedTo.depth))
+        if (!closesHere && !closesLater) {
+          attachedFenceMisses.push(at)
+          frames.length = 0
+          frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
+          attachedTo = null
+        }
       }
     }
     // A blank outside the quote that granted a `+` ends its attached block
