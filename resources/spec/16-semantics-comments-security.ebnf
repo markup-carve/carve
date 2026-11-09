@@ -571,6 +571,13 @@
         make safe handling the default for untrusted input; a processor that
         emits raw passthrough by default MUST document that its input is
         trusted.
+        This opt-out is SAFE MODE. It changes the disposition of raw content,
+        not URL or attribute hardening, which apply in both modes. A raw block
+        for the output format uses PART 10 §6's escaped code-block form with
+        its recorded format as the language; a raw inline for the output
+        format emits escaped literal text. Raw content for another format
+        remains omitted. The spec model's `renderDoc(doc, { safe: true })`
+        selects this mode; its default is raw passthrough for HTML.
       - URL TEMPLATE ENCODING. Any value taken from document content (mention
         name, tag, citation key, crossref id) and substituted into a
         configured URL template MUST be percent-encoded before substitution,

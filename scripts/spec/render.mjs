@@ -1322,6 +1322,7 @@ const sem = g.createSemantics().addOperation('h', {
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
     // PART 9 §20: emitted UNESCAPED for the html format, dropped otherwise
+    if (safeRawInline && fmt.sourceString === 'html') return rawFrame(escapeHtml(codeText(codeInner(code).child(1))))
     const text = rawFrame(codeText(codeInner(code).child(1)))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
@@ -2883,7 +2884,18 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  */
 let omitSymbols = false
 let omitRawInline = false
+let safeRawInline = false
 let omitComments = false
+
+export function withSafeRawInline(render) {
+  const previous = safeRawInline
+  safeRawInline = true
+  try {
+    return render()
+  } finally {
+    safeRawInline = previous
+  }
+}
 
 /*
  * HARD BREAKS: a soft break renders as `<br>` (PART 9 §23).
