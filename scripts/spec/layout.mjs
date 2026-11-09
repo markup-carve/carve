@@ -4877,6 +4877,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
     rest = trimLineEnd(rest)
     if (rest === '') return { kind: 'blank', interrupts: true }
+    // A note definition immediately after a refused run is the protected
+    // paragraph follower even when it misses the nested note's body column.
+    if (at > refusedKept.start && at <= refusedKept.through && FOOTNOTE_DEF.test(rest)) {
+      return { kind: 'text', interrupts: false, kept: true }
+    }
     // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
     if (missed) {
       const form = classifyShape(rest, owner, at, col)
