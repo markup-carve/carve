@@ -84,3 +84,10 @@ test('a list-shaped verse line remains line-block payload', () => {
   assert.equal(trace[3].owner, 'doc/item:1/div:2')
   assert.equal(trace[3].form, 'payload')
 })
+
+test('an indented colon run in verse remains payload', () => {
+  const source = '- +\n::: |\n\n  - child\n    :::'
+  const trace = modelTrace(source)
+  assert.notEqual(trace.at(-1).cell, 'B-div-end')
+  assert.equal(parse(source).blocks[0].items[0].blocks[0].t, 'line-block')
+})

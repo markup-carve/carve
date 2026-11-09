@@ -3824,12 +3824,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const colonMode = colon && parseColonOpener(colon[2])?.mode
         if (trace && colonMode) {
           const viewed = []
+          const viewedCols = []
           for (let k = at + opener; k < lines.length; k++) {
             const line = stripQuotes(lines[k], prefixes)
             if (!line) break
             const ind = walkIndent(line.rest)
             if (k > at + opener && ind.rest !== '' && ind.col < plusHost.col) break
             viewed.push(ind.rest)
+            viewedCols.push(ind.col)
           }
           if (colonMode !== 'line-block') for (let j = 1; j < viewed.length; j++) {
             const spanEnd = opaqueSpanEnd(viewed, j, true)
@@ -3844,7 +3846,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           // blank as verse payload, even when their run matches the opener.
           const firstBlank = viewed.findIndex((line, index) => index > 0 && line === '')
           const paired = colonMode === 'line-block' && firstBlank !== -1
-            ? viewed.map((line, index) => index < firstBlank && COLON_CLOSER.test(line) ? 'verse payload' : line)
+            ? viewed.map((line, index) => (index < firstBlank || viewedCols[index] !== plusHost.col) &&
+              COLON_CLOSER.test(line) ? 'verse payload' : line)
             : viewed
           const close = colonMode === 'line-block' && firstBlank === -1 ? -1
             : findColonCloser(paired, 0, colon[1].length)
