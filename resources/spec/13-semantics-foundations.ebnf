@@ -7,18 +7,17 @@
    1. WORD BOUNDARIES FOR EMPHASIS -- the templates of CARVE-P3-013, read
       as the CAN OPEN and CAN CLOSE tests of §9.
 
-   2. MATCHING FENCES -- FORMALIZED. Stated as `where` guards on the
-      productions (GUARD NOTATION, header):
-      - code_fence_close: same fence character, len(close) >= len(open); the
-        closer is optional and an unclosed fence runs to the end of its host
-        (PART 0 S1, §10 I4);
-      - colon_fence_close (§12): len(close) = len(open), matched against the
-        INNERMOST open colon fence; the closer is optional and an unclosed
-        container ends at its host boundary (CARVE-P9-084);
-      - comment_block_close: len(close) = len(open). Only the LEADING RUN of
-        `%` is compared -- trailing text on either fence line is insignificant.
-        The closer is optional and an unclosed comment block ends under
-        PART 0 S1 or at the end of its host (§28, carve#4907).
+   2. MATCHING FENCES -- FORMALIZED. PART 0 P1/P8 give extent; these are
+      the exact `where` guards on the productions (GUARD NOTATION, header):
+
+        closer               matching test                         unclosed end
+        code_fence_close     same character; len(close) >= open    host end (S1, §10 I4)
+        colon_fence_close    len(close) = len(open), innermost      host end (§12,
+                             open colon fence                      CARVE-P9-084)
+        comment_block_close  len(close) = len(open), leading `%`   S1 or host end
+                             run only; trailing text ignored       (§28, carve#4907)
+
+      Every closer is optional.
 
    3. NO BARE SAME-TYPE NESTING -- §9 R4 and SAME-DELIMITER ADJACENCY;
       a braced child may repeat its parent's kind (§9 R1).

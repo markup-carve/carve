@@ -337,90 +337,45 @@
       C2 MARKER SEPARATOR IS A SPACE. The required separator after a list
          marker is a single SPACE character -- a syntax delimiter, not
          indentation. `-<TAB>a` is NOT a list item (paragraph text).
-      C3 MARKER-BODY COLUMN AND EXTENT -- NORMATIVE [CARVE-P9-083]. A list
-         item, a definition body and a footnote definition body use this one
-         rule set. The content column is the visual column where the marker's
-         body starts. For a list item it is marker width plus separator
-         (`- ` -> 2,
-         `1. ` -> 3, `10. ` -> 4). A marker-attached attribute block (§15 A8)
-         is metadata and contributes ZERO: `-{.x} ` -> 2 and `1.{.x} ` -> 3,
-         irrespective of the block's spelling, length or Unicode encoding. A
-         task checkbox is content and contributes zero for the same coordinate:
-         `-{.x} [x] ` -> 2.
+      C3 MARKER-BODY COLUMN AND EXTENT -- NORMATIVE [CARVE-P9-083].
+         P2 and P5 apply to item, description and footnote bodies. Their
+         content columns are fixed by the opening marker:
 
-         A floating attribute block in marker-line content remains pending at
-         the item's content column. A following child block at that column
-         receives it; a line that misses the item closes it and discards the
-         pending attribute under CARVE-P9-024. Thus `-{#item} {#next}`
-         followed by `  # H` keeps the heading in the item and puts `next` on
-         it.
+           body          content column / prefix consumed
+           list item     marker width plus separator: `- ` -> 2, `1. ` -> 3,
+                         `10. ` -> 4; marker-glued attributes (§15 A8) and
+                         task checkbox contribute zero
+           description   after `: `, including every extra separator space
+           footnote      marker's authored `[` column plus exactly two
 
-         A definition body's own `: ` separator sets its content column,
-         including every extra separator space. A footnote
-         body adds two columns to its marker's authored column and consumes
-         exactly two columns of prefix. All comparisons use C1; no marker
-         family has its own reach test.
+         A floating attribute in marker-line content remains pending at the
+         item's column and attaches to the next child block reaching it;
+         closure discards it (CARVE-P9-024). `-{#item} {#next}` followed by
+         `  # H` gives that heading `next` inside the item.
 
-         A nonblank line at or past the content column belongs to the body.
-         A recognized block opener there begins a child block. A blank run of
-         any length remains in the body when the next nonblank line reaches
-         that column. A blank run without such a follower ends the body before
-         the next line. The three-blank sibling boundary in §11 N1a decides
-         list and description-list grouping, not body ownership. Every other
-         line, the `+` included, is PART 0's procedure (CARVE-P0-024) with the
-         body's FAMILIES row, the same for footnotes as for list items. These
-         decisions are independent of the marker spelling and the rendered
-         element.
+         A nonblank line at or past the column belongs to the body, and a
+         recognized opener there starts a child; a list marker starts a
+         sublist. The opener set is quote, heading, thematic break, code or
+         colon fence, table, and `:: ` definition term. The term is a
+         one-line leaf (PART 0 FAMILIES). The same test holds before and
+         after a blank; there is no `base_column + 2` channel. P5 keeps a
+         blank run only when the next nonblank line reaches the body. The
+         three-blank split (§11 N1a) groups siblings, not body ownership.
 
-         A child -- a LIST MARKER (bullet `-`/`*`,
-         task, or ordered, SYMMETRIC) opening a sublist, OR any OTHER block
-         opener -- must reach AT LEAST the parent item's content_column to belong
-         to the item. The block-opener set is UNIFORM and closed: block quote (`>` or
-         `> `), heading (`#`), thematic break, fenced code, colon fence / admonition
-         (`:::`), TABLE (a `|`-delimited row), and DEFINITION LIST (a `:: term`
-         opener; only the `:: ` TERM line opens the
-         block). None of these is special-cased: a def-list or table interrupts
-         at column 0 and nests at content_column exactly as a quote or heading
-         does. A definition term is a one-line leaf with no ownership of its own (PART 0
-         FAMILIES). The content_column is
-         the item body's CANONICAL COLUMN 0 and its minimum containment column.
-         This one rule holds whether or not a blank line precedes the child;
-         the blank only decides tight vs loose (§17), and there is no relaxed
-         `base_column + 2` channel.
-           - BELOW content_column: the line is outside the item body and
-             never nests. PART 0 S4 and S5 decide it: it folds (S4) or ends
-             the item and is read in the nearest surviving owner (S5), which
-             is the document only when no enclosing container's content
-             column is reached.
+         BELOW the column, P3 decides fold or closure in the nearest
+         surviving owner. THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE
+         [CARVE-P9-051]; a surviving frame alone cannot admit it. A NOTE
+         DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS --
+         NORMATIVE [CARVE-P9-052]: the list item closes, and the line
+         registers or floats in the surviving owner (§10 I5, §15 A2).
 
-             THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
-             This is CARVE-P0-006 for marker bodies: where no paragraph is
-             open the line is classified in the owner that SURVIVES, so after
-             a blank line the item has ended (PART 0 S5). It holds for
-             bullet, ordered, task and attributed markers alike.
-
-             A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS -- NORMATIVE [CARVE-P9-052].
-             This is the `invisible` field of the list item row of PART 0
-             FAMILIES: below the column a footnote definition or
-             block-attribute line interrupts, closes the item and is read in
-             the surviving owner, where a footnote definition registers (PART 9 §10 I5)
-             and an attribute line is pending (§15 A2).
-           - AT OR PAST content_column: a block opener nests and a list marker
-             opens a sublist. A non-list opener past the column opens in the
-             item, measured from its own line (PART 0 S3); a sublist marker
-             keeps its at-or-past containment rule.
-             A processor with lint diagnostics SHOULD report this ambiguous
-             compatibility spelling and name both author choices: dedent to
-             content_column for the canonical structural spelling, or escape
-             the opener to preserve the literal reading. It SHOULD likewise
-             report a block-shaped line between the marker and content_column
-             that detached after a blank. The stable rule ids and exact scopes
-             are `list-item-block-overindented` and `list-item-body-detached`
-             in docs/validation.md. The default formatter MUST NOT choose one
-             intention for the author while migrating an older spelling.
-         This is intentionally SIMILAR TO DJOT'S LENIENCY inside list items:
-         any authored column at or beyond Carve's minimum content_column may
-         open the block (docs/divergence-from-djot.md).
+         A non-list opener past the column is measured from its own line.
+         Lint SHOULD report an overindented item block or a detached block
+         between marker and column, naming dedent and escape as author
+         choices (`list-item-block-overindented`, `list-item-body-detached`,
+         docs/validation.md). The default formatter MUST NOT choose an
+         intention while migrating such input. Top-level list opening is C4;
+         paragraph interruption is §10 I2.
       C4 RULE B (TOP LEVEL, ANY INDENT). A bullet (`-`/`*` + space +
          content) opens a list at ANY indentation at the TOP LEVEL -- no
          column-0 restriction (unlike CommonMark, `    - x` is a list, not
