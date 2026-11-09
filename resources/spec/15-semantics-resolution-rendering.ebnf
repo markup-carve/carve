@@ -339,9 +339,11 @@
          (carve#5608, carve#5601).
          A `+` off every eligible marker column remains ordinary text.
 
-         A `+` at a container's marker column is outside that container's code,
-         raw or colon fence, and an accepted one ends that fence before the
-         attached block begins. Separators inserted for attachment are not
+         A `+` at a container's marker column is outside that container's code
+         or raw fence, or a colon fence that has already ended at its closer,
+         first blank or host end. An accepted marker there begins the next
+         attached block. A `+` inside an open colon fence is its text (L5).
+         Separators inserted for attachment are not
          fence payload. A `+` at the fence's content column stays payload;
          PART 0 S1 PAYLOAD gives the one ordered test for every line inside an
          open fence. A table `+ text` row follows §5 T6, rather than this rule.

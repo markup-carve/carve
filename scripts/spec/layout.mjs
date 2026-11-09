@@ -3527,6 +3527,55 @@ function attachedBlockLength(lines, at, view) {
   }
 }
 
+function attachedColonBoundary(lines, from, view, ownLine = false, host = null) {
+  const first = trimWsStart(view(lines[from] ?? '') ?? '')
+  if (!/^(?::::|[%{]|\[\^)/.test(first)) return null
+  // Most attachments close near their opener. Grow only when no boundary is
+  // visible yet; collecting the document tail for each short attachment makes
+  // a run of sibling attachments quadratic.
+  for (let size = 16; ; size *= 2) {
+    const body = []
+    let reachedEnd = from + size >= lines.length
+    for (let k = from; k < Math.min(lines.length, from + size); k++) {
+      const row = view(lines[k])
+      if (row === null) { reachedEnd = true; break }
+      body.push(row)
+    }
+    const opener = attachedOpener(body, 0)
+    const colon = COLON_FENCE.exec(trimWsStart(body[opener] ?? ''))
+    if (!colon || parseColonOpener(colon[2]) === null) {
+      if (reachedEnd) return null
+      continue
+    }
+    const hostEnd = attachedColonSiblingEnd(body, 0, body.length, opener, (k) => {
+      const measured = indentCols(body[k])
+      if (measured.col !== 0) return false
+      if (host?.kind === 'item') return !!matchMarkerAt(measured)
+      if (host?.kind === 'dd') return DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest)
+      if (host?.kind === 'note') return FOOTNOTE_DEF.test(measured.rest)
+      return false
+    })
+    const own = body.slice(0, hostEnd)
+    const close = findColonCloser(own, opener, colon[1].length)
+    if (close !== -1) return from + close + 1
+    if (!reachedEnd) {
+      if (hostEnd === body.length) continue
+      // An incomplete code span can make one of its payload rows look like a
+      // sibling. A closed span has no such ambiguity and cannot hold later
+      // siblings; an earlier opaque opener alone must not extend the search.
+      let unfinishedCode = false
+      for (let k = opener + 1; k < own.length; k++) {
+        const span = opaqueSpanEnd(own, k)
+        if (span !== -1) { k = span; continue }
+        if (isCodeBlockOpener(own[k])) { unfinishedCode = true; break }
+      }
+      if (unfinishedCode) continue
+    }
+    const blank = own.findIndex((row, k) => k > opener && isBlank(row))
+    return from + (ownLine || blank === -1 ? own.length : blank)
+  }
+}
+
 const underPath = (path, root) => path === root || path.startsWith(`${root}/`)
 
 // The column a written line starts at, for the trace (the walk's work is not counted).
@@ -3778,11 +3827,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const run = top().openRun
         const closer = PURE_FENCE.exec(through?.rest ?? '')?.[1]
         const closesHere = run && closer && closer[0] === run[0] && closer.length >= run.length
-        // One attached fence can retain many blanks before its closer. Cache
-        // the source-column search on the frame rather than rescanning them.
-        const closesLater = run && (top().ownLineHasLaterCloser ??=
-          laterSourceCloser(at, run, attachedTo.host.markerCol, attachedTo.depth))
-        if (!closesHere && !closesLater) {
+        if (!closesHere) {
           attachedFenceMisses.push(at)
           frames.length = 0
           frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
@@ -3856,6 +3901,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         const level = (k) => walkIndent(stripQuotes(lines[k] ?? '', prefixes)?.rest ?? '')
         const opener = attachedOpener(lines.slice(at, end).map((line) => stripQuotes(line, prefixes)?.rest ?? ''), col)
         end = attachedQuoteEnd(at, end, opener, (k) => level(k).rest)
+        if (follower.kind === 'colon') {
+          end = attachedColonBoundary(lines, at, (line) => {
+            const through = stripQuotes(line, prefixes)
+            if (through === null) return null
+            const ind = walkIndent(through.rest)
+            return ' '.repeat(Math.max(0, ind.col - col)) + ind.rest
+          }, false, plusHost) ?? end
+        }
         // A colon closer in the host keeps the attached block open across a
         // blank. Measure the same source-column view that the block reader uses.
         const colon = COLON_FENCE.exec(level(at + opener).rest)
@@ -3925,7 +3978,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         frames.length = 0
         frames.push(...attachedTo.frames, ...openBelow)
       }
-      attachedTo = null
+      if (top().kind !== 'colon' || attachedTo.endsAt(at)) attachedTo = null
     }
     // The block a `+` attached leaves its description open for a sibling (carve#4408).
     if (attachedTo?.host.kind === 'dd' && top().kind !== 'fence') {
@@ -3969,6 +4022,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // A quote opened on another marker line keeps that line's authored
       // marker column even though its reader frame starts at column zero.
       if (f.markerCol !== undefined && CONT_MARKER.test(m.rest) &&
+          !(attachedTo && top().kind === 'colon' && !attachedTo.endsAt(at)) &&
           (f.kind === 'quote' ? docColumn(lines[at], m.rest) - viewDoc === f.viewMarker : m.col === f.markerCol) &&
           (f.kind === 'quote' || m.col < f.col)) {
         plus = f
@@ -5052,8 +5106,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const ind = walkIndent(rest)
       return ' '.repeat(Math.max(0, ind.col - host.markerCol)) + ind.rest
     }
+    let colonBoundary
+    const openColonEndsBefore = (at) => {
+      if (colonBoundary === undefined) {
+        colonBoundary = attachedColonBoundary(lines, from, view, ownLine, host)
+      }
+      return colonBoundary === null ? null : at >= colonBoundary
+    }
     // Measured only when a `+` asks, over the lines since the block began.
     const endsAt = (at) => {
+      const colonEnded = openColonEndsBefore(at)
+      if (colonEnded !== null) return colonEnded
       let last = at
       // A blank after the one block an own-line `+` attached does not take
       // away the host's later marker-column `+` (carve#5639). Ignore the
@@ -7262,6 +7325,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const body = lines.slice(i + 1, end)
           if (ownership) state.ownershipEvents.set(body, { events: ownership.events, offset: ownership.offset + i + 1 })
           if (accepted) state.acceptedMarkerPluses.set(body, { byOwner: accepted.byOwner, offset: accepted.offset + i + 1 })
+          const misses = state.fenceHostMisses?.get(lines)?.filter(index => index > i && index < end)
+          if (misses?.length) state.fenceHostMisses.set(body, misses.map(index => index - i - 1))
           const bodyBraceColumns = authoredBraceColumns.get(lines)?.slice(i + 1, end)
           if (bodyBraceColumns) authoredBraceColumns.set(body, bodyBraceColumns)
           markMeasuredContainerText(state, lines, i + 1, end, ind)
@@ -9476,6 +9541,8 @@ function sameAxes(list, head) {
   return (head.task !== undefined) === list.task
 }
 
+const itemParentPaths = new WeakMap()
+
 function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
   const n = lines.length
   const skipped = new Set()
@@ -9719,6 +9786,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     carryPrefixMemo(state, lines, i, itemLines, 0)
     const headIndex = i
+    const sourceOwnership = state.ownershipEvents?.get(lines)
+    const parentItemPath = itemParentPaths.get(lines) ?? 'doc'
+    const markerOwner = sourceOwnership?.events.get(headIndex + sourceOwnership.offset)?.owner
+    const itemAt = markerOwner?.indexOf('/item:', parentItemPath.length)
+    const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
+    const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
@@ -10781,7 +10854,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const ownership = state.ownershipEvents?.get(lines)
       const decision = ownership?.events.get(i + ownership.offset)
       if (line === '%%' && decision?.form === 'plus' && decision.refused &&
-          decision.owner?.endsWith(`/item:${headIndex + ownership.offset + 1}`)) {
+          decision.owner === itemOwnerPath) {
         if (fence.opaque?.kind === 'code') {
           markAttachmentBoundary(state, itemLines)
           fence.opaque = null
@@ -12521,6 +12594,14 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
             dedentMeasured(ind(row), lines[row], contentCol).meas.col);
       (state.descriptionSourceColumns ??= new WeakMap()).set(itemLines, relativeColumns);
       (state.itemRelativeTermColumns ??= new WeakSet()).add(itemLines)
+    }
+    if (sourceOwnership && itemOwnerPath) {
+      const events = new Map(itemSourceRows.flatMap((row, index) => {
+        const event = sourceOwnership.events.get(row + sourceOwnership.offset)
+        return event ? [[index, event]] : []
+      }))
+      state.ownershipEvents.set(itemLines, { events, offset: 0 })
+      itemParentPaths.set(itemLines, itemOwnerPath)
     }
     item.blocks = state.measuringListExtent ? [] : yield parseBlocksGen(inheritFinalBreak(lines, itemLines, i, state), state, false, true, itemMeas)
     // A literal directive ends its own line (PART 6 I2), so a paragraph after it is a genuine second block (§17 L1).

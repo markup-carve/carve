@@ -1,0 +1,19 @@
+An item-attached colon keeps a later plus
+
+```
+- +
+::: note
+x
++
+zq
+.
+<ul>
+  <li>
+    <aside class="admonition note" aria-label="Note">
+      <p>x
++
+zq</p>
+    </aside>
+  </li>
+</ul>
+```

@@ -202,7 +202,7 @@ test('the spec model gives every decided cell the owner the table names', () => 
 
 test('the root and quoted-host boundary controls render their named owner', () => {
   const rows = TABLE.split('\n').filter(line => /^\| X\d\d /.test(line))
-  assert.equal(rows.length, 10)
+  assert.equal(rows.length, 12)
   const decode = value => {
     const fence = /^`+/.exec(value)?.[0]
     assert.ok(fence && value.endsWith(fence), value)

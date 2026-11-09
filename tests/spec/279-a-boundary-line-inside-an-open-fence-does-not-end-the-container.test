@@ -38,20 +38,10 @@ b
 
 see[^f]
 .
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>n</p>
-      <pre><code>a
-
-b
+<p>b</p>
+<pre><code>
+see[^f]
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ````
 
 ````
@@ -70,10 +60,11 @@ b
     <p>d</p>
     <pre><code>a
 
-b
 </code></pre>
   </dd>
 </dl>
+<p>b</p>
+<pre><code></code></pre>
 ````
 
 ```
@@ -139,11 +130,13 @@ z
   <li>x
     <pre><code>a
 
-b
 </code></pre>
   </li>
 </ul>
-<p>z</p>
+<p>b</p>
+<pre><code>
+z
+</code></pre>
 ````
 
 ```
