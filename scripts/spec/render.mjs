@@ -844,9 +844,11 @@ export function flattenInnerLinks(text) {
   // Keep each frame intact while removing anchors across its position. Splitting
   // here separates the tags of a link whose label contains an inline note.
   const notes = []
+  let marker = '\uE002'
+  while (text.includes(marker)) marker += '\uE002'
   text = text.replace(NOTE_FRAME, (frame) => {
     const index = notes.push(frame) - 1
-    return `\uE002${index}\uE003`
+    return `${marker}${index}\uE003`
   })
   // An inner crossref flattens to its resolved TEXT; it reaches here as a
   // sentinel because PART 9R resolves it in a later pass.
@@ -868,7 +870,7 @@ export function flattenInnerLinks(text) {
     }
     return parsed.img ? m : refFrame({ ...parsed, flat: true })
   })
-  return out.replace(/\uE002(\d+)\uE003/g, (_, index) => notes[Number(index)])
+  return out.replace(new RegExp(`${marker}(\\d+)\uE003`, 'g'), (_, index) => notes[Number(index)])
 }
 
 /*
