@@ -216,6 +216,10 @@
       and combined spans are not atoms; P2 finds them, so an attribute block
       that a bare closer has not taken is visible to them: in ={_a={c_} the
       `{_` forms and the `=` closes nothing.
+      A literal bracket run still bounds its content. An attribute candidate
+      cut by that boundary cannot attach to a host inside the run and remains
+      text: [t[x](/u){title="]"}y](/z) renders the inner link without a
+      title and leaves `{title="]"}` literal.
 
       KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
         emphasis        /      {/ /}      after the closer
