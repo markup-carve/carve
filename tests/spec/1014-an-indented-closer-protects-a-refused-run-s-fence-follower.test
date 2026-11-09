@@ -1,0 +1,17 @@
+An indented closer protects a refused run's fence follower
+
+````
+{.x
+.y}
+```
+wa
+> q
+  ```
+.
+<p>{.x
+.y}
+<code>
+wa
+&gt; q
+</code></p>
+````

@@ -8051,7 +8051,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // run. Keep its matching closer in that paragraph too; otherwise the
       // closer would be reinterpreted as a fresh empty fence opener.
       if (forcedAfterRefusal && refusedFollowerFenceEnd < i && opensFence(lines, i)) {
-        refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1])
+        refusedFollowerFenceEnd = findCloser(lines, i, FENCE.exec(lines[i])[1], true)
       }
       para.push(stripIndent(lines[i]).replace(/[ \t]+$/, ''))
       i++
@@ -8188,11 +8188,13 @@ function hasCloser(lines, idx) {
   return findCloser(lines, idx, m[1]) !== -1
 }
 
-function findCloser(lines, openIdx, run) {
+function findCloser(lines, openIdx, run, refusedFollower = false) {
   const ch = run[0]
   for (let j = openIdx + 1; j < lines.length; j++) {
     layoutWork.closerScan++
-    const c = PURE_FENCE.exec(lines[j])
+    // A refused brace run protects its fence follower through a matching
+    // closer at the closer's own source column (CARVE-P2-035).
+    const c = PURE_FENCE.exec(refusedFollower ? indentCols(lines[j]).rest : lines[j])
     if (!c || c[1][0] !== ch) continue
     if (c[1].length < run.length) continue // shorter run: content (the `where` guard)
     return j
