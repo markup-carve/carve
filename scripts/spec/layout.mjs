@@ -6101,7 +6101,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // whatever its later lines' columns (PART 9 §24 C3, carve#3537).
           // An ancestor may have framed its closer line as lazy text.
           const attributes = attrOpener ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
-          for (let k = 1; k < (attributes?.next ?? 0); k++) bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          for (let k = 1; k < (attributes?.next ?? 0); k++) {
+            noteBraceColumns[bodyLines.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
+            bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          }
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
           // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
           //
@@ -7992,7 +7995,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!lazyComment && !line?.includes(LAZY)) return line
+          // Compare every line in authored columns. A container may rebase
+          // either the opener or a continuation before this paragraph scan.
           const sourceCol = braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
