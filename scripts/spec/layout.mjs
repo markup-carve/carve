@@ -7107,11 +7107,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 : null
               const nestedDescriptionClosed = DEFLIST_TERM.test(lead) &&
                 nestedDefinition && lastLine.col >= 1 + nestedDefinition[1].length &&
-                (HEADING.test(lastLine.rest) || HR.test(lastLine.rest) ||
-                  isTableRow(lastLine.rest) || isDefinitionOrAttributeLine(lastLine.rest))
+                closesNestedParagraph(lastLine.rest)
               const nestedItemClosed = matchMarkerAt(indentCols(lead)) &&
                 lastLine.col >= matchMarkerAt(indentCols(lead)).markerWidth &&
-                isDefinitionOrAttributeLine(lastLine.rest)
+                closesNestedParagraph(lastLine.rest)
               const quotedLead = QUOTE.exec(lead)?.[1] ?? null
               const quotedLast = QUOTE.exec(lastLine.rest)?.[1] ?? null
               const quotedLeadItem = quotedLead === null ? null : matchMarkerAt(indentCols(quotedLead))
@@ -7119,7 +7118,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 ((quotedLead !== null && FOOTNOTE_DEF.test(quotedLead) &&
                   indentCols(quotedLast).col >= FOOTNOTE_BODY_COLUMN) ||
                  (quotedLeadItem && indentCols(quotedLast).col >= quotedLeadItem.markerWidth &&
-                  isDefinitionOrAttributeLine(indentCols(quotedLast).rest)))
+                  closesNestedParagraph(indentCols(quotedLast).rest)))
               // A line-block payload line is inline content, so its stanza stays open (PART 2 line_block).
               if ((nestedDescriptionClosed || nestedItemClosed || nestedQuoteClosed || endsInClosedDescription(bodyLines)) &&
                 !hostEndsInLineBlockStanza(bodyLines, 0, true)) break
@@ -8968,6 +8967,12 @@ const entryAbove = (bodyLines, col) => {
   }
   return false
 }
+// A footnote definition opens a body. Its paragraph can accept a lazy line,
+// unlike an erased definition or attribute line (PART 0 S4).
+const closesNestedParagraph = (text) =>
+  HEADING.test(text) || HR.test(text) || isTableRow(text) ||
+  !FOOTNOTE_DEF.test(text) && isDefinitionOrAttributeLine(text)
+
 // Whether a body's last block is a heading, break, table or definition that a
 // nested description holds, at its marker line or past its content column.
 const endsInClosedDescription = (bodyLines) => {
@@ -8975,15 +8980,14 @@ const endsInClosedDescription = (bodyLines) => {
   while (last >= 0 && isBlank(bodyLines[last])) last--
   if (last < 0 || bodyLines[last].startsWith(LAZY)) return false
   const tail = indentCols(bodyLines[last])
-  const closed = (text) => HEADING.test(text) || HR.test(text) || isTableRow(text) || isDefinitionOrAttributeLine(text)
   const isDescription = (k, measured) => DESCRIPTION_LEAD.test(measured.rest) && opensDescriptionAt(bodyLines, measured.col, k)
-  if (isDescription(last, tail)) return closed(tail.rest.slice(DESCRIPTION_LEAD.exec(tail.rest)[0].length))
+  if (isDescription(last, tail)) return closesNestedParagraph(tail.rest.slice(DESCRIPTION_LEAD.exec(tail.rest)[0].length))
   if (tail.col === 0) return false
   for (let k = last - 1; k >= 0; k--) {
     const measured = indentCols(bodyLines[k])
     if (measured.rest === '' || measured.col >= tail.col) continue
     if (!isDescription(k, measured)) return false
-    return tail.col >= measured.col + DESCRIPTION_LEAD.exec(measured.rest)[0].length && closed(tail.rest)
+    return tail.col >= measured.col + DESCRIPTION_LEAD.exec(measured.rest)[0].length && closesNestedParagraph(tail.rest)
   }
   return false
 }
