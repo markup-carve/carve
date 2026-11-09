@@ -4218,7 +4218,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
-      result.push(out + src)
+      result.push(out + (form.codeHeld ? LAZY : '') + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
@@ -4935,6 +4935,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (at > refusedKept.start && at <= refusedKept.through && FOOTNOTE_DEF.test(rest)) {
       return { kind: 'text', interrupts: false, kept: true }
     }
+    // Inline pairing already holds this brace line, even when it is a lazy
+    // continuation short of the container's content column (carve#5638).
+    if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
     if (missed) {
       const form = classifyShape(rest, owner, at, col)
@@ -8122,7 +8125,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
       if (!forcedAfterRefusal && CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
-      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
+      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
       if (!forcedAfterRefusal && ind(i).rest.startsWith('%%')) break // §10 I5 (comment line or fence)
       if (!forcedAfterRefusal && inItem && para.length > 0 && matchMarkerAt(ind(i))) break // §24 C3
       if (!forcedAfterRefusal && para.length > 0) {

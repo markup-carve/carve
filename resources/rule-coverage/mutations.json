@@ -821,7 +821,7 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5\n",
+          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i)) break // §15 A1 / §10 I5\n",
           "replace": ""
         },
         {
