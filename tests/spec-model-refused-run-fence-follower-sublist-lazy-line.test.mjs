@@ -40,3 +40,17 @@ for (const [name, head, pad] of [
 test('a root paragraph still folds a later list marker into its unclosed code span', () => {
   assert.match(render('{.x\n.y}\n```\nwa\n- li\ntail\n'), /<code>\nwa\n- li\ntail<\/code><\/p>/)
 })
+
+// A fence-shaped line short of the child's column is read in the parent (PART 0 S4):
+// it closes no follower span, and a code fence there takes no lazy line.
+for (const [name, source] of [
+  ['item', '- - a\n    {.x\n    .y}\n    ```\n   ```\ntail\n'],
+  ['stacked plus', '- - +\n    {.x\n    .y}\n    ```\n   ```\ntail\n'],
+  ['quoted stacked plus', '> - +\n>   {.x\n>   .y}\n>   ```\n>  ```\ntail\n'],
+]) {
+  test(`a ${name} keeps the shallower fence out of the follower span`, () => {
+    const output = render(source)
+    assert.match(output, /<code><\/code><\/li>\n\s*<\/ul>\n\s*<pre><code><\/code><\/pre>/)
+    assert.match(output, /<p>tail<\/p>\n?$/)
+  })
+}

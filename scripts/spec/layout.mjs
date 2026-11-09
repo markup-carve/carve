@@ -1851,7 +1851,9 @@ function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody
   let interrupt = -1
   for (let j = runEnd + 1; j < lines.length; j++) {
     if (isBlank(lines[j])) return interrupt < 0 ? j - 1 : interrupt - 1
-    const rest = indentCols(lines[j]).rest
+    const { col, rest } = indentCols(lines[j])
+    // A block short of the run's container is read there (PART 0 S4), a fence-shaped line included.
+    if (col < containerCol && !readsAsProse(rest)) return interrupt < 0 ? j - 1 : interrupt - 1
     const closer = PURE_FENCE.exec(rest)
     if (closer && closer[1][0] === fence[1][0] && closer[1].length >= fence[1].length) return j
     if (interrupt < 0 && (startsParagraphBlock(rest) || isCodeBlockOpener(rest) || isColonBlockOpener(rest) ||
