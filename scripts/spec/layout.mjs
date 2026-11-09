@@ -3760,9 +3760,18 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const reaches = stands && CONT_MARKER.test(trimWs(stands.rest)) && walkIndent(stands.rest).col === attachedTo.host.markerCol
       const codePayloadPlus = own && top().kind === 'fence' && top().family === 'code' &&
         walkIndent(own.rest).col > attachedTo.host.markerCol
-      if ((reaches || own && CONT_MARKER.test(trimWs(own.rest)) && !codePayloadPlus) && attachedTo.endsAt(at)) {
+      // A fence opened beside the attached block, outside its host, holds the `+` as payload (PART 0 S1).
+      const fenceParent = frames.length > 1 ? attachedTo.frames.indexOf(frames.at(-2)) : -1
+      const laterFence = top().kind === 'fence' && fenceParent >= 0 && fenceParent < attachedTo.frames.indexOf(attachedTo.host) &&
+        !attachedTo.frames.includes(top())
+      if (!laterFence && (reaches || own && CONT_MARKER.test(trimWs(own.rest)) && !codePayloadPlus) && attachedTo.endsAt(at)) {
+        // An open fence and its containers stay on top, so the `+` closes them as it would in any host.
+        let shared = 0
+        while (shared < frames.length && shared < attachedTo.frames.length && (frames[shared] === attachedTo.frames[shared] ||
+          frames[shared].kind === attachedTo.frames[shared].kind && frames[shared].line === attachedTo.frames[shared].line)) shared++
+        const openBelow = reaches && top().kind === 'fence' ? frames.slice(shared) : []
         frames.length = 0
-        frames.push(...attachedTo.frames)
+        frames.push(...attachedTo.frames, ...openBelow)
       }
       attachedTo = null
     }
