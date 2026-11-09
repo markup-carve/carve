@@ -37,3 +37,10 @@ test('a fence in a later description list item keeps its item indentation', () =
     '</dl>',
   ].join('\n'))
 })
+
+test('a fence-shaped line in a later line block keeps its payload indentation', () => {
+  const source = [':: t', ': +', '```', 'a', '', '  ::: |', '  a', '   ```', '  b', '  :::'].join('\n')
+  const out = renderDoc(parse(source))
+  assert.match(out, /<div class="line-block">/)
+  assert.match(out, /&nbsp;<code>\nb<\/code><\/p>/)
+})
