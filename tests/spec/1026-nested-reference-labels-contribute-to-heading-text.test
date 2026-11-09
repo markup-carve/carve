@@ -1,0 +1,17 @@
+Nested reference labels contribute to heading text
+
+```
+# a [[x][]][]
+.
+<section id="a-x">
+  <h1>a [[x][]][]</h1>
+</section>
+```
+
+```
+# [[x][]][]
+.
+<section id="x">
+  <h1><a href="#x">x</a></h1>
+</section>
+```
