@@ -1,0 +1,17 @@
+Open code makes brace run text before fence
+
+````
+p
+ foo](`url)
+ {.x
+ .y}
+ ```
+ z
+.
+<p>p
+foo](<code>url)
+{.x
+.y}</code></p>
+<pre><code>z
+</code></pre>
+````
