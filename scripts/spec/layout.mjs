@@ -1835,6 +1835,34 @@ function refusedBlockBraceRun(lines, start, cache) {
 
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
+// Advance an open inline code span or braced comment over one paragraph line.
+function scanInlineSpan(span, line) {
+  for (let k = 0; k < line.length; k++) {
+    if (span.comment) {
+      if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
+      continue
+    }
+    if (line[k] === '`') {
+      let width = 1
+      while (line[k + width] === '`') width++
+      if (span.codeRun === 0) span.codeRun = width
+      else if (span.codeRun === width) span.codeRun = 0
+      k += width - 1
+      continue
+    }
+    if (span.codeRun) continue
+    if (line[k] === '\\') {
+      let width = 1
+      while (line[k + width] === '\\') width++
+      const escaped = line[k + width] === '`' || line[k + width] === '{'
+      k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
+      continue
+    }
+    if (line[k] === '{' && line[k + 1] === '%') { span.comment = true; k++ }
+  }
+  return span
+}
+
 function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody = false) {
   let runEnd = refusedBlockBraceRun(lines, start, cache)
   if (runEnd === null) return null
@@ -4242,6 +4270,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // It meets the `+` where the walk moved it (PART 0 S3).
       lead(lonePlus.markerCanon)
       result.push(out + src)
+      if (!lonePlus.para) lonePlus.paraFrom = at
       lonePlus.para = true
       lonePlus.last = 'para'
       lonePlus.openTerm = false
@@ -4290,6 +4319,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // marker to the readers (PART 0 S3): what it attaches keeps the list's shift.
       if (owner.plusLine === at) carryPlus(owner, sibling, m.col)
       if (owner.para && FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
+      if (!owner.para) owner.paraFrom = at
       owner.para = true
       owner.last = 'para'
       owner.openTerm = false
@@ -4501,6 +4531,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
         frame.para = !quotedRefusedNote && frame.plus !== at &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
+        if (frame.para) frame.paraFrom = at
         frame.last = 'para'
         return
       }
@@ -4904,7 +4935,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
-    if (rest[0] === '{' && at !== refusedKept.start) {
+    if (rest[0] === '{' && at !== refusedKept.start && !codeSpanOpenAbove(owner, at)) {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
       const kept = refusedRunKeptThrough(new Proxy([], {
         get(_, key) {
@@ -4922,6 +4953,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
     } else if (rest[0] === '{' && at <= refusedKept.through) return { kind: 'text', interrupts: false, kept: true }
     return classifyShape(rest, owner, at, col)
+  }
+
+  // A line inside a still-open inline code span starts no block-position brace run (CARVE-P2-035, carve#5618).
+  function codeSpanOpenAbove(owner, at) {
+    if (!owner.para || owner.paraFrom === undefined) return false
+    const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+    // One pass per paragraph: the scan resumes where the last query stopped.
+    if (owner.spanScan?.from !== owner.paraFrom || owner.spanScan.upto > at) {
+      owner.spanScan = { from: owner.paraFrom, upto: owner.paraFrom, span: { codeRun: 0, comment: false } }
+    }
+    const scan = owner.spanScan
+    for (; scan.upto < at; scan.upto++) scanInlineSpan(scan.span, trimWsStart(stripLazy(stripQuotes(lines[scan.upto], depth)?.rest ?? '')))
+    return scan.span.codeRun !== 0
   }
 
   function classifyShape(rest, owner, at, col) {
@@ -8006,32 +8050,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     const refusedCache = { commentScannedThrough: -1 }
     const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
     const inlineSpanOpen = () => {
-      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) {
-        const line = para[inlineSpan.scanned]
-        for (let k = 0; k < line.length; k++) {
-          if (inlineSpan.comment) {
-            if (line[k] === '%' && line[k + 1] === '}') { inlineSpan.comment = false; k++ }
-            continue
-          }
-          if (line[k] === '`') {
-            let width = 1
-            while (line[k + width] === '`') width++
-            if (inlineSpan.codeRun === 0) inlineSpan.codeRun = width
-            else if (inlineSpan.codeRun === width) inlineSpan.codeRun = 0
-            k += width - 1
-            continue
-          }
-          if (inlineSpan.codeRun) continue
-          if (line[k] === '\\') {
-            let width = 1
-            while (line[k + width] === '\\') width++
-            const escaped = line[k + width] === '`' || line[k + width] === '{'
-            k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
-            continue
-          }
-          if (line[k] === '{' && line[k + 1] === '%') { inlineSpan.comment = true; k++ }
-        }
-      }
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) scanInlineSpan(inlineSpan, para[inlineSpan.scanned])
       return inlineSpan.codeRun !== 0 || inlineSpan.comment
     }
     while (i < n && !isBlank(lines[i])) {
