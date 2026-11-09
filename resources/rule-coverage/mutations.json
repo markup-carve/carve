@@ -1338,8 +1338,8 @@
       "edits": [
         {
           "file": "scripts/spec/html.mjs",
-          "find": "return labelKey(stripTags(text)).normalize('NFC')",
-          "replace": "return labelKey(stripTags(text)).normalize('NFC').toLowerCase()"
+          "find": "return labelKey(text).normalize('NFC')",
+          "replace": "return labelKey(text).normalize('NFC').toLowerCase()"
         }
       ]
     },

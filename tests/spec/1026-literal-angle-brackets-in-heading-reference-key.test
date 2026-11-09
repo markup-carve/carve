@@ -1,0 +1,9 @@
+Literal angle brackets in heading reference key
+
+```
+# [<>][]
+.
+<section id="s">
+  <h1><a href="#s">&lt;&gt;</a></h1>
+</section>
+```

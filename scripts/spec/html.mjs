@@ -1745,7 +1745,7 @@ function resolveRefsOnce(html, ctx) {
  */
 function refKey(text) {
   // R1's label key: U+0020 runs only, so a tab or a no-break space is content.
-  return labelKey(stripTags(text)).normalize('NFC')
+  return labelKey(text).normalize('NFC')
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */
