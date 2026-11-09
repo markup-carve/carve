@@ -1747,13 +1747,14 @@ function tryAttrLine(lines, i, openerColumn = 0) {
       buf += line.slice(j) + '\n'
       li++
       layoutWork.attrScan++
-      if (li >= lines.length || isBlank(lines[li])) return null // A5
+      const continuation = li < lines.length ? lines[li] : undefined
+      if (continuation === undefined || isBlank(continuation)) return null // A5
       // The indentation belongs to this run only when it passes the opening
       // brace's column. Compare source columns before stripping its padding.
-      if (indentCols(lines[li]).col <= blockColumn) return null
+      if (indentCols(continuation).col <= blockColumn) return null
       // A continuation starts a token or closes, and no token starts with `{`.
-      if (/^[ \t]*\{/.test(lines[li])) return null
-      line = lines[li]
+      if (/^[ \t]*\{/.test(continuation)) return null
+      line = continuation
       // No attribute list continues on a line that opens a block, so a run of
       // openers is scanned once (PART 9 §9 LINEAR TIME).
       if (/^[ \t]*\{/.test(line)) return null
@@ -1794,7 +1795,7 @@ function refusedBlockBraceRun(lines, start, cache) {
   let shallow = false
   let depth = 0
   let blockColumn = opener.col
-  for (let i = start; i < lines.length && !isBlank(lines[i]); i++) {
+  for (let i = start; i < lines.length && lines[i] !== undefined && !isBlank(lines[i]); i++) {
     const line = lines[i]
     const measured = indentCols(line)
     // A new attribute opener cannot continue the preceding run. Stop here so
