@@ -6592,6 +6592,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           let attachPending = !leadTab && CONT_MARKER.test(trimWs(dm[2]))
           let markerLinePlus = attachPending
           let attachedFrom = -1
+          let attachedOwnLine = false
           if (leadTab) pushBody(lazyFrame(trimLineEnd(dm[2])), i - 1)
           else if (!attachPending) {
             // The marker-line content stands at the body column, not at the marker.
@@ -6654,8 +6655,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 continue
               }
               // PART 0 S2, as for a footnote body.
-              if (reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at)) &&
-                  !attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))) {
+              // An own-line `+` fence reads like a body fence and keeps its trailing blank (carve#5560).
+              if (attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))
+                ? attachedOwnLine : reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at))) {
                 for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
               }
               break
@@ -6720,6 +6722,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               end = attachedQuoteEnd(i, end, opener, (k) => ind(k).rest)
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
               attachedFrom = bodyLines.length
+              attachedOwnLine = !markerLinePlus
               const pulled = []
               for (let k = i; k < end; k++) {
                 const caption = k > i && (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceBodyColumn && attachedQuoteCaption(pulled, ind(k).rest)
