@@ -25,6 +25,8 @@ test('CARVE-P12-002 keeps one text run and separates an escaped character', () =
     ] }],
   })).children[0].children
   assert.deepEqual(assembled.map(({ type, value }) => [type, value]), [['text', 'a b']])
+  const parsed = parse('foo_bar_baz\n').children[0].children
+  assert.deepEqual(parsed.map(({ type, value }) => [type, value]), [['text', 'foo_bar_baz']])
   const plain = tree('a  b\n').children[0].children
   assert.deepEqual(plain.map(({ type, value }) => [type, value]), [['text', 'a  b']])
   const escaped = tree('a\\-b\n').children[0].children
