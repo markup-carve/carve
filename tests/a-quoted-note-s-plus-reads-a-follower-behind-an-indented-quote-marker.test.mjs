@@ -10,7 +10,10 @@ const asLetter = (body) => html(`> [^b]: x\n${body}\n\nr[^b]\n`).replace('<p>x',
 
 test('a paragraph behind an indented quote marker refuses the +', () => {
   assert.equal(note('> para'), '<p>para')
-  for (const lead of [' ', '  ', '   ', '\t']) assert.equal(note(`${lead}> para`), '<p>para')
+  // A one-space lead puts the follower between marker and body columns, so
+  // CARVE-P9-067 leaves it in the quote (carve#5620).
+  assert.equal(note(' > para'), '<p>')
+  for (const lead of ['  ', '   ', '\t']) assert.equal(note(`${lead}> para`), '<p>para')
 })
 
 test('a heading and other blocks behind an indented quote marker read as behind a letter', () => {
