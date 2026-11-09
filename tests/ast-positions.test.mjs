@@ -1132,6 +1132,7 @@ test('an astral footnote label does not shift a same-line list start', () => {
  * step of each engine's fix.
  */
 const DECLARED_LIST_INDENT_START = [
+  "1030-a-refused-brace-run-keeps-a-following-plus-literal.crv 1  markup-carve/carve#5658: pinned carve-js still treats the ruled literal plus as a refused marker",
   "206-a-nested-list-in-a-footnote-body-stays-nested.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",

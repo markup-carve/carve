@@ -114,6 +114,10 @@ export function ownerCode(cell, html) {
   const outer = cell.form === 'stacked' ? 'doc/item' : 'doc'
   const hostPath = cell.host === 'note' ? 'doc/footnote' : `${outer}/${cell.host === 'dd' ? 'dd' : cell.host}`
   if (cell.host === 'quote' && closedQuotes > 0 && path.includes('/quote')) return cell.form === 'stacked' ? 'P' : 'D'
+  // A fence-shaped follower can open a second code block in the same quote.
+  // Its payload is in the host, not in the block that the `+` attached.
+  if (cell.host === 'quote' && cell.follower === 'content+1 fence' &&
+      cell.block !== 'unclosed fence' && path.endsWith('/quote/code')) return 'H'
   let lastBlock = -1
   for (const mb of before.matchAll(BLOCK_TAG)) lastBlock = mb.index
   const blockTag = lastBlock >= 0 ? before.slice(lastBlock, before.indexOf('>', lastBlock) + 1) : ''
@@ -140,7 +144,7 @@ function expected(rows, cell) {
   const code = o === 'Block (span)' ? 'B~'
     : o === 'Block' || o.startsWith('Block, Document') ? (o.startsWith('Block, Document') && stacked && cell.follower === 'col 0' ? 'D' : 'B')
       : o.startsWith('Block for column-0') ? (stacked ? 'D' : 'B')
-        : o === 'Host' ? 'H'
+        : o === 'Host' || o === 'Host, in a new fence' ? 'H'
           : o === 'Host (span)' ? 'H~'
           : o === 'Parent' ? (stacked ? 'P' : 'D')
             : o === 'Parent, in a new fence' ? (stacked ? 'Pc' : 'Dc')
@@ -198,8 +202,12 @@ test('the spec model gives every decided cell the owner the table names', () => 
 
 test('the root and quoted-host boundary controls render their named owner', () => {
   const rows = TABLE.split('\n').filter(line => /^\| X\d\d /.test(line))
-  assert.equal(rows.length, 6)
-  const decode = value => value.slice(1, -1).replaceAll('\\n', '\n')
+  assert.equal(rows.length, 8)
+  const decode = value => {
+    const fence = /^`+/.exec(value)?.[0]
+    assert.ok(fence && value.endsWith(fence), value)
+    return value.slice(fence.length, -fence.length).replaceAll('\\n', '\n')
+  }
   for (const line of rows) {
     const cells = line.split('|').slice(1, -1).map(value => value.trim())
     assert.equal(cells.length, 10, cells[0])

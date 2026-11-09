@@ -191,18 +191,22 @@
    STEP 1, PAYLOAD.
 
      S1 PAYLOAD. Inside an open code, raw or comment fence, a line is
-        tested in this order:
+        tested against this ownership rule first: An attached fence owns every
+        line up to its end. Only the fence's own end condition (its closer, or
+        the first blank for a marker-line `+`) ends it; a line that misses the
+        host ends only an own-line attachment.
+
+        The consequences are tested in this order:
 
         1. the fence's closer ends it;
-        2. a nonblank line that misses the fence's owner in S2 ends it;
-        3. the first blank ends an unclosed code fence that a marker-line `+`
-           attached (PART 9 §17 L3, carve#5304);
+        2. for an own-line attachment, a nonblank line that misses the fence's
+           owner in S2 ends it;
+        3. apply the marker-line first-blank end (PART 9 §17 L3, carve#5304);
         4. every other line is payload: it opens nothing, takes no `+` and
            changes no frame state.
 
-        Step 3 covers a marker-line `+` only. A fence an own-line `+`
-        attached reads like any fence in its host's body and keeps its
-        trailing blank (PART 9 §17 L4, carve#5560).
+        An own-line attached fence keeps its trailing blank (PART 9 §17 L4,
+        carve#5560).
 
         A host reads a closer at its column whatever stands between the
         blank and the closer, so a payload line there does not end a fence

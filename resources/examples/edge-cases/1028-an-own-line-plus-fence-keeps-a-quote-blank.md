@@ -1,5 +1,5 @@
 ---
-page: edge-quotes
+page: edge-containers
 ---
 
 ## An own line plus fence keeps a quote blank
@@ -22,7 +22,8 @@ a
   <p>p</p>
   <pre><code>a
 
-zq</code></pre>
+zq
+</code></pre>
 </blockquote>
 ```
 

@@ -5046,7 +5046,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const openFence = FENCE.exec(first)
       const ownLineFence = openFence && parseFenceInfo(openFence[2], openFence[1]) !== null &&
         !hasCloser(lines.slice(from, at).map(view), 0)
-      if (!ownLineFence) while (last > from && isBlank(view(lines[last - 1]) ?? lines[last - 1])) last--
+      // A definition attached inside a passed note retains its own body
+      // boundary; trimming that separator would end the nested body early.
+      if (!ownLineFence && (host.kind === 'item' || !FOOTNOTE_DEF.test(first)))
+        while (last > from && isBlank(view(lines[last - 1]) ?? lines[last - 1])) last--
       if (last <= from) return false
       const own = lines.slice(from, last).map(view)
       // T6: a table's rows stay its rows at any indent, so the block ends where they do.
@@ -5455,7 +5458,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
     ownershipEvents: new WeakMap([[lines, { events: ownershipEvents, offset: 0 }]]),
     acceptedMarkerPluses: new WeakMap([[lines, { byOwner: walked.acceptedPlusesByOwner, offset: 0 }]]),
-    attachmentBoundaries: new WeakMap([[lines, walked.attachedFenceMisses]]),
+    fenceHostMisses: new WeakMap([[lines, walked.attachedFenceMisses]]),
     losingNoteBody: losingNoteBody(sentinel),
     refusedNoteBody: refusedNoteBody(sentinel),
   }
@@ -5559,6 +5562,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   delete state.prefixMemos
   delete state.blockEndMemo
   delete state.attachmentBoundaries
+  delete state.fenceHostMisses
   delete state.ownershipEvents
   delete state.acceptedMarkerPluses
   delete state.losingNoteBody
@@ -6125,7 +6129,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const attached = takeOneBlock(lines, i, state, ind(i).L?.col ?? ind(i).col)
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
         let next = Math.min(attached.next,
-          state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n)
+          state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
         // A losing definition in the invisible lead takes no block. Measure
         // the winning marker's actual first block from its first visible line,
         // retaining the authored columns before the body reader rebases them.
@@ -6293,7 +6297,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
-        if (sortedHas(state.attachmentBoundaries?.get(lines), i)) break
+        if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
         // The ownership walk has already refused this marker and retained the
         // note as owner. Its invisible placeholder must not end the note body.
         const ownership = state.ownershipEvents?.get(lines)
@@ -6422,7 +6426,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           attachPending = true
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
           const end = Math.min(takeOneBlock(lines, i, state, measured.col).next,
-            state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n)
+            state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
           attachedFrom = bodyLines.length
           ownLineAttached = true
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
@@ -6837,7 +6841,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
-            if (sortedHas(state.attachmentBoundaries?.get(lines), i)) break
+            if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
             // A new span needs its own answer; payload rows keep the prior one.
             if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
@@ -6931,7 +6935,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
               let end = Math.min(takeOneBlock(lines, i, state, indentCols(lines[i]).col, false, siblingAt).next,
-                state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n)
+                state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
               // The refused run keeps its first fence follower through that
               // fence's closer. A later opener starts another block, even when
               // the attached paragraph's ordinary block probe scanned past it.
@@ -10573,10 +10577,10 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // the second needs a `+` of its own. The item's boundary set adds its
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
-        sortedHas(state.attachmentBoundaries?.get(lines), idx) ||
+        sortedHas(state.fenceHostMisses?.get(lines), idx) ||
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, Math.min(ind(i).col, blockColumn))
-      const miss = state.attachmentBoundaries?.get(lines)?.find(index => index > i) ?? n
+      const miss = state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n
       end = Math.min(end, miss)
       let attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
@@ -11011,7 +11015,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const { col } = jm
         // The ownership walk already ended an attached fence when this line
         // missed its host. Hand the line to the parent parser (S1 step 2).
-        if (sortedHas(state.attachmentBoundaries?.get(lines), j)) { i = j; break }
+        if (sortedHas(state.fenceHostMisses?.get(lines), j)) { i = j; break }
         const nm = matchMarkerAt(jm, col >= contentCol ? contentCol : 0)
         // PART 9 §11 N1a: an entry after the run sees all of it, as a sibling marker does (carve#4759).
         const entryAfterRun = col >= contentCol && /^::? (?=[ \t]*[^ \t\n\r])/.test(jm.rest) && !/^:::/.test(jm.rest)
