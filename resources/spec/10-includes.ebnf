@@ -175,6 +175,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       letter, digit or `_` (`#regional`) is not a marker; run on by any
       other character (`#region-x`) it is a malformed marker. The
       opening marker MUST name a region; a closing marker MAY omit the name.
+      Text after a recognized marker name, other than spaces or tabs and the
+      permitted comment closer, is a malformed marker in both modes.
       Distinct names MAY nest. A named closer MUST match the innermost open
       name. The same name MUST NOT open twice in one file, even sequentially.
       An unmatched, mismatched, unclosed, duplicate or malformed marker makes
