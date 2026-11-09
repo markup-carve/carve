@@ -3999,8 +3999,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const payloadPath = trace ? ownerPath() : null
       let payloadForm = 'payload'
       const spanBefore = inner.span
-      const authoredPayload = inner === pairedAttachedFence && m.rest !== '' && !PURE_FENCE.test(m.rest)
-      const shiftedCloser = inner === pairedAttachedFence && PURE_FENCE.test(m.rest) &&
+      const pureRun = PURE_FENCE.exec(m.rest)?.[1]
+      const matchingRun = pureRun && inner.openRun && pureRun[0] === inner.openRun[0] &&
+        pureRun.length >= inner.openRun.length
+      const authoredPayload = inner === pairedAttachedFence && m.rest !== '' && !matchingRun
+      const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
       lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - sourceShift, inner.canon) :
@@ -4385,6 +4388,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           }
         }
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon, once,
+          openRun: form.family === 'code' ? FENCE.exec(m.rest)?.[1] : undefined,
           pullCol: once === undefined ? undefined : col, pullHost: once === undefined ? undefined : attachedTo.host.markerCol,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
           entryLast: invisibleInEntry ? owner.last : undefined })

@@ -35,3 +35,8 @@ test('a shifted closer keeps the authored indentation of its payload (#5603)', (
     '<ul>\n  <li>\n    <pre><code>\n x\n</code></pre>\n  </li>\n</ul>')
 })
 
+test('a different fence character remains indented payload', () => {
+  assert.equal(html('- +\n```\n\n ~~~\n```\n'),
+    '<ul>\n  <li>\n    <pre><code>\n ~~~\n</code></pre>\n  </li>\n</ul>')
+})
+
