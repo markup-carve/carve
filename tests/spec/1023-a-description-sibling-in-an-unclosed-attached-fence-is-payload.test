@@ -1,0 +1,18 @@
+A description sibling in an unclosed attached fence is payload
+
+````
+:: t
+: +
+```
+a
+: dd
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <pre><code>a
+: dd
+</code></pre>
+  </dd>
+</dl>
+````

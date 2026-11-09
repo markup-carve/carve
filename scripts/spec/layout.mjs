@@ -3804,7 +3804,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const level = stripQuotes(line, prefixes)
           if (level === null) return null
           const ind = walkIndent(level.rest)
-          if (plusHost.kind === 'dd' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
+          if (plusHost.kind === 'dd' && follower.family !== 'code' && ind.col < plusHost.col && DESCRIPTION_TEXT.test(ind.rest)) return null
           // A marker-line item's closer may stand before its content column.
           // The length probe reads that run at the attached fence's column.
           if (follower.family === 'code' && plusHost.kind === 'item' &&
@@ -3845,7 +3845,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       attachedTo = null
     }
     // The block a `+` attached leaves its description open for a sibling (carve#4408).
-    if (attachedTo?.host.kind === 'dd') {
+    if (attachedTo?.host.kind === 'dd' && top().kind !== 'fence') {
       const stands = stripQuotes(src, attachedTo.depth)
       const line = stands && walkIndent(stands.rest)
       const parent = attachedTo.frames[attachedTo.frames.indexOf(attachedTo.host) - 1]
