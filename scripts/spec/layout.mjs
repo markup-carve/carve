@@ -11666,7 +11666,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A sibling marker ends an open comment span under S1 and is then read as a sibling.
       const spanEndsAtSibling = fence.opaque?.kind === 'comment' && nm && columnOwner(nm.indent) === 'outer'
       if (!commentTokenBelow && (nestedVerbatim() || fenceUnderAbsorbed !== null ||
-          (fence.opaque && fence.opaque.opens !== false && !spanEndsAtSibling))) break
+          (fence.opaque && fence.opaque.opens !== false && !spanEndsAtSibling &&
+            // A paired verse run is an inline span: a lazy line still folds into its stanza (carve#5488).
+            !(fence.opaque.payload && !nm && foldablePlainLine(lm.rest))))) break
       if (nm && columnOwner(nm.indent) === 'outer') {
         loosenBeforeSibling(nm)
         break // sibling or outer list
