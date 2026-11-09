@@ -1902,8 +1902,8 @@ function resolveFootnotes(html, ctx) {
         ids.push(id)
         referenceIds.set(n, ids)
         return anchorDepth > 0
-          ? `<sup id="${id}"${remaining}>${n}</sup>`
-          : `<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining.replace(/ (?:href|role)="[^"]*"/gi, '')}><sup>${n}</sup></a>`
+          ? rawFrame(`<sup id="${id}"${remaining}>${n}</sup>`)
+          : rawFrame(`<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining.replace(/ (?:href|role)="[^"]*"/gi, '')}><sup>${n}</sup></a>`)
       }
       if (json !== undefined) {
         let parsed
@@ -1987,11 +1987,11 @@ function resolveFootnotes(html, ctx) {
     // the note number is nowhere in this link's text.
     const label_ = LABELS.footnoteBacklink
     const backlink = total === 1
-      ? `<a href="#${referenceIds.get(n)?.[0] ?? `fnref${n}`}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`
+      ? rawFrame(`<a href="#${referenceIds.get(n)?.[0] ?? `fnref${n}`}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`)
       : Array.from({ length: total }, (_, kk) => {
           const refId = referenceIds.get(n)?.[kk] ?? (kk === 0 ? `fnref${n}` : `fnref${n}-${kk + 1}`)
           const name = escapeAttr(`${label_} ${kk + 1}`)
-          return `<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`
+          return rawFrame(`<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`)
         }).join(' ')
     if (rendered.endsWith('</p>')) {
       rendered = rendered.slice(0, -4) + backlink + '</p>'
@@ -2101,21 +2101,40 @@ function resolveCrossrefs(html, ctx) {
 // --- PART 9R R3: abbreviations ----------------------------------------------
 const RAW_OR_TAG = new RegExp(`(${RAW_MARK}[\\s\\S]*?${RAW_MARK}|<[^>]*>)`)
 const ENTITY_OR_WORD = /&#?[0-9A-Za-z]+;|[\p{L}\p{N}]+/gu
+const INLINE_EDGE = /^<\/?(?:a|abbr|b|del|em|i|ins|mark|s|small|span|strong|sub|sup|u)(?:\s[^>]*)?>$/
 function applyAbbreviations(html, ctx) {
   // transform only text segments outside tags, raw output and code/pre and math
   // spans, whose content is a code span's verbatim text (PART 9 §18)
-  const parts = html.split(RAW_OR_TAG)
+  const sourceParts = html.split(RAW_OR_TAG)
+  const parts = [...sourceParts]
+  // Tags belonging to eligible inline nodes have no character of their own.
+  // A block, raw frame or verbatim node ends the run being tested by R3.
+  const adjacent = (index, direction) => {
+    for (let at = index + direction; at >= 0 && at < sourceParts.length; at += direction) {
+      const part = sourceParts[at]
+      if (part === '') continue
+      if (INLINE_EDGE.test(part)) continue
+      if (part.startsWith('<') || part.startsWith(RAW_MARK)) return null
+      const char = direction < 0 ? Array.from(part).at(-1) : Array.from(part)[0]
+      return char === '\uE000' || char === '\uE001' ? null : char
+    }
+    return null
+  }
   let inCode = 0
   let inAbbr = 0
   let inMath = false
   // One pass over the words of the text: an expansion is never scanned again,
   // and the name of an entity is not a word of the text.
-  const expand = (text) => text.replace(ENTITY_OR_WORD, (hit) => {
+  const expand = (text, left, right) => text.replace(ENTITY_OR_WORD, (hit, at) => {
     const expansion = ctx.abbrDefs.get(hit)
-    return expansion === undefined ? hit : `<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`
+    if (expansion === undefined) return hit
+    const before = at === 0 ? left : Array.from(text.slice(0, at)).at(-1)
+    const after = at + hit.length === text.length ? right : Array.from(text.slice(at + hit.length))[0]
+    if (before && /[\p{L}\p{N}]/u.test(before) || after && /[\p{L}\p{N}]/u.test(after)) return hit
+    return `<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`
   })
   for (let i = 0; i < parts.length; i++) {
-    const p = parts[i]
+    const p = sourceParts[i]
     if (p.startsWith(RAW_MARK)) continue
     if (p.startsWith('<')) {
       if (/^<(code|pre)[\s>]/.test(p)) inCode++
@@ -2125,7 +2144,7 @@ function applyAbbreviations(html, ctx) {
       // a math span holds escaped text only, so its first </span> closes it;
       // its delimiter tells it from an authored span with the same classes
       const math = /^<span\s(?:[^>]*\s)?class="math (inline|display)[\s"]/.exec(p)
-      if (math && parts[i + 1]?.startsWith(math[1] === 'inline' ? '\\(' : '\\[')) inMath = true
+      if (math && sourceParts[i + 1]?.startsWith(math[1] === 'inline' ? '\\(' : '\\[')) inMath = true
       else if (inMath && p === '</span>') inMath = false
       continue
     }
@@ -2133,13 +2152,13 @@ function applyAbbreviations(html, ctx) {
     let result = ''
     let at = 0
     for (const frame of p.matchAll(REF_FRAME)) {
-      result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at, frame.index) : expand(p.slice(at, frame.index))
+      result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at, frame.index) : expand(p.slice(at, frame.index), at === 0 ? adjacent(i, -1) : null, null)
       let parsed
       try { parsed = JSON.parse(frame[1]) } catch { parsed = null }
       result += parsed?.opaque ? parsed.literal : frame[0]
       at = frame.index + frame[0].length
     }
-    result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at))
+    result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at), at === 0 ? adjacent(i, -1) : null, adjacent(i, 1))
     parts[i] = result
   }
   return parts.join('').replaceAll(RAW_MARK, '')

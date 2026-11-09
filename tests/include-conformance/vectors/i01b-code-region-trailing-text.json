@@ -1,0 +1,28 @@
+{
+  "name": "i01b-code-region-trailing-text",
+  "description": "A code-mode marker with text after its name invalidates region selection.",
+  "rules": [
+    "I1b"
+  ],
+  "mode": "virtual",
+  "resolver": "virtual",
+  "entry": "{{ child @code:txt @region:r }}",
+  "files": {
+    "child": "// #region r extra\nx\n// #endregion r"
+  },
+  "expected": {
+    "html": "<p>{{ child @code:txt @region:r }}</p>",
+    "fmt": "{{ child @code:txt @region:r }}\n",
+    "warnings": [
+      {
+        "rule": "include-region-invalid"
+      }
+    ],
+    "dependencies": [
+      {
+        "id": "child",
+        "resolved": true
+      }
+    ]
+  }
+}

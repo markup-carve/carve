@@ -406,7 +406,9 @@
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
          delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
-         differs -> a new sibling list at the same indent. Example:
+         differs -> a new sibling list at the same indent. A region marker
+         standing as the list's sibling (CARVE-P11-073(a)) ends that list;
+         the next item starts another even when all axes match. Example:
            - a              produces:    <ul><li>a</li><li>b</li></ul>
            - b                            <ul><li>c</li><li>d</li></ul>
            * c

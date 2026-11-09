@@ -1455,6 +1455,8 @@ export const vectors = [
     '{{ child @region:demo }}', { child: '%% #region demo\nBody.\n%% #endregion demo\n%% #endregion' }),
   v('i01b-region-malformed-marker', 'Content after a marker name makes region selection invalid.', ['I1b'],
     '{{ child @region:demo }}', { child: '%% #region demo extra\nBody.\n%% #endregion demo' }),
+  v('i01b-code-region-trailing-text', 'A code-mode marker with text after its name invalidates region selection.', ['I1b'],
+    '{{ child @code:txt @region:r }}', { child: '// #region r extra\nx\n// #endregion r' }),
   v('i01b-region-unnamed-opener', 'An opening marker must name its region.', ['I1b'],
     '{{ child @region:demo }}', { child: '%% #region\n%% #region demo\nBody.\n%% #endregion demo\n%% #endregion' }),
   v('i01b-region-keyword-run-on', 'A marker keyword followed by punctuation is a malformed marker.', ['I1b'],

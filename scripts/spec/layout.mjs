@@ -9430,6 +9430,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
   let lastItemEnd = null
   const commentsBeforeSibling = (at) => {
     if (at >= n || !invisibleAt(at)) return at
+    // A region marker at the list's column is its sibling (P11-073(a)).
+    // It cannot be erased while collecting the next item of this list.
+    if (ind(at).col === baseIndent && REGION_MARKER.test(ind(at).rest)) return at
     // Invisible lines are erased from layout, so blank lines on either side
     // belong to the same run (PART 0 S1, CARVE-P9-013, CARVE-P9-014).
     let run = 0
@@ -9438,6 +9441,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let longest = run
     let k = at
     while (k < n && (ind(k).rest === '' || invisibleAt(k))) {
+      if (ind(k).col === baseIndent && REGION_MARKER.test(ind(k).rest)) break
       if (ind(k).rest === '') {
         blanks++
         longest = Math.max(longest, ++run)

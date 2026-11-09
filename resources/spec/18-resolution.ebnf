@@ -245,7 +245,9 @@
       BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
       term when the adjacent character is absent or is not a Unicode letter
       or number (general category L or N). CARVE-P3-013 uses the same
-      Unicode boundary class for emphasis. A term matches only in ordinary
+      Unicode boundary class for emphasis. The adjacent character is tested
+      across eligible inline node edges in the rendered text; an element edge
+      does not itself supply a boundary. A term matches only in ordinary
       text the author wrote in the inline flow, at any depth of inline markup,
       so the content of emphasis and of a bracket run counts. Anything else
       is outside the scan: what a construct holds verbatim, as its name or as
