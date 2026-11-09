@@ -3768,11 +3768,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (attachedTo?.ownLine && top().kind === 'fence' && isBlank(lines[at - 1] ?? '') && !isBlank(src)) {
       const through = stripQuotes(src, attachedTo.depth)
       const col = through === null ? -1 : walkIndent(through.rest).col
-      if (col > attachedTo.host.markerCol && col < attachedTo.host.col) {
-        attachedFenceMisses.push(at)
-        frames.length = 0
-        frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
-        attachedTo = null
+      if (col < attachedTo.host.col &&
+          !(col === attachedTo.host.markerCol && CONT_MARKER.test(through?.rest ?? ''))) {
+        const run = top().openRun
+        const closer = PURE_FENCE.exec(through?.rest ?? '')?.[1]
+        const closesHere = run && closer && closer[0] === run[0] && closer.length >= run.length
+        // One attached fence can retain many blanks before its closer. Cache
+        // the source-column search on the frame rather than rescanning them.
+        const closesLater = run && (top().ownLineHasLaterCloser ??=
+          laterSourceCloser(at, run, attachedTo.host.markerCol, attachedTo.depth))
+        if (!closesHere && !closesLater) {
+          attachedFenceMisses.push(at)
+          frames.length = 0
+          frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
+          attachedTo = null
+        }
       }
     }
     // A blank outside the quote that granted a `+` ends its attached block
@@ -10738,6 +10748,27 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // An unclosed span a refused run's paragraph kept ends with that paragraph (CARVE-P2-035).
       if (fence.opaque?.refusedThrough !== undefined && i > fence.opaque.refusedThrough) fence.opaque = null
       const line = lines[i]
+      // The walk consumed a refused marker without changing the owner's
+      // frame (CARVE-P9-067). Its invisible placeholder is not a comment that
+      // can close this item. It does end an unclosed fence at the marker
+      // column, so the next content-column line opens in the retained item.
+      const ownership = state.ownershipEvents?.get(lines)
+      const decision = ownership?.events.get(i + ownership.offset)
+      if (line === '%%' && decision?.form === 'plus' && decision.refused &&
+          decision.owner?.endsWith(`/item:${headIndex + ownership.offset + 1}`)) {
+        if (fence.opaque?.kind === 'code') {
+          markAttachmentBoundary(state, itemLines)
+          fence.opaque = null
+        }
+        if (nestedOpaque?.kind === 'code') {
+          markAttachmentBoundary(state, itemLines)
+          nestedOpaque = null
+        }
+        if (subCol >= 0) pushLine('', BLANK_MEAS)
+        closePara()
+        i++
+        continue
+      }
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
       if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&

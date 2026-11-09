@@ -1,6 +1,6 @@
 ## A refused marker leaves an open fence's blank payload
 
-A refused `+` is text unless an open fence claims it as payload at its content column. A `+` at the fence content column stays payload (markup-carve/carve#3400, markup-carve/carve#3421).
+A refused `+` renders nothing and keeps the item's ownership. It ends an open fence at the item's marker column, so a following content-column line is a new item paragraph (carve#5637). A `+` at the fence content column stays payload (markup-carve/carve#3400, markup-carve/carve#3421).
 
 ::::::: compare
 
@@ -14,9 +14,9 @@ A refused `+` is text unless an open fence claims it as payload at its content c
 <ul>
   <li>
     <pre><code></code></pre>
+    x
   </li>
 </ul>
-<p>x</p>
 ```
 
 :::::::
@@ -34,9 +34,9 @@ A refused `+` is text unless an open fence claims it as payload at its content c
 <ul>
   <li>
     <pre><code></code></pre>
+    <p>x</p>
   </li>
 </ul>
-<p>x</p>
 ```
 
 :::::::
@@ -55,9 +55,9 @@ A refused `+` is text unless an open fence claims it as payload at its content c
   <li>
     <pre><code>a
 </code></pre>
+    x
   </li>
 </ul>
-<p>x</p>
 ```
 
 :::::::
