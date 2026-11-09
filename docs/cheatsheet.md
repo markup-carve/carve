@@ -414,12 +414,12 @@ Fenced blocks drawn by a client library or a build step. Fence words: `mermaid`,
 `d2`, `graphviz`, `wavedrom`, `abc`, `plantuml` (`puml`), `vega-lite`, `chart`.
 
 ````carve
-``` mermaid
+```mermaid
 classDiagram              (UML: classDiagram, sequenceDiagram,
   Parser --> Document      stateDiagram-v2, erDiagram)
 ```
 
-``` chart
+```chart
 {"type":"bar","data":{"labels":["a","b"],"datasets":[{"data":[1,2]}]}}
 ```
 ````

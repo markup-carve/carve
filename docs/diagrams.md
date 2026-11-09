@@ -9,7 +9,7 @@ Carve stores diagram instructions in fenced code blocks. A browser library or
 build tool can turn those instructions into an image.
 
 ````carve
-``` mermaid
+```mermaid
 classDiagram
   class Parser {
     +parse(source) Document
@@ -53,7 +53,7 @@ Mermaid covers most of UML directly:
 | Activity | `flowchart` / `graph` |
 
 ````carve
-``` mermaid
+```mermaid
 sequenceDiagram
   participant U as User
   participant P as Parser
@@ -67,7 +67,7 @@ Mermaid. For those, use the `plantuml` preset (also claimed as `puml`), which
 carries the full UML set:
 
 ````carve
-``` plantuml
+```plantuml
 @startuml
 actor User
 User --> (Parse source)
@@ -101,7 +101,7 @@ diagram shows:
 
 ````carve
 {aria-label="Deployment flow"}
-``` mermaid
+```mermaid
 flowchart LR
   Build --> Test --> Deploy
 ```

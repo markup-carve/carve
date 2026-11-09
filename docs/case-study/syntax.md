@@ -1367,8 +1367,6 @@ On by default in the conformant core; a processor MAY disable it
 | `...`       | …      | Ellipsis         |
 | `"text"`    | “text” | Smart double quotes |
 | `'text'`    | ‘text’ | Smart single quotes |
-| `(c)`       | ©      | Copyright        |
-| `(r)`       | ®      | Registered       |
 | `(tm)`      | ™      | Trademark        |
 | `-->`       | →      | Right arrow      |
 | `<--`       | ←      | Left arrow       |
