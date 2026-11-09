@@ -3554,6 +3554,61 @@ const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
 // prefix is stripped before columns are measured, so it stacks nothing (carve#5399).
 const stackedOnMarker = (parent, host) => parent?.kind !== 'quote' && parent?.line === host.line
 
+// Both the ownership walk and paragraph reader ask whether inline pairing
+// holds a brace line. This scan keeps their answer in step (carve#5618).
+function advanceInlineCode(owner, text) {
+  let run = owner.inlineCodeRun ?? 0
+  let comment = owner.inlineCommentOpen ?? false
+  let brackets = 0
+  for (let k = 0; k < text.length; k++) {
+    if (comment) {
+      if (text[k] === '%' && text[k + 1] === '}') { comment = false; k++ }
+      continue
+    }
+    if (text[k] === '\\' && !run && /[!-/:-@[-`{-~]/.test(text[k + 1] ?? '')) { k++; continue }
+    if (!run && text[k] === '[') { brackets++; continue }
+    if (!run && text[k] === ']' && brackets > 0) {
+      brackets--
+      if (brackets === 0 && text[k + 1] === '(') {
+        let depth = 1
+        let end = k + 2
+        for (; end < text.length && depth > 0; end++) {
+          if (text[end] === '\\') { end++; continue }
+          if (text[end] === '(') depth++
+          else if (text[end] === ')') depth--
+        }
+        if (depth === 0) {
+          const destination = text.slice(k + 2, end - 1)
+          if (destination === '' || matchDestination(destination) !== null) { k = end - 1; continue }
+        }
+      }
+      continue
+    }
+    if (!run && text[k] === '{' && text[k + 1] !== '%') {
+      let end = k + 1
+      let quote = null
+      for (; end < text.length; end++) {
+        const ch = text[end]
+        if (quote) {
+          if (ch === '\\') { end++; continue }
+          if (ch === quote) quote = null
+        } else if (ch === '"' || ch === "'") quote = ch
+        else if (ch === '{' || ch === '}') break
+      }
+      if (text[end] === '}' && parseAttrBlock(text.slice(k, end + 1)) !== null) { k = end; continue }
+    }
+    if (text[k] === '`') {
+      let width = 1
+      while (text[k + width] === '`') width++
+      if (!run) run = width
+      else if (run === width) run = 0
+      k += width - 1
+    } else if (!run && text[k] === '{' && text[k + 1] === '%') { comment = true; k++ }
+  }
+  owner.inlineCodeRun = run
+  owner.inlineCommentOpen = comment
+}
+
 function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
@@ -4190,6 +4245,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
       result.push(out + src)
+      advanceInlineCode(top(), m.rest)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
@@ -4241,7 +4297,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // It meets the `+` where the walk moved it (PART 0 S3).
       lead(lonePlus.markerCanon)
       result.push(out + src)
+      if (!lonePlus.para) { lonePlus.inlineCodeRun = 0; lonePlus.inlineCommentOpen = false }
       lonePlus.para = true
+      advanceInlineCode(lonePlus, m.rest)
       lonePlus.last = 'para'
       lonePlus.openTerm = false
       if (trace) emit(at, 'S5', ownerPath(), 'CARVE-P0-024', 'text', { plus: at })
@@ -4267,6 +4325,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     let applied = trace ? ownerPath() : null
     if (m.rest === '') {
       owner.para = false
+      owner.inlineCodeRun = 0
+      owner.inlineCommentOpen = false
       lead(m.col)
     } else if (form.kind === 'colon-close') {
       lead(frames[form.frame].canon)
@@ -4275,6 +4335,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       top().para = false
       top().last = 'block'
     } else if (form.kind === 'text') {
+      if (!owner.para) { owner.inlineCodeRun = 0; owner.inlineCommentOpen = false }
       // A new paragraph starts at the owner's column, never inside a frame
       // that line did not reach.
       // A separator after a `+` moved onto the owner meets it where its term stood.
@@ -4290,6 +4351,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (owner.plusLine === at) carryPlus(owner, sibling, m.col)
       if (owner.para && FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
       owner.para = true
+      advanceInlineCode(owner, m.rest)
       owner.last = 'para'
       owner.openTerm = false
     } else if (plusLanding !== null) {
@@ -4346,6 +4408,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
       if (!invisibleInEntry) {
         owner.para = !!form.caption
+        owner.inlineCodeRun = 0
+        owner.inlineCommentOpen = false
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
@@ -4496,6 +4560,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
         frame.para = !quotedRefusedNote && frame.plus !== at &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
+        if (!frame.para) { frame.inlineCodeRun = 0; frame.inlineCommentOpen = false }
+        advanceInlineCode(frame, m.rest)
         frame.last = 'para'
         return
       }
@@ -4896,6 +4962,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
+    if (rest[0] === '{' && owner.para && owner.inlineCodeRun) return { kind: 'text', interrupts: false }
     if (rest[0] === '{' && at !== refusedKept.start) {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
       const kept = refusedRunKeptThrough(new Proxy([], {
@@ -7953,35 +8020,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     let forcedAfterRefusal = false
     let refusedFollowerFenceEnd = -1
     const refusedCache = { commentScannedThrough: -1 }
-    const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
+    const inlineSpan = { scanned: 0, inlineCodeRun: 0, inlineCommentOpen: false }
     const inlineSpanOpen = () => {
-      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) {
-        const line = para[inlineSpan.scanned]
-        for (let k = 0; k < line.length; k++) {
-          if (inlineSpan.comment) {
-            if (line[k] === '%' && line[k + 1] === '}') { inlineSpan.comment = false; k++ }
-            continue
-          }
-          if (line[k] === '`') {
-            let width = 1
-            while (line[k + width] === '`') width++
-            if (inlineSpan.codeRun === 0) inlineSpan.codeRun = width
-            else if (inlineSpan.codeRun === width) inlineSpan.codeRun = 0
-            k += width - 1
-            continue
-          }
-          if (inlineSpan.codeRun) continue
-          if (line[k] === '\\') {
-            let width = 1
-            while (line[k + width] === '\\') width++
-            const escaped = line[k + width] === '`' || line[k + width] === '{'
-            k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
-            continue
-          }
-          if (line[k] === '{' && line[k + 1] === '%') { inlineSpan.comment = true; k++ }
-        }
-      }
-      return inlineSpan.codeRun !== 0 || inlineSpan.comment
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) advanceInlineCode(inlineSpan, para[inlineSpan.scanned])
+      return inlineSpan.inlineCodeRun !== 0 || inlineSpan.inlineCommentOpen
     }
     while (i < n && !isBlank(lines[i])) {
       // A lazy frame records ownership, not a new column for a line-start run.
@@ -8041,11 +8083,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
       if (!forcedAfterRefusal && CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
-      if (!forcedAfterRefusal && lines[i][0] === '{' && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
+      if (!forcedAfterRefusal && lines[i][0] === '{' && !(inlineSpanOpen() && inlineSpan.inlineCodeRun) && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
       if (!forcedAfterRefusal && ind(i).rest.startsWith('%%')) break // §10 I5 (comment line or fence)
       if (!forcedAfterRefusal && inItem && para.length > 0 && matchMarkerAt(ind(i))) break // §24 C3
       if (!forcedAfterRefusal && para.length > 0) {
-        if (startsParagraphBlock(lines[i], top)) break // I1/I5
+        if (!(lines[i][0] === '{' && inlineSpanOpen() && inlineSpan.inlineCodeRun) && startsParagraphBlock(lines[i], top)) break // I1/I5
         if (fenceOpens?.has(i)) break
         {
           if (colonFenceInterrupts(lines[i])) break // I1/I4

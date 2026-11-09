@@ -1,0 +1,29 @@
+A code span hides a block brace run
+
+````
+p
+ `open
+ {.x
+ .y}
+ ```
+ z
+.
+<p>p
+<code>open
+{.x
+.y}</code></p>
+<pre><code>z
+</code></pre>
+````
+
+```
+p
+`open
+{.x}
+`
+.
+<p>p
+<code>open
+{.x}
+</code></p>
+```
