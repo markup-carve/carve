@@ -136,8 +136,8 @@ test('the block a marker-line + takes at its marker column is traced in that con
     '3 S5 doc/item:1 leaf',
     '4 S5 doc/item:4 item',
   ])
-  // Stacked on its parent's marker line, the `+` reads the parent's column.
-  assert.deepEqual(steps('- - +\n  # H\n'), ['1 S5 doc/item:1/item:1 item', '2 S5 doc/item:1 leaf'])
+  // Stacked on its parent's marker line, the `+` gives the inner item its block (CARVE-P9-067, carve#5532).
+  assert.deepEqual(steps('- - +\n  # H\n'), ['1 S5 doc/item:1/item:1 item', '2 S5 doc/item:1/item:1 leaf'])
   // One block only: a fence after the attached heading is the parent's.
   assert.deepEqual(steps('- foo\n  - +\n  # H\n  ```\n  ```\n'), [
     '1 S5 doc/item:1 item',

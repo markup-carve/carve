@@ -3721,7 +3721,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const hostLevel = prefixes > 0 ? stripQuotes(src, prefixes) : null
     const below = hostLevel ? walkIndent(hostLevel.rest) : m
     if ((plusHost.kind === 'item' || plusHost.kind === 'dd' || plusHost.kind === 'note') && below.rest !== '' && below.col === plusHost.markerCol &&
-        below.col >= hostParent.col && followsMarkerLine && !stackedOnMarker(hostParent, plusHost) &&
+        below.col >= hostParent.col && followsMarkerLine &&
         !CONT_MARKER.test(below.rest)) {
       const follower = classifyAt(frames.length - 2, below.rest, hostParent, at, below.col)
       if (follower.interrupts && follower.kind !== 'item' && follower.kind !== 'colon-close') {
@@ -9449,6 +9449,14 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // counted across invisible lines (§11 N1a), so its own blanks do not loosen this item.
     let childList = headSubMarker ? { ...headSubMarker, indent: headSubCol - headSubMarker.markerWidth } : null
     let childListBlanks = 0
+    // A marker-line child's `+` gives that child the block at its marker column (§17 L3).
+    // After a task box the walk has already moved that block past the box.
+    const headPlusFirst = headIndex + 1
+    const headPlusCol = headPlusFirst < lines.length ? indentCols(lines[headPlusFirst]).col : -1
+    const headPlusBlockEnd = headSubMarker && CONT_MARKER.test(trimWs(headSubMarker.text)) && !isBlank(lines[headPlusFirst] ?? '') &&
+      (headPlusCol === childList.indent || head.task !== undefined && headPlusCol === childList.indent - taskTextOffset(head))
+      ? attachedBlockEnd(lines, headPlusFirst, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), headPlusCol)
+      : -1
     const openChildList = (marker) => {
       childList = marker
       childListBlanks = 0
@@ -10340,6 +10348,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           colonLineBlock.length = descendantAttachedColonDepth
           colonBases.length = descendantAttachedColonDepth
         }
+        // So does the colon a marker-line child's `+` attached.
+        if (i === headPlusBlockEnd && fence.opaque === null && fence.colon.length > 0) {
+          fence.colon.length = 0
+          colonLineBlock.length = 0
+          colonBases.length = 0
+        }
         quotePlusList = false
         quoteAttachedChildList = false
         // A separator closes the child's paragraph too. Otherwise its Q1
@@ -10779,7 +10793,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         (reach > headSubCol - headSubMarker.markerWidth || descendantQ1.para.length > 0 && !/^::? /.test(descendantQ1.para[0]))
       // A `+` at the box-column child's marker column ends that child's open fence (§17 L3).
       const taskPlusColumn = head.task !== undefined && headSubMarker ? headSubCol - headSubMarker.markerWidth : -1
-      if (headSubActive && reach < headSubCol && !foldsIntoChild &&
+      if (headSubActive && reach < headSubCol && !foldsIntoChild && i >= headPlusBlockEnd &&
           (opensAuthoredBase(lm.rest) || reach >= headSubCol - headSubMarker.markerWidth && DEFLIST_SEPARATOR.test(lm.rest)) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
@@ -10787,7 +10801,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A line below the child's column that its open paragraph cannot take is this item's block (PART 0 S4).
       // A line below the child's fence ends that fence, which holds no paragraph.
       const endsChildFence = nestedVerbatim() && lm.col - contentCol < nestedOpaque.col
-      if (headSubActive && reach < headSubCol && lm.rest !== '' &&
+      if (headSubActive && reach < headSubCol && lm.rest !== '' && i >= headPlusBlockEnd &&
           (endsChildFence || !nestedVerbatim() && !descendantParagraphBefore && !childParagraphOpen) &&
           !COMMENT_LINE.test(lm.rest) && !foldedChildFence && !insideFence()) {
         headSubActive = false
