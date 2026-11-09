@@ -185,7 +185,8 @@
     {
       "host": "paragraph",
       "value": "a\n{.c}\nc",
-      "id": "refused-23"
+      "id": "refused-23",
+      "source": "`a\n{.c}\nc`\n"
     },
     {
       "host": "paragraph",
