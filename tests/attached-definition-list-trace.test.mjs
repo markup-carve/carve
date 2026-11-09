@@ -18,3 +18,11 @@ test('a definition list claimed by plus keeps its term and descriptions in the h
     if (last !== -1) assert.equal(trace[last].owner, 'doc/item:8')
   }
 })
+
+test('a nested plus in an attached description keeps both host paths', () => {
+  const source = '- a\n+\n:: t\n: d\n  - x\n  +\n  # h\n'
+  const trace = modelTrace(source)
+  assert.equal(trace[4].owner, 'doc/item:1/dd:4/item:5')
+  assert.equal(trace[5].owner, 'doc/item:1/dd:4/item:5')
+  assert.equal(trace[6].owner, 'doc/item:1/dd:4/item:5')
+})

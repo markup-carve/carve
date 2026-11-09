@@ -3610,7 +3610,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let attachedTo = null
   // The reader keeps the whole block an accepted `+` claims in its host.
   // The walk may read that block through a parent frame at its written column.
-  let attachedTrace = null
+  const attachedTraces = []
   // The invisible lines between an accepted `+` and its block (carve#4449).
   let skipped = null
   // The continuation lines of a wrapped attribute block the walk opened.
@@ -4013,12 +4013,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const measured = walkIndent(level.rest)
           return ' '.repeat(Math.max(0, measured.col - plus.markerCol)) + measured.rest
         }
-        attachedTrace = start < lines.length && view(lines[start]) !== null && DEFLIST_TERM.test(view(lines[start])) ? {
+        const first = start < lines.length ? view(lines[start]) : null
+        if (first !== null && (DEFLIST_TERM.test(first) || attachedTraces.length > 0)) attachedTraces.push({
           start,
-          end: start < lines.length ? start + attachedBlockLength(lines, start, view) : start,
+          end: start + attachedBlockLength(lines, start, view),
           from: ownerPath(frames.indexOf(plus) - 1),
           to: ownerPath(),
-        } : null
+        })
       }
       result.push(out + src)
       afterPlus = true
@@ -4595,15 +4596,24 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   function emit(index, step, owner, rule, form, extra = {}) {
     // The empty string after a final newline is not a line.
     if (index === lines.length - 1 && lines[index] === '') return
-    if (attachedTrace && index >= attachedTrace.end &&
-        !(attachedTrace.continuation && underPath(owner, attachedTrace.continuation))) attachedTrace = null
-    if (attachedTrace && index === attachedTrace.end - 1 &&
-        underPath(owner, attachedTrace.from) && owner !== attachedTrace.from) {
-      attachedTrace.continuation = owner
+    const walkedOwner = owner
+    for (let k = attachedTraces.length - 1; k >= 0; k--) {
+      const attached = attachedTraces[k]
+      if (index >= attached.end &&
+          !(attached.continuation && underPath(walkedOwner, attached.continuation))) {
+        attachedTraces.splice(k, 1)
+        continue
+      }
+      if (index === attached.end - 1 &&
+          underPath(walkedOwner, attached.from) && walkedOwner !== attached.from) {
+        attached.continuation = walkedOwner
+      }
     }
-    if (attachedTrace && index >= attachedTrace.start &&
-        underPath(owner, attachedTrace.from) && !underPath(owner, attachedTrace.to)) {
-      owner = attachedTrace.to + owner.slice(attachedTrace.from.length)
+    for (let k = attachedTraces.length - 1; k >= 0; k--) {
+      const attached = attachedTraces[k]
+      if (index >= attached.start && underPath(owner, attached.from) && !underPath(owner, attached.to)) {
+        owner = attached.to + owner.slice(attached.from.length)
+      }
     }
     if (afterPlusBlock && index >= afterPlusBlock.end) {
       // An unclosed fence leaves the walk reading payload; the readers end the
