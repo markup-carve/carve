@@ -2698,6 +2698,10 @@ function bodyHasOpenCodeFence(lines, scan, end, measurement) {
   for (let k = scan.index; k < end; k++) {
     const measured = measurement(k) ?? indentCols(lines[k])
     const line = measured.rest
+    // A visible line below a comment span's item ends that span before the
+    // next sibling is classified (PART 0 S1).
+    if (opaque?.kind === 'comment' && line !== '' && measured.col < columns.at(-1) &&
+        !COMMENT_LINE.test(line) && !lines[k].startsWith(LAZY)) opaque = null
     // A line left of the column that holds a code fence ends it (PART 0 S1).
     if (opaque?.kind === 'code' && line !== '' && measured.col < opaque.base && !lines[k].startsWith(LAZY)) opaque = null
     if (opaque) {
