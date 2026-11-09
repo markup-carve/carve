@@ -1,0 +1,14 @@
+A region marker between items splits the list
+
+```
+- a
+%% #region x
+- b
+.
+<ul>
+  <li>a</li>
+</ul>
+<ul>
+  <li>b</li>
+</ul>
+```

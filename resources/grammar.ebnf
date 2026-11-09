@@ -3868,6 +3868,8 @@ include_unquoted_value = ( character - '}' - '|' - '"' - "'" - '\' - '@' - ' ' -
       letter, digit or `_` (`#regional`) is not a marker; run on by any
       other character (`#region-x`) it is a malformed marker. The
       opening marker MUST name a region; a closing marker MAY omit the name.
+      Text after a recognized marker name, other than spaces or tabs and the
+      permitted comment closer, is a malformed marker in both modes.
       Distinct names MAY nest. A named closer MUST match the innermost open
       name. The same name MUST NOT open twice in one file, even sequentially.
       An unmatched, mismatched, unclosed, duplicate or malformed marker makes
@@ -5859,7 +5861,9 @@ EOF = (* end of file *) ;
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
          delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
-         differs -> a new sibling list at the same indent. Example:
+         differs -> a new sibling list at the same indent. A region marker
+         standing as the list's sibling (CARVE-P11-073(a)) ends that list;
+         the next item starts another even when all axes match. Example:
            - a              produces:    <ul><li>a</li><li>b</li></ul>
            - b                            <ul><li>c</li><li>d</li></ul>
            * c
@@ -8155,7 +8159,9 @@ EOF = (* end of file *) ;
       BOUNDARIES only and emits <abbr>. A boundary exists on a side of the
       term when the adjacent character is absent or is not a Unicode letter
       or number (general category L or N). CARVE-P3-013 uses the same
-      Unicode boundary class for emphasis. A term matches only in ordinary
+      Unicode boundary class for emphasis. The adjacent character is tested
+      across eligible inline node edges in the rendered text; an element edge
+      does not itself supply a boundary. A term matches only in ordinary
       text the author wrote in the inline flow, at any depth of inline markup,
       so the content of emphasis and of a bracket run counts. Anything else
       is outside the scan: what a construct holds verbatim, as its name or as
@@ -10474,7 +10480,9 @@ EOF = (* end of file *) ;
           into it. A region marker is the one comment that still closes
           containers (the exception to PART 0 S1): written below a
           list it stands at the list's own column and closes every item of it,
-          so it is the list's sibling. Otherwise, and in a tree without
+          so it is the list's sibling. A following item at that column starts
+          a new list, even when its marker matches the preceding items.
+          Otherwise, and in a tree without
           positions, the ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that
