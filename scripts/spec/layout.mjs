@@ -6516,7 +6516,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // A sibling description or term ends the pulled block, as a sibling marker ends an item's (carve#4080).
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
-              let end = attachedBlockEnd(lines, i, state, (k) => attachmentBoundary(lines)(k) || siblingAt(k))
+              let end = takeOneBlock(lines, i, state, indentCols(lines[i]).col, false, siblingAt).next
               // A pulled paragraph stops where a block reaches the description's content column.
               // The attachment is measured at its pulled column, so inspect the authored reach here.
               const opener = attachedOpener(lines.slice(i, end), ind(i).col)
@@ -8767,7 +8767,7 @@ function authoredBlockEnd(lines, start, base, state) {
     if (start + blockEnd < end || end === lines.length) return start + blockEnd
   }
 }
-function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
+function takeOneBlock(lines, start, state, column = 0, quoteHost = false, hostBoundary = null) {
   const opener = leadRunEnd(lines, start)
   const firstMarker = matchMarkerAt(indentCols(lines[opener] ?? ''))
   const startsList = !!firstMarker
@@ -8787,7 +8787,7 @@ function takeOneBlock(lines, start, state, column = 0, quoteHost = false) {
     // N1 makes a changed marker axis a new sibling list, outside the one
     // block offered by the host's continuation marker. A live child fence
     // below owns marker-shaped payload, so the fence scan still decides it.
-    const offered = attachmentBoundary(lines)(idx) || sameColumnMarker ||
+    const offered = attachmentBoundary(lines)(idx) || hostBoundary?.(idx) || sameColumnMarker ||
       startsList && idx > start && measured.col === column && QUOTE.test(measured.rest)
     if (!offered || !startsList || idx <= start) return offered
     // An attached list is one block. Its descendant fence owns blank, plus,
