@@ -1868,8 +1868,8 @@ const readsAsProse = (rest) => opensParagraph(rest, true) && !FENCE.test(rest) &
 
 // Whether `last` is a line a refused brace run's paragraph keeps. Prose there
 // leaves the paragraph open anyway, so only a block-shaped tail is traced back.
-function endsInRefusedRunParagraph(bodyLines, last) {
-  if (readsAsProse(indentCols(bodyLines[last]).rest)) return false
+function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
+  if (!includeProseTail && readsAsProse(indentCols(bodyLines[last]).rest)) return false
   const cache = { commentScannedThrough: -1 }
   for (let k = last; k >= 0 && !isBlank(bodyLines[k]); k--) {
     if (indentCols(bodyLines[k]).rest[0] !== '{') continue
@@ -5916,7 +5916,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const nestedFenceOpen = bodyHasOpenCodeFence(taken,
           { index: 0, opaque: null, columns: [0] }, taken.length,
           (k) => indentCols(taken[k]))
-        if (!leavesFenceOpen(taken) && !nestedFenceOpen && !bodyLeavesParagraphOpen(taken)) {
+        if (!leavesFenceOpen(taken) && !nestedFenceOpen && !bodyLeavesParagraphOpen(taken) &&
+            !endsInRefusedRunParagraph(taken.map((line) => stripLazy(stripLazyLead(line))), taken.length - 1, true)) {
           bodyLines.push('')
           attachedSeparator = true
         }
@@ -6100,7 +6101,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           break
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
             // A line that ended the span, or follows one, folds into the stanza it left open (PART 0 S4, carve#4956).
-            ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) || verseSpanEnded ||
+            ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom) ||
+              endsInRefusedRunParagraph(bodyLines.map((line) => stripLazy(stripLazyLead(line))), bodyLines.length - 1, true)) || verseSpanEnded ||
               hostEndsInLineBlockStanza(bodyLines, 0, true)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
