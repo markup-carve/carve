@@ -1,0 +1,64 @@
+# Ownership after a `+` attachment
+
+This table is normative. It applies PART 0 S1 to S5 and PART 9 §17 L3 (CARVE-P0-024, CARVE-P9-067) to the line that follows a block a continuation marker attached, and names the clause or ruling that decides each owner (carve#5658). `tests/plus-ownership-table.test.mjs` walks every cell against the spec model.
+
+## Axes
+
+- Host: list item `- `, footnote body `[^a]: `, definition body `: ` under `:: t`, block quote `> `.
+- `+` form: marker-line (`- +`), own-line (`- p` / `+`), stacked (the host opens on an outer item's marker line, `- - +`, so its marker column is 2).
+- Attached block, written at the host's marker column: unclosed code fence, closed code fence, paragraph, table, valid attribute run (`{#i` / ` .y}`), refused brace run (`{.x` / `.y}`, CARVE-P2-035).
+- Follower, the line after the block, with or without a blank before it: a line at the host's content column, at its marker column, at column 0, a refused `+` at the marker column and then a content-column line, or a fence line one column right of the marker column and then a content-column line.
+- Context: plain, or the block's paragraph holds an open inline code span (a backtick run with no closer).
+
+## Owners
+
+- Block: the attached block keeps the line. For a fence it is payload; for a paragraph or a refused run it continues that paragraph; for an attribute run it is the block that takes the attributes.
+- Host: the host's body keeps the line as a new block.
+- Parent: the host is closed and the line is read in the container that holds the host: the outer item for a stacked host, the document otherwise.
+- Document: every frame is closed.
+- Span: the line is code text in the open inline code span; the owner is the Block.
+
+## Cells
+
+The first row that matches a cell decides it. `any` matches every value on that axis.
+
+|= Id |= Host          |= Form           |= Block                      |= Follower                                   |= Blank |= Context |= Owner                                          |= Decided by                                                                          |
+| P01 | item, note, dd | any             | paragraph, attribute, brace | content, marker, col 0                      | no     | span     | Block (span)                                    | PART 3 UNCLOSED RUN; CARVE-P2-035 with carve#5618, carve#5638                        |
+| P02 | item, note, dd | any             | paragraph, attribute, brace | refused `+`                                 | no     | span     | Host                                            | CARVE-P9-067 refused marker; the span ends with its paragraph                        |
+| P03 | item, note, dd | any             | paragraph, attribute, brace | content, refused `+`                        | yes    | span     | Host                                            | PART 3 UNCLOSED RUN: a blank ends the paragraph and its span                         |
+| P04 | item, note, dd | any             | paragraph, attribute, brace | shifted fence                               | any    | span     | Parent, in a new fence                          | PART 9 §10 I4, carve#5632                                                            |
+| F01 | item, note, dd | any             | unclosed fence              | content, marker, refused `+`, shifted fence | no     | plain    | Block                                           | PART 0 S1 step 4; carve#5494 for the `+` at the fence's content column; CARVE-P2-006 |
+| F02 | item, note, dd | marker, stacked | unclosed fence              | content, refused `+`                        | yes    | plain    | Host                                            | PART 0 S1 step 3 (carve#5304); refused marker, carve#5637                            |
+| F03 | item, note, dd | own             | unclosed fence              | content                                     | yes    | plain    | Block                                           | PART 0 S1 step 3 covers a marker-line `+` only (carve#5560, carve#5635)              |
+| F04 | item, note, dd | own             | unclosed fence              | refused `+`                                 | yes    | plain    | Host                                            | the refused marker ends the fence and keeps the owner (carve#5637, carve#5639)       |
+| F05 | item, note, dd | marker, stacked | unclosed fence              | shifted fence                               | yes    | plain    | Host                                            | the host reads the closer at its column (carve#5587); S2 for the next line           |
+| F06 | item, note, dd | own             | unclosed fence              | shifted fence                               | yes    | plain    | undecided, D2                                   | Decision batch                                                                       |
+| F07 | item, note, dd | any             | unclosed fence              | col 0                                       | no     | plain    | Block for column-0 hosts, Document when stacked | PART 0 S1 steps 2 and 4                                                              |
+| C01 | item, note, dd | any             | closed fence, table         | content, refused `+`                        | any    | plain    | Host                                            | PART 0 S2, S5; CARVE-P9-067 refused marker                                           |
+| A01 | item, note, dd | any             | attribute                   | marker, col 0                               | no     | plain    | Block, Document for col 0 when stacked          | §17 L3: invisible lines the host keeps are skipped (carve#4449, carve#5130)          |
+| A02 | item, note, dd | any             | attribute                   | content, refused `+`                        | any    | plain    | Parent                                          | FAMILIES `invisible`; §17 L3 example `- a` / `+` / `{x}` / `  - c` (carve#4278)      |
+| R01 | item, note, dd | any             | paragraph, brace            | content, marker, col 0                      | no     | plain    | Block                                           | PART 0 S4; CARVE-P2-035 (carve#5080, carve#5566)                                     |
+| R02 | item, note, dd | any             | paragraph                   | refused `+`                                 | no     | plain    | Host                                            | CARVE-P9-067 refused marker                                                          |
+| R03 | item, note, dd | any             | brace                       | refused `+`                                 | no     | plain    | undecided, D1                                   | Decision batch                                                                       |
+| R04 | item, note, dd | any             | brace                       | shifted fence                               | no     | plain    | Block (span)                                    | CARVE-P2-035: the fence-shaped follower stays paragraph text (carve#5600)            |
+| R05 | item, note, dd | any             | paragraph, brace, attribute | content, refused `+`                        | yes    | plain    | Host                                            | a blank ends the paragraph; carve#5639 for the `+`                                   |
+| G01 | item, note, dd | any             | any                         | marker                                      | yes    | any      | Parent                                          | PART 0 S2: the line misses the host                                                  |
+| G02 | item, note, dd | any             | any                         | col 0                                       | any    | any      | Document                                        | PART 0 S2, S4                                                                        |
+| G03 | item, note, dd | any             | any                         | marker                                      | no     | plain    | Parent                                          | PART 0 S2 for a closed block or table                                                |
+| G04 | item, note, dd | any             | any                         | shifted fence                               | any    | plain    | Parent, in a new fence                          | PART 0 S3: an opener past the owner's content column opens there; §10 I4             |
+| Q01 | quote          | any             | paragraph, attribute, brace | content, marker, col 0, refused `+`         | no     | span     | Block (span)                                    | PART 0 S4; carve#5618, carve#5638: a run inside the open span is code text           |
+| Q02 | quote          | any             | paragraph, brace            | col 0                                       | no     | plain    | Block                                           | PART 0 S4 lazy line; CARVE-P2-035                                                    |
+| Q03 | quote          | any             | any                         | col 0                                       | any    | any      | Document                                        | PART 0 S2: an unmarked line ends the quote; PART 9 §15 A5 (carve#5622)               |
+| Q05 | quote          | any             | brace                       | shifted fence                               | no     | plain    | Block (span)                                    | CARVE-P2-035 (carve#5600)                                                            |
+| Q04 | quote          | any             | any                         | any                                         | any    | any      | Block                                           | §17 L3 example `> +` / `> x` nests a quote; a marked blank keeps it (CARVE-P0-019)   |
+
+## Decision batch
+
+The cells marked undecided wait for the maintainer (carve#5658). Until they are ruled the test does not assert them.
+
+- D1: a refused `+` right after a refused brace run (row R03). CARVE-P2-035 keeps the line after the run in the paragraph; §17 L3 makes a lone `+` at the marker column a marker that renders nothing.
+- D2: an own-line `+` fence, a blank, then a fence line one column right of the marker column (row F06). carve#5587 gives one closer test per host for a marker-line `+`; carve#5560 reads an own-line `+` fence like a fence in the host's body.
+
+## Known model gaps
+
+The test lists the cells where the spec model still renders another owner than this table, each with the ticket that tracks it: carve#5639 (a refused `+` after a blank in a note or description that an own-line `+` opened), carve#5635 (an own-line `+` fence in a list item keeps its blank), and two shapes first measured by this table, both on carve#5658: a shifted closer after the blank in a note or description fence (row F05), and an attribute run in a quote followed by an unmarked line (rows Q01 and Q03).

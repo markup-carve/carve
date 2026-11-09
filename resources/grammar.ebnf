@@ -312,6 +312,10 @@
         blank and the closer, so a payload line there does not end a fence
         that a later line closes (PART 9 §17 L3, carve#5587).
 
+        resources/spec/plus-ownership.crv names the owner of the line after
+        every block a `+` attaches, cell by cell, with the clause or ruling
+        that decides it (carve#5658).
+
         Nothing else ends such a fence without its closer: otherwise an
         unclosed fence runs to the end of its container, and a host's colon
         closer inside it is payload. A colon body is not a payload: its lines
@@ -6656,11 +6660,14 @@ EOF = (* end of file *) ;
          of its content column as a column-0 host does, so `- - +` / a fence at
          column 2 / blank / `  x` / a closer at column 3 is one fence holding the
          blank and `x` (carve#5587).
-         After an unclosed fence attached by a stacked marker-line `+` ends
-         at that blank, an unpaired fence line indented into the following
-         paragraph stays paragraph text in whichever owner holds the paragraph
-         (carve#5606). This does not depend on that owner's distance from the
-         attaching host.
+         After an unclosed fence attached by a marker-line `+` ends at that
+         blank, stacked or not, an unpaired fence line indented into the
+         following paragraph stays paragraph text in whichever owner holds the
+         paragraph (carve#5606, carve#5636). This does not depend on that
+         owner's distance from the attaching host.
+         The owner of the line after an attached block, for every host, `+`
+         form, block and follower, is the table in
+         resources/spec/plus-ownership.crv (carve#5658).
 
          ONE ATTACH RULE FOR EVERY HOST -- NORMATIVE [CARVE-P9-067]. Lists,
          quotes, definition bodies and footnote bodies all use this one test.

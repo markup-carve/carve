@@ -208,6 +208,10 @@
         blank and the closer, so a payload line there does not end a fence
         that a later line closes (PART 9 §17 L3, carve#5587).
 
+        resources/spec/plus-ownership.crv names the owner of the line after
+        every block a `+` attaches, cell by cell, with the clause or ruling
+        that decides it (carve#5658).
+
         Nothing else ends such a fence without its closer: otherwise an
         unclosed fence runs to the end of its container, and a host's colon
         closer inside it is payload. A colon body is not a payload: its lines
