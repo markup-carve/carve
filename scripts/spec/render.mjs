@@ -142,18 +142,31 @@ function softHiding(source) {
   }
   return soft
 }
-function crossrefEnd(source, at) {
-  if (!source.startsWith('</#', at) || escapedAt(source, at)) return -1
-  let end = at + 3
-  if (source[end] === '>' || end === source.length) return -1
-  while (end < source.length && source[end] !== '>' && source[end] !== ' ' && source[end] !== '\n') end++
-  return source[end] === '>' ? end + 1 : -1
-}
 function forcedCrossrefs(source) {
   const refs = new Map()
   const marks = []
+  const nextStop = new Int32Array(source.length + 1)
+  nextStop[source.length] = source.length
+  for (let i = source.length - 1; i >= 0; i--) {
+    nextStop[i] = source[i] === '>' || source[i] === ' ' || source[i] === '\n' ? i : nextStop[i + 1]
+  }
   for (let i = 0; i < source.length; i++) {
-    const end = crossrefEnd(source, i)
+    if (source[i] === '`' && !escapedAt(source, i)) {
+      let width = 1
+      while (source[i + width] === '`') width++
+      let close = -1
+      for (let j = i + width; j < source.length && close === -1;) {
+        let run = 0
+        while (source[j + run] === '`') run++
+        if (run === width) close = j
+        j += run || 1
+      }
+      if (close === -1) break
+      i = close + width - 1
+      continue
+    }
+    const stop = nextStop[i + 3] ?? source.length
+    const end = source.startsWith('</#', i) && !escapedAt(source, i) && stop > i + 3 && source[stop] === '>' ? stop + 1 : -1
     if (end !== -1 && NESTING_MARKS.has(marks.at(-1))) {
       refs.set(i, end)
       i = end - 1
