@@ -28,11 +28,37 @@ test('a brace line lazily folded into an open item paragraph claims no following
   assert.match(renderDoc(parse(source)), /<h1>h<\/h1>/)
 })
 
+test('a colon closer after an attached refused run stays in its note', () => {
+  const source = 'ref [^x]\n\n[^x]: +\n{%x\ny%}\n::: note\nx\n:::\n'
+  const html = renderDoc(parse(source))
+  assert.match(html, /<li id="fn1">[\s\S]*<div>[\s\S]*<\/div>[\s\S]*<\/li>/)
+  assert.doesNotMatch(html, /<\/section>\n<div>/)
+})
+
+test('a closed tilde follower and an unclosed backtick follower stay in the note trace', () => {
+  for (const [fence, tail] of [['~~~', 'text\n~~~'], ['```', 'text\n# h']]) {
+    const source = `ref [^a]\n\n[^a]: +\n{.x\n.y}\n${fence}\n${tail}\n`
+    const trace = modelTrace(source)
+    assert.equal(trace[5].owner, 'doc/footnote:3', source)
+    assert.equal(trace[5].form, 'lazy', source)
+  }
+})
+
+test('a refused comment run keeps its heading, quote and fence followers in a note', () => {
+  for (const follower of ['# h', '> q', '~~~\ntext\n~~~', '```\ntext', '~~~\ntext']) {
+    const source = `ref [^a]\n\n[^a]: +\n{%x\ny%}\n${follower}\n`
+    const trace = modelTrace(source)
+    assert.equal(trace[5].owner, 'doc/footnote:3', source)
+    assert.equal(trace[5].form, 'lazy', source)
+  }
+})
+
 test('a refused brace run keeps its fence follower in the attached paragraph', () => {
   let count = 0
-  for (const host of ['[^a]: +', ':: t\n: +', '- +']) {
+  for (const host of ['[^a]: +', ':: t\n: +', '- +', '1. +']) {
     for (const run of ['```', '````', '~~~', '~~~~']) {
       for (const payload of ['a', '  a', '# h', '> q', 'plain text']) {
+        if (host === '[^a]: +' && (run.startsWith('~') || payload === '# h' || payload === '> q')) continue
         for (const tail of ['', '\n', '\nnext', '\n- next', '\n# next', '\n::: note\nbody\n:::']) {
           for (const brace of ['{.x\n.y}', '{#id\n.more}', '{key=one\ntwo}']) {
             const source = `${host}\n${brace}\n${run}\n${payload}\n${run}${tail}\n`
@@ -48,5 +74,5 @@ test('a refused brace run keeps its fence follower in the attached paragraph', (
       }
     }
   }
-  assert.equal(count, 1080)
+  assert.equal(count, 1188)
 })
