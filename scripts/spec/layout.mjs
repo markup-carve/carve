@@ -4218,7 +4218,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
-      result.push(out + src)
+      result.push(out + (form.codeHeld ? LAZY : '') + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
@@ -4935,6 +4935,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (at > refusedKept.start && at <= refusedKept.through && FOOTNOTE_DEF.test(rest)) {
       return { kind: 'text', interrupts: false, kept: true }
     }
+    // Inline pairing already holds this brace line, even when it is a lazy
+    // continuation short of the container's content column (carve#5638).
+    if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
     if (missed) {
       const form = classifyShape(rest, owner, at, col)
@@ -4943,8 +4946,6 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // A refused brace run and the line its paragraph keeps are text (CARVE-P2-035).
     if (at > refusedKept.start && at <= refusedKept.through && !invisibleSiblingLine(rest)) return { kind: 'text', interrupts: false, kept: true }
-    // Inline pairing has already claimed this brace line as code text.
-    if (rest[0] === '{' && codeSpanOpenAbove(owner, at)) return { kind: 'text', interrupts: false }
     if (rest[0] === '{' && at !== refusedKept.start && !codeSpanOpenAbove(owner, at)) {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
       const kept = refusedRunKeptThrough(new Proxy([], {
