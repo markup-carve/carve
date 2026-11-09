@@ -6794,7 +6794,16 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // `dedent` carries a tab that STRADDLES the margin back as the
               // spaces it bought past column 3, so `<TAB>x` (column 4) arrives
               // one column in, exactly as ` x` after three spaces would.
-              pushBody(dedent(cur, bodyColumn))
+              const bodyLine = dedent(cur, bodyColumn)
+              // Once a directly attached fence ends at its blank, a later
+              // fence at this body's column opens in the description. Keep
+              // its block form when rebasing extra authored indentation.
+              const attachedFenceEnded = attachedFrom !== -1 && opensCodeFence(bodyLines[attachedFrom]) &&
+                state.attachmentBoundaries?.get(bodyLines)?.some((b) => b > attachedFrom)
+              pushBody(attachedFenceEnded && opensCodeFence(indentCols(cur).rest) &&
+                descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt,
+                  state.attachmentBoundaries?.get(bodyLines)) === -1
+                ? indentCols(cur).rest : bodyLine)
               attachPending = false
               i++
               continue
