@@ -5455,6 +5455,55 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
       restoreOrdinaryPlus(state.descendantQ1Log, sentinel)
     }
   }
+  // A refused second marker can leave an empty note frame in the ownership
+  // walk after a blank, while the block reader has already opened a document
+  // paragraph. Project that reader decision onto the public trace only; its
+  // ownership events above must keep their original form for the reader.
+  if (trace) {
+    const offset = state.ownershipEvents.get(lines).offset
+    const records = new Map(decisions.slice(traceStart).map((record) => [record.line - 1 - offset, record]))
+    const quoteChildren = (entries) => entries.flatMap((block) =>
+      block.t === 'quote' ? quoteChildren(block.children) : [block])
+    const readerBlocks = quoteChildren(blocks)
+    for (let at = 0; at + 3 < authored.length; at++) {
+      const quoted = trimWsStart(authored[at]).startsWith('>')
+      const readerText = (line) => trimWsStart(quoted
+        ? (line ?? '').replace(/^(?:\s*>\s?)+/, '')
+        : line ?? '')
+      const note = FOOTNOTE_DEF.exec(readerText(authored[at]))
+      if (!note || !CONT_MARKER.test(note[2]) || state.footnoteDefs.get(labelKey(note[1]))?.length !== 0) continue
+      const refused = records.get(at + 1)
+      if (refused?.form !== 'plus' || refused.rule !== 'CARVE-P9-067') continue
+      let first = at + 2
+      if (!isBlank(readerText(authored[first]))) continue
+      while (first < authored.length && isBlank(readerText(authored[first]))) first++
+      const reader = readerBlocks.filter((block) =>
+        block.t === 'para' && block.lines.every((line, index) =>
+          line === readerText(authored[first + index])))
+        .sort((a, b) => b.lines.length - a.lines.length)[0]
+      const firstMarker = matchMarkerAt(indentCols(readerText(authored[first])))
+      const list = readerBlocks.find((block) => block.t === 'list' &&
+        block.items[0]?.blocks[0]?.t === 'para' &&
+        block.items[0].blocks[0].lines[0] === firstMarker?.text)
+      if (!reader && !list) continue
+      const parent = refused.owner.slice(0, refused.owner.lastIndexOf('/footnote:'))
+      const inRefusedNote = (path) => path === refused.owner || path?.startsWith(`${refused.owner}/`)
+      if (reader) {
+        for (let line = 0; line < reader.lines.length; line++) {
+          const record = records.get(first + line)
+          if (!inRefusedNote(record?.owner)) break
+          Object.assign(record, { step: 'S5', owner: parent, rule: 'CARVE-P0-024', form: 'text' })
+          for (const key of ['cell', 'closed', 'reached', 'plus', 'pair']) delete record[key]
+        }
+      }
+      for (let line = first + (reader?.lines.length ?? 0); line < authored.length; line++) {
+        const record = records.get(line)
+        if (!inRefusedNote(record?.owner)) break
+        record.owner = record.owner.replace(refused.owner, parent)
+        if (inRefusedNote(record.reached)) record.reached = record.reached.replace(refused.owner, parent)
+      }
+    }
+  }
   // blockDepth is transient recursion bookkeeping (see parseBlocks); it must
   // not leak into the parse-result contract { blocks, linkDefs, footnoteDefs,
   // abbrDefs }. It is back to 0 here, so drop it before spreading state.
