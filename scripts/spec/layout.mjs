@@ -7160,6 +7160,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qItemPara = false // and is that paragraph an item's?
       let qRefusedThrough = { at: -1, depth: 0 } // the last line a refused brace run's paragraph keeps (CARVE-P2-035)
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
+      let qNestedAttributeThrough = -1
+      let qNestedAttributeDepth = 0
       let qStanzaCandidate = false
       let qStanzaSpanSeen = false
       // The run of a `%%%` span open in the candidate stanza: a blank inside it is payload.
@@ -7323,6 +7325,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           for (let d = 0; d < reached; d++) qNestedPara[d] = ans
           return ans
         }
+        if (idx <= qNestedAttributeThrough) return settle(false, qNestedAttributeDepth)
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
           if (summary && markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null && !isColonBlockOpener(summary.tail) && fenceLineInfo(summary.tail) === null) {
@@ -7427,6 +7430,21 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (closesColon) stack.pop()
             if (colon && !closesColon && parseColonOpener(colon[2]) !== null) {
               stack.push(colon[1].length)
+            }
+            // A wrapped attribute closes the paragraph at every quote depth it reaches.
+            // Its continuation lines are one block, not fresh quoted prose (carve#5629).
+            const attribute = inner.rest[0] === '{' ? tryAttrLine(new Proxy([], {
+              get(_, key) {
+                if (key === 'length') return n - idx
+                if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
+                const offset = Number(key)
+                return offset === 0 ? inner.rest : dedent(stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? '', inner.col)
+              },
+            }), 0) : null
+            if (attribute) {
+              qNestedAttributeThrough = idx + attribute.next - 1
+              qNestedAttributeDepth = depth
+              return settle(false, depth)
             }
             return settle(!COLON_CLOSER.test(text) &&
               !(atStart && isColonBlockOpener(text)) &&
