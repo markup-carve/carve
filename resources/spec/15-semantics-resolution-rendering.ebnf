@@ -337,6 +337,9 @@ After an unclosed fence attached by a stacked marker-line `+` ends
          A refused marker renders nothing and
          `continuation-marker-refused` reports it. It does not become a
          letter, open a paragraph or change the next visible line's owner.
+         A description or note body that refuses it stays open: the next line
+         is read in that body, where a marker at its body column opens a block
+         (carve#5608, carve#5601).
          A `+` off every eligible marker column remains ordinary text.
 
          A `+` at a container's marker column is outside that container's code,
