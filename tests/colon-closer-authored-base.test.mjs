@@ -15,16 +15,25 @@ test('an exact colon run short of an authored base stays in the colon body', () 
   assert.equal(trace.find(row => row.line === 7)?.owner, 'doc/item:1/div:3')
 })
 
-test('only a run at the authored base closes an item colon body', () => {
-  for (const offset of [-2, -1, 1, 2]) {
+test('a run below the authored base stays in an item colon body', () => {
+  for (const offset of [-2, -1]) {
     const source = `- head\n\n      :::\n      a\n${' '.repeat(6 + offset)}:::\n\n  tail\n`
     const output = html(source)
     assert.match(output, /<p>a\n:::<\/p>\n\s*<p>tail<\/p>\n\s*<\/div>/)
   }
-  assert.match(html('- head\n\n      :::\n      a\n      :::\n\n  tail\n'), /<\/div>\n\s*<p>tail<\/p>/)
+  for (const offset of [0, 1, 2]) {
+    const source = `- head\n\n      :::\n      a\n${' '.repeat(6 + offset)}:::\n\n  tail\n`
+    assert.match(html(source), /<\/div>\n\s*<p>tail<\/p>/)
+  }
 })
 
 test('the authored base rule also applies inside a description', () => {
   const source = ':: t\n: head\n\n      :::\n      a\n    :::\n\n  tail\n'
   assert.match(html(source), /<p>a\n:::<\/p>\n\s*<p>tail<\/p>\n\s*<\/div>/)
+})
+
+test('a below-base run in a figure caption renders no parser marker', () => {
+  const output = html('  ::: figure\n![one](a.png)\n^ One\n :::\n')
+  assert.match(output, /<figcaption>One\n:::<\/figcaption>/)
+  assert.ok(!output.includes('\0'))
 })

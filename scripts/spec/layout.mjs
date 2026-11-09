@@ -4443,8 +4443,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (trace) applied = ownerPath()
     }
     // A fence line folded after a pulled fence is paragraph text in every
-    // surviving owner. Carry that reading to the nested block readers.
-    result.push(out + (foldedFenceAfterPull || form.colonPayload ? LAZY : '') + src)
+    // surviving owner. Carry that reading to the nested block readers. An
+    // off-base colon run is also text, but use an inline escape instead of a
+    // lazy marker: figure captions can render the latter as literal bytes.
+    const readerLine = form.colonPayload
+      ? src.slice(0, src.length - m.rest.length) + '\\' + m.rest
+      : src
+    result.push(out + (foldedFenceAfterPull ? LAZY : '') + readerLine)
     const blockPath = applied
     // A marker the walk opens as a frame inside a list the readers opened
     // (carve#4193) is read where the walk wrote it: at a level's column a
@@ -5194,7 +5199,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (frames[reach]?.kind === 'colon' && frames[reach].run === colon[1].length) {
         // The reader sees normalized indentation. Keep the source-column
         // test here, before a shorter bare run can look like a closer.
-        if (col !== frames[reach].base) return { kind: 'text', interrupts: false, kept: true, colonPayload: true }
+        if (col < frames[reach].base) return { kind: 'text', interrupts: false, kept: true, colonPayload: true }
         return { kind: 'colon-close', frame: reach, interrupts: true }
       }
     }
