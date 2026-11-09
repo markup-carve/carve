@@ -3590,6 +3590,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   // The lines a refused brace run's paragraph keeps (CARVE-P2-035).
   const refusedKept = { start: -1, through: -1, col: -1, fenceRun: null }
+  const attachedFenceMisses = []
   const top = () => frames[frames.length - 1]
   const carried = (f) => f.plusShift?.shift ?? 0
   // A lone `+` the walk does not read as an indented list's marker is still
@@ -3761,6 +3762,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       continue
     }
     let src = lines[at]
+    // A nonblank line that misses the host of an attached open fence ends
+    // that fence before the line is classified in the parent (S1 step 2).
+    // This also applies after the blank an own-line attachment retained.
+    if (attachedTo?.ownLine && top().kind === 'fence' && isBlank(lines[at - 1] ?? '') && !isBlank(src)) {
+      const through = stripQuotes(src, attachedTo.depth)
+      const col = through === null ? -1 : walkIndent(through.rest).col
+      if (col > attachedTo.host.markerCol && col < attachedTo.host.col) {
+        attachedFenceMisses.push(at)
+        frames.length = 0
+        frames.push(...attachedTo.frames.slice(0, attachedTo.frames.indexOf(attachedTo.host)))
+        attachedTo = null
+      }
+    }
     // A blank outside the quote that granted a `+` ends its attached block
     // with the quote. The follower was read where it stood, so the walk may
     // hold its frames without the quote frame that owns them (CARVE-P0-019).
@@ -3775,6 +3789,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // Where the innermost quote prefix taken so far ends, in document columns.
     let viewDoc = 0
     let m = walkIndent(src)
+    // A refused brace run protects its immediately following line as
+    // paragraph text, including a marker-column `+` (carve#5658 R03).
+    if (at > refusedKept.start && at <= refusedKept.through && CONT_MARKER.test(m.rest)) {
+      src = src.replace('+', plusLetter)
+      m = walkIndent(src)
+    }
     // The line as the current quote segment starts, for an opener's C5 column.
     let segmentSrc = src
     // The leading run of the current segment, written at `col`.
@@ -4048,7 +4068,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         continue
       }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
-      attachedTo = attachedBlock(plus, skipped?.end ?? at + 1)
+      attachedTo = attachedBlock(plus, skipped?.end ?? at + 1, true)
       if (trace) {
         const start = skipped?.end ?? at + 1
         const depth = attachedTo.depth
@@ -4623,6 +4643,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   }
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
+  walked.attachedFenceMisses = attachedFenceMisses
   walked.acceptedPlusesByOwner = acceptedPlusesByOwner
   return walked
 
@@ -5007,7 +5028,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return { rest }
   }
 
-  function attachedBlock(host, from) {
+  function attachedBlock(host, from, ownLine = false) {
     const depth = frames.slice(1, frames.indexOf(host)).filter((f) => f.kind === 'quote').length
     const view = (line) => {
       const rest = stripQuotes(line, depth)?.rest
@@ -5018,7 +5039,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // Measured only when a `+` asks, over the lines since the block began.
     const endsAt = (at) => {
       let last = at
-      while (host.kind === 'item' && last > from && isBlank(view(lines[last - 1]) ?? lines[last - 1])) last--
+      // A blank after the one block an own-line `+` attached does not take
+      // away the host's later marker-column `+` (carve#5639). Ignore the
+      // separator for every host before asking whether that block ended.
+      const first = trimWsStart(view(lines[from]) ?? '')
+      const openFence = FENCE.exec(first)
+      const ownLineFence = openFence && parseFenceInfo(openFence[2], openFence[1]) !== null &&
+        !hasCloser(lines.slice(from, at).map(view), 0)
+      // A definition attached inside a passed note retains its own body
+      // boundary; trimming that separator would end the nested body early.
+      if (!ownLineFence && (host.kind === 'item' || !FOOTNOTE_DEF.test(first)))
+        while (last > from && isBlank(view(lines[last - 1]) ?? lines[last - 1])) last--
       if (last <= from) return false
       const own = lines.slice(from, last).map(view)
       // T6: a table's rows stay its rows at any indent, so the block ends where they do.
@@ -5030,7 +5061,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const next = takeOneBlock(probe, 0, {}, 0).next
       return next >= own.length && (probe === rows || next === own.length)
     }
-    return { host, depth, endsAt, frames: frames.slice() }
+    return { host, depth, endsAt, ownLine, frames: frames.slice() }
   }
 
   function classify(rest, owner, at, col, missed = false) {
@@ -5427,6 +5458,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     unterminatedLines: new WeakSet(src.endsWith('\n') ? [] : [lines]),
     ownershipEvents: new WeakMap([[lines, { events: ownershipEvents, offset: 0 }]]),
     acceptedMarkerPluses: new WeakMap([[lines, { byOwner: walked.acceptedPlusesByOwner, offset: 0 }]]),
+    fenceHostMisses: new WeakMap([[lines, walked.attachedFenceMisses]]),
     losingNoteBody: losingNoteBody(sentinel),
     refusedNoteBody: refusedNoteBody(sentinel),
   }
@@ -5530,6 +5562,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   delete state.prefixMemos
   delete state.blockEndMemo
   delete state.attachmentBoundaries
+  delete state.fenceHostMisses
   delete state.ownershipEvents
   delete state.acceptedMarkerPluses
   delete state.losingNoteBody
@@ -6095,7 +6128,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       if (CONT_MARKER.test(m[2]) && i < n && !isBlank(lines[i])) {
         const attached = takeOneBlock(lines, i, state, ind(i).L?.col ?? ind(i).col)
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
-        let next = attached.next
+        let next = Math.min(attached.next,
+          state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
         // A losing definition in the invisible lead takes no block. Measure
         // the winning marker's actual first block from its first visible line,
         // retaining the authored columns before the body reader rebases them.
@@ -6263,6 +6297,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // not. A blank RUN of any length is allowed between continuation lines.
       while (i < n) {
         const measured = ind(i)
+        if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
         // The ownership walk has already refused this marker and retained the
         // note as owner. Its invisible placeholder must not end the note body.
         const ownership = state.ownershipEvents?.get(lines)
@@ -6370,6 +6405,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const end = blankRunBeforeSpanComment(lines, i, n)
           for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           i = end
+        } else if (isBlank(lines[i])) {
+          // A marker-column `+` reaches the note even after a blank. Keep the
+          // separator so the next loop can consume that marker (§17 L3/L4,
+          // carve#5639); an ordinary below-column line still ends the note.
+          let next = i
+          while (next < n && isBlank(lines[next])) next++
+          if (next < n && CONT_MARKER.test(lines[next]) && ind(next).col === 0) {
+            for (let k = i; k < next; k++) bodyLines.push('')
+            i = next
+            continue
+          }
+          break
         } else if (CONT_MARKER.test(lines[i] ?? '')) {
           // Checked BEFORE lazy continuation, which would otherwise swallow the `+`.
           i++
@@ -6378,7 +6425,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           lazyParagraphOpen = false
           attachPending = true
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
-          const end = takeOneBlock(lines, i, state, measured.col).next
+          const end = Math.min(takeOneBlock(lines, i, state, measured.col).next,
+            state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
           attachedFrom = bodyLines.length
           ownLineAttached = true
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
@@ -6793,6 +6841,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
+            if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
             // A new span needs its own answer; payload rows keep the prior one.
             if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
             if (reachesBody(i) || isBlank(cur)) retainedParagraph = false
@@ -6810,6 +6859,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (entryAtOwner(i)) break
             if (isBlank(cur)) {
               afterComment = false
+              const next = afterBlankRun(i)
+              if (CONT_MARKER.test(lines[next] ?? '') &&
+                  (sourceColumns?.[next] ?? ind(next).L?.col ?? ind(next).col) === sourceDescriptionCol) {
+                for (let k = i; k < next; k++) pushBody('', k)
+                i = next
+                continue
+              }
               // A blank inside a verse span leaves its earlier stanza open, even
               // when the next line misses the description's column (CARVE-P9-047).
               if (bodyHoldsLiveSpan() && (blankSpanKeepsStanza ??= hostEndsInLineBlockStanza(bodyLines, 0, true))) {
@@ -6878,7 +6934,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // A sibling description or term ends the pulled block, as a sibling marker ends an item's (carve#4080).
               const siblingAt = (k) => (DESCRIPTION_TEXT.test(ind(k)?.rest ?? '') || DEFLIST_TERM.test(ind(k)?.rest ?? '')) &&
                 (sourceColumns?.[k] ?? ind(k).L?.col ?? ind(k).col) === sourceDescriptionCol
-              let end = takeOneBlock(lines, i, state, indentCols(lines[i]).col, false, siblingAt).next
+              let end = Math.min(takeOneBlock(lines, i, state, indentCols(lines[i]).col, false, siblingAt).next,
+                state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
               // The refused run keeps its first fence follower through that
               // fence's closer. A later opener starts another block, even when
               // the attached paragraph's ordinary block probe scanned past it.
@@ -7974,7 +8031,17 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (key === 'length') return n - idx
             if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
             const offset = Number(key)
-            return offset === 0 ? inner0.rest : dedent(QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? '', inner0.col)
+            if (offset === 0) return inner0.rest
+            const authored = QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? lines[idx + offset] ?? ''
+            if (authored.includes(LAZY)) {
+              // A quote normalization that lost the opening brace's source
+              // column cannot turn its lazy text into block attributes.
+              if (authoredBraceColumns.get(lines)?.[idx] === undefined)
+                return dedent(QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? '', inner0.col)
+              const column = authoredBraceColumns.get(lines)?.[idx + offset] ?? indentCols(authored).col
+              return ' '.repeat(column) + stripLazy(trimWsStart(authored))
+            }
+            return dedent(authored, inner0.col)
           },
         }), 0) : null
         if (quotedAttributeRun) qAttributeThrough = idx + quotedAttributeRun.next - 1
@@ -8021,7 +8088,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           carryPrefixMemo(state, lines, i, inner, inner.length)
           const event = sourceOwnership?.events.get(i + sourceOwnership.offset)
           if (event) quoteOwnership.set(inner.length, event)
-          inner.push(qm[1] ?? '')
+          const quoteText = qm[1] ?? ''
+          const writtenColumn = authoredBraceColumns.get(lines)?.[i]
+          // A lazy continuation with a quote prefix keeps its written source
+          // column for a valid block attribute run (CARVE-P2-035, carve#5619).
+          inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
+            ? ' '.repeat(writtenColumn) + stripLazy(trimWsStart(quoteText)) : quoteText)
           if (LINE_BLOCK_SHAPED.test(qm[1] ?? '')) {
             qStanzaCandidate = true
             qStanzaOpen = false
@@ -8084,7 +8156,27 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           i++
           // A `+` the next `+` follows hands that one the quote's next block (carve#4438).
           if (lines[i] !== undefined && CONT_MARKER.test(ind(i).rest)) continue
-          const attached = takeOneBlock(lines, i, state, ind(i - 1).L?.col ?? sourceQuoteCol, true)
+          let attached = takeOneBlock(lines, i, state, ind(i - 1).L?.col ?? sourceQuoteCol, true)
+          // A fence an own-line `+` attaches keeps its blank in a quote too
+          // (S1, carve#5560 and carve#5635). The first block probe stops at
+          // that blank; extend only through lines that still carry this quote's
+          // prefix, stripping it as the ordinary quote reader does.
+          const code = FENCE.exec(trimWsStart(attached.rawMarker[0] ?? ''))
+          if (code && parseFenceInfo(code[2], code[1]) !== null &&
+              attachedLeavesFenceOpen(attached.rawMarker, inner) && isBlank(lines[attached.next] ?? '')) {
+            const rawMarker = attached.rawMarker.slice()
+            let next = attached.next
+            for (; next < n; next++) {
+              if (isBlank(lines[next])) { rawMarker.push(''); continue }
+              const quoted = QUOTE.exec(lines[next])
+              if (!quoted) break
+              const payload = quoted[1] ?? ''
+              rawMarker.push(payload)
+              const closer = PURE_FENCE.exec(trimWsStart(payload))
+              if (closer && closer[1][0] === code[1][0] && closer[1].length >= code[1].length) { next++; break }
+            }
+            attached = { rawMarker, next }
+          }
           if (attached.next > i) {
             const colonMode = qColonRuns.at(-1)?.mode
             const insideColon = colonMode && colonMode !== 'line-block' && !qHost.fence
@@ -10456,7 +10548,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       attachNext = true
       closePara()
     }
-    const attachFlushLeft = () => {
+    const attachFlushLeft = (ownLine = false) => {
       if (i >= n || isBlank(lines[i])) return false
       const blockColumn = ind(i).L?.col ?? ind(i).col
       const localColumn = ind(i).col
@@ -10485,14 +10577,37 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // the second needs a `+` of its own. The item's boundary set adds its
       // sibling marker to the shared one (carve#1782).
       let end = attachedBlockEnd(lines, i, state, (idx) =>
+        sortedHas(state.fenceHostMisses?.get(lines), idx) ||
         ind(idx).rest === '' || CONT_MARKER.test(lines[idx]) ||
         matchMarkerAt(ind(idx))?.indent === baseIndent, Math.min(ind(i).col, blockColumn))
-      const attached = lines.slice(i, end)
+      const miss = state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n
+      end = Math.min(end, miss)
+      let attached = lines.slice(i, end)
       // The block an attribute run leads decides how it ends, not the run (carve#4271).
       const opener = attachedOpener(attached, ind(i).col)
       const codeMatch = FENCE.exec(attached[opener] ?? '')
       const code = codeMatch && parseFenceInfo(codeMatch[2], codeMatch[1]) !== null ? codeMatch : null
       const colon = COLON_FENCE.exec(attached[opener] ?? '')
+      // An own-line `+` gives its fence the same blank payload as a body
+      // fence. The first blank only bounds a marker-line attachment (S1,
+      // carve#5560 and carve#5635). Keep later lines that reach the item and
+      // the final blank before a line that leaves it.
+      if (ownLine && code && !hasCloser(attached, opener) && isBlank(lines[end] ?? '')) {
+        const run = code[1]
+        for (let k = end; k < n; k++) {
+          if (k === miss) break
+          if (isBlank(lines[k])) { end = k + 1; continue }
+          const measured = ind(k)
+          if (measured.col < contentCol) {
+            const closer = PURE_FENCE.exec(measured.rest)
+            if (measured.col === localColumn && closer && closer[1][0] === run[0] && closer[1].length >= run.length)
+              end = k + 1
+            break
+          }
+          end = k + 1
+        }
+        attached = lines.slice(i, end)
+      }
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
       if (unclosedAttached) end = n
       end = attachedColonSiblingEnd(lines, i, end, opener, (k) => matchMarkerAt(ind(k))?.indent === baseIndent)
@@ -10726,7 +10841,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           continue
         }
         i++
-        if (attachFlushLeft()) continue
+        if (attachFlushLeft(true)) continue
         // §17 L3: a refused `+` renders nothing; the walk already wrote it as `%%`.
         if (i < n && !isBlank(lines[i]) && (ind(i).L?.col ?? ind(i).col) < sourceMarkerCol) break
         continue
@@ -10898,6 +11013,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (j >= n) { i = j; break }
         const jm = ind(j)
         const { col } = jm
+        // The ownership walk already ended an attached fence when this line
+        // missed its host. Hand the line to the parent parser (S1 step 2).
+        if (sortedHas(state.fenceHostMisses?.get(lines), j)) { i = j; break }
         const nm = matchMarkerAt(jm, col >= contentCol ? contentCol : 0)
         // PART 9 §11 N1a: an entry after the run sees all of it, as a sibling marker does (carve#4759).
         const entryAfterRun = col >= contentCol && /^::? (?=[ \t]*[^ \t\n\r])/.test(jm.rest) && !/^:::/.test(jm.rest)
@@ -10932,7 +11050,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // none of them makes.
         if (CONT_MARKER.test(lines[j]) && jm.col === baseIndent) {
           i = j + 1
-          attachFlushLeft()
+          attachFlushLeft(true)
           continue
         }
         if (nm && nm.indent === baseIndent) {

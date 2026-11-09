@@ -30,6 +30,9 @@ filename order, so their numeric prefixes are part of the build contract.
   `ownershipTransition`, which no parse path calls.
 - `paragraph-interruption.json` is the closed classification defined by PART 9
   section 10.
+- `plus-ownership.crv` is the ownership table for the line after a block a
+  `+` attaches (PART 0 S1, PART 9 §17 L3). `tests/plus-ownership-table.test.mjs`
+  reads it and walks every cell against the spec model.
 - The interchange fallback table in `23-ast-foundations.ebnf` summarizes
   existing PART 12 rules. `spec:write` derives its docs view; `spec:check`
   validates its node/field names, rule IDs, actions and diagnostic codes.

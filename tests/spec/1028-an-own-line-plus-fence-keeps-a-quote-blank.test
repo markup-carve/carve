@@ -1,0 +1,18 @@
+An own line plus fence keeps a quote blank
+
+````
+> p
++
+```
+a
+
+> zq
+.
+<blockquote>
+  <p>p</p>
+  <pre><code>a
+
+zq
+</code></pre>
+</blockquote>
+````

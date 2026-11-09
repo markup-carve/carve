@@ -295,22 +295,30 @@
    STEP 1, PAYLOAD.
 
      S1 PAYLOAD. Inside an open code, raw or comment fence, a line is
-        tested in this order:
+        tested against this ownership rule first: An attached fence owns every
+        line up to its end. Only the fence's own end condition (its closer, or
+        the first blank for a marker-line `+`) ends it; a line that misses the
+        host ends only an own-line attachment.
+
+        The consequences are tested in this order:
 
         1. the fence's closer ends it;
-        2. a nonblank line that misses the fence's owner in S2 ends it;
-        3. the first blank ends an unclosed code fence that a marker-line `+`
-           attached (PART 9 §17 L3, carve#5304);
+        2. for an own-line attachment, a nonblank line that misses the fence's
+           owner in S2 ends it;
+        3. apply the marker-line first-blank end (PART 9 §17 L3, carve#5304);
         4. every other line is payload: it opens nothing, takes no `+` and
            changes no frame state.
 
-        Step 3 covers a marker-line `+` only. A fence an own-line `+`
-        attached reads like any fence in its host's body and keeps its
-        trailing blank (PART 9 §17 L4, carve#5560).
+        An own-line attached fence keeps its trailing blank (PART 9 §17 L4,
+        carve#5560).
 
         A host reads a closer at its column whatever stands between the
         blank and the closer, so a payload line there does not end a fence
         that a later line closes (PART 9 §17 L3, carve#5587).
+
+        resources/spec/plus-ownership.crv names the owner of the line after
+        every block a `+` attaches, cell by cell, with the clause or ruling
+        that decides it (carve#5658).
 
         Nothing else ends such a fence without its closer: otherwise an
         unclosed fence runs to the end of its container, and a host's colon
@@ -838,8 +846,14 @@ blank_line = {whitespace}, newline ;
    comparison uses the lines' source columns after quote prefixes are read.
    A `{%` opened on a lazy paragraph continuation keeps its written source
    column, even when it is short of its owner's content column. A continuation
-   at or left of that `{` refuses the whole run in every owner; one or more
-   source columns past it continues the run. A line inside a still-open
+   without a quote prefix after a quoted block-position run also supplies its
+   written source column: one column past the quote-inner opening `{` makes
+   a valid block attribute run, not inline text (carve#5619).
+   A continuation at or left of that `{` refuses the whole run in every owner;
+   one or more source columns past it continues the run. A lone `+` at the host
+   marker column on the line immediately after a refused run stays literal
+   paragraph text, and the following line continues the paragraph (carve#5658
+   R03, maintainer ruling, 2026-11-09). A line inside a still-open
    inline code span of the paragraph starts no block-position brace line, at any
    column: block position is not decided against text the paragraph's inline
    pairing already holds (carve#5618, carve#5638). Inline
@@ -6656,11 +6670,14 @@ EOF = (* end of file *) ;
          of its content column as a column-0 host does, so `- - +` / a fence at
          column 2 / blank / `  x` / a closer at column 3 is one fence holding the
          blank and `x` (carve#5587).
-         After an unclosed fence attached by a stacked marker-line `+` ends
-         at that blank, an unpaired fence line indented into the following
-         paragraph stays paragraph text in whichever owner holds the paragraph
-         (carve#5606). This does not depend on that owner's distance from the
-         attaching host.
+         After an unclosed fence attached by a marker-line `+` ends at that
+         blank, stacked or not, an unpaired fence line indented into the
+         following paragraph stays paragraph text in whichever owner holds the
+         paragraph (carve#5606, carve#5636). This does not depend on that
+         owner's distance from the attaching host.
+         The owner of the line after an attached block, for every host, `+`
+         form, block and follower, is the table in
+         resources/spec/plus-ownership.crv (carve#5658).
 
          ONE ATTACH RULE FOR EVERY HOST -- NORMATIVE [CARVE-P9-067]. Lists,
          quotes, definition bodies and footnote bodies all use this one test.
