@@ -1,6 +1,7 @@
 ---
 title: Playground
 description: Live Carve to HTML preview, in your browser.
+aside: false
 ---
 
 # Playground
