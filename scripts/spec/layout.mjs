@@ -5851,7 +5851,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   }
   const sourceBraceColumns = authored.map(sourceBraceColumn)
   authoredBraceColumns.set(lines, sourceBraceColumns)
-  authoredCommentColumns.set(lines, authored.map(sourceCommentColumn))
+  authoredCommentColumns.set(lines, sourceBraceColumns)
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -8637,11 +8637,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
-          // Strip this quote's source prefix from the carried comment column.
-          // A marker line inside or outside a quote then reaches the next
-          // reader in the same host coordinates as its continuations.
-          quoteCommentColumns[inner.length] = Math.max(0,
-            (authoredCommentColumns.get(lines)?.[i] ?? sourceCommentColumn(lines[i])) - sourcePrefixColumn(lines[i], quoteText))
+          // A prefixed line is measured after this quote's prefix, whatever
+          // frame the host measured it in (CARVE-P2-035).
+          quoteCommentColumns[inner.length] = quoteText.includes(LAZY)
+            ? authoredCommentColumns.get(lines)?.[i] ?? indentCols(quoteText).col
+            : indentCols(quoteText).col
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined

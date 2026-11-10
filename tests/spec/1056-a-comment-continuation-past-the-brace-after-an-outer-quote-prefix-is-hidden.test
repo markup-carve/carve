@@ -1,0 +1,12 @@
+A comment continuation past the brace after an outer quote prefix is hidden
+
+```
+  > - {% a
+>    b %}
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+```

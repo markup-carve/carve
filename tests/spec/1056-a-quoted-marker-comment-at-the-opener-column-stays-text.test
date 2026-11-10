@@ -1,0 +1,15 @@
+A quoted marker comment at the opener column stays text
+
+```
+ - > {% a
+   > b
+   > z %}
+.
+<ul>
+  <li>
+    <blockquote><p>{% a
+b
+z %}</p></blockquote>
+  </li>
+</ul>
+```
