@@ -5613,6 +5613,11 @@ function normalizeSource(src) {
 }
 
 const authoredBraceColumns = new WeakMap()
+// Comment runs need written columns after nested readers rebase their lines.
+// Keep these separate from attribute columns: the two block scans use different
+// ownership windows, and a comment's quoted continuation must not retarget an
+// attribute run in the same quote.
+const authoredCommentColumns = new WeakMap()
 // What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
 const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
 const refusedNoteBody = (sentinel) => '%%' + sentinel + 'r'
@@ -5677,7 +5682,9 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
     }
     return indentCols(rest).col
   }
-  authoredBraceColumns.set(lines, authored.map(sourceBraceColumn))
+  const sourceBraceColumns = authored.map(sourceBraceColumn)
+  authoredBraceColumns.set(lines, sourceBraceColumns)
+  authoredCommentColumns.set(lines, sourceBraceColumns)
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -6086,6 +6093,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   }
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const braceSourceColumns = authoredBraceColumns.get(lines)
+  const commentSourceColumns = authoredCommentColumns.get(lines)
   const relativeTermColumns = state.itemRelativeTermColumns?.has(lines) ?? false
   layoutWork.lineVisits += n
 
@@ -7724,6 +7732,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const quoteOwnership = new Map()
       const quoteBraceColumns = []
       authoredBraceColumns.set(inner, quoteBraceColumns)
+      const quoteCommentColumns = []
+      authoredCommentColumns.set(inner, quoteCommentColumns)
       const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
       // The quote's own container ladder and the fence a container in it holds
       // open (carve#2538). `qHost.fence` replaces the run string this used to
@@ -8372,7 +8382,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
-          quoteBraceColumns[inner.length] = writtenColumn ?? indentCols(quoteText).col
+          quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? indentCols(quoteText).col
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
@@ -8559,6 +8569,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
           quoteBraceColumns[inner.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
+          quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? ind(i).col
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
           i++
           continue
@@ -8627,7 +8638,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
           if (!lazyComment && !blockComment && !line?.includes(LAZY)) return line
-          const sourceCol = braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
+          const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
+            braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
             : unframeLazy(line)
@@ -9941,6 +9953,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemMeas = []
     const itemBraceColumns = []
     authoredBraceColumns.set(itemLines, itemBraceColumns)
+    const itemCommentColumns = []
+    authoredCommentColumns.set(itemLines, itemCommentColumns)
     const itemSourceRows = []
     let itemHasTerm = DEFLIST_TERM.test(head.text)
     const measurement = state.opaqueMeasurement
@@ -9967,6 +9981,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       itemLines.push(text)
       itemMeas.push(m)
       itemBraceColumns.push(authoredBraceColumns.get(lines)?.[row] ?? m?.sourceCol)
+      itemCommentColumns.push(authoredCommentColumns.get(lines)?.[row] ?? m?.sourceCol)
       itemSourceRows.push(row)
       if (itemLines.length > 1 && DEFLIST_TERM.test(ind(row)?.rest ?? '')) itemHasTerm = true
       if (itemOrigins) itemOrigins.push(text === '' ? undefined :
@@ -9984,7 +9999,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     pushLine(head.text)
     // The marker-line body starts after the marker. Its source brace column
     // must be compared with continuation columns before item dedenting.
-    if (head.text.startsWith('{%')) itemBraceColumns[0] = contentCol
+    if (head.text.startsWith('{%')) itemCommentColumns[0] = contentCol
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {
