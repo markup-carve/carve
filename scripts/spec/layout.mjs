@@ -1990,8 +1990,14 @@ function invisibleSiblingLine(rest) {
 function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
   if (!indentCols(rests[k] ?? '').rest.startsWith('{%')) return -1
   let end = k + 1
+  // CARVE-P2-035: a line inside the open run is payload, so only a line after `%}` can interrupt.
+  let spanOpen = commentSpanOpenAfter(rests[k], false)
   for (; end < rests.length && !isBlank(rests[end] ?? ''); end++) {
     const rest = indentCols(rests[end]).rest
+    if (spanOpen) {
+      spanOpen = commentSpanOpenAfter(rests[end], true)
+      continue
+    }
     if (startsParagraphBlock(rest) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
     if (matchMarkerAt(indentCols(rest))) {
       if (inItem) break
@@ -2004,13 +2010,18 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
   for (let j = k; j < end; j++) {
     // A run whose continuation fails CARVE-P2-035 is paragraph text, so the paragraph is visible.
     if (!open && indentCols(measured[j]).rest[0] === '{' && refusedBlockBraceRun(measured, j, cache) !== null) return -1
-    for (let c = 0; c < rests[j].length - 1; c++) {
-      if (!open && rests[j][c] === '{' && rests[j][c + 1] === '%') { open = true; c++ }
-      else if (open && rests[j][c] === '%' && rests[j][c + 1] === '}') { open = false; c++ }
-    }
+    open = commentSpanOpenAfter(rests[j], open)
     para.push(rests[j])
   }
   return COMMENT_ONLY_PARA.test(para.join('\n')) ? end : -1
+}
+
+function commentSpanOpenAfter(line, open) {
+  for (let c = 0; c < line.length - 1; c++) {
+    if (!open && line[c] === '{' && line[c + 1] === '%') { open = true; c++ }
+    else if (open && line[c] === '%' && line[c + 1] === '}') { open = false; c++ }
+  }
+  return open
 }
 
 // A definition skipped between siblings still registers, in source order.

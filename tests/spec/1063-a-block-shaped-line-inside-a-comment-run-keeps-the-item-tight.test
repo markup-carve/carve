@@ -1,0 +1,39 @@
+A block-shaped line inside a comment run keeps the item tight
+
+```
+- p
+
+  {% a
+   - m
+   z %}
+.
+<ul>
+  <li>p</li>
+</ul>
+```
+
+```
+1. p
+
+   {% a
+    # m
+    %}
+.
+<ol>
+  <li>p</li>
+</ol>
+```
+
+```
+> - p
+>
+>   {% a
+>    ---
+>    z %}
+.
+<blockquote>
+  <ul>
+    <li>p</li>
+  </ul>
+</blockquote>
+```
