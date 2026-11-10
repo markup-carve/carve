@@ -5374,7 +5374,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         if (key === 'length') return lines.length - at
         if (key === '0') return ' '.repeat(openerCol) + rest
         const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
-        return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
+        // A lazy line without the quote prefixes keeps its written column (carve#5619).
+        return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? lines[j])
       },
       // A list marker in a body interrupts the run's paragraph as the block readers measure it (§24 C3).
     }), 0, { commentScannedThrough: -1 }, 0, ['item', 'dd', 'note'].includes(owner.kind))
