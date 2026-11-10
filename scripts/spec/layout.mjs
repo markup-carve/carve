@@ -1871,7 +1871,8 @@ function inlineAttributeHost(line, at, span, bracketStarts) {
     // The same inline parser that consumes the attribute run decides whether
     // this closer actually paired. A lexical delimiter guess would count an
     // intraword `*` or a stray `]` as a host (carve#5740).
-    const marker = 'data-carve-host-probe-5740'
+    let marker = 'data-carve-host-probe-5740'
+    while (prefix.includes(marker)) marker += 'x'
     try {
       const rendered = renderInline(prefix + `{${marker}=1}`)
       paired = rendered.includes(` ${marker}="1"`) || rendered.includes(`"${marker}","1"`)

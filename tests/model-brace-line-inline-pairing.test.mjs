@@ -36,3 +36,8 @@ test('a host paired across a soft line break consumes its attribute payload', ()
   assert.equal(html('[a\nb]{title="`"}\n{k=v}\nz\n'),
     '<p><span title="`">a\nb</span></p>\n<p k="v">z</p>')
 })
+
+test('an earlier attribute cannot impersonate the host probe', () => {
+  assert.equal(html('[x](u){data-carve-host-probe-5740=1} y){title="`"}\n{k=v}\nz\n'),
+    '<p><a href="u" data-carve-host-probe-5740="1">x</a> y){title=“<code>"}\n{k=v}\nz</code></p>')
+})
