@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd, renderInline, attachedInlineAttributeEnds } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-table.mjs'
 import { hasInvalidCodeLanguage, scanDirective } from './include-directive.mjs'
@@ -1843,8 +1843,63 @@ function refusedBlockBraceRun(lines, start, cache) {
 
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
-// Advance an open inline code span or braced comment over one paragraph line.
-function scanInlineSpan(span, line) {
+const inlineHostCache = new Map()
+const inlineAttributeCache = new Map()
+const commentCloserCache = new WeakMap()
+
+// A paired inline attribute is opaque to inline pairing. Only a host-ending
+// delimiter can own it; a bare word before the brace leaves its contents text.
+function inlineAttributeEnd(line, at) {
+  const closer = line[at - 1]
+  if (!'])`/*_~=}>'.includes(closer ?? '\0')) return -1
+  let attached = inlineAttributeCache.get(line)
+  if (attached === undefined) {
+    attached = attachedInlineAttributeEnds(line)
+    if (inlineAttributeCache.size >= 4096) inlineAttributeCache.clear()
+    inlineAttributeCache.set(line, attached)
+  }
+  if (attached !== null) return attached.get(at) ?? -1
+  // Delimiter characters can also be plain text. Ask the inline parser
+  // whether this exact prefix takes an attribute slot before hiding its
+  // payload from the block reader, including escaped bracket openers.
+  const prefix = line.slice(0, at)
+  const opener = closer === ')' || closer === ']' ? '[' : closer === '>' ? '<' : closer === '}' ? '{' : closer
+  if (!prefix.slice(0, -1).includes(opener)) return -1
+  let host = inlineHostCache.get(prefix)
+  if (host === undefined) {
+    const probe = `data-carve-host-probe-${at}`
+    try {
+      host = renderInline(prefix + `{${probe}=1}`).includes(` ${probe}="1"`)
+    } catch (error) {
+      if (!(error instanceof Refuse)) throw error
+      host = false
+    }
+    if (inlineHostCache.size >= 4096) inlineHostCache.clear()
+    inlineHostCache.set(prefix, host)
+  }
+  if (!host) return -1
+  for (let end = line.indexOf('}', at + 1); end >= 0; end = line.indexOf('}', end + 1)) {
+    if (parseAttrList(line.slice(at, end + 1)) !== null) return end + 1
+  }
+  return -1
+}
+
+function commentClosesAfter(lines, at) {
+  let closes = commentCloserCache.get(lines)
+  if (!closes) {
+    closes = new Uint8Array(lines.length + 1)
+    let future = false
+    for (let i = lines.length - 1; i >= 0; i--) {
+      future = isBlank(lines[i]) ? false : lines[i].includes('%}') || future
+      closes[i] = future ? 1 : 0
+    }
+    commentCloserCache.set(lines, closes)
+  }
+  return closes[at] === 1
+}
+
+// Advance only spans that inline pairing actually holds over a brace line.
+function scanInlineSpan(span, line, commentCloses = () => true) {
   for (let k = 0; k < line.length; k++) {
     if (span.comment) {
       if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
@@ -1866,7 +1921,14 @@ function scanInlineSpan(span, line) {
       k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
       continue
     }
-    if (line[k] === '{' && line[k + 1] === '%') { span.comment = true; k++ }
+    if (line[k] === '{') {
+      const attrEnd = inlineAttributeEnd(line, k)
+      if (attrEnd >= 0) { k = attrEnd - 1; continue }
+      if (line[k + 1] === '%' && (line.indexOf('%}', k + 2) >= 0 || commentCloses())) {
+        span.comment = true
+        k++
+      }
+    }
   }
   return span
 }
@@ -5253,8 +5315,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       owner.spanScan = { from: owner.paraFrom, upto: owner.paraFrom, span: { codeRun: 0, comment: false } }
     }
     const scan = owner.spanScan
-    for (; scan.upto < at; scan.upto++) scanInlineSpan(scan.span, trimWsStart(stripLazy(stripQuotes(lines[scan.upto], depth)?.rest ?? '')))
-    return scan.span.codeRun !== 0
+    for (; scan.upto < at; scan.upto++) scanInlineSpan(scan.span,
+      trimWsStart(stripLazy(stripQuotes(lines[scan.upto], depth)?.rest ?? '')),
+      () => commentClosesAfter(lines, scan.upto + 1))
+    return scan.span.codeRun !== 0 || scan.span.comment
   }
 
   function classifyShape(rest, owner, at, col) {
@@ -8480,7 +8544,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     const refusedCache = { commentScannedThrough: -1 }
     const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
     const inlineSpanOpen = () => {
-      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) scanInlineSpan(inlineSpan, para[inlineSpan.scanned])
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) scanInlineSpan(inlineSpan,
+        para[inlineSpan.scanned], () => commentClosesAfter(lines, i))
       return inlineSpan.codeRun !== 0 || inlineSpan.comment
     }
     while (i < n && !isBlank(lines[i])) {

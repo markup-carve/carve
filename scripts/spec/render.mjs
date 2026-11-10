@@ -2154,6 +2154,40 @@ let pairedDelims = null
 let spanPairs = null
 // Blocks that attached to a closer, with the raw `{` offsets inside the span.
 let attachedAttrs = null
+let attachedAttrObserver = null
+
+// The block reader asks which inline attribute runs actually attached on a
+// physical line. Reuse the inline parser's final pairing pass once per line.
+// A transformed source (literal loose attributes or quieted comments) leaves
+// offset mapping to the caller's conservative fallback.
+export function attachedInlineAttributeEnds(text) {
+  const previous = attachedAttrObserver
+  let ends = null
+  attachedAttrObserver = (source, attached) => {
+    if (source === text) ends = new Map(attached.map(({ at, end }) => [at, end]))
+  }
+  try {
+    renderInline(text)
+  } catch (error) {
+    if (!(error instanceof Refuse)) throw error
+  } finally {
+    attachedAttrObserver = previous
+  }
+  return ends
+}
+
+function nestedAttributeEnds(root) {
+  const found = []
+  const walk = (node, inRun = false) => {
+    if (node.ctorName === 'looseAttrs') return
+    if (node.ctorName === 'attrs' && inRun) found.push({ at: node.source.startIdx, end: node.source.endIdx })
+    for (let i = 0; i < node.numChildren; i++) {
+      walk(node.child(i), inRun || node.ctorName === 'attrRun')
+    }
+  }
+  walk(root)
+  return found
+}
 
 // E1-E5 over a token stream: which candidates pair, as `open index -> close
 // index`. Split out because the caption `#` placeholder asks the same question
@@ -2441,7 +2475,7 @@ function resolveEmphasis(build, src, literalDelims = '', contentAt = 0, spanCont
           consumed.add(after)
           const braces = []
           for (let b = i + 1; b < closeIdx; b++) if (toks[b].braceAt !== undefined) braces.push(toks[b].braceAt)
-          if (braces.length) attachedAttrs?.push({ at: toks[after].at, end: toks[after].node.source.endIdx, braces })
+          attachedAttrs?.push({ at: toks[after].at, end: toks[after].node.source.endIdx, braces })
         }
         out += bi
           ? `<strong${attrsStr}><em>${inner}</em></strong>`
@@ -3135,7 +3169,8 @@ function renderInlineInner(text) {
     if (m.failed()) throw new Refuse(`inline: ${m.shortMessage}`)
     const out = semantics(m).h()
     const contested = attachedAttrs.filter((a) => contestedBlock(source, a))
-    return { out, offsets: [...unattachedAttrs, ...contested], paired: pairedDelims }
+    return { out, offsets: [...unattachedAttrs, ...contested], paired: pairedDelims,
+      attached: [...nestedAttributeEnds(semantics(m)), ...attachedAttrs] }
   }
   let source = quietOpenComments(text, read)
   // Brace escapes this loop wrote, as offsets into `source`.
@@ -3175,6 +3210,7 @@ function renderInlineInner(text) {
       }
       if (offsets.length === 0 || pass > limit) {
         if (offsets.length === 0 && escapes.length) return restoreAttached(source, escapes, result)
+        attachedAttrObserver?.(source, result.attached)
         return out
       }
       // A block that attaches in no reading is text first (carve#3933): only
