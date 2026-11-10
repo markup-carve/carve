@@ -1141,7 +1141,7 @@ function withTaskListClass(list) {
 // PART 2 `task_marker`: the task box is named by what the item VISIBLY says. Only the
 // item's FIRST block can sit beside the box, and only an unpromoted paragraph
 // carries inline text, so that is the one block read.
-function taskLabel(item, ctx) {
+function taskLabel(item) {
   const first = item.blocks[0]
   if (first === undefined || first.t !== 'para' || first.blockImage) return ''
   // A paragraph spans lines - a soft wrap, or a lazy continuation folded in -
@@ -1149,8 +1149,8 @@ function taskLabel(item, ctx) {
   // space, which is what the reader hears anyway. A no-break space is CONTENT
   // and survives, so the class is spelled out rather than using `\s`, which
   // reaches past ASCII.
-  return derivedText(paragraphInlineSource(first), renderInlineWithoutSymbols, ctx.footnoteDefs)
-    .replace(/[ \t\n\r\f\v]+/g, ' ').replace(/^ | $/g, '')
+  // A footnote reference contributes nothing, resolved or not (CARVE-P2-004).
+  return derivedText(paragraphInlineSource(first)).replace(/[ \t\n\r\f\v]+/g, ' ').replace(/^ | $/g, '')
 }
 
 function renderItem(item, list, depth, ctx) {
@@ -1176,7 +1176,7 @@ function renderItem(item, list, depth, ctx) {
     liAttrs = liAttrs.replace(/ data-task-state="[^"]*"/gi, '')
     liAttrs = ` data-task-state="${escapeAttr(taskState)}"${liAttrs}`
   }
-  const taskName = list.task ? taskLabel(item, ctx) : ''
+  const taskName = list.task ? taskLabel(item) : ''
   const prefix = list.task
     ? `<input type="checkbox"${item.checked ? ' checked' : ''} disabled${taskName === '' ? '' : ` aria-label="${escapeAttr(taskName)}"`}> `
     : ''
@@ -1792,7 +1792,7 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * Raw inlines are omitted by the same heading-only render pass. The escapes
  * then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
-function derivedText(source, render = renderInlineWithoutSymbols, footnoteDefs = null) {
+function derivedText(source, render = renderInlineWithoutSymbols) {
   let html = render(source)
   // A reference's text can itself hold a reference frame. Unwrap each level
   // before stripping tags or excluding the other atomic inline frames.
@@ -1804,15 +1804,6 @@ function derivedText(source, render = renderInlineWithoutSymbols, footnoteDefs =
       return ref.img ? ref.alt : ref.text
     })
   } while (html !== previous)
-  if (footnoteDefs) {
-    // A reference without a definition is printed literally by the note pass.
-    // Keep that same visible text in a task box's name; defined references
-    // remain frames and contribute nothing under PART 9R R4.
-    html = html.replace(FOOTNOTE_FRAMES, (frame, json, label, attrSource) => {
-      if (json !== undefined || (!/[\r\n]/.test(label) && footnoteDefs.has(labelKey(label)))) return frame
-      return escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`)
-    })
-  }
   html = html.replace(/\uE000[\s\S]*?\uE001/g, '')
     .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>(?:\\\((.*?)\\\)|\\\[(.*?)\\\])<\/span>/gs, '$1$2')
     // An image's plain-text projection is its alternative text. Preserve it
