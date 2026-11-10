@@ -11059,13 +11059,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const descendantColumns = new Set()
     let fenceBlankRun = 0
     if (head.text.startsWith('{')) {
-      const window = [
-        head.text,
-        ...lines.slice(i).map((candidate) => {
-          const measured = indentCols(candidate)
-          return dedentMeasured(measured, candidate, contentCol).text
-        }),
-      ]
+      // Lazy, so a scan reads only the lines the attribute run reaches.
+      const below = dedentedWindow(lines, i, contentCol)
+      const window = new Proxy([], {
+        get: (_, key) => key === '0' ? head.text : key === 'length' ? below.length + 1
+          : typeof key === 'string' && /^\d+$/.test(key) ? below[Number(key) - 1] : undefined,
+      })
       const attributes = tryAttrLine(window, 0, taskTextOffset(head))
       if (attributes && attributes.next > 1) {
         wrappedAttrEnd = i + attributes.next - 2
@@ -12040,8 +12039,10 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
         // A run folded lazily into a descendant's paragraph is short of its container and keeps nothing (PART 0 S4).
-        const lazyInDescendant = (childParagraphOpen && childCol >= 0 && reach < childCol) ||
-          (!QUOTE.test(dedented) && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest)))
+        // A marker or quote line opens its own block there, so its run is not folded (carve#5771).
+        const lazyInDescendant = !QUOTE.test(dmeas.rest) && !matchMarkerAt(dmeas) &&
+          ((childParagraphOpen && childCol >= 0 && reach < childCol) ||
+            bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest))
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const details = {}
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
