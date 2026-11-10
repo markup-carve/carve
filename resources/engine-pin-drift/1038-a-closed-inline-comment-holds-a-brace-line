@@ -1,1 +1,0 @@
-carve#5740: the pinned JavaScript build ends the paragraph before the brace line inside a paired inline comment; CARVE-P2-035 keeps it as comment text. The formatter also changes the oracle reading of this row.

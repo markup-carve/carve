@@ -1,1 +1,0 @@
-carve#5740: the pinned JavaScript build treats the literal brace group as opaque and ends the paragraph before the next brace line; CARVE-P2-035 keeps that line inside the open code span. The formatter also changes the oracle reading of this row.

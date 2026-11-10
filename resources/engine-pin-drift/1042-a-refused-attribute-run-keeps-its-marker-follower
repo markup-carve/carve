@@ -1,1 +1,0 @@
-CARVE-P2-035 / carve#5752: the pinned carve-js build opens a child list after the refused marker-line attribute run; the spec model keeps the follower as paragraph text.

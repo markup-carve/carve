@@ -1,1 +1,0 @@
-CARVE-P9-067, CARVE-P2-035 and PART 9 §15 A5 / carve#5622: the pinned JavaScript engine attaches the wrapped attribute and the following lazy line to the note, while the spec model and corpus leave the attribute invisible in the quote and `next` at document level. The carve-js line of the tracking ticket remains open.

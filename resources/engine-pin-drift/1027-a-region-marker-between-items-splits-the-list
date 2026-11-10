@@ -1,1 +1,0 @@
-A region marker at the list's column is that list's sibling and starts a new list before the next item (carve#5671). The pinned carve-js build keeps one list.

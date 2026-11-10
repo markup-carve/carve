@@ -1,1 +1,0 @@
-The pinned carve-js build predates the carve#5587 ruling: its formatted output of a stacked host's attached fence with a shifted closer past a payload line no longer holds one fence, so the spec model reads a different document (carve#5634).

@@ -1,1 +1,0 @@
-The pinned carve-js build gives an attribute line left of a note's body column to the note, which the carve#5576 ruling gives to the `+` host, so the spec model reads its formatted output as a different document (carve#5634).

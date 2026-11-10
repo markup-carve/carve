@@ -1,1 +1,0 @@
-The pinned carve-js build predates the spec model fix for carve#5489: after a losing duplicate note plus, it keeps the later root-column sibling inside the winning note. PART 9R R2 and PART 9 §17 L3 put that sibling at the root.

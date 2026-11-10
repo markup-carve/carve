@@ -1,1 +1,0 @@
-CARVE-P2-035 / carve#5619: the pinned carve-js build reads the quoted note lazy brace continuation as text; the spec model reads its written source column as a valid attribute run.

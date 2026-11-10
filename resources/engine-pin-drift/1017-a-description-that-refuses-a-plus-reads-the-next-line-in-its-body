@@ -1,1 +1,0 @@
-The pinned carve-js build ends the description after a refused `+`, which the carve#5608 ruling keeps open, so the spec model reads its formatted output as a different document (carve#5634).

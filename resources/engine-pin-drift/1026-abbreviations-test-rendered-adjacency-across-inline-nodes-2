@@ -1,1 +1,0 @@
-R3 tests adjacent rendered characters across eligible inline nodes (carve#5670). The pinned carve-js build expands HTML inside emphasis despite the preceding w.

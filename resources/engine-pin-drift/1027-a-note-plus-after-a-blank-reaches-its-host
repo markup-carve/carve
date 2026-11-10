@@ -1,1 +1,0 @@
-PART 9 §17 L3 / carve#5639: the pinned carve-js build closes a note before its marker-column plus after a blank; the spec model keeps the attachment in the note.
