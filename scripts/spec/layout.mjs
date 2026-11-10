@@ -1993,12 +1993,18 @@ function invisibleSiblingLine(rest) {
 // Returns the index past its last line, or -1. A block opener, `%%` line or attribute line ends
 // it (§10 I1/I5), and so does a list marker in an item (§24 C3). Elsewhere the marker joins
 // the paragraph, which keeps it visible.
-function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
+// `shared` carries a span closer between calls that read the same lines (carve#5870); `limit` bounds the paragraph.
+function commentOnlyParaEnd(rests, k, inItem, measured = rests, shared = null, limit = rests.length) {
   if (!indentCols(rests[k] ?? '').rest.startsWith('{%')) return -1
+  const cache = { commentScannedThrough: -1, commentCloser: shared?.commentCloser }
+  // A refused first run makes the paragraph visible wherever it ends, so probe it before the end scan.
+  const refused = refusedBlockBraceRun(measured, k, cache) !== null
+  if (shared) shared.commentCloser = cache.commentCloser
+  if (refused) return -1
   let end = k + 1
   // CARVE-P2-035: a line inside the open run is payload, so only a line after `%}` can interrupt.
   let spanOpen = commentSpanOpenAfter(rests[k], false)
-  for (; end < rests.length && !isBlank(rests[end] ?? ''); end++) {
+  for (; end < limit && !isBlank(rests[end] ?? ''); end++) {
     const rest = indentCols(rests[end]).rest
     if (spanOpen) {
       spanOpen = commentSpanOpenAfter(rests[end], true)
@@ -2013,11 +2019,10 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
     }
   }
   const para = []
-  const cache = { commentScannedThrough: -1 }
   let open = false
   for (let j = k; j < end; j++) {
     // A run whose continuation fails CARVE-P2-035 is paragraph text, so the paragraph is visible.
-    if (!open && indentCols(measured[j]).rest[0] === '{' && refusedBlockBraceRun(measured, j, cache) !== null) return -1
+    if (j > k && !open && indentCols(measured[j]).rest[0] === '{' && refusedBlockBraceRun(measured, j, cache) !== null) return -1
     open = commentSpanOpenAfter(rests[j], open)
     para.push(rests[j])
   }
@@ -3846,6 +3851,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let nextVisible = -1
   let lastBlankBeforeVisible = -1
   let movedSpan = null
+  // Per-walk tables for `invisibleCommentEnd` (carve#5870).
+  let commentClosers = null
+  const commentViews = new Map()
   // Fence-shaped lines the walk read as paragraph text.
   const textFences = []
   // The line after an accepted `+` keeps its column: the marker reads it.
@@ -5255,17 +5263,38 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // With no paragraph open the run starts one in the owner its column
     // reaches, and its continuation lines decide whether that paragraph shows
     // anything (CARVE-P9-042, carve#5837).
-    let last = at
-    while (last < lines.length && !lines[last].includes('%}')) last++
+    let last = nextCommentCloser(at)
     if (last >= lines.length) return -1
     const opens = !(at > 0 && top().para && !isBlank(lines[at - 1].replace(/^[ \t>]*/, '')))
     if (opens) last = lines.length - 1
-    const view = new Proxy([], {
-      get: (_, key) => key === 'length' ? last + 1 : /^\d+$/.test(String(key))
-        ? stripQuotes(lines[Number(key)], quoteDepth)?.rest ?? '' : undefined,
-    })
-    const end = commentOnlyParaEnd(view, at, !opens || ownerKind === 'item', view)
+    const view = commentView(quoteDepth)
+    const end = commentOnlyParaEnd(view.rows, at, !opens || ownerKind === 'item', view.rows, view, last + 1)
     return end === -1 ? -1 : end - 1
+  }
+
+  // The first line at or after `at` holding `%}`, from one table per walk.
+  function nextCommentCloser(at) {
+    if (!commentClosers) {
+      commentClosers = new Int32Array(lines.length + 1).fill(lines.length)
+      for (let j = lines.length - 1; j >= 0; j--) commentClosers[j] = lines[j].includes('%}') ? j : commentClosers[j + 1]
+    }
+    return commentClosers[at]
+  }
+
+  // One quote-stripped view per depth, so a later opener's probe reuses the span closer an earlier one found.
+  function commentView(depth) {
+    let view = commentViews.get(depth)
+    if (view) return view
+    const stripped = []
+    view = {
+      commentCloser: undefined,
+      rows: new Proxy([], {
+        get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key))
+          ? stripped[key] ??= stripQuotes(lines[Number(key)] ?? '', depth)?.rest ?? '' : undefined,
+      }),
+    }
+    commentViews.set(depth, view)
+    return view
   }
 
   function commentSpanEnd(text, k) {
@@ -7489,8 +7518,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 (HEADING.test(dedented) || HR.test(dedented) || isTableRow(dedented) ||
                  QUOTE.test(dedented) || (QUOTE.test(lastBlock) && isCodeBlockOpener(dedented))) &&
                 descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) === -1 &&
-                ddParagraphOpen()) {
+                (foldedParagraphAt === bodyLines.length || ddParagraphOpen())) {
               pushBody(lazyFrame(dedented))
+              foldedParagraphAt = bodyLines.length
               i++
               continue
             }
@@ -7499,8 +7529,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // A lazy `{%` run at column 0 folds too; its continuations miss the body (carve#5830 rule B).
             if ((authoredCol > 0 || dedented.startsWith('{%')) && !startsVisibleBlock(dedented) &&
                 (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
-                ddParagraphOpen()) {
+                (foldedParagraphAt === bodyLines.length || ddParagraphOpen())) {
               pushBody(lazyFrame(dedented))
+              foldedParagraphAt = bodyLines.length
               i++
               continue
             }
