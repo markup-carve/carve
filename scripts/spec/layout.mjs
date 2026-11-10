@@ -3958,13 +3958,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     // The line as the current quote segment starts, for an opener's C5 column.
     let segmentSrc = src
+    // Where that segment's leading run starts in `out`, past its quote prefixes.
+    let segmentOut = 0
     // The leading run of the current segment, written at `col`.
     const lead = (target, spaces = false, perFrame = false) => {
       // Ownership only ever removes indentation. `spaces` writes a leading tab
       // as the columns it reaches, so a term and its body read alike in both
       // spellings; a post-marker tab stays as written.
       const authored = src.slice(0, src.length - m.rest.length)
-      const tabbed = spaces && out === '' && authored.includes('\t')
+      const tabbed = spaces && out.length === segmentOut && authored.includes('\t')
       // The readers measure that tab per frame (§24 C5), so the spaces stand at that column.
       const from = tabbed && perFrame ? segmentColumn() : m.col
       const col = Math.min(target, from)
@@ -4159,6 +4161,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         viewDoc = docColumn(lines[at], src)
         m = walkIndent(src)
         segmentSrc = src
+        segmentOut = out.length
         stripped = null
         segment = k + 1
         reached = k
