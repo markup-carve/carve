@@ -5618,6 +5618,8 @@ const authoredBraceColumns = new WeakMap()
 // ownership windows, and a comment's quoted continuation must not retarget an
 // attribute run in the same quote.
 const authoredCommentColumns = new WeakMap()
+// Item lines whose first row follows a task box: the box's source width (CARVE-P9-083).
+const markerLineBoxes = new WeakMap()
 // What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
 const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
 const refusedNoteBody = (sentinel) => '%%' + sentinel + 'r'
@@ -6271,7 +6273,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       continue
     }
     if (line[0] === '{') {
-      const al = tryAttrLine(lines, i)
+      const al = tryAttrLine(lines, i, i === 0 ? markerLineBoxes.get(lines) ?? 0 : 0)
       if (al) {
         pending.push(...al.lists) // A1/A2: collect, render nothing
         i = al.next
@@ -8642,12 +8644,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const blockBrace = ind(i).rest[0] === '{'
       const ordinaryAttribute = blockBrace && !indentCols(braceLine).rest.startsWith('{%')
       const blockComment = blockBrace && !ordinaryAttribute && commentSourceColumns !== undefined
-      const runLines = (lazyComment || ordinaryAttribute || blockComment) ? new Proxy(lines, {
+      // A run on a task item's marker line opens past the box, so its continuations measure against that column (CARVE-P2-035).
+      const box = i === 0 && blockBrace ? markerLineBoxes.get(lines) ?? 0 : 0
+      const runLines = (lazyComment || ordinaryAttribute || blockComment || box) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!lazyComment && !blockComment && !line?.includes(LAZY)) return line
+          if (!lazyComment && !blockComment && !line?.includes(LAZY)) return row === 0 && box ? ' '.repeat(box) + line : line
           const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
             braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
           return sourceCol !== undefined
@@ -10007,9 +10011,10 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
-    // The marker-line body starts after the marker, including when its first
+    // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
-    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth
+    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head)
+    if (head.task !== undefined) markerLineBoxes.set(itemLines, taskTextOffset(head))
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {
@@ -10883,6 +10888,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let attachNext = false
     if (trimWs(head.text) === '+') {
       itemLines.length = 0
+      markerLineBoxes.delete(itemLines)
       itemMeas.length = 0
       itemCommentColumns.length = 0
       itemSourceRows.length = 0
@@ -11055,7 +11061,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           return dedentMeasured(measured, candidate, contentCol).text
         }),
       ]
-      const attributes = tryAttrLine(window, 0)
+      const attributes = tryAttrLine(window, 0, taskTextOffset(head))
       if (attributes && attributes.next > 1) {
         wrappedAttrEnd = i + attributes.next - 2
         closePara()
