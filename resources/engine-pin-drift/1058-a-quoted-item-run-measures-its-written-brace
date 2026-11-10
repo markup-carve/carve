@@ -1,0 +1,1 @@
+carve#5826: the pinned JavaScript reader keeps a quoted item's marker-line run with marker-glued attributes and an unprefixed continuation as paragraph text; CARVE-P2-035 compares the continuation with the written brace and consumes the valid run.
