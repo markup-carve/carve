@@ -412,14 +412,16 @@ is the exception that became something: it is the [braced en dash](#inline).
 
 Fenced blocks drawn by a client library or a build step. Fence words: `mermaid`,
 `d2`, `graphviz`, `wavedrom`, `abc`, `plantuml` (`puml`), `vega-lite`, `chart`.
+Mermaid covers the UML `classDiagram`, `sequenceDiagram`, `stateDiagram-v2` and
+`erDiagram`.
 
 ````carve
-``` mermaid
-classDiagram              (UML: classDiagram, sequenceDiagram,
-  Parser --> Document      stateDiagram-v2, erDiagram)
+```mermaid
+classDiagram
+  Parser --> Document
 ```
 
-``` chart
+```chart
 {"type":"bar","data":{"labels":["a","b"],"datasets":[{"data":[1,2]}]}}
 ```
 ````
