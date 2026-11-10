@@ -2021,17 +2021,31 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
   return false
 }
 
+// Whether `tail`, read after `head[from..to)`, is a note definition a refused run keeps as its follower (CARVE-P2-035).
+function refusedNoteFollower(head, from, to, tail) {
+  if (!FOOTNOTE_DEF.test(trimWsStart(stripLazy(stripLazyLead(tail))))) return false
+  const n = to - from
+  const view = new Proxy([], {
+    get: (_, key) => key === 'length' ? n + 1
+      : typeof key !== 'string' || !/^\d+$/.test(key) || +key > n ? undefined
+      : stripLazy(stripLazyLead(+key === n ? tail : head[from + +key])),
+  })
+  return endsInRefusedRunParagraph(view, n, true)
+}
+
 // refusedRunKeptThrough for a run that `text` opens inside the items and
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column. `containerCol` is where the
 // container `text` stands in begins, in the same coordinates.
-function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null) {
+function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null, description = false) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
   for (let peeled = 0; peeled < MAX_NESTING_DEPTH; peeled++) {
     const quote = QUOTE.exec(walkIndent(tail).rest)
-    const marker = quote ? null : matchMarkerAt(indentCols(tail))
+    // A `: ` lead is a marker only where the caller has a description open.
+    const marker = quote ? null : matchMarkerAt(indentCols(tail)) ??
+      (peeled === 0 && description ? descriptionMarkerAt(indentCols(tail)) : null)
     if (quote) {
       tail = quote[1] ?? ''
       depth++
@@ -2050,6 +2064,12 @@ function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false,
       : below[key] === undefined ? undefined : stripQuotes(below[key], depth)?.rest ?? '',
   })
   return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol, markerBody, details)
+}
+
+// A `: ` description lead read as a marker, so a run on its line is measured from its body.
+function descriptionMarkerAt(measured) {
+  const lead = DESCRIPTION_LEAD.exec(measured.rest)
+  return lead ? { indent: measured.col, markerWidth: lead[0].length, text: measured.rest.slice(lead[0].length) } : null
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -7344,7 +7364,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // The item owns an attribute below the description body column;
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
-            if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
+            // A note definition right after a refused brace run is its protected follower (CARVE-P2-035).
+            const definitionLike = authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))
+            const refusedFollower = definitionLike && refusedNoteFollower(bodyLines, 0, bodyLines.length, dedented)
+            if (definitionLike && !refusedFollower) break
             // A list marker that misses a marker body closes it (PART 0 S3).
             if (!reachesBody(i) && matchMarkerAt(indentCols(dedented))) break
             // A line that misses the body ends a comment span it holds, and the body (PART 0 S1).
@@ -7407,7 +7430,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) : -1
             if (openFence !== -1) break
-            if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
+            if ((authoredCol > 0 || refusedFollower) && !startsVisibleBlock(dedented) &&
                 (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
                 ddParagraphOpen()) {
               pushBody(lazyFrame(dedented))
@@ -9450,7 +9473,9 @@ function foldedDefinitionEnd(lines, start, end, seen) {
     const key = labelKey(footnote ? footnote[1] : link.label)
     const table = footnote ? seen.footnoteDefs : seen.linkDefs
     const kind = footnote ? 'f' : 'l'
-    if (col > 0 && (claimed.has(kind + key) || !table.has(key))) return k
+    // A note definition right after a refused brace run is that paragraph's text (CARVE-P2-035).
+    if (col > 0 && (claimed.has(kind + key) || !table.has(key)) &&
+        !(footnote && refusedNoteFollower(lines, start, k, line))) return k
     claimed.add(kind + key)
   }
   return end
@@ -12040,7 +12065,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const details = {}
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details)
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details,
+            definitionListOpen && DESCRIPTION_TEXT.test(dmeas.rest))
           if (kept !== null) {
             refusedParaThrough = i + kept
             protectShortRefusal(i, kept, details.follower, lm.col)
@@ -12767,7 +12793,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       // A wrapped attribute line is one attribute line (CARVE-P9-013 I5).
-      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i))) break
+      // A note definition right after a refused brace run is its protected follower (CARVE-P2-035).
+      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i)) &&
+        !(i <= refusedParaThrough && FOOTNOTE_DEF.test(line))) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.
