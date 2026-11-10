@@ -37,3 +37,9 @@ test('a note definition after prose that follows the run still leaves the item',
   const source = '- {.x\n}\ny\n[^m]: n\n\nsee[^m]\n'
   assert.equal(modelTrace(source).find((r) => r.line === 4).owner, 'doc/footnote:4')
 })
+
+test('a `: ` line with no term above it is prose, so its brace opens no run', () => {
+  const source = '- : {.x\n}\n[^m]: n\n\nsee[^m]\n'
+  assert.equal(modelTrace(source).find((r) => r.line === 3).owner, 'doc/footnote:3')
+  assert.match(renderDoc(parse(source)), /<li id="fn1">/)
+})

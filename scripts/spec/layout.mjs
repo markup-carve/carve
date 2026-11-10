@@ -2037,13 +2037,15 @@ function refusedNoteFollower(head, from, to, tail) {
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column. `containerCol` is where the
 // container `text` stands in begins, in the same coordinates.
-function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null) {
+function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null, description = false) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
   for (let peeled = 0; peeled < MAX_NESTING_DEPTH; peeled++) {
     const quote = QUOTE.exec(walkIndent(tail).rest)
-    const marker = quote ? null : matchMarkerAt(indentCols(tail)) ?? descriptionMarkerAt(indentCols(tail))
+    // A `: ` lead is a marker only where the caller has a description open.
+    const marker = quote ? null : matchMarkerAt(indentCols(tail)) ??
+      (peeled === 0 && description ? descriptionMarkerAt(indentCols(tail)) : null)
     if (quote) {
       tail = quote[1] ?? ''
       depth++
@@ -12057,7 +12059,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const details = {}
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details)
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details,
+            definitionListOpen && DESCRIPTION_TEXT.test(dmeas.rest))
           if (kept !== null) {
             refusedParaThrough = i + kept
             protectShortRefusal(i, kept, details.follower, lm.col)
