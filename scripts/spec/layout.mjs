@@ -6417,7 +6417,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       }
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
-      const noteBraceColumns = []
+      const noteBraceColumns = [(authoredBraceColumns.get(lines)?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
       const noteCommentColumns = [(commentSourceColumns?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredCommentColumns.set(bodyLines, noteCommentColumns)
@@ -6696,7 +6696,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // whatever its later lines' columns (PART 9 §24 C3, carve#3537).
           // An ancestor may have framed its closer line as lazy text.
           const attributes = attrOpener ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
-          for (let k = 1; k < (attributes?.next ?? 0); k++) bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          for (let k = 1; k < (attributes?.next ?? 0); k++) {
+            noteBraceColumns[bodyLines.length] = authoredBraceColumns.get(lines)?.[i] ?? indentCols(unframeLazy(lines[i])).col
+            bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          }
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
           // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
           //
@@ -8679,9 +8682,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!lazyComment && !blockComment && !line?.includes(LAZY)) return row === 0 && box ? ' '.repeat(box) + line : line
           const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
             braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
+          if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return line
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
             : unframeLazy(line)
@@ -10041,6 +10044,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
+    itemBraceColumns[0] = (authoredBraceColumns.get(lines)?.[i] ?? authoredMarkerCol) + head.markerWidth + taskTextOffset(head)
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
     itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head)
