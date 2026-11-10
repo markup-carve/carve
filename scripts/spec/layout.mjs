@@ -4317,7 +4317,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (tabbedVerse && !shiftedCloser) {
         const openerOrigin = inner.canon + inner.openerFrameLead
         const reached = segmentColumn()
-        if (reached < openerOrigin) payloadColumn = reached
+        if (reached < openerOrigin) payloadColumn = inner.canon
         else {
           const origins = []
           for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
