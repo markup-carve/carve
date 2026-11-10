@@ -1,0 +1,1 @@
+carve#5804: the pinned JavaScript reader prints a note marker comment run and following attribute as paragraph text; the spec model measures the run from the note body column and leaves both invisible.
