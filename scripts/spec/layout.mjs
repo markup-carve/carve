@@ -2016,8 +2016,6 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false, de
   const cache = { commentScannedThrough: -1 }
   for (let k = last; k >= 0 && !isBlank(bodyLines[k]); k--) {
     if (indentCols(bodyLines[k]).rest[0] !== '{') continue
-    // A run folded lazily into a quote's paragraph misses the quote and keeps nothing (PART 0 S4).
-    if (k > 0 && QUOTE.test(walkIndent(bodyLines[k - 1]).rest)) return false
     const kept = refusedRunKeptThrough(bodyLines, k, cache)
     if (kept !== null) {
       if (kept >= last && details) details.start = k
@@ -3310,15 +3308,13 @@ function bodyFenceEnd(bodyLines, k) {
   return -1
 }
 
-// `body` with its lazy comment runs unframed, as the paragraph reader measures them (CARVE-P2-035).
-// A lazy attribute run keeps its frame: it misses its container and keeps nothing (PART 0 S4).
-function lazyCommentView(body) {
+// `body` with its lazy lines unframed, as the paragraph reader measures a lazy run of either kind (CARVE-P2-035, carve#5792).
+function lazyRunView(body) {
   return new Proxy(body, {
     get(target, key) {
       const line = Reflect.get(target, key)
       if (typeof key !== 'string' || !/^\d+$/.test(key) || !line?.includes(LAZY)) return line
-      const text = stripLazy(stripLazyLead(line))
-      return trimWsStart(text)[0] === '{' && !trimWsStart(text).startsWith('{%') ? line : text
+      return stripLazy(stripLazyLead(line))
     },
   })
 }
@@ -3338,7 +3334,7 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
     // (CARVE-P2-035), so it cannot leave an open block fence in this body.
     if (k > 0) {
       const refused = {}
-      if (endsInRefusedRunParagraph(lazyCommentView(bodyLines), k, false, refused)) {
+      if (endsInRefusedRunParagraph(lazyRunView(bodyLines), k, false, refused)) {
         // A nested marker's content column still bounds its paragraph. A
         // fence that falls short of it opens in the description instead.
         let ownerColumn = 0
@@ -7699,9 +7695,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
               const foldedMarker = matchMarkerAt(indentCols(dedented))
-              // A folded attribute-shaped run is text, so its kept-line rule does not reach the body (CARVE-P2-035).
-              const foldedRun = dedented[0] === '{' && dedented[1] !== '%'
-              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) || foldedRun ? lazyFrame(dedented) : dedented)
+              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
@@ -8412,15 +8406,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           qItemPara = false
           return
         }
-        // A run folded lazily into an item's paragraph is short of the item and keeps nothing (PART 0 S4).
-        const lazyInItem = qOpenPara && !QUOTE.test(walkIndent(l).rest) &&
-          ((qHost.columns.length > 1 && indentCols(l).col < qHost.columns.at(-1) && !matchMarkerAt(indentCols(l))) ||
-            QUOTE.test(walkIndent(stripQuotes(lines[idx - 1] ?? '', 1)?.rest ?? '').rest))
         if (idx <= qCommentThrough) {
           qOpenPara = true
           return
         }
-        if (idx > qRefusedThrough.at && !lazyInItem && l.includes('{')) {
+        if (idx > qRefusedThrough.at && l.includes('{')) {
           // A nested quote's run is read at its own depth.
           let depth = 0
           let tail = l
@@ -8429,7 +8419,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             depth++
           }
           // So is a run on an item's marker line, at the item's content column.
-          let containerCol = depth === 0 && qHost.columns.length > 1 && indentCols(tail).col >= qHost.columns.at(-1) ? qHost.columns.at(-1) : 0
+          // A run folded lazily into the item's paragraph keeps a follower only in the item (PART 0 S4, carve#5792).
+          const lazyInItem = qOpenPara && depth === 0 && qHost.columns.length > 1 && !matchMarkerAt(indentCols(l))
+          let containerCol = depth === 0 && qHost.columns.length > 1 && (indentCols(tail).col >= qHost.columns.at(-1) || lazyInItem) ? qHost.columns.at(-1) : 0
           for (let m = matchMarkerAt(indentCols(tail)); m; m = matchMarkerAt(indentCols(tail))) {
             const lead = indentCols(m.text)
             containerCol = m.indent + m.markerWidth
@@ -8444,7 +8436,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 return offset === 0 ? tail : stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? ''
               },
             })
-            const kept = refusedRunKeptThrough(quoted, 0, { commentScannedThrough: -1 }, containerCol)
+            const details = {}
+            let kept = refusedRunKeptThrough(quoted, 0, { commentScannedThrough: -1 }, containerCol, false, details)
+            // A run folded lazily into a nested quote keeps a block follower only with that quote's prefix (PART 0 S4).
+            if (kept !== null && kept >= details.follower && depth === 0 && !QUOTE.test(walkIndent(l).rest) &&
+                QUOTE.test(walkIndent(stripQuotes(lines[idx - 1] ?? '', 1)?.rest ?? '').rest)) {
+              const follower = quoted[details.follower] ?? ''
+              if (!QUOTE.test(walkIndent(follower).rest) && !readsAsProse(indentCols(follower).rest)) kept = details.follower - 1
+            }
             if (kept !== null) qRefusedThrough = { at: idx + kept, depth }
             const run = { commentScannedThrough: -1 }
             if (kept === null && indentCols(tail).rest.startsWith('{%') &&
@@ -8868,6 +8867,27 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // A line that reached HERE already framed came from an outer
           // collector's own fold; framing it twice leaks the sentinel into the
           // rendered text, which the paragraph collector strips only once.
+          // A lazy refused run of either kind keeps its follower (CARVE-P2-035, carve#5792);
+          // a block-shaped follower without this quote's prefix is short of it and read as usual (PART 0 S4).
+          if (i > qRefusedThrough.at && stripLazy(ind(i).rest)[0] === '{') {
+            const start = i
+            const details = {}
+            const kept = refusedRunKeptThrough(new Proxy([], {
+              get(_, key) {
+                if (key === 'length') return n - start
+                if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
+                const line = lines[start + Number(key)]
+                if (line === undefined) return undefined
+                return QUOTE.exec(line)?.[1] ?? ' '.repeat(authoredBraceColumns.get(lines)?.[start + Number(key)] ?? ind(start + Number(key)).col) + trimWsStart(stripLazy(trimWsStart(line)))
+              },
+            }), 0, { commentScannedThrough: -1 }, 0, false, details)
+            if (kept !== null) {
+              const follower = lines[start + details.follower]
+              const short = kept >= details.follower && follower !== undefined && !QUOTE.test(follower) &&
+                !readsAsProse(indentCols(stripLazy(trimWsStart(follower))).rest)
+              qRefusedThrough = { at: start + (short ? details.follower - 1 : kept), depth: 0 }
+            }
+          }
           quoteBraceColumns[inner.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
           quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? ind(i).col
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
@@ -8928,7 +8948,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // A lazy frame records ownership, not a new column for a line-start run.
       // Measure the authored lines after removing that frame (CARVE-P2-035).
       const braceLine = unframeLazy(lines[i])
-      const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
+      // A lazy run of either kind keeps its follower (carve#5792).
+      const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest[0] === '{'
       const blockBrace = ind(i).rest[0] === '{'
       const ordinaryAttribute = blockBrace && !indentCols(braceLine).rest.startsWith('{%')
       const blockComment = blockBrace && !ordinaryAttribute && commentSourceColumns !== undefined
@@ -11140,6 +11161,29 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     let shortRefusedFollower = -1
     let shortRefusedThrough = -1
+    // A lazy refused run of either kind keeps its follower (CARVE-P2-035, carve#5792).
+    // An outer collector's frame hides the written column, so a framed line is read there.
+    const traceLazyRun = (i, lm) => {
+      if (i <= refusedParaThrough || stripLazy(stripLazyLead(lm.rest))[0] !== '{' || insideFence() || nestedVerbatim()) return
+      const written = (row) => lines[row] === undefined || !lines[row].includes(LAZY) ? lines[row]
+        : ' '.repeat(authoredBraceColumns.get(lines)?.[row] ?? 0) + stripLazy(stripLazyLead(lines[row]))
+      const window = new Proxy([], {
+        get: (_, key) => key === 'length' ? lines.length - i : typeof key === 'string' && /^\d+$/.test(key) ? written(i + Number(key)) : undefined,
+      })
+      const details = {}
+      let kept = refusedRunKeptInside(lm.rest.includes(LAZY) ? written(i) : ' '.repeat(lm.col) + lm.rest, window, contentCol, true, details)
+      if (kept !== null && (bodyQuote.open || QUOTE.test(walkIndent(stripLazy(stripLazyLead(i - 1 === headIndex ? head.text : lines[i - 1] ?? ''))).rest))) {
+        kept = quotedFollowerKept(i, kept, details.follower)
+      }
+      if (kept !== null) refusedParaThrough = i + kept
+    }
+    // A block-shaped follower without the quote's prefix is short of the quote the run folded into.
+    const quotedFollowerKept = (i, kept, follower) => {
+      if (follower === undefined || kept < follower) return kept
+      const text = stripLazy(stripLazyLead(lines[i + follower] ?? ''))
+      const rest = indentCols(text).rest
+      return QUOTE.test(walkIndent(text).rest) || readsAsProse(rest) && !isDefinitionOrAttributeLine(rest) ? kept : follower - 1
+    }
     const protectShortRefusal = (start, kept, follower, column) => {
       if (!lines.slice(start + 1, start + follower).some(line => indentCols(line).col < column)) return
       // Prose already folds with its normal indentation. A block-shaped
@@ -11563,6 +11607,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         // a lazy line from an OUTER context propagates to the deepest open
         // paragraph (PART 9 §10 I2).
         if (!paragraphIsOpen() && !descendantStanzaOpen()) break
+        traceLazyRun(i, lm)
         pushLine(line, lm)
         i++
         continue
@@ -12396,16 +12441,16 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
             if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
           }
         }
-        // A run folded lazily into a descendant's paragraph is short of its container and keeps nothing (PART 0 S4).
-        // A marker or quote line opens its own block there, so its run is not folded (carve#5771).
-        const lazyInDescendant = !QUOTE.test(dmeas.rest) && !matchMarkerAt(dmeas) &&
-          ((childParagraphOpen && childCol >= 0 && reach < childCol) ||
-            bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest))
-        if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
+        // A run folded lazily into a descendant keeps a follower only inside that descendant (PART 0 S4, carve#5792).
+        const ownBlock = QUOTE.test(dmeas.rest) || !!matchMarkerAt(dmeas)
+        const lazyInChild = !ownBlock && childParagraphOpen && childCol >= 0 && reach < childCol
+        const lazyInQuote = !ownBlock && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest))
+        if (i > refusedParaThrough && i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const details = {}
-          const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details,
+          let kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
+            (descendantOwned || lazyInChild) && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details,
             definitionListOpen && DESCRIPTION_TEXT.test(dmeas.rest))
+          if (kept !== null && lazyInQuote) kept = quotedFollowerKept(i, kept, details.follower)
           if (kept !== null) {
             refusedParaThrough = i + kept
             protectShortRefusal(i, kept, details.follower, lm.col)
@@ -13180,6 +13225,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           descLive = false
           deepestIsDescendant = false
         }
+        traceLazyRun(i, lm)
         pushLine(lazyFrame(lm.rest), LAZY_MEAS(lm.rest))
         // The head seed waits for a quoted line; a lazy line continues the run too (carve#4291).
         if (bodyQuote.at === -2 && i - 1 === headIndex && QUOTE.test(head.text)) advanceBodyQuote(head.text, headIndex)

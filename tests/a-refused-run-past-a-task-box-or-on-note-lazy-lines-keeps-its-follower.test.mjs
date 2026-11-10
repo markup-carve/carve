@@ -55,16 +55,13 @@ for (const column of [0, 1, 2]) {
   })
 }
 
-// A lazy attribute run misses the note and keeps nothing (PART 0 S4, carve#5200).
-test('a lazy attribute run in a note leaves its fence follower a block fence', () => {
-  assert.equal(render('[^n]: p\n{.x\n.y}\n  ```\nafter\n\nx[^n]\n'), [
-    '<p>after</p>',
-    note([
-      '      <p>p',
-      '{.x',
-      '.y}</p>',
-      '      <pre><code></code></pre>',
-      '      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>',
-    ].join('\n')),
-  ].join('\n'))
+// A lazy attribute run keeps its follower like a comment run (carve#5792, ruling option 1).
+test('a lazy attribute run in a note keeps its unclosed fence follower', () => {
+  assert.equal(render('[^n]: p\n{.x\n.y}\n  ```\nafter\n\nx[^n]\n'), note([
+    '      <p>p',
+    '{.x',
+    '.y}',
+    '<code>',
+    'after</code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>',
+  ].join('\n')))
 })
