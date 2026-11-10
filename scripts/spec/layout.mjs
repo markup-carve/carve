@@ -4400,8 +4400,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      let payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
-        Math.max(m.col - inner.cut, inner.canon)
+      // A verse under an opener at its frame's column keeps the lead each frame leaves it (§23, carve#5755).
+      const lineCol = inner.lineBlock && inner.cut === 0 && frameShiftedTab() ? segmentColumn() : m.col
+      let payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(lineCol - Math.max(sourceShift, inner.cut), inner.canon) :
+        Math.max(lineCol - inner.cut, inner.canon)
       const tabbedVerse = inner.lineBlock && inner.openerFrameLead !== undefined &&
         src.slice(0, src.length - m.rest.length).includes('\t')
       if (tabbedVerse && !shiftedCloser) {
