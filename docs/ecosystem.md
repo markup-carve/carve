@@ -42,6 +42,7 @@ the binding's own sources names that format.
 | [carve-go](https://github.com/markup-carve/carve-go) | Go | Pure-Go module via wazero + WASI over carve-rs. |
 | [carve-py](https://github.com/markup-carve/carve-py) | Python | PyO3 bindings over carve-rs. Enables MkDocs, Pelican, and other Python pipelines. |
 | [carve-rb](https://github.com/markup-carve/carve-rb) | Ruby | Native gem via magnus over carve-rs. |
+| [echo-carve](https://github.com/markup-carve/echo-carve) | Echo | HTML rendering through a small C ABI over carve-rs. Not released yet; build from source. |
 | [carve-components](https://github.com/markup-carve/carve-components) | React / Vue | UI components for rendering Carve markup in the browser. |
 | [carve-wysiwyg](https://github.com/markup-carve/carve-wysiwyg) | TypeScript | WYSIWYG editor / live sandbox (Tiptap + carve-grammars). |
 | [carve-css](https://github.com/markup-carve/carve-css) | CSS | Shared styles for semantic Carve HTML such as admonitions and tabs. |
@@ -64,6 +65,8 @@ Syntax highlighting, structural editing, and diagnostics inside editors.
 | [highlightjs-carve](https://github.com/markup-carve/highlightjs-carve) | Highlight.js | Syntax grammar for highlighted Carve source. |
 | [pygments-carve](https://github.com/markup-carve/pygments-carve) | Pygments | Lexer for Python documentation and highlighting tools. |
 | [rouge-carve](https://github.com/markup-carve/rouge-carve) | Rouge | Lexer coloring Carve source wherever Rouge highlights. |
+| [tempest-highlight-carve](https://github.com/markup-carve/tempest-highlight-carve) | tempest/highlight | Server-side highlighting of Carve source in PHP. |
+| [Prettier plugin](https://github.com/markup-carve/carve-js/blob/main/docs/integrations.md#prettier) | Prettier | Ships with carve-js as `@markup-carve/carve/prettier`. Formats `.crv` with the same formatter as `carve fmt`, so the two never disagree. |
 | [carve-lsp](https://github.com/markup-carve/carve-lsp) | LSP | Language server - syntax diagnostics, Djot/Markdown collision hints. *Early.* |
 
 ### Copying a Carve document
@@ -95,12 +98,16 @@ Carve embedded in another tool or framework.
 | [symfony-carve-demo](https://github.com/markup-carve/symfony-carve-demo) | Symfony | Demo app for the symfony-carve bundle. |
 | [laravel-carve](https://github.com/markup-carve/laravel-carve) | Laravel | Integration with Blade directives, services, validation, and caching. |
 | [laravel-carve-demo](https://github.com/markup-carve/laravel-carve-demo) | Laravel | Runnable app demonstrating every feature of laravel-carve. |
+| [cakephp-carve](https://github.com/markup-carve/cakephp-carve) | CakePHP | Plugin with rendering, views, validation, an ORM behavior, commands, and caching. |
+| [tempest-carve](https://github.com/markup-carve/tempest-carve) | Tempest | Safe-by-default Carve rendering for Tempest applications. |
+| [tempest-carve-demo](https://github.com/markup-carve/tempest-carve-demo) | Tempest | Runnable app demonstrating every feature of tempest-carve. |
 | [shopware-carve](https://github.com/markup-carve/shopware-carve) | Shopware 6 | Twig filters, CMS element, product/category fields, admin live preview, mail, and a CLI. |
 | [wp-carve](https://github.com/markup-carve/wp-carve) | WordPress | Plugin on the carve-php engine - live preview, multi-format paste, REST API. |
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | Tiptap | Editor kit and Carve serializer. |
 | [vite-plugin-carve](https://github.com/markup-carve/vite-plugin-carve) | Vite | Import `.crv` documents as rendered HTML. *Early.* |
 | [carve-press](https://github.com/markup-carve/carve-press) | Static sites | Carve-native static site generator. |
 | [zensical-carve](https://github.com/markup-carve/zensical-carve) | Zensical | Carve integration for Zensical documentation sites. |
+| [zensical-carve-demo](https://github.com/markup-carve/zensical-carve-demo) | Zensical | A site written in Carve with every extension enabled. |
 
 ## PDF / output
 
@@ -115,7 +122,8 @@ Render Carve documents to formats beyond HTML.
 | [reveal-carve](https://github.com/markup-carve/reveal-carve) | Presentations | `@markup-carve/reveal-carve`: runtime plugin and static build step for reveal.js slides. Its peer dependencies include Carve and reveal.js. |
 | [carve-sile](https://github.com/markup-carve/carve-sile) | PDF | SILE input support for typesetting Carve documents. |
 | [pdf-to-carve](https://github.com/markup-carve/pdf-to-carve) | Carve source | Extract PDF text and layout into validated `.crv` documents. |
-| [docling-carve](https://github.com/markup-carve/docling-carve) | Carve source | Export Docling documents with provenance, assets, and conversion diagnostics. Its first package release is being prepared; build from source for now. |
+| [docling-carve](https://github.com/markup-carve/docling-carve) | Carve source | Export Docling documents with provenance, assets, and conversion diagnostics. Published on PyPI as `docling-carve`. |
+| [carve-okf](https://github.com/markup-carve/carve-okf) | Open Knowledge Format | `@markup-carve/carve-okf`: export to an OKF bundle of portable Markdown files, with a report of the constructs that do not survive. |
 
 ## Format bridges
 
