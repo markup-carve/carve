@@ -1,0 +1,1 @@
+carve#5800: the pinned JavaScript reader opens a second note after a lazy refused comment run; the spec model keeps that definition as text in the first note's paragraph.
