@@ -1,0 +1,13 @@
+A refused attribute run keeps its marker follower
+
+```
+- {.x
+ }
+  - q
+.
+<ul>
+  <li>{.x
+}
+- q</li>
+</ul>
+```
