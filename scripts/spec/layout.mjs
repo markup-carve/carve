@@ -2001,6 +2001,8 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
       continue
     }
     if (startsParagraphBlock(rest) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
+    // §10 I4: a valid code or colon fence line interrupts, as it does a visible paragraph.
+    if (opensFence([rest], 0) || colonFenceInterrupts(rest)) break
     if (matchMarkerAt(indentCols(rest))) {
       if (inItem) break
       return -1
@@ -9889,6 +9891,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let blank = -1
     let skipped = false
     let visible = false
+    let para
     for (let k = from + 1; k < at; k++) {
       const rest = ind(k).rest
       const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
@@ -9905,7 +9908,11 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         skipped = false
         visible = false
       } else if (invisibleSiblingLine(rest)) skipped = true
-      else visible = true
+      else if (!visible && (para = commentOnlyParaEnd(lines, k, true)) !== -1 && para <= at) {
+        // A comment-only paragraph is read as a `%%` line (carve#4799); the marker at `at` ends it.
+        k = para - 1
+        skipped = true
+      } else visible = true
     }
     return blank > from && skipped && !visible && (span !== null || ind(at - 1).rest !== '')
   }
