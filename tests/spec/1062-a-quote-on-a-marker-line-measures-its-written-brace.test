@@ -1,0 +1,89 @@
+A quote on a marker line measures its written brace
+
+```
+[^q]: > {.x
+     .y}
+
+x[^q]
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote><p>{.x
+.y}</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+[^q]: > {.x
+         .y}
+
+x[^q]
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote>
+
+      </blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- > {.x
+ }
+plain
+.
+<ul>
+  <li>
+    <blockquote><p>{.x
+}
+plain</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+- [ ] > {.x
+      .y}
+plain
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled> 
+    <blockquote><p>{.x
+.y}
+plain</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+[^q]: > > {.x
+       .y}
+
+x[^q]
+.
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <blockquote>
+        <blockquote><p>{.x
+.y}</p></blockquote>
+      </blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```

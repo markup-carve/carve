@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## A quoted note run uses the lazy line written column
 
-An unprefixed lazy continuation of a quoted note's block-position brace run supplies its written source column. One column past the opener makes the run valid block attributes (CARVE-P2-035, carve#5619).
+An unprefixed lazy continuation of a quoted note's block-position brace run supplies its written source column, and it is compared with the `{` where it is written, source column 2. Column 1 is short of it, so the run is refused and stays the note's paragraph text (CARVE-P2-035, carve#5619, carve#5820).
 
 :::::: compare
 
@@ -25,7 +25,8 @@ see[^a]
   <hr>
   <ol>
     <li id="fn1">
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+      <p>{#i
+.y}<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
