@@ -5805,6 +5805,14 @@ function normalizeSource(src) {
 }
 
 const authoredBraceColumns = new WeakMap()
+// The authored source line behind each walked document line.
+const walkedAuthoredLines = new WeakMap()
+// The source column of a block-position `{` that ends `rest`, as it was written.
+const writtenBraceColumn = (lines, idx, rest) => {
+  const raw = walkedAuthoredLines.get(lines)?.[idx]
+  if (raw === undefined || !raw.endsWith(rest)) return null
+  return indentCols(raw.slice(0, raw.length - rest.length).replace(/[^\t]/g, ' ') + '{').col
+}
 // Comment runs need written columns after nested readers rebase their lines.
 // Keep these separate from attribute columns: the two block scans use different
 // ownership windows, and a comment's quoted continuation must not retarget an
@@ -5892,6 +5900,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   authoredCommentColumns.set(lines, sourceBraceColumns)
   // The walk can rewrite a line; only an unchanged one is a source slice.
   sourceLineStarts.set(lines, lines.map((line, k) => line === authored[k] ? 0 : undefined))
+  walkedAuthoredLines.set(lines, authored)
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -8188,7 +8197,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         if (idx <= qNestedAttributeThrough) return settle(false, qNestedAttributeDepth)
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && !trimWsStart(summary.tail).startsWith('{') &&
+          // A run on a marker line needs the full ladder's attribute check, like a bare one.
+          if (summary && !markerBodyOpensBrace(summary.tail) &&
               markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null &&
               !isColonBlockOpener(summary.tail) && fenceLineInfo(summary.tail) === null) {
             const { depth, tail } = summary
@@ -8295,6 +8305,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             // A wrapped attribute closes the paragraph at every quote depth it reaches.
             // Its continuation lines are one block, not fresh quoted prose (carve#5629).
+            const writtenBrace = inner.rest[0] === '{' && lines[idx].endsWith(inner.rest)
+              ? writtenBraceColumn(lines, idx, inner.rest) ?? sourcePrefixColumn(lines[idx], inner.rest) : null
             const attribute = inner.rest[0] === '{' ? tryAttrLine(new Proxy([], {
               get(_, key) {
                 if (key === 'length') return n - idx
@@ -8306,12 +8318,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 return quoted === undefined ? source
                   : ' '.repeat(sourcePrefixColumn(source, trimWsStart(quoted))) + trimWsStart(quoted)
               },
-            }), 0, lines[idx].endsWith(inner.rest) ? sourcePrefixColumn(lines[idx], inner.rest) : inner.col) : null
+            }), 0, writtenBrace ?? inner.col) : null
             if (attribute) {
               qNestedAttributeThrough = idx + attribute.next - 1
               qNestedAttributeDepth = depth
-              qNestedAttributeShift = lines[idx].endsWith(inner.rest)
-                ? sourcePrefixColumn(lines[idx], inner.rest) - sourcePrefixColumn(line, inner.rest) : 0
+              qNestedAttributeShift = writtenBrace === null ? 0 : writtenBrace - sourcePrefixColumn(line, inner.rest)
               return settle(false, depth)
             }
             return settle(!COLON_CLOSER.test(text) &&
@@ -8616,8 +8627,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         // An unprefixed continuation is compared by source column with the `{` (CARVE-P2-035, carve#5619).
         // A tab before the `{` is normalized by the ownership walk, which reads such a run separately.
         const braceIndex = inner0.rest[0] === '{' && lines[idx].endsWith(inner0.rest) ? lines[idx].length - inner0.rest.length : -1
+        // The walk may have dropped indentation after the quote prefix, so the authored line decides.
         const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
-          : indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
+          : writtenBraceColumn(lines, idx, inner0.rest) ?? indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
         // A tab before the `{` widens by where it is written, so read both
         // lines from their source columns when this frame knows them.
         const braceSource = braceIndex < 0 || lineStart(idx) === undefined ? undefined
@@ -8647,7 +8659,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }), 0) : null
         if (quotedAttributeRun) {
           qAttributeThrough = idx + quotedAttributeRun.next - 1
-          qAttributeShift = braceColumn === null ? null : braceColumn - inner0.col
+          // The shift is the quote prefix: a host measures marker-glued attributes at zero
+          // width, so `inner0.col` can sit left of where the `{` stands in the quote body.
+          qAttributeShift = braceColumn === null ? null
+            : braceColumn - indentCols(l.slice(0, l.length - inner0.rest.length).replace(/[^\t]/g, ' ') + '{').col
           qAttributeSource = braceSource === undefined ? null : { brace: braceSource, col: inner0.col }
           // The walk normalizes such a run only when all its lines carry this
           // quote's prefix; otherwise the run starts the quote's body here.
@@ -10025,6 +10040,15 @@ function* listRunSteps(lines, i, blocks, state, peekInterrupts, ind, meas, inIte
 const QUOTE_PLUS = /^> \+[ \t]*$/
 const QUOTE_PLUS_AFTER_MARKER = /^[ \t]*> \+[ \t]*$/
 const quotePlusMarker = (meas) => QUOTE_PLUS.test(meas.rest) ? { indent: meas.col, markerWidth: 1, text: meas.rest.slice(1) } : null
+
+function markerBodyOpensBrace(text) {
+  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    const marker = matchMarkerAt(indentCols(text))
+    if (!marker) break
+    text = marker.text
+  }
+  return trimWsStart(text).startsWith('{')
+}
 
 function matchMarkerAt(meas, tabOrigin = 0) {
   if (meas === undefined) return null

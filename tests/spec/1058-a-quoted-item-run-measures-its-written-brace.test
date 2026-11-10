@@ -1,0 +1,58 @@
+A quoted item run measures its written brace
+
+```
+> -{.a} {.x
+         .y}
+plain
+.
+<blockquote>
+  <ul>
+    <li class="a"></li>
+  </ul>
+</blockquote>
+<p>plain</p>
+```
+
+```
+> > - {.x
+       .y}
+plain
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li></li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>plain</p>
+```
+
+```
+>  - {.x
+     .y}
+plain
+.
+<blockquote>
+  <ul>
+    <li>{.x
+.y}
+plain</li>
+  </ul>
+</blockquote>
+```
+
+```
+> > - {.x
+> >    .y}
+plain
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li></li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p>plain</p>
+```
