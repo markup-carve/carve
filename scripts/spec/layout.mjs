@@ -2001,6 +2001,8 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests) {
       continue
     }
     if (startsParagraphBlock(rest) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
+    // §10 I4: a valid code or colon fence line interrupts, as it does a visible paragraph.
+    if (opensFence([rest], 0) || colonFenceInterrupts(rest)) break
     if (matchMarkerAt(indentCols(rest))) {
       if (inItem) break
       return -1
@@ -3331,7 +3333,10 @@ function bodyOpenCommentRun(bodyLines) {
   // - so the flag is carried rather than assumed.
   let atBlockStart = resumes ? memo.atBlockStart : true
   // Content columns of the marker containers open in the body.
-  const columns = resumes ? [...memo.columns] : [0]
+  let columns = resumes ? [...memo.columns] : [0]
+  // A multi-line `{%` run read so far as refused text, with the state at its
+  // opener: once it closes, its lines were run text (CARVE-P2-035, carve#5853).
+  let brace = resumes ? memo.brace : null
   for (let k = resumes ? memo.n : 0; k < bodyLines.length; k++) {
     const raw = bodyLines[k]
     layoutWork.commentScan++
@@ -3341,6 +3346,15 @@ function bodyOpenCommentRun(bodyLines) {
     // that: it is the same question asked of the same span either way.
     const measured = indentCols(stripLazy(raw))
     const line = measured.rest
+    if (brace) {
+      if (line === '' || raw.startsWith(LAZY) || measured.col <= brace.col) brace = null
+      else if (line.includes('%}')) {
+        ({ opaque, atBlockStart } = brace.snap)
+        columns = [...brace.snap.columns]
+        brace = null
+        continue
+      }
+    }
     // A nonblank line that misses a comment span's owner ends it (PART 0 S1);
     // comment lines are column-exempt and may still close it.
     // A lazy line missed the owner where it was written (carve#4956).
@@ -3395,6 +3409,10 @@ function bodyOpenCommentRun(bodyLines) {
     }
     const opener = at.rest
     atBlockStart = false
+    if (!brace && opener.startsWith('{%') && !opener.includes('%}', 2)) {
+      brace = { col: at.col, snap: { opaque, atBlockStart, columns: [...columns] } }
+      continue
+    }
     const code = FENCE.exec(opener)
     if (code && parseFenceInfo(code[2], code[1]) !== null) {
       opaque = { kind: 'code', run: code[1], owner: columns.at(-1) }
@@ -3404,7 +3422,7 @@ function bodyOpenCommentRun(bodyLines) {
     if (comment) opaque = { kind: 'comment', run: comment[1], owner: columns.at(-1) }
   }
   if (bodyLines.length) {
-    openCommentRunMemo.set(bodyLines, { n: bodyLines.length, first: bodyLines[0], last: bodyLines.at(-1), opaque, atBlockStart, columns: [...columns] })
+    openCommentRunMemo.set(bodyLines, { n: bodyLines.length, first: bodyLines[0], last: bodyLines.at(-1), opaque, atBlockStart, columns: [...columns], brace })
   }
   return opaque !== null && opaque.kind === 'comment' ? opaque.run : null
 }
@@ -9873,6 +9891,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let blank = -1
     let skipped = false
     let visible = false
+    let para
     for (let k = from + 1; k < at; k++) {
       const rest = ind(k).rest
       const fence = COMMENT_FENCE_BODY.exec(rest)?.[1]
@@ -9889,7 +9908,11 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         skipped = false
         visible = false
       } else if (invisibleSiblingLine(rest)) skipped = true
-      else visible = true
+      else if (!visible && (para = commentOnlyParaEnd(lines, k, true)) !== -1 && para <= at) {
+        // A comment-only paragraph is read as a `%%` line (carve#4799); the marker at `at` ends it.
+        k = para - 1
+        skipped = true
+      } else visible = true
     }
     return blank > from && skipped && !visible && (span !== null || ind(at - 1).rest !== '')
   }

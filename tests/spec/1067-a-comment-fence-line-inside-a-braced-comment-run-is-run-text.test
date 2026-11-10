@@ -1,0 +1,39 @@
+A comment fence line inside a braced comment run is run text
+
+```
+- {% a
+   %%%
+   z %}
+plain
+.
+<ul>
+  <li>
+plain</li>
+</ul>
+```
+
+```
+1. {% a
+    %%% x
+    z %}
+plain
+.
+<ol>
+  <li>
+plain</li>
+</ol>
+```
+
+```
+- p
+  {% a
+   %%%
+   z %}
+plain
+.
+<ul>
+  <li>p
+
+plain</li>
+</ul>
+```
