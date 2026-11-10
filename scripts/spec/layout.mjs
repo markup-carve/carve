@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd, renderInline } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-table.mjs'
 import { hasInvalidCodeLanguage, scanDirective } from './include-directive.mjs'
@@ -1844,33 +1844,71 @@ function refusedBlockBraceRun(lines, start, cache) {
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
 // Advance an open inline code span or braced comment over one paragraph line.
-function inlineAttributeHost(line, at) {
-  const before = line.slice(0, at)
-  const last = before.at(-1)
-  if (last === ']') return before.lastIndexOf('[') >= 0 && before.lastIndexOf('[') > before.lastIndexOf(']', at - 2)
-  if (last === ')') {
-    const open = before.lastIndexOf('](')
-    if (open < 0 || before.lastIndexOf('[', open) < 0) return false
-    const slot = before.slice(open + 2, -1)
-    return /^\S+(?: +["'][^"']*["'])?$/.test(slot) && matchDestination(slot.split(' ')[0]) !== null
+const inlineHostCache = new Map()
+function inlineHostStart(line, at, bracketStarts) {
+  const closer = line[at - 1]
+  let open = -1
+  if (closer === ']') open = bracketStarts[at - 1]
+  else if (closer === ')') {
+    const tail = line.lastIndexOf('](', at - 1)
+    if (tail >= 0) open = bracketStarts[tail]
+  } else if (closer === '>') open = line.lastIndexOf('<', at - 2)
+  else if (closer === '}') open = line.lastIndexOf('{', at - 2)
+  else if (closer === '`') {
+    open = line.lastIndexOf('`', at - 2)
+    while (open > 0 && line[open - 1] === '`') open--
+  } else if ('/*_~=:'.includes(closer ?? '\0')) open = line.lastIndexOf(closer, at - 2)
+  return open < 0 ? -1 : Math.max(0, open - 1)
+}
+
+function inlineAttributeHost(line, at, span, bracketStarts) {
+  const closer = line[at - 1]
+  if (!'])`/*_~=}>:'.includes(closer ?? '\0')) return false
+  const start = inlineHostStart(line, at, bracketStarts)
+  const probe = (prefix) => {
+    let paired = inlineHostCache.get(prefix)
+    if (paired !== undefined) return paired
+    // The same inline parser that consumes the attribute run decides whether
+    // this closer actually paired. A lexical delimiter guess would count an
+    // intraword `*` or a stray `]` as a host (carve#5740).
+    const marker = 'data-carve-host-probe-5740'
+    try {
+      const rendered = renderInline(prefix + `{${marker}=1}`)
+      paired = rendered.includes(` ${marker}="1"`) || rendered.includes(`"${marker}","1"`)
+    }
+    catch (error) {
+      if (!(error instanceof Refuse)) throw error
+      paired = false
+    }
+    if (inlineHostCache.size >= 4096) inlineHostCache.clear()
+    inlineHostCache.set(prefix, paired)
+    return paired
   }
-  if (last === '>') return /<(?:[A-Za-z][A-Za-z0-9+.-]*:[^\s<>]+|[^\s<>@]+@[^\s<>@]+)>$/.test(before)
-  if (last === ':') return /:[A-Za-z][\w-]*:$/.test(before)
-  if (last === '`') return true
-  if ('*/_~='.includes(last ?? '')) return before.indexOf(last) < before.length - 1
-  if (last === '}') {
-    const open = before.lastIndexOf('{')
-    const marker = before[open + 1]
-    return open >= 0 && '+-/*_^,=~'.includes(marker ?? '') &&
-      before[at - 2] === marker && (marker !== '~' || !before.slice(open, at).includes('~>'))
-  }
-  return false
+  if (start >= 0 && probe(line.slice(start, at))) return true
+  // The host may have opened on a previous soft line. Read from its latest
+  // visible opener, rather than making a fresh lexical guess at this closer.
+  const marker = closer === ')' || closer === ']' ? '[' : closer === '>' ? '<' : closer === '}' ? '{' : closer
+  const prior = span.previousMarks?.get(marker)
+  if (!prior || prior[0] >= span.historyLines.length) return false
+  const prefix = [span.historyLines[prior[0]].slice(Math.max(0, prior[1] - 1)),
+    ...span.historyLines.slice(prior[0] + 1), line.slice(0, at)].join('\n')
+  return probe(prefix)
 }
 
 function scanInlineSpan(span, line, futureCommentClose = false) {
   const lastCommentClose = line.lastIndexOf('%}')
   const lastBraceClose = line.lastIndexOf('}')
+  const bracketStarts = new Int32Array(line.length).fill(-1)
+  const brackets = []
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '[') brackets.push(i)
+    else if (line[i] === ']' && brackets.length) bracketStarts[i] = brackets.pop()
+  }
   let acceptedAttributeEnd = -1
+  span.historyLines ??= []
+  span.lastMarks ??= new Map()
+  span.previousMarks = new Map(span.lastMarks)
+  const historyIndex = span.historyLines.length
   for (let k = 0; k < line.length; k++) {
     if (span.comment) {
       if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
@@ -1881,7 +1919,7 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
     // A bare word before the brace is no inline host, so leave that run as
     // text and let its backticks pair normally.
     if (!span.codeRun && line[k] === '{' && lastBraceClose > k &&
-        (acceptedAttributeEnd === k || inlineAttributeHost(line, k))) {
+        (acceptedAttributeEnd === k || inlineAttributeHost(line, k, span, bracketStarts))) {
       let quote = null
       let end = k + 1
       for (; end < line.length; end++) {
@@ -1900,7 +1938,10 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
     if (line[k] === '`') {
       let width = 1
       while (line[k + width] === '`') width++
-      if (span.codeRun === 0) span.codeRun = width
+      if (span.codeRun === 0) {
+        span.codeRun = width
+        span.lastMarks.set('`', [historyIndex, k])
+      }
       else if (span.codeRun === width) span.codeRun = 0
       k += width - 1
       continue
@@ -1915,7 +1956,9 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
     }
     if (line[k] === '{' && line[k + 1] === '%' &&
         (lastCommentClose > k + 1 || futureCommentClose)) { span.comment = true; k++ }
+    if ('[<{}/*_~=:'.includes(line[k])) span.lastMarks.set(line[k], [historyIndex, k])
   }
+  span.historyLines.push(line)
   return span
 }
 

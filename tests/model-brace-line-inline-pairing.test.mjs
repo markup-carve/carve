@@ -21,3 +21,18 @@ test('unrelated closing punctuation cannot hide a literal attribute payload', ()
     assert.ok(rendered.endsWith('<p k="v">z</p>'), prefix)
   }
 })
+
+test('intraword delimiters do not consume the following brace group', () => {
+  for (const mark of ['*', '/', '_', '~', '=']) {
+    const rendered = html(`a${mark}b${mark}{title="\`"}\n{k=v}\nb\n`)
+    assert.ok(rendered.includes('\n{k=v}\nb</code></p>'), mark)
+  }
+  assert.ok(html('a:widget:{title="`"}\n{k=v}\nb\n').includes('\n{k=v}\nb</code></p>'))
+})
+
+test('a host paired across a soft line break consumes its attribute payload', () => {
+  assert.equal(html('*a\nb*{title="`"}\n{k=v}\nz\n'),
+    '<p><strong title="`">a\nb</strong></p>\n<p k="v">z</p>')
+  assert.equal(html('[a\nb]{title="`"}\n{k=v}\nz\n'),
+    '<p><span title="`">a\nb</span></p>\n<p k="v">z</p>')
+})
