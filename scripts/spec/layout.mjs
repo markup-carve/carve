@@ -5877,6 +5877,16 @@ const writtenBraceColumn = (lines, idx, rest) => {
   return indentCols(raw.slice(0, raw.length - rest.length).replace(/[^\t]/g, ' ') + '{').col
 }
 const authoredLineColumns = new WeakMap()
+// Only a brace run reads a written line column, so each reader derives a row's on first read.
+function lazyLineColumns(resolve) {
+  return new Proxy([], {
+    get(known, key) {
+      if (typeof key !== 'string' || !/^\d+$/.test(key)) return Reflect.get(known, key)
+      if (!(key in known)) known[key] = resolve(Number(key))
+      return known[key]
+    },
+  })
+}
 // Comment runs need written columns after nested readers rebase their lines.
 // Keep these separate from attribute columns: the two block scans use different
 // ownership windows, and a comment's quoted continuation must not retarget an
@@ -5966,7 +5976,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   }
   const sourceBraceColumns = authored.map(sourceBraceColumn)
   // Where each line's first character is written; a quote adds its own prefix (CARVE-P2-035).
-  authoredLineColumns.set(lines, authored.map((line) => indentCols(line).col))
+  authoredLineColumns.set(lines, lazyLineColumns((k) => authored[k] === undefined ? undefined : indentCols(authored[k]).col))
   authoredBraceColumns.set(lines, sourceBraceColumns)
   authoredCommentColumns.set(lines, sourceBraceColumns)
   // The walk can rewrite a line; only an unchanged one is a source slice.
@@ -8087,8 +8097,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       authoredBraceColumns.set(inner, quoteBraceColumns)
       // A nested quote on the same marker line keeps the hidden width.
       if (i === 0 && quoteMarkerLineOffsets.has(lines)) quoteMarkerLineOffsets.set(inner, quoteMarkerLineOffsets.get(lines))
-      const quoteLineColumns = []
-      authoredLineColumns.set(inner, quoteLineColumns)
+      // Per inner row: the host row, and this quote's text on it (null for a lazy row).
+      const quoteRowSource = []
+      const quoteRowText = []
+      authoredLineColumns.set(inner, lazyLineColumns((k) => {
+        const at = quoteRowSource[k]
+        if (at === undefined) return undefined
+        const column = authoredLineColumns.get(lines)?.[at]
+        const text = quoteRowText[k]
+        if (text === null || column === undefined) return column
+        return text.includes(LAZY) || lines[at].includes('\t') ? undefined
+          : column + sourcePrefixColumn(lines[at], trimWsStart(text)) - ind(at).col
+      }))
       const quoteCommentColumns = []
       authoredCommentColumns.set(inner, quoteCommentColumns)
       const lineStarts = sourceLineStarts.get(lines)
@@ -8834,10 +8854,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
-          const lineColumn = authoredLineColumns.get(lines)?.[i]
-          if (lineColumn !== undefined && !quoteText.includes(LAZY) && !lines[i].includes('\t')) {
-            quoteLineColumns[inner.length] = lineColumn + sourcePrefixColumn(lines[i], trimWsStart(quoteText)) - ind(i).col
-          }
+          quoteRowSource[inner.length] = i
+          quoteRowText[inner.length] = quoteText
           // A prefixed line is measured after this quote's prefix, whatever
           // frame the host measured it in (CARVE-P2-035).
           quoteCommentColumns[inner.length] = quoteText.includes(LAZY)
@@ -9067,7 +9085,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
           }
           quoteBraceColumns[inner.length] = authoredBraceColumns.get(lines)?.[i] ?? ind(i).col
-          quoteLineColumns[inner.length] = authoredLineColumns.get(lines)?.[i]
+          quoteRowSource[inner.length] = i
+          quoteRowText[inner.length] = null
           quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? ind(i).col
           inner.push(lines[i].startsWith(LAZY) ? lines[i] : lazyFrame(ind(i).rest))
           i++
@@ -9134,19 +9153,29 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const blockComment = blockBrace && !ordinaryAttribute && commentSourceColumns !== undefined
       // A run on a task item's marker line opens past the box, so its continuations measure against that column (CARVE-P2-035).
       const box = i === 0 && blockBrace ? markerLineSourceOffsets.get(lines) ?? 0 : 0
+      const rowColumn = (row) => (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
+        braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
+      const baseRow = (line, row) => {
+        const sourceCol = rowColumn(row)
+        // Without a source column the row is item-relative, so the marker-line brace still sits past the box.
+        if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return row === i && box ? ' '.repeat(box) + line : line
+        return sourceCol !== undefined
+          ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
+          : unframeLazy(line)
+      }
+      // A lazy row is written in source columns; move it into the opener's coordinates by the opener's written column.
+      let lazyShift
+      const lazyRowShift = () => lazyShift ??= ordinaryAttribute && lineColumns?.[i] !== undefined
+        ? lineColumns[i] - indentCols(baseRow(lines[i], i)).col : null
       const runLines = (lazyComment || ordinaryAttribute || blockComment || box) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
-            (lineColumns?.[i] !== undefined && lineColumns[row] !== undefined ? lineColumns[row] : undefined) ??
-            braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
-          // Without a source column the row is item-relative, so the marker-line brace still sits past the box.
-          if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return row === i && box ? ' '.repeat(box) + line : line
-          return sourceCol !== undefined
-            ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
-            : unframeLazy(line)
+          if (row > i && line?.includes(LAZY) && lineColumns?.[row] !== undefined && lazyRowShift() !== null) {
+            return ' '.repeat(Math.max(0, lineColumns[row] - lazyShift)) + trimWsStart(unframeLazy(line))
+          }
+          return baseRow(line, row)
         },
       }) : lines
       const refusedBraceEnd = (lazyComment || blockBrace) && !inlineSpanOpen()
@@ -10479,11 +10508,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemMeas = []
     const itemBraceColumns = []
     authoredBraceColumns.set(itemLines, itemBraceColumns)
-    const itemLineColumns = []
-    authoredLineColumns.set(itemLines, itemLineColumns)
+    let headLineColumn
     const itemCommentColumns = []
     authoredCommentColumns.set(itemLines, itemCommentColumns)
     const itemSourceRows = []
+    authoredLineColumns.set(itemLines, lazyLineColumns((k) =>
+      k === 0 ? headLineColumn?.() : itemSourceRows[k] === undefined ? undefined : authoredLineColumns.get(lines)?.[itemSourceRows[k]]))
     let itemHasTerm = DEFLIST_TERM.test(head.text)
     const measurement = state.opaqueMeasurement
     const parentOrigins = measurement?.origins.get(lines)
@@ -10509,7 +10539,6 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       itemLines.push(text)
       itemMeas.push(m)
       itemBraceColumns.push(authoredBraceColumns.get(lines)?.[row] ?? m?.sourceCol)
-      itemLineColumns.push(authoredLineColumns.get(lines)?.[row])
       itemCommentColumns.push(authoredCommentColumns.get(lines)?.[row] ?? m?.sourceCol)
       itemSourceRows.push(row)
       if (itemLines.length > 1 && DEFLIST_TERM.test(ind(row)?.rest ?? '')) itemHasTerm = true
@@ -10532,8 +10561,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const markerSourceOffset = markerLineSourceOffset(head, markerSourceColumn)
     itemBraceColumns[0] = markerSourceColumn + head.markerWidth + markerSourceOffset
     const headBody = trimWsStart(head.text)
-    itemLineColumns[0] = authoredLineColumns.get(lines)?.[i] !== undefined && lines[i].endsWith(headBody) && !lines[i].includes('\t')
-      ? authoredLineColumns.get(lines)[i] + sourcePrefixColumn(lines[i], headBody) - ind(i).col : undefined
+    const headRow = i
+    headLineColumn = () => {
+      const column = authoredLineColumns.get(lines)?.[headRow]
+      return column !== undefined && lines[headRow].endsWith(headBody) && !lines[headRow].includes('\t')
+        ? column + sourcePrefixColumn(lines[headRow], headBody) - ind(headRow).col : undefined
+    }
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
     itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head) + sourceCommentColumn(head.text)
