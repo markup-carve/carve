@@ -1,0 +1,29 @@
+A refused tab-led quoted run keeps its lazy continuation
+
+```
+>   	{.x
+        .y}
+.
+<blockquote><p>{.x
+.y}</p></blockquote>
+```
+
+```
+> > 	{.x
+>      .y}
+.
+<blockquote>
+  <blockquote><p>{.x
+.y}</p></blockquote>
+</blockquote>
+```
+
+```
+> >  {.x
+>      .y}
+> > z
+.
+<blockquote>
+  <blockquote><p class="x y">z</p></blockquote>
+</blockquote>
+```

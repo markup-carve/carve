@@ -5812,6 +5812,14 @@ const authoredBraceColumns = new WeakMap()
 const authoredCommentColumns = new WeakMap()
 // The written width before a marker-line body beyond its virtual content column.
 const markerLineSourceOffsets = new WeakMap()
+// The source column of each line's first character, for lines that are raw
+// source slices (the document, a quote's prefixed lines); a tab expands by it.
+const sourceLineStarts = new WeakMap()
+const sourceColumnFrom = (start, text) => {
+  let col = start
+  for (const ch of text) col = ch === '\t' ? (Math.floor(col / 4) + 1) * 4 : col + 1
+  return col
+}
 // What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
 const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
 const refusedNoteBody = (sentinel) => '%%' + sentinel + 'r'
@@ -5882,6 +5890,8 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   const sourceBraceColumns = authored.map(sourceBraceColumn)
   authoredBraceColumns.set(lines, sourceBraceColumns)
   authoredCommentColumns.set(lines, sourceBraceColumns)
+  // The walk can rewrite a line; only an unchanged one is a source slice.
+  sourceLineStarts.set(lines, lines.map((line, k) => line === authored[k] ? 0 : undefined))
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -7991,6 +8001,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       authoredBraceColumns.set(inner, quoteBraceColumns)
       const quoteCommentColumns = []
       authoredCommentColumns.set(inner, quoteCommentColumns)
+      const lineStarts = sourceLineStarts.get(lines)
+      const lineStart = (k) => typeof lineStarts === 'number' ? lineStarts : lineStarts?.[k]
+      const quoteLineStarts = []
+      sourceLineStarts.set(inner, quoteLineStarts)
       const sourceQuoteCol = ind(i).L?.col ?? ind(i).col
       // The quote's own container ladder and the fence a container in it holds
       // open (carve#2538). `qHost.fence` replaces the run string this used to
@@ -8004,6 +8018,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qCommentThrough = -1 // the closing line of a valid comment run, whose continuations open nothing (CARVE-P2-035)
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
       let qAttributeShift = 0 // the quote prefix width an unprefixed continuation of that run drops
+      let qAttributeSource = null // or the run's `{` source column, when the frame knows it
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
       let qNestedAttributeShift = 0
@@ -8603,6 +8618,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const braceIndex = inner0.rest[0] === '{' && lines[idx].endsWith(inner0.rest) ? lines[idx].length - inner0.rest.length : -1
         const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
           : indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
+        // A tab before the `{` widens by where it is written, so read both
+        // lines from their source columns when this frame knows them.
+        const braceSource = braceIndex < 0 || lineStart(idx) === undefined ? undefined
+          : sourceColumnFrom(lineStart(idx), lines[idx].slice(0, braceIndex))
         const quotedAttributeRun = inner0.rest[0] === '{' ? tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
@@ -8618,12 +8637,27 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const column = authoredBraceColumns.get(lines)?.[idx + offset] ?? indentCols(authored).col
               return ' '.repeat(column) + stripLazy(trimWsStart(authored))
             }
+            if (!QUOTE.test(lines[idx + offset] ?? '') && braceSource !== undefined && lineStart(idx + offset) !== undefined) {
+              const lead = indentCols(authored)
+              const column = sourceColumnFrom(lineStart(idx + offset), authored.slice(0, authored.length - lead.rest.length))
+              return ' '.repeat(Math.max(0, column - braceSource)) + lead.rest
+            }
             return QUOTE.test(lines[idx + offset] ?? '') || braceColumn === null ? dedent(authored, inner0.col) : dedent(authored, braceColumn)
           },
         }), 0) : null
         if (quotedAttributeRun) {
           qAttributeThrough = idx + quotedAttributeRun.next - 1
           qAttributeShift = braceColumn === null ? null : braceColumn - inner0.col
+          qAttributeSource = braceSource === undefined ? null : { brace: braceSource, col: inner0.col }
+          // The walk normalizes such a run only when all its lines carry this
+          // quote's prefix; otherwise the run starts the quote's body here.
+          let unprefixed = false
+          for (let k = idx + 1; k <= qAttributeThrough && !unprefixed; k++) unprefixed = !QUOTE.test(lines[k] ?? '')
+          if (unprefixed && qAttributeSource && qHost.kinds.length === 0 && indentCols(l).rest === inner0.rest &&
+              trimWsStart(inner.at(-1) ?? '') === inner0.rest) {
+            inner[inner.length - 1] = inner0.rest
+            qAttributeSource.col = 0
+          }
         }
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
@@ -8675,6 +8709,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           quoteCommentColumns[inner.length] = quoteText.includes(LAZY)
             ? authoredCommentColumns.get(lines)?.[i] ?? indentCols(quoteText).col
             : indentCols(quoteText).col
+          if (lineStart(i) !== undefined && lines[i].endsWith(quoteText) && !quoteText.includes(LAZY))
+            quoteLineStarts[inner.length] = sourceColumnFrom(lineStart(i), lines[i].slice(0, lines[i].length - quoteText.length))
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
@@ -8807,9 +8843,17 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }
         if (qHost.fence || openComment !== null) break
         // An unprefixed continuation of a valid wrapped attribute run is that run's line, not lazy text.
-        if ((i <= qAttributeThrough && qAttributeShift !== null || i <= qNestedAttributeThrough) &&
+        if ((i <= qAttributeThrough && (qAttributeShift !== null || qAttributeSource !== null) || i <= qNestedAttributeThrough) &&
             !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
-          inner.push(dedent(lines[i], i <= qNestedAttributeThrough ? qNestedAttributeShift : qAttributeShift))
+          if (i > qNestedAttributeThrough && qAttributeSource !== null && lineStart(i) !== undefined) {
+            // The line keeps its source distance past the `{` (CARVE-P2-035).
+            const lead = indentCols(lines[i])
+            const column = sourceColumnFrom(lineStart(i), lines[i].slice(0, lines[i].length - lead.rest.length))
+            inner.push(' '.repeat(qAttributeSource.col + Math.max(0, column - qAttributeSource.brace)) + lead.rest)
+            i++
+            continue
+          }
+          inner.push(dedent(lines[i], i <= qNestedAttributeThrough ? qNestedAttributeShift : qAttributeShift ?? 0))
           i++
           continue
         }
