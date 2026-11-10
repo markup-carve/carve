@@ -565,7 +565,7 @@
 {"id":"ownership-72ee3b89ed1b","source":" - outer\n  - head\n\n    ~~~\n    a\n  ```\n:::\n  tail\n","html":"<ul>\n  <li><p>outer</p></li>\n  <li><p>head</p>\n    <pre><code>a\n</code></pre>\n  </li>\n</ul>\n<pre><code>:::\ntail\n</code></pre>"},
 {"id":"ownership-730d4e6cca2d","source":"-  [ ] ittem\n","html":"<ul class=\"task-list\">\n  <li><input type=\"checkbox\" disabled aria-label=\"ittem\"> ittem</li>\n</ul>"},
 {"id":"ownership-73643ade7904","source":"> q\n> %%%\n> x\n> %%%\n`\n> body\n","html":"<blockquote><p>q</p></blockquote>\n<p><code></code></p>\n<blockquote><p>body</p></blockquote>"},
-{"id":"ownership-743737c78aef","source":"{#i}\n> > $`x`q\n> > {.k\n > > #x}\ntail\n","html":"<blockquote id=\"i\">\n  <blockquote><p><span class=\"math inline\" role=\"math\">\\(x\\)</span>q\n{.k\n<span class=\"tag\"><strong>#x</strong></span>}\ntail</p></blockquote>\n</blockquote>"},
+{"id":"ownership-743737c78aef","source":"{#i}\n> > $`x`q\n> > {.k\n > > #x}\ntail\n","html":"<blockquote id=\"i\">\n  <blockquote><p><span class=\"math inline\" role=\"math\">\\(x\\)</span>q\n{.k\n#x}\ntail</p></blockquote>\n</blockquote>"},
 {"id":"ownership-7448eebaecd6","source":" - a[d]:u\n  - b\n    > q\nlazy\n","html":"<ul>\n  <li>a[d]:u</li>\n  <li>b\n    <blockquote><p>q\nlazy</p></blockquote>\n  </li>\n</ul>"},
 {"id":"ownership-74ad273f585a","source":"- a\n  + b |\ntai\n","html":"<ul>\n  <li>a\n+ b |\ntai</li>\n</ul>"},
 {"id":"ownership-74d7cc62bf9e","source":"> > - a\n +\n","html":"<blockquote>\n  <blockquote>\n    <ul>\n      <li>a\n+</li>\n    </ul>\n  </blockquote>\n</blockquote>"},
