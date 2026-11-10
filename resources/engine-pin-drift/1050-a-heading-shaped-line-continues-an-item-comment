@@ -1,1 +1,0 @@
-carve#5756: the pinned JavaScript reader ends a valid comment run at a block-shaped continuation; CARVE-P2-035 keeps it comment text.

@@ -1,1 +1,0 @@
-carve#5841: the pinned JavaScript reader reads a later `: %%%` line as a description lead under a `: ` line that continues no entry; PART 0 S3 recognizes a `: ` sibling only while its definition list has an open term or body, so the `%%%` is an inline comment.
