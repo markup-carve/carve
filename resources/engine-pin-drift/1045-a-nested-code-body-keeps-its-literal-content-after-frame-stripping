@@ -1,0 +1,1 @@
+carve#5755: the pinned JavaScript reader loses the literal code payload tab after the item frames strip their columns.
