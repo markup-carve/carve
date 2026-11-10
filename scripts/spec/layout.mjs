@@ -11342,8 +11342,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         noteListBodyColumn = null
         noteListChildColumn = null
       }
+      // A line below the item's content column either folds lazily into the note's paragraph or ends the item (PART 0 S4).
       if (i > noteFenceEnd && i >= markerNotePlusEnd && ((FOOTNOTE_DEF.test(lm.rest) && lm.col < markerNoteBodyColumn) ||
-          (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence()))) {
+          (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence() && lm.col >= contentCol))) {
         markerNoteEligible = false
         noteMarkerSeen = false
       }
