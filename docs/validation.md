@@ -169,6 +169,7 @@ the command-line and editor behavior stay aligned.
 | `link-gap-before-destination` | whitespace between `]` and `(` prevents an intended inline link from forming |
 | `markdown-italic-underline` | `_word_` renders underline; use `/word/` for italic. This default hint can be suppressed per document |
 | `heading-level-skip` | a heading jumps over a level; default-on hint |
+| `refused-continuation-marker` | default-on hint for a lone `+` whose PART 0 P6 offer is refused: it attaches nothing and can be removed. Report its line and column once; accepted offers and ordinary text are quiet. Suppresses through the normal CARVE comment, document, and config controls |
 | `unused-link-reference-definition` | a winning link reference definition has no rendered link or image use; default-on |
 | `empty-link-destination` | a parsed inline link has an empty destination; default-on |
 | `duplicate-reference-url` | two distinct reference definitions have the same normalized URL; opt-in |
@@ -205,7 +206,7 @@ the command-line and editor behavior stay aligned.
 | `description-separator-below-content-column` | a `:` or `::` separator below the column of a definition list it appears to continue inside an indentation container, so it adds no entry: past the item's marker column it folds into an open description as text or, after a term, ends the item, and a `:` at the marker column ends the item as a paragraph. Indent it to the definition list's column |
 | `ordered-list-split-by-indent` | consecutive ordered lists that continue the same numbering style and sequence with first markers in different columns. Since markup-carve/carve#3885 sibling items group by the container they open in, so those markers make one list and the rule has nothing left to report; it retires as each engine adopts the ruling. See [ordered lists split by indentation](#ordered-lists-split-by-indentation) |
 | `list-item-block-overindented` | a recognized block opener past an item's canonical content column. Reported once per block, on its first line; continuing table rows and quote lines do not open another block. An aligned opener stays unreported when a continuation is overindented, including when the block opens on the item's marker line. The finding also covers the pre-#1701 full-prefix column of an attributed marker; under #1705 it is structural and `fmt` canonicalizes it. Dedent for the canonical structural spelling or escape the opener to preserve the literal meaning older readers assigned to it |
-| `continuation-marker-refused` | a refused lone `+`, on its own line or on a marker line (`- +`, `: +`, `[^a]: +`, `> +`, `- > +`): the next line is blank or missing, lacks the prefix of a quote around the host, stands at another column, is a sibling or closes an open div. PART 9 §17 L3 consumes the marker without attaching a block; see [refused continuation markers](#refused-continuation-markers) |
+| `continuation-marker-refused` | a refused `+` on a marker line (`- +`, `: +`, `[^a]: +`, `> +`, `- > +`): the next line is blank or missing, lacks the prefix of a quote around the host, stands at another column, is a sibling or closes an open div. PART 9 §17 L3 consumes the marker without attaching a block; see [refused continuation markers](#refused-continuation-markers) |
 | `block-opener-overindented` | a block opener indented past the content column of the document, a quote, a definition body, a footnote body or a colon body; it still opens there, measured from its own line (`  # h` is a heading). A list marker is not reported, and a table reports once. Inside a list item the finding is `list-item-block-overindented` instead. Remove the indentation, or escape the opener to keep it as text; see [fragile spellings](#fragile-spellings) |
 | `emphasis-marker-before-attributes` | a bare `*`, `/`, `_`, `~` or `=` directly before an attribute block where the reading is not the visible one: the marker closes no span and both stay text, or the span it closes holds another same marker and the block attaches to all of it. Plain `*a*{.x}` is quiet. Brace the span or escape the marker; see [fragile spellings](#fragile-spellings) |
 | `empty-include-path` | a <code v-pre>{{ ... }}</code> run shaped like an include directive but containing no path, including empty braces and spaced directive forms containing only a `#section` or `@option`; it remains literal text, so add a path or remove the braces |
@@ -386,9 +387,10 @@ The shared vectors are in
 
 ### Refused continuation markers
 
-`continuation-marker-refused` reports a `+` that PART 9 §17 L3 reads as a
-continuation marker: alone at an open container's marker column, or first
-after a block opener in the first-block form (`- +`, `1. +`, `: +`, `[^a]: +`,
+The pinned carve-js build still reports own-line refusals as
+`continuation-marker-refused`. Under the #5736 ruling, the default-on
+`refused-continuation-marker` hint reports those own-line P6 refusals once;
+`continuation-marker-refused` remains for first-block forms (`- +`, `1. +`, `: +`, `[^a]: +`,
 `> +`). It reports when the next line is blank or the input ends, lacks the
 prefix of a quote around the host, stands at another column, is the host's
 sibling (a list marker under a list item, a `: ` or `:: ` line under a

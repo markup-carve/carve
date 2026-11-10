@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "rule": "refused-continuation-marker",
+  "vectors": [
+    {
+      "name": "second-offer",
+      "description": "The earlier first-block marker claims the body, so the next offer is refused.",
+      "source": "see[^a]\n\n[^a]: +\n+\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank-stop",
+      "description": "A blank line refuses a lone marker.",
+      "source": "- a\n+\n\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-quote",
+      "description": "A refused marker inside a nested quote reports its source column.",
+      "source": "> - a\n> +\n>\n> b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "accepted",
+      "description": "A marker that attaches the next block is quiet.",
+      "source": "see[^a]\n\n[^a]: +\nx\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "not-an-offer",
+      "description": "A document-level plus read as ordinary text is quiet.",
+      "source": "q\n+\n- s\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "suppressed-line",
+      "description": "A line directive suppresses the refused marker on its own line.",
+      "source": "- a\n%% carve-lint-disable-next-line refused-continuation-marker\n+\n\nx\n",
+      "expected": {
+        "findings": []
+      }
+    }
+  ]
+}
