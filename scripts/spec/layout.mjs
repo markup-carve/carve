@@ -3705,8 +3705,7 @@ function advanceQuoteRun(run, text, idx) {
         return true
       }
       const attr = tryAttrLine(brace.lines, 0, brace.col)
-      if (attr || !text.includes('}')) {
-        if (!attr || attr.next < brace.lines.length) run.brace = brace
+      if (attr && attr.next === brace.lines.length) {
         run.open = false
         run.table = false
         run.at = idx
@@ -3719,7 +3718,7 @@ function advanceQuoteRun(run, text, idx) {
   const colonCloses = COLON_CLOSER.test(text)
   if (!opaque && !wasOpen) {
     const at = indentCols(text)
-    if (at.rest[0] === '{' && !at.rest.startsWith('{%') && !tryAttrLine([at.rest], 0)) {
+    if (at.rest[0] === '{' && !at.rest.startsWith('{%')) {
       const shift = written.includes('\t') || !written.endsWith(at.rest) ? null : sourcePrefixColumn(written, at.rest) - at.col
       const brace = { depth, col: at.col, lines: [at.rest], written: shift, quoted: null, escaped: false }
       if (!braceRunCloses(brace, at.rest)) run.brace = brace
@@ -8537,13 +8536,26 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             containerCol = m.indent + m.markerWidth
             tail = ' '.repeat(containerCol + taskTextOffset(m) + lead.col) + lead.rest
           }
+          // A quote behind the markers holds the run; its continuations are measured past the prefixes they have (CARVE-P2-035).
+          let markerQuotes = 0
+          if (depth === 0 && tail !== l && !l.includes('\t')) {
+            for (let q = QUOTE.exec(walkIndent(tail).rest); q && markerQuotes < MAX_NESTING_DEPTH; q = QUOTE.exec(walkIndent(tail).rest)) {
+              const at = walkIndent(tail)
+              tail = ' '.repeat(at.col + at.rest.length - (q[1] ?? '').length) + (q[1] ?? '')
+              markerQuotes++
+            }
+          }
           if (indentCols(tail).rest[0] === '{') {
             const quoted = new Proxy([], {
               get(_, key) {
                 if (key === 'length') return n - idx
                 if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
                 const offset = Number(key)
-                return offset === 0 ? tail : stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? ''
+                if (offset === 0) return tail
+                const row = stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? ''
+                if (markerQuotes === 0) return row
+                const inner = stripQuotesUpTo(row, markerQuotes)
+                return inner === row ? row : ' '.repeat(sourcePrefixColumn(row, trimWsStart(inner))) + trimWsStart(inner)
               },
             })
             const details = {}
@@ -8555,6 +8567,17 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               if (!QUOTE.test(walkIndent(follower).rest) && !readsAsProse(indentCols(follower).rest)) kept = details.follower - 1
             }
             if (kept !== null) qRefusedThrough = { at: idx + kept, depth }
+            if (kept === null && markerQuotes > 0 && !indentCols(tail).rest.startsWith('{%')) {
+              const brace = indentCols(tail)
+              const attribute = tryAttrLine(new Proxy([], {
+                get(_, key) { return key === '0' ? brace.rest : quoted[key] },
+              }), 0, brace.col)
+              if (attribute) {
+                qNestedAttributeThrough = idx + attribute.next - 1
+                qNestedAttributeDepth = 0
+                qNestedAttributeShift = 0
+              }
+            }
             const run = { commentScannedThrough: -1 }
             if (kept === null && indentCols(tail).rest.startsWith('{%') &&
                 refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt

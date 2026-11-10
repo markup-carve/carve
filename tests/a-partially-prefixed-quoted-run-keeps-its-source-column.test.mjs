@@ -29,3 +29,16 @@ test('a refused quoted run with a lazy continuation reads no tag', () => {
   assert.equal(html('> {#a\n  .y}'), '<blockquote><p>{#a\n.y}</p></blockquote>')
   assert.equal(html('> {#a\n   .y}'), '<blockquote>\n\n</blockquote>')
 })
+
+test('a quoted item marker-line run continued under the outer quote prefix only is measured where written', () => {
+  assert.equal(html('> - > {.x\n>      .y}\nplain'),
+    '<blockquote>\n  <ul>\n    <li>\n      <blockquote>\n\n      </blockquote>\n    </li>\n  </ul>\n</blockquote>\n<p>plain</p>')
+  assert.equal(html('> - > {.x\n>     .y}\nplain'),
+    '<blockquote>\n  <ul>\n    <li>\n      <blockquote><p>{.x\n.y}\nplain</p></blockquote>\n    </li>\n  </ul>\n</blockquote>')
+})
+
+// A run that has not closed yet may still be refused, so its paragraph stays open.
+test('an unclosed quoted run on an item marker line keeps its paragraph for the next line', () => {
+  assert.equal(html('- > {#a\n  >    junk\nplain'),
+    '<ul>\n  <li>\n    <blockquote><p>{<span class="tag"><strong>#a</strong></span>\njunk\nplain</p></blockquote>\n  </li>\n</ul>')
+})
