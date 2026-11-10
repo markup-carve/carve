@@ -1844,11 +1844,45 @@ function refusedBlockBraceRun(lines, start, cache) {
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
 // Advance an open inline code span or braced comment over one paragraph line.
-function scanInlineSpan(span, line) {
+function inlineAttributeHost(line, at) {
+  const before = line.slice(0, at)
+  const last = before.at(-1)
+  if (last === ']') return before.includes('[')
+  if (last === ')') return /\]\([^)]*\)$/.test(before)
+  if (last === '>') return /<[^>]*>$/.test(before)
+  if (last === ':') return /:[\w-]+:$/.test(before)
+  if (last === '`') return true
+  if ('*/_~='.includes(last ?? '')) return before.indexOf(last) < before.length - 1
+  if (last === '}') return /\{[+\-/*_^,=~].*[+\-/*_^,=~]\}$/.test(before) && !before.includes('~>')
+  return false
+}
+
+function scanInlineSpan(span, line, futureCommentClose = false) {
+  const lastCommentClose = line.lastIndexOf('%}')
+  const lastBraceClose = line.lastIndexOf('}')
   for (let k = 0; k < line.length; k++) {
     if (span.comment) {
       if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
       continue
+    }
+    // An accepted inline attribute belongs to its preceding inline host. Its
+    // quoted payload is opaque to code and comment pairing (PART 9 §9 R3).
+    // A bare word before the brace is no inline host, so leave that run as
+    // text and let its backticks pair normally.
+    if (!span.codeRun && line[k] === '{' && lastBraceClose > k && inlineAttributeHost(line, k)) {
+      let quote = null
+      let end = k + 1
+      for (; end < line.length; end++) {
+        const ch = line[end]
+        if (quote && ch === '\\') { end++; continue }
+        if (quote) { if (ch === quote) quote = null }
+        else if (ch === '"' || ch === "'") quote = ch
+        else if (ch === '}') break
+      }
+      if (end < line.length && parseAttrList(line.slice(k, end + 1)) !== null) {
+        k = end
+        continue
+      }
     }
     if (line[k] === '`') {
       let width = 1
@@ -1866,7 +1900,8 @@ function scanInlineSpan(span, line) {
       k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
       continue
     }
-    if (line[k] === '{' && line[k + 1] === '%') { span.comment = true; k++ }
+    if (line[k] === '{' && line[k + 1] === '%' &&
+        (lastCommentClose > k + 1 || futureCommentClose)) { span.comment = true; k++ }
   }
   return span
 }
@@ -5956,6 +5991,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   const blocks = []
   let i = 0
   const n = lines.length
+  // A failed `{%` is literal text. Remember whether a closer lies ahead in
+  // this nonblank run so checking each paragraph line stays linear.
+  const commentClosesAhead = new Array(n)
+  let futureCommentClose = false
+  for (let row = n - 1; row >= 0; row--) {
+    commentClosesAhead[row] = futureCommentClose
+    futureCommentClose = isBlank(lines[row]) ? false : lines[row].includes('%}') || futureCommentClose
+  }
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const braceSourceColumns = authoredBraceColumns.get(lines)
   const relativeTermColumns = state.itemRelativeTermColumns?.has(lines) ?? false
@@ -8480,7 +8523,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     const refusedCache = { commentScannedThrough: -1 }
     const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
     const inlineSpanOpen = () => {
-      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) scanInlineSpan(inlineSpan, para[inlineSpan.scanned])
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++)
+        scanInlineSpan(inlineSpan, para[inlineSpan.scanned], commentClosesAhead[paraStart + inlineSpan.scanned])
       return inlineSpan.codeRun !== 0 || inlineSpan.comment
     }
     while (i < n && !isBlank(lines[i])) {

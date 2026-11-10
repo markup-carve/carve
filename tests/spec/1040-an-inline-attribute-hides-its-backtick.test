@@ -1,0 +1,10 @@
+An inline attribute hides its backtick
+
+```
+[a]{title="`"}
+{k=v}
+b
+.
+<p><span title="`">a</span></p>
+<p k="v">b</p>
+```

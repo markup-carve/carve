@@ -1,0 +1,11 @@
+A literal brace group leaves its backtick open
+
+```
+a{title="`"}
+{k=v}
+b
+.
+<p>a{title=“<code>"}
+{k=v}
+b</code></p>
+```
