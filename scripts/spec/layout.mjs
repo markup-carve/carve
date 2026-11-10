@@ -6080,17 +6080,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   const blocks = []
   let i = 0
   const n = lines.length
+  const fenceOpens = state.fenceOpensAt?.get(lines)
   // A failed `{%` is literal text. Remember whether a closer lies ahead in
   // this nonblank run so checking each paragraph line stays linear.
   const commentClosesAhead = new Array(n)
-  let futureCommentClose = false
-  for (let row = n - 1; row >= 0; row--) {
-    commentClosesAhead[row] = futureCommentClose
-    // Inline pairing cannot cross a visible paragraph interruption. A close
-    // in a later block cannot keep this paragraph's brace line inside it.
-    futureCommentClose = isBlank(lines[row]) || startsParagraphBlock(lines[row], top)
-      ? false : lines[row].includes('%}') || futureCommentClose
-  }
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const braceSourceColumns = authoredBraceColumns.get(lines)
   const commentSourceColumns = authoredCommentColumns.get(lines)
@@ -6108,13 +6101,25 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   lineMeasures.set(lines, meas)
   // Fence lines the enclosing collector already found to open, whose closer
   // lies past these lines (§10 I4).
-  const fenceOpens = state.fenceOpensAt?.get(lines)
   const ind = (idx) => {
     const m = meas[idx]
     if (m !== undefined && m !== null) return m
     const line = lines[idx]
     if (line === undefined) return undefined
     return (meas[idx] = indentCols(line))
+  }
+
+  let futureCommentClose = false
+  for (let row = n - 1; row >= 0; row--) {
+    commentClosesAhead[row] = futureCommentClose
+    // Inline pairing cannot cross a paragraph interruption. Use the same
+    // seeded indentation measurement as the block reader for nested markers.
+    futureCommentClose = isBlank(lines[row]) || startsParagraphBlock(lines[row], top) ||
+      fenceOpens?.has(row) || opensFence(lines, row) ||
+      isColonParagraphInterrupt(lines[row]) || colonFenceInterrupts(lines[row]) ||
+      COLON_CLOSER.test(lines[row]) ||
+      (inItem && !!matchMarkerAt(ind(row)))
+      ? false : lines[row].includes('%}') || futureCommentClose
   }
 
   const peekInterrupts = (idx) => {
