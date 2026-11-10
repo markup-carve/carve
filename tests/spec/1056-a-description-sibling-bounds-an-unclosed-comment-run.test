@@ -1,0 +1,31 @@
+A description sibling bounds an unclosed comment run
+
+```
+:: t
+:   {% a
+     {k=v}
+: next
+.
+<dl>
+  <dt>t</dt>
+  <dd>{% a
+{k=v}</dd>
+  <dd>next</dd>
+</dl>
+```
+
+```
+:: t
+:   {% a
+     {k=v}
+: next
+z %} y
+.
+<dl>
+  <dt>t</dt>
+  <dd>{% a
+{k=v}</dd>
+  <dd>next
+z %} y</dd>
+</dl>
+```
