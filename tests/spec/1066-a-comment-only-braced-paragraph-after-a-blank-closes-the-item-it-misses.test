@@ -1,0 +1,45 @@
+A comment-only braced paragraph after a blank closes the item it misses
+
+```
+- a
+
+{%%}
+
+  z
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>z</p>
+```
+
+```
+- a
+  - b
+
+   {%%}
+    - b
+.
+<ul>
+  <li>a
+    <ul>
+      <li><p>b</p></li>
+      <li><p>b</p></li>
+    </ul>
+  </li>
+</ul>
+```
+
+```
+- a
+
+  {%%}
+
+  z
+.
+<ul>
+  <li><p>a</p>
+    <p>z</p>
+  </li>
+</ul>
+```
