@@ -1463,6 +1463,8 @@ const COMMENT_FENCE = /^[ \t]*(%{3,})(.*)$/s
 // line: `[ \t]*` in front is what makes the pattern re-walk indentation an
 // enclosing container has already walked.
 const COMMENT_FENCE_BODY = /^(%{3,})(.*)$/s
+// A braced comment paragraph is still a paragraph for S2 (CARVE-P9-042), so only an open paragraph carries it lazily (carve#5850).
+const BRACED_COMMENT_LINE = /^\{%/
 
 /**
  * Recognize layout-transparent comments after an opaque payload has had the
@@ -4239,7 +4241,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       src = ' '.repeat(Math.max(0, column)) + m.rest
       m = walkIndent(src)
       reached = frames.length - 1
-    } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at, frames[reached].kind)) {
+    } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at, frames[reached].kind) &&
+        (top().para || !BRACED_COMMENT_LINE.test(m.rest))) {
       // A line that misses an open fence's owner ends that fence first (S1), so it is read where it stands.
       const deeper = nextVisibleReach(at, reached)
       if (deeper > reached) {
@@ -5218,8 +5221,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return invisibleCommentEnd(text, k, undefined, ownerKind) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
   }
 
-  // A paragraph made solely of braced comments has the same ownership effect
-  // as a %% line. Its continuation lines travel with the opener, but their
+  // A paragraph made solely of braced comments is transparent to the frames of
+  // an open paragraph it continues. Its continuation lines travel with the opener, but their
   // authored columns remain available to CARVE-P2-035 in the block reader.
   function invisibleCommentEnd(text, at, quoteDepth = quotePrefix(lines[at]).depth, ownerKind = 'item') {
     const fence = commentSpanEnd(text, at)

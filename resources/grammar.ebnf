@@ -6772,7 +6772,9 @@ EOF = (* end of file *) ;
         line does: `{% c %}` gives no output, `- {% c %}` an empty `<li>` and
         `> {% c %}` an empty quote. Pending attributes float past it (§15 A2a),
         and it separates nothing in a list (CARVE-P9-013). It is still a paragraph
-        while open: `x` / `{% c %}` interrupts nothing.
+        while open: `x` / `{% c %}` interrupts nothing. After a blank, S2 places
+        it by its column like any paragraph, so it closes the frames its column
+        misses: `- a` / blank / `{% c %}` / blank / `  z` ends the item (carve#5850).
       - SPELLING. `{%` opens, the FIRST `%}` closes. One character per meaning,
         like the rest of the braced family ({^x^}, {,x,}, {+x+}, {-x-}), and the
         same spelling Djot uses, so a Djot document's comments keep working.
