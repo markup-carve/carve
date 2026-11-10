@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A multi-line braced comment keeps the nested list open
 
-CARVE-P9-042 makes a comment-only paragraph invisible to list separation. The later marker reaches the deepest surviving container under CARVE-P0-024. CARVE-P2-035 still measures the continuation from the authored opening column.
+The comment run's continuation misses the nested item's body column, so the run takes no lazy line and is refused (carve#5830 rule B). Its opener is literal paragraph text in the nested item, and the later marker reaches the deepest surviving container under CARVE-P0-024.
 
 ::: compare
 
@@ -21,7 +21,8 @@ CARVE-P9-042 makes a comment-only paragraph invisible to list separation. The la
   <li>a
     <ul>
       <li>b
-</li>
+{% c
+d %}</li>
       <li>c</li>
     </ul>
   </li>
@@ -30,7 +31,7 @@ CARVE-P9-042 makes a comment-only paragraph invisible to list separation. The la
 
 :::
 
-A blank after the invisible comment loosens the nested list without closing it.
+A blank after the refused run loosens the nested list without closing it.
 
 ::: compare
 
@@ -48,7 +49,8 @@ A blank after the invisible comment loosens the nested list without closing it.
   <li>a
     <ul>
       <li><p>b
-</p></li>
+{% c
+d %}</p></li>
       <li><p>c</p></li>
     </ul>
   </li>
@@ -57,7 +59,7 @@ A blank after the invisible comment loosens the nested list without closing it.
 
 :::
 
-A lazy line after the comment remains in the deepest item before the next marker.
+A lazy line after the refused run remains in the deepest item before the next marker.
 
 ::: compare
 
@@ -75,7 +77,8 @@ A lazy line after the comment remains in the deepest item before the next marker
   <li>a
     <ul>
       <li>b
-
+{% c
+d %}
 x</li>
       <li>c</li>
     </ul>
@@ -102,7 +105,8 @@ A later marker can also open a deeper child under the surviving nested item.
   <li>a
     <ul>
       <li>b
-
+{% c
+d %}
         <ul>
           <li>c</li>
         </ul>

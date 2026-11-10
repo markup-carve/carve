@@ -5,12 +5,14 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const render = (source) => renderDoc(parse(source))
 
-test('a lazy line after an invisible comment leaves the nested list open for its sibling', () => {
+// carve#5830 rule B: the lazy continuation refuses the run, so its opener is literal.
+test('a lazy line after a refused comment run leaves the nested list open for its sibling', () => {
   assert.equal(render('- a\n  - b\n{% c\n d %}\n tail\n\n  - z\n'), `<ul>
   <li>a
     <ul>
       <li><p>b
-
+{% c
+d %}
 tail</p></li>
       <li><p>z</p></li>
     </ul>

@@ -11,12 +11,15 @@ const hosts = [
   ['note', (body) => `[^n]: p\n${body}\nx[^n]\n`],
   ['item', (body) => `- p\n${body}`],
 ]
+// At column 0 the continuation misses the body column, so carve#5830 rule B refuses the run.
 for (const [name, host] of hosts) for (const opener of [0, 1]) for (const payload of [false, true]) {
   for (const follower of ['> q', '# q', '- q', '---']) {
-    test(`a valid ${name} comment opened at column ${opener}${payload ? ' with a payload' : ''} leaves ${follower} a block`, () => {
+    const valid = opener === 1
+    test(`a ${valid ? 'valid' : 'refused'} ${name} comment opened at column ${opener}${payload ? ' with a payload' : ''} leaves ${follower} a block`, () => {
       const pad = ' '.repeat(opener)
-      const run = html(host(`${pad}{% a\n${payload ? `${pad} b\n` : ''}${pad} %}\n   ${follower}\nafter\n`))
-      const line = html(host(`${pad}{% a %}\n   ${follower}\nafter\n`))
+      const source = host(`${pad}{% a\n${payload ? `${pad} b\n` : ''}${pad} %}\n   ${follower}\nafter\n`)
+      const run = html(source)
+      const line = valid ? html(host(`${pad}{% a %}\n   ${follower}\nafter\n`)) : html(source.replace('{', '\\{'))
       assert.equal(run, line)
     })
   }
