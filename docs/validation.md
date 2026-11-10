@@ -408,14 +408,13 @@ Meant for the item.
 ```
 
 renders a one-item list with no added text, then a separate paragraph. The finding is at the `+`.
-The message says what follows it, a `blank line` or the `end of the
-document`, and names the fix: delete the blank line to attach the next
-block, or delete the `+`. A refused first-block `+` is also consumed: `- +` over a
+The own-line hint names why it attaches nothing and says the marker can be
+removed. A refused first-block `+` is also consumed: `- +` over a
 blank line renders `<li></li>`. An empty item is written `- {empty}`, an empty
 description `: {empty}`.
 
 ```txt
-doc.crv:2:1 continuation-marker-refused — This + attaches nothing: a blank line follows it, so the marker is refused and the list item ends here. Delete the blank line to attach the next block, or delete the +.
+doc.crv:2:1 refused-continuation-marker — This + attaches nothing because a blank line follows it. The marker can be removed.
 ```
 
 Not reported:
@@ -432,7 +431,8 @@ enclosing host's marker column it is a continuation marker; off every marker
 column it is text (markup-carve/carve#3400, markup-carve/carve#5013).
 
 The shared vectors are in
-[`tests/lint-rule-vectors/continuation-marker-refused.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/continuation-marker-refused.json).
+[`tests/lint-rule-vectors/continuation-marker-refused.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/continuation-marker-refused.json)
+and [`tests/lint-rule-vectors/refused-continuation-marker.json`](https://github.com/markup-carve/carve/blob/main/tests/lint-rule-vectors/refused-continuation-marker.json).
 
 ### List markers below the content column
 

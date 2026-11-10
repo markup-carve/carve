@@ -331,8 +331,9 @@
 
          P6 gives the first valid marker the claim. `- +` / `+` / `x` gives
          the item `x` and lints the second marker. If neither attaches,
-         both render nothing. A refused marker reports
-         `continuation-marker-refused`; it does not become a
+         both render nothing. A refused own-line marker reports
+         `refused-continuation-marker`; a refused marker-line form reports
+         `continuation-marker-refused`. It does not become a
          letter, open a paragraph or change the next visible line's owner.
          A description or note body that refuses it stays open: the next line
          is read in that body, where a marker at its body column opens a block

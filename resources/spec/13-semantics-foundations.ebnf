@@ -736,7 +736,7 @@
    and the host marker column. Offer explicit alignment of the marker and its
    follower, or escaping the `+` as text. Alignment must preview a
    whole-document parse and HTML change and require an intentional action.
-   For a recognized refusal, `continuation-marker-refused` should name the
+   For a recognized marker-line refusal, `continuation-marker-refused` should name the
    first failed gate: blank, end, sibling or follower column, with the eligible
    column. Fence payload and harmless literals without a plausible host are
    quiet.

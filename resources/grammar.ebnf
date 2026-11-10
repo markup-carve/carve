@@ -1250,8 +1250,9 @@ indent = whitespace, {whitespace} ;
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
-   sibling at its marker column, so the `+` is a refused marker: it renders
-   nothing and `continuation-marker-refused` reports it (CARVE-P9-067). *)
+   sibling at its marker column, so the `+` is refused and renders nothing.
+   `refused-continuation-marker` reports an own-line refusal and
+   `continuation-marker-refused` a marker-line refusal (CARVE-P9-067). *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A
@@ -5173,7 +5174,7 @@ EOF = (* end of file *) ;
    and the host marker column. Offer explicit alignment of the marker and its
    follower, or escaping the `+` as text. Alignment must preview a
    whole-document parse and HTML change and require an intentional action.
-   For a recognized refusal, `continuation-marker-refused` should name the
+   For a recognized marker-line refusal, `continuation-marker-refused` should name the
    first failed gate: blank, end, sibling or follower column, with the eligible
    column. Fence payload and harmless literals without a plausible host are
    quiet.
@@ -6512,8 +6513,9 @@ EOF = (* end of file *) ;
 
          P6 gives the first valid marker the claim. `- +` / `+` / `x` gives
          the item `x` and lints the second marker. If neither attaches,
-         both render nothing. A refused marker reports
-         `continuation-marker-refused`; it does not become a
+         both render nothing. A refused own-line marker reports
+         `refused-continuation-marker`; a refused marker-line form reports
+         `continuation-marker-refused`. It does not become a
          letter, open a paragraph or change the next visible line's owner.
          A description or note body that refuses it stays open: the next line
          is read in that body, where a marker at its body column opens a block
@@ -7304,7 +7306,9 @@ EOF = (* end of file *) ;
         A returned document MUST NOT lack text the author typed. An eligible
         `+` is a structural marker, even when its attachment is refused
         (PART 9 §17 L3); its missing glyph is reported by
-        `continuation-marker-refused`, not silent loss of text.
+        `refused-continuation-marker` for an own-line offer or
+        `continuation-marker-refused` for a marker-line offer, not silent
+        loss of text.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
