@@ -4776,9 +4776,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const invisibleInEntry = (owner.last === 'term' || owner.last === 'dd') &&
         (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
       if (!invisibleInEntry) {
-        const wasPara = owner.para
         owner.para = !!form.caption || !!form.para
-        if (form.caption || form.para && !wasPara) owner.paraFrom = at
+        if (form.caption) owner.paraFrom = at
+        // No span is open where the run starts (codeSpanOpenAbove), so the span scan resumes at its closer's tail.
+        if (form.para) {
+          owner.paraFrom = at + form.attrLines
+          owner.paraTailOf = owner.paraFrom
+        }
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
@@ -5498,7 +5502,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       owner.spanScan = { from: owner.paraFrom, upto: owner.paraFrom, span: { codeRun: 0, comment: false } }
     }
     const scan = owner.spanScan
-    for (; scan.upto < at; scan.upto++) scanInlineSpan(scan.span, trimWsStart(stripLazy(stripQuotes(lines[scan.upto], depth)?.rest ?? '')))
+    for (; scan.upto < at; scan.upto++) {
+      const text = trimWsStart(stripLazy(stripQuotes(lines[scan.upto], depth)?.rest ?? ''))
+      scanInlineSpan(scan.span, scan.upto === owner.paraTailOf ? text.slice(text.indexOf('%}') + 2) : text)
+    }
     return scan.span.codeRun !== 0
   }
 
@@ -8876,6 +8883,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       if (refusedBraceEnd === null && refusedCache.commentClosesAt > i && indentCols(braceLine).rest.startsWith('{%')) {
         const through = refusedCache.commentClosesAt
         while (i <= through) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
+        // Text after the closer can open a span; the run itself opens none.
+        const closer = para.at(-1)
+        scanInlineSpan(inlineSpan, closer.slice(closer.indexOf('%}') + 2))
         inlineSpan.scanned = para.length
         forcedAfterRefusal = false
         continue

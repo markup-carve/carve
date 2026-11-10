@@ -21,3 +21,17 @@ test('a lazy line after a multi-line comment run is traced in the open paragraph
     assert.equal(row.rule, 'CARVE-P0-006', JSON.stringify(source))
   }
 })
+
+test('a backtick inside a multi-line comment run opens no code span for the trace (carve#5795)', () => {
+  const source = '- p\n  {% a\n   `\n   z %}\n  {.x}\nplain\n'
+  assert.equal(ownerOf(source, 5).rule, 'CARVE-P0-011')
+  assert.equal(ownerOf(source, 6).owner, 'doc')
+})
+
+test('text after a multi-line comment run closer can open a span that holds a brace line (carve#5795, carve#5793)', async () => {
+  const { renderDoc } = await import('../scripts/spec/html.mjs')
+  const source = '- {% a\n   z %} `\n  {.x}\n  `\nplain\n'
+  assert.equal(renderDoc(parse(source)).trim(), '<ul>\n  <li> <code>\n{.x}\n</code>\nplain</li>\n</ul>')
+  assert.equal(ownerOf(source, 3).rule, 'CARVE-P0-024')
+  assert.equal(ownerOf(source, 5).owner, 'doc/item:1')
+})
