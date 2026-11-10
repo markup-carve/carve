@@ -1,0 +1,1 @@
+carve#5855: the pinned JavaScript writer re-bases an own-line `+` fence to the body column and drops the payload indentation after its blank; ruling A keeps those lines verbatim from the opener's column in every host.

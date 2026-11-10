@@ -6460,6 +6460,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let attachedEnd = -1
       let attachedSeparator = false
       let ownLineAttached = false
+      // As in a description body (carve#5855).
+      let ownLineFenceRun = null
       const passedNotes = []
       let passedNoteBody = null
       let passedOwnsFollower = false
@@ -6708,7 +6710,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           retainedParagraph = false
           lazyParagraphOpen = null
         }
-        if (isFootnoteContinuationLine(lines[i])) {
+        if (ownLineFenceRun && isFootnoteContinuationLine(lines[i])) {
+          if (closesFenceRun(lines[i], ownLineFenceRun)) ownLineFenceRun = null
+          bodyLines.push(lines[i])
+          attachPending = false
+          i++
+        } else if (isFootnoteContinuationLine(lines[i])) {
           afterComment = afterCommentTransition(false, {})
           const content = dedent(lines[i], FOOTNOTE_BODY_COLUMN)
           // An ancestor already answered §10 I4 for this line (CARVE-P0-014).
@@ -6781,6 +6788,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           bodyLines.push('')
           lazyParagraphOpen = false
           attachPending = true
+          ownLineFenceRun = null
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
           const end = Math.min(takeOneBlock(lines, i, state, measured.col).next,
             state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
@@ -6788,6 +6796,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           ownLineAttached = true
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
+          ownLineFenceRun = openFenceRun(bodyLines.slice(attachedFrom))
           lazyParagraphOpen = null
           attachPending = false
           i = end
@@ -7173,6 +7182,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           let markerLinePlus = attachPending
           let attachedFrom = -1
           let attachedOwnLine = false
+          // The run of an open fence an own-line `+` attached. Its payload stays
+          // verbatim from the opener's column after a blank too (S2, carve#5855).
+          let ownLineFenceRun = null
           if (leadTab) pushBody(lazyFrame(trimLineEnd(dm[2])), i - 1)
           else if (!attachPending) {
             // The marker-line content stands at the body column, not at the marker.
@@ -7267,6 +7279,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               markAttachmentBoundary(state, bodyLines)
               pushBody('', i - 1)
               attachPending = true
+              ownLineFenceRun = null
+              continue
+            }
+            if (ownLineFenceRun && sortedHas(state.attachmentBoundaries?.get(lines), i)) ownLineFenceRun = null
+            if (ownLineFenceRun && reachesBody(i) && !attachPending) {
+              if (closesFenceRun(cur, ownLineFenceRun)) ownLineFenceRun = null
+              pushBody(cur)
+              i++
               continue
             }
             if (reachesBody(i) && !attachPending) {
@@ -7316,6 +7336,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 pushBody(pulled.at(-1), k)
               }
               if (markerLinePlus && isBlank(lines[end] ?? '') && endsAtFirstBlank(lines, i, end, bodyColumn)) markAttachmentBoundary(state, bodyLines)
+              ownLineFenceRun = markerLinePlus ? null : openFenceRun(pulled)
               markerLinePlus = false
               attachPending = false
               i = end
@@ -8868,7 +8889,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
 }
 
 // A block that opens a code fence, after any attribute lines or kept note, and never closes it.
-const leavesFenceOpen = (block) => {
+// The run of the code fence `block` opens and leaves unclosed, or null.
+const openFenceRun = (block) => {
   let at = 0
   for (let attrs, note; ; ) {
     if (isOneLineComment(block[at])) at++
@@ -8877,7 +8899,13 @@ const leavesFenceOpen = (block) => {
     else break
   }
   const m = FENCE.exec(block[at] ?? '')
-  return !!m && parseFenceInfo(m[2], m[1]) !== null && findCloser(block, at, m[1]) === -1
+  return m && parseFenceInfo(m[2], m[1]) !== null && findCloser(block, at, m[1]) === -1 ? m[1] : null
+}
+const leavesFenceOpen = (block) => openFenceRun(block) !== null
+// Whether `line` closes a fence `openFenceRun` returned, as `findCloser` reads it.
+const closesFenceRun = (line, run) => {
+  const c = PURE_FENCE.exec(line)
+  return !!c && c[1][0] === run[0] && c[1].length >= run.length
 }
 // The same for a quote's attached block: a list's fence may stand behind its
 // markers or on a later line, and a separator would become that fence's payload.

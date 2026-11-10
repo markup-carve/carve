@@ -31,7 +31,7 @@ test('an indented fence line past the blank opens a second fence', () => {
 })
 
 test('an own-line plus in a definition body keeps its fence open', () => {
-  assert.match(renderDoc(parse(':: t\n: a\n+\n```\n\n  tail\n')), /<pre><code>\ntail\n<\/code><\/pre>/)
+  assert.match(renderDoc(parse(':: t\n: a\n+\n```\n\n  tail\n')), /<pre><code>\n  tail\n<\/code><\/pre>/)
 })
 
 test('the trace keeps the footnote as the owner of the attached block and what follows', () => {
