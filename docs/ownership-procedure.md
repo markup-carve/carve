@@ -5,12 +5,11 @@ description: Read Carve 0.1 container ownership as one procedure, with the claus
 # Container ownership procedure
 
 PART 0 of the grammar states container ownership as one procedure of four
-steps, a transition table and one container table. The steps carry the ids S1
-to S5 (step 2 holds S2, the owner, and S3, the form). Where the outcome depends
-on the container, a step reads a field of that container's row in the FAMILIES
-table: its column, prefix, blank and lazy behavior, what a list marker does, what
-an invisible line does, and whether it takes `+`. This page follows that order and names the
-clauses each step decides. It adds no rule. The source clauses in
+steps, a transition table, eight layout rules and local family guards. The
+steps carry the ids S1 to S5 (step 2 holds S2, the owner, and S3, the form).
+The rules fix each container's column and prefix; local guards decide marker
+forms, invisible lines and `+` eligibility. This page follows that order and
+names the clauses each step decides. It adds no rule. The source clauses in
 `resources/spec/01-layout.ebnf` are authoritative, and the
 [machine-readable map](https://github.com/markup-carve/carve/blob/main/resources/spec/ownership-procedure.json)
 lists the Part 0 rule IDs with the checker helpers that implement each step.
@@ -39,7 +38,10 @@ Rule: CARVE-P0-024.
 ## S1 Payload
 
 An open code, raw or comment fence tests the line against its closer first. A
-nonblank line that misses the fence's owner ends the fence. Comments are then
+nonblank line that misses the fence's owner ends an own-line attachment. A
+marker-line-attached fence keeps that line as payload unless it also crosses
+an ancestor boundary of its host (PART 0 L8 and `plus-ownership.crv` F07).
+Comments are then
 classified before S3 reads the visible residue: a `%%` line comment and a
 one-line link or abbreviation definition are erased there and affect no frame. A
 `%%%` comment closes no list item, description body or footnote body at any

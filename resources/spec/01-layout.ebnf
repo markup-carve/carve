@@ -22,17 +22,19 @@
          reaches.
      L3  A nonblank line at or beyond that content column belongs to the
          selected frame, while one short of it is classified again in the
-         nearest surviving owner.
+         nearest surviving owner. Block-level invisible lines retain their
+         container-survival guards under S1 and PART 9 §10 I5.
      L4  Only noninterrupting text may continue the deepest currently open
          paragraph lazily; a lazy continuation closes no frame and never
          reopens a closed one.
      L5  Classify a line after opaque payload and eligible erased lines, and
          let a visible paragraph-interrupting opener or block-level invisible
-         line end an open paragraph while a list marker in an ordinary
-         paragraph stays text.
+         line end an open paragraph while a list marker in a paragraph outside
+         a marker body stays text.
      L6  A marker body keeps a blank run only when its next nonblank line
          reaches its content column; one blank between visible sibling items
-         or direct child blocks makes the list loose, while three blanks
+         or direct child blocks makes an item list loose. A blank between
+         definition entries never loosens that list (§17 L7); three blanks
          split same-owner siblings.
      L7  A lone `+` at an eligible host marker column offers the next visible
          block before any blank only if it passes the quote-prefix, column,
@@ -42,8 +44,9 @@
          own closer, end of input, applicable host boundary or declared
          first-blank boundary. A nonblank line that misses the host ends an
          own-line attachment but remains payload of a marker-line-attached
-         fence. After closure the containing frame has no paragraph to
-         continue.
+         fence unless it also crosses an ancestor boundary of that host
+         (S1, plus-ownership F07). After closure the containing frame has no
+         paragraph to continue.
 
    Existing P1-P8 names below remain stable references for the local
    qualifications of L1-L8. Clause IDs keep their existing meanings.
@@ -462,12 +465,13 @@
        content. Below it, if no such list survives, it folds or becomes
        paragraph text. The definition list ends at the first nonmember
        block, or at a blank followed by one (carve#5368, #5373, #5379).
-     - S1 erases eligible `%%` and one-line definitions before the family's
-       invisible field is read. A `%%%` span ends the paragraph but never
-       closes an item solely by its column (carve#4862). Below an item's
-       body column a footnote definition or attribute line closes that item
-       and registers or floats in the surviving owner (CARVE-P9-052); a
-       region marker there closes every item (CARVE-P11-073). An unmarked
+     - S1 erases eligible `%%` and one-line definitions before S2 tests reach
+       and the remaining invisible-line guards apply. A `%%%` span ends the
+       paragraph but never closes an item solely by its column (carve#4862).
+       Below an item's body column a footnote definition or attribute line
+       closes that item and registers or floats in the surviving owner
+       (CARVE-P9-052); a region marker there closes every item
+       (CARVE-P11-073). An unmarked
        `%%%` span, footnote definition or attribute line ends a quote; an
        erased line does not. A comment between term and description is the
        first block of the last term's description (CARVE-P12-027).
