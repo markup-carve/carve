@@ -6760,14 +6760,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // run that parse can never see, and §11 N1a's three-blank boundary is
           // measured inside the body like anywhere else.
           const end = footnoteBlankRunEnd(lines, i, n)
-          for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
+          for (let k = i; k < end; k++) bodyLines.push(ownLineFenceRun ? lines[k] : dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           lazyParagraphOpen = false
           i = end
         } else if (isBlank(lines[i]) && blankRunBeforeSpanComment(lines, i, n) !== -1 &&
             holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
           // A blank inside a live span is payload; a comment line below the column still closes it (§28).
           const end = blankRunBeforeSpanComment(lines, i, n)
-          for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
+          for (let k = i; k < end; k++) bodyLines.push(ownLineFenceRun ? lines[k] : dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           i = end
         } else if (isBlank(lines[i])) {
           // A marker-column `+` reaches the note even after a blank. Keep the
@@ -6859,7 +6859,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           (ownLineAttached && openAttachedFence ||
             reachedBefore(lines, i, defLine, isFootnoteContinuationLine) && !openAttachedFence)) {
         const end = markerBodyPolicy(FOOTNOTE_BODY_COLUMN).blankRunEnd(lines, i, n)
-        for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
+        for (let k = i; k < end; k++) bodyLines.push(ownLineFenceRun ? lines[k] : dedent(lines[k], FOOTNOTE_BODY_COLUMN))
       }
       if (openFence !== -1) inheritedFenceOpens.add(openFence)
       if (inheritedFenceOpens.size) (state.fenceOpensAt ??= new WeakMap()).set(bodyLines, inheritedFenceOpens)
@@ -7242,15 +7242,15 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // A blank inside a verse span leaves its earlier stanza open, even
               // when the next line misses the description's column (CARVE-P9-047).
               if (bodyHoldsLiveSpan() && (blankSpanKeepsStanza ??= hostEndsInLineBlockStanza(bodyLines, 0, true))) {
-                pushBody(dedent(cur, bodyColumn))
+                pushBody(ownLineFenceRun ? cur : dedent(cur, bodyColumn))
                 i++
                 continue
               }
               // The whole blank run belongs to a continuation at the body column.
-              if (reachesBody(afterBlankRun(i))) { pushBody(dedent(cur, bodyColumn)); i++; continue }
+              if (reachesBody(afterBlankRun(i))) { pushBody(ownLineFenceRun ? cur : dedent(cur, bodyColumn)); i++; continue }
               // A blank inside a live span is payload; a comment line below the column still closes it (§28).
               if (COMMENT_LINE.test(stripIndent(lines[afterBlankRun(i)] ?? '')) && bodyHoldsLiveSpan()) {
-                for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
+                for (let k = i; k < afterBlankRun(i); k++) pushBody(ownLineFenceRun ? lines[k] : dedent(lines[k], bodyColumn), k)
                 i = afterBlankRun(i)
                 continue
               }
@@ -7258,7 +7258,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // An own-line `+` fence reads like a body fence and keeps its trailing blank (carve#5560).
               if (attachedFenceOpen(bodyLines, attachedFrom, state.attachmentBoundaries?.get(bodyLines))
                 ? attachedOwnLine : reachedBefore(lines, i, descriptionStart, (_, at) => reachesBody(at))) {
-                for (let k = i; k < afterBlankRun(i); k++) pushBody(dedent(lines[k], bodyColumn), k)
+                for (let k = i; k < afterBlankRun(i); k++) pushBody(ownLineFenceRun ? lines[k] : dedent(lines[k], bodyColumn), k)
               }
               break
             }

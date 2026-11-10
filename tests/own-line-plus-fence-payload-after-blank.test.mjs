@@ -27,3 +27,9 @@ for (const [name, host] of Object.entries(hosts)) {
     assert.deepEqual(code(quoted), ['code\n\n  tail'])
   })
 }
+
+for (const [name, host] of Object.entries(hosts)) {
+  test(`whitespace-only payload lines of a ${name}'s attached fence keep their spaces (#5855)`, () => {
+    assert.deepEqual(code(host(`${F}\ncode\n  \n  tail\n   \n  more\n`)), ['code\n  \n  tail\n   \n  more\n'])
+  })
+}
