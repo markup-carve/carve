@@ -26,3 +26,8 @@ test('notes and descriptions compare against their marker-line comment column', 
   assert.equal(html(':: t\n: {% a\n  {x}\n  z %} y'), '<dl>\n  <dt>t</dt>\n  <dd>{% a\n{x}\nz %} y</dd>\n</dl>')
   assert.equal(html(':: t\n: {% a\n   {x}\n   z %} y'), '<dl>\n  <dt>t</dt>\n  <dd> y</dd>\n</dl>')
 })
+
+test('a first-block plus resets the item comment-column history', () => {
+  assert.equal(html('- +\n{% a\n x %} y'), '<ul>\n  <li> y</li>\n</ul>')
+  assert.equal(html('- p\n+\n{% a\n x %} y'), '<ul>\n  <li>p\n     y\n  </li>\n</ul>')
+})

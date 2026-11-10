@@ -1,0 +1,1 @@
+CARVE-P2-035 / carve#5756: the pinned carve-js build prints a valid marker-line comment run when a brace-shaped continuation is past its opener; the spec model consumes the comment and keeps its trailing text.

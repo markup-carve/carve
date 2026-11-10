@@ -10879,6 +10879,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (trimWs(head.text) === '+') {
       itemLines.length = 0
       itemMeas.length = 0
+      itemCommentColumns.length = 0
       itemSourceRows.length = 0
       if (itemOrigins) itemOrigins.length = 0
       // The memo carried for the `+` head must not answer for the line that now opens the body.
