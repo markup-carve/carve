@@ -605,8 +605,9 @@ indent = whitespace, {whitespace} ;
    that innermost opener when the next line stands at the opener's marker
    column, through the prefixes of its enclosing quotes. At a list item's
    marker column a list marker is a sibling and a description's `: ` line is a
-   sibling at its marker column, so the `+` is a refused marker: it renders
-   nothing and `continuation-marker-refused` reports it (CARVE-P9-067). *)
+   sibling at its marker column, so the `+` is refused and renders nothing.
+   `refused-continuation-marker` reports an own-line refusal and
+   `continuation-marker-refused` a marker-line refusal (CARVE-P9-067). *)
 continuation_marker = '+', newline ;
 (* CARVE-P7-001 item 5 removes a line-final space/tab run before this
    production is matched, so that source spelling remains a marker. A

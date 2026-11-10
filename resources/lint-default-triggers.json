@@ -23,7 +23,7 @@
   "ordered-list-split-by-indent": " 9. nine\n10. ten\n",
   "description-separator-below-content-column": "- a\n  :: term\n : detail\n",
   "list-item-block-overindented": "-{.x1} item\n\n       # heading\n",
-  "continuation-marker-refused": "- item\n+\n\npara\n",
+  "continuation-marker-refused": "- +\n\npara\n",
   "definition-term-block-folded": ":: term\n  # heading\n",
   "empty-include-path": "{{ #section }}\n",
   "carve-version-unsupported": "---\ncarve-version: 99.0\n---\n\nx\n",

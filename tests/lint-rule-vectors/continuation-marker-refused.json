@@ -7,15 +7,7 @@
       "description": "A blank line after the plus refuses it.",
       "source": "- item\n+\n\nMeant for the item.\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "blank line"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -23,15 +15,7 @@
       "description": "The input ends after the plus.",
       "source": "- item\n+\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "end of the document"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -39,15 +23,7 @@
       "description": "An ordered item takes the marker the same way.",
       "source": "1. a\n+\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "blank line"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -55,15 +31,7 @@
       "description": "A description takes the marker the same way.",
       "source": ":: t\n: d\n+\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 1,
-            "includes": [
-              "blank line"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -105,15 +73,7 @@
       "description": "An indented plus with a blank follower is refused.",
       "source": "- a\n  - b\n  +\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -121,15 +81,7 @@
       "description": "A refused plus at the marker column under an open fence (carve#3400 family).",
       "source": "- ```\n+\n\ntail\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "blank line"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -153,15 +105,7 @@
       "description": "In a block quote the plus is not a list marker position.",
       "source": "> q\n+\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -169,15 +113,7 @@
       "description": "The note body marker column recognizes a refused plus.",
       "source": "x[^a]\n\n[^a]: note\n+\n\npara\n",
       "expected": {
-        "findings": [
-          {
-            "line": 4,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -185,15 +121,7 @@
       "description": "A line that is not flush-left follows the plus.",
       "source": "- a\n+\n  x\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -217,15 +145,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- a\n  - b\n  +\ntail\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -233,15 +153,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- a\n  - b\n  +\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -249,15 +161,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- a\n+\n- b\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -265,15 +169,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- foo\n  - [ ] task\n  +\n  - x\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -289,15 +185,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- a\n  - ```\n  +\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 3,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -305,15 +193,7 @@
       "description": "The refused plus is reported at its source column.",
       "source": "- a\n+\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -682,16 +562,7 @@
       "description": "The inner quote claims the marker column and reports a refused sibling follower (carve#5013).",
       "source": "> > q\n> > +\n> > - s\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 5,
-            "includes": [
-              "sibling",
-              "list item"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -885,15 +756,7 @@
       "description": "The second plus cannot claim the quote already taken by the list item (carve#5013 and #5034).",
       "source": "- +\n[^n]: a\n+\n> q\n\nsee[^n]\n",
       "expected": {
-        "findings": [
-          {
-            "line": 3,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     },
     {
@@ -901,15 +764,7 @@
       "description": "The second plus cannot claim the quote already taken by the note body marker (carve#5013).",
       "source": "[^n]: +\n+\n> q\n\nsee[^n]\n",
       "expected": {
-        "findings": [
-          {
-            "line": 2,
-            "column": 1,
-            "includes": [
-              "+"
-            ]
-          }
-        ]
+        "findings": []
       }
     }
   ]

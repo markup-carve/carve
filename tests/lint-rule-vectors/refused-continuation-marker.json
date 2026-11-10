@@ -1,0 +1,378 @@
+{
+  "version": 1,
+  "rule": "refused-continuation-marker",
+  "vectors": [
+    {
+      "name": "second-offer",
+      "description": "The earlier first-block marker claims the body, so the next offer is refused.",
+      "source": "see[^a]\n\n[^a]: +\n+\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank-stop",
+      "description": "A blank line refuses a lone marker.",
+      "source": "- a\n+\n\nx\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-quote",
+      "description": "A refused marker inside a nested quote reports its source column.",
+      "source": "> - a\n> +\n>\n> b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "accepted",
+      "description": "A marker that attaches the next block is quiet.",
+      "source": "see[^a]\n\n[^a]: +\nx\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "not-an-offer",
+      "description": "A document-level plus read as ordinary text is quiet.",
+      "source": "q\n+\n- s\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "suppressed-line",
+      "description": "A line directive suppresses the refused marker on its own line.",
+      "source": "- a\n%% carve-lint-disable-next-line refused-continuation-marker\n+\n\nx\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "legacy-item-blank",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- item\n+\n\nMeant for the item.\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-item-end-of-input",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- item\n+\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-ordered-item",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "1. a\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-definition-description",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": ":: t\n: d\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-nested-item",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n  - b\n  +\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-under-an-open-fence",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- ```\n+\n\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-block-quote",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "> q\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-footnote-body",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "x[^a]\n\n[^a]: note\n+\n\npara\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 4,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-not-flush-left",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n+\n  x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-nested-left-follower",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n  - b\n  +\ntail\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-nested-no-follower",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n  - b\n  +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-sibling",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n+\n- b\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-nested-task-sibling",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- foo\n  - [ ] task\n  +\n  - x\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-open-fence-other-column",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n  - ```\n  +\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 3,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-dangling-mid-body",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- a\n+\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-nested-quote-unclaimed-before-list",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "> > q\n> > +\n> > - s\n",
+      "expected": {
+        "findings": []
+      }
+    },
+    {
+      "name": "legacy-second-marker-after-skipped-note",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "- +\n[^n]: a\n+\n> q\n\nsee[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 3,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy-second-marker-after-note-first-block",
+      "description": "P6 refusal from the former continuation-marker-refused vector.",
+      "source": "[^n]: +\n+\n> q\n\nsee[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 1,
+            "includes": [
+              "attaches nothing",
+              "removed"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -728,17 +728,20 @@
    `heading-level-skip` hints when a heading jumps over one or more levels.
    A next-level heading is quiet. Only `heading-level-skip` names this rule
    in configuration and suppression directives; an unknown name has no effect.
+   `refused-continuation-marker` is a default-on hint at the line and column
+   of each lone `+` whose offer PART 0 P6 refuses. It attaches nothing and
+   can be removed; accepted offers are quiet. Ordinary lint suppression applies.
    PROPOSED CONTINUATION LINT AID (NON-NORMATIVE). A visually lone
    off-column `+` near an open marker host may report its tab-expanded column
    and the host marker column. Offer explicit alignment of the marker and its
    follower, or escaping the `+` as text. Alignment must preview a
    whole-document parse and HTML change and require an intentional action.
-   For a recognized refusal, `continuation-marker-refused` should name the
+   For a recognized marker-line refusal, `continuation-marker-refused` should name the
    first failed gate: blank, end, sibling or follower column, with the eligible
    column. Fence payload and harmless literals without a plausible host are
    quiet.
-   `continuation-marker-refused` reports every refusal PART 9 §17 names, at
-   every host and depth, including the first-block form in a stacked quote
+   `continuation-marker-refused` reports marker-line refusals PART 9 §17 names,
+   including the first-block form in a stacked quote
    (`- > +`, `> - +`) and in a description body (`: > +`, `: - +`). A `+`
    that PART 0 S2 reads as ordinary text is not a refusal and is
    quiet.

@@ -593,7 +593,9 @@
         A returned document MUST NOT lack text the author typed. An eligible
         `+` is a structural marker, even when its attachment is refused
         (PART 9 §17 L3); its missing glyph is reported by
-        `continuation-marker-refused`, not silent loss of text.
+        `refused-continuation-marker` for an own-line offer or
+        `continuation-marker-refused` for a marker-line offer, not silent
+        loss of text.
 
         THE CANONICAL WRITER MAY TAKE THE REFUSE ARM PAST THE CAP -- NORMATIVE
         [CARVE-P9-078]. Over-cap flattening owes it no spellable tree: the
