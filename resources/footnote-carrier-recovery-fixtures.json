@@ -55,10 +55,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "^[body]\n"
-    }
+    ]
   },
   {
     "name": "safe-carve-djot-both",
@@ -76,10 +73,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "safe-djot-label",
@@ -97,10 +91,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^named]\n\n[^named]: body\n"
-    }
+    ]
   },
   {
     "name": "safe-djot-carve-both",
@@ -118,10 +109,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "safe-djot-djot-both",
@@ -203,10 +191,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "^[body]\n"
-    }
+    ]
   },
   {
     "name": "semantic-carve-djot-both",
@@ -224,10 +209,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "semantic-djot-label",
@@ -245,10 +227,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^named]\n\n[^named]: body\n"
-    }
+    ]
   },
   {
     "name": "semantic-djot-carve-both",
@@ -266,10 +245,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "semantic-djot-djot-both",
@@ -351,10 +327,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "^[body]\n"
-    }
+    ]
   },
   {
     "name": "roundtrip-carve-djot-both",
@@ -372,10 +345,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "roundtrip-djot-label",
@@ -393,10 +363,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^named]\n\n[^named]: body\n"
-    }
+    ]
   },
   {
     "name": "roundtrip-djot-carve-both",
@@ -414,10 +381,7 @@
     "forbiddenAuthoredAttributes": [
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
-    ],
-    "aheadOfPin": {
-      "source": "[^1]\n\n[^1]: body\n"
-    }
+    ]
   },
   {
     "name": "roundtrip-djot-djot-both",

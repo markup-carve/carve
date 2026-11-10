@@ -2106,12 +2106,8 @@ test('a definition description ends at its last child ON THE REFERENCE, which is
  * carve-js main before the last three merged, which is why the list was
  * re-measured wholesale rather than struck row by row (carve#1589).
  */
-const DECLARED_OVER_REACH = [
-  "435-the-continuation-marker-s-column-gate-reaches-every-container-2.crv 1  markup-carve/carve-js#4838: a footnote ending in a refused plus reaches over the plus line (since carve-js#4691)",
-  "629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-4.crv 1  markup-carve/carve-js#4838: a footnote ending in a refused plus reaches over the plus line (since carve-js#4691)",
-  "629-a-dangling-plus-is-a-letter-and-a-nested-quote-reads-it-like-an-unnested-one-8.crv 1  markup-carve/carve-js#4838: a footnote ending in a refused plus reaches over the plus line (since carve-js#4691)",
-  "726-a-second-plus-starts-its-own-paragraph-after-attachment-4.crv 1  markup-carve/carve-js#4838: a footnote ending in a refused plus reaches over the plus line (since carve-js#4691)",
-]
+// The pinned JS build now satisfies every stops-at-children span check.
+const DECLARED_OVER_REACH = []
 
 test('STOPS AT ITS CHILDREN, over every corpus document', () => {
   // Declared as `<document> <count>`, so a document growing a second
