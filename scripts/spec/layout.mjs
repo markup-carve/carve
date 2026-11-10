@@ -5593,6 +5593,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // its continuations carry the owner's quote prefix (PART 4) and stay its own.
     if (rest[0] === '{') {
       const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+      const tabbedQuoteBrace = depth > 0 && owner.kind === 'quote' && lines[at].endsWith(rest) &&
+        (lines[at].slice(0, -rest.length).includes('\t') || col > 0)
       if (rest.startsWith('{%') && !rest.includes('%}')) {
         let end = at + 1
         for (; end < lines.length; end++) {
@@ -5607,9 +5609,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           if (key === 'length') return lines.length - at
           if (key === '0') return rest
           const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
-          return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
+          if (j < 0 || j >= lines.length) return undefined
+          if (!tabbedQuoteBrace) return stripQuotes(lines[j], depth)?.rest ?? ''
+          const quoted = stripQuotes(lines[j], depth)?.rest
+          return quoted === undefined ? lines[j]
+            : ' '.repeat(sourcePrefixColumn(lines[j], trimWsStart(quoted))) + trimWsStart(quoted)
         },
-      }), 0, col)
+      }), 0, tabbedQuoteBrace ? sourcePrefixColumn(lines[at], rest) : col)
       if (attr) return { kind: 'leaf', interrupts: true, attrLines: attr.next - 1 }
     }
     if (CAPTION.test(rest)) return { kind: 'leaf', interrupts: false, caption: true }
@@ -7972,6 +7978,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qAttributeShift = 0 // the quote prefix width an unprefixed continuation of that run drops
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
+      let qNestedAttributeShift = 0
       let qStanzaCandidate = false
       let qStanzaSpanSeen = false
       // The run of a `%%%` span open in the candidate stanza: a blank inside it is payload.
@@ -8138,7 +8145,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         if (idx <= qNestedAttributeThrough) return settle(false, qNestedAttributeDepth)
         if (atStart && qNestedTable.length === 0) {
           const summary = quotePrefixSummary(line, prefixMemo(state, lines, idx).quote)
-          if (summary && markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null && !isColonBlockOpener(summary.tail) && fenceLineInfo(summary.tail) === null) {
+          if (summary && !trimWsStart(summary.tail).startsWith('{') &&
+              markerQuoteText(summary.tail, prefixMemo(state, lines, idx).markerQuote ??= new Map()) === null &&
+              !isColonBlockOpener(summary.tail) && fenceLineInfo(summary.tail) === null) {
             const { depth, tail } = summary
             if (state.blockDepth + depth >= MAX_NESTING_DEPTH) {
               const remaining = MAX_NESTING_DEPTH - state.blockDepth
@@ -8248,12 +8257,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 if (key === 'length') return n - idx
                 if (typeof key !== 'string' || !/^\d+$/.test(key)) return undefined
                 const offset = Number(key)
-                return offset === 0 ? inner.rest : dedent(stripQuotes(lines[idx + offset] ?? '', depth + 1)?.rest ?? '', inner.col)
+                if (offset === 0) return inner.rest
+                const source = lines[idx + offset] ?? ''
+                const quoted = stripQuotes(source, depth + 1)?.rest
+                return quoted === undefined ? source
+                  : ' '.repeat(sourcePrefixColumn(source, trimWsStart(quoted))) + trimWsStart(quoted)
               },
-            }), 0) : null
+            }), 0, lines[idx].endsWith(inner.rest) ? sourcePrefixColumn(lines[idx], inner.rest) : inner.col) : null
             if (attribute) {
               qNestedAttributeThrough = idx + attribute.next - 1
               qNestedAttributeDepth = depth
+              qNestedAttributeShift = lines[idx].endsWith(inner.rest)
+                ? sourcePrefixColumn(lines[idx], inner.rest) - sourcePrefixColumn(line, inner.rest) : 0
               return settle(false, depth)
             }
             return settle(!COLON_CLOSER.test(text) &&
@@ -8759,8 +8774,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }
         if (qHost.fence || openComment !== null) break
         // An unprefixed continuation of a valid wrapped attribute run is that run's line, not lazy text.
-        if (i <= qAttributeThrough && qAttributeShift !== null && !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
-          inner.push(dedent(lines[i], qAttributeShift))
+        if ((i <= qAttributeThrough && qAttributeShift !== null || i <= qNestedAttributeThrough) &&
+            !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
+          inner.push(dedent(lines[i], i <= qNestedAttributeThrough ? qNestedAttributeShift : qAttributeShift))
           i++
           continue
         }
