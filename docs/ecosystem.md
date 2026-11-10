@@ -136,6 +136,7 @@ boundary sits at the AST, and what a bridge owes its caller:
 | Bridge | Model | Runtime | Carve to it | It to Carve |
 |---|---|---|---|---|
 | [pandoc-carve](https://github.com/markup-carve/pandoc-carve) | Pandoc AST | Node + `pandoc` | ✅ every pandoc writer | ✅ everything pandoc reads |
+| [unified-carve](https://github.com/markup-carve/unified-carve) | mdast (unified / remark) | Node | ✅ `carveParse` (not released yet) | ❌ not yet |
 | [carve-grammars](https://github.com/markup-carve/carve-grammars) | ProseMirror / Tiptap | Node | ✅ `carveToProseMirror` | ✅ `serializeToCarve` |
 | [carve-php](https://github.com/markup-carve/carve-php/blob/main/docs/prosemirror.md) | ProseMirror / Tiptap | PHP | ✅ `ProseMirrorRenderer` | ✅ `ProseMirrorToCarve` |
 
