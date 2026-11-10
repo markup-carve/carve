@@ -52,15 +52,16 @@ test('a heading short of the item after a refused run in it ends the item', () =
   ].join('\n'))
 })
 
-test('a run and follower in the item still keep the follower', () => {
+test('a refused run releases the following heading in the item', () => {
   assert.equal(render(['- a', '  {x', '  y}', '  # c', 'more']), [
     '<ul>',
     '  <li>a',
     '{x',
     'y}',
-    '# c',
-    'more</li>',
+    '    <h1 id="c">c</h1>',
+    '  </li>',
     '</ul>',
+    '<p>more</p>',
   ].join('\n'))
 })
 

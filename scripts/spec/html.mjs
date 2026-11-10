@@ -534,15 +534,12 @@ function withoutCommentBlocks(lines, spanEndList = []) {
 }
 
 function paragraphInlineSource(b) {
-  if (!b.literalSegments) return b.lines.join('\n')
+  if (!b.literalBraceOpeners) return b.lines.join('\n')
   const lines = b.lines.slice()
-  for (const [start, end] of b.literalSegments) {
-    // Escape syntax on the literal lines while keeping one inline parse across
-    // every soft break. An emphasis or code span can begin before this run and
-    // close after it; splitting renderInline at either edge would lose it.
-    for (let i = start; i < end; i++) {
-      lines[i] = lines[i].replace(/[!-/:-@[-`{-~]/g, ch => `\\${ch}`)
-    }
+  for (const i of b.literalBraceOpeners) {
+    // A refused block opener is the only literal byte. Its following text
+    // still follows the ordinary inline grammar (CARVE-P2-035).
+    lines[i] = lines[i].replace('{', '\\{')
   }
   return lines.join('\n')
 }

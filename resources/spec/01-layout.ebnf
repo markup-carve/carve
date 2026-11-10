@@ -58,8 +58,8 @@
          misses its host. Exact closer tests remain in PART 9 §2.
      P2  L1-L3 govern normalization, prefix consumption and frame reach.
      P3  L4 separates container survival from paragraph openness.
-     P4  L5 governs classification. A caption needs an eligible host; the
-         line after a refused brace run retains that run's paragraph.
+     P4  L5 governs classification. A caption needs an eligible host; a
+         refused block-position brace opener is literal text and claims no later line.
      P5  L6 governs marker-body blanks and list looseness. Siblings also
          group by kind and owner under PART 9 §11 N1.
      P6  L7 governs `+` offers. A refused offer renders no text; the grant

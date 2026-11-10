@@ -289,8 +289,6 @@
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a code or raw fence opener, closer or not (I4);
          - a `:::` opener, closer or not (I4).
-         The exception is the line after a refused brace run: it continues the
-         run's paragraph and interrupts nothing (CARVE-P2-035).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
@@ -864,7 +862,8 @@
          a line containing only `}`, must be indented at least one column past
          the opening `{` (PART 4 `continuation`). A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
-         whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
+         opener is literal paragraph text and later lines are read normally,
+         not as `block_attributes` (CARVE-P2-035). Each block of a glued run (`{.a}{.b}`) wraps by
          this same rule, so `{.a}{.b` / `     }` (past the second `{`) and
          `{.a` / ` }{.b}` are attribute lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
