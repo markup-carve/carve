@@ -8891,7 +8891,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const row = Number(key)
           const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
             braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
-          if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return line
+          // Without a source column the row is item-relative, so the marker-line brace still sits past the box.
+          if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return row === i && box ? ' '.repeat(box) + line : line
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
             : unframeLazy(line)
@@ -8947,7 +8948,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // line-initial caret and `oracle(fmt(x))` parted from `oracle(x)` on a
       // document every engine agreed about (carve#1046).
       if (!forcedAfterRefusal && CAPTION.test(lines[i]) && isCaptionableParagraph(para)) break
-      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i)) break // §15 A1 / §10 I5
+      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i, box)) break // §15 A1 / §10 I5
       if (!forcedAfterRefusal && ind(i).rest.startsWith('%%')) break // §10 I5 (comment line or fence)
       if (!forcedAfterRefusal && inItem && para.length > 0 && matchMarkerAt(ind(i))) break // §24 C3
       if (!forcedAfterRefusal && para.length > 0) {
