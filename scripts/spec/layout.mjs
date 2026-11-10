@@ -7035,6 +7035,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          const bodyRefusalLines = []
           const bodySourceColumns = []
           authoredCommentColumns.set(bodyLines, bodySourceColumns)
           let bodyHasFenceCandidate = false
@@ -7069,6 +7070,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               markAttachmentBoundary(state, bodyLines)
             }
             bodyLines.push(text)
+            bodyRefusalLines.push(stripLazy(stripLazyLead(text)))
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const bodyMarker = matchMarkerAt(indentCols(text))
             if (bodyMarker) lastBodyListMarker = bodyMarker
@@ -7294,6 +7296,20 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // `more`.
             const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
             const authoredCol = indentCols(cur).col
+            // A refused brace run keeps its first block-shaped follower as
+            // paragraph text even when that follower misses this body's
+            // column. Carry that text past the body parse's block classifier.
+            if (!readsAsProse(dedented) || startsParagraphBlock(dedented) ||
+                matchMarkerAt(indentCols(dedented)) || isDefinitionOrAttributeLine(dedented)) {
+              bodyRefusalLines.push(dedented)
+              const protectedFollower = endsInRefusedRunParagraph(bodyRefusalLines, bodyRefusalLines.length - 1, true)
+              bodyRefusalLines.pop()
+              if (protectedFollower) {
+                pushBody(lazyFrame(dedented))
+                i++
+                continue
+              }
+            }
             // A block closed inside a nested description, item or marked quote
             // leaves no paragraph for a column-zero continuation (CARVE-P0-011).
             // An unmarked quote follower stays paragraph text under X2.
