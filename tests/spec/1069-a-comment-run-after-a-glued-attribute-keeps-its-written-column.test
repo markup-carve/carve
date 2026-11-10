@@ -1,0 +1,32 @@
+A comment run after a glued attribute keeps its written column
+
+```
+-{.g} {% b
+   b %}
+.
+<ul>
+  <li class="g">{% b
+b %}</li>
+</ul>
+```
+
+```
+> 1.{#i} {% b
+>    b %}
+.
+<blockquote>
+  <ol>
+    <li id="i">{% b
+b %}</li>
+  </ol>
+</blockquote>
+```
+
+```
+-{.g} {% b
+       b %}
+.
+<ul>
+  <li class="g"></li>
+</ul>
+```
