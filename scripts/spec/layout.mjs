@@ -1899,6 +1899,21 @@ function inlineAttributeHost(line, at, span, bracketStarts) {
   return probe(prefix)
 }
 
+// Per source row: does a `%}` lie on a later line before the next blank?
+const commentClosesAheadMemo = new WeakMap()
+function commentClosesAheadIn(lines) {
+  let closes = commentClosesAheadMemo.get(lines)
+  if (closes?.length === lines.length) return closes
+  closes = new Array(lines.length)
+  let ahead = false
+  for (let row = lines.length - 1; row >= 0; row--) {
+    closes[row] = ahead
+    ahead = isBlank(lines[row] ?? '') ? false : ahead || (lines[row] ?? '').includes('%}')
+  }
+  commentClosesAheadMemo.set(lines, closes)
+  return closes
+}
+
 function scanInlineSpan(span, line, futureCommentClose = false) {
   const lastCommentClose = line.lastIndexOf('%}')
   const lastBraceClose = line.lastIndexOf('}')
@@ -10716,6 +10731,21 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       return { kind: 'comment', run: summary.run, markerLine: true, col: col + summary.col }
     }
     const bodyHoldsLiveCommentSpan = () => bodyHoldsOpenCommentSpan(itemLines)
+    // A brace line inside an inline span the item's open paragraph opened is
+    // that paragraph's text, as the paragraph reader reads it (§10 I5, CARVE-P2-035).
+    // The scan resumes where the last query stopped, so each body line is read once.
+    const spanScan = { upto: 0, span: null }
+    const braceInOpenSpan = () => {
+      if (spanScan.upto > itemLines.length) Object.assign(spanScan, { upto: 0, span: null })
+      const closes = commentClosesAheadIn(lines)
+      for (; spanScan.upto < itemLines.length; spanScan.upto++) {
+        const line = stripLazy(itemLines[spanScan.upto])
+        if (isBlank(line)) { spanScan.span = null; continue }
+        if (spanScan.span === null || startsParagraphBlock(line, false)) spanScan.span = { codeRun: 0, comment: false }
+        scanInlineSpan(spanScan.span, trimWsStart(line), closes[itemSourceRows[spanScan.upto]] ?? false)
+      }
+      return spanScan.span !== null && (spanScan.span.codeRun !== 0 || spanScan.span.comment)
+    }
     const missedLiveSpan = liveSpanTest(itemLines, bodyHoldsLiveCommentSpan)
     // A descendant span cannot carry payload across a shallower block. Its
     // closer still pairs by run length at any column.
@@ -11876,7 +11906,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           !inDescendantSpan &&
           (!insideFence() || inOpenColonOnly) && opensAuthoredBase(lm.rest) &&
           // A fence with no closer under an open paragraph is text (§10 I4), as the walk read it.
-          (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload()
+          (!isCodeBlockOpener(lm.rest) || bodyFenceOpens(i, lm.rest, col)) && !stanzaPayload() &&
+          !(lm.rest[0] === '{' && paragraphIsOpen() && braceInOpenSpan())
         if (pendingHeadQuote !== null && mayOpenAuthoredBlock) {
           const start = pendingHeadQuote
           const candidate = [head.text]
