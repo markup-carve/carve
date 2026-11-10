@@ -4727,8 +4727,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const invisibleInEntry = (owner.last === 'term' || owner.last === 'dd') &&
         (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
       if (!invisibleInEntry) {
-        owner.para = !!form.caption
-        if (form.caption) owner.paraFrom = at
+        const wasPara = owner.para
+        owner.para = !!form.caption || !!form.para
+        if (form.caption || form.para && !wasPara) owner.paraFrom = at
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
@@ -5521,7 +5522,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         for (; end < lines.length; end++) {
           const body = stripQuotes(lines[end], depth)?.rest
           if (body === undefined || indentCols(body).col <= col || isBlank(body)) break
-          if (body.includes('%}')) return { kind: 'leaf', interrupts: true, attrLines: end - at }
+          // The run is paragraph text, so a lazy line after it continues that paragraph (PART 9 §21a).
+          if (body.includes('%}')) return { kind: 'leaf', interrupts: true, attrLines: end - at, para: true }
         }
       }
       const attr = tryAttrLine(new Proxy([], {
