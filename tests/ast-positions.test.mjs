@@ -1132,7 +1132,7 @@ test('an astral footnote label does not shift a same-line list start', () => {
  * step of each engine's fix.
  */
 const DECLARED_LIST_INDENT_START = [
-  "1030-a-refused-brace-run-keeps-a-following-plus-literal.crv 1  markup-carve/carve#5658: pinned carve-js still treats the ruled literal plus as a refused marker",
+  "1017-a-description-that-refuses-a-plus-reads-the-next-line-in-its-body.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4780)",
   "206-a-nested-list-in-a-footnote-body-stays-nested.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -1191,7 +1191,11 @@ const DECLARED_LIST_INDENT_START = [
   "930-a-list-marker-opens-a-list-in-every-marker-body.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-2.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "958-a-below-item-marker-continues-the-list-in-a-description.crv 1  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
+  "981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4711)",
+  "989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4707)",
+  "989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4699)",
   "990-a-passed-note-keeps-its-blank-separated-continuation-2.crv 3  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
+  "991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4699)",
   "999-a-note-attached-list-keeps-its-child-fence-payload.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
 ]
 

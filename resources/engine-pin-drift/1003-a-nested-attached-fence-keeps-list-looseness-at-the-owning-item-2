@@ -1,1 +1,0 @@
-The pinned carve-js build loosens the outer item for a blank inside the nested attached fence. PART 9 §17 L1 keeps the outer item tight because the blank belongs to the child (carve#5534). Current carve-js main follows the corpus row.

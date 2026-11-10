@@ -1426,12 +1426,7 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false,
-      "aheadOfPin": {
-        "fails": [
-          "error: {\"type\":\"link\",\"ref\":\"r\",\"attrs.keyValues.data-djot-ref\":\"z\"}"
-        ]
-      }
+      "requiresDiagnostic": false
     },
     {
       "id": "plus-is-not-a-bullet",
@@ -1728,12 +1723,7 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false,
-      "aheadOfPin": {
-        "fails": [
-          "error: {\"type\":\"paragraph\",\"attrs.keyValues.data-djot-src\":\"Z\"}"
-        ]
-      }
+      "requiresDiagnostic": false
     },
     {
       "id": "unmarked-section-slug-id-is-generated",
@@ -1863,13 +1853,7 @@
       "source": "[a](/u){data-djot-ref=x}\n",
       "attribute": "data-djot-ref",
       "value": "x",
-      "kept": true,
-      "aheadOfPin": {
-        "fails": [
-          "exported collision attribute matches fixture",
-          "kept attribute has no drop loss"
-        ]
-      }
+      "kept": true
     },
     {
       "id": "unreserved-name-kept-on-heading",

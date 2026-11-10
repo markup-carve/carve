@@ -89,6 +89,7 @@ const TRIGGERS = {
   'block-opener-overindented': '  # h\n',
   'emphasis-marker-before-attributes': 'a*{.x} b*\n',
   'unclosed-comment-fence': '%%% TODO\n# Heading\npara\n',
+  'refused-continuation-marker': '- a\n+\n\nx\n',
 }
 
 /*
@@ -151,10 +152,6 @@ const RETIRED_IN_THE_PIN = new Map([
  *   - listed here and absent from the page -> a declaration about nothing.
  */
 const NOT_IN_THE_PIN_YET = new Map([
-  [
-    'refused-continuation-marker',
-    'specified by carve#5736; the pinned build still reports own-line P6 refusals under continuation-marker-refused',
-  ],
   [
     'gfm-delimiter-row',
     'specified by carve#4980 stage 2; the pinned build predates the migration warning',

@@ -1,1 +1,0 @@
-The spec model keeps the post-refusal line in the note, as the ownership trace and carve#5601 ruling require. The pinned carve-js build leaves that line at document level.

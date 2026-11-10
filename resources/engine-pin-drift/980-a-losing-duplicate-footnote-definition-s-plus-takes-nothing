@@ -1,1 +1,0 @@
-Spec model now leaves the block below a losing duplicate footnote definition's lone plus to the enclosing container (PART 9R R2); the pinned carve-js build drops it with the losing note (carve#5474).
