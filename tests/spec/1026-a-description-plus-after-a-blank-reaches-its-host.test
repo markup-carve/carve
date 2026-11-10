@@ -1,0 +1,17 @@
+A description plus after a blank reaches its host
+
+```
+:: t
+: h
+
++
+pp
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>h</p>
+    <p>pp</p>
+  </dd>
+</dl>
+```

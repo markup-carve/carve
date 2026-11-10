@@ -655,7 +655,9 @@
           into it. A region marker is the one comment that still closes
           containers (the exception to PART 0 S1): written below a
           list it stands at the list's own column and closes every item of it,
-          so it is the list's sibling. Otherwise, and in a tree without
+          so it is the list's sibling. A following item at that column starts
+          a new list, even when its marker matches the preceding items.
+          Otherwise, and in a tree without
           positions, the ordinary separator applies.
 
       (b) A MARKER KEPT IN A LIST ITEM KEEPS ITS COLUMN. A region marker that

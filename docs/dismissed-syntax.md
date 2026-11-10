@@ -46,7 +46,6 @@ Visit [Google -> https://google.com] for search.
 
 **Why rejected:**
 - Completely different from all existing formats
-- `->` conflicts with smart typography (→)
 - Would require entirely new tooling
 
 ---

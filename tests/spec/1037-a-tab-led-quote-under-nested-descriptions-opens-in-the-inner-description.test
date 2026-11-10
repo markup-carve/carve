@@ -1,0 +1,23 @@
+A tab-led quote under nested descriptions opens in the inner description
+
+```
+:: t
+: a
+  :: t
+  : a
+  	> b
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>a</p>
+    <dl>
+      <dt>t</dt>
+      <dd>
+        <p>a</p>
+        <blockquote><p>b</p></blockquote>
+      </dd>
+    </dl>
+  </dd>
+</dl>
+```

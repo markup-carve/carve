@@ -105,12 +105,17 @@ function extensionClose(source, at) {
 }
 function softHiding(source) {
   const soft = new Uint8Array(source.length)
+  const crossrefs = forcedCrossrefs(source)
   const braces = [0]
   for (let i = 0; i < source.length; i++) braces.push(braces[i] + (source[i] === '{' || source[i] === '}' ? 1 : 0))
   const open = []
   for (let i = 0; i < source.length; ) {
     const c = source[i]
-    if (c === '\\') {
+    const refEnd = crossrefs.get(i) ?? -1
+    if (refEnd !== -1) {
+      soft.fill(1, i, refEnd)
+      i = refEnd
+    } else if (c === '\\') {
       i += 2
     } else if (c === '[' && opensExtension(source, i) && extensionClose(source, i) !== -1) {
       i = extensionClose(source, i) + 1
@@ -136,6 +141,44 @@ function softHiding(source) {
     } else i++
   }
   return soft
+}
+function forcedCrossrefs(source) {
+  const refs = new Map()
+  const marks = []
+  const nextStop = new Int32Array(source.length + 1)
+  nextStop[source.length] = source.length
+  for (let i = source.length - 1; i >= 0; i--) {
+    nextStop[i] = source[i] === '>' || source[i] === ' ' || source[i] === '\n' ? i : nextStop[i + 1]
+  }
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '`' && !escapedAt(source, i)) {
+      let width = 1
+      while (source[i + width] === '`') width++
+      let close = -1
+      for (let j = i + width; j < source.length && close === -1;) {
+        let run = 0
+        while (source[j + run] === '`') run++
+        if (run === width) close = j
+        j += run || 1
+      }
+      if (close === -1) break
+      i = close + width - 1
+      continue
+    }
+    const stop = nextStop[i + 3] ?? source.length
+    const end = source.startsWith('</#', i) && !escapedAt(source, i) && stop > i + 3 && source[stop] === '>' ? stop + 1 : -1
+    if (end !== -1 && NESTING_MARKS.has(marks.at(-1))) {
+      refs.set(i, end)
+      i = end - 1
+    } else if (source[i] === '{' && !escapedAt(source, i)) {
+      marks.push(source[i + 1])
+      i++
+    } else if (source[i + 1] === '}' && marks.at(-1) === source[i]) {
+      marks.pop()
+      i++
+    }
+  }
+  return refs
 }
 // PART 9 §22 DEPTH LIMIT: a braced span past the depth budget left to this run
 // is one literal atom, so neither the match nor its semantics recurse into it.
@@ -205,9 +248,15 @@ const indexClosers = (source) => {
     const openers = []
     const last = new Map()
     const soft = softHiding(source)
+    const crossrefs = forcedCrossrefs(source)
     const otherBefore = [0]
     for (let i = 0; i < source.length; i++) otherBefore.push(otherBefore[i] + (!soft[i] && HIDING.test(source[i]) ? 1 : 0))
     for (let i = 0; i < source.length; i++) {
+      const refEnd = crossrefs.get(i) ?? -1
+      if (refEnd !== -1) {
+        i = refEnd - 1
+        continue
+      }
       if (source[i] === '{' && source[i - 1] !== '\\') {
         const mark = source[i + 1]
         if (!stacks.has(mark)) stacks.set(mark, [])
@@ -740,13 +789,27 @@ const urlListIsClean = (separator, value) =>
 // leading scheme is denylisted, and a URL-list value with a denylisted scheme
 // in ANY candidate as well; blank a style value with a CSS execution vector.
 const STYLE_VECTOR = /expression\(|url\(|@import|behavior:|-moz-binding/i
+// CSS parses escapes before recognizing identifiers and functions. Probe that
+// interpretation, while retaining the authored spelling if it is allowed.
+const CSS_ESCAPE = /\\(?:([0-9a-f]{1,6})(?:\r\n|[ \t\r\n\f])?|(\r\n|[\r\n\f])|([\s\S]))/gi
+function decodeCssEscapes(value) {
+  return value.replace(CSS_ESCAPE, (_match, hex, newline, character) => {
+    if (hex) {
+      const codePoint = Number.parseInt(hex, 16)
+      return codePoint === 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)
+        ? '\ufffd'
+        : String.fromCodePoint(codePoint)
+    }
+    return newline ? '' : character === '\0' ? '\ufffd' : character
+  })
+}
 function hardenAttr(name, value) {
   const n = name.toLowerCase()
   if (n.startsWith('on') || n === 'srcdoc' || n === 'formaction') return null
   if (value !== '' && checkUrl(value) === '') return { name, value: '' }
   const separator = Object.hasOwn(URL_LIST_SEPARATORS, n) ? URL_LIST_SEPARATORS[n] : null
   if (separator && !urlListIsClean(separator, value)) return { name, value: '' }
-  if (n === 'style' && STYLE_VECTOR.test(value.replace(STRIP_FRAMES, '').replace(/\s+/g, ''))) return { name, value: '' }
+  if (n === 'style' && STYLE_VECTOR.test(decodeCssEscapes(value.replace(STRIP_FRAMES, '')).replace(/\s+/g, ''))) return { name, value: '' }
   return { name, value }
 }
 
@@ -792,10 +855,15 @@ export function refFrame(payload) {
 export function flattenInnerLinks(text) {
   // A note's content renders in the endnotes, not in the link text, so links
   // inside a note frame keep their destinations (carve#3938).
-  const parts = text.split(new RegExp(`(${NOTE_FRAME.source})`))
-  if (parts.length > 1) {
-    return parts.map((part, i) => i % 3 === 0 ? flattenInnerLinks(part) : i % 3 === 1 ? part : '').join('')
-  }
+  // Keep each frame intact while removing anchors across its position. Splitting
+  // here separates the tags of a link whose label contains an inline note.
+  const notes = []
+  let marker = '\uE002'
+  while (text.includes(marker)) marker += '\uE002'
+  text = text.replace(NOTE_FRAME, (frame) => {
+    const index = notes.push(frame) - 1
+    return `${marker}${index}\uE003`
+  })
   // An inner crossref flattens to its resolved TEXT; it reaches here as a
   // sentinel because PART 9R resolves it in a later pass.
   let out = text
@@ -816,7 +884,7 @@ export function flattenInnerLinks(text) {
     }
     return parsed.img ? m : refFrame({ ...parsed, flat: true })
   })
-  return out
+  return out.replace(new RegExp(`${marker}(\\d+)\uE003`, 'g'), (_, index) => notes[Number(index)])
 }
 
 /*
@@ -1091,7 +1159,7 @@ const sem = g.createSemantics().addOperation('h', {
   codeAttrd(code, attrs) {
     const a = renderAttrs(attrsOf(attrs))
     if (a === '') return code.h()
-    return code.h().replace('<code>', `<code${a}>`)
+    return code.h().replace('<code>', () => `<code${a}>`)
   },
   mathI(_d, code, attrs) {
     // `code` is the alternation node; its sole child is codeN(_o,content,_c)
@@ -1268,6 +1336,7 @@ const sem = g.createSemantics().addOperation('h', {
   rawInline(code, _ob, fmt, _cb) {
     if (omitRawInline) return ''
     // PART 9 §20: emitted UNESCAPED for the html format, dropped otherwise
+    if (safeRawInline && fmt.sourceString === 'html') return quoteOpaque(rawFrame(escapeHtml(codeText(codeInner(code).child(1)))))
     const text = rawFrame(codeText(codeInner(code).child(1)))
     return fmt.sourceString === 'html' ? quoteOpaque(text) : ''
   },
@@ -2829,7 +2898,18 @@ let quotePrevCtx = '' // preceding character for recursive inline parses
  */
 let omitSymbols = false
 let omitRawInline = false
+let safeRawInline = false
 let omitComments = false
+
+export function withSafeRawInline(render) {
+  const previous = safeRawInline
+  safeRawInline = true
+  try {
+    return render()
+  } finally {
+    safeRawInline = previous
+  }
+}
 
 /*
  * HARD BREAKS: a soft break renders as `<br>` (PART 9 §23).

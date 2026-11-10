@@ -1,12 +1,10 @@
 ## A boundary line inside an open fence does not end the container
 
-PART 9 §17 L3 attaches ONE BLOCK of ANY kind, "up to the next blank line,
-sibling marker, or a further `+`". That list bounds the ATTACHED BLOCK, and a
-block's own extent is settled before the list is ever consulted: a fenced block
-runs from its opener to its matching closer, so every line between the two is
-INSIDE the one block L3 attached. A blank line there is not "the next blank
-line" any more than the closer is "a sibling marker" - it is fence content, and
-the boundary list never sees it.
+PART 0 P1 gives the attached fence its own extent. An interior blank is code
+payload, and a matching closer ends a closed fence. For an own-line `+`, the
+first later nonblank line that misses the host ends the attachment before that
+line is read (PART 0 S1 step 2, carve#5658 F06 ruling). The note, description,
+and item rows below exercise this boundary after the blank.
 
 The same holds one construct over, for a body collected by INDENTATION rather
 than by a marker. §24 S1 MATCH PREFIXES places a line by the column it reaches
@@ -82,15 +80,15 @@ b
 
 :::::
 
-### A blank line inside the same fence
+### A line after the blank misses the note
 
-The boundary L3 DOES name, in the one position where it cannot apply. The blank
-is between the fence's opener and its closer, so it is code text; the attached
-block ends at the closer, as it did above.
+The blank is code payload. The following `b` stands at the note's marker column,
+so it misses the note and ends this own-line attachment before the line is read
+(PART 0 S1 step 2, carve#5658 F06 ruling). The later fence-shaped line opens at
+document level.
 
-Stated as its own row because the two are different predicates: one reader ends
-the block on a definition line, the other on a blank, and a fix to either is
-invisible to the other.
+This differs from the definition-line row above: that line is inside the
+fence before a blank, whereas `b` is the first line after the blank.
 
 ::::: compare
 
@@ -107,30 +105,19 @@ see[^f]
 ````
 
 ```html
-<p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<section role="doc-endnotes" aria-label="Footnotes">
-  <hr>
-  <ol>
-    <li id="fn1">
-      <p>n</p>
-      <pre><code>a
-
-b
+<p>b</p>
+<pre><code>
+see[^f]
 </code></pre>
-      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
-    </li>
-  </ol>
-</section>
 ```
 
 :::::
 
-### The same blank, in a definition list's body
+### A line after the blank misses a definition body
 
-A third row for the same blank line because a `dd` is collected by a DIFFERENT
-loop than a footnote body in every reader, and `carve-php#1003` is the
-precedent for one row letting the other half stay broken and still read as done.
-The `+` attach into a `dd` is pinned by `25-definition-lists-3`.
+The `dd` has the same own-line boundary as the note: `b` misses its content
+column after the retained blank. The closing fence-shaped line opens a new
+document block (PART 0 S1 step 2, carve#5658 F06 ruling).
 
 ::::: compare
 
@@ -152,10 +139,11 @@ b
     <p>d</p>
     <pre><code>a
 
-b
 </code></pre>
   </dd>
 </dl>
+<p>b</p>
+<pre><code></code></pre>
 ```
 
 :::::
@@ -266,23 +254,12 @@ body as two paragraphs.
 
 :::::
 
-### The same blank, in a block attached to a LIST ITEM
+### A line after the blank misses a list item
 
-The fourth collector for the one boundary, and the one that severs hardest. A
-list item's `+` attach is a separate loop again - separate from the footnote
-body, separate from the `dd`, separate from the block quote - so nothing the
-other three `+` rows pin reaches it.
-
-What severing costs here is not a rearranged block but a broken document. End
-the attached block at the blank and the item keeps `a` alone, the closing fence
-is never consumed, and that stray delimiter run opens an EMPTY inline code
-element at document level: output that no reading of the source licenses, from
-an input whose only unusual feature is a blank line in a code block. L3 gives
-the whole fence to the item and leaves nothing at document level but `z`.
-
-The item also stays TIGHT. §17 L1 loosens on a blank-line-separated second
-PARAGRAPH; this blank is code text and there is no second paragraph, so it is
-not the kind of blank L1 asks about.
+The item keeps `a` and the blank as fence payload. The following `b` misses
+the item's content column, ending the own-line attachment under PART 0 S1 step 2
+and the carve#5658 F06 ruling. The later fence-shaped line opens at document
+level and holds `z`.
 
 ::::: compare
 
@@ -303,11 +280,13 @@ z
   <li>x
     <pre><code>a
 
-b
 </code></pre>
   </li>
 </ul>
-<p>z</p>
+<p>b</p>
+<pre><code>
+z
+</code></pre>
 ```
 
 :::::

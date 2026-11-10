@@ -101,10 +101,10 @@ Definition list:
 
 ## Tables
 
-|= Fruit       |=> Price |=~ Stock |
-| Apple        |    1.20 |   In     |
-| Banana       |    0.50 |   In     |
-| Dragon fruit |    4.00 |   Out    |
+|= Fruit       |={>} Price |={~} Stock |
+| Apple        | 1.20      | In        |
+| Banana       | 0.50      | In        |
+| Dragon fruit | 4.00      | Out       |
 ^ Table #: column alignment - left, right, center.
 
 A `{table}` flag turns a `csv` or `tsv` fence into a table:

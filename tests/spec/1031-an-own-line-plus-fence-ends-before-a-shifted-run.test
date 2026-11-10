@@ -1,0 +1,21 @@
+An own line plus fence ends before a shifted run
+
+````
+- p
++
+```
+a
+
+ ```
+  zq
+.
+<ul>
+  <li>p
+    <pre><code>a
+
+</code></pre>
+  </li>
+</ul>
+<pre><code> zq
+</code></pre>
+````

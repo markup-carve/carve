@@ -17,7 +17,8 @@
       text and takes part in no step below, and a braced opener whose mark is
       followed by one is text.
 
-      TWO PASSES.
+      PART 0 P7 is the pairing principle; the atom and delimiter tables
+      below hold its exact lexical guards. TWO PASSES:
       P1 ATOMS. Scan left to right. At each position take the first
          construct of the atom table that matches; otherwise the character
          is one inline character. An atom is opaque to P2: no delimiter
@@ -49,13 +50,16 @@
       `_` stands after a backtick, and in a_*x* the `*` stands after `_`.
       Only the start and end of the block are START and END, which count as
       whitespace.
-      - CAN CLOSE: `before` is not whitespace and `after` is not alnum.
-      - CAN OPEN: `after` is neither whitespace nor d, and `before` is not
-        alnum and not d (SAME-DELIMITER ADJACENCY: `**x**`, `//x//` and
-        `==x==` are text; corpus 76-doubled-emphasis-delimiters). Two guards
-        apply to an opener: `before` is `_`, for every d; `before` is `/`,
-        for d of `/` or `_` (path protection: a/_y_ and /a/_b_ stay text at
-        the `_`; corpus 129-emphasis-opener-slash-adjacency).
+      The exact bare-delimiter guard table is:
+
+        test        `before`                         `after`
+        CAN CLOSE   not whitespace                   not alnum
+        CAN OPEN    not alnum, not d; not `_` for     not whitespace, not d
+                    every d; not `/` for `/` or `_`
+
+      SAME-DELIMITER ADJACENCY makes `**x**`, `//x//` and `==x==`
+      text (corpus 76). The opener guards protect paths: a/_y_ and
+      /a/_b_ stay text at `_` (corpus 129).
       - GUARD EXEMPTION. A guard character that is itself an open entry on
         the stack where d stands is markup and does not block: _*x*_ nests.
         Whether that entry closes later does not matter, so _*x* q renders
@@ -216,6 +220,13 @@
       and combined spans are not atoms; P2 finds them, so an attribute block
       that a bare closer has not taken is visible to them: in ={_a={c_} the
       `{_` forms and the `=` closes nothing.
+      A literal bracket run still bounds its content. An attribute candidate
+      cut by that boundary cannot attach to a host inside the run and remains
+      text: [t[x](/u){title="]"}y](/z) renders the inner link without a
+      title and leaves `{title="]"}` literal. When a bracket run declines,
+      its failed attribute tail claims nothing. P1 may then take an editorial
+      comment beginning at the same brace: [[][[]]{#1}][]#} renders the
+      `{#1}][]#}` suffix as an editorial comment.
 
       KIND TABLE (P2): kind, bare mark, other spelling, attribute run.
         emphasis        /      {/ /}      after the closer
@@ -264,16 +275,9 @@
       amortized linear bound in the block length.
 
    10. PARAGRAPH INTERRUPTION -- OPERATIONAL SEMANTICS (governs
-      `paragraph` in PART 2). The relation interrupts(L, P) decides whether
-      a line L ends an OPEN paragraph P with NO blank line between, at the
-      document top level AND inside nested content (list item, block quote,
-      admonition/div body). L interrupts -> L is parsed as its block and P
-      ends on the preceding line. PART 0 S1 handles opaque payloads and
-      comment tokens first; S2 selects the owner; S3 and S4 use the same
-      recognition result in that owner's coordinates (CARVE-P0-024).
-      I1 to I7 specify interruption policy, not a second block recognizer.
-      A recognized opener need not interrupt: list markers follow I2, fence
-      guards follow I4, and caption attachment follows I7.
+      `paragraph` in PART 2). PART 0 P4 and S1-S4 classify the line in its
+      owner. I1-I7 are the exact interruption guards for an open paragraph;
+      they do not select another owner or recognize another block.
       I1 VISIBLE OPENERS interrupt. interrupts(L, P) holds when L begins:
          - a heading (`#`..`######` + space);
          - a thematic break (a lone `---` / `***` / `___` line);
@@ -291,14 +295,10 @@
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
       I2 LIST MARKERS DO NOT INTERRUPT OUTSIDE A MARKER BODY (symmetric).
-         NEITHER a bullet (`- `/`* `, `- [x] ` task) NOR an ordered marker
-         (decimal, letter, roman, any value) interrupts a paragraph owned by
-         the document, a quote or a colon body: the line FOLDS into P as lazy continuation;
-         a list needs a blank line before it.
-         "Liste: \n - eins \n - zwei" is ONE paragraph, so is
-         "x = 5 \n * 3 + 17"; a blank line starts the list.
-         IN A MARKER BODY A LIST MARKER ALWAYS OPENS: the `markers` field of the
-         list item, definition body and footnote body rows of PART 0 FAMILIES.
+         P4 applies to bullets (`- `, `* `, tasks) and every ordered marker.
+         An open document, quote or colon paragraph folds one as text; a
+         marker body opens a child list at its content column (P5, FAMILIES).
+         Thus `x = 5` / `* 3 + 17` is one paragraph.
       I3 IMAGE EXCLUDED. A line that is only a bare image ("![alt](url)")
          does not interrupt: an image is not a block of its own in Carve;
          it stays an inline image inside the paragraph.
@@ -369,14 +369,9 @@
          claims one marker column and one separator column, so its
          content_column is the same as `- `. Pinned by corpus 374.
       I6 SCOPE. The relation applies to EVERY open
-         paragraph, including a blockquote's lazy continuation: "> quoted
-         \n - item" folds into ONE quote whose paragraph is
-         "quoted\n- item" (NOT quote + <ul>); "> text \n > # H" is a quoted
-         heading; a quoted bullet ("> p \n > - x") folds the same way.
-         A heading is not an open paragraph. Its SINGLE-LINE HEADINGS rule
-         in PART 2 determines its extent; T's heading transition leaves no
-         paragraph or continuation claim (CARVE-P0-006). Thus "# H \n - item"
-         starts a sibling list without invoking paragraph interruption.
+         paragraph in every frame (P3). A quoted bullet folds into an open
+         quote paragraph. A heading is a closed leaf (P8, T), so the next
+         marker is read without a paragraph interruption claim.
       I7 A CAPTION LINE DOES NOT INTERRUPT. A `^ ` line appears in neither
          I1 nor I5. What ends a paragraph at a caret is §4, and §4 reaches
          only the seven captionable hosts; for the two it spells in prose that
@@ -390,56 +385,30 @@
          caption rule.
 
    11. LIST MARKER CHANGE STARTS A NEW LIST -- OPERATIONAL (governs `list`
-      in PART 2). §10 decides FIRST whether marker lines establish a list
-      at all (the interruption gate); §11 then partitions established
-      same-indent items into sibling lists. The rules layer; §11 never
-      overrides §10.
+      in PART 2). P4 decides whether a marker opens; P5 groups markers that
+      opened in the same owner. N1-N3 give the exact grouping guards.
       N1 SAME LIST iff two adjacent items in the same owner, neither nested in
          the other, match on ALL
          axes: bullet character (`-` vs `*`; `+` is NOT a bullet in Carve --
          it is the continuation marker, §17), ordered_marker alternative,
          delimiter (`.` vs `)`), and plain-vs-task classification. Any axis
-         differs -> a new sibling list at the same indent. Example:
+         differs -> a new sibling list at the same indent. A region marker
+         standing as the list's sibling (CARVE-P11-073(a)) ends that list;
+         the next item starts another even when all axes match. Example:
            - a              produces:    <ul><li>a</li><li>b</li></ul>
            - b                            <ul><li>c</li><li>d</li></ul>
            * c
            * d
          `- a` followed by `- [x] b` is likewise two lists.
-         N1a HARD BOUNDARY AFTER THREE BLANK LINES -- NORMATIVE [CARVE-P9-014]. A run of
-         THREE OR MORE blank lines before an item marker ends the list: the
-         marker after the run opens a NEW sibling list even when every N1
-         axis matches. ONE blank line remains the ordinary loose separator,
-         and so does TWO (§17 L1). In the common LF spelling the boundary is
-         four newline bytes between the two item lines (`item\n\n\n\nitem`)
-         against two for the tight spelling and three for the loose one.
-         Count the run in the layout stream after comments are erased by
-         PART 0 S1 (CARVE-P0-005) and the other invisible lines are skipped
-         (§10 CARVE-P9-013). A comment or definition between blank lines does
-         not split the run; removing it leaves this boundary unchanged.
-         Example:
-           - apples         produces:    <ul><li>apples</li></ul>
-                                         <ul><li>oranges</li></ul>
-           (two more blank lines)
-           - oranges
-         AT EVERY LEVEL. The boundary is not restricted to the top level: it
-         applies wherever a list is, including a list nested in a list item
-         and a list inside a quote or a div.
-         THE RUN CLOSES NOTHING ON ITS OWN. It denies a FOLLOWING SIBLING
-         MARKER the right to join; it does not end the item. A run followed
-         by a continuation at the item's content column continues that item,
-         at any run length -- which is §17's content-column model unchanged,
-         and is why three blank lines before indented text still leave one
-         loose item.
-         DESCRIPTION LISTS TOO. The same run ends a description
-         list: after it a `:: ` term opens a NEW description list, and a `: `
-         description has no term above it and is read as a paragraph. As for
-         items, the run closes no description on its own: a continuation at
-         the description's body column after it stays in that description.
-           :: t             produces:    <dl><dt>t</dt><dd>x</dd></dl>
-           : x                           <dl><dt>u</dt><dd>v</dd></dl>
-           (three blank lines)
-           :: u
-           : v
+         N1a HARD BOUNDARY AFTER THREE BLANK LINES -- NORMATIVE [CARVE-P9-014].
+         Under P5, three or more blanks before a sibling marker start a new
+         list even when N1 axes match; one or two are loose separators.
+         Count blanks after S1 erases eligible comments and definitions and
+         skip block-level invisible lines (§10 I5). The boundary applies at
+         every nesting level and to description lists. It denies the next
+         marker membership but does not close a body: a line reaching that
+         body's column after any blank run remains inside it. A `: ` after
+         the split has no term and reads as paragraph text.
       N2 ORDERED DIALECT. A list's dialect (decimal / lower- or upper-alpha
          / lower- or upper-roman) and delimiter are fixed by its FIRST
          item; a later marker outside the dialect, or with the other

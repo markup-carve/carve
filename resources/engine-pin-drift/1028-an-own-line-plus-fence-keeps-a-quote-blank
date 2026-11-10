@@ -1,0 +1,1 @@
+PART 0 S1 / carve#5635: the pinned carve-js build ends an own-line attached quote fence at its first blank; the spec model keeps the blank and prefixed payload.

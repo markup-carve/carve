@@ -13,10 +13,11 @@ import { renderDoc } from '../scripts/spec/html.mjs'
 
 const html = (src) => renderDoc(parse(src)).trim()
 
-test('the blank after a column-0 fence a + attached is not payload', () => {
+test('the marker-line fence ends at its blank, while an own-line fence keeps it (#5635)', () => {
   const expected = '<ul>\n  <li>\n    <pre><code>x\n</code></pre>\n  </li>\n</ul>\n<p>see</p>'
   assert.equal(html('- +\n```\nx\n\nsee\n'), expected)
-  assert.equal(html('- a\n+\n```\nx\n\nsee\n'), expected.replace('<li>\n', '<li>a\n'))
+  assert.equal(html('- a\n+\n```\nx\n\nsee\n'),
+    expected.replace('<li>\n', '<li>a\n').replace('<code>x\n</code>', '<code>x\n\n</code>'))
 })
 
 test('a column-0 fence with a closer keeps the blank inside', () => {

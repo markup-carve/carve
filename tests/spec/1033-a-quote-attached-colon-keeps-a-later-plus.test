@@ -1,0 +1,17 @@
+A quote-attached colon keeps a later plus
+
+```
+> +
+::: note
+x
++
+zq
+.
+<blockquote>
+  <aside class="admonition note" aria-label="Note">
+    <p>x
++
+zq</p>
+  </aside>
+</blockquote>
+```

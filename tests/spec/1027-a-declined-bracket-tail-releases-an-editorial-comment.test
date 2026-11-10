@@ -1,0 +1,7 @@
+A declined bracket tail releases an editorial comment
+
+```
+[[][[]]{#1}][]#}
+.
+<p>[[][[]]<span class="critic-comment">1}][]</span></p>
+```

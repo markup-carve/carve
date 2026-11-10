@@ -36,7 +36,7 @@ const LABELS = {
   admonitionExample: 'Example',
   admonitionQuote: 'Quote',
 }
-import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, NUMBER_JOINER, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
+import { RAW_MARK, escapeAuthoredAttr, idSlot, imageStructural, linkStructural, rawFrame, withRawFrames, withSafeRawInline, renderInline, renderCellInline, renderInlineHardBreaks, renderInlineWithoutSymbols, renderInlineWithoutRaw, renderInlineWithoutComments, captionPlaceholder, NUMBER_JOINER, deTypography, makeSlugger, escapeAttr, escapeUrlAttr, escapeHtml, isClass, baseClass, classTokens, parseAttrBlock, parseAttrList, renderBlockAttrs, renderAttrs, refFrame, REF_FRAME, FOOTNOTE_FRAMES, flattenInnerLinks } from './render.mjs'
 
 const IMG_ONLY = /^<img [^>]*>$/
 
@@ -111,11 +111,13 @@ function renderTextBlockAttrs(lists, tag) {
   })
 }
 
-export function renderDoc(doc) {
+export function renderDoc(doc, { safe = false } = {}) {
+  const render = () => withRawFrames(() => renderFramedDoc(doc, safe))
+  const renderWithPolicy = () => safe ? withSafeRawInline(render) : render()
   const shield = shieldAuthoredFrames(doc)
-  if (!shield) return withRawFrames(() => renderFramedDoc(doc))
+  if (!shield) return renderWithPolicy()
   try {
-    return shield.restore(withRawFrames(() => renderFramedDoc(doc)))
+    return shield.restore(renderWithPolicy())
   } finally {
     mapDocStrings(doc, shield.restore)
   }
@@ -180,8 +182,8 @@ function mapDocStrings(doc, map) {
   visit(doc)
 }
 
-function renderFramedDoc(doc) {
-  return renderDocPass(doc, false)
+function renderFramedDoc(doc, safe) {
+  return renderDocPass(doc, false, safe)
 }
 
 // PART 9R frames in rendered inline text, an inline note's content included.
@@ -314,7 +316,7 @@ function reserveHeadingIds(blocks) {
   return { byHeading, used }
 }
 
-function renderDocPass(doc, footnoteProbe) {
+function renderDocPass(doc, footnoteProbe, safe) {
   // A placed title takes an adm id before its authored children, and a marker
   // with no resolved note renders as a div one level deeper. Check whether a
   // note actually resolves first; only documents with a top-level marker or a
@@ -334,10 +336,11 @@ function renderDocPass(doc, footnoteProbe) {
   })
   const needsProbe = !footnoteProbe && (hasNoteHeading || doc.blocks.some((b) =>
     b.t === 'footnotes-placement'))
-  const probe = needsProbe ? renderDocPass(doc, true) : null
+  const probe = needsProbe ? renderDocPass(doc, true, safe) : null
   const hasResolvedNotes = probe?.hasResolvedNotes ?? null
   const reserved = reserveHeadingIds(doc)
   const ctx = {
+    safe,
     headingIdByBlock: reserved.byHeading,
     mintAdmId() {
       const base = `adm-${++this.admCount}`
@@ -936,6 +939,7 @@ function renderBlock(b, depth, ctx) {
       // something the source did not. Padding EVERY line was indistinguishable
       // from this on the single-line raw blocks the corpus used to hold, which
       // is how three engines gave three answers (carve#800).
+      if (ctx.safe && b.format === 'html') return renderBlock({ ...b, t: 'code', lang: b.format }, depth, ctx)
       return rawFrame(b.format === 'html' ? pad + rawPassthrough(b.text) : null)
     case 'heading': {
       // a heading inside a container: no section wrapper (§13 wraps
@@ -1745,7 +1749,7 @@ function resolveRefsOnce(html, ctx) {
  */
 function refKey(text) {
   // R1's label key: U+0020 runs only, so a tab or a no-break space is content.
-  return labelKey(stripTags(text)).normalize('NFC')
+  return labelKey(text).normalize('NFC')
 }
 
 /* Register a heading in the implicit-reference index. FIRST wins. */
@@ -1757,7 +1761,9 @@ function noteHeadingId(ctx, id, html) {
 
 function noteHeadingRef(ctx, text, id) {
   if (ctx.inBlockquote) return
-  const key = refKey(text)
+  // A terminal hard break renders as <br> plus a serialization newline. That
+  // newline is not heading text and must not become part of the lookup key.
+  const key = refKey(text.replace(/\n+$/, ''))
   if (key && !ctx.headingRefs.has(key)) ctx.headingRefs.set(key, id)
 }
 
@@ -1789,12 +1795,18 @@ const ENTITIES = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&nbsp
  * then come back off, so `# A & B` is `A-B` and not `A-amp-B`.
  */
 function derivedText(source, render = renderInlineWithoutSymbols) {
-  const html = render(source)
-    .replace(REF_FRAME, (_frame, json) => {
+  let html = render(source)
+  // A reference's text can itself hold a reference frame. Unwrap each level
+  // before stripping tags or excluding the other atomic inline frames.
+  let previous
+  do {
+    previous = html
+    html = html.replace(REF_FRAME, (_frame, json) => {
       const ref = JSON.parse(json)
       return ref.img ? ref.alt : ref.text
     })
-    .replace(/\uE000[\s\S]*?\uE001/g, '')
+  } while (html !== previous)
+  html = html.replace(/\uE000[\s\S]*?\uE001/g, '')
     .replace(/<span\b[^>]*\bclass="[^"]*\bmath\b[^"]*"[^>]*>(?:\\\((.*?)\\\)|\\\[(.*?)\\\])<\/span>/gs, '$1$2')
     // An image's plain-text projection is its alternative text. Preserve it
     // before the generic tag strip removes the `<img>` leaf altogether.
@@ -1896,8 +1908,8 @@ function resolveFootnotes(html, ctx) {
         ids.push(id)
         referenceIds.set(n, ids)
         return anchorDepth > 0
-          ? `<sup id="${id}"${remaining}>${n}</sup>`
-          : `<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining.replace(/ (?:href|role)="[^"]*"/gi, '')}><sup>${n}</sup></a>`
+          ? rawFrame(`<sup id="${id}"${remaining}>${n}</sup>`)
+          : rawFrame(`<a id="${id}" href="#fn${n}" role="doc-noteref"${remaining.replace(/ (?:href|role)="[^"]*"/gi, '')}><sup>${n}</sup></a>`)
       }
       if (json !== undefined) {
         let parsed
@@ -1913,7 +1925,7 @@ function resolveFootnotes(html, ctx) {
         return carrier(`fnref${n}`, n, parsed.attrs)
       }
       const label = payload
-      const literal = () => escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`)
+      const literal = () => rawFrame(escapeHtml(`[^${label}]${decodeURIComponent(attrSource)}`))
       if (/[\r\n]/.test(label)) return literal()
       const key = labelKey(label)
       if (!ctx.footnoteDefs.has(key)) return literal() // unresolved -> literal
@@ -1981,11 +1993,11 @@ function resolveFootnotes(html, ctx) {
     // the note number is nowhere in this link's text.
     const label_ = LABELS.footnoteBacklink
     const backlink = total === 1
-      ? `<a href="#${referenceIds.get(n)?.[0] ?? `fnref${n}`}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`
+      ? rawFrame(`<a href="#${referenceIds.get(n)?.[0] ?? `fnref${n}`}" role="doc-backlink" aria-label="${escapeAttr(label_)}">↩</a>`)
       : Array.from({ length: total }, (_, kk) => {
           const refId = referenceIds.get(n)?.[kk] ?? (kk === 0 ? `fnref${n}` : `fnref${n}-${kk + 1}`)
           const name = escapeAttr(`${label_} ${kk + 1}`)
-          return `<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`
+          return rawFrame(`<a href="#${refId}" role="doc-backlink" aria-label="${name}">↩<sup>${kk + 1}</sup></a>`)
         }).join(' ')
     if (rendered.endsWith('</p>')) {
       rendered = rendered.slice(0, -4) + backlink + '</p>'
@@ -2095,21 +2107,40 @@ function resolveCrossrefs(html, ctx) {
 // --- PART 9R R3: abbreviations ----------------------------------------------
 const RAW_OR_TAG = new RegExp(`(${RAW_MARK}[\\s\\S]*?${RAW_MARK}|<[^>]*>)`)
 const ENTITY_OR_WORD = /&#?[0-9A-Za-z]+;|[\p{L}\p{N}]+/gu
+const INLINE_EDGE = /^<\/?(?:a|abbr|b|del|em|i|ins|mark|s|small|span|strong|sub|sup|u)(?:\s[^>]*)?>$/
 function applyAbbreviations(html, ctx) {
   // transform only text segments outside tags, raw output and code/pre and math
   // spans, whose content is a code span's verbatim text (PART 9 §18)
-  const parts = html.split(RAW_OR_TAG)
+  const sourceParts = html.split(RAW_OR_TAG)
+  const parts = [...sourceParts]
+  // Tags belonging to eligible inline nodes have no character of their own.
+  // A block, raw frame or verbatim node ends the run being tested by R3.
+  const adjacent = (index, direction) => {
+    for (let at = index + direction; at >= 0 && at < sourceParts.length; at += direction) {
+      const part = sourceParts[at]
+      if (part === '') continue
+      if (INLINE_EDGE.test(part)) continue
+      if (part.startsWith('<') || part.startsWith(RAW_MARK)) return null
+      const char = direction < 0 ? Array.from(part).at(-1) : Array.from(part)[0]
+      return char === '\uE000' || char === '\uE001' ? null : char
+    }
+    return null
+  }
   let inCode = 0
   let inAbbr = 0
   let inMath = false
   // One pass over the words of the text: an expansion is never scanned again,
   // and the name of an entity is not a word of the text.
-  const expand = (text) => text.replace(ENTITY_OR_WORD, (hit) => {
+  const expand = (text, left, right) => text.replace(ENTITY_OR_WORD, (hit, at) => {
     const expansion = ctx.abbrDefs.get(hit)
-    return expansion === undefined ? hit : `<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`
+    if (expansion === undefined) return hit
+    const before = at === 0 ? left : Array.from(text.slice(0, at)).at(-1)
+    const after = at + hit.length === text.length ? right : Array.from(text.slice(at + hit.length))[0]
+    if (before && /[\p{L}\p{N}]/u.test(before) || after && /[\p{L}\p{N}]/u.test(after)) return hit
+    return `<abbr title="${escapeAttr(expansion)}">${hit}</abbr>`
   })
   for (let i = 0; i < parts.length; i++) {
-    const p = parts[i]
+    const p = sourceParts[i]
     if (p.startsWith(RAW_MARK)) continue
     if (p.startsWith('<')) {
       if (/^<(code|pre)[\s>]/.test(p)) inCode++
@@ -2119,7 +2150,7 @@ function applyAbbreviations(html, ctx) {
       // a math span holds escaped text only, so its first </span> closes it;
       // its delimiter tells it from an authored span with the same classes
       const math = /^<span\s(?:[^>]*\s)?class="math (inline|display)[\s"]/.exec(p)
-      if (math && parts[i + 1]?.startsWith(math[1] === 'inline' ? '\\(' : '\\[')) inMath = true
+      if (math && sourceParts[i + 1]?.startsWith(math[1] === 'inline' ? '\\(' : '\\[')) inMath = true
       else if (inMath && p === '</span>') inMath = false
       continue
     }
@@ -2127,13 +2158,13 @@ function applyAbbreviations(html, ctx) {
     let result = ''
     let at = 0
     for (const frame of p.matchAll(REF_FRAME)) {
-      result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at, frame.index) : expand(p.slice(at, frame.index))
+      result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at, frame.index) : expand(p.slice(at, frame.index), at === 0 ? adjacent(i, -1) : null, null)
       let parsed
       try { parsed = JSON.parse(frame[1]) } catch { parsed = null }
       result += parsed?.opaque ? parsed.literal : frame[0]
       at = frame.index + frame[0].length
     }
-    result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at))
+    result += inCode > 0 || inAbbr > 0 || inMath ? p.slice(at) : expand(p.slice(at), at === 0 ? adjacent(i, -1) : null, adjacent(i, 1))
     parts[i] = result
   }
   return parts.join('').replaceAll(RAW_MARK, '')
