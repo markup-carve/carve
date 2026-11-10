@@ -5491,7 +5491,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
     // The continuation lines are read where they were written, so the opener is too (CARVE-P2-035).
     const authored = trimLineEnd(stripQuotes(lines[at], depth)?.rest ?? '')
-    const openerCol = authored.length >= rest.length ? docColumn(authored, rest) : col
+    // A brace run that opens a note on its marker line begins at the note's
+    // body column, even when spaces after the label put `{` farther right.
+    const openerCol = owner.kind === 'note' && owner.line === at ? owner.col
+      : authored.length >= rest.length ? docColumn(authored, rest) : col
     const kept = refusedRunKeptThrough(new Proxy([], {
       get(_, key) {
         if (key === 'length') return lines.length - at
