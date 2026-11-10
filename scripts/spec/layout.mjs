@@ -3953,9 +3953,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     let m = walkIndent(src)
     // A refused brace run protects its immediately following line as
     // paragraph text, including a marker-column `+` (carve#5658 R03).
-    if (at > refusedKept.start && at <= refusedKept.through && CONT_MARKER.test(m.rest)) {
-      src = src.replace('+', plusLetter)
-      m = walkIndent(src)
+    // The run's quote prefixes come first, so the `+` is read past them (carve#5770).
+    if (at > refusedKept.start && at <= refusedKept.through) {
+      let rest = m.rest
+      for (let d = 0; d < MAX_NESTING_DEPTH && QUOTE.test(rest); d++) rest = walkIndent(QUOTE.exec(rest)[1] ?? '').rest
+      if (CONT_MARKER.test(rest)) {
+        src = src.replace('+', plusLetter)
+        m = walkIndent(src)
+      }
     }
     // The line as the current quote segment starts, for an opener's C5 column.
     let segmentSrc = src
