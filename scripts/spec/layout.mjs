@@ -180,7 +180,7 @@ const MAX_NESTING_DEPTH = 200
 /// so the answer comes from an index built once per depth and this counts the
 /// lines that index reads. `closerScan` counts the lines `findCloser` reads.
 /// `paragraphProbe` counts the lines the whole-body scans of `bodyLeavesParagraphOpen` read.
-export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0, paragraphProbe: 0, commentScan: 0 }
+export const layoutWork = { scan: 0, pad: 0, views: 0, quoteStrips: 0, lineVisits: 0, fenceCloserLookahead: 0, forwardSearch: 0, commentTail: 0, ownership: 0, captionHost: 0, closerScan: 0, attrScan: 0, paragraphProbe: 0, commentScan: 0, descendantQ1Copy: 0 }
 
 export function resetLayoutWork() {
   layoutWork.scan = 0
@@ -197,6 +197,7 @@ export function resetLayoutWork() {
   layoutWork.attrScan = 0
   layoutWork.paragraphProbe = 0
   layoutWork.commentScan = 0
+  layoutWork.descendantQ1Copy = 0
 }
 
 /**
@@ -10524,8 +10525,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // A surviving child list is the last block here. Its leaf paragraph,
       // not an older paragraph of this item, decides a below-column fold.
       if (ind(i)?.col < contentCol && subCol >= 0 && childList && descendantQ1.col >= 0) {
-        const child = descendantQ1At(descendantQ1.col)
-        if (child?.open === false) return false
+        if (descendantQ1OpenAt(descendantQ1.col) === false) return false
       }
       if (!paragraphIsOpen()) return false
       if (bodyQuote.at === i - 1 && bodyQuote.open &&
@@ -10543,8 +10543,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
             bodyLeavesNoParagraphAt(itemLines, itemLines.length - 1)) return false
         return true
       }
-      const d = descendantQ1At(descendantQ1.col)
-      return d?.open === true
+      return descendantQ1OpenAt(descendantQ1.col) === true
     }
     // The quote run the deepest descendant holds, read like the item's own.
     const descendantQuote = { at: -2, open: false, table: false, hosts: [] }
@@ -10684,9 +10683,13 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     // Readable at the column the descendant owns, and nowhere else: asking
     // outside that column is the conflation this state exists to end.
-    const descendantQ1At = (col) => descendantQ1.col >= 0 && col >= descendantQ1.col
-      ? { open: descendantQ1.open, para: [...descendantQ1.para], absorbedFence: descendantQ1.absorbedFence }
-      : null
+    const descendantQ1At = (col) => {
+      if (descendantQ1.col < 0 || col < descendantQ1.col) return null
+      layoutWork.descendantQ1Copy += descendantQ1.para.length
+      return { open: descendantQ1.open, para: [...descendantQ1.para], absorbedFence: descendantQ1.absorbedFence }
+    }
+    // A per-line question reads the flag alone; copying `para` each line is quadratic (carve#5859).
+    const descendantQ1OpenAt = (col) => descendantQ1.col >= 0 && col >= descendantQ1.col ? descendantQ1.open : undefined
     // SEED. `- - :::d` puts `:::d` in the descendant before this collector reads
     // a single body line; `para`'s first line here is the raw `- - :::d`, whose
     // `- - ` is MARKERS rather than indentation, so no dedent recovers it. That
