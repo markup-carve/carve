@@ -1,0 +1,13 @@
+An outer quote prefix width does not move a comment continuation
+
+```
+> - {% a
+  >  b %}
+.
+<blockquote>
+  <ul>
+    <li>{% a
+b %}</li>
+  </ul>
+</blockquote>
+```
