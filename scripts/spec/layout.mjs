@@ -4114,6 +4114,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
       return stripped
     }
+    const frameShiftedTab = () => src.slice(0, src.length - m.rest.length).includes('\t') &&
+      segmentColumn() !== m.col
     const attachedHostIndex = afterPlus || followsMarkerLine ? frames.indexOf(attachedTo?.host) : -1
     const lastHostQuote = attachedHostIndex < 0 ? -1 : frames.findLastIndex((frame, index) => index < attachedHostIndex && frame.kind === 'quote')
     let attachedColumnPlaced = false
@@ -4304,8 +4306,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      lead(shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
-        Math.max(m.col - inner.cut, inner.canon))
+      const payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
+        Math.max(m.col - inner.cut, inner.canon)
+      // A tab past an off-stop owner column reaches the same payload column
+      // as its space spelling after each frame strips its own indentation.
+      const frameTab = frameShiftedTab()
+      lead(payloadColumn, frameTab, frameTab)
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
         if (c && c[1][0] === inner.span[0] &&
@@ -4564,7 +4570,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       owner.para = false
       lead(m.col)
     } else if (form.kind === 'colon-close') {
-      lead(frames[form.frame].canon)
+      const frameTab = frameShiftedTab()
+      lead(frames[form.frame].canon, frameTab, frameTab)
       if (trace) applied = ownerPath(form.frame)
       frames.length = form.frame
       top().para = false
@@ -4598,9 +4605,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const laterRun = blankInAttachedCode && form.family === 'code' && m.col >= blankInAttachedCode.col
       const run = laterRun ? FENCE.exec(m.rest)?.[1] : null
       const keepColumn = run && !laterSourceCloser(at, run, m.col, quotePrefix(lines[at]).depth)
-      // Sigil payload openers also need the frame column: a note reader must
-      // not remeasure their leading tab from the source-line origin (§24 C5).
-      const frameOpener = form.kind === 'quote' || form.kind === 'leaf' || form.perFrame
+      // A block opener is written at the column its owner measured, so a
+      // nested reader cannot remeasure a leading tab from the line start (C5).
+      const frameShiftedOpener = (form.kind === 'colon' || form.kind === 'fence' || form.kind === 'item') &&
+        frameShiftedTab()
+      const frameOpener = form.kind === 'quote' || form.kind === 'leaf' || form.perFrame || frameShiftedOpener
       lead(keepColumn ? m.col : owner.canon, form.kind === 'term' || form.kind === 'dd' || frameOpener, frameOpener)
       if (laterRun) blankInAttachedCode = null
       apply(owner, m.col, form)
