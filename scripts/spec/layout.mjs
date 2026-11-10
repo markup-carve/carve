@@ -9640,7 +9640,7 @@ function ownLineFenceEnd(lines, start, end, stop, reaches, measure) {
     const closer = PURE_FENCE.exec(measure(k).rest)
     return closer && closer[1][0] === run[0] && closer[1].length >= run.length
   }
-  for (let k = start + opener + 1; k < end; k++) if (closes(k)) return end
+  for (let k = start + opener + 1; k < end; k++) if (measure(k).col === head.col && closes(k)) return end
   for (let k = end; k < stop; k++) {
     if (isBlank(lines[k])) { end = k + 1; continue }
     if (!reaches(k)) {
