@@ -1,7 +1,7 @@
 /*
- * The CARVE-P2-035 kept line belongs to a run that stands in its container. A
- * run short of the container keeps nothing, and a follower short of it is read
- * as usual (PART 0 S4, carve#5200).
+ * A follower short of the refused run's container is read as usual (PART 0 S4,
+ * carve#5200). A run folded lazily into its container keeps its follower, as an
+ * attribute run or a comment run (carve#5792, ruling option 1).
  */
 
 import { test } from 'node:test'
@@ -94,7 +94,7 @@ test('a follower short of an item in a quote ends the keeping', () => {
   ].join('\n'))
 })
 
-test('a run folded lazily into a nested item keeps nothing', () => {
+test('a run folded lazily into a nested item keeps its follower', () => {
   assert.equal(render(['- p', '  - a', '   {x', '   y}', '    # c', 'more']), [
     '<ul>',
     '  <li>p',
@@ -102,12 +102,11 @@ test('a run folded lazily into a nested item keeps nothing', () => {
     '      <li>a',
     '{x',
     'y}',
-    '        <h1 id="c">c</h1>',
-    '      </li>',
+    '# c',
+    'more</li>',
     '    </ul>',
     '  </li>',
     '</ul>',
-    '<p>more</p>',
   ].join('\n'))
 })
 
@@ -125,47 +124,41 @@ test('a run folded lazily into an item in a quote keeps nothing', () => {
   ].join('\n'))
 })
 
-test('a run folded lazily into a quote in an item keeps nothing', () => {
+test('a run folded lazily into a quote in an item keeps its follower', () => {
   assert.equal(render(['- > a', '  {x', '  y}', '  > # c', 'more']), [
     '<ul>',
     '  <li>',
-    '    <blockquote>',
-    '      <p>a',
+    '    <blockquote><p>a',
     '{x',
-    'y}</p>',
-    '      <h1 id="c">c</h1>',
-    '    </blockquote>',
+    'y}',
+    '# c',
+    'more</p></blockquote>',
     '  </li>',
     '</ul>',
-    '<p>more</p>',
   ].join('\n'))
 })
 
-test('a run folded lazily into a nested quote keeps nothing', () => {
+test('a run folded lazily into a nested quote keeps its follower', () => {
   assert.equal(render(['> > a', '> {x', '> y}', '> > # c', 'more']), [
     '<blockquote>',
-    '  <blockquote>',
-    '    <p>a',
+    '  <blockquote><p>a',
     '{x',
-    'y}</p>',
-    '    <h1 id="c">c</h1>',
-    '  </blockquote>',
+    'y}',
+    '# c',
+    'more</p></blockquote>',
     '</blockquote>',
-    '<p>more</p>',
   ].join('\n'))
 })
 
-test('a run folded lazily into a description keeps nothing', () => {
+test('a run folded lazily into a description keeps its follower', () => {
   assert.equal(render([':: t', ': a', '{x', 'y}', '  # c', 'more']), [
     '<dl>',
     '  <dt>t</dt>',
-    '  <dd>',
-    '    <p>a',
+    '  <dd>a',
     '{x',
-    'y}</p>',
-    '    <h1 id="c">c</h1>',
-    '  </dd>',
+    'y}',
+    '# c',
+    'more</dd>',
     '</dl>',
-    '<p>more</p>',
   ].join('\n'))
 })

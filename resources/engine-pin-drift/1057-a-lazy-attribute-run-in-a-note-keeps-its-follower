@@ -1,0 +1,1 @@
+carve#5792: the pinned JavaScript reader ends the note at the lazy line after a lazy refused attribute run's follower; the spec model keeps it as paragraph text.
