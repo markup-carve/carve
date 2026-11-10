@@ -1972,11 +1972,12 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
   return span
 }
 
-function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody = false) {
+function refusedRunKeptThrough(lines, start, cache, containerCol = 0, markerBody = false, details = null) {
   let runEnd = refusedBlockBraceRun(lines, start, cache)
   if (runEnd === null) return null
   // PART 0 S1 erases a comment or link definition line first, so the follower is the line after it.
   while (lines[runEnd] !== undefined && invisibleSiblingLine(indentCols(lines[runEnd]).rest)) runEnd++
+  if (details) details.follower = runEnd
   const follower = lines[runEnd]
   if (follower === undefined || isBlank(follower)) return runEnd - 1
   const measured = indentCols(follower)
@@ -2024,7 +2025,7 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column. `containerCol` is where the
 // container `text` stands in begins, in the same coordinates.
-function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false) {
+function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
@@ -2048,7 +2049,7 @@ function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false)
     get: (_, key) => key === '0' ? tail : key === 'length' ? below.length
       : below[key] === undefined ? undefined : stripQuotes(below[key], depth)?.rest ?? '',
   })
-  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol, markerBody)
+  return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol, markerBody, details)
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -10792,9 +10793,26 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (QUOTE.test(head.text) && (!paragraphIsOpen() || QUOTE.test(stripIndent(lines[headIndex + 1] ?? '')))) {
       advanceBodyQuote(head.text, headIndex)
     }
+    let shortRefusedFollower = -1
+    let shortRefusedThrough = -1
+    const protectShortRefusal = (start, kept, follower, column) => {
+      if (!lines.slice(start + 1, start + follower).some(line => indentCols(line).col < column)) return
+      // Prose already folds with its normal indentation. A block-shaped
+      // follower needs the lazy frame through its protected fence closer.
+      const rest = indentCols(lines[start + follower] ?? '').rest
+      if (readsAsProse(rest) && !startsParagraphBlock(rest) && !matchMarkerAt(indentCols(rest))) return
+      shortRefusedFollower = start + follower
+      shortRefusedThrough = start + kept
+    }
     if (/^[{>]|^[^ \t]/.test(head.text)) {
-      const kept = refusedRunKeptInside(head.text, dedentedWindow(lines, headIndex, contentCol), 0, true)
-      if (kept !== null) refusedParaThrough = headIndex + kept
+      const details = {}
+      const kept = refusedRunKeptInside(head.text, dedentedWindow(lines, headIndex, contentCol), 0, true, details)
+      if (kept !== null) {
+        refusedParaThrough = headIndex + kept
+        // A continuation short of the marker body's authored column is lazy
+        // in the item. Its protected follower must be lazy in the child parse.
+        protectShortRefusal(headIndex, kept, details.follower, contentCol)
+      }
     }
     {
       // A fence can open on the MARKER LINE (`- ``` `), where its opener is the
@@ -11980,9 +11998,13 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const lazyInDescendant = (childParagraphOpen && childCol >= 0 && reach < childCol) ||
           (!QUOTE.test(dedented) && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest)))
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
+          const details = {}
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true)
-          if (kept !== null) refusedParaThrough = i + kept
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details)
+          if (kept !== null) {
+            refusedParaThrough = i + kept
+            protectShortRefusal(i, kept, details.follower, lm.col)
+          }
         }
         const keptByRefusal = i <= refusedParaThrough
         if (pendingSeparation && i > commentParaThrough && dmeas.rest.startsWith('{%')) {
@@ -12065,7 +12087,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         const codeColonText = fence.colon.length && fence.opaque?.kind === 'code' &&
           col > colonBases.at(-1) &&
           col === authoredBlockBase && COLON_CLOSER.test(lm.rest)
-        pushLine(codeColonText ? lazyFrame(dedented) : dedented, dmeas)
+        pushLine(codeColonText ? lazyFrame(dedented)
+          : i >= shortRefusedFollower && i <= shortRefusedThrough
+            ? lazyFrame(dmeas.rest) : dedented, dmeas)
         if (noteFenceOpensPast) fenceOpensAt.add(itemLines.length - 1)
         // Advance the incremental three-kind tracker so the blank-line branch
         // above knows whether an interior blank is fence content.
