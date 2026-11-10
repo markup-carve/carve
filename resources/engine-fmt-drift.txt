@@ -20,3 +20,5 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+1056-a-description-sibling-bounds-an-unclosed-comment-run  JS fmt narrows the refused comment continuation below its authored column (carve#5818)
+1056-a-description-sibling-bounds-an-unclosed-comment-run-2  JS fmt narrows the refused comment continuation below its authored column (carve#5818)

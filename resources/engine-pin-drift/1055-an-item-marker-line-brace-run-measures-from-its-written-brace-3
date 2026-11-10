@@ -1,1 +1,0 @@
-carve#5766: the pinned JavaScript reader measures a brace run on a task item marker line past a zero-width task box and accepts the run; the spec model keeps the box's width and prints the run as text (carve#5805, maintainer ruling, 2026-11-10).

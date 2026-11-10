@@ -1,1 +1,0 @@
-carve#5818: the pinned JavaScript reader drops the refused brace continuation in an unclosed description comment run; CARVE-P2-035 keeps it as literal text before the sibling description.
