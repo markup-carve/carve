@@ -1,0 +1,9 @@
+A quote marker continues a comment
+
+```
+{% a
+ > q
+ z %} y
+.
+<p> y</p>
+```

@@ -1,0 +1,13 @@
+A fence-shaped line continues an item comment
+
+````
+- {% a
+   ```
+   z %}
+plain
+.
+<ul>
+  <li>
+plain</li>
+</ul>
+````

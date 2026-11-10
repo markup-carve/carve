@@ -1812,7 +1812,10 @@ function refusedBlockBraceRun(lines, start, cache) {
     run.push(i === start ? opener.rest : ' '.repeat(Math.max(1, measured.col - opener.col, blockColumn - opener.col + 1)) + measured.rest)
     if (comment) {
       if (line.includes('%}')) {
-        if (!shallow) cache.commentScannedThrough = i + 1
+        if (!shallow) {
+          cache.commentScannedThrough = i + 1
+          cache.commentClosesAt = i
+        }
         return shallow ? i + 1 : null
       }
       continue
@@ -5750,9 +5753,12 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   }
   // The ownership walk can move a lazy line to a container's column. Keep its
   // authored column for CARVE-P2-035, after any quote prefix is read.
-  const sourceBraceColumn = (line) => {
+  // Only the quotes the walk gave the line are prefixes; a `>` past them is the run's text.
+  const sourceBraceColumn = (line, at) => {
+    const owner = ownershipEvents.get(at)?.owner
+    const quotes = owner === undefined ? MAX_NESTING_DEPTH : Math.min(MAX_NESTING_DEPTH, owner.split('/quote:').length - 1)
     let rest = line
-    for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    for (let depth = 0; depth < quotes; depth++) {
       const quote = QUOTE.exec(walkIndent(rest).rest)
       if (!quote) break
       rest = quote[1] ?? ''
@@ -7883,6 +7889,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qRefusedThrough = { at: -1, depth: 0 } // the last line a refused brace run's paragraph keeps (CARVE-P2-035)
+      let qCommentThrough = -1 // the closing line of a valid comment run, whose continuations open nothing (CARVE-P2-035)
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
@@ -8281,6 +8288,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const lazyInItem = qOpenPara && !QUOTE.test(walkIndent(l).rest) &&
           ((qHost.columns.length > 1 && indentCols(l).col < qHost.columns.at(-1) && !matchMarkerAt(indentCols(l))) ||
             QUOTE.test(walkIndent(stripQuotes(lines[idx - 1] ?? '', 1)?.rest ?? '').rest))
+        if (idx <= qCommentThrough) {
+          qOpenPara = true
+          return
+        }
         if (idx > qRefusedThrough.at && !lazyInItem && l.includes('{')) {
           // A nested quote's run is read at its own depth.
           let depth = 0
@@ -8307,6 +8318,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             })
             const kept = refusedRunKeptThrough(quoted, 0, { commentScannedThrough: -1 }, containerCol)
             if (kept !== null) qRefusedThrough = { at: idx + kept, depth }
+            const run = { commentScannedThrough: -1 }
+            if (kept === null && indentCols(tail).rest.startsWith('{%') &&
+                refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt
           }
         }
         if (idx <= qRefusedThrough.at && qRefusedThrough.depth === 0) {
@@ -8788,6 +8802,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       }) : lines
       const refusedBraceEnd = (lazyComment || blockBrace) && !inlineSpanOpen()
         ? refusedBlockBraceRun(runLines, i, refusedCache) : null
+      // A valid comment run's continuations are its text, whatever block they spell (CARVE-P2-035).
+      if (refusedBraceEnd === null && refusedCache.commentClosesAt > i && indentCols(braceLine).rest.startsWith('{%')) {
+        const through = refusedCache.commentClosesAt
+        while (i <= through) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
+        inlineSpan.scanned = para.length
+        forcedAfterRefusal = false
+        continue
+      }
       if (refusedBraceEnd !== null) {
         const start = para.length
         while (i < refusedBraceEnd) para.push(stripLazy(stripIndent(lines[i++])).replace(/[ \t]+$/, ''))
@@ -11180,6 +11202,29 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // continuation line therefore leaves no paragraph available for a later
     // below-column lazy continuation.
     let wrappedAttrEnd = -1
+    // The last line of a valid comment run that starts a line of this body or of a descendant's marker line.
+    // Its continuations open nothing here, so the body's parse reads them as the run's text (CARVE-P2-035).
+    let heldCommentEnd = -1
+    const holdCommentRun = (row, at, sourceCol) => {
+      if (!at.rest.includes('{%')) return
+      const offset = sourceCol - at.col
+      for (let marker = matchMarkerAt(at); marker; marker = matchMarkerAt(at)) {
+        const next = indentCols(marker.text)
+        at = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
+      }
+      if (!at.rest.startsWith('{%') || at.rest.includes('%}')) return
+      for (let j = row + 1; j < n && !isBlank(lines[j]); j++) {
+        if ((authoredCommentColumns.get(lines)?.[j] ?? ind(j).col) <= at.col + offset) return
+        if (lines[j].includes('%}')) {
+          heldCommentEnd = j
+          return
+        }
+      }
+    }
+    {
+      const at = indentCols(head.text)
+      holdCommentRun(headIndex, { col: contentCol + at.col, rest: at.rest }, itemCommentColumns[0] + at.col)
+    }
     // Content columns of the item's nested markers, where a wrapped attribute may open.
     const descendantColumns = new Set()
     let fenceBlankRun = 0
@@ -11240,6 +11285,15 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       }
       // `+` at the item's marker column attaches one block there (§17 L3).
       const lm = ind(i)
+      if (i <= heldCommentEnd) {
+        const body = dedentMeasured(lm, line, contentCol)
+        pushLine(body.text, body.meas)
+        i++
+        continue
+      }
+      if (lm.col >= contentCol && fence.opaque === null && !nestedVerbatim()) {
+        holdCommentRun(i, lm, authoredCommentColumns.get(lines)?.[i] ?? lm.col)
+      }
       if (lm.rest !== '' && lm.col >= contentCol && !insideFence() &&
           (FOOTNOTE_DEF.test(lm.rest) || DESCRIPTION_LEAD.test(lm.rest) && opensDescriptionAt(lines, lm.col, i))) {
         const attachedMarker = FOOTNOTE_DEF.exec(lm.rest)?.[2] ?? lm.rest.replace(DESCRIPTION_LEAD, '')
