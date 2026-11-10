@@ -1,0 +1,1 @@
+carve#5748: the pinned JavaScript reader measures a comment run on a note marker line from the written brace column and prints the run as text; the spec model measures it from the note body column (maintainer ruling, 2026-11-10).

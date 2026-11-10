@@ -661,6 +661,10 @@ blank_line = {whitespace}, newline ;
    indented or not, whatever stands between it and the opener, a quote or
    heading included (carve#5600). The column
    comparison uses the lines' source columns after quote prefixes are read.
+   On a container's marker line, a run that opens the body measures its `{`
+   at the container's body column, not after a note's label; a task box
+   before it keeps its width (carve#5748, maintainer ruling, 2026-11-10;
+   carve#5766).
    A `{%` opened on a lazy paragraph continuation keeps its written source
    column, even when it is short of its owner's content column. A continuation
    without a quote prefix after a quoted block-position run also supplies its
