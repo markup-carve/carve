@@ -1,0 +1,55 @@
+A colon line without a term continues no entry
+
+```
+- a
+  : 
+
+  : %%%
+%%%
+c
+.
+<ul>
+  <li><p>a
+:</p>
+    <p>:</p>
+  </li>
+</ul>
+```
+
+```
+- a
+  : x
+
+  : %%%
+%%%
+c
+.
+<ul>
+  <li><p>a
+: x</p>
+    <p>:</p>
+  </li>
+</ul>
+```
+
+```
+- a
+  :: t
+    deep
+  : d
+
+  : %%%
+%%%
+c
+.
+<ul>
+  <li><p>a</p>
+    <dl>
+      <dt>t</dt>
+    </dl>
+    <p>deep
+: d</p>
+    <p>:</p>
+  </li>
+</ul>
+```

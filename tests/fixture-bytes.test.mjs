@@ -76,6 +76,7 @@ const INVENTORY = [
   // The space after the colon is the contentless-marker spelling this row tests.
   { base: '723-a-contentless-description-marker-folds-under-a-quoted-term', crv: ['trailing-WS'], html: [] },
   { base: '973-open-state-lifetime-boundaries-28', crv: ['trailing-WS'], html: [] },
+  { base: '1064-a-colon-line-without-a-term-continues-no-entry', crv: ['trailing-WS'], html: [] }, // the `  : ` line's space is the case (carve#5841)
   { base: '739-opaque-reference-and-inline-bounds-4', crv: ['trailing-WS', 'trailing-TAB'], html: [] },
   { base: '739-opaque-reference-and-inline-bounds-7', crv: ['PS'], html: ['PS'] },
   { base: '739-opaque-reference-and-inline-bounds-8', crv: ['LS'], html: ['LS'] },
