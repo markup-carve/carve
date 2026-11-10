@@ -4214,7 +4214,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       src = ' '.repeat(Math.max(0, column)) + m.rest
       m = walkIndent(src)
       reached = frames.length - 1
-    } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at)) {
+    } else if (!plus && reached < frames.length - 1 && top().kind !== 'fence' && transparentLine(m.rest, at, frames[reached].kind)) {
       // A line that misses an open fence's owner ends that fence first (S1), so it is read where it stands.
       const deeper = nextVisibleReach(at, reached)
       if (deeper > reached) {
@@ -5187,29 +5187,34 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return lines.length
   }
 
-  function transparentLine(rest, k) {
+  function transparentLine(rest, k, ownerKind = 'item') {
     const text = trimLineEnd(rest)
     if (REGION_MARKER.test(text) || FOOTNOTE_DEF.test(text)) return false
-    return invisibleCommentEnd(text, k) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
+    return invisibleCommentEnd(text, k, undefined, ownerKind) !== -1 || COMMENT_LINE.test(text) || isDefinitionLine(text)
   }
 
   // A paragraph made solely of braced comments has the same ownership effect
   // as a %% line. Its continuation lines travel with the opener, but their
   // authored columns remain available to CARVE-P2-035 in the block reader.
-  function invisibleCommentEnd(text, at, quoteDepth = quotePrefix(lines[at]).depth) {
+  function invisibleCommentEnd(text, at, quoteDepth = quotePrefix(lines[at]).depth, ownerKind = 'item') {
     const fence = commentSpanEnd(text, at)
     if (fence !== -1) return fence
     if (!text.startsWith('{%')) return -1
     // Stop at the comment's closer. A following lazy line belongs to the
     // paragraph that was open before the invisible run, not to the run itself.
+    // With no paragraph open the run starts one in the owner its column
+    // reaches, and its continuation lines decide whether that paragraph shows
+    // anything (CARVE-P9-042, carve#5837).
     let last = at
     while (last < lines.length && !lines[last].includes('%}')) last++
     if (last >= lines.length) return -1
+    const opens = !(at > 0 && top().para && !isBlank(lines[at - 1].replace(/^[ \t>]*/, '')))
+    if (opens) last = lines.length - 1
     const view = new Proxy([], {
       get: (_, key) => key === 'length' ? last + 1 : /^\d+$/.test(String(key))
         ? stripQuotes(lines[Number(key)], quoteDepth)?.rest ?? '' : undefined,
     })
-    const end = commentOnlyParaEnd(view, at, true, view)
+    const end = commentOnlyParaEnd(view, at, !opens || ownerKind === 'item', view)
     return end === -1 ? -1 : end - 1
   }
 

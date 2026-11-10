@@ -1,0 +1,42 @@
+A braced comment paragraph with text misses the item
+
+```
+- a
+
+{%%}
+  z
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>
+z</p>
+```
+
+```
+> - a
+>
+> {% c %}
+>   z
+.
+<blockquote>
+  <ul>
+    <li>a</li>
+  </ul>
+  <p>
+z</p>
+</blockquote>
+```
+
+```
+- a
+
+{%%}
+  - b
+.
+<ul>
+  <li>a</li>
+</ul>
+<p>
+- b</p>
+```
