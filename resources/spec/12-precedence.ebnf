@@ -31,13 +31,10 @@
    Link text and an inline note body are runs of their own: a `%%` in either
    runs to the matching `]`. An image's alt text holds its `%%` verbatim.
 
-   Inline parsing (second pass) is PART 9 §9: pass P1 takes atoms in
-   the order of its atom table (escapes, code spans, math, inline
-   literals, autolinks and cross-references, comments, inline notes, note
-   references, extensions, bracket runs and their tails), and pass P2 pairs bare,
-   braced, combined and editorial spans in one left-to-right reading.
-   Prefer literal text over markup: a delimiter that pairs with nothing
-   under §9 is literal. What remains is read afterwards, in this order:
+   Inline parsing (second pass) follows PART 9 §9: P1 takes opaque atoms
+   in that section's table order, then P2 pairs spans in one left-to-right
+   reading. An unpaired delimiter is literal. Read the remaining text in
+   this order:
    1. Mentions and tags (@user, #tag)
    2. Symbols (`:name:`, PART 9 §7)
    3. Smart typography (--, ---, etc.; `=>` is ordinary text, never a

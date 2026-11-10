@@ -94,26 +94,13 @@ attribute = language_attribute | id_attribute | class_attribute
    attribute reading `fr`, and it does not fail the block. This follows from
    `':', [ language_tag ]` with no special case.
 
-   LANGUAGE SHORTHAND USES THE `lang` KEY -- NORMATIVE [CARVE-P4-004]: `:TAG` and `lang=TAG`
-   ARE THE SAME KEY, so writing
-   both is a repeated key and nothing more. RENDER ORDER above already decides
-   it: the LAST value wins and the slot stays at the FIRST appearance. That
-   holds inside one block and across merged block-attribute lines, because the
-   shorthand desugars before either merge sees it. So `{:fr lang=de}` and
-   `{lang=de :fr}` are `lang="de"` and `lang="fr"`; `{k=1 :fr lang=de}` is
-   `k="1" lang="de"`, with `lang` in the slot `:fr` opened. This clause adds no
-   additional merge rule; it makes the shorthand's expansion explicit.
-
-   CANONICAL FORM: the writer COLLAPSES a repeated `lang` to the one attribute
-   that survives the merge, and spells it `:TAG` -- `{:fr lang=de}` formats to
-   `{:de}`. An empty value is `{:}`, which is therefore the canonical spelling
-   of `{lang=""}` too. Both follow from PART 11's rule that the writer emits
-   the canonical spelling of what the AST holds, and the AST holds one `lang`.
-
-   A BOOLEAN `lang` IS THE SAME KEY AS WELL: `{lang}` means `lang=""` under
-   PART 4's boolean rule, so `{:fr lang}` ends at `lang=""` and `{lang :fr}` at
-   `lang="fr"`. The three spellings of the key meet in one slot, and the corpus
-   pins the boolean form beside the other two. *)
+   LANGUAGE SHORTHAND USES THE `lang` KEY -- NORMATIVE [CARVE-P4-004]: `:TAG`
+   desugars to `lang=TAG` BEFORE merging, within a block or across blocks.
+   Its value and a key/value or boolean `lang` use the generic repeated-key
+   merge: the last value wins at the first appearance's slot (RENDER ORDER
+   above; PART 9 §15). A bare `lang` has the empty value. The canonical
+   writer spells the surviving value as `:TAG`, including `{:}` for empty.
+   For example, `{:fr lang=de}` renders `lang="de"` and formats to `{:de}`. *)
 language_attribute = ':', [ language_tag ] ;
 language_tag       = language_subtag, { '-', language_subtag } ;
 language_subtag    = ( letter | digit ), { letter | digit } ;

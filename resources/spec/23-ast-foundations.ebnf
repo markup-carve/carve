@@ -61,7 +61,7 @@
       from profiles.md (CARVE-P12-001). A document is
       `{"type":"document","children":[...]}`.
 
-      The root's own fields are fixed by CARVE-P12-024.
+      The document root follows PART 12 §7 (CARVE-P12-024).
 
         {"type":"document","children":[...],"srcByteLength":42}
 
