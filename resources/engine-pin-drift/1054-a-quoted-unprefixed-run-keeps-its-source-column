@@ -1,1 +1,0 @@
-carve#5796: the pinned JavaScript reader keeps the unprefixed continuation of a nested quoted attribute run as paragraph text; CARVE-P2-035 measures its written source column and consumes the valid run.
