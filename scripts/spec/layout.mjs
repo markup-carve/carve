@@ -3674,7 +3674,11 @@ function sourceCommentColumn(line) {
     if (!quote) break
     rest = quote[1] ?? ''
   }
-  const prefix = line.slice(0, line.length - trimWsStart(rest).length)
+  return sourcePrefixColumn(line, trimWsStart(rest))
+}
+
+function sourcePrefixColumn(line, rest) {
+  const prefix = line.slice(0, line.length - rest.length)
   let col = 0
   for (const ch of prefix) col = ch === '\t' ? (Math.floor(col / 4) + 1) * 4 : col + 1
   return col
@@ -8551,7 +8555,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
-          quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? indentCols(quoteText).col
+          // Strip this quote's source prefix from the carried comment column.
+          // A marker line inside or outside a quote then reaches the next
+          // reader in the same host coordinates as its continuations.
+          quoteCommentColumns[inner.length] = Math.max(0,
+            (authoredCommentColumns.get(lines)?.[i] ?? sourceCommentColumn(lines[i])) - sourcePrefixColumn(lines[i], quoteText))
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
