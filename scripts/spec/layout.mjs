@@ -1847,19 +1847,30 @@ function refusedBlockBraceRun(lines, start, cache) {
 function inlineAttributeHost(line, at) {
   const before = line.slice(0, at)
   const last = before.at(-1)
-  if (last === ']') return before.includes('[')
-  if (last === ')') return /\]\([^)]*\)$/.test(before)
-  if (last === '>') return /<[^>]*>$/.test(before)
-  if (last === ':') return /:[\w-]+:$/.test(before)
+  if (last === ']') return before.lastIndexOf('[') >= 0 && before.lastIndexOf('[') > before.lastIndexOf(']', at - 2)
+  if (last === ')') {
+    const open = before.lastIndexOf('](')
+    if (open < 0 || before.lastIndexOf('[', open) < 0) return false
+    const slot = before.slice(open + 2, -1)
+    return /^\S+(?: +["'][^"']*["'])?$/.test(slot) && matchDestination(slot.split(' ')[0]) !== null
+  }
+  if (last === '>') return /<(?:[A-Za-z][A-Za-z0-9+.-]*:[^\s<>]+|[^\s<>@]+@[^\s<>@]+)>$/.test(before)
+  if (last === ':') return /:[A-Za-z][\w-]*:$/.test(before)
   if (last === '`') return true
   if ('*/_~='.includes(last ?? '')) return before.indexOf(last) < before.length - 1
-  if (last === '}') return /\{[+\-/*_^,=~].*[+\-/*_^,=~]\}$/.test(before) && !before.includes('~>')
+  if (last === '}') {
+    const open = before.lastIndexOf('{')
+    const marker = before[open + 1]
+    return open >= 0 && '+-/*_^,=~'.includes(marker ?? '') &&
+      before[at - 2] === marker && (marker !== '~' || !before.slice(open, at).includes('~>'))
+  }
   return false
 }
 
 function scanInlineSpan(span, line, futureCommentClose = false) {
   const lastCommentClose = line.lastIndexOf('%}')
   const lastBraceClose = line.lastIndexOf('}')
+  let acceptedAttributeEnd = -1
   for (let k = 0; k < line.length; k++) {
     if (span.comment) {
       if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
@@ -1869,7 +1880,8 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
     // quoted payload is opaque to code and comment pairing (PART 9 §9 R3).
     // A bare word before the brace is no inline host, so leave that run as
     // text and let its backticks pair normally.
-    if (!span.codeRun && line[k] === '{' && lastBraceClose > k && inlineAttributeHost(line, k)) {
+    if (!span.codeRun && line[k] === '{' && lastBraceClose > k &&
+        (acceptedAttributeEnd === k || inlineAttributeHost(line, k))) {
       let quote = null
       let end = k + 1
       for (; end < line.length; end++) {
@@ -1880,6 +1892,7 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
         else if (ch === '}') break
       }
       if (end < line.length && parseAttrList(line.slice(k, end + 1)) !== null) {
+        acceptedAttributeEnd = end + 1
         k = end
         continue
       }
