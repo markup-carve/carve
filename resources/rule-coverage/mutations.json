@@ -1653,7 +1653,6 @@
     "CARVE-P10-016": "roundtrip carrier inventory; the model has no roundtrip option",
     "CARVE-P10-017": "export vs import mode separation; import/security behavior the model does not implement",
     "CARVE-P10-019": "roundtrip export drops reserved authored names and reports loss; no roundtrip option or render-loss reporting in the model",
-    "CARVE-P10-020": "HTML importer alias data-djot-; the model has no HTML importer",
     "CARVE-P10-021": "HTML import consumption of carriers; the model has no HTML importer"
   }
 }

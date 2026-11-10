@@ -726,10 +726,8 @@
    `/word/` renders italic. It is on by default and can be disabled per
    document. Escaped underscores and code spans are quiet.
    `heading-level-skip` hints when a heading jumps over one or more levels.
-   A next-level heading is quiet. `a11y/heading-jump` is a deprecated input
-   alias for this rule: enabling or suppressing it selects `heading-level-skip`,
-   and every finding reports `heading-level-skip`. Remove the alias at the next
-   minor release; two findings for one jump are never emitted.
+   A next-level heading is quiet. Only `heading-level-skip` names this rule
+   in configuration and suppression directives; an unknown name has no effect.
    PROPOSED CONTINUATION LINT AID (NON-NORMATIVE). A visually lone
    off-column `+` near an open marker host may report its tab-expanded column
    and the host marker column. Offer explicit alignment of the marker and its

@@ -725,8 +725,7 @@
         "data-carve-label": "Example"
       },
       "forbiddenExportAttributes": [
-        "data-carve-src",
-        "data-djot-src"
+        "data-carve-src"
       ],
       "expectedNodes": [
         {
@@ -754,8 +753,7 @@
         "data-carve-label": ""
       },
       "forbiddenExportAttributes": [
-        "data-carve-src",
-        "data-djot-src"
+        "data-carve-src"
       ],
       "expectedNodes": [
         {
@@ -1408,12 +1406,13 @@
       "requiresDiagnostic": false
     },
     {
-      "id": "canonical-carrier-beats-deprecated",
+      "id": "canonical-carrier-keeps-former-alias-as-attribute",
       "html": "<p><a href=\"/u\" data-carve-ref=\"r\" data-djot-ref=\"z\">t</a></p>",
       "expectedNodes": [
         {
           "type": "link",
-          "ref": "r"
+          "ref": "r",
+          "attrs.keyValues.data-djot-ref": "z"
         },
         {
           "type": "link_reference_definition",
@@ -1427,7 +1426,12 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false
+      "requiresDiagnostic": false,
+      "aheadOfPin": {
+        "fails": [
+          "error: {\"type\":\"link\",\"ref\":\"r\",\"attrs.keyValues.data-djot-ref\":\"z\"}"
+        ]
+      }
     },
     {
       "id": "plus-is-not-a-bullet",
@@ -1710,11 +1714,12 @@
       "diagnosticControlHtml": "<section id=\"mine\" data-carve-explicit-id data-carve-id-slot=\"1\"><h1 class=\"c\">H</h1></section>"
     },
     {
-      "id": "retired-source-alias-consumed",
+      "id": "former-source-alias-is-ordinary-attribute",
       "html": "<p data-djot-src=\"Z\">text</p>",
       "expectedNodes": [
         {
-          "type": "paragraph"
+          "type": "paragraph",
+          "attrs.keyValues.data-djot-src": "Z"
         }
       ],
       "forbiddenTypes": [],
@@ -1723,7 +1728,12 @@
         "semantic",
         "roundtrip"
       ],
-      "requiresDiagnostic": false
+      "requiresDiagnostic": false,
+      "aheadOfPin": {
+        "fails": [
+          "error: {\"type\":\"paragraph\",\"attrs.keyValues.data-djot-src\":\"Z\"}"
+        ]
+      }
     },
     {
       "id": "unmarked-section-slug-id-is-generated",
@@ -1849,11 +1859,17 @@
       "defaultValue": "x"
     },
     {
-      "id": "deprecated-alias-name-dropped",
+      "id": "former-alias-name-kept",
       "source": "[a](/u){data-djot-ref=x}\n",
       "attribute": "data-djot-ref",
-      "value": null,
-      "defaultValue": "x"
+      "value": "x",
+      "kept": true,
+      "aheadOfPin": {
+        "fails": [
+          "exported collision attribute matches fixture",
+          "kept attribute has no drop loss"
+        ]
+      }
     },
     {
       "id": "unreserved-name-kept-on-heading",

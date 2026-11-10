@@ -2009,12 +2009,6 @@
       "scope": "resolution-rendering"
     },
     {
-      "id": "CARVE-P10-020",
-      "part": "10",
-      "title": "AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING",
-      "scope": "imports-security-extensions"
-    },
-    {
       "id": "CARVE-P10-021",
       "part": "10",
       "title": "EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME BACK",
@@ -2261,6 +2255,12 @@
       "part": "9",
       "title": "A REFUSED `+` IS A PLAIN LETTER",
       "replacement": "CARVE-P9-067"
+    },
+    {
+      "id": "CARVE-P10-020",
+      "part": "10",
+      "title": "AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING",
+      "replacement": "CARVE-P10-016"
     }
   ]
 }

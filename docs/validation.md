@@ -168,7 +168,7 @@ the command-line and editor behavior stay aligned.
 | `unclosed-inline-emphasis` | a strong or emphasis opener with no closer in its paragraph |
 | `link-gap-before-destination` | whitespace between `]` and `(` prevents an intended inline link from forming |
 | `markdown-italic-underline` | `_word_` renders underline; use `/word/` for italic. This default hint can be suppressed per document |
-| `heading-level-skip` | a heading jumps over a level; default-on hint. `a11y/heading-jump` is a deprecated input alias through the next minor and reports under this id |
+| `heading-level-skip` | a heading jumps over a level; default-on hint |
 | `unused-link-reference-definition` | a winning link reference definition has no rendered link or image use; default-on |
 | `empty-link-destination` | a parsed inline link has an empty destination; default-on |
 | `duplicate-reference-url` | two distinct reference definitions have the same normalized URL; opt-in |
@@ -937,8 +937,7 @@ existing zero-findings gate for correct documents still applies.
 
 carve-js and carve-rs expose an initial AST-based accessibility pass.
 `a11y/image-alt` covers missing or blank image alternatives. Skipped heading
-levels report as `heading-level-skip`; `a11y/heading-jump` is an input alias
-that will be removed in the next minor release. These checks catch focused
+levels report as `heading-level-skip`. These checks catch focused
 document-structure problems; they are not a claim of WCAG conformance or a
 replacement for testing the rendered page with accessibility tools.
 
