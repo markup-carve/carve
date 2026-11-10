@@ -1,0 +1,1 @@
+carve#5844: the pinned JavaScript reader predates carve-js#4883, so a block-shaped line inside an open comment run still interrupts the run and loosens the item.
