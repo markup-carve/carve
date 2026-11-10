@@ -1,10 +1,6 @@
 ## A wrapped attribute block ends at its quote and reaches no line below it
 
-An attribute block at the end of a quote ends where the quote ends. These
-historical wrapped inputs place the second line at or below the opening `{`
-column after the quote marker. CARVE-P2-035 therefore reads the whole brace run
-as paragraph text. A valid wrapped block still cannot attribute a line outside
-its quote (markup-carve/carve#1956).
+These historical continuations fail CARVE-P2-035, so the brace opener is literal and later lines follow ordinary quote ownership. A valid prefixed attribute still cannot attach outside its quote.
 
 ::: compare
 
@@ -19,7 +15,7 @@ tail
 <blockquote>
   <blockquote><p>q
 {.k
-#x}
+<span class="tag"><strong>#x</strong></span>}
 tail</p></blockquote>
 </blockquote>
 ```
@@ -62,7 +58,7 @@ same.
 <blockquote>
   <blockquote><p>q
 {.k
-#x}
+<span class="tag"><strong>#x</strong></span>}
 after</p></blockquote>
 </blockquote>
 ```

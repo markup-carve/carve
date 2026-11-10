@@ -4,9 +4,12 @@
 
 (* --- Headings --- *)
 (* A BLOCK BRACE RUN CONTINUES PAST ITS OPENER -- NORMATIVE [CARVE-P2-035].
-   A block-position attribute or comment run continues only on lines indented
-   at least one column past its opening `{`, including a closing-delimiter-only
-   line. The brace column is measured after the container prefixes are read.
+   A block-position attribute or comment run continues only when every line
+   after the opener through its closer carries every prefix in the opener's
+   container stack and reaches its body column. No line inside the run is
+   lazy. After those prefixes are read, each continuation must be indented
+   at least one column past the opening `{`, including a closer-only line.
+   The brace column is measured after the container prefixes are read.
    On an item or quote marker line it is the written brace column, including
    a task box; on a note marker line it is the note body column.
 

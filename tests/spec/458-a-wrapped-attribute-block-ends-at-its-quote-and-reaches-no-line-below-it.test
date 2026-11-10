@@ -9,7 +9,7 @@ tail
 <blockquote>
   <blockquote><p>q
 {.k
-#x}
+<span class="tag"><strong>#x</strong></span>}
 tail</p></blockquote>
 </blockquote>
 ```
@@ -34,7 +34,7 @@ tail
 <blockquote>
   <blockquote><p>q
 {.k
-#x}
+<span class="tag"><strong>#x</strong></span>}
 after</p></blockquote>
 </blockquote>
 ```

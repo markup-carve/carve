@@ -4,7 +4,7 @@ page: edge-attributes
 
 ## A partially prefixed quoted run continuation keeps its source column
 
-A continuation under fewer quote prefixes than its opener is read past the prefixes it has and keeps its written source column. A valid run opens no paragraph, so the column-zero follower leaves every quote (CARVE-P2-035, carve#5822, carve#5827).
+A multi-line run requires every quote prefix on every continuation. The partially prefixed lines below refuse their runs regardless of source column; later lines follow ordinary paragraph ownership (CARVE-P2-035, carve#5830, superseding the earlier reading of carve#5822 and carve#5827).
 
 ::: compare
 
@@ -16,11 +16,10 @@ plain
 
 ```html
 <blockquote>
-  <blockquote>
-
-  </blockquote>
+  <blockquote><p>{.x
+.y}
+plain</p></blockquote>
 </blockquote>
-<p>plain</p>
 ```
 
 :::
@@ -34,9 +33,8 @@ plain
 
 ```html
 <blockquote>
-  <blockquote>
-
-  </blockquote>
+  <blockquote><p>{.x
+.y}</p></blockquote>
 </blockquote>
 ```
 

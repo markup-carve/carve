@@ -25,7 +25,9 @@ y}
   <li>a
     {x
 y}
-- c
+    <ul>
+      <li>c</li>
+    </ul>
   </li>
 </ul>
 ```

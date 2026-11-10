@@ -19,7 +19,8 @@ b %}</li>
 .
 <ul>
   <li>pre
-</li>
+{% b
+b %}</li>
 </ul>
 ```
 
@@ -39,7 +40,8 @@ b %}</p></blockquote>
  b %}
 .
 <blockquote><p>pre
-</p></blockquote>
+{% b
+b %}</p></blockquote>
 ```
 
 ```
@@ -75,7 +77,8 @@ ref[^a]
   <ol>
     <li id="fn1">
       <p>pre
-<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+{% b
+b %}<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

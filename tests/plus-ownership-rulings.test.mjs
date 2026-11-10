@@ -7,11 +7,11 @@ import { modelTrace } from '../scripts/spec/decision-trace.mjs'
 
 const render = source => renderDoc(parse(source))
 
-test('a refused brace run keeps the following plus literal in every marker host (#5658 R03)', () => {
+test('a refused brace run leaves the following plus to its host (#5830 R03)', () => {
   for (const host of ['item', 'note', 'dd']) for (const form of ['marker', 'own', 'stacked']) {
     const source = cellSource({ host, form, block: 'brace', follower: 'refused `+`', blank: false, ctx: 'plain' })
     const html = render(source)
-    assert.match(html, /\{\.x\n\.y\}\n\+\nzq/, `${host} ${form}\n${source}\n${html}`)
+    assert.equal(html, render(source.replace('{', '\\{')), `${host} ${form}\n${source}\n${html}`)
     assert.doesNotMatch(html, /%%/, `${host} ${form}`)
   }
 })

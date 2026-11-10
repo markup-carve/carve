@@ -23,6 +23,6 @@ for (const [name, host] of hosts) for (const opener of [0, 1]) for (const payloa
 }
 
 test('a closer short of the moved opener still refuses the run', () => {
-  const out = html('[^n]: p\n  {% a\n %}\n   > q\nafter\n\nx[^n]\n')
-  assert.match(out, /<p>p\n\{% a\n%\}\n&gt; q\nafter/)
+  const source = '[^n]: p\n  {% a\n %}\n   > q\nafter\n\nx[^n]\n'
+  assert.equal(html(source), html(source.replace('{', '\\{')))
 })

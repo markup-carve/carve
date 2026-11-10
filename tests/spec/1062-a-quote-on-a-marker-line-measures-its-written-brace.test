@@ -30,9 +30,8 @@ x[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <blockquote>
-
-      </blockquote>
+      <blockquote><p>{.x
+.y}</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>

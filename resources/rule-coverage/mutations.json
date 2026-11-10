@@ -821,11 +821,6 @@
       "edits": [
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "      if (!forcedAfterRefusal && lines[i][0] === '{' && !inlineSpanOpen() && tryAttrLine(lines, i, box)) break // §15 A1 / §10 I5\n",
-          "replace": ""
-        },
-        {
-          "file": "scripts/spec/layout.mjs",
           "find": "          if (!firstVisible && !(descendantFence && col > contentCol)) list.tight = false",
           "replace": "          if (!firstVisible && !matchMarkerAt(indentCols(head.text)) && !(descendantFence && col > contentCol)) list.tight = false"
         },
@@ -1605,7 +1600,7 @@
         },
         {
           "file": "scripts/spec/layout.mjs",
-          "find": "if (i > start && measured.col <= blockColumn) shallow = true",
+          "find": "if (i > start && (measured.col <= blockColumn || line.includes(LAZY))) shallow = true",
           "replace": "if (false) shallow = true"
         }
       ]

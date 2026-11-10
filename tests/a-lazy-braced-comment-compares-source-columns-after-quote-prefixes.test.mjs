@@ -12,7 +12,7 @@ const erasedQuote = '<blockquote><p>pre\n</p></blockquote>'
 
 for (const [name, source, html] of [
   ['list: same source column', '- pre\n {% b\n b %}\n', literalList],
-  ['list: one deeper source column', '- pre\n {% b\n  b %}\n', erasedList],
+  ['list: one deeper source column', '- pre\n {% b\n  b %}\n', literalList],
   ['quote: same column after its marker', '> pre\n{% b\n> b %}\n', literalQuote],
   ['quote: one deeper column after its marker', '> pre\n{% b\n>  b %}\n', erasedQuote],
 ]) {

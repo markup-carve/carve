@@ -10,8 +10,8 @@ const asLetter = (source) => html(source.replace(/^((?:> )?)\+$/m, '$1Z')).repla
 test('a sublist after an attribute run or a shallow literal brace run follows the ruling', () => {
   for (const run of ['{x}', '{x}\n{y}', '{x\ny}']) {
     if (run === '{x\ny}') {
-      assert.equal(html(`- a\n+\n${run}\n  - c\n`), '<ul><li>a{xy}- c</li></ul>', run)
-      assert.equal(html(`1. a\n+\n${run}\n   - c\n`), '<ol><li>a{xy}- c</li></ol>', run)
+      assert.equal(html(`- a\n+\n${run}\n  - c\n`), '<ul><li>a{xy}<ul><li>c</li></ul></li></ul>', run)
+      assert.equal(html(`1. a\n+\n${run}\n   - c\n`), '<ol><li>a{xy}<ul><li>c</li></ul></li></ol>', run)
       continue
     }
     const attrs = run === '{x}' ? ' x=""' : ' x="" y=""'

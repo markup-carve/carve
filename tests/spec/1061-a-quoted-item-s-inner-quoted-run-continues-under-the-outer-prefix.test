@@ -8,13 +8,12 @@ plain
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-
-      </blockquote>
+      <blockquote><p>{.x
+.y}
+plain</p></blockquote>
     </li>
   </ul>
 </blockquote>
-<p>plain</p>
 ```
 
 ```

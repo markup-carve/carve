@@ -859,8 +859,9 @@
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). Every continuation line, including
-         a line containing only `}`, must be indented at least one column past
-         the opening `{` (PART 4 `continuation`). A line at or below that
+         a line containing only `}`, must carry every container prefix and reach
+         the body column before standing at least one column past the opening
+         `{` (PART 4 `continuation`). No continuation is lazy. A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
          opener is literal paragraph text and later lines are read normally,
          not as `block_attributes` (CARVE-P2-035). Each block of a glued run (`{.a}{.b}`) wraps by

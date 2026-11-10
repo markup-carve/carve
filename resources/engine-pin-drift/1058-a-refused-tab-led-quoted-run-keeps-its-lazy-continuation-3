@@ -1,1 +1,0 @@
-carve#5828: the pinned JavaScript reader refuses a nested quoted attribute run whose indented brace is continued past its source column by a line that carries only the outer quote prefix; CARVE-P2-035 measures both lines in source columns and continues the run.

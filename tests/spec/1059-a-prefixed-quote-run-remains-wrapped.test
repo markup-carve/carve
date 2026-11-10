@@ -1,0 +1,11 @@
+A prefixed quote run remains wrapped
+
+```
+> {.x
+>   .y}
+> # H
+.
+<blockquote>
+  <h1 class="x y" id="H">H</h1>
+</blockquote>
+```

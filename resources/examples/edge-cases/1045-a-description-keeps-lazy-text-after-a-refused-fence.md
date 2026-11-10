@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A description keeps lazy text after a refused fence
 
-The short continuation refuses the brace run. The fence-shaped follower stays in the description paragraph, which owns the following column-zero line (CARVE-P2-035, PART 0 S4, carve#5763).
+The refused brace opener is literal. Its fence-shaped follower opens a separate code block, and the later column-zero line is read normally (CARVE-P2-035, carve#5830).
 
 ::: compare
 
@@ -19,11 +19,13 @@ plain
 ```html
 <dl>
   <dt>t</dt>
-  <dd>{.x
-}
-<code>
-plain</code></dd>
+  <dd>
+    <p>{.x
+}</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>plain</p>
 ```
 
 :::

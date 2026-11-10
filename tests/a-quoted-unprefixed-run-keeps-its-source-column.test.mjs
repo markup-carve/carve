@@ -9,13 +9,13 @@ const html = source => renderDoc(parse(source)).trim()
 // with the opening brace after any quote prefixes, at every quote depth.
 test('a valid unprefixed run two quotes deep leaves no lazy paragraph', () => {
   assert.equal(html('> > {.x\n     .y}\nplain'),
-    '<blockquote>\n  <blockquote>\n\n  </blockquote>\n</blockquote>\n<p>plain</p>')
+    html('> > \\{.x\n     .y}\nplain'))
   assert.equal(html('> > {.x\n    .y}\nplain'),
     '<blockquote>\n  <blockquote><p>{.x\n.y}\nplain</p></blockquote>\n</blockquote>')
 })
 
 test('a tab before the brace preserves its measured source column', () => {
-  assert.equal(html('> \t{.x\n     .y}\nplain'), '<blockquote>\n\n</blockquote>\n<p>plain</p>')
+  assert.equal(html('> \t{.x\n     .y}\nplain'), html('> \t\\{.x\n     .y}\nplain'))
   assert.equal(html('> \t{.x\n    .y}\nplain'),
     '<blockquote><p>{.x\n.y}\nplain</p></blockquote>')
 })

@@ -9,9 +9,11 @@ plain
 .
 <dl>
   <dt>t</dt>
-  <dd>{.x
-}
-<code>
-plain</code></dd>
+  <dd>
+    <p>{.x
+}</p>
+    <pre><code></code></pre>
+  </dd>
 </dl>
+<p>plain</p>
 ````

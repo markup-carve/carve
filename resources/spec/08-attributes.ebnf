@@ -198,14 +198,16 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
    need not be on the opening line): a continuation is a single line
-   break followed by indentation at least one column past the opening `{`.
+   break carrying every container prefix, reaching its body column, then
+   indentation at least one column past the opening `{`.
    This includes a line containing only the closing `}`. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
    block interrupted by a blank line is not a `block_attributes`; its opener
    is literal text, and later lines are read normally. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
-(* Every continuation line must carry the quote prefix of its container and
-   reach at least one column past the opening `{`. If any line fails, the
+(* Every continuation line must carry every prefix of its container stack,
+   reach its body column, then pass the opening `{` column. It is never lazy.
+   If any line fails, the
    opener is literal text; later lines are read normally. *)
 block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;

@@ -6,11 +6,10 @@ A quoted unprefixed run keeps its source column
 plain
 .
 <blockquote>
-  <blockquote>
-
-  </blockquote>
+  <blockquote><p>{.x
+.y}
+plain</p></blockquote>
 </blockquote>
-<p>plain</p>
 ```
 
 ```
@@ -18,8 +17,7 @@ plain
      .y}
 plain
 .
-<blockquote>
-
-</blockquote>
-<p>plain</p>
+<blockquote><p>{.x
+.y}
+plain</p></blockquote>
 ```

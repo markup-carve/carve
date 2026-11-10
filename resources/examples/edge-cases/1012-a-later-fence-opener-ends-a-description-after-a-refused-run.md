@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A later fence opener ends a description after a refused run
 
-The refused brace run keeps the first fence opener and its closer in the attached paragraph. The next opener begins a root code block (CARVE-P2-035, PART 9 §10 I4, carve#5593).
+The refused brace opener is literal. Both following fence openers are read by ordinary fence and attachment rules (CARVE-P2-035, carve#5830).
 
 ::: compare
 
@@ -23,11 +23,10 @@ wa
 <dl>
   <dt>t</dt>
   <dd>{.x
-.y}
-<code>
-wa
-</code></dd>
+.y}</dd>
 </dl>
+<pre><code>wa
+</code></pre>
 <pre><code></code></pre>
 ```
 

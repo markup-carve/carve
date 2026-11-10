@@ -13,10 +13,9 @@ wa
 <dl>
   <dt>t</dt>
   <dd>{.x
-.y}
-<code>
-wa
-</code></dd>
+.y}</dd>
 </dl>
+<pre><code>wa
+</code></pre>
 <pre><code></code></pre>
 ````

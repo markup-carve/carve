@@ -6,11 +6,10 @@ A partially prefixed quoted run continuation keeps its source column
 plain
 .
 <blockquote>
-  <blockquote>
-
-  </blockquote>
+  <blockquote><p>{.x
+.y}
+plain</p></blockquote>
 </blockquote>
-<p>plain</p>
 ```
 
 ```
@@ -18,9 +17,8 @@ plain
 >     .y}
 .
 <blockquote>
-  <blockquote>
-
-  </blockquote>
+  <blockquote><p>{.x
+.y}</p></blockquote>
 </blockquote>
 ```
 

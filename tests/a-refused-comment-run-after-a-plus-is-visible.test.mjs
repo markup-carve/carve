@@ -17,10 +17,9 @@ test('a refused comment run after a separate-line + joins the item', () => {
   assert.equal(render('- a\n+\n{% x\n%}\n'), '<ul>\n  <li>a\n    {% x\n%}\n  </li>\n</ul>')
 })
 
-test('the line after the run continues the attached paragraph', () => {
-  const kept = '<ul>\n  <li>a\n    {% x\n%}\n{y}\nmore\n  </li>\n</ul>'
-  assert.equal(render('- a\n+\n{% x\n%}\n{y}\n more\n'), kept)
-  assert.equal(render('- a\n+\n{% x\n%}\n{y}\n  more\n'), kept)
+test('the line after a refused run follows ordinary ownership', () => {
+  for (const source of ['- a\n+\n{% x\n%}\n{y}\n more\n', '- a\n+\n{% x\n%}\n{y}\n  more\n'])
+    assert.equal(render(source), render(source.replace('{', '\\{')))
 })
 
 test('each host attaches a refused comment run as it attaches a refused attribute run', () => {

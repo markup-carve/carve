@@ -83,8 +83,9 @@
         `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
         paragraphs across a blank line -- `%%%` is the block form (§28).
         At block position its continuations follow CARVE-P2-035: each later
-        line, including a `%}`-only closer, must be indented past the opening
-        `{`. Otherwise the opener is literal text and later lines are read
+        line, including a `%}`-only closer, carries every container prefix and
+        reaches its body column before it passes the opening `{`. No line in
+        the run is lazy. Otherwise the opener is literal text and later lines are read
         normally; its literal `{%` never pairs with a later `%}`. A `{%` that
         starts a line is at block position, including the start of a
         continuation line of an open paragraph: `pre\n{% a\nb %}` renders

@@ -18,7 +18,8 @@ The marker-glued metadata does not move the item's content column, but it occupi
 <ul>
   <li class="x">{.x
 .y}
-# h</li>
+    <h1 id="h">h</h1>
+  </li>
 </ul>
 ```
 

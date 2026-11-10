@@ -4,7 +4,7 @@ page: edge-inline
 
 ## A lazy braced comment uses source columns in every host
 
-CARVE-P2-035 measures a lazy `{%` opener and its continuation in source columns after quote prefixes. At or left of the opener column the whole run is literal paragraph text; one column deeper continues an erased comment.
+A block-position `{%` run in a container takes no lazy continuation. The refused opener is literal and later lines follow ordinary paragraph rules (CARVE-P2-035, carve#5830).
 
 list, continuation at the opener column.
 
@@ -39,7 +39,8 @@ list, continuation one source column deeper.
 ```html
 <ul>
   <li>pre
-</li>
+{% b
+b %}</li>
 </ul>
 ```
 
@@ -75,7 +76,8 @@ quote, continuation one source column deeper.
 
 ```html
 <blockquote><p>pre
-</p></blockquote>
+{% b
+b %}</p></blockquote>
 ```
 
 ::::
@@ -127,7 +129,8 @@ ref[^a]
   <ol>
     <li id="fn1">
       <p>pre
-<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+{% b
+b %}<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

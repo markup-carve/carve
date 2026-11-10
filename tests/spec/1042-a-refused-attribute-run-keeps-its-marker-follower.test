@@ -8,6 +8,9 @@ A refused attribute run keeps its marker follower
 <ul>
   <li>{.x
 }
-- q</li>
+    <ul>
+      <li>q</li>
+    </ul>
+  </li>
 </ul>
 ```

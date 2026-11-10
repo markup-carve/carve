@@ -16,7 +16,8 @@ A continuation of an item's comment run that carries a quote prefix at the openi
 ```html
 <ul>
   <li>{% a
-&gt;  b %}</li>
+    <blockquote><p>b %}</p></blockquote>
+  </li>
 </ul>
 ```
 
