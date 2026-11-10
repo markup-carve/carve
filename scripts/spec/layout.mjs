@@ -5822,6 +5822,11 @@ const writtenBraceColumn = (lines, idx, rest) => {
 const authoredCommentColumns = new WeakMap()
 // The written width before a marker-line body beyond its virtual content column.
 const markerLineSourceOffsets = new WeakMap()
+// A quote opened on a marker line measures its `{` where it is written (carve#5820),
+// though the host's frame hides the label or task box: `frame` is that hidden
+// width, and `source` the part of it the line's recorded source column lacks.
+// A run that opens a note body itself keeps the body column (carve#5748).
+const quoteMarkerLineOffsets = new WeakMap()
 // The source column of each line's first character, for lines that are raw
 // source slices (the document, a quote's prefixed lines); a tab expands by it.
 const sourceLineStarts = new WeakMap()
@@ -6610,6 +6615,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const bodyLines = [m[2]]
       const noteBraceColumns = [(authoredBraceColumns.get(lines)?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
+      if (!m[2].includes('\t')) {
+        const hidden = line.length - m[2].length - FOOTNOTE_BODY_COLUMN
+        quoteMarkerLineOffsets.set(bodyLines, { frame: hidden, source: hidden })
+      }
       const noteCommentColumns = [(commentSourceColumns?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredCommentColumns.set(bodyLines, noteCommentColumns)
       const inheritedFenceOpens = new Set()
@@ -8010,6 +8019,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const quoteOwnership = new Map()
       const quoteBraceColumns = []
       authoredBraceColumns.set(inner, quoteBraceColumns)
+      // A nested quote on the same marker line keeps the hidden width.
+      if (i === 0 && quoteMarkerLineOffsets.has(lines)) quoteMarkerLineOffsets.set(inner, quoteMarkerLineOffsets.get(lines))
       const quoteCommentColumns = []
       authoredCommentColumns.set(inner, quoteCommentColumns)
       const lineStarts = sourceLineStarts.get(lines)
@@ -8632,8 +8643,15 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const braceLine = lines[idx].endsWith(inner0.rest) ? lines[idx] : trimLineEnd(lines[idx])
         const braceIndex = inner0.rest[0] === '{' && braceLine.endsWith(inner0.rest) ? braceLine.length - inner0.rest.length : -1
         // The walk may have dropped indentation after the quote prefix, so the authored line decides.
-        const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
-          : writtenBraceColumn(lines, idx, inner0.rest) ?? indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
+        const written = braceIndex < 0 ? null : writtenBraceColumn(lines, idx, inner0.rest)
+        const hidden = written === null && idx === 0 ? quoteMarkerLineOffsets.get(lines) : undefined
+        const localBrace = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
+          : indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
+        const braceColumn = localBrace === null ? null : written ?? localBrace + (hidden?.frame ?? 0)
+        // A lazy line's written column is compared with the `{` in source columns too.
+        const lineSource = authoredBraceColumns.get(lines)?.[idx]
+        const braceSourceColumn = localBrace === null || lineSource === undefined ? null
+          : written ?? lineSource + localBrace + (hidden?.source ?? 0)
         // A tab before the `{` widens by where it is written, so read both
         // lines from their source columns when this frame knows them.
         const braceSource = braceIndex < 0 || lineStart(idx) === undefined ? undefined
@@ -8651,7 +8669,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               if (authoredBraceColumns.get(lines)?.[idx] === undefined)
                 return dedent(QUOTE.exec(lines[idx + offset] ?? '')?.[1] ?? '', inner0.col)
               const column = authoredBraceColumns.get(lines)?.[idx + offset] ?? indentCols(authored).col
-              return ' '.repeat(column) + stripLazy(trimWsStart(authored))
+              return ' '.repeat(braceSourceColumn === null ? column : Math.max(0, column - braceSourceColumn)) + stripLazy(trimWsStart(authored))
             }
             if (!QUOTE.test(lines[idx + offset] ?? '') && braceSource !== undefined && lineStart(idx + offset) !== undefined) {
               const lead = indentCols(authored)
@@ -10415,6 +10433,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // block is another container whose comment opener is parsed later.
     itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head) + sourceCommentColumn(head.text)
     if (markerSourceOffset) markerLineSourceOffsets.set(itemLines, markerSourceOffset)
+    const taskWidth = taskTextOffset(head)
+    if (taskWidth) quoteMarkerLineOffsets.set(itemLines, { frame: taskWidth, source: 0 })
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {
