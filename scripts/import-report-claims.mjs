@@ -104,7 +104,7 @@ for (const mode of ['safe', 'semantic', 'roundtrip']) {
   }
 }
 for (const mode of ['safe', 'semantic']) {
-  for (const name of ['data-carve-src', 'data-djot-src']) {
+  for (const name of ['data-carve-src']) {
     CASES.push({
       name: `${mode} ignored nested ${name}`,
       html: `<form><p ${name}="stored">text</p></form>`,

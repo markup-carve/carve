@@ -730,7 +730,7 @@
       MAY place a core carrier name on its own element, and defines its
       meaning there. AN EXTENSION CARRIER IS A
       CARRIER in every other respect: CARVE-P10-019 displaces an authored attribute of
-      its name, CARVE-P10-020 reads its deprecated spelling, and CARVE-P10-021 consumes it in
+      its name, and CARVE-P10-021 consumes it in
       every import mode.
 
       A WIDTH IS A POSITIVE INTEGER, AND 1000 IS THE BOUND ON BOTH SIDES OF
@@ -776,7 +776,7 @@
       THE RESERVED SET IS AN ENUMERATION, NOT A PREFIX PATTERN. These names
       are the serializer's protocol rather than an author's content, and each
       one is reserved because it is named: a row of this inventory, the
-      rowless name below and its alias, or an extension carrier its own
+      rowless name below, or an extension carrier its own
       contract names. So `data-marker` and `data-char` keep their own spelling
       and are no less reserved for carrying no prefix, and a `data-carve-`
       name none of these names is NOT a carrier and NOT reserved: an engine
@@ -797,8 +797,7 @@
 
    13b. ROUNDTRIP EXPORT DROPS AN AUTHORED RESERVED NAME AND REPORTS IT --
       NORMATIVE [CARVE-P10-019]. Under roundtrip export an authored attribute
-      whose name is a reserved name from CARVE-P10-016, or the deprecated `data-djot-`
-      spelling of one, which CARVE-P10-020 has every importer consume, IS DROPPED ON
+      whose name is a reserved name from CARVE-P10-016 IS DROPPED ON
       EVERY NODE, whether or not that node writes a carrier of that name. A node that
       writes a carrier of that name still writes it. Default export passes
       the authored attribute through.
@@ -816,34 +815,11 @@
       EITHER -- one authored attribute cannot veto a mode the caller asked
       for.
 
-   13c. AN IMPORTER READS THE DEPRECATED `data-djot-` SPELLING -- NORMATIVE
-      [CARVE-P10-020]. The prefixed names in CARVE-P10-016 were spelled `data-djot-`
-      before this clause, and documents exported by released engines carry
-      that spelling. So, for every prefixed name in the inventory:
-
-        A WRITER EMITS `data-carve-` ONLY. The `data-djot-` spelling is never
-        written, under this option or any other.
-
-        AN IMPORTER ACCEPTS EITHER SPELLING, and `data-carve-` wins where one
-        element carries both. `data-djot-` is DEPRECATED: it is read for
-        compatibility and consumed exactly as CARVE-P10-021 consumes the canonical
-        spelling, so a document that arrives carrying it leaves without it.
-
-      THE ALIAS IS NOT A SECOND SET OF NAMES. A `data-djot-` name this
-      inventory does not list under its `data-carve-` spelling is not a
-      carrier and not reserved; it is an ordinary authored attribute.
-      `data-marker` and `data-char` have no alias, having never carried a
-      prefix.
-
-      `data-djot-src` IS THE ONE ALIAS OF THE ROWLESS NAME. It is reserved and
-      consumed like `data-carve-src` (CARVE-P10-016), in every import mode, and nothing
-      is rebuilt from its value.
-
    13d. EVERY IMPORT MODE CONSUMES THE INVENTORY AND WRITES NO RESERVED NAME
       BACK -- NORMATIVE [CARVE-P10-021]. Consuming a carrier reconstructs
       syntax the AST can already express, so it is not a trust decision and
       is not gated on an import mode. `safe` import consumes every name in
-      CARVE-P10-016, in either spelling, exactly as `roundtrip` import does.
+      CARVE-P10-016 exactly as `roundtrip` import does.
 
       A RESERVED NAME NEVER LEAVES AS AN AUTHORED ATTRIBUTE. An importer that
       consumed a carrier does not then write its name into the reconstructed
@@ -869,7 +845,7 @@
       for the pair, and excludes both reserved names from authored attributes.
       `data-carve-autolink` beside `data-carve-ref` on one `<a>` imports as an
       inline link. A PAIR NOT ON THE LIST IS NOT A CONTRADICTION. This applies
-      in every import mode and to the deprecated aliases in CARVE-P10-020. Value
+      in every import mode. Value
       validation under CARVE-P10-017 comes first: an invalid value is not a carrier
       and contradicts nothing.
 

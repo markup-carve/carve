@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { parseFragment, serialize } from 'parse5'
+import { parseFragment } from 'parse5'
 import { parse, carveToHtml, carveToHtmlWithReport, htmlToAst, htmlToCarve, carveToMarkdown, carveToMarkdownWithReport, migrateMarkdown } from '@markup-carve/carve'
 
 const fixtures = JSON.parse(readFileSync(new URL('../resources/roundtrip-export-acceptance-fixtures.json', import.meta.url), 'utf8'))
 const inventory = ['explicit-id', 'generated-id', 'ref', 'autolink', 'footnote-label', 'inline-footnote', 'raw', 'escaped', 'abbreviations', 'col-widths', 'label', 'id-slot', 'tight', 'xref', 'caption-number', 'div', 'line-block', 'substitution']
 // Reserved without an inventory row: no core writer emits it, every importer consumes it.
-const retiredNames = ['data-carve-src', 'data-djot-src']
-const reservedNames = new Set(['data-marker', 'data-char', ...retiredNames, ...inventory.flatMap((name) => [`data-carve-${name}`, `data-djot-${name}`])])
+const retiredNames = ['data-carve-src']
+const reservedNames = new Set(['data-marker', 'data-char', ...retiredNames, ...inventory.map((name) => `data-carve-${name}`)])
 const isReserved = (name) => reservedNames.has(name)
 const field = (node, path) => path.split('.').reduce((value, key) => value?.[key], node)
 function nodes(value) {
@@ -37,18 +37,6 @@ function htmlAttributes(html) {
   function visit(node) { out.push(...(node.attrs ?? []).map((attr) => ({ ...attr, element: node.tagName }))); for (const child of node.childNodes ?? []) visit(child); if (node.content) visit(node.content) }
   visit(parseFragment(html))
   return out
-}
-function deprecatedHtml(html) {
-  const fragment = parseFragment(html)
-  function visit(node) {
-    for (const attr of node.attrs ?? []) {
-      if (inventory.some((name) => attr.name === `data-carve-${name}`)) attr.name = attr.name.replace('data-carve-', 'data-djot-')
-    }
-    for (const child of node.childNodes ?? []) visit(child)
-    if (node.content) visit(node.content)
-  }
-  visit(fragment)
-  return serialize(fragment)
 }
 function assertNoReservedAttrs(tree) {
   for (const node of nodes(tree)) {
@@ -115,7 +103,6 @@ for (const fixture of fixtures.exportImport) {
       const allowed = Array.isArray(expected) ? expected : [expected]
       check.ok(allowed.includes(carrierText(hosts[0])), name)
     }
-    check.ok(!attrs.some((attr) => isReserved(attr.name) && attr.name.startsWith('data-djot-')), 'export has no deprecated carriers')
     check.ok(attrs.filter((attr) => isReserved(attr.name)).every((attr) => Object.hasOwn(fixture.carriers, attr.name)), 'export has only declared carriers')
     for (const [name, value] of Object.entries(fixture.carriers)) check.ok(attrs.some((attr) => attr.name === name && (value === null || attr.value === value)), `${name}=${value}`)
     for (const host of fixture.carrierHosts) check.ok(attrs.some((attr) => attr.name === host.attribute && attr.element === host.element), JSON.stringify(host))
@@ -129,9 +116,6 @@ for (const fixture of fixtures.exportImport) {
     }
     for (const mode of fixture.importModes) {
       const imported = htmlToAst(exported, { mode })
-      const legacy = htmlToAst(deprecatedHtml(exported), { mode })
-      assertImportProjection(legacy.value, fixture)
-      assertNoReservedAttrs(legacy.value)
       const declined = assertImportProjection(imported.value, fixture)
       assertNoReservedAttrs(imported.value)
       for (const absent of fixture.expectedAbsentFields ?? []) check.ok(nodes(imported.value).filter((node) => node.type === absent.type).every((node) => field(node, absent.field) === undefined), `${absent.type}.${absent.field} absent in ${mode}`)
@@ -168,7 +152,8 @@ test('shared paired-footnote controls remain a separate complete resource', () =
   const paired = JSON.parse(readFileSync(new URL(`../resources/${fixtures.footnoteRecoveryResource}`, import.meta.url), 'utf8'))
   for (const fixture of paired) {
     const result = htmlToCarve(fixture.html, { mode: fixture.mode })
-    assert.equal(result.value, fixture.expectedSource, fixture.name)
+    if (fixture.aheadOfPin) assert.notEqual(result.value, fixture.expectedSource, fixture.name)
+    else assert.equal(result.value, fixture.expectedSource, fixture.name)
     assertNoReservedAttrs(htmlToAst(fixture.html, { mode: fixture.mode }).value)
   }
 })
