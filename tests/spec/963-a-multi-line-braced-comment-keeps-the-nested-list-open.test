@@ -11,7 +11,8 @@ A multi-line braced comment keeps the nested list open
   <li>a
     <ul>
       <li>b
-</li>
+{% c
+d %}</li>
       <li>c</li>
     </ul>
   </li>
@@ -30,7 +31,8 @@ A multi-line braced comment keeps the nested list open
   <li>a
     <ul>
       <li><p>b
-</p></li>
+{% c
+d %}</p></li>
       <li><p>c</p></li>
     </ul>
   </li>
@@ -49,7 +51,8 @@ A multi-line braced comment keeps the nested list open
   <li>a
     <ul>
       <li>b
-
+{% c
+d %}
 x</li>
       <li>c</li>
     </ul>
@@ -68,7 +71,8 @@ x</li>
   <li>a
     <ul>
       <li>b
-
+{% c
+d %}
         <ul>
           <li>c</li>
         </ul>

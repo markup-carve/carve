@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A lazy line after a comment keeps the deepest list open
 
-CARVE-P9-013 makes the braced-comment-only run invisible to list ownership. PART 0 S4 folds the next plain line into the deepest open paragraph even when it misses that item's content column. The later blank separates the nested list's siblings under PART 9 §17 L1. CARVE-P2-035 measures the comment continuation in authored columns.
+The lazy `{%` run's continuation misses the nested item's body column, so the run is refused (carve#5830 rule B) and its opener is literal. A later line does not change that (rule A). PART 0 S4 folds the run and the next plain line into the deepest open paragraph even when they miss that item's content column. The later blank separates the nested list's siblings under PART 9 §17 L1.
 
 ::: compare
 
@@ -23,7 +23,8 @@ CARVE-P9-013 makes the braced-comment-only run invisible to list ownership. PART
   <li>a
     <ul>
       <li><p>b
-
+{% c
+d %}
 tail</p></li>
       <li><p>z</p></li>
     </ul>
@@ -55,7 +56,8 @@ A line at the ancestor's content column still continues the innermost paragraph 
       <li>mid
         <ul>
           <li><p>b
-
+{% c
+d %}
 tail</p></li>
           <li><p>z</p></li>
         </ul>

@@ -13,7 +13,8 @@ A lazy line after a comment keeps the deepest list open
   <li>a
     <ul>
       <li><p>b
-
+{% c
+d %}
 tail</p></li>
       <li><p>z</p></li>
     </ul>
@@ -37,7 +38,8 @@ tail</p></li>
       <li>mid
         <ul>
           <li><p>b
-
+{% c
+d %}
 tail</p></li>
           <li><p>z</p></li>
         </ul>

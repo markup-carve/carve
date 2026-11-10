@@ -4,7 +4,7 @@ page: edge-footnotes
 
 ## A lazy comment run lets a quote open in its note
 
-The comment run starts below the note's body column and its closer is indented past the opening brace, so the run is a valid invisible comment. The quote after it interrupts the note paragraph (CARVE-P2-035, PART 9 §10 I1, carve#5762).
+The comment run starts below the note's body column and its closer misses that column too, so the run takes no lazy line and is refused (carve#5830 rule B). Its opener and closer stay literal note text, and the quote after them interrupts the note paragraph (PART 9 §10 I1, carve#5762).
 
 ::: compare
 
@@ -25,7 +25,8 @@ x[^n]
   <ol>
     <li id="fn1">
       <p>p
-</p>
+{% a
+%}</p>
       <blockquote><p>q
 after</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>

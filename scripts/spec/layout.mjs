@@ -4263,7 +4263,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         (top().para || !BRACED_COMMENT_LINE.test(m.rest))) {
       // A line that misses an open fence's owner ends that fence first (S1), so it is read where it stands.
       const deeper = nextVisibleReach(at, reached)
-      if (deeper > reached) {
+      if (deeper > reached && !lazyRunMissesFrame(at, top().para ? frames.length - 1 : deeper)) {
         src = ' '.repeat(frames[deeper].col) + m.rest
         m = walkIndent(src)
         reached = deeper
@@ -5274,6 +5274,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return lines.length - 1
   }
 
+  // A multi-line `{%` run takes no lazy lines (carve#5830 rule B): moved into
+  // frame `deeper`, each continuation must carry its quotes and reach its column.
+  function lazyRunMissesFrame(at, deeper) {
+    const text = trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest)
+    if (!text.startsWith('{%') || text.includes('%}')) return false
+    let depth = 0
+    for (let k = 1; k <= deeper; k++) if (frames[k].kind === 'quote') depth++
+    for (let j = at + 1; j < lines.length && !isBlank(lines[j]); j++) {
+      const stands = stripQuotes(lines[j], depth)
+      if (!stands || walkIndent(stands.rest).col < frames[deeper].col) return true
+      if (lines[j].includes('%}')) return false
+    }
+    return false
+  }
+
   // How deep the next visible line reaches through the indentation frames below `from`.
   function nextVisibleReach(at, from) {
     const braced = walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest.startsWith('{%')
@@ -5379,9 +5394,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // continuation short of the container's content column (carve#5638).
     if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4).
-    if (missed) {
-      return classifyShape(rest, owner, at, col)
-    }
+    // A lazy `{%` run whose continuation misses the open paragraph's frame is refused (carve#5830 rule B).
+    if (missed && top().para && lazyRunMissesFrame(at, frames.length - 1)) return { kind: 'text', interrupts: false }
     return classifyShape(rest, owner, at, col)
   }
 
@@ -7139,7 +7153,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           let noteBodyQuoted = false
           let lastBlockLine = ''
           let lastBodyListMarker = null
+          // A lazy `{%` run awaiting its closer: a fold below the column is lazy too (carve#5830 rule B).
+          let lazyCommentRun = false
           const pushBody = (text, row = i, column = null) => {
+            lazyCommentRun = text.startsWith(LAZY + '{%') ? !text.includes('%}') : lazyCommentRun && !text.includes('%}')
             // A host's `+` boundary bounds the description's blocks too, as it does an item's (carve#5182).
             if (sortedHas(state.attachmentBoundaries?.get(lines), row) && state.attachmentBoundaries.get(bodyLines)?.at(-1) !== bodyLines.length) {
               markAttachmentBoundary(state, bodyLines)
@@ -7475,7 +7492,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) : -1
             if (openFence !== -1) break
-            if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
+            // A lazy `{%` run at column 0 folds too; its continuations miss the body (carve#5830 rule B).
+            if ((authoredCol > 0 || dedented.startsWith('{%')) && !startsVisibleBlock(dedented) &&
                 (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
                 ddParagraphOpen()) {
               pushBody(lazyFrame(dedented))
@@ -7516,7 +7534,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               // A marker below the body's column is no sibling of a list in the body,
               // so it continues the open paragraph once the description dedents it (PART 0 S4).
               const foldedMarker = matchMarkerAt(indentCols(dedented))
-              pushBody(lazyFence || foldedMarker || verseSpanEnded || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
+              const lazyRunLine = lazyCommentRun && (commentSourceColumns?.[i] ?? ind(i).col) <
+                (commentSourceColumns?.[descriptionStart] ?? sourceDescriptionCol) + 1 + dm[1].length
+              pushBody(lazyFence || foldedMarker || verseSpanEnded || lazyRunLine || CAPTION.test(dedented) ? lazyFrame(dedented) : dedented)
               foldedParagraphAt = bodyLines.length
               i++
               continue
