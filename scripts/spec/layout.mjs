@@ -7070,7 +7070,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               markAttachmentBoundary(state, bodyLines)
             }
             bodyLines.push(text)
-            bodyRefusalLines.push(stripLazy(stripLazyLead(text)))
+            const unframed = stripLazy(stripLazyLead(text))
+            // A lazy brace follower is already paragraph text. Keep its text
+            // visible to the run scan without offering it as a new opener.
+            bodyRefusalLines.push(text.startsWith(LAZY) && unframed.startsWith('{') ? 'x' + unframed : unframed)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const bodyMarker = matchMarkerAt(indentCols(text))
             if (bodyMarker) lastBodyListMarker = bodyMarker
