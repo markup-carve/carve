@@ -5489,6 +5489,27 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
 
   function markRefusedRun(rest, owner, at, col) {
     const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+    // A description sibling ends this owner's comment run. A closer in that
+    // sibling cannot turn an unclosed run's continuation into an attribute.
+    if (owner.kind === 'dd' && rest.startsWith('{%') && !rest.includes('%}')) {
+      let end = at + 1
+      let closed = false
+      for (; end < lines.length; end++) {
+        const inner = stripQuotes(lines[end], depth)?.rest ?? lines[end]
+        if (isBlank(inner)) break
+        const measured = indentCols(inner)
+        if (measured.col <= owner.markerCol &&
+            (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) break
+        if (inner.includes('%}')) { closed = true; break }
+      }
+      if (!closed) {
+        refusedKept.start = at
+        refusedKept.through = end - 1
+        refusedKept.col = col
+        refusedKept.fenceRun = null
+        return true
+      }
+    }
     // The continuation lines are read where they were written, so the opener is too (CARVE-P2-035).
     const authored = trimLineEnd(stripQuotes(lines[at], depth)?.rest ?? '')
     // A brace run that opens a note on its marker line begins at the note's
