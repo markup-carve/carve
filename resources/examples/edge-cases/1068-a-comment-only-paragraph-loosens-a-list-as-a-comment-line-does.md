@@ -24,7 +24,7 @@ A paragraph holding only braced comments has the ownership effect of a `%%` line
 
 :::
 
-::: compare
+:::: compare
 
 ```carve
 - x
@@ -43,7 +43,7 @@ A paragraph holding only braced comments has the ownership effect of a `%%` line
 </div>
 ```
 
-:::
+::::
 
 ::: compare
 
