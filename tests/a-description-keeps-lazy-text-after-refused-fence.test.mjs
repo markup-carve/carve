@@ -14,3 +14,15 @@ for (const fence of ['```', '~~~']) for (const lead of ['{.x', '{#id']) {
     assert.match(out, /plain(?:<\/code>)?<\/dd>\n<\/dl>$/)
   })
 }
+
+test('a fence outside a nested item still opens in the description', () => {
+  const src = ':: t\n: - a\n    {.x\n    }\n  ```\nplain\n'
+  assert.equal(html(src), '<dl>\n  <dt>t</dt>\n  <dd>\n    <ul>\n      <li>a\n{.x\n}</li>\n    </ul>\n    <pre><code></code></pre>\n  </dd>\n</dl>\n<p>plain</p>')
+})
+
+test('a fence at an outer item column leaves the inner refused paragraph', () => {
+  const src = ':: t\n: - - a\n      {.x\n      }\n    ```\nplain\n'
+  const out = html(src)
+  assert.match(out, /<pre><code><\/code><\/pre>/)
+  assert.match(out, /<p>plain<\/p>\n  <\/dd>\n<\/dl>$/)
+})
