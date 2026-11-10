@@ -5669,10 +5669,13 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
 // identifies actual closers and code payloads, so a sibling opener cannot be
 // mistaken for a closer. This is still not a replacement for S1-S5: a changed
 // closer can change later ownership, which the current readers decide again.
-function minimalCloserStudy(src) {
+function minimalCloserStudy(src, includeFiles = null) {
   src = normalizeSource(src)
   let sentinel = '\uE102'
-  while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
+  const included = includeFiles instanceof Map ? [...includeFiles.values()] : Object.values(includeFiles ?? {})
+  while (src.includes(sentinel) || included.some(value => typeof value === 'string' && value.includes(sentinel))) {
+    sentinel += '\uE103'
+  }
   const trace = []
   parse(src, { trace })
   const lines = src.split('\n')
@@ -5743,7 +5746,7 @@ function restoreStudySentinel(value, sentinel, seen = new Set()) {
 
 export function parse(src, options = {}) {
   if (options.layoutMode === 'minimal') {
-    const study = minimalCloserStudy(src)
+    const study = minimalCloserStudy(src, options.includeFiles)
     return restoreStudySentinel(parse(study.source, { ...options, layoutMode: 'current' }), study.sentinel)
   }
   // Comments require %% and definitions require ]:. Literal probes keep this

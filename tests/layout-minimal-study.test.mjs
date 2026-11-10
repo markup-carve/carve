@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
-const html = (source, layoutMode) => renderDoc(parse(source, { layoutMode }))
+const html = (source, layoutMode, options = {}) => renderDoc(parse(source, { layoutMode, ...options }))
 
 test('study switch exposes the left-side code closer cost', () => {
   const source = '  ```\nx\n ```\ny\n'
@@ -57,4 +57,10 @@ test('a right-side task-item closer lands at its parser content column', () => {
 test('a line-block opener may have more than one separator space', () => {
   const source = ':::  |\nx\n  :::\ny\n'
   assert.match(html(source, 'minimal'), /<\/div>\n<p>y<\/p>/)
+})
+
+test('study sentinel never erases a character from an included file', () => {
+  const source = '{{ child @code:txt }}\n'
+  const options = { includeFiles: { child: 'A\uE102B' } }
+  assert.equal(html(source, 'minimal', options), html(source, undefined, options))
 })
