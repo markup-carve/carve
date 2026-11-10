@@ -29,8 +29,8 @@ test('an unprefixed continuation of a quoted run is measured by its source colum
   assert.equal(html('> {.x\n  .y}\nplain'), '<blockquote><p>{.x\n.y}\nplain</p></blockquote>')
   assert.equal(html('- > {.x\n     .y}\nplain'),
     '<ul>\n  <li>\n    <blockquote>\n\n    </blockquote>\n  </li>\n</ul>\n<p>plain</p>')
-  // A tab before the `{` keeps the walk's reading; the walk does not read that unprefixed shape yet.
-  assert.equal(html('> \t{.x\n     .y}\nplain'), '<blockquote><p>{.x</p></blockquote>\n<p>.y}\nplain</p>')
+  // CARVE-P2-035 and carve#5619 measure the unprefixed line at its written column, even after a tab.
+  assert.equal(html('> \t{.x\n     .y}\nplain'), '<blockquote>\n\n</blockquote>\n<p>plain</p>')
   assert.equal(html('> - {.x\n   .y}\nplain'),
     '<blockquote>\n  <ul>\n    <li>{.x\n.y}\nplain</li>\n  </ul>\n</blockquote>')
 })

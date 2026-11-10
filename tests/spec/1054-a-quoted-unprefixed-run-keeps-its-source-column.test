@@ -1,0 +1,25 @@
+A quoted unprefixed run keeps its source column
+
+```
+> > {.x
+     .y}
+plain
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+<p>plain</p>
+```
+
+```
+> 	{.x
+     .y}
+plain
+.
+<blockquote>
+
+</blockquote>
+<p>plain</p>
+```
