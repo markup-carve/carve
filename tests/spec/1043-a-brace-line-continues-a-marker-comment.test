@@ -1,0 +1,11 @@
+A brace line continues a marker comment
+
+```
+- {% a
+   {lang=de}
+   z %} y
+.
+<ul>
+  <li> y</li>
+</ul>
+```
