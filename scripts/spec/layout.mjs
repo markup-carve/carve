@@ -2061,7 +2061,8 @@ function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false,
       const lead = indentCols(marker.text)
       containerCol = marker.indent + marker.markerWidth
       markerBody = true
-      tail = ' '.repeat(containerCol + lead.col) + lead.rest
+      // The task box is content (CARVE-P9-083), so a run after it opens past the box.
+      tail = ' '.repeat(containerCol + taskTextOffset(marker) + lead.col) + lead.rest
     } else break
   }
   if (indentCols(tail).rest[0] !== '{') return null
@@ -3284,6 +3285,19 @@ function bodyFenceEnd(bodyLines, k) {
   return -1
 }
 
+// `body` with its lazy comment runs unframed, as the paragraph reader measures them (CARVE-P2-035).
+// A lazy attribute run keeps its frame: it misses its container and keeps nothing (PART 0 S4).
+function lazyCommentView(body) {
+  return new Proxy(body, {
+    get(target, key) {
+      const line = Reflect.get(target, key)
+      if (typeof key !== 'string' || !/^\d+$/.test(key) || !line?.includes(LAZY)) return line
+      const text = stripLazy(stripLazyLead(line))
+      return trimWsStart(text)[0] === '{' && !trimWsStart(text).startsWith('{%') ? line : text
+    },
+  })
+}
+
 // The body index of a code fence a description body OPENED and has not closed,
 // or -1. A FENCED BODY IS NOT A PARAGRAPH (CARVE-P0-013), so a line below the
 // body's column cannot fold into it and ends the body. A valid opener always
@@ -3299,7 +3313,7 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
     // (CARVE-P2-035), so it cannot leave an open block fence in this body.
     if (k > 0) {
       const refused = {}
-      if (endsInRefusedRunParagraph(bodyLines, k, false, refused)) {
+      if (endsInRefusedRunParagraph(lazyCommentView(bodyLines), k, false, refused)) {
         // A nested marker's content column still bounds its paragraph. A
         // fence that falls short of it opens in the description instead.
         let ownerColumn = 0
@@ -8305,7 +8319,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           for (let m = matchMarkerAt(indentCols(tail)); m; m = matchMarkerAt(indentCols(tail))) {
             const lead = indentCols(m.text)
             containerCol = m.indent + m.markerWidth
-            tail = ' '.repeat(containerCol + lead.col) + lead.rest
+            tail = ' '.repeat(containerCol + taskTextOffset(m) + lead.col) + lead.rest
           }
           if (indentCols(tail).rest[0] === '{') {
             const quoted = new Proxy([], {
@@ -10996,7 +11010,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     if (/^[{>]|^[^ \t]/.test(head.text)) {
       const details = {}
-      const kept = refusedRunKeptInside(head.text, dedentedWindow(lines, headIndex, contentCol), 0, true, details)
+      const kept = refusedRunKeptInside(' '.repeat(taskTextOffset(head)) + head.text, dedentedWindow(lines, headIndex, contentCol), 0, true, details)
       if (kept !== null) {
         refusedParaThrough = headIndex + kept
         // A continuation short of the marker body's authored column is lazy
