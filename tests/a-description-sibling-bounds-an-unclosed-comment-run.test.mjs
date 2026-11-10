@@ -22,3 +22,12 @@ test('a quoted description observes the same sibling boundary', () => {
   assert.equal(html('> :: t\n> :   {% a\n>      {k=v}\n> : next\n> z %} y\n'),
     '<blockquote>\n  <dl>\n    <dt>t</dt>\n    <dd>{% a\n{k=v}</dd>\n    <dd>next\nz %} y</dd>\n  </dl>\n</blockquote>')
 })
+
+test('ordinary block openers still interrupt an unclosed description comment', () => {
+  assert.equal(html(':: t\n:   {% a\n     # Heading\n: next\n'),
+    '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>{% a</p>\n    <h1 id="Heading">Heading</h1>\n  </dd>\n  <dd>next</dd>\n</dl>')
+  assert.equal(html(':: t\n:   {% a\n     ```\n     code\n     ```\n: next\n'),
+    '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>{% a</p>\n    <pre><code>code\n</code></pre>\n  </dd>\n  <dd>next</dd>\n</dl>')
+  assert.equal(html(':: t\n:   {% a\n     {k=v}\n     # Heading\n: next\n'),
+    '<dl>\n  <dt>t</dt>\n  <dd>\n    <p>{% a\n{k=v}</p>\n    <h1 id="Heading">Heading</h1>\n  </dd>\n  <dd>next</dd>\n</dl>')
+})

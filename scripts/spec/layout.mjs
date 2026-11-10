@@ -5494,17 +5494,30 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (owner.kind === 'dd' && rest.startsWith('{%') && !rest.includes('%}')) {
       let end = at + 1
       let closed = false
+      let sibling = false
       for (; end < lines.length; end++) {
         const inner = stripQuotes(lines[end], depth)?.rest ?? lines[end]
         if (isBlank(inner)) break
         const measured = indentCols(inner)
         if (measured.col <= owner.markerCol &&
-            (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) break
+            (DEFLIST_TERM.test(measured.rest) || DESCRIPTION_TEXT.test(measured.rest))) {
+          sibling = true
+          break
+        }
         if (inner.includes('%}')) { closed = true; break }
       }
-      if (!closed) {
+      if (!closed && sibling) {
+        let through = at
+        for (let row = at + 1; row < end; row++) {
+          const inner = stripQuotes(lines[row], depth)?.rest ?? lines[row]
+          const next = indentCols(inner).rest
+          // I1-I5 still end this paragraph inside its description.
+          if (startsParagraphBlock(next) || isCodeBlockOpener(next) || isColonBlockOpener(next) ||
+              matchMarkerAt(indentCols(inner)) || next.startsWith('%%')) break
+          through = row
+        }
         refusedKept.start = at
-        refusedKept.through = end - 1
+        refusedKept.through = through
         refusedKept.col = col
         refusedKept.fenceRun = null
         return true
