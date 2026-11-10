@@ -1,0 +1,17 @@
+A description keeps lazy text after a refused fence
+
+````
+:: t
+: {.x
+  }
+  ```
+plain
+.
+<dl>
+  <dt>t</dt>
+  <dd>{.x
+}
+<code>
+plain</code></dd>
+</dl>
+````

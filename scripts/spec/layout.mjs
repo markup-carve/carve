@@ -2008,7 +2008,7 @@ const readsAsProse = (rest) => opensParagraph(rest, true) && !FENCE.test(rest) &
 
 // Whether `last` is a line a refused brace run's paragraph keeps. Prose there
 // leaves the paragraph open anyway, so only a block-shaped tail is traced back.
-function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
+function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false, details = null) {
   if (!includeProseTail && readsAsProse(indentCols(bodyLines[last]).rest)) return false
   const cache = { commentScannedThrough: -1 }
   for (let k = last; k >= 0 && !isBlank(bodyLines[k]); k--) {
@@ -2016,7 +2016,10 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
     // A run folded lazily into a quote's paragraph misses the quote and keeps nothing (PART 0 S4).
     if (k > 0 && QUOTE.test(walkIndent(bodyLines[k - 1]).rest)) return false
     const kept = refusedRunKeptThrough(bodyLines, k, cache)
-    if (kept !== null) return kept >= last
+    if (kept !== null) {
+      if (kept >= last && details) details.start = k
+      return kept >= last
+    }
   }
   return false
 }
@@ -3289,6 +3292,31 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
     if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
     if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2], f[1]) === null) continue
+    // A refused brace run keeps its fence-shaped follower as paragraph text
+    // (CARVE-P2-035), so it cannot leave an open block fence in this body.
+    if (k > 0) {
+      const refused = {}
+      if (endsInRefusedRunParagraph(bodyLines, k, false, refused)) {
+        // A nested marker's content column still bounds its paragraph. A
+        // fence that falls short of it opens in the description instead.
+        let ownerColumn = 0
+        // A paragraph also owns lazy lines short of its marker's content
+        // column; the run's written column alone cannot identify its owner.
+        if (bodyLeavesParagraphOpen(bodyLines.slice(0, refused.start))) {
+          for (let j = refused.start - 1; j >= 0 && !isBlank(bodyLines[j]); j--) {
+            let text = bodyLines[j]
+            let heldColumn = 0
+            for (let marker; (marker = matchMarkerAt(indentCols(text))); ) {
+              const next = indentCols(marker.text)
+              heldColumn = marker.indent + marker.markerWidth
+              text = ' '.repeat(heldColumn + next.col) + next.rest
+            }
+            if (heldColumn > 0) { ownerColumn = heldColumn; break }
+          }
+        }
+        if (indentCols(bodyLines[k]).col >= ownerColumn) continue
+      }
+    }
     const closer = bodyFenceEnd(bodyLines, k)
     const boundary = bounds?.find((b) => b > k && (closer === -1 || b <= closer))
     const end = boundary === undefined ? closer : boundary - 1
