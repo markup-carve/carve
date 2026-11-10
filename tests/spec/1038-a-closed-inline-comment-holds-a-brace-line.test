@@ -1,0 +1,9 @@
+A closed inline comment holds a brace line
+
+```
+p {% a
+{lang=de}
+z %} y
+.
+<p>p  y</p>
+```

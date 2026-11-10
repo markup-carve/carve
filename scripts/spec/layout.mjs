@@ -17,7 +17,7 @@
  * disagreement before (carve#646).
  */
 
-import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd } from './render.mjs'
+import { parseAttrList, parseBlockAttrList, parseAttrBlock, matchDestination, isImageSource, headingText, bracketScanEnd, renderInline } from './render.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount, delimitedRows, delimitedRecords } from './delimited-table.mjs'
 import { hasInvalidCodeLanguage, scanDirective } from './include-directive.mjs'
@@ -1844,16 +1844,109 @@ function refusedBlockBraceRun(lines, start, cache) {
 // The last line a refused run's paragraph keeps: the follower, a fence opener there through its closer (CARVE-P2-035).
 // A follower short of the run's container column is read as usual (PART 0 S4), so only prose there is kept.
 // Advance an open inline code span or braced comment over one paragraph line.
-function scanInlineSpan(span, line) {
+const inlineHostCache = new Map()
+function inlineHostStart(line, at, bracketStarts) {
+  const closer = line[at - 1]
+  let open = -1
+  if (closer === ']') open = bracketStarts[at - 1]
+  else if (closer === ')') {
+    const tail = line.lastIndexOf('](', at - 1)
+    if (tail >= 0) open = bracketStarts[tail]
+  } else if (closer === '>') open = line.lastIndexOf('<', at - 2)
+  else if (closer === '}') open = line.lastIndexOf('{', at - 2)
+  else if (closer === '`') {
+    open = line.lastIndexOf('`', at - 2)
+    while (open > 0 && line[open - 1] === '`') open--
+  } else if ('/*_~=:'.includes(closer ?? '\0')) open = line.lastIndexOf(closer, at - 2)
+  return open < 0 ? -1 : Math.max(0, open - 1)
+}
+
+function inlineAttributeHost(line, at, span, bracketStarts) {
+  const closer = line[at - 1]
+  if (!'])`/*_~=}>:'.includes(closer ?? '\0')) return false
+  const start = inlineHostStart(line, at, bracketStarts)
+  const probe = (prefix) => {
+    let paired = inlineHostCache.get(prefix)
+    if (paired !== undefined) return paired
+    // The same inline parser that consumes the attribute run decides whether
+    // this closer actually paired. A lexical delimiter guess would count an
+    // intraword `*` or a stray `]` as a host (carve#5740).
+    let marker = 'data-carve-host-probe-5740'
+    while (prefix.includes(marker)) marker += 'x'
+    try {
+      const rendered = renderInline(prefix + `{${marker}=1}`)
+      paired = rendered.includes(` ${marker}="1"`) || rendered.includes(`"${marker}","1"`)
+    }
+    catch (error) {
+      if (!(error instanceof Refuse)) throw error
+      paired = false
+    }
+    if (inlineHostCache.size >= 4096) inlineHostCache.clear()
+    inlineHostCache.set(prefix, paired)
+    return paired
+  }
+  if (start >= 0 && probe(line.slice(start, at))) return true
+  // The host may have opened on a previous soft line. Read from its latest
+  // visible opener, rather than making a fresh lexical guess at this closer.
+  const marker = closer === ')' || closer === ']' ? '[' : closer === '>' ? '<' : closer === '}' ? '{' : closer
+  const bracketClose = closer === ']' ? at - 1 : closer === ')' ? line.lastIndexOf('](', at - 1) : -1
+  const pairedBracket = bracketClose >= 0 && span.lastBracketClose?.[0] === span.historyLines.length &&
+    span.lastBracketClose[1] === bracketClose ? span.lastBracketMatch : null
+  const prior = pairedBracket ?? span.previousMarks?.get(marker)
+  if (!prior || prior[0] >= span.historyLines.length) return false
+  const prefix = [span.historyLines[prior[0]].slice(Math.max(0, prior[1] - 1)),
+    ...span.historyLines.slice(prior[0] + 1), line.slice(0, at)].join('\n')
+  return probe(prefix)
+}
+
+function scanInlineSpan(span, line, futureCommentClose = false) {
+  const lastCommentClose = line.lastIndexOf('%}')
+  const lastBraceClose = line.lastIndexOf('}')
+  const bracketStarts = new Int32Array(line.length).fill(-1)
+  const brackets = []
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '[') brackets.push(i)
+    else if (line[i] === ']' && brackets.length) bracketStarts[i] = brackets.pop()
+  }
+  let acceptedAttributeEnd = -1
+  span.historyLines ??= []
+  span.lastMarks ??= new Map()
+  span.bracketOpeners ??= []
+  span.previousMarks = new Map(span.lastMarks)
+  const historyIndex = span.historyLines.length
   for (let k = 0; k < line.length; k++) {
     if (span.comment) {
       if (line[k] === '%' && line[k + 1] === '}') { span.comment = false; k++ }
       continue
     }
+    // An accepted inline attribute belongs to its preceding inline host. Its
+    // quoted payload is opaque to code and comment pairing (PART 9 §9 R3).
+    // A bare word before the brace is no inline host, so leave that run as
+    // text and let its backticks pair normally.
+    if (!span.codeRun && line[k] === '{' && lastBraceClose > k &&
+        (acceptedAttributeEnd === k || inlineAttributeHost(line, k, span, bracketStarts))) {
+      let quote = null
+      let end = k + 1
+      for (; end < line.length; end++) {
+        const ch = line[end]
+        if (quote && ch === '\\') { end++; continue }
+        if (quote) { if (ch === quote) quote = null }
+        else if (ch === '"' || ch === "'") quote = ch
+        else if (ch === '}') break
+      }
+      if (end < line.length && parseAttrList(line.slice(k, end + 1)) !== null) {
+        acceptedAttributeEnd = end + 1
+        k = end
+        continue
+      }
+    }
     if (line[k] === '`') {
       let width = 1
       while (line[k + width] === '`') width++
-      if (span.codeRun === 0) span.codeRun = width
+      if (span.codeRun === 0) {
+        span.codeRun = width
+        span.lastMarks.set('`', [historyIndex, k])
+      }
       else if (span.codeRun === width) span.codeRun = 0
       k += width - 1
       continue
@@ -1862,12 +1955,20 @@ function scanInlineSpan(span, line) {
     if (line[k] === '\\') {
       let width = 1
       while (line[k + width] === '\\') width++
-      const escaped = line[k + width] === '`' || line[k + width] === '{'
+      const escaped = '`{[]'.includes(line[k + width] ?? '\0')
       k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
       continue
     }
-    if (line[k] === '{' && line[k + 1] === '%') { span.comment = true; k++ }
+    if (line[k] === '{' && line[k + 1] === '%' &&
+        (lastCommentClose > k + 1 || futureCommentClose)) { span.comment = true; k++ }
+    if (line[k] === '[') span.bracketOpeners.push([historyIndex, k])
+    else if (line[k] === ']' && span.bracketOpeners.length) {
+      span.lastBracketMatch = span.bracketOpeners.pop()
+      span.lastBracketClose = [historyIndex, k]
+    }
+    if ('[<{}/*_~=:'.includes(line[k])) span.lastMarks.set(line[k], [historyIndex, k])
   }
+  span.historyLines.push(line)
   return span
 }
 
@@ -5956,6 +6057,17 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   const blocks = []
   let i = 0
   const n = lines.length
+  // A failed `{%` is literal text. Remember whether a closer lies ahead in
+  // this nonblank run so checking each paragraph line stays linear.
+  const commentClosesAhead = new Array(n)
+  let futureCommentClose = false
+  for (let row = n - 1; row >= 0; row--) {
+    commentClosesAhead[row] = futureCommentClose
+    // Inline pairing cannot cross a visible paragraph interruption. A close
+    // in a later block cannot keep this paragraph's brace line inside it.
+    futureCommentClose = isBlank(lines[row]) || startsParagraphBlock(lines[row], top)
+      ? false : lines[row].includes('%}') || futureCommentClose
+  }
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const braceSourceColumns = authoredBraceColumns.get(lines)
   const relativeTermColumns = state.itemRelativeTermColumns?.has(lines) ?? false
@@ -8480,7 +8592,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
     const refusedCache = { commentScannedThrough: -1 }
     const inlineSpan = { scanned: 0, codeRun: 0, comment: false }
     const inlineSpanOpen = () => {
-      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++) scanInlineSpan(inlineSpan, para[inlineSpan.scanned])
+      for (; inlineSpan.scanned < para.length; inlineSpan.scanned++)
+        scanInlineSpan(inlineSpan, para[inlineSpan.scanned], commentClosesAhead[paraStart + inlineSpan.scanned])
       return inlineSpan.codeRun !== 0 || inlineSpan.comment
     }
     while (i < n && !isBlank(lines[i])) {

@@ -1,0 +1,12 @@
+An unclosed inline comment holds no brace line
+
+```
+{%%%:fr}
+y
+{.x}
+z
+.
+<p>{%%%:fr}
+y</p>
+<p class="x">z</p>
+```
