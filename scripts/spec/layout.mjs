@@ -8663,11 +8663,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }), 0) : null
         if (quotedAttributeRun) {
           qAttributeThrough = idx + quotedAttributeRun.next - 1
-          // The shift is the quote prefix: a host measures marker-glued attributes at zero
-          // width, so `inner0.col` can sit left of where the `{` stands in the quote body.
-          qAttributeShift = braceColumn === null ? null
-            : braceColumn - indentCols(l.slice(0, l.length - inner0.rest.length).replace(/[^\t]/g, ' ') + '{').col
-          qAttributeSource = braceSource === undefined ? null : { brace: braceSource, col: inner0.col }
+          // A host measures marker-glued attributes at zero width, so `inner0.col` can sit
+          // left of where the `{` stands in the quote body; continuations keep that column.
+          const braceInQuote = indentCols(l.slice(0, l.length - inner0.rest.length).replace(/[^\t]/g, ' ') + '{').col
+          qAttributeShift = braceColumn === null ? null : braceColumn - braceInQuote
+          qAttributeSource = braceSource === undefined ? null : { brace: braceSource, col: braceInQuote }
           // The walk normalizes such a run only when all its lines carry this
           // quote's prefix; otherwise the run starts the quote's body here.
           let unprefixed = false
