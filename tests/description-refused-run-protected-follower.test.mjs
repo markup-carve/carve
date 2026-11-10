@@ -21,3 +21,7 @@ test('the protected follower rule applies to other block shapes and ends at a si
 test('a protected brace follower cannot become a fresh refused run', () => {
   assert.equal(html(':: t\n: {.x\n}\n{.y\n}\n# h\nz'), '<dl>\n  <dt>t</dt>\n  <dd>{.x\n}\n{.y\n}</dd>\n</dl>\n<section id="h">\n  <h1>h</h1>\n  <p>z</p>\n</section>')
 })
+
+test('a protected fence follower keeps its payload through the closer', () => {
+  assert.equal(html(':: t\n: {.x\n}\n```\n# h\n```\nz'), '<dl>\n  <dt>t</dt>\n  <dd>{.x\n}\n<code>\n# h\n</code>\nz</dd>\n</dl>')
+})

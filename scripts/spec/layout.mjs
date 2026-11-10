@@ -7036,6 +7036,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
           const bodyRefusalLines = []
+          let protectedFenceThrough = -1
           let bodySpanScanAt = 0
           let bodySpan = { codeRun: 0, comment: false }
           const bodyInlineSpanOpen = () => {
@@ -7157,6 +7158,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
+            if (i <= protectedFenceThrough) {
+              pushBody(lazyFrame(stripIndent(cur).replace(/[ \t]+$/, '')))
+              i++
+              continue
+            }
             if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
             // A new span needs its own answer; payload rows keep the prior one.
             if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
@@ -7319,6 +7325,16 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const protectedFollower = endsInRefusedRunParagraph(bodyRefusalLines, bodyRefusalLines.length - 1, true)
               bodyRefusalLines.pop()
               if (protectedFollower) {
+                const fence = FENCE.exec(dedented)
+                if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
+                  for (let row = i + 1; row < n && !isBlank(lines[row]); row++) {
+                    const closer = PURE_FENCE.exec(indentCols(lines[row]).rest)?.[1]
+                    if (closer && closer[0] === fence[1][0] && closer.length >= fence[1].length) {
+                      protectedFenceThrough = row
+                      break
+                    }
+                  }
+                }
                 pushBody(lazyFrame(dedented))
                 i++
                 continue
