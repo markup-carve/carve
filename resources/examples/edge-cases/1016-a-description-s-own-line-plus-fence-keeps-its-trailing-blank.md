@@ -27,7 +27,7 @@ x
     <p>p</p>
     <pre><code>code
 
-tail
+  tail
 
 </code></pre>
   </dd>

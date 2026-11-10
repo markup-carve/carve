@@ -317,7 +317,9 @@
            changes no frame state.
 
         An own-line attached fence keeps its trailing blank (PART 9 §17 L4,
-        carve#5560).
+        carve#5560). Its payload lines are verbatim from the opener's column
+        in every host; a blank inside the fence does not re-measure a later
+        line against the host's body column (carve#5855).
 
         A host reads a closer at its column whatever stands between the
         blank and the closer, so a payload line there does not end a fence
