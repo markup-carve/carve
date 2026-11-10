@@ -2203,6 +2203,21 @@ function carryPrefixMemo(state, source, index, target, targetIndex) {
 // `marker.text` drops the authored gap after a task box; retain it in source columns.
 const taskTextOffset = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH + marker.taskGap
 
+// The text after the list markers and quote prefixes a line opens with, and its column (C3).
+function containerLeadText(text, column = 0) {
+  if (!text.includes('{')) return { text, column }
+  for (let depth = 0; depth < MAX_NESTING_DEPTH && text.includes('{'); depth++) {
+    const measured = indentCols(text)
+    const marker = matchMarkerAt(measured)
+    const quote = !marker && QUOTE.exec(measured.rest)
+    if (!marker && !quote) break
+    column += marker ? marker.indent + marker.markerWidth + taskTextOffset(marker) : measured.col + measured.rest.length - (quote[1] ?? '').length
+    text = marker ? marker.text : quote[1] ?? ''
+  }
+  const measured = indentCols(text)
+  return { text: measured.rest, column: column + measured.col }
+}
+
 function markerFenceSummary(text, memo) {
   const path = []
   let summary
@@ -7927,6 +7942,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qRefusedThrough = { at: -1, depth: 0 } // the last line a refused brace run's paragraph keeps (CARVE-P2-035)
       let qCommentThrough = -1 // the closing line of a valid comment run, whose continuations open nothing (CARVE-P2-035)
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
+      let qAttributeShift = 0 // the quote prefix width an unprefixed continuation of that run drops
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
       let qStanzaCandidate = false
@@ -8507,6 +8523,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           (qHost.kinds.at(-1) === 'description' && inner0.col === qHost.markerCols.at(-1) ||
            qHost.kinds.at(-1) === 'item' && inner0.col === qHost.columns.at(-1) &&
            TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
+        // An unprefixed continuation is compared by source column with the `{` (CARVE-P2-035, carve#5619).
+        // A tab before the `{` is normalized by the ownership walk, which reads such a run separately.
+        const braceIndex = inner0.rest[0] === '{' && lines[idx].endsWith(inner0.rest) ? lines[idx].length - inner0.rest.length : -1
+        const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
+          : indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
         const quotedAttributeRun = inner0.rest[0] === '{' ? tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
@@ -8522,10 +8543,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const column = authoredBraceColumns.get(lines)?.[idx + offset] ?? indentCols(authored).col
               return ' '.repeat(column) + stripLazy(trimWsStart(authored))
             }
-            return dedent(authored, inner0.col)
+            return QUOTE.test(lines[idx + offset] ?? '') || braceColumn === null ? dedent(authored, inner0.col) : dedent(authored, braceColumn)
           },
         }), 0) : null
-        if (quotedAttributeRun) qAttributeThrough = idx + quotedAttributeRun.next - 1
+        if (quotedAttributeRun) {
+          qAttributeThrough = idx + quotedAttributeRun.next - 1
+          qAttributeShift = braceColumn === null ? null : braceColumn - inner0.col
+        }
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
              isTableRow(l) || quotedAttributeRun || contRow || nestedQuoteEnds || nestedItemEnds || descriptionEndsPara || descriptionClosesPara || descriptionBodyEndsPara ||
@@ -8707,6 +8731,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           continue
         }
         if (qHost.fence || openComment !== null) break
+        // An unprefixed continuation of a valid wrapped attribute run is that run's line, not lazy text.
+        if (i <= qAttributeThrough && qAttributeShift !== null && !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
+          inner.push(dedent(lines[i], qAttributeShift))
+          i++
+          continue
+        }
         // A COMMENT IS COLUMN-EXEMPT (§10 I5's first exception, §24 C3). The
         // other four invisible kinds are ordinary text below a column and fold;
         // a comment stays invisible at ANY column, and folding one would make it
@@ -11268,14 +11298,16 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // Content columns of the item's nested markers, where a wrapped attribute may open.
     const descendantColumns = new Set()
     let fenceBlankRun = 0
-    if (head.text.startsWith('{')) {
+    // A run after nested markers on the marker line is measured from its `{` source column too (CARVE-P2-035).
+    const { text: headLead, column: headLeadColumn } = containerLeadText(head.text, taskTextOffset(head))
+    if (headLead.startsWith('{')) {
       // Lazy, so a scan reads only the lines the attribute run reaches.
       const below = dedentedWindow(lines, i, contentCol)
       const window = new Proxy([], {
-        get: (_, key) => key === '0' ? head.text : key === 'length' ? below.length + 1
+        get: (_, key) => key === '0' ? headLead : key === 'length' ? below.length + 1
           : typeof key === 'string' && /^\d+$/.test(key) ? below[Number(key) - 1] : undefined,
       })
-      const attributes = tryAttrLine(window, 0, taskTextOffset(head))
+      const attributes = tryAttrLine(window, 0, headLeadColumn)
       if (attributes && attributes.next > 1) {
         wrappedAttrEnd = i + attributes.next - 2
         closePara()
@@ -11408,8 +11440,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         noteListBodyColumn = null
         noteListChildColumn = null
       }
+      // A line below the item's content column either folds lazily into the note's paragraph or ends the item (PART 0 S4).
       if (i > noteFenceEnd && i >= markerNotePlusEnd && ((FOOTNOTE_DEF.test(lm.rest) && lm.col < markerNoteBodyColumn) ||
-          (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence()))) {
+          (lm.rest !== '' && lm.col < markerNoteBodyColumn && !insideFence() && lm.col >= contentCol))) {
         markerNoteEligible = false
         noteMarkerSeen = false
       }
@@ -11958,6 +11991,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const quoteClaimsDefinitionLine = bodyQuote.open &&
         (bodyQuote.at === i - 1 || quoteLazyAt === i - 1) && !QUOTE.test(lm.rest)
       if (nm && col >= contentCol) descendantColumns.add(nm.indent + nm.markerWidth)
+      else if (col >= contentCol && DESCRIPTION_LEAD.test(lm.rest)) descendantColumns.add(col + DESCRIPTION_LEAD.exec(lm.rest)[0].length)
       if (DEFLIST_TERM.test(lm.rest) && col >= contentCol && !fence.opaque && !inPayload &&
           !nestedVerbatim() && noteFrames.length === 0) {
         lastListBlock = 'term'
@@ -12263,6 +12297,19 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // Lazy, so a scan reads only the lines the attribute run reaches.
           const attributes = tryAttrLine(dedentedWindow(lines, i, lm.col), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
+        } else if (i > wrappedAttrEnd && col >= contentCol && lm.rest.includes('{') && !insideFence() && !nestedVerbatim()) {
+          // So is one opened after a nested marker or description lead, measured from its `{` source column (CARVE-P2-035).
+          const description = definitionListOpen && DESCRIPTION_LEAD.exec(lm.rest)
+          const { text: lead, column: opener } = description
+            ? containerLeadText(lm.rest.slice(description[0].length), description[0].length)
+            : containerLeadText(lm.rest)
+          if (lead.startsWith('{') && opener > 0) {
+            const window = dedentedWindow(lines, i, lm.col)
+            const attributes = tryAttrLine(new Proxy([], {
+              get: (_, key) => key === '0' ? lead : window[key],
+            }), 0, opener)
+            if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
+          }
         }
         // A run folded lazily into a descendant's paragraph is short of its container and keeps nothing (PART 0 S4).
         // A marker or quote line opens its own block there, so its run is not folded (carve#5771).
