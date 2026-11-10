@@ -4761,9 +4761,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const invisibleInEntry = (owner.last === 'term' || owner.last === 'dd') &&
         (form.kind === 'leaf' && (COMMENT_LINE.test(m.rest) || isDefinitionLine(m.rest)) || form.family === 'comment')
       if (!invisibleInEntry) {
-        const wasPara = owner.para
         owner.para = !!form.caption || !!form.para
-        if (form.caption || form.para && !wasPara) owner.paraFrom = at
+        if (form.caption) owner.paraFrom = at
+        // No span is open where the run starts (codeSpanOpenAbove), so the span scan resumes after it.
+        if (form.para) owner.paraFrom = at + form.attrLines + 1
         owner.last = form.kind
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
