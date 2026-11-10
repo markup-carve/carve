@@ -3637,6 +3637,19 @@ function cachedForwardSearch(cache, key, from, length, visit) {
 
 // The ownership walk's one linear pass, counted apart from `scan` so the
 // rescan guards still measure only the block readers.
+// Whether a block brace run's line holds its closing `}` outside a quoted value.
+function braceRunCloses(brace, line) {
+  for (const ch of line) {
+    if (brace.quoted) {
+      if (brace.escaped) brace.escaped = false
+      else if (ch === '\\') brace.escaped = true
+      else if (ch === brace.quoted) brace.quoted = null
+    } else if (ch === '"' || ch === "'") brace.quoted = ch
+    else if (ch === '}') return true
+  }
+  return false
+}
+
 // One line of a quote run at a container's content column: whether the run
 // now ends in an open paragraph. `run` carries the run's state between lines.
 function advanceQuoteRun(run, text, idx) {
@@ -3683,6 +3696,14 @@ function advanceQuoteRun(run, text, idx) {
     const col = shallow ? sourcePrefixColumn(written, at.rest) - brace.written : at.col
     if (at.rest !== '' && col > brace.col) {
       brace.lines.push(' '.repeat(col) + at.rest)
+      // Validated once, on the line that closes it; until then the run may still be refused text.
+      if (!braceRunCloses(brace, at.rest)) {
+        run.brace = brace
+        run.open = true
+        run.table = false
+        run.at = idx
+        return true
+      }
       const attr = tryAttrLine(brace.lines, 0, brace.col)
       if (attr || !text.includes('}')) {
         if (!attr || attr.next < brace.lines.length) run.brace = brace
@@ -3700,7 +3721,8 @@ function advanceQuoteRun(run, text, idx) {
     const at = indentCols(text)
     if (at.rest[0] === '{' && !at.rest.startsWith('{%') && !tryAttrLine([at.rest], 0)) {
       const shift = written.includes('\t') || !written.endsWith(at.rest) ? null : sourcePrefixColumn(written, at.rest) - at.col
-      run.brace = { depth, col: at.col, lines: [at.rest], written: shift }
+      const brace = { depth, col: at.col, lines: [at.rest], written: shift, quoted: null, escaped: false }
+      if (!braceRunCloses(brace, at.rest)) run.brace = brace
     }
   }
   run.open = stanza || (!opaque && !colonCloses && trimWs(text) !== '' && opensParagraph(text, !wasOpen, rowOpen))
