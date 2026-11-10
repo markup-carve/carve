@@ -8473,7 +8473,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
            qHost.kinds.at(-1) === 'item' && inner0.col === qHost.columns.at(-1) &&
            TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
         // An unprefixed continuation is compared by source column with the `{` (CARVE-P2-035, carve#5619).
-        const braceShift = inner0.rest[0] === '{' ? indentCols(lines[idx].slice(0, lines[idx].length - l.length).replace(/[^\t]/g, ' ') + '{').col : 0
+        // A tab before the `{` is normalized by the ownership walk, which reads such a run separately.
+        const braceIndex = inner0.rest[0] === '{' && lines[idx].endsWith(inner0.rest) ? lines[idx].length - inner0.rest.length : -1
+        const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
+          : indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
         const quotedAttributeRun = inner0.rest[0] === '{' ? tryAttrLine(new Proxy([], {
           get(_, key) {
             if (key === 'length') return n - idx
@@ -8489,12 +8492,12 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               const column = authoredBraceColumns.get(lines)?.[idx + offset] ?? indentCols(authored).col
               return ' '.repeat(column) + stripLazy(trimWsStart(authored))
             }
-            return QUOTE.test(lines[idx + offset] ?? '') ? dedent(authored, inner0.col) : dedent(authored, braceShift + inner0.col)
+            return QUOTE.test(lines[idx + offset] ?? '') || braceColumn === null ? dedent(authored, inner0.col) : dedent(authored, braceColumn)
           },
         }), 0) : null
         if (quotedAttributeRun) {
           qAttributeThrough = idx + quotedAttributeRun.next - 1
-          qAttributeShift = braceShift
+          qAttributeShift = braceColumn === null ? null : braceColumn - inner0.col
         }
         if ((isBlank(l) || HEADING.test(l) || HR.test(l) || isOpener || hostedBlock || itemClosesPara ||
              isColonParagraphInterrupt(l) || COLON_CLOSER.test(l) ||
@@ -8674,7 +8677,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         }
         if (qHost.fence || openComment !== null) break
         // An unprefixed continuation of a valid wrapped attribute run is that run's line, not lazy text.
-        if (i <= qAttributeThrough && !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
+        if (i <= qAttributeThrough && qAttributeShift !== null && !isBlank(lines[i]) && !lines[i].startsWith(LAZY)) {
           inner.push(dedent(lines[i], qAttributeShift))
           i++
           continue
