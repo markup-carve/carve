@@ -5680,6 +5680,7 @@ function minimalCloserStudy(src) {
     const bare = line.replace(/^(?:[ \t]*> ?)+/, '')
     const measured = indentCols(bare)
     let content = measured.rest
+    let parserColumn = measured.col
     if (opener) {
       // Only an opener that the trace recognized may carry a marker prefix.
       // A marker-shaped code payload is literal and must not be stripped.
@@ -5690,10 +5691,13 @@ function minimalCloserStudy(src) {
         const next = marker?.text ?? note?.[2] ??
           (description ? content.slice(description[0].length) : undefined)
         if (next === undefined) break
+        parserColumn += marker?.markerWidth ??
+          (note ? FOOTNOTE_BODY_COLUMN : description?.[0].length ?? 0)
         content = next
       }
     }
     return { column: measured.col + measured.rest.length - content.length,
+      parserColumn: opener ? parserColumn : measured.col,
       prefix: line.slice(0, line.length - bare.length), content }
   }
   for (const record of trace) {
@@ -5716,8 +5720,8 @@ function minimalCloserStudy(src) {
       const offset = line.length - candidate.content.length
       lines[lineIndex] = line.slice(0, offset) + sentinel + line.slice(offset)
     } else if (record.form === 'payload' && candidate.column > start.column &&
-        (parent[1] === 'code' || parent[1] === 'div' && /^:{3,} \|/.test(start.content))) {
-      lines[lineIndex] = candidate.prefix + ' '.repeat(start.column) + candidate.content
+        (parent[1] === 'code' || parent[1] === 'div' && /^:{3,} +\|/.test(start.content))) {
+      lines[lineIndex] = candidate.prefix + ' '.repeat(start.parserColumn) + candidate.content
     }
   }
   return { source: lines.join('\n'), sentinel }

@@ -47,3 +47,14 @@ test('a right-side line-block closer is structural in the study mode', () => {
   const source = '::: |\nx\n  :::\ny\n'
   assert.match(html(source, 'minimal'), /<\/div>\n<p>y<\/p>/)
 })
+
+test('a right-side task-item closer lands at its parser content column', () => {
+  const source = '- [x] ```\n  x\n       ```\n  y\n'
+  assert.match(html(source, 'minimal'), /<pre><code>x\n<\/code><\/pre>/)
+  assert.doesNotMatch(html(source, 'minimal'), /<code>x\n {5}```/)
+})
+
+test('a line-block opener may have more than one separator space', () => {
+  const source = ':::  |\nx\n  :::\ny\n'
+  assert.match(html(source, 'minimal'), /<\/div>\n<p>y<\/p>/)
+})
