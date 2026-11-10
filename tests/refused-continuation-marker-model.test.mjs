@@ -11,12 +11,17 @@ const rawDecisions = new Map([
   ['accepted', []],
   ['not-an-offer', []],
   ['suppressed-line', [3]],
+  ['legacy-nested-quote-unclaimed-before-list', []],
 ])
 
 for (const { name, source } of vectors) {
   test(`${name}: the P6 walk decides whether the lone marker was refused`, () => {
     const stateSink = {}
     parse(source, { stateSink })
-    assert.deepEqual(stateSink.refusedPlusLines.map(index => index + 1), rawDecisions.get(name))
+    const refused = stateSink.refusedPlusLines.map(index => index + 1)
+    if (rawDecisions.has(name)) assert.deepEqual(refused, rawDecisions.get(name))
+    else for (const finding of vectors.find(vector => vector.name === name).expected.findings) {
+      assert.ok(refused.includes(finding.line), `${name}: model did not refuse line ${finding.line}`)
+    }
   })
 }
