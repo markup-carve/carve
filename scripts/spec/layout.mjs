@@ -3869,6 +3869,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   let attrRest = null
   // Every lone `+` the one rule refused; each is written as `%%` and renders nothing.
   const refusedPlus = []
+  const frameTabColumns = new Map()
   const acceptedPlusesByOwner = new Map()
   // Note labels in document order: a later definition's lone `+` takes nothing (PART 9R R2, carve#5474).
   const definedNotes = new Set()
@@ -4260,6 +4261,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
       reached = k
     }
+    // A leading tab is measured per frame (carve#5755); a brace run's reader needs that column, not the line-start one.
+    if (frameShiftedTab()) frameTabColumns.set(at, segmentColumn())
     // A comment or one-line definition closes no indentation frame: the next
     // visible line picks the owner (CARVE-P9-013).
     if (movedSpan && at <= movedSpan.end) {
@@ -4714,7 +4717,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const frameShiftedOpener = (form.kind === 'colon' || form.kind === 'fence' || form.kind === 'item') &&
         frameShiftedTab()
       const frameOpener = form.kind === 'quote' || form.kind === 'leaf' || form.perFrame || frameShiftedOpener
-      lead(keepColumn ? m.col : owner.canon, form.kind === 'term' || form.kind === 'dd' || frameOpener, frameOpener)
+      // A tab-led brace run keeps its per-frame padding past the owner, as its space spelling does (CARVE-P2-035).
+      const bracePad = form.attrLines && frameTabColumns.has(at) ? Math.max(0, frameTabColumns.get(at) - owner.col) : 0
+      lead(keepColumn ? m.col : owner.canon + bracePad, form.kind === 'term' || form.kind === 'dd' || frameOpener, frameOpener)
       if (laterRun) blankInAttachedCode = null
       apply(owner, m.col, form)
       if (trace) applied = ownerPath()
@@ -4769,7 +4774,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         if (form.kind !== 'term' && form.kind !== 'dd') owner.openTerm = false
       }
       owner.tableLine = form.table ? at : undefined
-      if (form.attrLines) attrRest = { left: form.attrLines, cut: col - canon }
+      // A continuation in the owner the opener reached moves with that owner's frame shift, not the opener's padding (CARVE-P2-035, carve#5874).
+      if (form.attrLines) attrRest = { left: form.attrLines, cut: (frames.indexOf(owner) <= reached ? owner.col : col) - canon }
       if (form.kind === 'term') {
         owner.termShift = col - owner.canon
         owner.openTerm = true
@@ -4948,6 +4954,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   }
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
+  walked.frameTabColumns = frameTabColumns
   walked.attachedFenceMisses = attachedFenceMisses
   walked.acceptedPlusesByOwner = acceptedPlusesByOwner
   return walked
@@ -5796,7 +5803,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
       if (!quote) break
       rest = quote[1] ?? ''
     }
-    return indentCols(rest).col
+    return quotes === 0 ? walked.frameTabColumns.get(at) ?? indentCols(rest).col : indentCols(rest).col
   }
   const sourceBraceColumns = authored.map(sourceBraceColumn)
   // Where each line's first character is written; a quote adds its own prefix (CARVE-P2-035).
