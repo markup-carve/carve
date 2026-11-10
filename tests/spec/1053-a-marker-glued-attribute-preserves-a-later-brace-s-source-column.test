@@ -1,0 +1,13 @@
+A marker-glued attribute preserves a later brace's source column
+
+```
+-{.x} {.x
+     .y}
+  # h
+.
+<ul>
+  <li class="x">{.x
+.y}
+# h</li>
+</ul>
+```
