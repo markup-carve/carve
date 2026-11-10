@@ -1,0 +1,33 @@
+A refused quoted run with a lazy continuation stays literal
+
+```
+- > {#a
+   .y}
+.
+<ul>
+  <li>
+    <blockquote><p>{#a
+.y}</p></blockquote>
+  </li>
+</ul>
+```
+
+```
+> - {#a
+   .y}
+.
+<blockquote>
+  <ul>
+    <li>{#a
+.y}</li>
+  </ul>
+</blockquote>
+```
+
+```
+> {#a
+ .y}
+.
+<blockquote><p>{#a
+.y}</p></blockquote>
+```

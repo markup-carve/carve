@@ -1,0 +1,34 @@
+A quoted item's inner quoted run continues under the outer prefix
+
+```
+> - > {.x
+>      .y}
+plain
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote>
+
+      </blockquote>
+    </li>
+  </ul>
+</blockquote>
+<p>plain</p>
+```
+
+```
+> - > {.x
+>     .y}
+plain
+.
+<blockquote>
+  <ul>
+    <li>
+      <blockquote><p>{.x
+.y}
+plain</p></blockquote>
+    </li>
+  </ul>
+</blockquote>
+```

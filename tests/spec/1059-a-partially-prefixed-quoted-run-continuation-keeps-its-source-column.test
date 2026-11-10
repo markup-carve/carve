@@ -1,0 +1,40 @@
+A partially prefixed quoted run continuation keeps its source column
+
+```
+> > {.x
+>    .y}
+plain
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+<p>plain</p>
+```
+
+```
+> >  {.x
+>     .y}
+.
+<blockquote>
+  <blockquote>
+
+  </blockquote>
+</blockquote>
+```
+
+```
+- > {.x
+  >  .y}
+plain
+.
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+<p>plain</p>
+```

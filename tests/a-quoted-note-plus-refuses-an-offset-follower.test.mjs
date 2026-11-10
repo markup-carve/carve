@@ -24,7 +24,8 @@ for (const depth of [1, 2, 3]) {
 
 test('an offset brace run and its lazy continuation stay in the deepest quote', () => {
   const output = html('> > [^a]: +\n> >  {#i\n  .y}\n\nsee[^a]\n')
-  assert.match(output, /<blockquote><p>\{<span class="tag"><strong>#i<\/strong><\/span>\n\.y\}<\/p><\/blockquote>/)
+  // A refused run is literal paragraph text (CARVE-P2-035, carve#5829 ruling).
+  assert.match(output, /<blockquote><p>\{#i\n\.y\}<\/p><\/blockquote>/)
   assert.doesNotMatch(output.slice(output.indexOf('<li id="fn1">')), /#i|\.y\}/)
 })
 
