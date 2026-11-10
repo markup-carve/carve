@@ -5670,15 +5670,29 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
 // mistaken for a closer. This is still not a replacement for S1-S5: a changed
 // closer can change later ownership, which the current readers decide again.
 function minimalCloserStudy(src) {
+  src = normalizeSource(src)
   let sentinel = '\uE102'
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
   const trace = []
   parse(src, { trace })
   const lines = src.split('\n')
-  const column = line => {
+  const column = (line, opener = false) => {
     const bare = line.replace(/^(?:[ \t]*> ?)+/, '')
     const measured = indentCols(bare)
-    const content = measured.rest.replace(/^(?:(?:[-*]|\d+[.)]) |: |\[\^[^\]]+\]: +)+/, '')
+    let content = measured.rest
+    if (opener) {
+      // Only an opener that the trace recognized may carry a marker prefix.
+      // A marker-shaped code payload is literal and must not be stripped.
+      for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+        const marker = matchMarkerAt({ col: 0, rest: content })
+        const note = FOOTNOTE_DEF.exec(content)
+        const description = /^: +(?=[^ \t])/.exec(content)
+        const next = marker?.text ?? note?.[2] ??
+          (description ? content.slice(description[0].length) : undefined)
+        if (next === undefined) break
+        content = next
+      }
+    }
     return { column: measured.col + measured.rest.length - content.length,
       prefix: line.slice(0, line.length - bare.length), content }
   }
@@ -5691,7 +5705,7 @@ function minimalCloserStudy(src) {
     if (!parent) continue
     const opener = lines[Number(parent[2]) - 1]
     if (opener === undefined) continue
-    const start = column(opener)
+    const start = column(opener, true)
     const candidate = column(line)
     const run = /^(`{3,}|~{3,}|:{3,})[ \t]*$/.exec(candidate.content)
     if (!run || !/^(`{3,}|~{3,}|:{3,})/.test(start.content)) continue
@@ -5701,7 +5715,8 @@ function minimalCloserStudy(src) {
     if (record.form === 'closer' && candidate.column < start.column) {
       const offset = line.length - candidate.content.length
       lines[lineIndex] = line.slice(0, offset) + sentinel + line.slice(offset)
-    } else if (record.form === 'payload' && parent[1] === 'code' && candidate.column > start.column) {
+    } else if (record.form === 'payload' && candidate.column > start.column &&
+        (parent[1] === 'code' || parent[1] === 'div' && /^:{3,} \|/.test(start.content))) {
       lines[lineIndex] = candidate.prefix + ' '.repeat(start.column) + candidate.content
     }
   }

@@ -27,3 +27,23 @@ test('study switch does not suppress a sibling colon opener', () => {
   const source = '- ::: note\n  - para text\n:::\n'
   assert.equal(html(source, 'minimal'), html(source))
 })
+
+test('marker-shaped code payload remains literal', () => {
+  const source = '```\n- ```\ntail\n```\n'
+  assert.equal(html(source, 'minimal'), html(source))
+})
+
+test('a traced task-item opener keeps its source column', () => {
+  const source = '- [x] ```\n  x\n  ```\ny\n'
+  assert.match(html(source, 'minimal'), /<pre><code>x\n```\n<\/code><\/pre>/)
+})
+
+test('the study switch normalizes CRLF before using trace line numbers', () => {
+  const source = '  ```\r\nx\r\n ```\r\ny\r\n'
+  assert.equal(html(source, 'minimal'), '<pre><code>x\n```\ny\n</code></pre>')
+})
+
+test('a right-side line-block closer is structural in the study mode', () => {
+  const source = '::: |\nx\n  :::\ny\n'
+  assert.match(html(source, 'minimal'), /<\/div>\n<p>y<\/p>/)
+})
