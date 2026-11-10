@@ -1008,7 +1008,7 @@
 {"id":"attributes-d74aa636bbaf","source":"- a\n\n  {.x}\n\n  {#i}\n - b\n","html":"<ul>\n  <li><p>a</p></li>\n  <li><p>b</p></li>\n</ul>"},
 {"id":"attributes-d74c7cc506ca","source":"/_a_{t=\"/\"} b*{t=c/}\n`\n#tag\n","html":"<p><em><u t=\"/\">a</u> b*{t=c</em>}\n<code>\n#tag</code></p>"},
 {"id":"attributes-d77575a15672","source":"> {.c}\n> \n> text\n","html":"<blockquote><p class=\"c\">text</p></blockquote>"},
-{"id":"attributes-d7a022809675","source":"- [ ] x {#c#} y\n- [x] {# note #}done\n[a]{k=\"t\\zu\"}[^f]\n","html":"<ul class=\"task-list\">\n  <li><input type=\"checkbox\" disabled aria-label=\"x y\"> x <span class=\"critic-comment\">c</span> y</li>\n  <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"done a\"> <span class=\"critic-comment\"> note </span>done\n<span k=\"t\\zu\">a</span>[^f]</li>\n</ul>"},
+{"id":"attributes-d7a022809675","source":"- [ ] x {#c#} y\n- [x] {# note #}done\n[a]{k=\"t\\zu\"}[^f]\n","html":"<ul class=\"task-list\">\n  <li><input type=\"checkbox\" disabled aria-label=\"x y\"> x <span class=\"critic-comment\">c</span> y</li>\n  <li data-task-state=\"x\"><input type=\"checkbox\" checked disabled aria-label=\"done a[^f]\"> <span class=\"critic-comment\"> note </span>done\n<span k=\"t\\zu\">a</span>[^f]</li>\n</ul>"},
 {"id":"attributes-d80bc7095235","source":"1. \n![a](/u){src=/v}\n","html":"<p>1.\n<img src=\"/u\" alt=\"a\"></p>"},
 {"id":"attributes-d84327095e3d","source":" [x]{samp} [y]{dfn=a term\"}\n","html":"<p><span samp=\"\">x</span> [y]{dfn=a term”}</p>"},
 {"id":"attributes-d886e8776ccb","source":":: t\n:  d\n\t{.k|= a |= b |}\n\ttail\n","html":"<dl>\n  <dt>t</dt>\n  <dd>d\n{.k|= a |= b |}\ntail</dd>\n</dl>"},
