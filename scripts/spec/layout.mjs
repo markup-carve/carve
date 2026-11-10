@@ -5809,8 +5809,10 @@ const authoredBraceColumns = new WeakMap()
 const walkedAuthoredLines = new WeakMap()
 // The source column of a block-position `{` that ends `rest`, as it was written.
 const writtenBraceColumn = (lines, idx, rest) => {
-  const raw = walkedAuthoredLines.get(lines)?.[idx]
-  if (raw === undefined || !raw.endsWith(rest)) return null
+  const authored = walkedAuthoredLines.get(lines)?.[idx] ?? ''
+  // A reader may have trimmed `rest` at the line end.
+  const raw = authored.endsWith(rest) ? authored : trimLineEnd(authored)
+  if (!raw.endsWith(rest)) return null
   return indentCols(raw.slice(0, raw.length - rest.length).replace(/[^\t]/g, ' ') + '{').col
 }
 // Comment runs need written columns after nested readers rebase their lines.
@@ -8305,8 +8307,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             // A wrapped attribute closes the paragraph at every quote depth it reaches.
             // Its continuation lines are one block, not fresh quoted prose (carve#5629).
-            const writtenBrace = inner.rest[0] === '{' && lines[idx].endsWith(inner.rest)
-              ? writtenBraceColumn(lines, idx, inner.rest) ?? sourcePrefixColumn(lines[idx], inner.rest) : null
+            const braceLine = lines[idx].endsWith(inner.rest) ? lines[idx] : trimLineEnd(lines[idx])
+            const writtenBrace = inner.rest[0] === '{' && braceLine.endsWith(inner.rest)
+              ? writtenBraceColumn(lines, idx, inner.rest) ?? sourcePrefixColumn(braceLine, inner.rest) : null
             const attribute = inner.rest[0] === '{' ? tryAttrLine(new Proxy([], {
               get(_, key) {
                 if (key === 'length') return n - idx
@@ -8626,7 +8629,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
            TERM_RUN.test(qHost.markers.at(-1)?.text ?? ''))
         // An unprefixed continuation is compared by source column with the `{` (CARVE-P2-035, carve#5619).
         // A tab before the `{` is normalized by the ownership walk, which reads such a run separately.
-        const braceIndex = inner0.rest[0] === '{' && lines[idx].endsWith(inner0.rest) ? lines[idx].length - inner0.rest.length : -1
+        const braceLine = lines[idx].endsWith(inner0.rest) ? lines[idx] : trimLineEnd(lines[idx])
+        const braceIndex = inner0.rest[0] === '{' && braceLine.endsWith(inner0.rest) ? braceLine.length - inner0.rest.length : -1
         // The walk may have dropped indentation after the quote prefix, so the authored line decides.
         const braceColumn = braceIndex < 0 || lines[idx].slice(0, braceIndex).includes('\t') ? null
           : writtenBraceColumn(lines, idx, inner0.rest) ?? indentCols(lines[idx].slice(0, braceIndex).replace(/[^\t]/g, ' ') + '{').col
