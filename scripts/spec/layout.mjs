@@ -10161,7 +10161,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     }
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
-    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head) + sourceCommentColumn(head.text)
+    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + markerSourceOffset + sourceCommentColumn(head.text)
     if (markerSourceOffset) markerLineSourceOffsets.set(itemLines, markerSourceOffset)
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
