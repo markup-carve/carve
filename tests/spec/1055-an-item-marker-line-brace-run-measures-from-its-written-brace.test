@@ -1,0 +1,45 @@
+An item marker-line brace run measures from its written brace
+
+```
+-   {.x
+   }
+   z
+.
+<ul>
+  <li>{.x
+}
+z</li>
+</ul>
+```
+
+```
+-   {.x
+     }
+     z
+.
+<ul>
+  <li><p class="x">z</p></li>
+</ul>
+```
+
+```
+- [ ] {.x
+   }
+   z
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="{.x } z"> {.x
+}
+z</li>
+</ul>
+```
+
+```
+- [ ] {.x
+       }
+       z
+.
+<ul class="task-list">
+  <li><input type="checkbox" disabled aria-label="z"> <p class="x">z</p></li>
+</ul>
+```
