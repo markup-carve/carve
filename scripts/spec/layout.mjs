@@ -5341,10 +5341,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
 
   function markRefusedRun(rest, owner, at, col) {
     const depth = frames.slice(1, frames.indexOf(owner) + 1).filter((f) => f.kind === 'quote').length
+    // The continuation lines are read where they were written, so the opener is too (CARVE-P2-035).
+    const authored = trimLineEnd(stripQuotes(lines[at], depth)?.rest ?? '')
+    const openerCol = authored.length >= rest.length ? docColumn(authored, rest) : col
     const kept = refusedRunKeptThrough(new Proxy([], {
       get(_, key) {
         if (key === 'length') return lines.length - at
-        if (key === '0') return ' '.repeat(col) + rest
+        if (key === '0') return ' '.repeat(openerCol) + rest
         const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
         return j < 0 || j >= lines.length ? undefined : (stripQuotes(lines[j], depth)?.rest ?? '')
       },
