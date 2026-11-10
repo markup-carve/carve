@@ -6387,7 +6387,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const bodyLines = [m[2]]
       const noteBraceColumns = []
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
-      const noteCommentColumns = [sourceDefCol + FOOTNOTE_BODY_COLUMN]
+      const noteCommentColumns = [(commentSourceColumns?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredCommentColumns.set(bodyLines, noteCommentColumns)
       const inheritedFenceOpens = new Set()
       const defLine = i
@@ -10002,9 +10002,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
-    // The marker-line body starts after the marker. Its source brace column
-    // must be compared with continuation columns before item dedenting.
-    if (head.text.startsWith('{%')) itemCommentColumns[0] = contentCol
+    // The marker-line body starts after the marker, including when its first
+    // block is another container whose comment opener is parsed later.
+    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {

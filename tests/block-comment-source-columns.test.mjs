@@ -17,6 +17,7 @@ test('a body-line comment keeps its authored continuation columns', () => {
 
 test('a continuation at the opening brace still refuses the run', () => {
   assert.equal(html('- {% a\n  {lang=de}\n   z %} y'), '<ul>\n  <li>{% a\n{lang=de}\nz %} y</li>\n</ul>')
+  assert.equal(html('- - {% a\n    {x}\n     z %} y'), '<ul>\n  <li>\n    <ul>\n      <li>{% a\n{x}\nz %} y</li>\n    </ul>\n  </li>\n</ul>')
 })
 
 test('notes and descriptions compare against their marker-line comment column', () => {
@@ -25,6 +26,7 @@ test('notes and descriptions compare against their marker-line comment column', 
   assert.ok(note(3).includes('<p> y<a href="#fnref1"'))
   assert.equal(html(':: t\n: {% a\n  {x}\n  z %} y'), '<dl>\n  <dt>t</dt>\n  <dd>{% a\n{x}\nz %} y</dd>\n</dl>')
   assert.equal(html(':: t\n: {% a\n   {x}\n   z %} y'), '<dl>\n  <dt>t</dt>\n  <dd> y</dd>\n</dl>')
+  assert.ok(html('- [^n]: {% a\n    {x}\n     z %} y\n\nsee[^n]').includes('<p>{% a\n{x}\nz %} y<a href="#fnref1"'))
 })
 
 test('a first-block plus resets the item comment-column history', () => {
