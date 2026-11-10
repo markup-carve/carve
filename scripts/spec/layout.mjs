@@ -5420,6 +5420,13 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4): a run there keeps nothing, and a block there ends the keeping.
     if (missed) {
+      // A lazy comment opener belongs to the open paragraph even when it
+      // misses that paragraph's frame. Measure its refused run from the
+      // written column before the reached owner can read a later follower.
+      if (rest.startsWith('{%') && top() !== owner && top().para &&
+          !codeSpanOpenAbove(top(), at) && markRefusedRun(rest, top(), at, col)) {
+        return { kind: 'text', interrupts: false, kept: true }
+      }
       // A refused run's follower keeps its paragraph at the opening brace's
       // source column even if it misses the attached host's content column.
       if (at > refusedKept.start && at <= refusedKept.through && col >= refusedKept.col) {
