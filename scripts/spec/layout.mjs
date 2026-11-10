@@ -2218,6 +2218,16 @@ function containerLeadText(text, column = 0) {
   return { text: measured.rest, column: column + measured.col }
 }
 
+// Metadata has no width in the item's body frame, but it is still written
+// before a marker-line brace. Tabs inside attribute values use source stops.
+function markerLineSourceOffset(marker, markerCol) {
+  const tokenWidth = marker.isOrdered ? marker.ordered.length + marker.delim.length : marker.bullet.length
+  let column = markerCol + tokenWidth
+  for (const ch of marker.attrs ?? '')
+    column = ch === '\t' ? (Math.floor(column / 4) + 1) * 4 : column + 1
+  return column - markerCol - tokenWidth + taskTextOffset(marker)
+}
+
 function markerFenceSummary(text, memo) {
   const path = []
   let summary
@@ -5754,8 +5764,8 @@ const authoredBraceColumns = new WeakMap()
 // ownership windows, and a comment's quoted continuation must not retarget an
 // attribute run in the same quote.
 const authoredCommentColumns = new WeakMap()
-// Item lines whose first row follows a task box: the box's source width (CARVE-P9-083).
-const markerLineBoxes = new WeakMap()
+// The written width before a marker-line body beyond its virtual content column.
+const markerLineSourceOffsets = new WeakMap()
 // What the walk writes for a losing duplicate's lone `+`: an invisible body the readers skip.
 const losingNoteBody = (sentinel) => '%%' + sentinel + sentinel
 const refusedNoteBody = (sentinel) => '%%' + sentinel + 'r'
@@ -6412,7 +6422,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       continue
     }
     if (line[0] === '{') {
-      const al = tryAttrLine(lines, i, i === 0 ? markerLineBoxes.get(lines) ?? 0 : 0)
+      const al = tryAttrLine(lines, i, i === 0 ? markerLineSourceOffsets.get(lines) ?? 0 : 0)
       if (al) {
         pending.push(...al.lists) // A1/A2: collect, render nothing
         i = al.next
@@ -8863,7 +8873,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const ordinaryAttribute = blockBrace && !indentCols(braceLine).rest.startsWith('{%')
       const blockComment = blockBrace && !ordinaryAttribute && commentSourceColumns !== undefined
       // A run on a task item's marker line opens past the box, so its continuations measure against that column (CARVE-P2-035).
-      const box = i === 0 && blockBrace ? markerLineBoxes.get(lines) ?? 0 : 0
+      const box = i === 0 && blockBrace ? markerLineSourceOffsets.get(lines) ?? 0 : 0
       const runLines = (lazyComment || ordinaryAttribute || blockComment || box) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
@@ -10242,11 +10252,15 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
-    itemBraceColumns[0] = (authoredBraceColumns.get(lines)?.[i] ?? authoredMarkerCol) + head.markerWidth + taskTextOffset(head)
+    // Marker-glued metadata has zero width in the item's content frame, but
+    // it still occupies source columns before a later brace on this line.
+    const markerSourceColumn = authoredBraceColumns.get(lines)?.[i] ?? authoredMarkerCol
+    const markerSourceOffset = markerLineSourceOffset(head, markerSourceColumn)
+    itemBraceColumns[0] = markerSourceColumn + head.markerWidth + markerSourceOffset
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
     itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head) + sourceCommentColumn(head.text)
-    if (head.task !== undefined) markerLineBoxes.set(itemLines, taskTextOffset(head))
+    if (markerSourceOffset) markerLineSourceOffsets.set(itemLines, markerSourceOffset)
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {
@@ -11120,7 +11134,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     let attachNext = false
     if (trimWs(head.text) === '+') {
       itemLines.length = 0
-      markerLineBoxes.delete(itemLines)
+      markerLineSourceOffsets.delete(itemLines)
       itemMeas.length = 0
       itemCommentColumns.length = 0
       itemSourceRows.length = 0
@@ -11309,7 +11323,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const descendantColumns = new Set()
     let fenceBlankRun = 0
     // A run after nested markers on the marker line is measured from its `{` source column too (CARVE-P2-035).
-    const { text: headLead, column: headLeadColumn } = containerLeadText(head.text, taskTextOffset(head))
+    const { text: headLead, column: headLeadColumn } = containerLeadText(head.text, markerSourceOffset)
     if (headLead.startsWith('{')) {
       // Lazy, so a scan reads only the lines the attribute run reaches.
       const below = dedentedWindow(lines, i, contentCol)
