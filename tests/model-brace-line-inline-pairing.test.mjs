@@ -46,3 +46,8 @@ test('a comment close after a visible block cannot hold an earlier brace line', 
   assert.equal(html('a {% x\n{.x}\n# h\nz %}\n'),
     '<p>a {% x</p>\n<section id="h">\n  <h1 class="x">h</h1>\n  <p>z %}</p>\n</section>')
 })
+
+test('an escaped bracket cannot host an inline attribute', () => {
+  assert.equal(html('\\[a]{title="`"}\n{k=v}\nb\n'),
+    '<p>[a]{title=“<code>"}\n{k=v}\nb</code></p>')
+})
