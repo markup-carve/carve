@@ -6782,8 +6782,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           lazyParagraphOpen = false
           attachPending = true
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
-          const end = Math.min(takeOneBlock(lines, i, state, measured.col).next,
-            state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
+          const stop = state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n
+          const end = ownLineFenceEnd(lines, i, Math.min(takeOneBlock(lines, i, state, measured.col).next, stop), stop,
+            (k) => isFootnoteContinuationLine(lines[k]), ind)
           attachedFrom = bodyLines.length
           ownLineAttached = true
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
@@ -7307,6 +7308,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               }
               end = attachedQuoteEnd(i, end, opener, (k) => ind(k).rest)
               end = attachedColonSiblingEnd(lines, i, end, attachedOpener(lines.slice(i, end), ind(i).col), siblingAt)
+              if (!markerLinePlus) end = ownLineFenceEnd(lines, i, end, state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n, reachesBody, ind)
               attachedFrom = bodyLines.length
               attachedOwnLine = !markerLinePlus
               const pulled = []
@@ -9580,6 +9582,32 @@ function attachedOpener(attached, column) {
   return opener
 }
 
+// An own-line `+` leaves an unclosed code fence open past its blanks in every
+// host: its payload stays verbatim from the opener column, and the first line
+// that leaves the host ends it (S1, carve#5560, carve#5855).
+function ownLineFenceEnd(lines, start, end, stop, reaches, measure) {
+  if (!isBlank(lines[end] ?? '')) return end
+  const opener = attachedOpener(lines.slice(start, end), measure(start).col)
+  const head = measure(start + opener)
+  const code = FENCE.exec(head.rest)
+  if (!code || parseFenceInfo(code[2], code[1]) === null) return end
+  const run = code[1]
+  const closes = (k) => {
+    const closer = PURE_FENCE.exec(measure(k).rest)
+    return closer && closer[1][0] === run[0] && closer[1].length >= run.length
+  }
+  for (let k = start + opener + 1; k < end; k++) if (closes(k)) return end
+  for (let k = end; k < stop; k++) {
+    if (isBlank(lines[k])) { end = k + 1; continue }
+    if (!reaches(k)) {
+      if (measure(k).col === head.col && closes(k)) end = k + 1
+      break
+    }
+    end = k + 1
+  }
+  return end
+}
+
 // A colon frame ends at the host's sibling even when a matching closer follows
 // later. An opaque code or comment payload can contain a sibling-shaped line.
 function attachedColonSiblingEnd(lines, start, end, opener, isSibling) {
@@ -10991,20 +11019,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // fence. The first blank only bounds a marker-line attachment (S1,
       // carve#5560 and carve#5635). Keep later lines that reach the item and
       // the final blank before a line that leaves it.
-      if (ownLine && code && !hasCloser(attached, opener) && isBlank(lines[end] ?? '')) {
-        const run = code[1]
-        for (let k = end; k < n; k++) {
-          if (k === miss) break
-          if (isBlank(lines[k])) { end = k + 1; continue }
-          const measured = ind(k)
-          if (measured.col < contentCol) {
-            const closer = PURE_FENCE.exec(measured.rest)
-            if (measured.col === localColumn && closer && closer[1][0] === run[0] && closer[1].length >= run.length)
-              end = k + 1
-            break
-          }
-          end = k + 1
-        }
+      if (ownLine && code && !hasCloser(attached, opener)) {
+        end = ownLineFenceEnd(lines, i, end, miss, (k) => ind(k).col >= contentCol, ind)
         attached = lines.slice(i, end)
       }
       const unclosedAttached = code && i + opener + 1 < n && !hasCloser(lines.slice(i + opener), 0) && !lines.slice(i).some(isBlank)
