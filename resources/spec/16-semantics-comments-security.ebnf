@@ -353,21 +353,19 @@
          closure discards it (CARVE-P9-024). `-{#item} {#next}` followed by
          `  # H` gives that heading `next` inside the item.
 
-         A nonblank line at or past the column belongs to the body, and a
-         recognized opener there starts a child; a list marker starts a
-         sublist. The opener set is quote, heading, thematic break, code or
-         colon fence, table, and `:: ` definition term. The term is a
-         one-line leaf (PART 0 FAMILIES). The same test holds before and
-         after a blank; there is no `base_column + 2` channel. P5 keeps a
-         blank run only when the next nonblank line reaches the body. The
-         three-blank split (§11 N1a) groups siblings, not body ownership.
+         L2-L6 in PART 0 decide reach, child ownership, blanks and lazy
+         paragraph continuation at every depth. A recognized opener at or
+         past the column starts a child; a list marker starts a sublist.
+         The recognized non-list forms are quote, heading, thematic break,
+         code or colon fence, table and `:: ` term. A term owns one line.
+         There is no `base_column + 2` channel. Three blanks split same-owner
+         siblings under §11 N1a.
 
-         BELOW the column, P3 decides fold or closure in the nearest
-         surviving owner. THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE
-         [CARVE-P9-051]; a surviving frame alone cannot admit it. A NOTE
-         DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS --
-         NORMATIVE [CARVE-P9-052]: the list item closes, and the line
-         registers or floats in the surviving owner (§10 I5, §15 A2).
+         THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
+         L4 never folds below-column text into a frame with no open paragraph.
+         A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS --
+         NORMATIVE [CARVE-P9-052]: the item closes, and the line registers
+         or floats in the surviving owner (§10 I5, §15 A2).
 
          A non-list opener past the column is measured from its own line.
          Lint SHOULD report an overindented item block or a detached block

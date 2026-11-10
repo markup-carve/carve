@@ -114,45 +114,61 @@
 
    INPUT.  Lines, split on `newline` as that production defines it below.
 
-   EIGHT PRINCIPLES. These govern both the steps below and PART 9's block
-   and inline clauses. A family row or lexical guard refines a principle;
-   it does not introduce another ownership or pairing procedure.
+   EIGHT LAYOUT RULES (CARVE-P0-024). Apply these to every family
+   through S1-S5 below. PART 9 supplies local syntax and extent guards.
 
-     P1  An attached fence owns every line up to its end. Only the fence's
-         own end condition (its closer, or the first blank for a marker-line
-         `+`) ends it; a line that misses the host ends only an own-line
-         attachment. Its exact closer tests remain in PART 9 §2.
-     P2  Normalize line endings and measure leading indentation by columns.
-         Every opener fixes its content column and prefix. A later line
-         reaches the deepest still-open frame whose prefix and column it
-         satisfies; reaching a frame never revives one that closed.
-     P3  Container survival and paragraph openness are separate. A line
-         missing a frame folds only into its deepest currently open paragraph
-         and only when its form does not interrupt. Otherwise close missed
-         frames and read the line in the surviving owner. A fold closes none.
-     P4  Classify a line in its selected owner's coordinates after opaque
-         payload and eligible erased lines. An interrupting visible opener
-         or block-level invisible line ends an open paragraph. A list marker
-         does not interrupt a paragraph outside a marker body; a caption
-         attaches only to an eligible host. The line after a refused brace
-         run retains that run's paragraph.
-     P5  A marker body in an item, description or footnote uses the column
-         fixed by its marker. A blank run belongs to that body only when the
-         next nonblank line reaches it. Sibling markers group by kind and
-         owner; three blanks split them. A blank between the list's own
-         visible blocks or siblings makes it loose.
-     P6  A lone `+` offers the next visible block to an eligible host at its
-         marker column. Quote prefixes, column, sibling and closer guards
-         decide the claim; the earliest valid offer wins. A refused offer
-         renders no text. A grant ends at the attached block's own boundary.
+     L1  Normalize line endings and input scalar values, then expand leading
+         tabs to four-column stops before any column comparison, retaining
+         residual spaces when a tab crosses a consumed prefix.
+     L2  Each container opener records its authored marker column, required
+         per-line prefix and content column; consume prefixes from outside
+         inward on every new line and select the deepest open frame the line
+         reaches.
+     L3  A nonblank line at or beyond that content column belongs to the
+         selected frame, while one short of it is classified again in the
+         nearest surviving owner.
+     L4  Only noninterrupting text may continue the deepest currently open
+         paragraph lazily; a lazy continuation closes no frame and never
+         reopens a closed one.
+     L5  Classify a line after opaque payload and eligible erased lines, and
+         let a visible paragraph-interrupting opener or block-level invisible
+         line end an open paragraph while a list marker in an ordinary
+         paragraph stays text.
+     L6  A marker body keeps a blank run only when its next nonblank line
+         reaches its content column; one blank between visible sibling items
+         or direct child blocks makes the list loose, while three blanks
+         split same-owner siblings.
+     L7  A lone `+` at an eligible host marker column offers the next visible
+         block before any blank only if it passes the quote-prefix, column,
+         sibling and closer tests, and the first valid offer owns exactly
+         that block.
+     L8  An open opaque leaf or fenced container owns its lines until its
+         own closer, host boundary or declared first-blank boundary; after
+         closure the containing frame has no paragraph to continue.
+
+   Existing P1-P8 names below remain stable references for the local
+   qualifications of L1-L8. Clause IDs keep their existing meanings.
+
+   LOCAL PRINCIPLES. These qualify the eight layout rules and PART 9's block
+   and inline clauses. A lexical guard never introduces another ownership
+   or pairing procedure.
+
+     P1  L8 governs payload; an own-line attachment alone ends when a line
+         misses its host. Exact closer tests remain in PART 9 §2.
+     P2  L1-L3 govern normalization, prefix consumption and frame reach.
+     P3  L4 separates container survival from paragraph openness.
+     P4  L5 governs classification. A caption needs an eligible host; the
+         line after a refused brace run retains that run's paragraph.
+     P5  L6 governs marker-body blanks and list looseness. Siblings also
+         group by kind and owner under PART 9 §11 N1.
+     P6  L7 governs `+` offers. A refused offer renders no text; the grant
+         ends at the attached block's own boundary.
      P7  Within a finished block, read opaque atoms before pairing
          delimiters. Pair eligible delimiters with one stack per region; a
          closer closes the nearest matching opener and exposes no atom
          internals. Attach a glued attribute run only after its host forms.
-     P8  An open leaf or fenced container owns its extent until its own
-         boundary. After it closes, its containing frame has no paragraph
-         to continue. Code, raw, comment, colon, table, line-block, caption
-         and attribute extents use their local closer or row grammar.
+     P8  L8 governs closed leaves; local closer and row grammars still decide
+         code, raw, comment, colon, table, line-block, caption and attributes.
 
            A LEADING BYTE ORDER MARK IS STRIPPED -- NORMATIVE [CARVE-P0-001]. A single U+FEFF
            at the very start of the document is removed before the first line
@@ -191,8 +207,8 @@
    STATE.  open := stack of open containers, bottom-up (document ->
            innermost), plus the current leaf (none | paragraph | heading |
            ...). The container kinds, the content column each one fixes and
-           the per-line prefix each one demands are the rows of FAMILIES,
-           the one container table after the procedure. The document is the
+           the per-line prefix each one demands follow L2 and the local
+           grammars in FAMILIES below. The document is the
            root frame: content column 0, no prefix, and under its open
            paragraph a list marker is text, as in a quote (PART 9 §10 I2).
 
@@ -249,55 +265,22 @@
            line may close the frame because its column is owned by an ancestor;
            the closed block itself never closes its owner.
 
-   OPEN-STATE LIFETIMES. This table collects the existing end tests. "Blank
-   plus block" means a blank followed by a block outside the state, not a
-   blank inside an opaque payload. A missed line is classified again in its
-   surviving owner (S1-S5). The table does not give a closed leaf a lazy
-   paragraph merely because its containing frame survives (CARVE-P0-003).
+   OPEN-STATE LIFETIMES. L2-L4, L6 and L8 decide ordinary survival and
+   closure. These local boundaries remain:
 
-     open state        opens                 ends                         owns while open                         deciding rules
-     term              `:: ` with content     its line; the enclosing     its inline content; a following `: `   B-term-start/end,
-                                             definition list can accept  is read fresh in the owner while the    S2, carve#5368
-                                             a description until the     definition list remains open
-                                             first non-member block
-     description       `: ` with content,   next term or description  body blocks at its content column;     B-dd-start/end,
-                       after term/body in    marker in the same owner, a marker-column `: ` is a boundary      S2-S4, carve#5321,
-                       the same owner        missed nonfolding line,     only while its definition list is open carve#5323, carve#5346
-                                             host end or input end
-     list item         valid list marker     missed nonfolding line,     lines reaching its content column      B-item-start/end,
-                                             sibling or input end;       and lazy text from an open paragraph   S2-S4, PART 9 §17 L1
-                                             a blank stays if its host   and a `+` at its marker column; a `: `
-                                             survives and the next     at that column ends it only while its
-                                             nonblank line reaches      definition list has an open term or
-                                             its content column         description
-     line-block stanza `::: |` body line     blank stanza boundary,     verse lines, including lazy lines;     B-div-keep/end,
-                                             exact closer, host end or   column-0 `%%` leaves an empty line;    PART 9 §23,
-                                             input end                  a `%%%` span indented at most three    CARVE-P9-047
-                                                                          spaces leaves none; other block
-                                                                          constructs are verse
-     comment span      `%%%` alone or as      exact-width closer, a      opaque body in the opener's owner      S1, CARVE-P0-005,
-                       marker-line content   line missing that owner,                                          B-comment-end
-                                             host end or input end
-     attached block    accepted `+` and     closer, missed owner,      one next block in the marker's host;   PART 9 §17 L3,
-     (code fence)      a code opener         or host/input end; first  its opaque payload lasts to that       CARVE-P9-067,
-                                             blank only if unclosed      boundary                               carve#5304
-                                             after a marker-line `+`
-     attached block    accepted `+` and     exact closer or host/input one next block in the marker's host;   PART 9 §17 L3,
-     (colon body)      a colon opener        end; first blank only if   a closed body retains its interior    B-div-end,
-                                             unclosed after a           blanks                                 carve#5359
-                                             marker-line `+`
-     attached block    accepted `+` and     the attached block's own   one next block in the marker's host,   PART 9 §17 L3,
-     (other)           another block opener  boundary, then the host    parsed under its ordinary family row   CARVE-P9-067
-                                             resumes
-     pulled paragraph  accepted `+` and     an interrupting block at  paragraph text in its host, including  S4-S5,
-                       paragraph text        or past the host content   lazy lines until a block interrupts    CARVE-P0-011,
-                                             column, a blank, a missed                                       carve#5331
-                                             nonfolding line, host end
-                                             or input end
-     quote paragraph   `>` with paragraph   marked blank, unmarked    paragraph text and lazy folds through  B-quote-keep/end,
-                       text, or `> +`        blank/quote end, block     missed quote prefixes; a `: ` follows  S2-S4, PART 9 §10 I2,
-                       attaching a paragraph interruption or input end  the definition-body marker rule and    PART 9 §17 L3
-                                                                          an open item's marker-column rule
+     - A `:: ` term owns its line only. A same-owner `: ` may follow permitted
+       blank or invisible lines while the definition list remains open.
+     - A description ends at a same-owner term or description marker while
+       its definition list remains open. The list ends at a nonmember block.
+     - A line-block stanza reads verse rather than nested blocks; a blank
+       separates stanzas, and an exact closer ends its colon body (§23).
+     - An unmarked blank ends a quote and its children. A marked blank keeps
+       the quote but closes its paragraph.
+     - An own-line attached fence keeps a trailing blank. An unclosed fence
+       after a marker-line `+` ends at its first blank; a closed one retains
+       its interior blanks (§17 L3/L4).
+     - A pulled paragraph ends at a blank or interrupting block in its host.
+       An open inline code span is still paragraph content (PART 3).
 
    ============================================================================
 
@@ -310,20 +293,9 @@
    read ahead. Step 2 carries two ids, S2 for the owner and S3 for the form,
    so a decision trace cites S1 to S5 (docs/decision-trace.md).
 
-   Where the outcome depends on the container, a step reads one field of
-   that container's row in FAMILIES below:
-
-     column      the content column the opening line fixes
-     prefix      what a later line supplies to reach the frame (S2)
-     blank       what a blank line does to the frame (S2, S5)
-     lazy        whether a line that misses the frame may fold into the
-                 deepest open paragraph inside it (S4)
-     markers     what a list marker or a `: ` line does in the frame and
-                 below its column (S3, S4)
-     invisible   what a fenced comment, footnote definition or attribute
-                 line does to the frame (S1, S3)
-     plus        whether the frame takes the continuation marker (S2)
-     cells       the family's start, keep and end conditions
+   A frame's opener fixes its column and prefix under L2. The common
+   transitions above determine blanks and lazy continuation under L4/L6;
+   FAMILIES supplies only local marker, closer and body grammars.
 
    STEP 1, PAYLOAD.
 
@@ -390,7 +362,7 @@
 
         A `%%%` span takes the `fenced_comment` row of T in its owner and
         does not fold. It ends the open paragraph; its effect on surrounding
-        containers is their `invisible` field. The span's extent is fixed
+        containers follows L5 and the local guards. The span's extent is fixed
         where it is written, and the whole span moves
         with its opener. A line that misses an open fence's owner has ended
         that fence above, so it is read where it stands.
@@ -398,13 +370,13 @@
    STEP 2, OWNER AND FORM.
 
      S2 OWNER. Walk the open frames from the outside in. Each frame consumes
-        its row's `prefix` up to its content column (PART 9 §24 C5). Stop at
+        its required prefix up to its content column (PART 9 §24 C5). Stop at
         the first frame the line does not reach. A lone `+` at the marker
-        column of a frame whose row takes `plus` reaches that frame regardless of whether PART 9 §17 L3 attaches
-        its next line; a refused marker renders nothing and any off-column
+        column of an eligible item, quote, description or footnote reaches
+        that frame regardless of whether PART 9 §17 L3 attaches its next line; a refused marker renders nothing and any off-column
         `+` is a letter. The
         owner is the deepest frame reached. A blank line reaches a frame as
-        its row's `blank` field says: it reaches every indentation frame and
+        L6 and the quote guard say: it reaches every indentation frame and
         no unmarked quote, so without its `>` it ends a quote and the
         containers opened inside it.
 
@@ -419,10 +391,10 @@
      S3 FORM. Classify the rest of the line in the owner's coordinates:
         blank, fenced comment, block attribute, footnote definition,
         closer, opener, caption, `+`, or ordinary text. A list marker opens,
-        folds or closes as the owner's row says in `markers`, and the
-        document's is stated under STATE. A `: ` line follows the definition
-        body row's `markers` field in every owner. A line block recognizes
-        none of these forms but a comment (its row).
+        folds or closes under L2-L5 and PART 9 §11; the document's
+        paragraph exception is stated under STATE. A `: ` line starts a
+        description only while a same-owner definition list survives. A line
+        block recognizes none of these forms but a comment (§23).
 
         Leading space before an opener does not stop it from opening, at
         every level, the document and quotes included: an opener past the
@@ -458,11 +430,11 @@
 
      S4 LAZY. If the line missed a frame below its owner, it folds into the
         deepest open paragraph when that paragraph is open, the line is not
-        blank, the missed frames' rows allow it in `lazy`, and its form does
+        blank, L4 permits it in those frames, and its form does
         not interrupt a paragraph. The deepest paragraph is found by following
         the last child container to its leaf at every depth. The test is the
-        same at every depth and in every family; only `lazy` and `markers`
-        differ by row. Headings, thematic breaks, quotes, terms, tables, valid
+        same at every depth and in every family; only local marker
+        grammar differs. Headings, thematic breaks, quotes, terms, tables, valid
         colon openers, code and raw openers, fenced comments, attributes and
         footnote definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
@@ -515,34 +487,25 @@
         Quotes use the same P2/P3 test. An empty or closed colon body has no
         paragraph for a line missing its quote to continue.
 
-   FAMILIES. One table supplies the fields read by S1-S5. `body` gives the
-   fixed column and required prefix; `blank/lazy` gives the survival and
-   paragraph test; `forms` gives local exceptions to P4. An omitted field
-   follows the steps. The B-cell table below holds stable decision-trace ids
-   (docs/decision-trace.md); start, keep and end never get renumbered.
+   FAMILIES. L1-L8 and S1-S5 decide reach, blanks, lazy lines and closure
+   for every family. Only these local marker, prefix and body grammars remain;
+   PART 9 gives their complete syntax. The B cells below preserve stable
+   decision-trace names (docs/decision-trace.md).
 
-     family          body / prefix                 blank / lazy                 forms / plus
-     item            after marker and separator;   next nonblank must reach;    list markers at or past body open
-                     indentation to that column    open paragraph may fold      child list; marker-column `: `
-                                                                              ends item while its definition
-                                                                              list remains open; plus yes
-     description     after `:` and all separator   as item; open paragraph     `: ` in same owner opens sibling
-                     spaces; indentation           may fold                    while term/body open; plus yes
-     footnote        two columns past `[`;         as item; open paragraph     footnote definition opens own
-                     indentation                   may fold                    frame; plus yes
-     quote           after `>` and optional space; marked blank keeps;         list marker under open paragraph
-                     `>` then space or line end    unmarked blank ends;         is text; plus yes
-                                                    deepest paragraph may fold
-     colon body      opener owner's content        body separation; child      exact closer; plus no
-                     column; no prefix             paragraph may fold
-     line block      colon body frame; no prefix   stanza boundary; stanza     verse lines, no list or `: `
-                                                    may take lazy text          opener; plus no
-     code/raw/       opaque payload; no prefix     payload blank; no lazy      own closer or S1; plus no
-       comment
-     table           owner's column                blank ends; no lazy         row grammar; `+` extends row
-     caption         host column                   one intervening blank;      next `^ ` ends; plus no
-                                                    caption continuation
-     `+` marker      host marker column            no leaf of its own          next block offer (P6)
+     - Item, description and footnote bodies use indentation to their fixed
+       content columns (§24 C3). The footnote offset is exactly two columns
+       past `[`. Marker-attached attributes and checkboxes add zero width.
+     - A quote requires `>` and optional space or line end on each marked
+       line; only a marked blank keeps it. Its deepest paragraph may fold
+       across a missing prefix under L4.
+     - A colon body uses its opener owner's column and its exact closer.
+       `|` mode reads verse, not nested blocks (§23).
+     - Code, raw and comment fences read opaque payload under L8; their
+       closer character, width and host boundary are local (§2, §28).
+     - Tables read rows and `+` row continuations under §5. Captions need
+       an eligible host and read following lines as caption text under §4.
+     - A lone `+` is a marker at an eligible host's marker column under L7;
+       a colon body's `+` is text (§17 L5).
 
    B-CELLS. Each cell gives its family's start, keep or end test. A missing
    keep test follows S2 and S4; a missing end test follows S5 and input end.
@@ -552,17 +515,15 @@
      [B-item-start]      valid bullet, task, decimal, alphabetic, roman or
                          bare-dot marker WITH content; empty marker is text
      [B-list-keep]       siblings share kind, delimiter, dialect, owner and
-                         plain-or-task; checkbox state may differ. A blank
-                         between siblings or an item's visible blocks loosens
-     [B-list-end]        three consecutive blanks split sibling lists
+                         plain-or-task; checkbox state may differ. L6 loosens
+     [B-list-end]        L6 splits same-owner siblings after three blanks
      [B-term-start]      `:: ` with content; one-line leaf, no body ownership
      [B-term-end]        ends with its line; permitted blank/invisible lines
                          may precede a same-owner `: ` description
      [B-dd-start]        `: ` with content after same-owner term or body
-     [B-dd-end]          next same-owner term/body, missed nonfolding line,
-                         host end or input end
+     [B-dd-end]          next same-owner term/body; otherwise L2-L4
      [B-footnote-start]  `[^label]: `; referenced body renders as endnote
-     [B-footnote-keep]   open paragraph may fold under S4
+     [B-footnote-keep]   L4 permits an open paragraph to fold
      [B-quote-start]    `>` then space or line end; each `>` adds one level
      [B-quote-keep]     marked blank keeps quote, closes its paragraph
      [B-quote-end]      unmarked blank ends quote and its child frames
@@ -571,11 +532,11 @@
      [B-div-end]        exact-length closer in same owner, host or input end;
                          unclosed marker-line attachment ends at first blank
      [B-code-start]     valid code or raw opener; no closer lookahead
-     [B-code-keep]      opaque payload, never a lazy paragraph
-     [B-code-end]       own closer or S1
+     [B-code-keep]      L8 opaque payload
+     [B-code-end]       L8 and §2
      [B-comment-start]  `%%%` opener; no closer lookahead
-     [B-comment-keep]   opaque payload, never a lazy paragraph
-     [B-comment-end]    exact closer or S1
+     [B-comment-keep]   L8 opaque payload
+     [B-comment-end]    L8 and §28 exact closer
      [B-table-start]    valid pipe row or selected CSV/TSV fence
      [B-table-keep]     continuation row requires a preceding row, header
                          included
@@ -7100,21 +7061,19 @@ EOF = (* end of file *) ;
          closure discards it (CARVE-P9-024). `-{#item} {#next}` followed by
          `  # H` gives that heading `next` inside the item.
 
-         A nonblank line at or past the column belongs to the body, and a
-         recognized opener there starts a child; a list marker starts a
-         sublist. The opener set is quote, heading, thematic break, code or
-         colon fence, table, and `:: ` definition term. The term is a
-         one-line leaf (PART 0 FAMILIES). The same test holds before and
-         after a blank; there is no `base_column + 2` channel. P5 keeps a
-         blank run only when the next nonblank line reaches the body. The
-         three-blank split (§11 N1a) groups siblings, not body ownership.
+         L2-L6 in PART 0 decide reach, child ownership, blanks and lazy
+         paragraph continuation at every depth. A recognized opener at or
+         past the column starts a child; a list marker starts a sublist.
+         The recognized non-list forms are quote, heading, thematic break,
+         code or colon fence, table and `:: ` term. A term owns one line.
+         There is no `base_column + 2` channel. Three blanks split same-owner
+         siblings under §11 N1a.
 
-         BELOW the column, P3 decides fold or closure in the nearest
-         surviving owner. THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE
-         [CARVE-P9-051]; a surviving frame alone cannot admit it. A NOTE
-         DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS --
-         NORMATIVE [CARVE-P9-052]: the list item closes, and the line
-         registers or floats in the surviving owner (§10 I5, §15 A2).
+         THE FOLD PRESUMES AN OPEN PARAGRAPH -- NORMATIVE [CARVE-P9-051].
+         L4 never folds below-column text into a frame with no open paragraph.
+         A NOTE DEFINITION OR ATTRIBUTE LINE BELOW THE COLUMN INTERRUPTS --
+         NORMATIVE [CARVE-P9-052]: the item closes, and the line registers
+         or floats in the surviving owner (§10 I5, §15 A2).
 
          A non-list opener past the column is measured from its own line.
          Lint SHOULD report an overindented item block or a detached block
