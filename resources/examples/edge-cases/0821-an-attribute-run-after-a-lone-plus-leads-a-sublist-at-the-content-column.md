@@ -6,8 +6,8 @@ page: edge-lists
 
 The maintainer overruled this row's title (carve#4278, carve#4449): an attribute line is invisible, so the `+` test reads the line after it (CARVE-P9-067). That line stands at the content column, so the `+` is refused and shows as a letter, and the attribute line labels the list outside the item.
 
-The wrapped `{x` / `y}` example below is now a refused brace run under
-CARVE-P2-035, so its new paragraph reading follows the continuation rule.
+The wrapped `{x` / `y}` example below is a refused brace run under
+CARVE-P2-035. Its following marker opens a nested list by the ordinary item rule.
 
 ::: compare
 
@@ -44,7 +44,9 @@ y}
   <li>a
     {x
 y}
-- c
+    <ul>
+      <li>c</li>
+    </ul>
   </li>
 </ul>
 ```

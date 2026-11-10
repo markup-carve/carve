@@ -7,7 +7,7 @@ const html = source => renderDoc(parse(source)).trim()
 
 test('a task label keeps an unresolved note reference that is visible in its paragraph', () => {
   assert.equal(html('- [ ] {.x\n      .y}\n[^m]: n'),
-    '<ul class="task-list">\n  <li><input type="checkbox" disabled aria-label="{.x .y} [^m]: n"> {.x\n.y}\n[^m]: n</li>\n</ul>')
+    '<ul class="task-list">\n  <li><input type="checkbox" disabled aria-label="{.x .y}"> {.x\n.y}</li>\n</ul>')
   assert.equal(html('- [ ] read [^missing] now'),
     '<ul class="task-list">\n  <li><input type="checkbox" disabled aria-label="read [^missing] now"> read [^missing] now</li>\n</ul>')
 })

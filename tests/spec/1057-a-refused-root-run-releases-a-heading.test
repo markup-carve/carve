@@ -1,0 +1,13 @@
+A refused root run releases a heading
+
+```
+{.x
+.y}
+# H
+.
+<p>{.x
+.y}</p>
+<section id="H">
+  <h1>H</h1>
+</section>
+```

@@ -10,7 +10,7 @@ test('a marker-glued attribute keeps a later brace at its written source column 
     const opener = marker.length
     for (const column of [opener - 1, opener]) {
       const source = `${marker}{.x\n${' '.repeat(column)}.y}\n${' '.repeat(bodyColumn)}# h\n`
-      assert.match(render(source), /\{\.x\n\.y\}\n# h<\/li>/, source)
+      assert.equal(render(source), render(source.replace('{.x\n', '\\{.x\n')), source)
     }
     const source = `${marker}{.x\n${' '.repeat(opener + 1)}.y}\n${' '.repeat(bodyColumn)}# h\n`
     assert.doesNotMatch(render(source), /\{\.x\n\.y\}/, source)

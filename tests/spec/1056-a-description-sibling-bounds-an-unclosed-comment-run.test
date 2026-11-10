@@ -8,8 +8,7 @@ A description sibling bounds an unclosed comment run
 .
 <dl>
   <dt>t</dt>
-  <dd>{% a
-{k=v}</dd>
+  <dd>{% a</dd>
   <dd>next</dd>
 </dl>
 ```
@@ -23,8 +22,7 @@ z %} y
 .
 <dl>
   <dt>t</dt>
-  <dd>{% a
-{k=v}</dd>
+  <dd>{% a</dd>
   <dd>next
 z %} y</dd>
 </dl>

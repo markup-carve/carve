@@ -3,7 +3,9 @@ import assert from 'node:assert/strict'
 import { parse } from '../scripts/spec/layout.mjs'
 import { renderDoc } from '../scripts/spec/html.mjs'
 
+// CARVE-P2-035, carve#5830: a short continuation refuses only the opener.
 const render = source => renderDoc(parse(source))
+const oracle = source => render(source.replace('{', '\\{'))
 
 for (const [name, prefix, body] of [
   ['marker line', '- {.x\n }\n', '  '],
@@ -11,41 +13,16 @@ for (const [name, prefix, body] of [
   ['nested marker line', '- p\n  - {.x\n   }\n', '    '],
   ['ordered marker line', '1. {.x\n  }\n', '   '],
 ]) {
-  for (const [follower, forbidden] of [
-    ['- q', /<ul>\n\s*<li>q/],
-    ['# h', /<h1/],
-    ['> q', /<blockquote/],
-    ['```', /<pre/],
-    ['::: note', /<aside/],
-  ]) {
-    test(`${name}: ${follower} stays in the refused run's paragraph`, () => {
-      const output = render(`${prefix}${body}${follower}\n`)
-      assert.doesNotMatch(output, forbidden)
-      assert.match(output, /\{\.x\n\}/)
+  for (const follower of ['- q', '# h', '> q', '```', '::: note']) {
+    test(`${name}: ${follower} follows the literal opener`, () => {
+      const source = `${prefix}${body}${follower}\n`
+      assert.equal(render(source), oracle(source))
     })
   }
 }
 
-test('an unclosed fence follower keeps its payload as inline code', () => {
-  assert.equal(render('- {.x\n }\n  ```\nplain\n'), [
-    '<ul>',
-    '  <li>{.x',
-    '}',
-    '<code>\nplain</code></li>',
-    '</ul>',
-  ].join('\n'))
-})
-
-test('a closed fence follower keeps its payload and closer in the paragraph', () => {
-  assert.equal(render('- {.x\n }\n  ```\n  # h\n  ```\n'), [
-    '<ul>',
-    '  <li>{.x',
-    '}',
-    '<code>\n# h\n</code></li>',
-    '</ul>',
-  ].join('\n'))
-})
-
-test('a prose follower keeps normal paragraph indentation', () => {
-  assert.equal(render('- {.x\n }\n   q\n'), '<ul>\n  <li>{.x\n}\nq</li>\n</ul>')
-})
+for (const source of [
+  '- {.x\n }\n  ```\nplain\n',
+  '- {.x\n }\n  ```\n  # h\n  ```\n',
+  '- {.x\n }\n   q\n',
+]) test('the follower follows its own block rule', () => assert.equal(render(source), oracle(source)))

@@ -6,7 +6,7 @@ A refused quoted run with a lazy continuation stays literal
 .
 <ul>
   <li>
-    <blockquote><p>{#a
+    <blockquote><p>{<span class="tag"><strong>#a</strong></span>
 .y}</p></blockquote>
   </li>
 </ul>
@@ -18,7 +18,7 @@ A refused quoted run with a lazy continuation stays literal
 .
 <blockquote>
   <ul>
-    <li>{#a
+    <li>{<span class="tag"><strong>#a</strong></span>
 .y}</li>
   </ul>
 </blockquote>
@@ -28,6 +28,6 @@ A refused quoted run with a lazy continuation stays literal
 > {#a
  .y}
 .
-<blockquote><p>{#a
+<blockquote><p>{<span class="tag"><strong>#a</strong></span>
 .y}</p></blockquote>
 ```

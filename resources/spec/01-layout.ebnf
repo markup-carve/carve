@@ -58,8 +58,8 @@
          misses its host. Exact closer tests remain in PART 9 §2.
      P2  L1-L3 govern normalization, prefix consumption and frame reach.
      P3  L4 separates container survival from paragraph openness.
-     P4  L5 governs classification. A caption needs an eligible host; the
-         line after a refused brace run retains that run's paragraph.
+     P4  L5 governs classification. A caption needs an eligible host; a
+         refused block-position brace opener is literal text and claims no later line.
      P5  L6 governs marker-body blanks and list looseness. Siblings also
          group by kind and owner under PART 9 §11 N1.
      P6  L7 governs `+` offers. A refused offer renders no text; the grant
@@ -334,7 +334,9 @@
         not interrupt a paragraph. The deepest paragraph is found by following
         the last child container to its leaf at every depth. The test is the
         same at every depth and in every family; only local marker
-        grammar differs. Headings, thematic breaks, quotes, terms, tables, valid
+        grammar differs. A multi-line block-position brace run takes no lazy
+        continuation; every line through its closer reaches the opener's
+        container body column (CARVE-P2-035). Headings, thematic breaks, quotes, terms, tables, valid
         colon openers, code and raw openers, fenced comments, attributes and
         footnote definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container

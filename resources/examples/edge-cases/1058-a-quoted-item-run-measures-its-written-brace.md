@@ -4,7 +4,7 @@ page: edge-attributes
 
 ## A quoted item run measures its written brace
 
-On a quoted item's marker line, an unprefixed continuation is compared with the `{` where it is written, past marker-glued attributes, quote levels and the item's own indentation. A valid run opens no paragraph, so the column-zero follower leaves the quote (CARVE-P2-035, carve#5619, carve#5826).
+On a quoted item's marker line, every multiline continuation must carry the quote prefixes and reach the item's body column. An unprefixed line refuses the run regardless of its written column. A fully prefixed continuation is then compared with the `{` where it was written, past marker-glued attributes and the item's own indentation (CARVE-P2-035, carve#5830, superseding the unprefixed cases of carve#5826).
 
 ::: compare
 
@@ -17,10 +17,11 @@ plain
 ```html
 <blockquote>
   <ul>
-    <li class="a"></li>
+    <li class="a">{.x
+.y}
+plain</li>
   </ul>
 </blockquote>
-<p>plain</p>
 ```
 
 :::
@@ -37,11 +38,12 @@ plain
 <blockquote>
   <blockquote>
     <ul>
-      <li></li>
+      <li>{.x
+.y}
+plain</li>
     </ul>
   </blockquote>
 </blockquote>
-<p>plain</p>
 ```
 
 :::

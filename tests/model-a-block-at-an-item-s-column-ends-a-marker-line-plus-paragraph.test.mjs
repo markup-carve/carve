@@ -16,6 +16,6 @@ test('a block at the item column ends the paragraph a marker-line + pulled (carv
 
 test('text and a refused brace run keep the paragraph open (carve#5349)', () => {
   assert.equal(html('- +\nh\n  k\n'), '<ul><li>h\nk</li></ul>'.replace(/\n\s*/g, ''))
-  assert.match(html('- +\n{x\ny}\n  > c\n'), /y}\n?&gt; c<\/li>/)
+  assert.match(html('- +\n{x\ny}\n  > c\n'), /y}<blockquote><p>c<\/p><\/blockquote><\/li>/)
   assert.match(html('- +\nh\n # H\n'), /^<ul><li>h<\/li><\/ul><section id="H">/)
 })

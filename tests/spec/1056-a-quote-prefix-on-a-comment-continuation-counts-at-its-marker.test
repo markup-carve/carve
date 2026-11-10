@@ -6,6 +6,7 @@ A quote prefix on a comment continuation counts at its marker
 .
 <ul>
   <li>{% a
-&gt;  b %}</li>
+    <blockquote><p>b %}</p></blockquote>
+  </li>
 </ul>
 ```

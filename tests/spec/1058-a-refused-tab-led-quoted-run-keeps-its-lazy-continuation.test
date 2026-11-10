@@ -24,6 +24,8 @@ A refused tab-led quoted run keeps its lazy continuation
 > > z
 .
 <blockquote>
-  <blockquote><p class="x y">z</p></blockquote>
+  <blockquote><p>{.x
+.y}
+z</p></blockquote>
 </blockquote>
 ```

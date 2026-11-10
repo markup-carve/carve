@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## A description sibling bounds an unclosed comment run
 
-An unclosed marker-line comment run remains literal paragraph text through its description. A later description cannot supply its closer or change the earlier description's text (CARVE-P2-035, PART 0 L2, carve#5818).
+An unclosed marker-line comment opener is literal text. The following attribute line is read normally, and a later description cannot supply the comment closer (CARVE-P2-035, PART 0 L2, carve#5830).
 
 ::: compare
 
@@ -18,8 +18,7 @@ An unclosed marker-line comment run remains literal paragraph text through its d
 ```html
 <dl>
   <dt>t</dt>
-  <dd>{% a
-{k=v}</dd>
+  <dd>{% a</dd>
   <dd>next</dd>
 </dl>
 ```
@@ -39,8 +38,7 @@ z %} y
 ```html
 <dl>
   <dt>t</dt>
-  <dd>{% a
-{k=v}</dd>
+  <dd>{% a</dd>
   <dd>next
 z %} y</dd>
 </dl>

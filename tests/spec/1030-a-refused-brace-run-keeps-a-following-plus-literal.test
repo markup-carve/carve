@@ -10,7 +10,7 @@ A refused brace run keeps a following plus literal
 <ul>
   <li>{.x
 .y}
-+
-zq</li>
+    zq
+  </li>
 </ul>
 ```

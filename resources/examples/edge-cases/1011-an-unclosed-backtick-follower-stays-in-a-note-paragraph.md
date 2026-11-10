@@ -4,7 +4,7 @@ page: edge-lists
 
 ## An unclosed backtick follower stays in a note paragraph
 
-The continuation at the opening brace's column refuses the attribute run. The unclosed backtick follower and its payload remain in the attached paragraph through the first blank (CARVE-P2-035, carve#5549).
+The brace opener is literal. The following backtick fence opens as a separate block and keeps its own payload (CARVE-P2-035, carve#5830).
 
 ::: compare
 
@@ -23,15 +23,17 @@ tail
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
-<p>tail</p>
+<pre><code>wa
+
+
+tail
+</code></pre>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
     <li id="fn1">
       <p>{.x
-.y}
-<code>
-wa</code><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+.y}<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>

@@ -1,1 +1,1 @@
-carve#5820: the pinned JavaScript reader continues a quoted note run on a lazy line one column past the quote-inner `{`; the ruling measures the `{` where it is written, source column 2, so the lazy line at column 1 refuses the run and it stays paragraph text.
+carve#5830: the pinned JavaScript reader predates the refused-run and container-prefix ruling; the updated corpus follows the spec model.

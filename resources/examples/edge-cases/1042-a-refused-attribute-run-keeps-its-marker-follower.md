@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A refused attribute run keeps its marker follower
 
-The closer is short of the opening brace. The following marker continues the refused run's paragraph (CARVE-P2-035, carve#5752).
+The closer fails the brace-column test. The following marker opens a nested list under ordinary item ownership (CARVE-P2-035, carve#5830).
 
 ::: compare
 
@@ -18,7 +18,10 @@ The closer is short of the opening brace. The following marker continues the ref
 <ul>
   <li>{.x
 }
-- q</li>
+    <ul>
+      <li>q</li>
+    </ul>
+  </li>
 </ul>
 ```
 

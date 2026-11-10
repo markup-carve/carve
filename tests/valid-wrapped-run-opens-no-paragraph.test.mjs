@@ -10,7 +10,7 @@ test('a run at a description body column inside an item lets a column-0 line lea
   assert.equal(html('- :: t\n  : a\n    {#i\n     .y}\nQQ\nz'),
     '<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>a</dd>\n    </dl>\n  </li>\n</ul>\n<p>QQ\nz</p>')
   assert.equal(html('- :: t\n  : a\n    {#i\n    .y}\nQQ'),
-    '<ul>\n  <li>\n    <dl>\n      <dt>t</dt>\n      <dd>a\n{#i\n.y}\nQQ</dd>\n    </dl>\n  </li>\n</ul>')
+    html('- :: t\n  : a\n    \\{#i\n    .y}\nQQ'))
 })
 
 test('a run after a nested marker or description lead is measured from its brace', () => {
@@ -25,12 +25,12 @@ test('a run after a nested marker or description lead is measured from its brace
 })
 
 test('an unprefixed continuation of a quoted run is measured by its source column', () => {
-  assert.equal(html('> {.x\n   .y}\nplain'), '<blockquote>\n\n</blockquote>\n<p>plain</p>')
+  assert.equal(html('> {.x\n   .y}\nplain'), html('> \\{.x\n   .y}\nplain'))
   assert.equal(html('> {.x\n  .y}\nplain'), '<blockquote><p>{.x\n.y}\nplain</p></blockquote>')
   assert.equal(html('- > {.x\n     .y}\nplain'),
-    '<ul>\n  <li>\n    <blockquote>\n\n    </blockquote>\n  </li>\n</ul>\n<p>plain</p>')
+    html('- > \\{.x\n     .y}\nplain'))
   // CARVE-P2-035 and carve#5619 measure the unprefixed line at its written column, even after a tab.
-  assert.equal(html('> \t{.x\n     .y}\nplain'), '<blockquote>\n\n</blockquote>\n<p>plain</p>')
+  assert.equal(html('> \t{.x\n     .y}\nplain'), html('> \t\\{.x\n     .y}\nplain'))
   assert.equal(html('> - {.x\n   .y}\nplain'),
     '<blockquote>\n  <ul>\n    <li>{.x\n.y}\nplain</li>\n  </ul>\n</blockquote>')
 })

@@ -1,6 +1,6 @@
 ## A wrapped attribute line interrupts like a one-line attribute line
 
-A block attribute may span lines (PART 4, `block_attributes`) only when its continuation passes the opening `{` column. The historical inputs below have column-0 continuations or closers. CARVE-P2-035 makes those runs paragraph text, while a deeper continuation still interrupts like a one-line attribute.
+A block attribute interrupts when every continuation carries its container prefixes, reaches the body column and passes the brace column. The historical short continuations below refuse, leaving only their opener literal (CARVE-P2-035, carve#5830).
 
 A refused wrapped run below an item paragraph stays text before the fence
 
@@ -74,10 +74,9 @@ y
   </li>
 </ul>
 <p>{.c
-}
-~~~
-y
-~~~</p>
+}</p>
+<pre><code>y
+</code></pre>
 `````
 
 :::::::

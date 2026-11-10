@@ -4,7 +4,7 @@ page: edge-attributes
 
 ## A quoted item's inner quoted run continues under the outer prefix
 
-A run in a quote on a quoted item's marker line may continue under the outer quote prefix only; the line keeps its written source column. A valid run opens no paragraph, so the column-zero follower leaves every container, and a continuation at or left of the `{` refuses the run (CARVE-P2-035, carve#5835).
+A run in a quote on a quoted item's marker line requires both quote prefixes on every continuation. A line with only the outer prefix refuses the run; later lines follow ordinary ownership (CARVE-P2-035, carve#5830, superseding carve#5835).
 
 ::: compare
 
@@ -18,13 +18,12 @@ plain
 <blockquote>
   <ul>
     <li>
-      <blockquote>
-
-      </blockquote>
+      <blockquote><p>{.x
+.y}
+plain</p></blockquote>
     </li>
   </ul>
 </blockquote>
-<p>plain</p>
 ```
 
 :::

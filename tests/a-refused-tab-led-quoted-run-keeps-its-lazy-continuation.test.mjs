@@ -11,9 +11,9 @@ test('a tab-led quoted run refused at its brace column keeps its lazy line', () 
   assert.equal(render('> \t{.x\n    .y}\n'), '<blockquote><p>{.x\n.y}</p></blockquote>')
 })
 
-test('a tab-led quoted run continued past its brace column stays a run', () => {
-  assert.equal(render('>   \t{.x\n         .y}\n> z\n'), '<blockquote><p class="x y">z</p></blockquote>')
-  assert.equal(render('> \t{.x\n     .y}\n> z\n'), '<blockquote><p class="x y">z</p></blockquote>')
+test('a tab-led quoted run without a prefix on its continuation refuses', () => {
+  assert.equal(render('>   \t{.x\n         .y}\n> z\n'), '<blockquote><p>{.x\n.y}\nz</p></blockquote>')
+  assert.equal(render('> \t{.x\n     .y}\n> z\n'), '<blockquote><p>{.x\n.y}\nz</p></blockquote>')
 })
 
 test('a refused tab-led run in a nested quote keeps its lazy line in that quote', () => {
@@ -22,8 +22,8 @@ test('a refused tab-led run in a nested quote keeps its lazy line in that quote'
   assert.equal(render('> > \t{.x\n>       .y}\n'), kept)
 })
 
-test('a nested quoted run with an indented brace continues past its source column', () => {
-  const run = '<blockquote>\n  <blockquote><p class="x y">z</p></blockquote>\n</blockquote>'
+test('a nested quoted run requires its quote prefixes on every continuation', () => {
+  const run = '<blockquote>\n  <blockquote><p>{.x\n.y}\nz</p></blockquote>\n</blockquote>'
   assert.equal(render('> > \t{.x\n>        .y}\n> > z\n'), run)
   assert.equal(render('> >  {.x\n>     .y}\n> > z\n'), run)
   assert.equal(render('> >  {.x\n>    .y}\n> > z\n'), '<blockquote>\n  <blockquote><p>{.x\n.y}\nz</p></blockquote>\n</blockquote>')

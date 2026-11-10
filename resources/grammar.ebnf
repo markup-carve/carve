@@ -162,8 +162,8 @@
          misses its host. Exact closer tests remain in PART 9 §2.
      P2  L1-L3 govern normalization, prefix consumption and frame reach.
      P3  L4 separates container survival from paragraph openness.
-     P4  L5 governs classification. A caption needs an eligible host; the
-         line after a refused brace run retains that run's paragraph.
+     P4  L5 governs classification. A caption needs an eligible host; a
+         refused block-position brace opener is literal text and claims no later line.
      P5  L6 governs marker-body blanks and list looseness. Siblings also
          group by kind and owner under PART 9 §11 N1.
      P6  L7 governs `+` offers. A refused offer renders no text; the grant
@@ -438,7 +438,9 @@
         not interrupt a paragraph. The deepest paragraph is found by following
         the last child container to its leaf at every depth. The test is the
         same at every depth and in every family; only local marker
-        grammar differs. Headings, thematic breaks, quotes, terms, tables, valid
+        grammar differs. A multi-line block-position brace run takes no lazy
+        continuation; every line through its closer reaches the opener's
+        container body column (CARVE-P2-035). Headings, thematic breaks, quotes, terms, tables, valid
         colon openers, code and raw openers, fenced comments, attributes and
         footnote definitions interrupt. An invalid opener is text. A fold closes
         nothing and changes the leaf operation, never which container
@@ -652,35 +654,25 @@ blank_line = {whitespace}, newline ;
 
 (* --- Headings --- *)
 (* A BLOCK BRACE RUN CONTINUES PAST ITS OPENER -- NORMATIVE [CARVE-P2-035].
-   A block-position attribute or comment run continues only on lines indented
-   at least one column past its opening `{`, including a closing-delimiter-only
-   line. If a continuation fails, the entire run is paragraph text, and the
-   line after it continues that paragraph without interrupting it, even when
-   it opens a heading, quote or fence (carve#5080); a fence opener there keeps
-   its closer in the paragraph too. That closer is read by its own column,
-   indented or not, whatever stands between it and the opener, a quote or
-   heading included (carve#5600). The column
-   comparison uses the lines' source columns after quote prefixes are read.
-   On a container's marker line, a run that opens the body measures its `{`
-   where it is written, spaces and a task box before it included; only a note
-   measures it at its body column, past the label (carve#5748, carve#5805,
-   maintainer rulings, 2026-11-10; carve#5766).
-   A `{%` opened on a lazy paragraph continuation keeps its written source
-   column, even when it is short of its owner's content column. A continuation
-   without a quote prefix after a quoted block-position run also supplies its
-   written source column: one column past the quote-inner opening `{` makes
-   a valid block attribute run, not inline text (carve#5619).
-   A continuation at or left of that `{` refuses the whole run in every owner;
-   one or more source columns past it continues the run. A lone `+` at the host
-   marker column on the line immediately after a refused run stays literal
-   paragraph text, and the following line continues the paragraph (carve#5658
-   R03, maintainer ruling, 2026-11-09). A line inside a still-open
-   inline code span of the paragraph starts no block-position brace line, at any
-   column: block position is not decided against text the paragraph's inline
-   pairing already holds (carve#5618, carve#5638). Inline
-   attribute and comment runs remain governed by their inline productions.
-   PART 4 `continuation` spells the attribute production; PART 9 §21a gives
-   comment rendering. The importer now passes these runs through. *)
+   A block-position attribute or comment run continues only when every line
+   after the opener through its closer carries every prefix in the opener's
+   container stack and reaches its body column. No line inside the run is
+   lazy. After those prefixes are read, each continuation must be indented
+   at least one column past the opening `{`, including a closer-only line.
+   The brace column is measured after the container prefixes are read.
+   On an item or quote marker line it is the written brace column, including
+   a task box; on a note marker line it is the note body column.
+
+   If the continuation test fails, the opener is literal text and claims no
+   later physical line. Every later line follows ordinary owner, interruption,
+   inline and attachment rules. A literal `{%` opener never pairs with a later
+   `%}`. For example, `{.x` / `.y}` / `# H` makes a literal paragraph followed
+   by a heading.
+
+   A line inside a still-open inline code span of the paragraph starts no
+   block-position brace run. Inline attribute and comment runs keep their
+   inline productions. PART 4 `continuation` spells the attribute production;
+   PART 9 §21a gives comment rendering. *)
 
 (* ATX (`#` prefix) only. Setext (underline) headings are intentionally
    NOT supported, matching djot: a `---` underline collides with the
@@ -3467,15 +3459,17 @@ quoted_value = '"', { escaped_char | literal_backslash | (character - '"' - '\' 
 (* Block-level attributes appear on their own line(s) preceding a block.
    A single attribute block may span multiple physical lines (the `}`
    need not be on the opening line): a continuation is a single line
-   break followed by indentation at least one column past the opening `{`.
+   break carrying every container prefix, reaching its body column, then
+   indentation at least one column past the opening `{`.
    This includes a line containing only the closing `}`. A BLANK line (two line
    breaks) ends the block -- it is not interior padding; an attribute
-   block interrupted by a blank line is not a `block_attributes`; its lines
-   are literal paragraph text. Merge + reach semantics
+   block interrupted by a blank line is not a `block_attributes`; its opener
+   is literal text, and later lines are read normally. Merge + reach semantics
    (including float-across-blank-lines BETWEEN separate blocks): PART 9 §15. *)
-(* Every continuation line must carry the quote prefix of its container and
-   reach at least one column past the opening `{`. If any line fails, the
-   entire run is paragraph text, as when a blank line interrupts it. *)
+(* Every continuation line must carry every prefix of its container stack,
+   reach its body column, then pass the opening `{` column. It is never lazy.
+   If any line fails, the
+   opener is literal text; later lines are read normally. *)
 block_attributes = block_attribute_block, {block_attribute_block}, newline ;
 block_attribute_block = '{', opt_pad, attribute, {attr_separator, attribute}, opt_pad, '}' ;
 (* A GLUED RUN IS ONE ATTRIBUTE LINE. `{.a}{.b}` on a line of its own is one
@@ -5572,8 +5566,6 @@ EOF = (* end of file *) ;
            and a line-initial `|` with no closing `|`, are NOT ones);
          - a code or raw fence opener, closer or not (I4);
          - a `:::` opener, closer or not (I4).
-         The exception is the line after a refused brace run: it continues the
-         run's paragraph and interrupts nothing (CARVE-P2-035).
          So "intro \n # H" is <p>intro</p> + <h1>; "intro \n --- \n more"
          is <p>intro</p> + <hr> + <p>more</p> (corpus
          81-paragraph-interruption).
@@ -6144,10 +6136,12 @@ EOF = (* end of file *) ;
          This clause does not decide how an empty container renders.
       A5 MULTI-LINE BLOCK. One block may wrap across lines ({#id\n .foo} is
          one block: id `id`, class `foo`). Every continuation line, including
-         a line containing only `}`, must be indented at least one column past
-         the opening `{` (PART 4 `continuation`). A line at or below that
+         a line containing only `}`, must carry every container prefix and reach
+         the body column before standing at least one column past the opening
+         `{` (PART 4 `continuation`). No continuation is lazy. A line at or below that
          column, like a BLANK line inside the braces, ends the attempt: the
-         whole run is paragraph text, not `block_attributes`. Each block of a glued run (`{.a}{.b}`) wraps by
+         opener is literal paragraph text and later lines are read normally,
+         not as `block_attributes` (CARVE-P2-035). Each block of a glued run (`{.a}{.b}`) wraps by
          this same rule, so `{.a}{.b` / `     }` (past the second `{`) and
          `{.a` / ` }{.b}` are attribute lines. A quoted value containing a literal `}` across
          lines is outside this form. Continuation placement inside containers
@@ -6803,9 +6797,10 @@ EOF = (* end of file *) ;
         `a {% one\ntwo %} b` renders `<p>a  b</p>`. It never joins two
         paragraphs across a blank line -- `%%%` is the block form (§28).
         At block position its continuations follow CARVE-P2-035: each later
-        line, including a `%}`-only closer, must be indented past the opening
-        `{`. Otherwise every line of the run is literal paragraph text, and a
-        following line without a blank joins that paragraph. A `{%` that
+        line, including a `%}`-only closer, carries every container prefix and
+        reaches its body column before it passes the opening `{`. No line in
+        the run is lazy. Otherwise the opener is literal text and later lines are read
+        normally; its literal `{%` never pairs with a later `%}`. A `{%` that
         starts a line is at block position, including the start of a
         continuation line of an open paragraph: `pre\n{% a\nb %}` renders
         `<p>pre\n{% a\nb %}</p>` in the root, a list item and a quote alike

@@ -4,7 +4,7 @@ page: edge-attributes
 
 ## A refused quoted run with a lazy continuation stays literal
 
-A lazy continuation at or left of the quoted `{` refuses the run, and a refused run is literal paragraph text in every owner, so `{#a` reads no tag (CARVE-P2-035, carve#5829).
+A multi-line run takes no lazy continuation. Its refused opener is literal text, and the `#a` after that opener follows ordinary inline parsing (CARVE-P2-035, carve#5830, superseding carve#5829).
 
 ::: compare
 
@@ -16,7 +16,7 @@ A lazy continuation at or left of the quoted `{` refuses the run, and a refused 
 ```html
 <ul>
   <li>
-    <blockquote><p>{#a
+    <blockquote><p>{<span class="tag"><strong>#a</strong></span>
 .y}</p></blockquote>
   </li>
 </ul>
@@ -34,7 +34,7 @@ A lazy continuation at or left of the quoted `{` refuses the run, and a refused 
 ```html
 <blockquote>
   <ul>
-    <li>{#a
+    <li>{<span class="tag"><strong>#a</strong></span>
 .y}</li>
   </ul>
 </blockquote>
@@ -50,7 +50,7 @@ A lazy continuation at or left of the quoted `{` refuses the run, and a refused 
 ```
 
 ```html
-<blockquote><p>{#a
+<blockquote><p>{<span class="tag"><strong>#a</strong></span>
 .y}</p></blockquote>
 ```
 

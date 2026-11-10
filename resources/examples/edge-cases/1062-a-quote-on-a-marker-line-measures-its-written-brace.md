@@ -4,7 +4,7 @@ page: edge-attributes
 
 ## A quote on a marker line measures its written brace
 
-When a quote opens on a note's or an item's marker line, an unprefixed continuation of a brace run in it is compared with the `{` where it is written, past the note label or a task box, not with the host's body column. A continuation at or short of that `{` refuses the run, which stays the quote's paragraph text; one column past it continues the run (CARVE-P2-035, carve#5805, carve#5820).
+When a quote opens on a note's or an item's marker line, its brace stays at the written column for the CARVE-P2-035 test. A multi-line run also requires every quote prefix on every continuation. The unprefixed continuations below refuse their runs at any indentation; their openers stay literal text (carve#5820, carve#5830).
 
 ::: compare
 
@@ -46,9 +46,8 @@ x[^q]
   <hr>
   <ol>
     <li id="fn1">
-      <blockquote>
-
-      </blockquote>
+      <blockquote><p>{.x
+.y}</p></blockquote>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>

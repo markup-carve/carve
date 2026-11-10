@@ -5,7 +5,7 @@ A refused marker-head brace run stays literal
  }
 .
 <ul>
-  <li>{#a
+  <li>{<span class="tag"><strong>#a</strong></span>
 }</li>
 </ul>
 ```
@@ -21,7 +21,7 @@ x[^n]
   <hr>
   <ol>
     <li id="fn1">
-      <p>{#a
+      <p>{<span class="tag"><strong>#a</strong></span>
 }<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>

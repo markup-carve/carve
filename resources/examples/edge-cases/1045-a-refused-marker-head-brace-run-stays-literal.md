@@ -4,7 +4,7 @@ page: edge-footnotes
 
 ## A refused marker-head brace run stays literal
 
-The continuation reaches the opening brace's source column but does not pass it. The entire run is literal paragraph text in an item and in a note (CARVE-P2-035, carve#5773).
+The continuation reaches but does not pass the brace column. Only the opener is forced literal; later text follows ordinary inline and block rules in both hosts (CARVE-P2-035, carve#5830).
 
 ::: compare
 
@@ -15,7 +15,7 @@ The continuation reaches the opening brace's source column but does not pass it.
 
 ```html
 <ul>
-  <li>{#a
+  <li>{<span class="tag"><strong>#a</strong></span>
 }</li>
 </ul>
 ```
@@ -37,7 +37,7 @@ x[^n]
   <hr>
   <ol>
     <li id="fn1">
-      <p>{#a
+      <p>{<span class="tag"><strong>#a</strong></span>
 }<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>

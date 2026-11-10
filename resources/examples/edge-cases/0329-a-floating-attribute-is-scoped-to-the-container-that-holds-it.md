@@ -132,7 +132,7 @@ tail
   <dt>t</dt>
   <dd>d
 {.k
-#x}
+<span class="tag"><strong>#x</strong></span>}
 tail</dd>
 </dl>
 ```

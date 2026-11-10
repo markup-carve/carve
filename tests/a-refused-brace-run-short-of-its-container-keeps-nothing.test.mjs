@@ -1,7 +1,7 @@
 /*
  * A follower short of the refused run's container is read as usual (PART 0 S4,
- * carve#5200). A run folded lazily into its container keeps its follower, as an
- * attribute run or a comment run (carve#5792, ruling option 1).
+ * carve#5200). A refused run claims no lines. Its follower is parsed normally under
+ * carve#5830, superseding carve#5792.
  */
 
 import { test } from 'node:test'
@@ -52,15 +52,16 @@ test('a heading short of the item after a refused run in it ends the item', () =
   ].join('\n'))
 })
 
-test('a run and follower in the item still keep the follower', () => {
+test('a refused run releases the following heading in the item', () => {
   assert.equal(render(['- a', '  {x', '  y}', '  # c', 'more']), [
     '<ul>',
     '  <li>a',
     '{x',
     'y}',
-    '# c',
-    'more</li>',
+    '    <h1 id="c">c</h1>',
+    '  </li>',
     '</ul>',
+    '<p>more</p>',
   ].join('\n'))
 })
 
@@ -94,7 +95,7 @@ test('a follower short of an item in a quote ends the keeping', () => {
   ].join('\n'))
 })
 
-test('a run folded lazily into a nested item keeps its follower', () => {
+test('a refused run in a nested item releases its follower', () => {
   assert.equal(render(['- p', '  - a', '   {x', '   y}', '    # c', 'more']), [
     '<ul>',
     '  <li>p',
@@ -102,11 +103,12 @@ test('a run folded lazily into a nested item keeps its follower', () => {
     '      <li>a',
     '{x',
     'y}',
-    '# c',
-    'more</li>',
+    '        <h1 id="c">c</h1>',
+    '      </li>',
     '    </ul>',
     '  </li>',
     '</ul>',
+    '<p>more</p>',
   ].join('\n'))
 })
 
@@ -124,41 +126,47 @@ test('a run folded lazily into an item in a quote keeps nothing', () => {
   ].join('\n'))
 })
 
-test('a run folded lazily into a quote in an item keeps its follower', () => {
+test('a refused run in a quote in an item releases its follower', () => {
   assert.equal(render(['- > a', '  {x', '  y}', '  > # c', 'more']), [
     '<ul>',
     '  <li>',
-    '    <blockquote><p>a',
+    '    <blockquote>',
+    '      <p>a',
     '{x',
-    'y}',
-    '# c',
-    'more</p></blockquote>',
+    'y}</p>',
+    '      <h1 id="c">c</h1>',
+    '    </blockquote>',
     '  </li>',
     '</ul>',
+    '<p>more</p>',
   ].join('\n'))
 })
 
-test('a run folded lazily into a nested quote keeps its follower', () => {
+test('a refused run in a nested quote releases its follower', () => {
   assert.equal(render(['> > a', '> {x', '> y}', '> > # c', 'more']), [
     '<blockquote>',
-    '  <blockquote><p>a',
+    '  <blockquote>',
+    '    <p>a',
     '{x',
-    'y}',
-    '# c',
-    'more</p></blockquote>',
+    'y}</p>',
+    '    <h1 id="c">c</h1>',
+    '  </blockquote>',
     '</blockquote>',
+    '<p>more</p>',
   ].join('\n'))
 })
 
-test('a run folded lazily into a description keeps its follower', () => {
+test('a refused run in a description releases its follower', () => {
   assert.equal(render([':: t', ': a', '{x', 'y}', '  # c', 'more']), [
     '<dl>',
     '  <dt>t</dt>',
-    '  <dd>a',
+    '  <dd>',
+    '    <p>a',
     '{x',
-    'y}',
-    '# c',
-    'more</dd>',
+    'y}</p>',
+    '    <h1 id="c">c</h1>',
+    '  </dd>',
     '</dl>',
+    '<p>more</p>',
   ].join('\n'))
 })

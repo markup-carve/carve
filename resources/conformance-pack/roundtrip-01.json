@@ -886,7 +886,7 @@
 {"id":"roundtrip-b9a9a5c6b685","source":"-- +\n-- +\n","html":"<p>– +\n– +</p>"},
 {"id":"roundtrip-b9caa574b443","source":"-- > ```\n  > x\n  > ```\n\n    > y\n","html":"<p>– &gt; <code></code></p>\n<blockquote>\n  <p>x</p>\n  <pre><code></code></pre>\n</blockquote>\n<blockquote><p>y</p></blockquote>"},
 {"id":"roundtrip-b9f14e027a93","source":"\n| |{bad!!}\n| |{bad!!}\n","html":"<p>| |{bad!!}\n| |{bad!!}</p>"},
-{"id":"roundtrip-badadbc5adb9","source":"[r][d]\n- a\n{.c\n}\n~~~\ny\n1. \n\n~~~\n","html":"<p>[r][d]\n- a\n{.c\n}\n~~~\ny\n1.</p>\n<pre><code></code></pre>"},
+{"id":"roundtrip-badadbc5adb9","source":"[r][d]\n- a\n{.c\n}\n~~~\ny\n1. \n\n~~~\n","html":"<p>[r][d]\n- a\n{.c\n}</p>\n<pre><code>y\n1. \n\n</code></pre>"},
 {"id":"roundtrip-bbf59ff58da3","source":":::: \\\n  indented\nnext\n\n:::: note\na\nb\n:::\n::::\n","html":"<div class=\"hardbreaks\">\n  <p>indented<br>\nnext</p>\n  <aside class=\"admonition note\" aria-label=\"Note\">\n    <p>a\nb</p>\n    <div>\n      <div>\n\n      </div>\n    </div>\n  </aside>\n</div>"},
 {"id":"roundtrip-bc25ea1c1912","source":":: term\n:: term\nwrapped on\n: defnition\n","html":"<dl>\n  <dt>term</dt>\n  <dt>term</dt>\n</dl>\n<p>wrapped on\n: defnition</p>"},
 {"id":"roundtrip-bc2d901b7d0a","source":"tail\n","html":"<p>tail</p>"},
