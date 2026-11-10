@@ -7894,6 +7894,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qItemPara = false // and is that paragraph an item's?
       let qCommentThrough = -1 // the closing line of a valid comment run, whose continuations open nothing (CARVE-P2-035)
       let qCommentCloser = null // the closer an earlier opener's scan found, in rows of `lines` (carve#5859)
+      let qCommentOpenThrough = null // the paragraph end an earlier closerless opener's scan reached, so later openers skip it
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
@@ -8343,8 +8344,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             })
             const known = qCommentCloser?.depth === depth && qCommentCloser.markerQuotes === markerQuotes && qCommentCloser.at > idx
             const run = { commentScannedThrough: -1, commentCloser: known ? { from: qCommentCloser.from - idx, at: qCommentCloser.at - idx } : undefined }
-            if (indentCols(tail).rest.startsWith('{%') &&
+            const comment = indentCols(tail).rest.startsWith('{%')
+            // No `%}` lies between this opener and the end an earlier scan of the same rows reached.
+            const closerless = comment && qCommentOpenThrough?.depth === depth &&
+              qCommentOpenThrough.markerQuotes === markerQuotes && qCommentOpenThrough.from < idx && qCommentOpenThrough.through > idx
+            if (comment && !closerless &&
                 refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt
+            if (comment && !closerless && run.commentClosesAt === undefined && run.commentScannedThrough > 0)
+              qCommentOpenThrough = { from: idx, through: idx + run.commentScannedThrough, depth, markerQuotes }
             if (run.commentCloser?.from === 0) qCommentCloser = { from: idx, at: idx + run.commentCloser.at, depth, markerQuotes }
           }
         }
