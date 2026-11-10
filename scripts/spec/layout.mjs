@@ -1889,7 +1889,10 @@ function inlineAttributeHost(line, at, span, bracketStarts) {
   // The host may have opened on a previous soft line. Read from its latest
   // visible opener, rather than making a fresh lexical guess at this closer.
   const marker = closer === ')' || closer === ']' ? '[' : closer === '>' ? '<' : closer === '}' ? '{' : closer
-  const prior = span.previousMarks?.get(marker)
+  const bracketClose = closer === ']' ? at - 1 : closer === ')' ? line.lastIndexOf('](', at - 1) : -1
+  const pairedBracket = bracketClose >= 0 && span.lastBracketClose?.[0] === span.historyLines.length &&
+    span.lastBracketClose[1] === bracketClose ? span.lastBracketMatch : null
+  const prior = pairedBracket ?? span.previousMarks?.get(marker)
   if (!prior || prior[0] >= span.historyLines.length) return false
   const prefix = [span.historyLines[prior[0]].slice(Math.max(0, prior[1] - 1)),
     ...span.historyLines.slice(prior[0] + 1), line.slice(0, at)].join('\n')
@@ -1908,6 +1911,7 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
   let acceptedAttributeEnd = -1
   span.historyLines ??= []
   span.lastMarks ??= new Map()
+  span.bracketOpeners ??= []
   span.previousMarks = new Map(span.lastMarks)
   const historyIndex = span.historyLines.length
   for (let k = 0; k < line.length; k++) {
@@ -1951,12 +1955,17 @@ function scanInlineSpan(span, line, futureCommentClose = false) {
     if (line[k] === '\\') {
       let width = 1
       while (line[k + width] === '\\') width++
-      const escaped = line[k + width] === '`' || line[k + width] === '{'
+      const escaped = '`{[]'.includes(line[k + width] ?? '\0')
       k += width - 1 + (escaped && width % 2 === 1 ? 1 : 0)
       continue
     }
     if (line[k] === '{' && line[k + 1] === '%' &&
         (lastCommentClose > k + 1 || futureCommentClose)) { span.comment = true; k++ }
+    if (line[k] === '[') span.bracketOpeners.push([historyIndex, k])
+    else if (line[k] === ']' && span.bracketOpeners.length) {
+      span.lastBracketMatch = span.bracketOpeners.pop()
+      span.lastBracketClose = [historyIndex, k]
+    }
     if ('[<{}/*_~=:'.includes(line[k])) span.lastMarks.set(line[k], [historyIndex, k])
   }
   span.historyLines.push(line)

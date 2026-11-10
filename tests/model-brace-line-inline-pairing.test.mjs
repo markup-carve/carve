@@ -51,3 +51,10 @@ test('an escaped bracket cannot host an inline attribute', () => {
   assert.equal(html('\\[a]{title="`"}\n{k=v}\nb\n'),
     '<p>[a]{title=“<code>"}\n{k=v}\nb</code></p>')
 })
+
+test('a nested bracket host closed on a later line consumes its attributes', () => {
+  assert.equal(html('[a [b\nx]]{title="`"}\n{k=v}\nz\n'),
+    '<p><span title="`">a [b\nx]</span></p>\n<p k="v">z</p>')
+  assert.equal(html('[a [b\nx]](u){title="`"}\n{k=v}\nz\n'),
+    '<p><a href="u" title="`">a [b\nx]</a></p>\n<p k="v">z</p>')
+})
