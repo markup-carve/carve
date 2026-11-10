@@ -7063,6 +7063,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          const bodyRefusalLines = []
+          let protectedFenceThrough = -1
+          let bodySpanScanAt = 0
+          let bodySpan = { codeRun: 0, comment: false }
+          const bodyInlineSpanOpen = () => {
+            for (; bodySpanScanAt < bodyRefusalLines.length; bodySpanScanAt++) {
+              const text = bodyRefusalLines[bodySpanScanAt]
+              if (isBlank(text)) bodySpan = { codeRun: 0, comment: false }
+              else scanInlineSpan(bodySpan, text)
+            }
+            return bodySpan.codeRun !== 0 || bodySpan.comment
+          }
           const bodySourceColumns = []
           authoredCommentColumns.set(bodyLines, bodySourceColumns)
           let bodyHasFenceCandidate = false
@@ -7097,6 +7109,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               markAttachmentBoundary(state, bodyLines)
             }
             bodyLines.push(text)
+            const unframed = stripLazy(stripLazyLead(text))
+            // A lazy brace follower is already paragraph text. Keep its text
+            // visible to the run scan without offering it as a new opener.
+            bodyRefusalLines.push(text.startsWith(LAZY) && unframed.startsWith('{') ? 'x' + unframed : unframed)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const bodyMarker = matchMarkerAt(indentCols(text))
             if (bodyMarker) lastBodyListMarker = bodyMarker
@@ -7170,6 +7186,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
+            if (i <= protectedFenceThrough) {
+              pushBody(lazyFrame(stripIndent(cur).replace(/[ \t]+$/, '')))
+              i++
+              continue
+            }
             if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
             // A new span needs its own answer; payload rows keep the prior one.
             if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
@@ -7322,6 +7343,31 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // `more`.
             const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
             const authoredCol = indentCols(cur).col
+            // A refused brace run keeps its first block-shaped follower as
+            // paragraph text even when that follower misses this body's
+            // column. Carry that text past the body parse's block classifier.
+            if ((!readsAsProse(dedented) || startsParagraphBlock(dedented) ||
+                matchMarkerAt(indentCols(dedented)) || isDefinitionOrAttributeLine(dedented)) &&
+                !bodyInlineSpanOpen()) {
+              bodyRefusalLines.push(dedented)
+              const protectedFollower = endsInRefusedRunParagraph(bodyRefusalLines, bodyRefusalLines.length - 1, true)
+              bodyRefusalLines.pop()
+              if (protectedFollower) {
+                const fence = FENCE.exec(dedented)
+                if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
+                  for (let row = i + 1; row < n && !isBlank(lines[row]); row++) {
+                    const closer = PURE_FENCE.exec(indentCols(lines[row]).rest)?.[1]
+                    if (closer && closer[0] === fence[1][0] && closer.length >= fence[1].length) {
+                      protectedFenceThrough = row
+                      break
+                    }
+                  }
+                }
+                pushBody(lazyFrame(dedented))
+                i++
+                continue
+              }
+            }
             // A block closed inside a nested description, item or marked quote
             // leaves no paragraph for a column-zero continuation (CARVE-P0-011).
             // An unmarked quote follower stays paragraph text under X2.
