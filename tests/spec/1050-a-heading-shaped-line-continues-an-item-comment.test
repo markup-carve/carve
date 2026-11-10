@@ -1,0 +1,13 @@
+A heading-shaped line continues an item comment
+
+```
+- p
+  {% a
+   # h
+   z %}
+.
+<ul>
+  <li>p
+</li>
+</ul>
+```
