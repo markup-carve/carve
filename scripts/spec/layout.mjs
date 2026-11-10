@@ -2417,18 +2417,43 @@ const pastMarkers = (at) => {
 }
 // A term holds no body, so a deeper line after it ended the entry (carve#5289).
 const TERM_RUN = /^:: /
-// A description lead continues the entry above it, whose term may follow list markers.
-const descriptionAbove = (bodyLines, col, end) => {
+// Whether the entry above line `from` + 1 makes a `: ` line at `col` a description:
+// the nearest line at or left of `col` is its term, or a `: ` line that is itself
+// a description. A `: ` line with no term above it is paragraph text and continues
+// no entry (PART 0 S3, carve#5841). `measureAt(k)` gives the line's column for the
+// deeper test, `resolve` the run it is read as. A walk that finds no line, or
+// reaches a `stop` above 0 without deciding, returns undefined. `lines`, when
+// given, keys a memo of each chained `: ` line's answer so a long entry is read once.
+const entryMemos = new WeakMap()
+function entryAboveAt(from, col, measureAt, resolve = (m) => m, stop = 0, lines = null, tag = '') {
+  let memo = null
+  if (lines && stop === 0) {
+    if (!entryMemos.has(lines)) entryMemos.set(lines, new Map())
+    memo = entryMemos.get(lines)
+  }
   let deeper = false
-  for (let k = end - 1; k >= 0; k--) {
-    const measured = indentCols(bodyLines[k])
+  const chain = []
+  let result
+  for (let k = from; k >= stop; k--) {
+    const measured = measureAt(k)
     if (measured.rest === '') continue
     if (measured.col > col) { deeper = true; continue }
-    const at = pastMarkers(measured)
-    return at.col === col && DESCRIPTION_RUN.test(at.rest) && !(deeper && TERM_RUN.test(at.rest))
+    const at = resolve(measured)
+    if (at.col !== col || !DESCRIPTION_RUN.test(at.rest)) { result = false; break }
+    if (TERM_RUN.test(at.rest)) { result = !deeper; break }
+    const key = `${tag}:${col}:${k}`
+    const known = memo?.get(key)
+    if (known && known.line === lines[k]) { result = known.result; break }
+    chain.push([key, k])
+    deeper = false
   }
-  return false
+  if (result === undefined) result = chain.length && stop === 0 ? false : undefined
+  if (memo) for (const [key, k] of chain) memo.set(key, { line: lines[k], result })
+  return result
 }
+// A description lead continues the entry above it, whose term may follow list markers.
+const descriptionAbove = (bodyLines, col, end) =>
+  entryAboveAt(end - 1, col, (k) => indentCols(bodyLines[k]), pastMarkers, 0, bodyLines, 'past')
 // The comment-shaped lines written below a line block's column that its open
 // `%%%` span holds as payload (PART 0 S1, PART 9 §28, carve#4994), each mapped
 // to its span's opener. A collector appends to its body as it reads, so the
@@ -8880,16 +8905,7 @@ const attachedLeavesFenceOpen = (block, above = []) => {
   }
   const context = (j) => j < above.length ? above[j] : block[j - above.length]
   // A `: ` line is a description only under an entry (`opensDescriptionAt`), whose term may stand above the `+`.
-  const isDescription = (k, col) => {
-    let deeper = false
-    for (let j = k - 1; j >= 0; j--) {
-      const measured = behindMarkers(context(j))
-      if (measured.rest === '') continue
-      if (measured.col > col) { deeper = true; continue }
-      return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
-    }
-    return false
-  }
+  const isDescription = (k, col) => entryAboveAt(k - 1, col, (j) => behindMarkers(context(j)))
   // Each line read behind its containers: the text, and the column it stands at.
   const read = block.map((line, k) => {
     const measured = behindMarkers(line)
@@ -9163,16 +9179,8 @@ const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 const DESCRIPTION_RUN = /^::? /
 // Whether a `: ` line at `col` is a description: the nearest line at or left of
 // that column is the entry's term or an earlier description of it.
-const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => {
-  let deeper = false
-  for (let k = end - 1; k >= 0; k--) {
-    const measured = indentCols(bodyLines[k])
-    if (measured.rest === '') continue
-    if (measured.col > col) { deeper = true; continue }
-    return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
-  }
-  return false
-}
+const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) =>
+  entryAboveAt(end - 1, col, (k) => indentCols(bodyLines[k]), undefined, 0, bodyLines, 'plain')
 // Whether a body ends inside a `%%%` span opened on a description's lead line
 // (`: %%%`), which the item and quote paragraph trackers read as text. The
 // span leaves nothing (CARVE-P9-047), so a line that ends it under S1 finds no
@@ -9212,35 +9220,21 @@ function descriptionLeadSpanOpen(bodyLines) {
     const lead = DESCRIPTION_LEAD.exec(measured.rest)
     const opener = lead && COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))
     if (!opener) continue
-    // The entry above: the nearest line at or left of this column is its term (`opensDescriptionAt`).
-    for (let k = scan.at - 1, deeper = false; k >= 0; k--) {
-      const above = quoteFreeMeasure(bodyLines[k])
-      if (above.rest === '') continue
-      if (above.col > measured.col) { deeper = true; continue }
-      if (above.col === measured.col && DESCRIPTION_RUN.test(above.rest) && !(deeper && TERM_RUN.test(above.rest))) {
-        scan.span = { run: opener[1].length, owner: measured.col + lead[0].length, depth: measured.quotes.length }
-      }
-      break
+    if (entryAboveAt(scan.at - 1, measured.col, (k) => quoteFreeMeasure(bodyLines[k]), undefined, 0, bodyLines, 'quote')) {
+      scan.span = { run: opener[1].length, owner: measured.col + lead[0].length, depth: measured.quotes.length }
     }
   }
   return scan.span !== null
 }
 
 // `opensDescriptionAt` for the line just pushed, reading the entry above behind its markers.
-const entryAbove = (bodyLines, col) => {
-  let deeper = false
-  for (let k = bodyLines.length - 2; k >= 0; k--) {
-    let measured = indentCols(bodyLines[k])
-    if (measured.rest === '') continue
-    if (measured.col > col) { deeper = true; continue }
-    for (let marker; measured.col < col && (marker = matchMarkerAt(measured)); ) {
-      const next = indentCols(marker.text)
-      measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
-    }
-    return measured.col === col && DESCRIPTION_RUN.test(measured.rest) && !(deeper && TERM_RUN.test(measured.rest))
+const entryAbove = (bodyLines, col) => entryAboveAt(bodyLines.length - 2, col, (k) => indentCols(bodyLines[k]), (measured) => {
+  for (let marker; measured.col < col && (marker = matchMarkerAt(measured)); ) {
+    const next = indentCols(marker.text)
+    measured = { col: marker.indent + marker.markerWidth + next.col, rest: next.rest }
   }
-  return false
-}
+  return measured
+}, 0, bodyLines, 'markers')
 // A footnote definition opens a body. Its paragraph can accept a lazy line,
 // unlike an erased definition or attribute line (PART 0 S4).
 const closesNestedParagraph = (text) =>
@@ -9867,13 +9861,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     if (marker) return COMMENT_FENCE_BODY.exec(marker.text ?? '')?.[1] ?? null
     const lead = DESCRIPTION_LEAD.exec(measured.rest)
     if (!lead) return null
-    for (let j = k - 1, deeper = false; j >= from; j--) {
-      const above = ind(j)
-      if (above.rest === '') continue
-      if (above.col > measured.col) { deeper = true; continue }
-      if (above.col !== measured.col || !DESCRIPTION_RUN.test(above.rest) || deeper && TERM_RUN.test(above.rest)) return null
-      break
-    }
+    if (entryAboveAt(k - 1, measured.col, ind, undefined, from) === false) return null
     return COMMENT_FENCE_BODY.exec(measured.rest.slice(lead[0].length))?.[1] ?? null
   }
   const blankBehindInvisible = (at, from, codeRow = -1) => {
