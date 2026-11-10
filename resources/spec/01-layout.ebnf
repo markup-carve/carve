@@ -39,8 +39,11 @@
          sibling and closer tests, and the first valid offer owns exactly
          that block.
      L8  An open opaque leaf or fenced container owns its lines until its
-         own closer, host boundary or declared first-blank boundary; after
-         closure the containing frame has no paragraph to continue.
+         own closer, end of input, applicable host boundary or declared
+         first-blank boundary. A nonblank line that misses the host ends an
+         own-line attachment but remains payload of a marker-line-attached
+         fence. After closure the containing frame has no paragraph to
+         continue.
 
    Existing P1-P8 names below remain stable references for the local
    qualifications of L1-L8. Clause IDs keep their existing meanings.
