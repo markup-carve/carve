@@ -1,0 +1,66 @@
+A tabbed verse line keeps the lead its frames leave
+
+```
+- a
+  ::: |
+  	x
+  :::
+.
+<ul>
+  <li>a
+    <div class="line-block">
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- a
+  ::: |
+      x
+  :::
+.
+<ul>
+  <li>a
+    <div class="line-block">
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+:: t
+: d
+  ::: |
+  	x
+  :::
+.
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <div class="line-block">
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>
+    </div>
+  </dd>
+</dl>
+```
+
+```
+> - a
+>   ::: |
+>   	x
+>   :::
+.
+<blockquote>
+  <ul>
+    <li>a
+      <div class="line-block">
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```

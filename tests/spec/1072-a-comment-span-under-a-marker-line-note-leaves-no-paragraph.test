@@ -1,0 +1,106 @@
+A comment span under a marker-line note leaves no paragraph
+
+```
+> - [^n]: {% a
+>   %%%
+>   z %}
+plain
+
+x[^n]
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p>plain</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>{% a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> - [^n]: a
+>   %%%
+>   z
+plain
+
+x[^n]
+.
+<blockquote>
+  <ul>
+    <li></li>
+  </ul>
+</blockquote>
+<p>plain</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> :: t
+> : [^n]: a
+>   %%%
+>   z
+plain
+
+x[^n]
+.
+<blockquote>
+  <dl>
+    <dt>t</dt>
+    <dd></dd>
+  </dl>
+</blockquote>
+<p>plain</p>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+> > - [^n]: a
+> >   %%%
+> > z
+plain
+
+x[^n]
+.
+<blockquote>
+  <blockquote>
+    <ul>
+      <li></li>
+    </ul>
+    <p>z
+plain</p>
+  </blockquote>
+</blockquote>
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
