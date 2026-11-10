@@ -3139,7 +3139,9 @@ function hostColonStep(h, inner, commentOpens = false, markerLine = false, remai
     if (comment && commentOpens) {
       h.colonComment = comment[1].length
       h.colonCommentFloor = undefined
-      h.colonCommentHost = h.columns.length > 1 ? h.columns.at(-1) : undefined
+      // A comment line closes no frame, so its span's host is the deepest one it reaches (PART 0 S1).
+      const reached = h.columns.findLastIndex((column) => column <= inner.col)
+      h.colonCommentHost = reached > 0 ? h.columns[reached] : undefined
     }
     return false
   }
@@ -7955,6 +7957,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       // item's content column, and CARVE-P0-013 names no depth (carve#2538).
       const qNestedHost = []
       const qNestedComments = []
+      const qNestedCommentColumns = []
       let qHostedUntracked = []
       const qNestedPara = []
       const qNestedColon = []
@@ -8237,13 +8240,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         return false
       }
       const nestedCommentStep = (text, depth, idx) => {
-        const fence = COMMENT_FENCE_BODY.exec(indentCols(text).rest)
+        const measured = indentCols(text)
+        const fence = COMMENT_FENCE_BODY.exec(measured.rest)
         if (qNestedComments[depth] !== undefined) {
           if (fence && fence[1].length === qNestedComments[depth]) qNestedComments[depth] = undefined
-          return true
+          // As at the quote's own level, a text line left of the span's column ends it (PART 0 S1).
+          if (qNestedComments[depth] === undefined || measured.rest === '' || measured.rest.startsWith('%%') ||
+              measured.col >= qNestedCommentColumns[depth]) return true
+          qNestedComments[depth] = undefined
         }
         if (!fence) return false
         qNestedComments[depth] = fence[1].length
+        qNestedCommentColumns[depth] = measured.col
         return true
       }
       const trackFence = (l, idx) => {
