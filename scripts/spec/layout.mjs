@@ -1793,6 +1793,30 @@ function refusedRunParses(run) {
   return known
 }
 
+// The first row at or after `k` that is blank, missing, or holds `%}`, memoized per
+// array, so a stretch of closerless `{%` openers is scanned once (carve#5879).
+// With `lazyBlank`, a row holding a lazy frame also stops, as in a view that blanks lazy rows.
+const commentStops = [new WeakMap(), new WeakMap()]
+function commentStopAt(lines, k, lazyBlank = false) {
+  const memos = commentStops[lazyBlank ? 1 : 0]
+  let memo = memos.get(lines)
+  if (!memo || memo.length !== lines.length) memos.set(lines, memo = { length: lines.length, stop: new Map() })
+  const visited = []
+  let j = k
+  let stop
+  for (;; j++) {
+    stop = memo.stop.get(j)
+    if (stop !== undefined) break
+    const line = lines[j]
+    if (j >= lines.length || line === undefined || isBlank(line) || line.includes('%}') || (lazyBlank && line.includes(LAZY))) { stop = j; break }
+    visited.push(j)
+  }
+  layoutWork.commentScan += visited.length
+  for (const v of visited) memo.stop.set(v, stop)
+  memo.stop.set(j, stop)
+  return stop
+}
+
 // A failed block-position brace continuation leaves a literal opener. Probe
 // with indentation repaired to distinguish a refused run from other text.
 function refusedBlockBraceRun(lines, start, cache) {
@@ -1801,6 +1825,15 @@ function refusedBlockBraceRun(lines, start, cache) {
   const comment = opener.rest.startsWith('{%')
   if (!opener.rest.startsWith('{')) return null
   if (comment && cache.commentScannedThrough > start) return null
+  const knownCloser = cache.commentCloser && start > cache.commentCloser.from && start < cache.commentCloser.at
+  if (comment && !knownCloser) {
+    // No `%}` before the run's paragraph ends: the run is neither valid nor refused.
+    const stop = commentStopAt(lines, start)
+    if (!lines[stop]?.includes('%}')) {
+      cache.commentScannedThrough = stop
+      return null
+    }
+  }
   const run = []
   let shallow = first.includes(LAZY)
   let depth = 0
@@ -1996,6 +2029,12 @@ function invisibleSiblingLine(rest) {
 // `shared` carries a span closer between calls that read the same lines (carve#5870); `limit` bounds the paragraph.
 function commentOnlyParaEnd(rests, k, inItem, measured = rests, shared = null, limit = rests.length) {
   if (!indentCols(rests[k] ?? '').rest.startsWith('{%')) return -1
+  const closer = shared?.commentCloser
+  if (!(closer && k > closer.from && k < closer.at)) {
+    // A paragraph with no `%}` cannot be comment-only.
+    const stop = commentStopAt(rests, k)
+    if (stop >= limit || !rests[stop]?.includes('%}')) return -1
+  }
   const cache = { commentScannedThrough: -1, commentCloser: shared?.commentCloser }
   // A refused first run makes the paragraph visible wherever it ends, so probe it before the end scan.
   const refused = refusedBlockBraceRun(measured, k, cache) !== null
@@ -8857,7 +8896,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             : unframeLazy(line)
         },
       }) : lines
-      const refusedBraceEnd = (lazyComment || blockBrace) && !inlineSpanOpen()
+      // `runLines` is a fresh view per line; its rows past `i` are blank where a source row is blank or lazy,
+      // and hold `%}` where the source row does, so a closerless run is read off the source lines.
+      const closerStop = runLines !== lines && !lines[i].includes('%}') && indentCols(runLines[i] ?? '').rest.startsWith('{%')
+        ? commentStopAt(lines, i + 1, true) : -1
+      const closerless = closerStop !== -1 && !lines[closerStop]?.includes('%}') && refusedCache.commentScannedThrough <= i
+      if (closerless && (lazyComment || blockBrace) && !inlineSpanOpen()) refusedCache.commentScannedThrough = closerStop
+      const refusedBraceEnd = (lazyComment || blockBrace) && !inlineSpanOpen() && !closerless
         ? refusedBlockBraceRun(runLines, i, refusedCache) : null
       // A valid comment run's continuations are its text, whatever block they spell (CARVE-P2-035).
       if (refusedBraceEnd === null && refusedCache.commentClosesAt > i && indentCols(braceLine).rest.startsWith('{%')) {
