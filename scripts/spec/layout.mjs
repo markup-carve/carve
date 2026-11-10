@@ -3299,8 +3299,11 @@ function bodyFenceEnd(bodyLines, k) {
 // body's column cannot fold into it and ends the body. A valid opener always
 // opens (§10 I4), under a paragraph too. An attachment boundary in `bounds`
 // ends a fence opened before it (PART 0 S1, carve#5408).
-function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, bounds = undefined) {
-  for (let k = 0; k < bodyLines.length; k++) {
+// `resume` lets a caller whose body only grows skip the lines an earlier call
+// resolved: a closed fence keeps its closer, and a later boundary lies past it.
+function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, bounds = undefined, resume = undefined) {
+  for (let k = resume?.from ?? 0; k < bodyLines.length; k++) {
+    if (resume) resume.from = k
     k = lineBlockEnd(bodyLines, k)
     if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
@@ -3314,6 +3317,7 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
     }
     return k
   }
+  if (resume && resume.from < bodyLines.length && lineBlockEnd(bodyLines, resume.from) < bodyLines.length) resume.from = bodyLines.length
   return -1
 }
 
@@ -6730,6 +6734,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let attachedFenceScan = { index: Math.max(0, attachedFrom), opaque: null, columns: [0] }
       let fenceKnownShut = 0
       let fenceSeen = false
+      const fenceScan = { from: 0 }
       let sigilPayloadChecked = 0
       let noteSawSigilPayload = false
       const noteOpenFence = (at) => {
@@ -6740,7 +6745,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (fenceSeen) break
         }
         if (fenceKnownShut === bodyLines.length) return -1
-        const k = descriptionOpenFenceAt(bodyLines, lines, at, FOOTNOTE_BODY_COLUMN, endsNoteAt, state.attachmentBoundaries?.get(bodyLines))
+        const k = descriptionOpenFenceAt(bodyLines, lines, at, FOOTNOTE_BODY_COLUMN, endsNoteAt, state.attachmentBoundaries?.get(bodyLines), fenceScan)
         if (k === -1) fenceKnownShut = bodyLines.length
         return k
       }
