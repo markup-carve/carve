@@ -1,0 +1,15 @@
+A quoted marker comment keeps source columns
+
+```
+- > {% a
+  >  b
+  >  z %}
+.
+<ul>
+  <li>
+    <blockquote>
+
+    </blockquote>
+  </li>
+</ul>
+```

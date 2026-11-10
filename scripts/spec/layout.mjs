@@ -3664,6 +3664,26 @@ function stripQuotes(line, depth) {
   return { rest }
 }
 
+// Preserve the authored column after quote markers, including the markers
+// themselves. A comment on a host marker line and its later quoted lines must
+// be compared in the same source coordinates (CARVE-P2-035).
+function sourceCommentColumn(line) {
+  let rest = line
+  for (let depth = 0; depth < MAX_NESTING_DEPTH; depth++) {
+    const quote = QUOTE.exec(walkIndent(rest).rest)
+    if (!quote) break
+    rest = quote[1] ?? ''
+  }
+  return sourcePrefixColumn(line, trimWsStart(rest))
+}
+
+function sourcePrefixColumn(line, rest) {
+  const prefix = line.slice(0, line.length - rest.length)
+  let col = 0
+  for (const ch of prefix) col = ch === '\t' ? (Math.floor(col / 4) + 1) * 4 : col + 1
+  return col
+}
+
 // How many lines from `at` the block starting there holds, each line read
 // through `view`; a null view left its quote level and ends the block. The
 // window doubles only while the block reaches its edge, so a measure stays local.
@@ -5767,7 +5787,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   }
   const sourceBraceColumns = authored.map(sourceBraceColumn)
   authoredBraceColumns.set(lines, sourceBraceColumns)
-  authoredCommentColumns.set(lines, sourceBraceColumns)
+  authoredCommentColumns.set(lines, authored.map(sourceCommentColumn))
   // Only when a sink is passed. An always-present key would change the state
   // object's own shape, which a structural test deep-compares.
   if (stateSink) state.descendantQ1Log = (stateSink.descendantQ1 = [])
@@ -8535,7 +8555,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
-          quoteCommentColumns[inner.length] = authoredCommentColumns.get(lines)?.[i] ?? indentCols(quoteText).col
+          // Strip this quote's source prefix from the carried comment column.
+          // A marker line inside or outside a quote then reaches the next
+          // reader in the same host coordinates as its continuations.
+          quoteCommentColumns[inner.length] = Math.max(0,
+            (authoredCommentColumns.get(lines)?.[i] ?? sourceCommentColumn(lines[i])) - sourcePrefixColumn(lines[i], quoteText))
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
@@ -10165,7 +10189,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     itemBraceColumns[0] = (authoredBraceColumns.get(lines)?.[i] ?? authoredMarkerCol) + head.markerWidth + taskTextOffset(head)
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
-    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head)
+    itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head) + sourceCommentColumn(head.text)
     if (head.task !== undefined) markerLineBoxes.set(itemLines, taskTextOffset(head))
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)

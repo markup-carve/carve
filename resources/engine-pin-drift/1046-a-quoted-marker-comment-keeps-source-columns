@@ -1,0 +1,1 @@
+CARVE-P2-035 / carve#5787: the pinned JavaScript reader keeps a valid block comment on a quoted item marker line as literal paragraph text; the spec model hides the comment.
