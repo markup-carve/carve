@@ -8372,6 +8372,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (event) quoteOwnership.set(inner.length, event)
           const quoteText = qm[1] ?? ''
           const writtenColumn = authoredBraceColumns.get(lines)?.[i]
+          quoteBraceColumns[inner.length] = writtenColumn ?? indentCols(quoteText).col
           // A lazy continuation with a quote prefix keeps its written source
           // column for a valid block attribute run (CARVE-P2-035, carve#5619).
           inner.push(i <= qAttributeThrough && quoteText.includes(LAZY) && writtenColumn !== undefined
@@ -8619,12 +8620,13 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
       const blockBrace = ind(i).rest[0] === '{'
       const ordinaryAttribute = blockBrace && !indentCols(braceLine).rest.startsWith('{%')
-      const runLines = (lazyComment || ordinaryAttribute) ? new Proxy(lines, {
+      const blockComment = blockBrace && !ordinaryAttribute
+      const runLines = (lazyComment || ordinaryAttribute || blockComment) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!lazyComment && !line?.includes(LAZY)) return line
+          if (!lazyComment && !blockComment && !line?.includes(LAZY)) return line
           const sourceCol = braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
@@ -9980,6 +9982,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
+    // The marker-line body starts after the marker. Its source brace column
+    // must be compared with continuation columns before item dedenting.
+    if (head.text.startsWith('{%')) itemBraceColumns[0] = contentCol
     let quoteFoldAt = -1
     let holdsQuote = QUOTE.test(head.text)
     const markerFoldsIntoItemQuote = () => {
