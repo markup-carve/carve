@@ -6054,7 +6054,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
   let futureCommentClose = false
   for (let row = n - 1; row >= 0; row--) {
     commentClosesAhead[row] = futureCommentClose
-    futureCommentClose = isBlank(lines[row]) ? false : lines[row].includes('%}') || futureCommentClose
+    // Inline pairing cannot cross a visible paragraph interruption. A close
+    // in a later block cannot keep this paragraph's brace line inside it.
+    futureCommentClose = isBlank(lines[row]) || startsParagraphBlock(lines[row], top)
+      ? false : lines[row].includes('%}') || futureCommentClose
   }
   const sourceColumns = state.descriptionSourceColumns?.get(lines)
   const braceSourceColumns = authoredBraceColumns.get(lines)

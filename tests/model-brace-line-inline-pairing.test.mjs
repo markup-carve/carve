@@ -41,3 +41,8 @@ test('an earlier attribute cannot impersonate the host probe', () => {
   assert.equal(html('[x](u){data-carve-host-probe-5740=1} y){title="`"}\n{k=v}\nz\n'),
     '<p><a href="u" data-carve-host-probe-5740="1">x</a> y){title=“<code>"}\n{k=v}\nz</code></p>')
 })
+
+test('a comment close after a visible block cannot hold an earlier brace line', () => {
+  assert.equal(html('a {% x\n{.x}\n# h\nz %}\n'),
+    '<p>a {% x</p>\n<section id="h">\n  <h1 class="x">h</h1>\n  <p>z %}</p>\n</section>')
+})
