@@ -1,0 +1,1 @@
+carve#5788: the pinned JavaScript reader measures the later brace after marker-glued metadata from the item's virtual content column, accepts a continuation at or left of its written source column, and renders a heading. The spec model keeps the refused run and its heading-shaped follower as paragraph text.
