@@ -16,3 +16,14 @@ test('study switch exposes the left-side colon closer cost', () => {
   assert.equal(html(source), '<aside class="admonition note" aria-label="Note">\n  <p>x</p>\n</aside>\n<p>y</p>')
   assert.equal(html(source, 'minimal'), '<aside class="admonition note" aria-label="Note">\n  <p>x\n:::\ny</p>\n</aside>')
 })
+
+test('study switch treats a right-side code closer as structural', () => {
+  const source = '````\nx\n  ````\ny\n'
+  assert.equal(html(source), '<pre><code>x\n  ````\ny\n</code></pre>')
+  assert.equal(html(source, 'minimal'), '<pre><code>x\n</code></pre>\n<p>y</p>')
+})
+
+test('study switch does not suppress a sibling colon opener', () => {
+  const source = '- ::: note\n  - para text\n:::\n'
+  assert.equal(html(source, 'minimal'), html(source))
+})

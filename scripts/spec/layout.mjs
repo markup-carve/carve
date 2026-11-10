@@ -5665,38 +5665,46 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
 // to exclude opaque payloads and marker-line content; then let every container
 // reader see the same visible stream. The first pass also collects definitions
 // in their authored order, before the erased lines lose their positions.
-// A deliberately small study adapter for the proposed column rule. It protects
-// left-of-opener closers before the legacy block readers see them, then restores
-// their authored text in the tree. It is not a replacement for the S1-S5 walk:
-// prefixes and nested marker columns still use the published readers.
+// A study adapter for the proposed column rule. The current ownership trace
+// identifies actual closers and code payloads, so a sibling opener cannot be
+// mistaken for a closer. This is still not a replacement for S1-S5: a changed
+// closer can change later ownership, which the current readers decide again.
 function minimalCloserStudy(src) {
   let sentinel = '\uE102'
   while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
-  const stack = []
-  const lines = src.split('\n').map(line => {
+  const trace = []
+  parse(src, { trace })
+  const lines = src.split('\n')
+  const column = line => {
     const bare = line.replace(/^(?:[ \t]*> ?)+/, '')
     const measured = indentCols(bare)
     const content = measured.rest.replace(/^(?:(?:[-*]|\d+[.)]) |: |\[\^[^\]]+\]: +)+/, '')
-    const run = /^(`{3,}|~{3,}|:{3,})(.*)$/.exec(content)
-    if (!run) return line
-    const column = measured.col + (measured.rest.length - content.length)
-    const active = stack.at(-1)
-    const pure = /^[ \t]*$/.test(run[2])
-    const matching = active && pure && run[1][0] === active.mark &&
-      (active.mark === ':' ? run[1].length === active.length : run[1].length >= active.length)
-    if (matching) {
-      if (column < active.column) {
-        const offset = line.length - content.length
-        return line.slice(0, offset) + sentinel + line.slice(offset)
-      }
-      stack.pop()
-      return line
+    return { column: measured.col + measured.rest.length - content.length,
+      prefix: line.slice(0, line.length - bare.length), content }
+  }
+  for (const record of trace) {
+    if (record.form !== 'closer' && record.form !== 'payload') continue
+    const lineIndex = record.line - 1
+    const line = lines[lineIndex]
+    if (line === undefined) continue
+    const parent = /\/(code|div):(\d+)$/.exec(record.owner)
+    if (!parent) continue
+    const opener = lines[Number(parent[2]) - 1]
+    if (opener === undefined) continue
+    const start = column(opener)
+    const candidate = column(line)
+    const run = /^(`{3,}|~{3,}|:{3,})[ \t]*$/.exec(candidate.content)
+    if (!run || !/^(`{3,}|~{3,}|:{3,})/.test(start.content)) continue
+    const openRun = /^(`{3,}|~{3,}|:{3,})/.exec(start.content)[1]
+    if (run[1][0] !== openRun[0] ||
+        (run[1][0] === ':' ? run[1].length !== openRun.length : run[1].length < openRun.length)) continue
+    if (record.form === 'closer' && candidate.column < start.column) {
+      const offset = line.length - candidate.content.length
+      lines[lineIndex] = line.slice(0, offset) + sentinel + line.slice(offset)
+    } else if (record.form === 'payload' && parent[1] === 'code' && candidate.column > start.column) {
+      lines[lineIndex] = candidate.prefix + ' '.repeat(start.column) + candidate.content
     }
-    if (!active && (run[1][0] !== ':' || run[2] === '' || /^ (?:[A-Za-z][\w-]*|[|\\>])(?: |$)/.test(run[2]))) {
-      stack.push({ mark: run[1][0], length: run[1].length, column })
-    }
-    return line
-  })
+  }
   return { source: lines.join('\n'), sentinel }
 }
 
