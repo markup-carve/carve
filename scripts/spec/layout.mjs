@@ -6387,6 +6387,8 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const bodyLines = [m[2]]
       const noteBraceColumns = []
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
+      const noteCommentColumns = [sourceDefCol + FOOTNOTE_BODY_COLUMN]
+      authoredCommentColumns.set(bodyLines, noteCommentColumns)
       const inheritedFenceOpens = new Set()
       const defLine = i
       const noteOwnership = state.ownershipEvents?.get(lines)
@@ -6651,6 +6653,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           if (state.fenceOpensAt?.get(lines)?.has(i)) inheritedFenceOpens.add(bodyLines.length)
           const attrOpener = content.startsWith('{') && noteOpenFence(i) === -1
           noteBraceColumns[bodyLines.length] = authoredBraceColumns.get(lines)?.[i] ?? measured.col
+          noteCommentColumns[bodyLines.length] = authoredCommentColumns.get(lines)?.[i] ?? measured.col
           bodyLines.push(content)
           // The body reader can rebase this line before recognizing its block.
           // Check the claim only when a below-column follower asks for it.
@@ -6770,6 +6773,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               tryAttrLine(lines, i)))) {
           bodyLines.push(lazyFrame(measured.rest))
           noteBraceColumns[bodyLines.length - 1] = authoredBraceColumns.get(lines)?.[i] ?? measured.col
+          noteCommentColumns[bodyLines.length - 1] = authoredCommentColumns.get(lines)?.[i] ?? measured.col
           lazyParagraphOpen = true
           i++
         } else break
@@ -7025,6 +7029,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
           const bodySourceColumns = []
+          authoredCommentColumns.set(bodyLines, bodySourceColumns)
           let bodyHasFenceCandidate = false
           let foldedParagraphAt = -1
           const measurement = state.opaqueMeasurement
@@ -8631,7 +8636,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       const lazyComment = lines[i].includes(LAZY) && indentCols(braceLine).rest.startsWith('{%')
       const blockBrace = ind(i).rest[0] === '{'
       const ordinaryAttribute = blockBrace && !indentCols(braceLine).rest.startsWith('{%')
-      const blockComment = blockBrace && !ordinaryAttribute
+      const blockComment = blockBrace && !ordinaryAttribute && commentSourceColumns !== undefined
       const runLines = (lazyComment || ordinaryAttribute || blockComment) ? new Proxy(lines, {
         get(target, key) {
           const line = Reflect.get(target, key)
