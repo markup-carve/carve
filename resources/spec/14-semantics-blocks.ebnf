@@ -354,8 +354,8 @@
          metadata in the current container (§15 A2), and a definition
          REGISTERS metadata in its permitted scope (PART 9R).
 
-         WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
-         `invisible` field of that container's PART 0 FAMILIES row: a `%%%`
+         WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT follows
+         PART 0 L2-L5 and S2: a `%%%`
          span closes no indentation container, an unmarked one
          ends a quote, and below a content column a block-attribute line and
          a footnote definition close the missed containers. Erased lines

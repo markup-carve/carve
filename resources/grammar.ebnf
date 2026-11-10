@@ -340,8 +340,7 @@
         selects an owner for the next visible line. A definition still
         registers document-wide. A region marker (CARVE-P11-073) is not
         erased: it stays a block-level invisible line (PART 9 §10 I5), so it
-        ends an open paragraph and an unmarked quote, and closes the items its
-        FAMILIES rows name. Retain a comment node with its authored
+        ends an open paragraph and an unmarked quote, and closes missed frames under L2-L5 and S2. Retain a comment node with its authored
         spelling and complete source extent in the AST and source map.
         Its parent is the innermost open container whose content column
         the line reaches, by the S2 walk a visible line at that column gets,
@@ -5626,8 +5625,8 @@ EOF = (* end of file *) ;
          metadata in the current container (§15 A2), and a definition
          REGISTERS metadata in its permitted scope (PART 9R).
 
-         WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT is the
-         `invisible` field of that container's PART 0 FAMILIES row: a `%%%`
+         WHAT AN INVISIBLE LINE DOES TO THE CONTAINER AROUND IT follows
+         PART 0 L2-L5 and S2: a `%%%`
          span closes no indentation container, an unmarked one
          ends a quote, and below a content column a block-attribute line and
          a footnote definition close the missed containers. Erased lines
@@ -6461,9 +6460,9 @@ EOF = (* end of file *) ;
          marker and the next line that the host keeps are skipped: they are
          read in the host, and the gates apply to the first visible line after
          them (carve#4449). The host keeps an invisible line at its marker
-         column or at or past its content column (carve#5130). One its
-         FAMILIES `invisible` field closes it at, such as an attribute line or
-         footnote definition below an item's content column, closes the host
+         column or at or past its content column (carve#5130). One that PART 0 L2-L5 and S2 place outside the host, such as an
+         attribute line or footnote definition below an item's content
+         column, closes the host
          and so refuses the `+`. S1 erases `%%` lines and one-line link and
          abbreviation definitions before the next-line test. A `%%%` span and
          block-level invisible lines follow CARVE-P9-013, and a note

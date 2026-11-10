@@ -283,9 +283,9 @@
          marker and the next line that the host keeps are skipped: they are
          read in the host, and the gates apply to the first visible line after
          them (carve#4449). The host keeps an invisible line at its marker
-         column or at or past its content column (carve#5130). One its
-         FAMILIES `invisible` field closes it at, such as an attribute line or
-         footnote definition below an item's content column, closes the host
+         column or at or past its content column (carve#5130). One that PART 0 L2-L5 and S2 place outside the host, such as an
+         attribute line or footnote definition below an item's content
+         column, closes the host
          and so refuses the `+`. S1 erases `%%` lines and one-line link and
          abbreviation definitions before the next-line test. A `%%%` span and
          block-level invisible lines follow CARVE-P9-013, and a note
