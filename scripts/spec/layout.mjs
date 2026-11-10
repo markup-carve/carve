@@ -1813,7 +1813,10 @@ function refusedBlockBraceRun(lines, start, cache) {
     if (i > start && (measured.col <= blockColumn || line.includes(LAZY))) shallow = true
     run.push(i === start ? opener.rest : ' '.repeat(Math.max(1, measured.col - opener.col, blockColumn - opener.col + 1)) + measured.rest)
     if (comment) {
+      // An earlier opener's scan already found this span's closer, so a refused run needs no rescan (carve#5859).
+      if (shallow && cache.commentCloser && start > cache.commentCloser.from && i < cache.commentCloser.at) return cache.commentCloser.at + 1
       if (line.includes('%}')) {
+        cache.commentCloser = { from: start, at: i }
         if (!shallow) {
           cache.commentScannedThrough = i + 1
           cache.commentClosesAt = i
@@ -7836,6 +7839,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let qOpenPara = false // does the quote currently end in an open paragraph?
       let qItemPara = false // and is that paragraph an item's?
       let qCommentThrough = -1 // the closing line of a valid comment run, whose continuations open nothing (CARVE-P2-035)
+      let qCommentCloser = null // the closer an earlier opener's scan found, in rows of `lines` (carve#5859)
       let qAttributeThrough = -1 // a wrapped block attribute leaves no paragraph on its continuation lines
       let qNestedAttributeThrough = -1
       let qNestedAttributeDepth = 0
@@ -8283,9 +8287,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 return inner === row ? row : ' '.repeat(sourcePrefixColumn(row, trimWsStart(inner))) + trimWsStart(inner)
               },
             })
-            const run = { commentScannedThrough: -1 }
+            const known = qCommentCloser?.depth === depth && qCommentCloser.markerQuotes === markerQuotes && qCommentCloser.at > idx
+            const run = { commentScannedThrough: -1, commentCloser: known ? { from: qCommentCloser.from - idx, at: qCommentCloser.at - idx } : undefined }
             if (indentCols(tail).rest.startsWith('{%') &&
                 refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt
+            if (run.commentCloser?.from === 0) qCommentCloser = { from: idx, at: idx + run.commentCloser.at, depth, markerQuotes }
           }
         }
         const belowRun = FENCE.exec(indentCols(l).rest)
