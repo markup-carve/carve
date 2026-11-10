@@ -8,7 +8,7 @@ test('an own-line plus leaves an unclosed note fence open through its trailing b
     for (const payload of ['code', 'code\n\n  tail']) {
       const source = `[^a]: p\n+\n${fence}\n${payload}\n\nsee[^a]\n`
       const html = renderDoc(parse(source))
-      assert.ok(html.includes(`<pre><code>${payload.replace('  tail', 'tail')}\n\n</code></pre>`), source)
+      assert.ok(html.includes(`<pre><code>${payload}\n\n</code></pre>`), source)
     }
   }
 })
