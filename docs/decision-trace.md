@@ -29,7 +29,7 @@ cites one stays valid.
 | `S5` | Apply | Everything else: blank, text, a leaf, an opener, a closer |
 | `T` | Transition | The boundary table of CARVE-P0-003 that S5 applies |
 
-The rows of PART 0's FAMILIES table carry cell ids of the form `B-<family>-start`,
+The rows of PART 0's B-CELLS table carry cell ids of the form `B-<family>-start`,
 `B-<family>-keep` and `B-<family>-end`: what opens a block of that family, what
 continues it and what ends it. The families are `item`, `list`, `term`, `dd`,
 `footnote`, `quote`, `div`, `code`, `comment`, `table`, `caption` and `plus`.
@@ -56,7 +56,7 @@ source order, with lines counted from 1 after input normalization:
 | `owner` | Deepest open container holding the line after the step; for a closer, the container it closes |
 | `rule` | Governing clause id, such as `CARVE-P0-006`, or `null` |
 | `form` | What the line is: `blank`, `text`, `leaf`, `lazy`, `payload`, `closer`, `plus`, `frontmatter`, or the family it opens (`item`, `quote`, `footnote`, `dd`, `term`, `div`, `code`, `comment`) |
-| `cell` | The FAMILIES cell id, when a family entry decided the line |
+| `cell` | The B-CELLS id, when a family guard decided the line |
 | `closed` | How many open containers the line closed by missing them, when it closed any. A closer's own container is its `owner`, not part of the count |
 | `reached` | The deepest container the line reached, when it missed a deeper one |
 | `plus` | The accepted `+` line this line follows; see below |

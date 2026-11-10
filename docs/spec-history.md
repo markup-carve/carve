@@ -508,5 +508,5 @@ the item's first visible block may be any kind) is L1, which now holds its
 example. L1b (CARVE-P9-030, an invisible line does not cancel the separation)
 is CARVE-P9-013 property 3. L6 (CARVE-P9-034, a collected definition leaves no
 trace) is PART 0 S1 for link definitions, CARVE-P9-013 properties 1 and 2 and
-its container list, and the FAMILIES footnote body row for the fold of a
+its container list, and the PART 0 FAMILIES footnote body guard for the fold of a
 footnote definition's own paragraph.
