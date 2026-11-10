@@ -4310,11 +4310,24 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      const payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
+      let payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
         Math.max(m.col - inner.cut, inner.canon)
+      const tabbedVerse = inner.lineBlock && inner.openerFrameLead !== undefined &&
+        src.slice(0, src.length - m.rest.length).includes('\t')
+      if (tabbedVerse && !shiftedCloser) {
+        const openerOrigin = inner.canon + inner.openerFrameLead
+        const reached = segmentColumn()
+        if (reached < openerOrigin) payloadColumn = reached
+        else {
+          const origins = []
+          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
+          origins.push(openerOrigin)
+          payloadColumn = inner.canon + strippedColumn(src, origins) - openerOrigin
+        }
+      }
       // A tab past an off-stop owner column reaches the same payload column
       // as its space spelling after each frame strips its own indentation.
-      const frameTab = frameShiftedTab()
+      const frameTab = frameShiftedTab() || tabbedVerse
       lead(payloadColumn, frameTab, frameTab)
       if (m.rest !== '' && inner.span) {
         const c = inner.span[0] === '%' ? COMMENT_FENCE_BODY.exec(m.rest) : PURE_FENCE.exec(m.rest)
@@ -4709,7 +4722,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             if (!paired) once = blank
           }
         }
+        let openerFrameLead
+        if (form.lineBlock &&
+            segmentSrc.slice(0, segmentSrc.length - trimWsStart(segmentSrc).length).includes('\t')) {
+          const origins = []
+          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
+          openerFrameLead = strippedColumn(segmentSrc, origins) - owner.canon
+        }
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon, once,
+          openerFrameLead,
           openRun: form.family === 'code' ? FENCE.exec(m.rest)?.[1] : undefined,
           pullCol: once === undefined ? undefined : col, pullHost: once === undefined ? undefined : attachedTo.host.markerCol,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
@@ -12017,7 +12038,14 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
             (fence.opaque?.kind !== 'code' || fence.opaque.opens === false)
           ? contentCol
           : openerBase ?? authoredBlockBase ?? contentCol
-        const dd = dedentMeasured(lm, line, localBase)
+        // The item's content column is a frame boundary. A tab remaining past
+        // it starts at column zero in that frame, so consume any extra block
+        // indent only after stripping the item (PART 0 L1, PART 9 §24 C5).
+        const framed = localBase > contentCol && lm.tabs
+          ? dedentMeasured(lm, line, contentCol) : null
+        const dd = framed
+          ? dedentMeasured(framed.meas, framed.text, localBase - contentCol)
+          : dedentMeasured(lm, line, localBase)
         const dedented = dd.text
         // The body line's own measurement, derived from this one rather than
         // re-walked, and handed to the item's parse below (carve#752).

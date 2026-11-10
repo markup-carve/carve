@@ -117,9 +117,8 @@
    EIGHT LAYOUT RULES (CARVE-P0-024). Apply these to every family
    through S1-S5 below. PART 9 supplies local syntax and extent guards.
 
-     L1  Normalize line endings and input scalar values, then expand leading
-         tabs to four-column stops before any column comparison, retaining
-         residual spaces when a tab crosses a consumed prefix.
+     L1  Normalize line endings and scalars; expand leading tabs per frame
+         to four-column stops before comparison, retaining spaces when a prefix cuts a tab.
      L2  Each container opener records its authored marker column, required
          per-line prefix and content column; consume prefixes from outside
          inward on every new line and select the deepest open frame the line

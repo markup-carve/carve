@@ -1133,6 +1133,7 @@ test('an astral footnote label does not shift a same-line list start', () => {
  */
 const DECLARED_LIST_INDENT_START = [
   "1017-a-description-that-refuses-a-plus-reads-the-next-line-in-its-body.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column (since carve-js#4780)",
+  "1046-a-description-item-measures-its-verse-lead-in-both-frames.crv 2  markup-carve/carve#5755: pinned carve-js starts the nested list before its owner content column",
   "206-a-nested-list-in-a-footnote-body-stays-nested.crv 4  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "410-a-footnote-continuation-survives-a-blank-run-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
