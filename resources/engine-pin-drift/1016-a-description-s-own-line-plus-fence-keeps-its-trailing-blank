@@ -1,1 +1,0 @@
-carve#5855 ruling A: the pinned JavaScript reader re-measures the payload line after a blank against the body column and drops its two columns.

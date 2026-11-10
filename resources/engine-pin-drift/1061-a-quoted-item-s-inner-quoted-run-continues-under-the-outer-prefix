@@ -1,1 +1,0 @@
-carve#5835: the pinned JavaScript reader keeps a quoted item's inner run continued under the outer quote prefix as paragraph text; CARVE-P2-035 measures its written source column and consumes the valid run.
