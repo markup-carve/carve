@@ -1,0 +1,17 @@
+A description keeps a note follower after a refused run
+
+```
+:: t
+: {.x
+}
+[^m]: n
+z
+.
+<dl>
+  <dt>t</dt>
+  <dd>{.x
+}
+[^m]: n
+z</dd>
+</dl>
+```

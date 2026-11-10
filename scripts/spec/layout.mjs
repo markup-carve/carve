@@ -2021,17 +2021,31 @@ function endsInRefusedRunParagraph(bodyLines, last, includeProseTail = false) {
   return false
 }
 
+// Whether `tail`, read after `head[from..to)`, is a note definition a refused run keeps as its follower (CARVE-P2-035).
+function refusedNoteFollower(head, from, to, tail) {
+  if (!FOOTNOTE_DEF.test(trimWsStart(stripLazy(stripLazyLead(tail))))) return false
+  const n = to - from
+  const view = new Proxy([], {
+    get: (_, key) => key === 'length' ? n + 1
+      : typeof key !== 'string' || !/^\d+$/.test(key) || +key > n ? undefined
+      : stripLazy(stripLazyLead(+key === n ? tail : head[from + +key])),
+  })
+  return endsInRefusedRunParagraph(view, n, true)
+}
+
 // refusedRunKeptThrough for a run that `text` opens inside the items and
 // quotes it starts, read in that container's coordinates. `below` holds the
 // lines from `text`'s own on, at its column. `containerCol` is where the
 // container `text` stands in begins, in the same coordinates.
-function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null) {
+function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false, details = null, description = false) {
   if (!text.includes('{')) return null
   let depth = 0
   let tail = text
   for (let peeled = 0; peeled < MAX_NESTING_DEPTH; peeled++) {
     const quote = QUOTE.exec(walkIndent(tail).rest)
-    const marker = quote ? null : matchMarkerAt(indentCols(tail))
+    // A `: ` lead is a marker only where the caller has a description open.
+    const marker = quote ? null : matchMarkerAt(indentCols(tail)) ??
+      (peeled === 0 && description ? descriptionMarkerAt(indentCols(tail)) : null)
     if (quote) {
       tail = quote[1] ?? ''
       depth++
@@ -2050,6 +2064,12 @@ function refusedRunKeptInside(text, below, containerCol = 0, markerBody = false,
       : below[key] === undefined ? undefined : stripQuotes(below[key], depth)?.rest ?? '',
   })
   return refusedRunKeptThrough(window, 0, { commentScannedThrough: -1 }, containerCol, markerBody, details)
+}
+
+// A `: ` description lead read as a marker, so a run on its line is measured from its body.
+function descriptionMarkerAt(measured) {
+  const lead = DESCRIPTION_LEAD.exec(measured.rest)
+  return lead ? { indent: measured.col, markerWidth: lead[0].length, text: measured.rest.slice(lead[0].length) } : null
 }
 
 function isDefinitionOrAttributeLine(line) {
@@ -3953,9 +3973,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     let m = walkIndent(src)
     // A refused brace run protects its immediately following line as
     // paragraph text, including a marker-column `+` (carve#5658 R03).
-    if (at > refusedKept.start && at <= refusedKept.through && CONT_MARKER.test(m.rest)) {
-      src = src.replace('+', plusLetter)
-      m = walkIndent(src)
+    // The run's quote prefixes come first, so the `+` is read past them (carve#5770).
+    if (at > refusedKept.start && at <= refusedKept.through) {
+      let rest = m.rest
+      for (let d = 0; d < MAX_NESTING_DEPTH && QUOTE.test(rest); d++) rest = walkIndent(QUOTE.exec(rest)[1] ?? '').rest
+      if (CONT_MARKER.test(rest)) {
+        src = src.replace('+', plusLetter)
+        m = walkIndent(src)
+      }
     }
     // The line as the current quote segment starts, for an opener's C5 column.
     let segmentSrc = src
@@ -6413,7 +6438,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       }
       const sourceDefCol = ind(i).L?.col ?? ind(i).col
       const bodyLines = [m[2]]
-      const noteBraceColumns = []
+      const noteBraceColumns = [(authoredBraceColumns.get(lines)?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredBraceColumns.set(bodyLines, noteBraceColumns)
       const noteCommentColumns = [(commentSourceColumns?.[i] ?? sourceDefCol) + FOOTNOTE_BODY_COLUMN]
       authoredCommentColumns.set(bodyLines, noteCommentColumns)
@@ -6692,7 +6717,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // whatever its later lines' columns (PART 9 §24 C3, carve#3537).
           // An ancestor may have framed its closer line as lazy text.
           const attributes = attrOpener ? tryAttrLine(dedentedWindow(lines, i - 1, FOOTNOTE_BODY_COLUMN, true), 0) : null
-          for (let k = 1; k < (attributes?.next ?? 0); k++) bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          for (let k = 1; k < (attributes?.next ?? 0); k++) {
+            noteBraceColumns[bodyLines.length] = authoredBraceColumns.get(lines)?.[i] ?? indentCols(unframeLazy(lines[i])).col
+            bodyLines.push(dedent(unframeLazy(lines[i++]), FOOTNOTE_BODY_COLUMN))
+          }
         } else if (isBlank(lines[i]) && footnoteBlankRunEnd(lines, i, n) !== -1) {
           // A BLANK RUN DOES NOT END THE DEFINITION -- carve#1620.
           //
@@ -7056,6 +7084,18 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // rest -- matching the real output the corpus pins for all engines.
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
+          const bodyRefusalLines = []
+          let protectedFenceThrough = -1
+          let bodySpanScanAt = 0
+          let bodySpan = { codeRun: 0, comment: false }
+          const bodyInlineSpanOpen = () => {
+            for (; bodySpanScanAt < bodyRefusalLines.length; bodySpanScanAt++) {
+              const text = bodyRefusalLines[bodySpanScanAt]
+              if (isBlank(text)) bodySpan = { codeRun: 0, comment: false }
+              else scanInlineSpan(bodySpan, text)
+            }
+            return bodySpan.codeRun !== 0 || bodySpan.comment
+          }
           const bodySourceColumns = []
           authoredCommentColumns.set(bodyLines, bodySourceColumns)
           let bodyHasFenceCandidate = false
@@ -7090,6 +7130,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
               markAttachmentBoundary(state, bodyLines)
             }
             bodyLines.push(text)
+            const unframed = stripLazy(stripLazyLead(text))
+            // A lazy brace follower is already paragraph text. Keep its text
+            // visible to the run scan without offering it as a new opener.
+            bodyRefusalLines.push(text.startsWith(LAZY) && unframed.startsWith('{') ? 'x' + unframed : unframed)
             if (!text.startsWith(LAZY)) lastBlockLine = text
             const bodyMarker = matchMarkerAt(indentCols(text))
             if (bodyMarker) lastBodyListMarker = bodyMarker
@@ -7163,6 +7207,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           )
           while (i < n) {
             const cur = lines[i] ?? ''
+            if (i <= protectedFenceThrough) {
+              pushBody(lazyFrame(stripIndent(cur).replace(/[ \t]+$/, '')))
+              i++
+              continue
+            }
             if (sortedHas(state.fenceHostMisses?.get(lines), i)) break
             // A new span needs its own answer; payload rows keep the prior one.
             if (COMMENT_FENCE_BODY.test(stripIndent(cur)) && !bodyHoldsLiveSpan()) blankSpanKeepsStanza = null
@@ -7315,6 +7364,31 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // `more`.
             const dedented = stripIndent(cur).replace(/[ \t]+$/, '')
             const authoredCol = indentCols(cur).col
+            // A refused brace run keeps its first block-shaped follower as
+            // paragraph text even when that follower misses this body's
+            // column. Carry that text past the body parse's block classifier.
+            if ((!readsAsProse(dedented) || startsParagraphBlock(dedented) ||
+                matchMarkerAt(indentCols(dedented)) || isDefinitionOrAttributeLine(dedented)) &&
+                !bodyInlineSpanOpen()) {
+              bodyRefusalLines.push(dedented)
+              const protectedFollower = endsInRefusedRunParagraph(bodyRefusalLines, bodyRefusalLines.length - 1, true)
+              bodyRefusalLines.pop()
+              if (protectedFollower) {
+                const fence = FENCE.exec(dedented)
+                if (fence && parseFenceInfo(fence[2], fence[1]) !== null) {
+                  for (let row = i + 1; row < n && !isBlank(lines[row]); row++) {
+                    const closer = PURE_FENCE.exec(indentCols(lines[row]).rest)?.[1]
+                    if (closer && closer[0] === fence[1][0] && closer.length >= fence[1].length) {
+                      protectedFenceThrough = row
+                      break
+                    }
+                  }
+                }
+                pushBody(lazyFrame(dedented))
+                i++
+                continue
+              }
+            }
             // A block closed inside a nested description, item or marked quote
             // leaves no paragraph for a column-zero continuation (CARVE-P0-011).
             // An unmarked quote follower stays paragraph text under X2.
@@ -7365,7 +7439,10 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // The item owns an attribute below the description body column;
             // it ends the paragraph there and cannot fold into the description.
             if (inItem && authoredCol > 0 && tryAttrLine([dedented], 0)) break
-            if (authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))) break
+            // A note definition right after a refused brace run is its protected follower (CARVE-P2-035).
+            const definitionLike = authoredCol === 0 && (isDefinitionOrAttributeLine(dedented) || !!tryAttrLine(lines, i))
+            const refusedFollower = definitionLike && refusedNoteFollower(bodyLines, 0, bodyLines.length, dedented)
+            if (definitionLike && !refusedFollower) break
             // A list marker that misses a marker body closes it (PART 0 S3).
             if (!reachesBody(i) && matchMarkerAt(indentCols(dedented))) break
             // A line that misses the body ends a comment span it holds, and the body (PART 0 S1).
@@ -7428,7 +7505,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             }
             openFence = bodyHasFenceCandidate ? descriptionOpenFenceAt(bodyLines, lines, i, bodyColumn, endsBodyAt, state.attachmentBoundaries?.get(bodyLines)) : -1
             if (openFence !== -1) break
-            if (authoredCol > 0 && !startsVisibleBlock(dedented) &&
+            if ((authoredCol > 0 || refusedFollower) && !startsVisibleBlock(dedented) &&
                 (isDefinitionLine(dedented) || FOOTNOTE_DEF.test(dedented) || dedented[0] === '{') &&
                 ddParagraphOpen()) {
               pushBody(lazyFrame(dedented))
@@ -8672,9 +8749,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const line = Reflect.get(target, key)
           if (typeof key !== 'string' || !/^\d+$/.test(key)) return line
           const row = Number(key)
-          if (!lazyComment && !blockComment && !line?.includes(LAZY)) return row === 0 && box ? ' '.repeat(box) + line : line
           const sourceCol = (blockComment || lazyComment ? commentSourceColumns?.[row] : undefined) ??
             braceSourceColumns?.[row] ?? meas[row]?.sourceCol ?? sourceColumns?.[row]
+          if (!lazyComment && !blockComment && !line?.includes(LAZY) && sourceCol === undefined) return line
           return sourceCol !== undefined
             ? ' '.repeat(Math.max(0, sourceCol)) + trimWsStart(unframeLazy(line))
             : unframeLazy(line)
@@ -9471,7 +9548,9 @@ function foldedDefinitionEnd(lines, start, end, seen) {
     const key = labelKey(footnote ? footnote[1] : link.label)
     const table = footnote ? seen.footnoteDefs : seen.linkDefs
     const kind = footnote ? 'f' : 'l'
-    if (col > 0 && (claimed.has(kind + key) || !table.has(key))) return k
+    // A note definition right after a refused brace run is that paragraph's text (CARVE-P2-035).
+    if (col > 0 && (claimed.has(kind + key) || !table.has(key)) &&
+        !(footnote && refusedNoteFollower(lines, start, k, line))) return k
     claimed.add(kind + key)
   }
   return end
@@ -10032,6 +10111,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const itemAfter = itemAt === undefined || itemAt < 0 ? -1 : markerOwner.indexOf('/', itemAt + 1)
     const itemOwnerPath = itemAt === undefined || itemAt < 0 ? null : markerOwner.slice(0, itemAfter < 0 ? undefined : itemAfter)
     pushLine(head.text)
+    itemBraceColumns[0] = (authoredBraceColumns.get(lines)?.[i] ?? authoredMarkerCol) + head.markerWidth + taskTextOffset(head)
     // The marker-line body starts after the marker and any task box, including when its first
     // block is another container whose comment opener is parsed later.
     itemCommentColumns[0] = authoredMarkerCol + head.markerWidth + taskTextOffset(head)
@@ -11075,13 +11155,12 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const descendantColumns = new Set()
     let fenceBlankRun = 0
     if (head.text.startsWith('{')) {
-      const window = [
-        head.text,
-        ...lines.slice(i).map((candidate) => {
-          const measured = indentCols(candidate)
-          return dedentMeasured(measured, candidate, contentCol).text
-        }),
-      ]
+      // Lazy, so a scan reads only the lines the attribute run reaches.
+      const below = dedentedWindow(lines, i, contentCol)
+      const window = new Proxy([], {
+        get: (_, key) => key === '0' ? head.text : key === 'length' ? below.length + 1
+          : typeof key === 'string' && /^\d+$/.test(key) ? below[Number(key) - 1] : undefined,
+      })
       const attributes = tryAttrLine(window, 0, taskTextOffset(head))
       if (attributes && attributes.next > 1) {
         wrappedAttrEnd = i + attributes.next - 2
@@ -12063,12 +12142,15 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
         }
         // A run folded lazily into a descendant's paragraph is short of its container and keeps nothing (PART 0 S4).
-        const lazyInDescendant = (childParagraphOpen && childCol >= 0 && reach < childCol) ||
-          (!QUOTE.test(dedented) && (bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest)))
+        // A marker or quote line opens its own block there, so its run is not folded (carve#5771).
+        const lazyInDescendant = !QUOTE.test(dmeas.rest) && !matchMarkerAt(dmeas) &&
+          ((childParagraphOpen && childCol >= 0 && reach < childCol) ||
+            bodyQuote.open || QUOTE.test(walkIndent(i - 1 === headIndex ? head.text : lines[i - 1] ?? '').rest))
         if (i > refusedParaThrough && i > wrappedAttrEnd && !lazyInDescendant && !insideFence() && !nestedVerbatim() && /^[ \t]*[{>]|^[^ \t]/.test(dmeas.rest)) {
           const details = {}
           const kept = refusedRunKeptInside(dedented, dedentedWindow(lines, i, localBase),
-            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details)
+            descendantOwned && childCol >= 0 ? Math.max(0, childCol - (reach - dmeas.col)) : 0, true, details,
+            definitionListOpen && DESCRIPTION_TEXT.test(dmeas.rest))
           if (kept !== null) {
             refusedParaThrough = i + kept
             protectShortRefusal(i, kept, details.follower, lm.col)
@@ -12795,7 +12877,9 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       // reaches column 0 in any collector, so it still folds as text (corpus
       // 183).
       // A wrapped attribute line is one attribute line (CARVE-P9-013 I5).
-      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i))) break
+      // A note definition right after a refused brace run is its protected follower (CARVE-P2-035).
+      if (!nm && atFrameColumn(lm.col) && (isDefinitionOrAttributeLine(line) || !!tryAttrLine(lines, i)) &&
+        !(i <= refusedParaThrough && FOOTNOTE_DEF.test(line))) break
       // A surviving frame after a comment can own a nonzero below-column line,
       // which begins a new paragraph rather than continuing the closed one.
       // Document column zero remains owned by the document.
