@@ -152,8 +152,10 @@ test('shared paired-footnote controls remain a separate complete resource', () =
   const paired = JSON.parse(readFileSync(new URL(`../resources/${fixtures.footnoteRecoveryResource}`, import.meta.url), 'utf8'))
   for (const fixture of paired) {
     const result = htmlToCarve(fixture.html, { mode: fixture.mode })
-    if (fixture.aheadOfPin) assert.notEqual(result.value, fixture.expectedSource, fixture.name)
-    else assert.equal(result.value, fixture.expectedSource, fixture.name)
+    if (fixture.aheadOfPin) {
+      assert.equal(result.value, fixture.aheadOfPin.source, fixture.name)
+      assert.notEqual(fixture.aheadOfPin.source, fixture.expectedSource, fixture.name)
+    } else assert.equal(result.value, fixture.expectedSource, fixture.name)
     assertNoReservedAttrs(htmlToAst(fixture.html, { mode: fixture.mode }).value)
   }
 })

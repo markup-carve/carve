@@ -49,7 +49,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "^[body]\n"
+    }
   },
   {
     "name": "safe-carve-djot-both",
@@ -61,7 +63,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "safe-djot-label",
@@ -73,7 +77,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^named]\n\n[^named]: body\n"
+    }
   },
   {
     "name": "safe-djot-carve-both",
@@ -85,7 +91,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "safe-djot-djot-both",
@@ -148,7 +156,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "^[body]\n"
+    }
   },
   {
     "name": "semantic-carve-djot-both",
@@ -160,7 +170,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "semantic-djot-label",
@@ -172,7 +184,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^named]\n\n[^named]: body\n"
+    }
   },
   {
     "name": "semantic-djot-carve-both",
@@ -184,7 +198,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "semantic-djot-djot-both",
@@ -247,7 +263,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "^[body]\n"
+    }
   },
   {
     "name": "roundtrip-carve-djot-both",
@@ -259,7 +277,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "roundtrip-djot-label",
@@ -271,7 +291,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^named]\n\n[^named]: body\n"
+    }
   },
   {
     "name": "roundtrip-djot-carve-both",
@@ -283,7 +305,9 @@
       "data-carve-footnote-label",
       "data-carve-inline-footnote"
     ],
-    "aheadOfPin": true
+    "aheadOfPin": {
+      "source": "[^1]\n\n[^1]: body\n"
+    }
   },
   {
     "name": "roundtrip-djot-djot-both",
