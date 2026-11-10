@@ -7036,6 +7036,16 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // (`:  \+` stays a literal `+`, never a marker.)
           const bodyLines = []
           const bodyRefusalLines = []
+          let bodySpanScanAt = 0
+          let bodySpan = { codeRun: 0, comment: false }
+          const bodyInlineSpanOpen = () => {
+            for (; bodySpanScanAt < bodyRefusalLines.length; bodySpanScanAt++) {
+              const text = bodyRefusalLines[bodySpanScanAt]
+              if (isBlank(text)) bodySpan = { codeRun: 0, comment: false }
+              else scanInlineSpan(bodySpan, text)
+            }
+            return bodySpan.codeRun !== 0 || bodySpan.comment
+          }
           const bodySourceColumns = []
           authoredCommentColumns.set(bodyLines, bodySourceColumns)
           let bodyHasFenceCandidate = false
@@ -7302,8 +7312,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             // A refused brace run keeps its first block-shaped follower as
             // paragraph text even when that follower misses this body's
             // column. Carry that text past the body parse's block classifier.
-            if (!readsAsProse(dedented) || startsParagraphBlock(dedented) ||
-                matchMarkerAt(indentCols(dedented)) || isDefinitionOrAttributeLine(dedented)) {
+            if ((!readsAsProse(dedented) || startsParagraphBlock(dedented) ||
+                matchMarkerAt(indentCols(dedented)) || isDefinitionOrAttributeLine(dedented)) &&
+                !bodyInlineSpanOpen()) {
               bodyRefusalLines.push(dedented)
               const protectedFollower = endsInRefusedRunParagraph(bodyRefusalLines, bodyRefusalLines.length - 1, true)
               bodyRefusalLines.pop()
