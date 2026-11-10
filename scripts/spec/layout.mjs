@@ -2201,6 +2201,7 @@ const taskTextOffset = marker => marker.task === undefined ? 0 : TASK_MARKER_SOU
 
 // The text after the list markers and quote prefixes a line opens with, and its column (C3).
 function containerLeadText(text, column = 0) {
+  if (!text.includes('{')) return { text, column }
   for (let depth = 0; depth < MAX_NESTING_DEPTH && text.includes('{'); depth++) {
     const measured = indentCols(text)
     const marker = matchMarkerAt(measured)
@@ -12202,7 +12203,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           // Lazy, so a scan reads only the lines the attribute run reaches.
           const attributes = tryAttrLine(dedentedWindow(lines, i, lm.col), 0)
           if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
-        } else if (i > wrappedAttrEnd && !insideFence() && !nestedVerbatim() && col >= contentCol) {
+        } else if (i > wrappedAttrEnd && col >= contentCol && lm.rest.includes('{') && !insideFence() && !nestedVerbatim()) {
           // So is one opened after a nested marker or description lead, measured from its `{` source column (CARVE-P2-035).
           const description = definitionListOpen && DESCRIPTION_LEAD.exec(lm.rest)
           const { text: lead, column: opener } = description
