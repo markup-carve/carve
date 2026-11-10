@@ -3640,6 +3640,7 @@ function cachedForwardSearch(cache, key, from, length, visit) {
 // One line of a quote run at a container's content column: whether the run
 // now ends in an open paragraph. `run` carries the run's state between lines.
 function advanceQuoteRun(run, text, idx) {
+  const written = text
   const continues = run.at === idx - 1
   if (!continues) run.hosts = []
   let depth = 0
@@ -3672,9 +3673,36 @@ function advanceQuoteRun(run, text, idx) {
     depth++
   }
   run.hosts.length = depth + Number(opaque)
+  // A block attribute run continues on lines past its `{` and leaves no paragraph (CARVE-P2-035).
+  const brace = continues && !opaque ? run.brace : null
+  run.brace = null
+  // Under fewer quote prefixes the line is measured where it is written (CARVE-P2-035).
+  const shallow = brace && depth > 0 && depth < brace.depth && brace.written !== null && !written.includes('\t')
+  if (brace && (brace.depth === depth || shallow)) {
+    const at = indentCols(text)
+    const col = shallow ? sourcePrefixColumn(written, at.rest) - brace.written : at.col
+    if (at.rest !== '' && col > brace.col) {
+      brace.lines.push(' '.repeat(col) + at.rest)
+      const attr = tryAttrLine(brace.lines, 0, brace.col)
+      if (attr || !text.includes('}')) {
+        if (!attr || attr.next < brace.lines.length) run.brace = brace
+        run.open = false
+        run.table = false
+        run.at = idx
+        return false
+      }
+    }
+  }
   const rowOpen = continues && run.table
   const wasOpen = continues && run.open
   const colonCloses = COLON_CLOSER.test(text)
+  if (!opaque && !wasOpen) {
+    const at = indentCols(text)
+    if (at.rest[0] === '{' && !at.rest.startsWith('{%') && !tryAttrLine([at.rest], 0)) {
+      const shift = written.includes('\t') || !written.endsWith(at.rest) ? null : sourcePrefixColumn(written, at.rest) - at.col
+      run.brace = { depth, col: at.col, lines: [at.rest], written: shift }
+    }
+  }
   run.open = stanza || (!opaque && !colonCloses && trimWs(text) !== '' && opensParagraph(text, !wasOpen, rowOpen))
   run.table = !opaque && tableRunStep(rowOpen, text)
   run.at = idx
@@ -3697,6 +3725,17 @@ function stripQuotes(line, depth) {
     rest = m[1] ?? ''
   }
   return { rest }
+}
+
+// What is left of a line after up to `depth` quote prefixes, however many it has.
+function stripQuotesUpTo(line, depth) {
+  let rest = line
+  for (let d = 0; d < depth; d++) {
+    const m = QUOTE.exec(walkIndent(rest).rest)
+    if (!m) break
+    rest = m[1] ?? ''
+  }
+  return rest
 }
 
 // Preserve the authored column after quote markers, including the markers
@@ -5641,8 +5680,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
           if (j < 0 || j >= lines.length) return undefined
           if (!tabbedQuoteBrace) return stripQuotes(lines[j], depth)?.rest ?? ''
-          const quoted = stripQuotes(lines[j], depth)?.rest
-          return quoted === undefined ? lines[j]
+          // Past the quote prefixes the line has, however few (CARVE-P2-035).
+          const quoted = stripQuotesUpTo(lines[j], depth)
+          return quoted === lines[j] ? lines[j]
             : ' '.repeat(sourcePrefixColumn(lines[j], trimWsStart(quoted))) + trimWsStart(quoted)
         },
       }), 0, tabbedQuoteBrace ? sourcePrefixColumn(lines[at], rest) : col)
@@ -8328,8 +8368,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
                 const offset = Number(key)
                 if (offset === 0) return inner.rest
                 const source = lines[idx + offset] ?? ''
-                const quoted = stripQuotes(source, depth + 1)?.rest
-                return quoted === undefined ? source
+                // A continuation is read past the quote prefixes it has, however few (CARVE-P2-035).
+                const quoted = stripQuotesUpTo(source, depth + 1)
+                return quoted === source ? source
                   : ' '.repeat(sourcePrefixColumn(source, trimWsStart(quoted))) + trimWsStart(quoted)
               },
             }), 0, writtenBrace ?? inner.col) : null
@@ -8498,7 +8539,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const belowRun = FENCE.exec(indentCols(l).rest)
         const belowFenceLazy = !!(belowRun && parseFenceInfo(belowRun[2], belowRun[1]) === null)
         const { meas, inner: inner0, blockStart, popped } = hostAdvance(qHost, l, qOpenPara, belowFenceLazy)
-        if (idx <= qAttributeThrough) {
+        if (idx <= qAttributeThrough || idx <= qNestedAttributeThrough) {
           qOpenPara = false
           qItemPara = false
           return
