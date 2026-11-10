@@ -3279,19 +3279,20 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
       if (endsInRefusedRunParagraph(bodyLines, k, false, refused)) {
         // A nested marker's content column still bounds its paragraph. A
         // fence that falls short of it opens in the description instead.
-        const runColumn = indentCols(bodyLines[refused.start]).col
         let ownerColumn = 0
-        for (let j = refused.start - 1; j >= 0 && !isBlank(bodyLines[j]); j--) {
-          let text = bodyLines[j]
-          let heldColumn = 0
-          for (let marker; (marker = matchMarkerAt(indentCols(text))); ) {
-            const next = indentCols(marker.text)
-            const nextColumn = marker.indent + marker.markerWidth
-            if (nextColumn > runColumn) break
-            heldColumn = nextColumn
-            text = ' '.repeat(heldColumn + next.col) + next.rest
+        // A paragraph also owns lazy lines short of its marker's content
+        // column; the run's written column alone cannot identify its owner.
+        if (bodyLeavesParagraphOpen(bodyLines.slice(0, refused.start))) {
+          for (let j = refused.start - 1; j >= 0 && !isBlank(bodyLines[j]); j--) {
+            let text = bodyLines[j]
+            let heldColumn = 0
+            for (let marker; (marker = matchMarkerAt(indentCols(text))); ) {
+              const next = indentCols(marker.text)
+              heldColumn = marker.indent + marker.markerWidth
+              text = ' '.repeat(heldColumn + next.col) + next.rest
+            }
+            if (heldColumn > 0) { ownerColumn = heldColumn; break }
           }
-          if (heldColumn > 0) { ownerColumn = heldColumn; break }
         }
         if (indentCols(bodyLines[k]).col >= ownerColumn) continue
       }
