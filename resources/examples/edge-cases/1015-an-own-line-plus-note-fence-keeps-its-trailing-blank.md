@@ -4,7 +4,7 @@ page: edge-definitions
 
 ## An own-line plus note fence keeps its trailing blank
 
-PART 0 S1 step 3 ends an unclosed fence at its first blank only for a marker-line `+` (carve#5560). An own-line `+` leaves the fence open through an interior blank and the trailing blank.
+PART 0 S1 step 3 ends an unclosed fence at its first blank only for a marker-line `+` (carve#5560). An own-line `+` leaves the fence open through an interior blank and the trailing blank. A payload line after the blank stays verbatim from the opener's column, as in a list item (carve#5855).
 
 :::::: compare
 
@@ -28,7 +28,7 @@ see[^a]
       <p>p</p>
       <pre><code>code
 
-tail
+  tail
 
 </code></pre>
       <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>

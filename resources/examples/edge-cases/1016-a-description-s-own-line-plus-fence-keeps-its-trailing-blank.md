@@ -4,7 +4,7 @@ page: edge-lists
 
 ## A description's own-line plus fence keeps its trailing blank
 
-PART 0 S1 step 3 ends an unclosed fence at its first blank only after a marker-line `+`. A fence an own-line `+` attached in a description reads like any fence in the description's body, so its trailing blank is payload, as in a note (PART 9 §17 L4, carve#5560).
+PART 0 S1 step 3 ends an unclosed fence at its first blank only after a marker-line `+`. A fence an own-line `+` attached in a description reads like any fence in the description's body, so its trailing blank is payload, as in a note (PART 9 §17 L4, carve#5560). A payload line after the blank stays verbatim from the opener's column, as in a list item (carve#5855).
 
 ::: compare
 
@@ -27,7 +27,7 @@ x
     <p>p</p>
     <pre><code>code
 
-tail
+  tail
 
 </code></pre>
   </dd>
