@@ -1025,7 +1025,7 @@
 {"id":"lazy-d714a9768baa","source":"> - a\n>   - para\n>   - para\n>     [^f]: n\n+ \ntail\ntail\n","html":"<blockquote>\n  <ul>\n    <li>a\n      <ul>\n        <li>para</li>\n        <li>para</li>\n      </ul>\n    </li>\n  </ul>\n  <p>tail\ntail</p>\n</blockquote>"},
 {"id":"lazy-d7155ebfa980","source":":: t\n> : - # h\n> x\n","html":"<dl>\n  <dt>t</dt>\n</dl>\n<blockquote><p>: - # h\nx</p></blockquote>"},
 {"id":"lazy-d7267f718711","source":"- >>\n*b*\nlazy\n","html":"<ul>\n  <li>&gt;&gt;\n<strong>b</strong>\nlazy</li>\n</ul>"},
-{"id":"lazy-d81b827a4d6d","source":"> > q\n> > {.k\n > > #x}\ntail\n","html":"<blockquote>\n  <blockquote><p>q\n{.k\n#x}\ntail</p></blockquote>\n</blockquote>"},
+{"id":"lazy-d81b827a4d6d","source":"> > q\n> > {.k\n > > #x}\ntail\n","html":"<blockquote>\n  <blockquote><p>q\n{.k\n<span class=\"tag\"><strong>#x</strong></span>}\ntail</p></blockquote>\n</blockquote>"},
 {"id":"lazy-d81c90a6ab0b","source":"1. \n\n- a\n  - c\n::: noteb\n    ```\n    y\n    ```\nflush\n","html":"<p>1.</p>\n<ul>\n  <li>a\n    <ul>\n      <li>c</li>\n    </ul>\n  </li>\n</ul>\n<div class=\"noteb\">\n  <pre><code>y\n</code></pre>\n  <p>flush</p>\n</div>"},
 {"id":"lazy-d853b82dada6","source":"  - > ::  term\ntail\n","html":"<ul>\n  <li>\n    <blockquote>\n      <dl>\n        <dt>term</dt>\n      </dl>\n    </blockquote>\n  </li>\n</ul>\n<p>tail</p>"},
 {"id":"lazy-d869cc629964","source":" - > +\nparra\n```x\n","html":"<ul>\n  <li>\n    <blockquote>\n\n    </blockquote>\n  </li>\n</ul>\n<p>parra</p>\n<pre><code class=\"language-x\"></code></pre>"},
