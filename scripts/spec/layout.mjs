@@ -3269,6 +3269,9 @@ function descriptionOpenFenceAt(bodyLines, lines, from, bodyColumn, endsBodyAt, 
     if (k >= bodyLines.length) break
     const f = FENCE.exec(bodyLines[k])
     if (k === 0 ? openerFenceRun(bodyLines[k]) === null : !f || parseFenceInfo(f[2], f[1]) === null) continue
+    // A refused brace run keeps its fence-shaped follower as paragraph text
+    // (CARVE-P2-035), so it cannot leave an open block fence in this body.
+    if (k > 0 && endsInRefusedRunParagraph(bodyLines, k)) continue
     const closer = bodyFenceEnd(bodyLines, k)
     const boundary = bounds?.find((b) => b > k && (closer === -1 || b <= closer))
     const end = boundary === undefined ? closer : boundary - 1
