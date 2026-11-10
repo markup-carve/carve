@@ -5665,7 +5665,60 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
 // to exclude opaque payloads and marker-line content; then let every container
 // reader see the same visible stream. The first pass also collects definitions
 // in their authored order, before the erased lines lose their positions.
+// A deliberately small study adapter for the proposed column rule. It protects
+// left-of-opener closers before the legacy block readers see them, then restores
+// their authored text in the tree. It is not a replacement for the S1-S5 walk:
+// prefixes and nested marker columns still use the published readers.
+function minimalCloserStudy(src) {
+  let sentinel = '\uE102'
+  while (src.includes(sentinel)) sentinel = String.fromCharCode(sentinel.charCodeAt(0) + 1)
+  const stack = []
+  const lines = src.split('\n').map(line => {
+    const bare = line.replace(/^(?:[ \t]*> ?)+/, '')
+    const measured = indentCols(bare)
+    const content = measured.rest.replace(/^(?:(?:[-*]|\d+[.)]) |: |\[\^[^\]]+\]: +)+/, '')
+    const run = /^(`{3,}|~{3,}|:{3,})(.*)$/.exec(content)
+    if (!run) return line
+    const column = measured.col + (measured.rest.length - content.length)
+    const active = stack.at(-1)
+    const pure = /^[ \t]*$/.test(run[2])
+    const matching = active && pure && run[1][0] === active.mark &&
+      (active.mark === ':' ? run[1].length === active.length : run[1].length >= active.length)
+    if (matching) {
+      if (column < active.column) {
+        const offset = line.length - content.length
+        return line.slice(0, offset) + sentinel + line.slice(offset)
+      }
+      stack.pop()
+      return line
+    }
+    if (!active && (run[1][0] !== ':' || run[2] === '' || /^ (?:[A-Za-z][\w-]*|[|\\>])(?: |$)/.test(run[2]))) {
+      stack.push({ mark: run[1][0], length: run[1].length, column })
+    }
+    return line
+  })
+  return { source: lines.join('\n'), sentinel }
+}
+
+function restoreStudySentinel(value, sentinel, seen = new Set()) {
+  if (typeof value === 'string') return value.replaceAll(sentinel, '')
+  if (!value || typeof value !== 'object' || seen.has(value)) return value
+  seen.add(value)
+  if (value instanceof Map) {
+    for (const [key, item] of value) value.set(key, restoreStudySentinel(item, sentinel, seen))
+  } else if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) value[i] = restoreStudySentinel(value[i], sentinel, seen)
+  } else {
+    for (const key of Object.keys(value)) value[key] = restoreStudySentinel(value[key], sentinel, seen)
+  }
+  return value
+}
+
 export function parse(src, options = {}) {
+  if (options.layoutMode === 'minimal') {
+    const study = minimalCloserStudy(src)
+    return restoreStudySentinel(parse(study.source, { ...options, layoutMode: 'current' }), study.sentinel)
+  }
   // Comments require %% and definitions require ]:. Literal probes keep this
   // prefilter linear even when many unclosed brackets share one long line.
   if (!src.includes('%%') && !src.includes(']:')) {
