@@ -20,7 +20,7 @@ for (const [lead, unit] of [['- p\n', '{bad\n'], ['[^n]: p\n  - a\n', '{bad\n'],
   })
 }
 
-test('a quote opened on a continuation line without a brace keeps the run in the item's paragraph', () => {
+test('a quote opened on a continuation line without a brace keeps the run in the item paragraph', () => {
   assert.equal(renderDoc(parse('> - p\n> > {.x\n> "abc\n> }\nx\n')).trim(),
     '<blockquote>\n  <ul>\n    <li>p\n&gt; {.x\n“abc\n}\nx</li>\n  </ul>\n</blockquote>')
 })
