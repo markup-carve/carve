@@ -51,9 +51,12 @@ test('the follower leaves the ended list item at every note host', () => {
     ['[^a]: +\n- li\n+\n  - x\n\nsee[^a]\n', 4, 'doc/footnote:1/item:4'],
     ['- [^a]: +\n  - li\n  +\n    - x\n\nsee[^a]\n', 4, 'doc/item:1/footnote:1/item:4'],
     ['- h\n  [^a]: +\n  - li\n  +\n    - x\n\nsee[^a]\n', 5, 'doc/item:1/footnote:2/item:5'],
+    ['- [^a]: +\n  - li\n  +\n\n    - x\n\nsee[^a]\n', 5, 'doc/item:1/footnote:1/item:5'],
   ]) {
     assert.equal(owner(source, line), path, source)
-    assert.match(notes(renderDoc(parse(source))), /<\/ul>\n {6}<ul>\n {8}<li>x<\/li>/, source)
+    const html = notes(renderDoc(parse(source)))
+    assert.match(html, /<\/li>\n {6}<\/ul>\n {6}<ul>\n {8}<li>x<\/li>/, source)
+    assert.doesNotMatch(html, /<li><p>li/, source)
   }
   const paragraph = '[^a]: +\n- li\n+\n  p\n\nsee[^a]\n'
   assert.equal(owner(paragraph, 4), 'doc/footnote:1')
@@ -109,7 +112,9 @@ function htmlOwner(html, block) {
   if (fn < 0) return 'outside'
   const own = { pre: /fence|tilde|closed|code/i.test(block), table: block === 'table' }
   const inBlock = stack.slice(fn + 1).some((s) => own[s.tag] ||
-    (s.tag === 'li' && /^\s*(<p>)?(<input[^>]*>\s*)?(li|lj|n)\b/.test(html.slice(s.end))))
+    (s.tag === 'li' && /^\s*(<p>)?(<input[^>]*>\s*)?(li|lj|n)\b/.test(html.slice(s.end))) ||
+    // A follower item that joined the ended list.
+    ((s.tag === 'ul' || s.tag === 'ol') && /<li>(<p>)?(<input[^>]*>\s*)?(li|lj)\b/.test(html.slice(s.end, at))))
   return inBlock ? 'block' : 'note'
 }
 
