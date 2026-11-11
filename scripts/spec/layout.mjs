@@ -4701,7 +4701,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
-      result.push(out + (form.codeHeld ? LAZY : '') + src)
+      result.push(out + (form.codeHeld || form.refusedRun ? LAZY : '') + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
@@ -5421,17 +5421,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return lines.length - 1
   }
 
-  // A multi-line `{%` run takes no lazy lines (carve#5830 rule B): moved into
+  // A multi-line brace run takes no lazy lines (carve#5830 rule B): moved into
   // frame `deeper`, each continuation must carry its quotes and reach its column.
   function lazyRunMissesFrame(at, deeper) {
     const text = trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest)
-    if (!text.startsWith('{%') || text.includes('%}')) return false
+    const comment = text.startsWith('{%')
+    if (comment ? text.includes('%}') : text[0] !== '{') return false
+    const brace = { quoted: null, escaped: false }
+    if (!comment && braceRunCloses(brace, text.slice(1))) return false
     let depth = 0
     for (let k = 1; k <= deeper; k++) if (frames[k].kind === 'quote') depth++
     for (let j = at + 1; j < lines.length && !isBlank(lines[j]); j++) {
       const stands = stripQuotes(lines[j], depth)
       if (!stands || walkIndent(stands.rest).col < frames[deeper].col) return true
-      if (lines[j].includes('%}')) return false
+      if (comment ? lines[j].includes('%}') : braceRunCloses(brace, stands.rest)) return false
     }
     return false
   }
@@ -5547,8 +5550,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // continuation short of the container's content column (carve#5638).
     if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4).
-    // A lazy `{%` run whose continuation misses the open paragraph's frame is refused (carve#5830 rule B).
-    if (missed && top().para && lazyRunMissesFrame(at, frames.length - 1)) return { kind: 'text', interrupts: false }
+    // A lazy `{%` run whose continuation misses the open paragraph's frame is refused, and so is an
+    // attribute run whose continuation misses the container the opener reached (carve#5830 rule B).
+    // It is framed LAZY so no reader re-measures its opener against a moved continuation.
+    if (missed && top().para && lazyRunMissesFrame(at, rest.startsWith('{%') ? frames.length - 1 : frames.indexOf(owner))) {
+      return { kind: 'text', interrupts: false, refusedRun: true }
+    }
     return classifyShape(rest, owner, at, col)
   }
 
