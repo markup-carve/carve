@@ -5087,7 +5087,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             return level && nextCol > frame.docMarker && nextCol < frame.docMarker + frame.col - frame.markerCol
           })()) &&
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
-        frame.para = !quotedRefusedNote && frame.plus !== at &&
+        // A definition the refused marker looked past ends its body: it owns the lines after it
+        // as it does without the marker (CARVE-P9-067, carve#5994).
+        const passedDefinition = refusedPlus.at(-1) === at && skipped?.host === frame &&
+          lines.slice(at + 1, skipped.end).some((line) => FOOTNOTE_DEF.test(trimWsStart(throughQuotes(line, frames.indexOf(frame))?.rest ?? '')))
+        frame.para = !quotedRefusedNote && frame.plus !== at && !passedDefinition &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
         if (frame.para) frame.paraFrom = at
         frame.last = 'para'
