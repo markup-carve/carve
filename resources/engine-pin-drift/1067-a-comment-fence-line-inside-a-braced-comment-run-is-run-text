@@ -1,1 +1,0 @@
-carve#5853: the pinned JavaScript reader opens a comment span at a `%%%` line inside a valid `{%` run; CARVE-P2-035 keeps it run text.
