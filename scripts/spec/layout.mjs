@@ -1898,7 +1898,15 @@ function inlineHostStart(line, at, bracketStarts) {
     open = line.lastIndexOf('`', at - 2)
     while (open > 0 && line[open - 1] === '`') open--
   } else if ('/*_~=:'.includes(closer ?? '\0')) open = line.lastIndexOf(closer, at - 2)
-  return open < 0 ? -1 : Math.max(0, open - 1)
+  return open < 0 ? -1 : probeStart(line, open)
+}
+
+// One character of context before the opener, widened over a whole backslash
+// run so the probe sees its escape parity (carve#5894).
+function probeStart(line, open) {
+  let start = Math.max(0, open - 1)
+  while (start > 0 && line[start] === '\\' && line[start - 1] === '\\') start--
+  return start
 }
 
 function inlineAttributeHost(line, at, span, bracketStarts) {
@@ -1934,7 +1942,7 @@ function inlineAttributeHost(line, at, span, bracketStarts) {
     span.lastBracketClose[1] === bracketClose ? span.lastBracketMatch : null
   const prior = pairedBracket ?? span.previousMarks?.get(marker)
   if (!prior || prior[0] >= span.historyLines.length) return false
-  const prefix = [span.historyLines[prior[0]].slice(Math.max(0, prior[1] - 1)),
+  const prefix = [span.historyLines[prior[0]].slice(probeStart(span.historyLines[prior[0]], prior[1])),
     ...span.historyLines.slice(prior[0] + 1), line.slice(0, at)].join('\n')
   return probe(prefix)
 }
@@ -4695,7 +4703,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead(foldedAt)
       if (CONT_MARKER.test(m.rest)) carryPlus(owner, next, m.col)
       if (FENCE.test(m.rest) && !form.kept) textFences.push({ at: result.length, col: owner.canon })
-      result.push(out + (form.codeHeld ? LAZY : '') + src)
+      result.push(out + (form.codeHeld || form.refusedRun ? LAZY : '') + src)
       // The readers open a list at a folded marker (§10 I2); a lazy line framed later belongs to its item (carve#4259).
       if (form.kind === 'item') top().listContent = foldedAt + form.width
       // A marker of another list kind under an item's paragraph opens a list
@@ -5415,17 +5423,20 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return lines.length - 1
   }
 
-  // A multi-line `{%` run takes no lazy lines (carve#5830 rule B): moved into
+  // A multi-line brace run takes no lazy lines (carve#5830 rule B): moved into
   // frame `deeper`, each continuation must carry its quotes and reach its column.
   function lazyRunMissesFrame(at, deeper) {
     const text = trimLineEnd(walkIndent(lines[at].replace(/^[ \t>]*(?=>)>? ?/, '')).rest)
-    if (!text.startsWith('{%') || text.includes('%}')) return false
+    const comment = text.startsWith('{%')
+    if (comment ? text.includes('%}') : text[0] !== '{') return false
+    const brace = { quoted: null, escaped: false }
+    if (!comment && braceRunCloses(brace, text.slice(1))) return false
     let depth = 0
     for (let k = 1; k <= deeper; k++) if (frames[k].kind === 'quote') depth++
     for (let j = at + 1; j < lines.length && !isBlank(lines[j]); j++) {
       const stands = stripQuotes(lines[j], depth)
       if (!stands || walkIndent(stands.rest).col < frames[deeper].col) return true
-      if (lines[j].includes('%}')) return false
+      if (comment ? lines[j].includes('%}') : braceRunCloses(brace, stands.rest)) return false
     }
     return false
   }
@@ -5541,8 +5552,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     // continuation short of the container's content column (carve#5638).
     if (rest[0] === '{' && codeSpanOpenAbove(missed ? top() : owner, at)) return { kind: 'text', interrupts: false, codeHeld: true }
     // A line short of its container is read as usual (PART 0 S4).
-    // A lazy `{%` run whose continuation misses the open paragraph's frame is refused (carve#5830 rule B).
-    if (missed && top().para && lazyRunMissesFrame(at, frames.length - 1)) return { kind: 'text', interrupts: false }
+    // A lazy `{%` run whose continuation misses the open paragraph's frame is refused, and so is an
+    // attribute run whose continuation misses the container the opener reached (carve#5830 rule B).
+    // It is framed LAZY so no reader re-measures its opener against a moved continuation.
+    if (missed && top().para && lazyRunMissesFrame(at, rest.startsWith('{%') ? frames.length - 1 : frames.indexOf(owner))) {
+      return { kind: 'text', interrupts: false, refusedRun: true }
+    }
     return classifyShape(rest, owner, at, col)
   }
 
@@ -8473,7 +8488,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             const closerless = comment && qCommentOpenThrough?.depth === depth &&
               qCommentOpenThrough.markerQuotes === markerQuotes && qCommentOpenThrough.from < idx && qCommentOpenThrough.through > idx
             if (comment && !closerless &&
-                refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt
+                refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) {
+              qCommentThrough = idx + run.commentClosesAt
+              // A valid comment run is invisible: its opener closes no host frame either (CARVE-P9-013, carve#5893).
+              return
+            }
             if (comment && !closerless && run.commentClosesAt === undefined && run.commentScannedThrough > 0)
               qCommentOpenThrough = { from: idx, through: idx + run.commentScannedThrough, depth, markerQuotes }
             if (run.commentCloser?.from === 0) qCommentCloser = { from: idx, at: idx + run.commentCloser.at, depth, markerQuotes }
