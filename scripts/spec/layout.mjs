@@ -3544,7 +3544,8 @@ function endsAtFirstBlank(lines, start, end, bodyCol) {
 
 function breakRefusedList(state, bodyLines, row) {
   const breaks = state.refusedListBreaks ??= new WeakMap()
-  breaks.set(bodyLines, new Set([...(breaks.get(bodyLines) ?? []), row]))
+  const rows = breaks.get(bodyLines) ?? new Set()
+  breaks.set(bodyLines, rows.add(row))
 }
 
 function markAttachmentBoundary(state, bodyLines) {
