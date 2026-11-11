@@ -11340,6 +11340,10 @@ EOF = (* end of file *) ;
 
                                                        x
 
+      A FOOTNOTE DEFINITION WITH AN EMPTY BODY is written as its marker alone,
+      `[^m]:`, with no space after the colon: the space would be trailing
+      whitespace on that line, and CommonMark reads both spellings the same.
+
   10n. A TABLE WITHOUT A HEADER ROW GETS AN EMPTY ONE --
       NORMATIVE [CARVE-P11-056]. GFM reads a pipe table only below a header row and its
       delimiter row, so rows written without them are a paragraph of pipes.
