@@ -5452,10 +5452,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     for (; j < lines.length && !isBlank(lines[j]); j++) {
       const stands = stripQuotes(lines[j], depth)
       if (!stands || walkIndent(stands.rest).col < frames[deeper].col) { result = true; break }
-      if (lines[j].includes(comment ? '%}' : '}')) {
-        clean = false
-        if (comment || braceRunCloses(brace, stands.rest)) break
-      }
+      if (lines[j].includes(comment ? '%}' : '}')) clean = false
+      // Every attribute line feeds the quote state, even one without a `}`.
+      if (comment ? !clean : braceRunCloses(brace, stands.rest)) break
     }
     if (clean) lazyRunScans.set(key, { from: at, to: j, result })
     return result
