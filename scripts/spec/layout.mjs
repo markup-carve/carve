@@ -3544,7 +3544,8 @@ function endsAtFirstBlank(lines, start, end, bodyCol) {
 
 function breakRefusedList(state, bodyLines, row) {
   const breaks = state.refusedListBreaks ??= new WeakMap()
-  breaks.set(bodyLines, new Set([...(breaks.get(bodyLines) ?? []), row]))
+  const rows = breaks.get(bodyLines) ?? new Set()
+  breaks.set(bodyLines, rows.add(row))
 }
 
 function markAttachmentBoundary(state, bodyLines) {
@@ -6879,13 +6880,15 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             (follower?.owner === event.owner || follower?.owner?.startsWith(`${event.owner}/`)) &&
             (resumed?.owner === event.owner || resumed?.owner?.startsWith(`${event.owner}/`))) {
           // The refused marker still ends the note's list (carve#5890): a marker after it opens a new list.
-          breakRefusedList(state, bodyLines, bodyLines.length)
+          for (let row = 0; row < resumes - i; row++) breakRefusedList(state, bodyLines, bodyLines.length + row)
           i++
           continue
         }
         // Kept as an invisible line, the placeholder ends the list at the line after it.
         if (measured.rest === '%%' && event?.form === 'plus' && event.refused && noteOwner && event.owner === noteOwner) {
-          breakRefusedList(state, bodyLines, bodyLines.length + 1)
+          let next = i + 1
+          while (next < n && isBlank(lines[next])) next++
+          for (let row = 0; row <= next - i; row++) breakRefusedList(state, bodyLines, bodyLines.length + row)
         }
         // A losing `+` on the same label inside this note is a boundary,
         // not a new owner. Keep reading the follower at this note's column.
@@ -10236,8 +10239,10 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
   while (i < n) {
     // Siblings group by their container, and a comment is invisible, so a
     // comment that closed the item above does not end the list (carve#3885).
+    const refusedBreaks = list.items.length > 0 ? state.refusedListBreaks?.get(lines) : undefined
+    if (refusedBreaks?.has(i)) break
     if (list.items.length > 0) i = commentsBeforeSibling(i)
-    if (list.items.length > 0 && state.refusedListBreaks?.get(lines)?.has(i)) break
+    if (refusedBreaks?.has(i)) break
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (head.leadTab) head.text = lazyFrame(head.text)
