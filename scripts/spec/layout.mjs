@@ -2043,10 +2043,14 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests, shared = null, l
   let end = k + 1
   // CARVE-P2-035: a line inside the open run is payload, so only a line after `%}` can interrupt.
   let spanOpen = commentSpanOpenAfter(rests[k], false)
+  // A paragraph line with visible text fails COMMENT_ONLY_PARA, so stop there, not at the paragraph end.
+  let hidden = commentOnlyLine(rests[k], false)
+  if (hidden === null) return -1
   for (; end < limit && !isBlank(rests[end] ?? ''); end++) {
     const rest = indentCols(rests[end]).rest
     if (spanOpen) {
       spanOpen = commentSpanOpenAfter(rests[end], true)
+      if ((hidden = commentOnlyLine(rests[end], hidden)) === null) return -1
       continue
     }
     if (startsParagraphBlock(rest) || rest.startsWith('%%') || (rest[0] === '{' && tryAttrLine([rest], 0))) break
@@ -2056,6 +2060,7 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests, shared = null, l
       if (inItem) break
       return -1
     }
+    if ((hidden = commentOnlyLine(rests[end], hidden)) === null) return -1
   }
   const para = []
   let open = false
@@ -2066,6 +2071,18 @@ function commentOnlyParaEnd(rests, k, inItem, measured = rests, shared = null, l
     para.push(rests[j])
   }
   return COMMENT_ONLY_PARA.test(para.join('\n')) ? end : -1
+}
+
+// One line of COMMENT_ONLY_PARA: whether the span is open after it, or null once it shows text.
+function commentOnlyLine(line, open) {
+  for (let c = 0; c < line.length; c++) {
+    if (open) {
+      if (line[c] === '%' && line[c + 1] === '}') { open = false; c++ }
+    } else if (line[c] === '{' && line[c + 1] === '%') { open = true; c++ }
+    else if (line[c] === '%' && line[c + 1] === '%' && line[c - 1] === ' ') return false
+    else if (!' \t\r'.includes(line[c])) return null
+  }
+  return open
 }
 
 function commentSpanOpenAfter(line, open) {
@@ -3778,9 +3795,23 @@ function attachedBlockLength(lines, at, view) {
   }
 }
 
+const colonLines = new WeakMap()
+
+// The first line at or after `at` whose text holds `:::`, so a colon opener can stand there.
+function nextColonLine(lines, at) {
+  let next = colonLines.get(lines)
+  if (!next || next.length !== lines.length + 1) {
+    colonLines.set(lines, next = new Int32Array(lines.length + 1).fill(lines.length))
+    for (let j = lines.length - 1; j >= 0; j--) next[j] = lines[j].includes(':::') ? j : next[j + 1]
+  }
+  return next[at]
+}
+
 function attachedColonBoundary(lines, from, view, ownLine = false, host = null) {
   const first = trimWsStart(view(lines[from] ?? '') ?? '')
   if (!/^(?::::|[%{]|\[\^)/.test(first)) return null
+  // Only a colon opener yields a boundary, and no later line can hold one.
+  if (nextColonLine(lines, from) >= lines.length) return null
   // Most attachments close near their opener. Grow only when no boundary is
   // visible yet; collecting the document tail for each short attachment makes
   // a run of sibling attachments quadratic.
@@ -3795,7 +3826,8 @@ function attachedColonBoundary(lines, from, view, ownLine = false, host = null) 
     const opener = attachedOpener(body, 0)
     const colon = COLON_FENCE.exec(trimWsStart(body[opener] ?? ''))
     if (!colon || parseColonOpener(colon[2]) === null) {
-      if (reachedEnd) return null
+      // A plain opener row before the window's last row is where every larger window stops too.
+      if (reachedEnd || opener + 1 < body.length && !/^[{%[:]/.test(trimWsStart(body[opener] ?? ''))) return null
       continue
     }
     const hostEnd = attachedColonSiblingEnd(body, 0, body.length, opener, (k) => {
