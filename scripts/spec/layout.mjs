@@ -1898,7 +1898,15 @@ function inlineHostStart(line, at, bracketStarts) {
     open = line.lastIndexOf('`', at - 2)
     while (open > 0 && line[open - 1] === '`') open--
   } else if ('/*_~=:'.includes(closer ?? '\0')) open = line.lastIndexOf(closer, at - 2)
-  return open < 0 ? -1 : Math.max(0, open - 1)
+  return open < 0 ? -1 : probeStart(line, open)
+}
+
+// One character of context before the opener, widened over a whole backslash
+// run so the probe sees its escape parity (carve#5894).
+function probeStart(line, open) {
+  let start = Math.max(0, open - 1)
+  while (start > 0 && line[start] === '\\' && line[start - 1] === '\\') start--
+  return start
 }
 
 function inlineAttributeHost(line, at, span, bracketStarts) {
@@ -1934,7 +1942,7 @@ function inlineAttributeHost(line, at, span, bracketStarts) {
     span.lastBracketClose[1] === bracketClose ? span.lastBracketMatch : null
   const prior = pairedBracket ?? span.previousMarks?.get(marker)
   if (!prior || prior[0] >= span.historyLines.length) return false
-  const prefix = [span.historyLines[prior[0]].slice(Math.max(0, prior[1] - 1)),
+  const prefix = [span.historyLines[prior[0]].slice(probeStart(span.historyLines[prior[0]], prior[1])),
     ...span.historyLines.slice(prior[0] + 1), line.slice(0, at)].join('\n')
   return probe(prefix)
 }

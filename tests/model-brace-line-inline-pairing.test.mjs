@@ -58,3 +58,16 @@ test('a nested bracket host closed on a later line consumes its attributes', () 
   assert.equal(html('[a [b\nx]](u){title="`"}\n{k=v}\nz\n'),
     '<p><a href="u" title="`">a [b\nx]</a></p>\n<p k="v">z</p>')
 })
+
+test('an even backslash run before the opener leaves the host live (carve#5894)', () => {
+  assert.equal(html('\\\\[a]{title="`"}\n{k=v}\nb\n'),
+    '<p>\\<span title="`">a</span></p>\n<p k="v">b</p>')
+  for (const host of ['*a*', '`a`', '[a](u)', '<https://x.y>']) {
+    for (const lead of ['\\\\', '\\\\\\\\', 'é\\\\']) {
+      const rendered = html(lead + host + '{title="`"}\n{k=v}\nb\n')
+      assert.ok(rendered.endsWith('<p k="v">b</p>'), lead + host)
+    }
+  }
+  assert.ok(html('\\\\\\[a]{title="`"}\n{k=v}\nb\n').includes('\n{k=v}\nb</code></p>'))
+  assert.ok(html('[x\n\\\\[a]{title="`"}\n{k=v}\nb\n').endsWith('<p k="v">b</p>'))
+})
