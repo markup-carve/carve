@@ -45,6 +45,10 @@ export interface RenderLoss {
     nodeType: string;
     message: string;
     pos?: SourcePosition;
+    /** The included file the lost content came from; absent for the document itself. */
+    file?: string;
+    /** The include directives that reached `file`, top-level first. */
+    includedBy?: { file: string; line: number; column: number }[];
 }
 export interface RenderResult {
     value: string;
@@ -112,6 +116,8 @@ export type LintIncludeOptions = Omit<IncludeOptions, "extensions">;
 export interface LintOptions extends RenderOptions {
     /** Follow include directives through `resolve` and lint the included Carve files too. */
     includes?: LintIncludeOptions;
+    /** Report a paragraph beside an image or table that looks like its caption. Off by default. */
+    captionLookingParagraph?: boolean;
 }
 /**
  * A finding from a lint that followed includes. `start` and `end` are null on
