@@ -3,13 +3,16 @@ name: Conformance page
 # Regenerates docs/conformance.md and the per-engine badge endpoints from the
 # released engines and opens a PR with the result. Release-tied on purpose: the
 # page states what a release measures, so it does not run on every push.
-# An engine release reaches it through repository_dispatch (type
-# engine-released); a manual run can name the engine refs to measure.
+# The engine repos send no event here, so a daily run picks up their latest
+# published releases; this repo's own releases, repository_dispatch (type
+# engine-released) and a manual run (which can name the engine refs) also run it.
 # Uses BUMP_TOKEN, as bump-engine-pin.yml does, so the PR triggers CI.
 
 on:
   release:
     types: [published]
+  schedule:
+    - cron: '17 6 * * *'
   repository_dispatch:
     types: [engine-released]
   workflow_dispatch:
@@ -97,7 +100,8 @@ jobs:
           BRANCH: automation/conformance-page
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/conformance.md docs/public/badges && [ -z "$(git ls-files --others --exclude-standard -- docs/public/badges)" ]; then
+          # -I: a run that only moves the "last regenerated" date opens no PR.
+          if git diff --quiet -I 'last regenerated' -- docs/conformance.md docs/public/badges && [ -z "$(git ls-files --others --exclude-standard -- docs/public/badges)" ]; then
             echo "the conformance page is current"
             exit 0
           fi

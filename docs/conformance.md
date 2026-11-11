@@ -6,8 +6,8 @@ description: How closely each released Carve engine renders the conformance pack
 
 # Conformance
 
-Each released engine against the spec commit it pins. Regenerated when a
-release is published; last regenerated 2026-11-02.
+Each released engine against the spec commit it pins. Checked daily against
+the latest published release of each engine; last regenerated 2026-11-11.
 
 | Engine | Release | Spec it pins | Cases that differ | Matching | Tagged | Ledger |
 |---|---|---|---|---|---|---|
