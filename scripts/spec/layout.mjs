@@ -3010,25 +3010,26 @@ function hostLadder() {
 function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
   const meas = indentCols(line)
   const term = meas.col === 0 && DEFLIST_TERM.test(meas.rest)
-  const description = h.descriptionTerm && meas.col === 0 && /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(meas.rest)
+  // A term opens its entry where it stands, on a marker line too (PART 0 S3).
+  const description = h.descriptionTerm === meas.col && /^:( +)(?=[ \t]*[^ \t])(.*)$/s.exec(meas.rest)
   if (description && matchMarkerAt(indentCols(description[2]))) {
     const lead = markerFenceSummary(description[2], new Map())
     if (lead) {
-      const column = 1 + description[1].length + lead.col
+      const column = meas.col + 1 + description[1].length + lead.col
       h.columns.push(column)
-      h.markerCols.push(1 + description[1].length)
+      h.markerCols.push(meas.col + 1 + description[1].length)
       h.markers.push(matchMarkerAt(indentCols(description[2])))
       h.kinds.push('item')
       return { meas, inner: { col: column, rest: markerFreeContent(description[2]) }, blockStart: true, popped: false }
     }
   }
   if (term) {
-    h.descriptionTerm = true
+    h.descriptionTerm = 0
     h.descriptionBlank = false
   } else if (meas.rest === '') {
     h.descriptionBlank = true
   } else if (!description && !h.kinds.includes('description')) {
-    h.descriptionTerm = false
+    h.descriptionTerm = null
   }
   if (meas.rest !== '') h.descriptionBlank = false
   if (h.colons?.at(-1)?.mode === 'line-block' && meas.col >= h.colons.at(-1).base) {
@@ -3150,6 +3151,7 @@ function hostAdvance(h, line, paraOpen, belowFenceLazy = false) {
     }
     break
   }
+  if (!term && inner.col > 0 && inner.col === h.columns.at(-1) && DEFLIST_TERM.test(inner.rest)) h.descriptionTerm = inner.col
   if (h.kinds.at(-1) === 'description') {
     // A list-shaped line folds into the description's paragraph under section 10 I2.
     h.descriptionMarker = !blockStart && paraOpen && (h.descriptionMarker || matchMarkerAt(inner) !== null)
@@ -8472,7 +8474,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const description = /^:( +)(?=[ \t]*[^ \t])/.exec(sourceLine.rest)
         if (sourceLine.col === 0 && sourceLine.rest !== '' && !description &&
             !DEFLIST_TERM.test(sourceLine.rest)) qDescriptionBodyCol = null
-        if (description && sourceLine.col === 0 && qHost.descriptionTerm) qDescriptionBodyCol = 1 + description[1].length
+        if (description && sourceLine.col === 0 && qHost.descriptionTerm === 0) qDescriptionBodyCol = 1 + description[1].length
         if (qNoteBodyCol !== null && sourceLine.rest !== '' && sourceLine.col < qNoteBodyCol) qNoteBodyCol = null
         if (qDescriptionBodyCol !== null && sourceLine.col >= qDescriptionBodyCol &&
             FOOTNOTE_DEF.test(sourceLine.rest)) qNoteBodyCol = sourceLine.col + FOOTNOTE_BODY_COLUMN
@@ -9507,9 +9509,9 @@ function markMeasuredContainerText(state, lines, from, to, ind) {
 const DESCRIPTION_TEXT = /^: (?=[ \t]*[^ \t\n\r])/
 const DESCRIPTION_RUN = /^::? /
 // Whether a `: ` line at `col` is a description: the nearest line at or left of
-// that column is the entry's term or an earlier description of it.
-const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) =>
-  entryAboveAt(end - 1, col, (k) => indentCols(bodyLines[k]), undefined, 0, bodyLines, 'plain')
+// that column is the entry's term, which may follow list markers, or an earlier
+// description of it (carve#5969).
+const opensDescriptionAt = (bodyLines, col, end = bodyLines.length) => descriptionAbove(bodyLines, col, end)
 // Whether a body ends inside a `%%%` span opened on a description's lead line
 // (`: %%%`), which the item and quote paragraph trackers read as text. The
 // span leaves nothing (CARVE-P9-047), so a line that ends it under S1 finds no

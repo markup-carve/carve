@@ -1,0 +1,1 @@
+carve#5969: the pinned JavaScript reader does not let a lazy line continue the paragraph a text line opens after it ends a comment span in a note's description; carve-js#4946 folds it.
