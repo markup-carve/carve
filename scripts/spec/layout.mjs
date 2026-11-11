@@ -3542,6 +3542,11 @@ function endsAtFirstBlank(lines, start, end, bodyCol) {
   return true
 }
 
+function breakRefusedList(state, bodyLines, row) {
+  const breaks = state.refusedListBreaks ??= new WeakMap()
+  breaks.set(bodyLines, new Set([...(breaks.get(bodyLines) ?? []), row]))
+}
+
 function markAttachmentBoundary(state, bodyLines) {
   const bounds = state.attachmentBoundaries ??= new WeakMap()
   bounds.set(bodyLines, [...(bounds.get(bodyLines) ?? []), bodyLines.length])
@@ -4449,8 +4454,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         if (claimedMarkers.has(at) && plus.plus !== undefined) afterPlus = true
         if (trace) emit(at, 'S2', ownerPath(), 'CARVE-P9-067', 'plus', { cell: 'B-plus-start' })
         // A note offered through a marker-line `+` has no body of its own
-        // after a refused second marker; the item reads the next block.
-        if (plus.kind === 'note' && plus.markerPlus && frames.at(-2)?.kind === 'item') frames.pop()
+        // after a refused second marker; the item reads the next block. A
+        // note whose `+` attached a block keeps the next line (carve#5890).
+        if (plus.kind === 'note' && plus.markerPlus && frames.at(-2)?.kind === 'item' &&
+            !lines.slice(plus.line + 1, at).some((line) => line.trim() !== '')) frames.pop()
         continue
       }
       skipInvisible(plus, at, docColumn(lines[at], m.rest), out)
@@ -6075,6 +6082,7 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   delete state.prefixMemos
   delete state.blockEndMemo
   delete state.attachmentBoundaries
+  delete state.refusedListBreaks
   delete state.fenceHostMisses
   delete state.ownershipEvents
   delete state.acceptedMarkerPluses
@@ -6668,6 +6676,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         // An attached paragraph ends at an opener that reaches the body column: that line is the body's.
         let next = Math.min(attached.next,
           state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n)
+        // A refused marker the walk gave back to the note ends the attached block (carve#5890).
+        for (let k = i + 1; noteOwner && k < next; k++) {
+          const event = noteOwnership.events.get(k + noteOwnership.offset)
+          if (event?.form === 'plus' && event.refused && event.owner === noteOwner) {
+            next = k
+            break
+          }
+        }
         // A losing definition in the invisible lead takes no block. Measure
         // the winning marker's actual first block from its first visible line,
         // retaining the authored columns before the body reader rebases them.
@@ -6854,11 +6870,22 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
         const ownership = state.ownershipEvents?.get(lines)
         const event = ownership?.events.get(i + ownership.offset)
         const follower = ownership?.events.get(i + 1 + ownership.offset)
-        if (i + 1 < n && lines[i] === '%%' && event?.form === 'plus' && event.refused && event.owner?.includes('/footnote:') &&
-            isFootnoteContinuationLine(lines[i + 1]) &&
-            (follower?.owner === event.owner || follower?.owner?.startsWith(`${event.owner}/`))) {
+        // After a note's body, a blank run after the marker is the note's too when the walk gives it the next line (carve#5890).
+        let resumes = i + 1
+        if (attachedFrom !== -1) while (resumes < n && isBlank(lines[resumes])) resumes++
+        const resumed = resumes > i + 1 ? ownership?.events.get(resumes + ownership.offset) : follower
+        if (resumes < n && lines[i] === '%%' && event?.form === 'plus' && event.refused && event.owner?.includes('/footnote:') &&
+            isFootnoteContinuationLine(lines[resumes]) &&
+            (follower?.owner === event.owner || follower?.owner?.startsWith(`${event.owner}/`)) &&
+            (resumed?.owner === event.owner || resumed?.owner?.startsWith(`${event.owner}/`))) {
+          // The refused marker still ends the note's list (carve#5890): a marker after it opens a new list.
+          breakRefusedList(state, bodyLines, bodyLines.length)
           i++
           continue
+        }
+        // Kept as an invisible line, the placeholder ends the list at the line after it.
+        if (measured.rest === '%%' && event?.form === 'plus' && event.refused && noteOwner && event.owner === noteOwner) {
+          breakRefusedList(state, bodyLines, bodyLines.length + 1)
         }
         // A losing `+` on the same label inside this note is a boundary,
         // not a new owner. Keep reading the follower at this note's column.
@@ -10210,6 +10237,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     // Siblings group by their container, and a comment is invisible, so a
     // comment that closed the item above does not end the list (carve#3885).
     if (list.items.length > 0) i = commentsBeforeSibling(i)
+    if (list.items.length > 0 && state.refusedListBreaks?.get(lines)?.has(i)) break
     const head = matchMarkerAt(ind(i))
     if (!head || head.indent !== baseIndent || !sameAxes(list, head)) break
     if (head.leadTab) head.text = lazyFrame(head.text)
@@ -11399,6 +11427,7 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       ? attachedBlockEnd(lines, i, state, (idx) => isBlank(lines[idx]) || CONT_MARKER.test(lines[idx]), contentCol)
       : -1
     while (i < n) {
+      if (state.refusedListBreaks?.get(lines)?.has(i)) break
       if (captureParagraphState) paragraphOpenBeforeComments = deepestParagraphOpen()
       // An unclosed span a refused run's paragraph kept ends with that paragraph (CARVE-P2-035).
       const line = lines[i]
