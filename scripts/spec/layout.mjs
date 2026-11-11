@@ -4358,9 +4358,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         reached = k
         continue
       }
-      if (m.rest !== '' && m.col < f.col) {
+      // A line reaches a frame by its per-frame column (carve#5755): a tab lead or a
+      // frame opened on a tab-led marker line moves both sides off the line-start column.
+      if (m.rest !== '') {
         const tabbed = src.length > m.rest.length && src.slice(0, src.length - m.rest.length).includes('\t')
-        if (!tabbed || segmentColumn() < f.col + (f.tabShift ?? 0)) break
+        if (tabbed || f.tabShift ? segmentColumn() < f.col + (f.tabShift ?? 0) : m.col < f.col) break
       }
       reached = k
     }
