@@ -1,0 +1,1 @@
+carve#5993: the pinned JavaScript reader ends a note kept at a wider plus host's marker column at the first block in its body and moves that block out of the note; the spec keeps every line at the note's own body column in the note.

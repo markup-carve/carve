@@ -5397,15 +5397,43 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // An attribute line left of the note's body column is the host's (carve#5576).
         const hostAttr = (j) => view(j)[0] === '{' && colAt(j) < at + FOOTNOTE_BODY_COLUMN &&
           tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[j], hostIndex)?.rest ?? '').col)
-        // An attribute line in the note's body ends its paragraph (§15 A1), so no lazy line follows it.
+        // Every line at or past the note's own body column is the note's, whatever block it
+        // opens (PART 9 §16, carve#5993); a line left of it is the note's only as a lazy line of
+        // an open paragraph (PART 0 L4). An attribute line ends that paragraph (§15 A1).
+        const bodyCol = at + FOOTNOTE_BODY_COLUMN
+        const inQuote = (j) => throughQuotes(lines[j], hostIndex) !== null
         let open = true
-        while (k < lines.length && foldablePlainLine(view(k)) && !hostAttr(k) &&
-            (!offered || colAt(k) !== column)) {
-          const inBody = colAt(k) >= at + FOOTNOTE_BODY_COLUMN
-          if (!inBody && !open) break
-          const attr = inBody && view(k)[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
-          open = !attr
-          k = attr ? attr.next : k + 1
+        let fence = null
+        while (k < lines.length && inQuote(k)) {
+          const line = trimLineEnd(view(k))
+          if (line === '') {
+            let j = k + 1
+            while (j < lines.length && inQuote(j) && isBlank(view(j))) j++
+            if (j >= lines.length || !inQuote(j) || colAt(j) < bodyCol) break
+            if (!fence) open = false
+            k = j
+            continue
+          }
+          if (colAt(k) < bodyCol) {
+            if (fence || !open || !foldablePlainLine(line) || hostAttr(k) || (offered && colAt(k) === column)) break
+            k++
+            continue
+          }
+          if (fence) {
+            if (PURE_FENCE.exec(line)?.[1].startsWith(fence)) fence = null
+            k++
+            continue
+          }
+          if (CONT_MARKER.test(line)) break
+          const attr = line[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
+          if (attr) {
+            open = false
+            k = attr.next
+            continue
+          }
+          if (isCodeBlockOpener(line)) fence = FENCE.exec(line)[1]
+          open = !fence && opensParagraph(line, true)
+          k++
         }
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
