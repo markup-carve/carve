@@ -3,7 +3,6 @@
 # corpus row and target. A unanimous engine difference needs an expected fixture
 # and a declaration for each engine. The gate rejects any stale declaration.
 # Format: target/engine/slug  owner/repo#issue and reason
-markdown/js/963-a-multi-line-braced-comment-keeps-the-nested-list-open-4  markup-carve/carve-js#4536: corrected list ownership inserts a blank before the nested sibling in Markdown; output remains semantically equivalent to Rust and PHP.
 ansi/rust/736-model-syntax-boundaries-and-ownership-4  markup-carve/carve#5185, pinned Rust retains a tab before the literal marker while pinned JS omits it; target layout is under triage
 carve/php/506-comment-columns-and-surviving-list-items-5  markup-carve/carve#4850 (carve-php), CARVE-P11-079 comment and indentation layout pending
 ansi/php/382-a-marker-line-link-definition-is-collected-where-no-paragraph-is-open  carve-php main still writes this target differently from carve-js and carve-rs after the pin move; triage in markup-carve/carve#5185.
@@ -27,7 +26,6 @@ ansi/rust/853-a-whitespace-run-after-a-tab-sets-the-content-column-where-the-con
 ansi/rust/853-a-whitespace-run-after-a-tab-sets-the-content-column-where-the-content-starts-3  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 ansi/rust/864-a-leading-content-tab-sets-the-item-s-content-column-where-the-content-starts  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 ansi/php/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-2  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
-html/rust/860-an-id-key-is-a-spelling-of-the-id-slot-3  carve-rs does not write the fixture yet; carve-rs declares the port pending in tests/corpus.rs, ruling markup-carve/carve#4534.
 html/rust/860-an-id-key-is-a-spelling-of-the-id-slot-4  carve-rs does not write the fixture yet; carve-rs declares the port pending in tests/corpus.rs, ruling markup-carve/carve#4534.
 markdown/rust/12-inline-code-8  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/php/531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only-7  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
@@ -47,7 +45,6 @@ markdown/rust/781-an-opener-is-open-where-it-stands-so-a-combined-token-after-a-
 markdown/js/855-an-email-autolink-takes-every-email-character-in-its-domain-3  Row entered the formatter selection with the 0947cae0 spec pins; carve-js writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/js/855-an-email-autolink-takes-every-email-character-in-its-domain-4  Row entered the formatter selection with the 0947cae0 spec pins; carve-js writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/rust/855-attribute-hardening-probes-the-value-as-emitted-3  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
-markdown/rust/860-an-id-key-is-a-spelling-of-the-id-slot-3  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/php/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-2  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/js/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-5  Row entered the formatter selection with the 0947cae0 spec pins; carve-js writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 plain/php/620-generated-container-documents-23  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
