@@ -499,6 +499,72 @@
       }
     },
     {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/js->php",
+      "fingerprint": "c3f97d9089855d72e44a4d1d7c6bffcba189b1315b5da7ae6b96c36acbc32837",
+      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/js->rust",
+      "fingerprint": "48a7275e86154baa14e6d04f92881daec63eec925b91144ef4c0ad88d05ecd24",
+      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/php->js",
+      "fingerprint": "f130040204a458fae6440102fa5694d390444a6ba54d303963923d91feec8d69",
+      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/php->rust",
+      "fingerprint": "39193a029f9045b044cd08b3f9493c4dd67a6ef831be5c3c92f6f390fc80e676",
+      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/rust->js",
+      "fingerprint": "4c93e93e491cff29548ecae853912ff081162288103b417bdd5cf46ce6f2b507",
+      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/rust->php",
+      "fingerprint": "57df95cf08f6872d75551603b16603a4c18897e863f7e8522a293dbe85e86313",
+      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "observation": {
+        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
       "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
