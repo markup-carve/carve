@@ -20,3 +20,6 @@
 # resources/engine-pin-drift/.README says the same thing for the same reason.
 #
 # Format: <slug><space><space><reason>
+1078-a-class-key-in-any-case-joins-the-class-slot-in-write-order  carve#5991: the pinned writer keeps a case-variant class key in keyValues and writes it after the shorthands, so its tokens move to the end of the slot
+1078-a-class-key-in-any-case-joins-the-class-slot-in-write-order-2  carve#5991: the pinned writer keeps a case-variant class key in keyValues and writes it after the shorthands, so its tokens move to the end of the slot
+1078-a-class-key-in-any-case-joins-the-class-slot-in-write-order-4  carve#5991: the pinned writer keeps a case-variant class key in keyValues and writes it after the shorthands, so its tokens move to the end of the slot
