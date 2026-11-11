@@ -16,7 +16,7 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 
 ### Breaking
 
-- Importers no longer read `data-djot-*` carriers, including `data-djot-src`; only `data-carve-*` is read. Writer output does not change (CARVE-P10-020 retired, #5735).
+- Importers no longer read `data-djot-*` carriers, including `data-djot-src`; only `data-carve-*` is read. Writer output does not change (CARVE-P10-020 retired, #5735, #5738).
 - The `a11y/heading-jump` lint alias is gone; only `heading-level-skip` names the rule in config and suppression directives (#5735).
 
 ### Changes
@@ -30,12 +30,12 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 - Plain text writes nothing for a cell a span covers, so `| Summe netto | < |` becomes `Summe netto` instead of `Summe netto |` (CARVE-P11-082, #5546).
 - PART 0 and PART 9 are organized around eight principles, and the block layout core is consolidated under them (#5703, #5737, #5741, #5734).
 - One ordered rule decides what an open fence takes (#5498).
-- `+` attachment ownership is specified across every block host, with the ruled boundary and tail cases (#5658, #5704).
-- The 2026-11-09 rulings, the R3, list-region and source-region rulings, and the bracket-region rulings are written into the text and the model (#5587, #5579, #5560, #5600, #5576, #5618, #5608, #5674, #5683).
-- A refused brace run claims no lines and a multi-line run inside a container takes no lazy lines (#5830); a marker-line brace run is measured from its written brace and the container body column (#5748, #5805).
-- Leading tabs in nested payloads are measured per frame (#5755).
-- An own-line `+` fence keeps its payload columns after a blank in every host (#5855).
-- Lint hints on a refused own-line continuation offer (#5736).
+- `+` attachment ownership is specified across every block host, with the ruled boundary and tail cases (#5658, #5704, #5716).
+- The 2026-11-09 rulings, the R3, list-region and source-region rulings, and the bracket-region rulings are written into the text and the model (#5587, #5579, #5560, #5600, #5576, #5618, #5608, #5674, #5683, #5623, #5625, #5634).
+- A refused brace run claims no lines and a multi-line run inside a container takes no lazy lines (#5830); a marker-line brace run is measured from its written brace and the container body column (#5748, #5805, #5799, #5816, #5845).
+- Leading tabs in nested payloads are measured per frame (#5755, #5782).
+- An own-line `+` fence keeps its payload columns after a blank in every host (#5855, #5861).
+- Lint hints on a refused own-line continuation offer (#5736, #5739).
 - An invalid language tag renders through inline parsing (#5680).
 
 ### Fixes
@@ -53,11 +53,11 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 - Includes: CSV and TSV selection, invalid line ranges, captions after code includes, empty delimited includes and per-file render losses (#3763, #3765, #3787, #3804, #3858, #3958, #4707, #5425).
 - AST: line block breaks, cloned heading inline nodes, colspan or rowspan of 1 validates, link reference definition spans and `pos` across erased comments (#3705, #3726, #4652, #4969, #5146, #5232).
 
-- Footnotes and `+`: losing duplicate definitions, passed and interleaved note bodies, note-attached lists and fences, lazy frames after a missed note, quoted gaps and siblings around a winning note (#5474, #5492, #5466, #5482, #5511, #5504, #5502, #5519, #5522, #5489, #5528, #5499, #5531, #5512, #5538, #5534, #5550, #5547, #5520, #5559, #5581, #5616, #5560, #5601, #5620, #5627, #5640, #4085, #5747, #5932, #5933).
-- Brace and comment runs: refused-run followers in every host, valid runs through brace- and block-shaped continuations, written brace columns after quotes, task boxes and glued attributes, comment-only braced paragraphs and lazy comment openers (#5496, #5561, #5594, #5740, #5752, #5756, #5762, #5772, #5773, #5787, #5788, #5800, #5804, #5811, #5818, #5792, #5826, #5820, #5844, #5837, #5841, #5850, #5851, #5853, #5854, #5863, #5874, #5796, #5822, #5827, #5829, #5835, #5629).
-- Tabs: a tab-led one-line opener, a tab-led quoted run's follower and verse leads are measured per frame (#5719, #5828, #5881, #5878, #5885).
-- Lists, descriptions and fences: unclosed backtick and fence followers in refused paragraphs, quoted attribute runs, unpaired fences, off-base and exact colon runs and lazy description text (#5549, #5600, #5622, #5606, #5710, #5717, #5763).
-- Inline: DEL in heading slugs, caption code spans, attributes and escaped table closers in open code spans, dollar sequences in code attributes, forced spans around cross-reference atoms, heading references and nested links with inline notes, unresolved notes in task labels (#5462, #5641, #5638, #5667, #5668, #5669, #5659, #5665, #5664, #5666, #5821, #5872).
+- Footnotes and `+`: losing duplicate definitions, passed and interleaved note bodies, note-attached lists and fences, lazy frames after a missed note, quoted gaps and siblings around a winning note (#5474, #5492, #5466, #5482, #5511, #5504, #5502, #5519, #5522, #5489, #5528, #5499, #5531, #5512, #5538, #5534, #5550, #5547, #5520, #5559, #5581, #5616, #5560, #5601, #5620, #5627, #5640, #4085, #5747, #5932, #5933, #5477, #5503, #5514, #5518, #5523, #5529, #5530, #5535, #5537, #5543, #5563, #5628, #5630, #5642, #5654, #5707, #5749).
+- Brace and comment runs: refused-run followers in every host, valid runs through brace- and block-shaped continuations, written brace columns after quotes, task boxes and glued attributes, comment-only braced paragraphs and lazy comment openers (#5496, #5561, #5594, #5740, #5752, #5756, #5762, #5772, #5773, #5787, #5788, #5800, #5804, #5811, #5818, #5792, #5826, #5820, #5844, #5837, #5841, #5850, #5851, #5853, #5854, #5863, #5874, #5796, #5822, #5827, #5829, #5835, #5629, #5564, #5743, #5761, #5791, #5793, #5807, #5815, #5817, #5819, #5824, #5832, #5843).
+- Tabs: a tab-led one-line opener, a tab-led quoted run's follower and verse leads are measured per frame (#5719, #5828, #5881, #5878, #5885, #5905).
+- Lists, descriptions and fences: unclosed backtick and fence followers in refused paragraphs, quoted attribute runs, unpaired fences, off-base and exact colon runs and lazy description text (#5549, #5600, #5622, #5606, #5710, #5717, #5763, #5573, #5624, #5631, #5713).
+- Inline: DEL in heading slugs, caption code spans, attributes and escaped table closers in open code spans, dollar sequences in code attributes, forced spans around cross-reference atoms, heading references and nested links with inline notes, unresolved notes in task labels (#5462, #5641, #5638, #5667, #5668, #5669, #5659, #5665, #5664, #5666, #5821, #5872, #5643, #5825).
 - Security: CSS escapes are decoded before the style security probes run (#5660).
 ### Improvements
 
