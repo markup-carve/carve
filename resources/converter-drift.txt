@@ -234,3 +234,9 @@
 # PART 11 section 6h and the D3 ruling at carve#5091: an empty left-aligned body
 # cell imports as `|{<} |` and keeps its alignment (carve#5101). The pinned
 # engines predate the D3 importer (carve-js#4372) and still write `| |`.
+
+# carve#5950: since the carve#5830 ruling an unindented brace-run continuation
+# refuses the run, so its opener is literal. carve-php and carve-rs still write
+# `{#one` unescaped from Djot, and the reparsed `#one` forms a hashtag.
+rust/40-djot-a-brace-run-continuation-must-be-indented  carve#5950: refused brace-run opener left unescaped
+php/40-djot-a-brace-run-continuation-must-be-indented  carve#5950: refused brace-run opener left unescaped

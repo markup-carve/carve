@@ -33,35 +33,5 @@
     "name": "n:ordered/footnote-8081",
     "source": "[r][] [^p] [^c] [^d]\n\n1. [^c]: para\n   ^ cap\ntail\n",
     "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118, markup-carve/carve-rs#3383"
-  },
-  {
-    "name": "s:footnote-3383",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "s:footnote-3388",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n   [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "s:footnote-3393",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n      [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "s:footnote-3658",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n  [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "s:footnote-3663",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n   [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
-  },
-  {
-    "name": "s:footnote-3668",
-    "source": "[r][] [^p] [^c] [^d]\n\n[^c]: para\n  more\n      [^p]: n\n  tail\n",
-    "issue": "markup-carve/carve-js#3769, markup-carve/carve-php#4118"
   }
 ]
