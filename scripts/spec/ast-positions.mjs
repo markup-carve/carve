@@ -603,10 +603,16 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     }
     return column
   }
-  const ownerColumn = (node) => {
+  const isOwner = (parent) => ['list_item', 'footnote', 'definition_description', 'admonition', 'div'].includes(parent.type) ||
+    (parent.type === 'block_quote' && parent.fenced)
+  const ownerOf = (node) => {
     let parent = parentOf.get(node)
     if (node.type === 'list_item') parent = parentOf.get(parent)
-    while (parent && !['list_item', 'footnote', 'definition_description', 'admonition', 'div'].includes(parent.type) && !(parent.type === 'block_quote' && parent.fenced)) parent = parentOf.get(parent)
+    while (parent && !isOwner(parent)) parent = parentOf.get(parent)
+    return parent
+  }
+  const ownerColumn = (node) => {
+    const parent = ownerOf(node)
     // A description holding a comment written above a term omits pos (CARVE-P12-022); its
     // marker line is the line of its first placed block after the comments.
     if (parent?.type === 'definition_description' && !Number.isInteger(parent.pos?.startOffset)) {
@@ -647,6 +653,24 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
     return marker
       ? visualColumn(start, parent.pos.startOffset + marker[1].length) + marker[2].length + marker[3].length
       : null
+  }
+  // A body line the owner reads BELOW its content column (carve#5959). A `+`
+  // host keeps attached source, and the marker-column lines after it, at its
+  // marker column; a fenced container reads its body at its own frame's column.
+  const PLUS_LINE = /^[ \t>]*(?:(?:[-*+]|[0-9]+[.)]|[A-Za-z]+[.)]|:|\[\^[^\]]+\]:)(?:\{[^}]*\})?[ \t]+)*\+[ \t]*$/
+  const lowerFrameColumn = (node) => {
+    const parent = ownerOf(node)
+    if (!parent || !Number.isInteger(parent.pos?.startOffset)) return undefined
+    if (parent.type === 'admonition' || parent.type === 'div' || parent.type === 'block_quote') {
+      const frame = ownerColumn(parent)
+      return frame === null ? 0 : frame
+    }
+    const until = lineStart(node.pos.startOffset)
+    const lines = codepoints.slice(lineStart(parent.pos.startOffset), until).join('').split(/\r\n|\r|\n/)
+    if (!lines.some((line) => PLUS_LINE.test(line))) return undefined
+    let opener = parent.pos.startOffset
+    while (codepoints[opener] === ' ' || codepoints[opener] === '\t') opener++
+    return visualColumn(lineStart(opener), opener)
   }
   let examined = 0
   for (const [node, path] of walkNodes(doc)) {
@@ -700,7 +724,11 @@ export function checkOpeningMarkup(doc, codepoints, findings) {
         prefixEnd += [...marker[0]].length
         rest = rest.slice(marker[0].length)
       }
-      const owner = ownerColumn(node)
+      let owner = ownerColumn(node)
+      if (owner != null && visualColumn(start, at) < owner) {
+        const lower = lowerFrameColumn(node)
+        if (lower != null && lower < owner && visualColumn(start, at) >= lower) owner = lower
+      }
       // A task box or authored text between the owner column and the marker
       // is content, not indentation, so it cannot enter the child's span.
       const expected = /[^ \t]/.test(rest) ? at

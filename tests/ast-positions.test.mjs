@@ -1144,7 +1144,6 @@ const DECLARED_LIST_INDENT_START = [
   "461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling-4.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "461-a-column-0-line-after-a-description-hosted-note-is-a-document-sibling.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "503-a-block-opener-indented-under-a-definition-term-ends-the-term-at-every-depth-9.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
-  "507-a-list-marker-in-a-raised-colon-container-folds-into-its-open-paragraph-14.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "514-a-fence-a-container-inside-a-quote-holds-open-stores-no-claim-12.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "556-a-closed-block-leaves-no-frame-for-the-line-below-12.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
   "578-a-closed-fence-at-a-marker-line-note-s-body-column-opens-in-the-note-2.crv 2  markup-carve/carve#5063: pinned carve-js starts at the marker instead of the owner content column",
@@ -2630,4 +2629,62 @@ test('a container holding a paragraph joined across an erased line ends at that 
   checkStopsAtChildren(doc(23), [...source], past)
   assert.equal(past.length, 1)
   assert.match(past[0], /on "definition_description"/)
+})
+
+const plusDescription = (source, listStart, paragraphEnd = 8) => {
+  const list = { type: 'list', pos: pos(listStart, source.length - 1), items: [
+    { type: 'list_item', pos: pos(listStart, source.length - 1) },
+  ] }
+  return { list, doc: { type: 'document', children: [{ type: 'definition_list', pos: pos(0, source.length - 1), items: [
+    { type: 'definition_term', pos: pos(3, 4) },
+    { type: 'definition_description', pos: pos(5, source.length - 1), children: [
+      { type: 'paragraph', pos: pos(7, paragraphEnd), children: [] },
+      list,
+    ] },
+  ] }] } }
+}
+
+const ownerFindings = (doc, source) => {
+  const findings = []
+  checkOpeningMarkup(doc, [...source], findings)
+  return findings.filter((finding) => finding.includes("owner's content column"))
+}
+
+test('a plus-attached list may start at its host marker column (carve#5959)', () => {
+  const source = ':: t\n: a\n+\n- b\n'
+  assert.deepEqual(ownerFindings(plusDescription(source, 11).doc, source), [])
+  // The `+` is the reason: the same list with no `+` in the host is still below its owner.
+  const bare = ':: t\n: a\n- b\n'
+  assert.equal(ownerFindings(plusDescription(bare, 9).doc, bare).length, 2)
+})
+
+test('a plus host still reports a list that does not start at the opening markup', () => {
+  const source = ':: t\n: a\n+\n- b\n'
+  const { list, doc } = plusDescription(source, 12)
+  list.items[0].pos = pos(12, source.length - 1)
+  const findings = []
+  checkOpeningMarkup(doc, [...source], findings)
+  assert.ok(findings.some((finding) => finding.includes('opens "list" ')), findings.join('\n'))
+  assert.ok(findings.some((finding) => finding.includes('opens "list_item" ')), findings.join('\n'))
+  // Between the marker column and the content column is neither frame.
+  const shifted = '[^a]: +\n - b\n'
+  const inner = { type: 'list', pos: pos(9, 12), items: [{ type: 'list_item', pos: pos(9, 12) }] }
+  const note = { type: 'document', children: [{ type: 'footnote', pos: pos(0, 12), children: [inner] }] }
+  assert.equal(ownerFindings(note, shifted).length, 2)
+})
+
+test('a fenced container reads a nested list at its own frame column (carve#5959)', () => {
+  const source = '- a\n\n      :::\n  - b\n  :::\n'
+  const inner = { type: 'list', pos: pos(17, 20), items: [{ type: 'list_item', pos: pos(17, 20) }] }
+  const doc = { type: 'document', children: [{ type: 'list', pos: pos(0, source.length - 1), items: [
+    { type: 'list_item', pos: pos(0, source.length - 1), children: [
+      { type: 'paragraph', pos: pos(2, 3), children: [] },
+      { type: 'div', pos: pos(11, source.length - 1), children: [inner] },
+    ] },
+  ] }] }
+  assert.deepEqual(ownerFindings(doc, source), [])
+  // Below the item's content column the line is not the div's.
+  inner.pos = pos(15, 20)
+  inner.items[0].pos = pos(15, 20)
+  assert.equal(ownerFindings(doc, source).length, 2)
 })
