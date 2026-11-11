@@ -1,0 +1,63 @@
+A verse lead under an indented opener is measured per frame
+
+```
+- a
+   ::: |
+  	x
+   :::
+.
+<ul>
+  <li>a
+    <div class="line-block">
+      <p>&nbsp;&nbsp;&nbsp;x</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- a
+   ::: |
+    	x
+   :::
+.
+<ul>
+  <li>a
+    <div class="line-block">
+      <p>&nbsp;&nbsp;&nbsp;x</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+- a
+  	::: |
+    	x
+  	:::
+.
+<ul>
+  <li>a
+    <div class="line-block">
+      <p>x</p>
+    </div>
+  </li>
+</ul>
+```
+
+```
+> - a
+>    ::: |
+>   	x
+>    :::
+.
+<blockquote>
+  <ul>
+    <li>a
+      <div class="line-block">
+        <p>&nbsp;&nbsp;&nbsp;x</p>
+      </div>
+    </li>
+  </ul>
+</blockquote>
+```

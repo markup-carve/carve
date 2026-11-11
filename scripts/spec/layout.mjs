@@ -4503,22 +4503,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       const shiftedCloser = inner === pairedAttachedFence && matchingRun &&
         attachedTo && m.col < attachedTo.host.col
       const sourceShift = attachedTo ? attachedTo.host.markerCol - attachedTo.host.markerCanon : 0
-      // A verse under an opener at its frame's column keeps the lead each frame leaves it (§23, carve#5755).
-      const lineCol = inner.lineBlock && inner.cut === 0 && frameShiftedTab() ? segmentColumn() : m.col
-      let payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(lineCol - Math.max(sourceShift, inner.cut), inner.canon) :
-        Math.max(lineCol - inner.cut, inner.canon)
-      const tabbedVerse = inner.lineBlock && inner.openerFrameLead !== undefined &&
-        src.slice(0, src.length - m.rest.length).includes('\t')
-      if (tabbedVerse && !shiftedCloser) {
-        const openerOrigin = inner.canon + inner.openerFrameLead
-        const reached = segmentColumn()
-        if (reached < openerOrigin) payloadColumn = inner.canon
-        else {
-          const origins = []
-          for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
-          origins.push(openerOrigin)
-          payloadColumn = inner.canon + strippedColumn(src, origins) - openerOrigin
-        }
+      let payloadColumn = shiftedCloser ? inner.canon : authoredPayload ? Math.max(m.col - Math.max(sourceShift, inner.cut), inner.canon) :
+        Math.max(m.col - inner.cut, inner.canon)
+      // A tabbed verse keeps its per-frame column less the opener's; the opener is no frame (§23, carve#5755, carve#5885).
+      const tabbedVerse = inner.lineBlock && !shiftedCloser &&
+        (inner.openerTabbed || src.slice(0, src.length - m.rest.length).includes('\t'))
+      if (tabbedVerse) {
+        const openerLead = authoredPayload ? Math.max(sourceShift, inner.openerFrameLead) : inner.openerFrameLead
+        payloadColumn = Math.max(segmentColumn() - openerLead, inner.canon)
       }
       // A tab past an off-stop owner column reaches the same payload column
       // as its space spelling after each frame strips its own indentation.
@@ -4925,15 +4917,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             if (!paired) once = blank
           }
         }
-        let openerFrameLead
-        if (form.lineBlock &&
-            segmentSrc.slice(0, segmentSrc.length - trimWsStart(segmentSrc).length).includes('\t')) {
+        let openerFrameLead = col - canon
+        const openerTabbed = form.lineBlock &&
+          segmentSrc.slice(0, segmentSrc.length - trimWsStart(segmentSrc).length).includes('\t')
+        if (openerTabbed) {
           const origins = []
           for (let q = segment; q < frames.length && frames[q].kind !== 'quote'; q++) origins.push(frames[q].col + (frames[q].tabShift ?? 0))
           openerFrameLead = strippedColumn(segmentSrc, origins) - owner.canon
         }
         frames.push({ kind: form.kind, family: form.family ?? 'div', line: at, col: owner.col, canon: owner.canon, reader, cut: col - canon, once,
-          openerFrameLead,
+          openerFrameLead, openerTabbed,
           openRun: form.family === 'code' ? FENCE.exec(m.rest)?.[1] : undefined,
           pullCol: once === undefined ? undefined : col, pullHost: once === undefined ? undefined : attachedTo.host.markerCol,
           closes: form.closes, run: form.run, lineBlock: form.lineBlock, span: null, para: false, last: null,
