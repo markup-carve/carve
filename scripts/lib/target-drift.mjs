@@ -44,11 +44,12 @@ export function targetDriftKey(target, slug, outputs, entries) {
 export function targetDriftKeys(target, slug, outputs, entries, expected = null) {
   if (outputs.length !== 3 || outputs.some(([, value]) => value.startsWith('ERROR:'))) return null
   const unique = new Set(outputs.map(([, value]) => value))
-  if (unique.size === 1) {
-    if (expected === null || unique.has(expected)) return null
+  if (expected !== null && !unique.has(expected)) {
+    // Every engine misses the fixture, whether or not they agree with each other.
     const keys = outputs.map(([engine]) => `${target}/${engine}/${slug}`)
     return keys.every(key => entries.has(key)) ? keys : null
   }
+  if (unique.size === 1) return null
   if (unique.size !== 2) return null
   const lone = targetDriftKey(target, slug, outputs, entries)
   if (lone !== null) {

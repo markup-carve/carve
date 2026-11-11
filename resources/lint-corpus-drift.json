@@ -1,42 +1,14 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-08",
-    "spec": "731ec583b30cf764d65b363327e5cbefff903c92",
-    "js": "3f4aade88cad49c25ae6c9918824131c33e911ba",
-    "php": "25759013f5b96d1bed2273e5e13440886ae96c47",
-    "rust": "01a36468d3e4fcf5b9f3426a1f953e9ef09abdb2",
-    "documents": 4540
+    "date": "2026-11-11",
+    "spec": "2a94ded6774d2f4e8f245a1494c050701a4b41dd",
+    "js": "31e4be11ffe993a59abda36acb1d92254c615f1f",
+    "php": "3e604b2970c7e2842fd3e0736adc196cdb67eb97",
+    "rust": "51922596902e195c7955bc8038cb0f4843ef9aab",
+    "documents": 4751
   },
   "differences": [
-    {
-      "file": "tests/corpus/444-an-opener-at-or-past-a-description-body-s-column-closes-its-paragraph-7.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            5
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
-        ],
-        "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
-        ]
-      }
-    },
     {
       "file": "tests/corpus/490-a-comment-inside-a-forced-span-or-the-combined-token-ends-at-its-closer-2.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
@@ -51,34 +23,6 @@
         ],
         "php": [],
         "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/493-empty-containers-share-one-html-body-shape-2.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "figure-group-empty",
-            26,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "figure-group-empty",
-            1,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "figure-group-empty",
-            26,
-            1
-          ]
-        ]
       }
     },
     {
@@ -279,34 +223,6 @@
       }
     },
     {
-      "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-10.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            2,
-            6
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
-        ],
-        "rust": [
-          [
-            "unattached-block-attribute",
-            2,
-            5
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/615-a-line-past-a-body-s-column-is-read-in-the-body-and-a-quote-does-not-rebase-3.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -391,64 +307,6 @@
       }
     },
     {
-      "file": "tests/corpus/782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-11.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "block-opener-overindented",
-            7,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "block-opener-overindented",
-            7,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "block-opener-overindented",
-            7,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            7,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/782-a-first-block-plus-hands-its-block-to-the-host-as-the-host-reads-it-13.crv",
       "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -456,7 +314,7 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
+            3,
             1
           ]
         ],
@@ -478,78 +336,12 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
+            2,
             1
           ]
         ],
         "php": [],
         "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/823-a-fence-in-a-list-a-quote-attaches-takes-no-separator-line-4.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ]
       }
     },
     {
@@ -629,44 +421,6 @@
       }
     },
     {
-      "file": "tests/corpus/855-a-refused-plus-after-an-attached-block-ends-nothing-2.crv",
-      "reason": "Rust reports a refused continuation marker where the plus is ordinary text; the expected result and clause are in markup-carve/carve-rs#3944.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/3944",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            5,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            1
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-4.crv",
       "reason": "After the carve-rs#3922 lint merge, the remaining diagnostic difference needs cause triage in markup-carve/carve#5226.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -734,7 +488,7 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
+            2,
             1
           ],
           [
@@ -777,49 +531,6 @@
             "description-separator-below-content-column",
             2,
             1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/87-compact-list-blocks-10.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            4
-          ]
-        ],
-        "php": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            3
           ]
         ]
       }
@@ -1018,11 +729,6 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
             3,
             4
           ]
@@ -1043,11 +749,6 @@
       "issue": "https://github.com/markup-carve/carve/issues/5226",
       "diagnostics": {
         "js": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
           [
             "unclosed-code-fence",
             4,
@@ -1094,11 +795,6 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
             3,
             3
           ]
@@ -1111,72 +807,6 @@
           ]
         ],
         "rust": []
-      }
-    },
-    {
-      "file": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-3.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/948-a-fence-a-quote-s-attached-block-opens-ends-with-its-container-4.crv",
-      "reason": "The pinned engines differ on this diagnostic; cause triage is tracked in markup-carve/carve#5226.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ]
       }
     },
     {
@@ -1293,39 +923,6 @@
       }
     },
     {
-      "file": "tests/corpus/973-open-state-lifetime-boundaries-18.crv",
-      "reason": "Open-state lifetime moved with carve-js#4645, carve-php#4854, and carve-rs#4051; JavaScript reports one extra unclosed fence.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/974-an-attached-fence-closes-only-at-its-host-column-carve-5410-2.crv",
       "reason": "Attached fence closer columns moved with carve-js#4676, carve-php#4869, and carve-rs#4061; JavaScript reports the outer fence too.",
       "issue": "https://github.com/markup-carve/carve/issues/5226",
@@ -1333,7 +930,7 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
+            3,
             1
           ],
           [
@@ -1366,7 +963,7 @@
         "js": [
           [
             "unclosed-code-fence",
-            1,
+            2,
             1
           ],
           [
@@ -1386,125 +983,6 @@
           [
             "unclosed-code-fence",
             5,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/974-an-attached-fence-closes-only-at-its-host-column-carve-5410.crv",
-      "reason": "Attached fence closer columns moved with carve-js#4676, carve-php#4869, and carve-rs#4061; JavaScript reports the outer fence too.",
-      "issue": "https://github.com/markup-carve/carve/issues/5226",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            5,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/975-a-skipped-note-definition-cannot-claim-an-earlier-plus.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1003-a-nested-attached-fence-keeps-list-looseness-at-the-owning-item-2.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
             3
           ]
         ]
@@ -1571,39 +1049,6 @@
       }
     },
     {
-      "file": "tests/corpus/1012-a-note-attached-fence-blank-ends-lazy-claim.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/1013-a-refused-plus-before-a-description-list-sibling-keeps-it-tight.crv",
       "reason": "carve-php does not report refused-continuation-marker for an own-line + before a description item's sibling.",
       "issue": "https://github.com/markup-carve/carve-php/issues/5144",
@@ -1616,138 +1061,6 @@
           ]
         ],
         "php": [],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            4,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1015-an-own-line-plus-note-fence-keeps-its-trailing-blank.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1016-a-description-s-own-line-plus-fence-keeps-its-trailing-blank-2.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1016-a-description-s-own-line-plus-fence-keeps-its-trailing-blank.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            4,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1016-a-note-keeps-a-line-after-a-refused-plus.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            4,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            4,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            3
-          ]
-        ],
         "rust": [
           [
             "refused-continuation-marker",
@@ -1780,34 +1093,6 @@
       }
     },
     {
-      "file": "tests/corpus/1023-a-description-sibling-in-an-unclosed-attached-fence-is-payload.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/1024-a-fence-after-an-attached-description-blank-opens-in-the-description.crv",
       "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
       "issue": "https://github.com/markup-carve/carve-js/issues/4942",
@@ -1820,7 +1105,7 @@
           ],
           [
             "unclosed-code-fence",
-            1,
+            3,
             1
           ],
           [
@@ -1851,39 +1136,6 @@
             "unclosed-code-fence",
             6,
             4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1025-an-item-own-line-plus-fence-keeps-its-trailing-blank.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
           ]
         ]
       }
@@ -1906,39 +1158,6 @@
             "unclosed-inline-emphasis",
             1,
             24
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1028-an-own-line-plus-fence-keeps-a-quote-blank.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            3,
-            1
           ]
         ]
       }
@@ -2025,54 +1244,6 @@
       }
     },
     {
-      "file": "tests/corpus/1043-a-brace-line-continues-a-marker-comment.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            2,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1050-a-heading-shaped-line-continues-an-item-comment.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            3,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1052-a-quote-marker-continues-a-comment.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "block-opener-overindented",
-            2,
-            2
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/1053-a-marker-glued-attribute-preserves-a-later-brace-s-source-column.crv",
       "reason": "carve-php points block-marker-as-text at the glued marker attribute instead of the later brace.",
       "issue": "https://github.com/markup-carve/carve-php/issues/5145",
@@ -2096,62 +1267,6 @@
             "block-marker-as-text",
             1,
             7
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1055-a-note-marker-comment-run-uses-its-body-column.crv",
-      "reason": "carve-php and carve-rs report unattached-block-attribute after a marker-line comment run at a non-source column.",
-      "issue": "https://github.com/markup-carve/carve/issues/5952",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            6,
-            5
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            6,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unattached-block-attribute",
-            6,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1056-a-description-sibling-bounds-an-unclosed-comment-run.crv",
-      "reason": "carve-php and carve-rs report unattached-block-attribute after a marker-line comment run at a non-source column.",
-      "issue": "https://github.com/markup-carve/carve/issues/5952",
-      "diagnostics": {
-        "js": [
-          [
-            "unattached-block-attribute",
-            3,
-            6
-          ]
-        ],
-        "php": [
-          [
-            "unattached-block-attribute",
-            3,
-            6
-          ]
-        ],
-        "rust": [
-          [
-            "unattached-block-attribute",
-            3,
-            5
           ]
         ]
       }
@@ -2265,219 +1380,6 @@
       }
     },
     {
-      "file": "tests/corpus/1067-a-comment-fence-line-inside-a-braced-comment-run-is-run-text-2.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "unclosed-comment-fence",
-            2,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1067-a-comment-fence-line-inside-a-braced-comment-run-is-run-text-3.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "unclosed-comment-fence",
-            3,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1067-a-comment-fence-line-inside-a-braced-comment-run-is-run-text.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "unclosed-comment-fence",
-            2,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-4.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-5.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            2,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            2,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            2,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-6.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            2,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            2,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/627-a-refused-marker-leaves-an-open-fence-s-blank-payload-7.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            3,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            1,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/632-a-continuation-marker-uses-its-container-column-18.crv",
-      "reason": "carve-js and carve-php drop unclosed-code-fence when a + at the host's marker column ends the fence (carve-rs on the note row); carve-js also adds a host-start finding, carve-js#4942.",
-      "issue": "https://github.com/markup-carve/carve/issues/5951",
-      "diagnostics": {
-        "js": [
-          [
-            "refused-continuation-marker",
-            3,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "refused-continuation-marker",
-            3,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "refused-continuation-marker",
-            3,
-            3
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            5
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/733-consecutive-continuation-markers-in-a-div-hosted-quote.crv",
       "reason": "carve-rs misses refused + findings in a div (first of two own-line markers; - + before a div closer).",
       "issue": "https://github.com/markup-carve/carve-rs/issues/4261",
@@ -2538,894 +1440,9 @@
       }
     },
     {
-      "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing-3.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing-4.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-3.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-4.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            9
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-5.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-7.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            9
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            2,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            9
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            5,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/987-a-plus-at-a-quoted-fence-s-content-column-stays-payload.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            4
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            4
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            4
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            9
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            1,
-            9
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            7
-          ],
-          [
-            "refused-continuation-marker",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/990-a-passed-note-keeps-its-blank-separated-continuation-2.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/990-a-passed-note-keeps-its-blank-separated-continuation.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            3,
-            7
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            2,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "duplicate-footnote-definition",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/992-a-losing-interleaved-note-plus-keeps-the-later-note-s-body.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/993-a-sibling-marker-in-an-unclosed-attached-fence-is-payload.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            3
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/996-a-top-level-sibling-marker-in-an-unclosed-attached-fence-is-payload.crv",
-      "reason": "carve-js reports the unclosed fence of a +-attached fence at the host's first line (next-minor scope check in the ticket).",
-      "issue": "https://github.com/markup-carve/carve-js/issues/4942",
-      "diagnostics": {
-        "js": [
-          [
-            "unclosed-code-fence",
-            1,
-            1
-          ],
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ],
-        "php": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "unclosed-code-fence",
-            2,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/998-a-losing-note-plus-does-not-take-an-immediate-follower.crv",
-      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
-      "issue": "https://github.com/markup-carve/carve/issues/5953",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ],
-          [
-            "refused-continuation-marker",
-            3,
-            7
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "duplicate-footnote-definition",
-            3,
-            1
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv",
-      "reason": "carve-js reads the attribute line in the plus-passed note body as escaping the note and reports no unattached-block-attribute; carve-php and carve-rs keep it in the note and report it.",
-      "issue": "https://github.com/markup-carve/carve/issues/5957",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            1,
-            3
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            1,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            1,
-            3
-          ],
-          [
-            "unattached-block-attribute",
-            3,
-            3
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv",
-      "reason": "carve-php reports the tab-led attribute line in the note a nested plus passes as unattached-block-attribute, as it does for row 1074; carve-js and carve-rs read it outside the note and report none (row 1075).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "reason": "carve-js reads the tab-led attribute line as note text and reports no unattached-block-attribute; carve-php and carve-rs report it at 4:5 (row 1075).",
+      "issue": "https://github.com/markup-carve/carve/issues/5987",
       "diagnostics": {
         "js": [
           [
@@ -3453,7 +1470,7 @@
           [
             "unattached-block-attribute",
             4,
-            7
+            5
           ]
         ],
         "rust": [
@@ -3464,6 +1481,11 @@
           ],
           [
             "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unattached-block-attribute",
             4,
             5
           ]

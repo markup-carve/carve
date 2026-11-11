@@ -30,3 +30,19 @@ test('a fixture can identify three declared lagging engines that agree with each
   entries.delete(`html/php/${slug}`)
   assert.equal(targetDriftKeys('html', slug, outputs, entries, 'new'), null)
 })
+
+test('a fixture can identify three declared lagging engines that disagree with each other', () => {
+  const slug = 'example'
+  const outputs = [['js', 'a'], ['php', 'b'], ['rust', 'b']]
+  const entries = new Map(outputs.map(([engine]) => [`html/${engine}/${slug}`, {}]))
+  assert.deepEqual(targetDriftKeys('html', slug, outputs, entries, 'new'), [
+    `html/js/${slug}`, `html/php/${slug}`, `html/rust/${slug}`,
+  ])
+  entries.delete(`html/js/${slug}`)
+  assert.equal(targetDriftKeys('html', slug, outputs, entries, 'new'), null)
+  const three = [['js', 'a'], ['php', 'b'], ['rust', 'c']]
+  const all = new Map(three.map(([engine]) => [`html/${engine}/${slug}`, {}]))
+  assert.deepEqual(targetDriftKeys('html', slug, three, all, 'new'), [
+    `html/js/${slug}`, `html/php/${slug}`, `html/rust/${slug}`,
+  ])
+})
