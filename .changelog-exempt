@@ -153,3 +153,9 @@
 5282: 0.1.14 - moves the carve-js pin past comment boundary fixes and retires drift rows. Pin bump and measurement ledger.
 5293: 0.1.14 - reconciles cross-engine ledgers after a carve-js pin. Measurement ledger.
 5475: 0.1.14 - moves the engine pins to the 0.1.14 release commits. Pin bump.
+5473: 0.1.14 - prepares the exact 0.1.14 declaration waiver. Measurement ledger.
+5479: 0.1.14 - moves the carve-js and carve-php pins for the 0.1.14 cut. Pin bump and measurement ledger.
+5732: 0.1.14 - moves the carve-js pin through lint, importer and plus ownership ports. Pin bump and measurement ledger.
+5814: 0.1.14 - moves the carve-js pin through the marker-line body-column ruling. Pin bump and measurement ledger.
+5869: 0.1.14 - moves the carve-js pin through the carve#5830 port. Pin bump and measurement ledger.
+5921: 0.1.14 - moves all three engine pins for the 0.1.14 cut and declares the next-minor engine lag. Pin bump and measurement ledger.

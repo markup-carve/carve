@@ -10,13 +10,14 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-### Changes
-
-- Plain text writes nothing for a cell a span covers, so `| Summe netto | < |` becomes `Summe netto` instead of `Summe netto |` (CARVE-P11-082, #5546).
-
 ## [0.1.14] - 2026-11-08
 
 The spec settles one attach rule for `+`, a four-step block layout, a braced table alignment spelling and a canonical `***` thematic break. The executable spec model now follows the layout clauses across lists, descriptions, quotes, notes and comments, and the corpus pins the readings the engines owe.
+
+### Breaking
+
+- Importers no longer read `data-djot-*` carriers, including `data-djot-src`; only `data-carve-*` is read. Writer output does not change (CARVE-P10-020 retired, #5735).
+- The `a11y/heading-jump` lint alias is gone; only `heading-level-skip` names the rule in config and suppression directives (#5735).
 
 ### Changes
 
@@ -26,6 +27,16 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 - A definition term is one line; a letter or roman marker with a dot needs two spaces; `(c)` and `(r)` stay text; single-hyphen arrows are gone and an arrow needs its exact hyphen run; a mention or tag name holds at least one ASCII letter (#4894, #4828, #4824, #4831, #4851, #4705, #4826).
 - One attach rule covers every `+` host. A refused `+` reads as a plain letter, is escaped by the writer when the block below would attach, and skips invisible lines before testing the next one (#4427, #4433, #4877, #4483, #4576, #5073, #5074, #4413, #4467).
 - Block layout is stated as four steps and one container table, and one-line invisible content is erased before layout (#3887, #4990, #5078, #3895, #3908).
+- Plain text writes nothing for a cell a span covers, so `| Summe netto | < |` becomes `Summe netto` instead of `Summe netto |` (CARVE-P11-082, #5546).
+- PART 0 and PART 9 are organized around eight principles, and the block layout core is consolidated under them (#5703, #5737, #5741, #5734).
+- One ordered rule decides what an open fence takes (#5498).
+- `+` attachment ownership is specified across every block host, with the ruled boundary and tail cases (#5658, #5704).
+- The 2026-11-09 rulings, the R3, list-region and source-region rulings, and the bracket-region rulings are written into the text and the model (#5587, #5579, #5560, #5600, #5576, #5618, #5608, #5674, #5683).
+- A refused brace run claims no lines and a multi-line run inside a container takes no lazy lines (#5830); a marker-line brace run is measured from its written brace and the container body column (#5748, #5805).
+- Leading tabs in nested payloads are measured per frame (#5755).
+- An own-line `+` fence keeps its payload columns after a blank in every host (#5855).
+- Lint hints on a refused own-line continuation offer (#5736).
+- An invalid language tag renders through inline parsing (#5680).
 
 ### Fixes
 
@@ -42,6 +53,12 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 - Includes: CSV and TSV selection, invalid line ranges, captions after code includes, empty delimited includes and per-file render losses (#3763, #3765, #3787, #3804, #3858, #3958, #4707, #5425).
 - AST: line block breaks, cloned heading inline nodes, colspan or rowspan of 1 validates, link reference definition spans and `pos` across erased comments (#3705, #3726, #4652, #4969, #5146, #5232).
 
+- Footnotes and `+`: losing duplicate definitions, passed and interleaved note bodies, note-attached lists and fences, lazy frames after a missed note, quoted gaps and siblings around a winning note (#5474, #5492, #5466, #5482, #5511, #5504, #5502, #5519, #5522, #5489, #5528, #5499, #5531, #5512, #5538, #5534, #5550, #5547, #5520, #5559, #5581, #5616, #5560, #5601, #5620, #5627, #5640, #4085, #5747, #5932, #5933).
+- Brace and comment runs: refused-run followers in every host, valid runs through brace- and block-shaped continuations, written brace columns after quotes, task boxes and glued attributes, comment-only braced paragraphs and lazy comment openers (#5496, #5561, #5594, #5740, #5752, #5756, #5762, #5772, #5773, #5787, #5788, #5800, #5804, #5811, #5818, #5792, #5826, #5820, #5844, #5837, #5841, #5850, #5851, #5853, #5854, #5863, #5874, #5796, #5822, #5827, #5829, #5835, #5629).
+- Tabs: a tab-led one-line opener, a tab-led quoted run's follower and verse leads are measured per frame (#5719, #5828, #5881, #5878, #5885).
+- Lists, descriptions and fences: unclosed backtick and fence followers in refused paragraphs, quoted attribute runs, unpaired fences, off-base and exact colon runs and lazy description text (#5549, #5600, #5622, #5606, #5710, #5717, #5763).
+- Inline: DEL in heading slugs, caption code spans, attributes and escaped table closers in open code spans, dollar sequences in code attributes, forced spans around cross-reference atoms, heading references and nested links with inline notes, unresolved notes in task labels (#5462, #5641, #5638, #5667, #5668, #5669, #5659, #5665, #5664, #5666, #5821, #5872).
+- Security: CSS escapes are decoded before the style security probes run (#5660).
 ### Improvements
 
 - The conformance pack, rule mutation gate, structural round-trip exceptions and block ownership traces give engine authors per-case checks; edge-case files, drift ledgers, rule-index pages and include vectors are regenerated and organized for review (#3954, #3971, #3981, #3995, #4132, #4506, #4543, #4546, #4562).
@@ -52,7 +69,7 @@ The spec settles one attach rule for `+`, a four-step block layout, a braced tab
 - Lint: authoring lint and suppression are specified, fragile constructs warn, HTML comments and glob shapes are reported, `fence-delimiter-indentation`, `raw-block-syntax` and `ordered-list-split-by-indent` retire (#3800, #3806, #3839, #4005, #4833, #4848, #4856, #5005).
 - CLI and API: error statuses and categories and the HTML API fragment terminator are specified (#3756, #3794).
 - The reference engine pins move to current carve-js main and the conformance ledgers follow; the corpus pins model readings the engines owe (#3675, #3687, #3691, #3693, #3694, #3753, #3754, #3801, #3864, #4446, #4539, #4541, #4838, #4875, #4908, #4977, #4985, #4989, #5020, #5090, #5173, #5186, #5228).
-- Spec text: provenance and rationale move out of normative clauses, stale references are repaired, and the review rounds' findings are applied (#3661, #3668, #3669, #3670, #3673, #3674, #3717, #4173, #4192, #4452, #4477, #4480, #4486, #4491, #4521, #4522, #4547, #4558, #4575, #4593, #4624, #4625, #4626, #4638, #4679, #4696, #4701, #4730, #4818, #4822, #4841, #5117, #5118, #5143, #5147, #5148, #5149, #5150, #5154, #5155, #5244).
+- Spec text: provenance and rationale move out of normative clauses, stale references are repaired, and the review rounds' findings are applied (#3661, #3668, #3669, #3670, #3673, #3674, #3717, #4173, #4192, #4452, #4477, #4480, #4486, #4491, #4521, #4522, #4547, #4558, #4575, #4593, #4624, #4625, #4626, #4638, #4679, #4696, #4701, #4730, #4818, #4822, #4841, #5117, #5118, #5143, #5147, #5148, #5149, #5150, #5154, #5155, #5244, #5681).
 
 ## [0.1.13] - 2026-10-25
 
