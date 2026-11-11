@@ -406,6 +406,7 @@ const MANIFEST = [
   // the task-list hooks. Two-way: each row asserts the pinned golden still
   // differs, so an entry cannot outlive the pin bump that closes it.
   { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'remove its ahead-of-pin expectation', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
+  { repo: 'carve-php', path: 'tests/TestCase/Converter/ConverterCorpusTest.php', name: 'CANONICAL_AHEAD_OF_PIN', kind: 'php', policy: 'owed', guard: 'two-way', staleness: 'reached the pin; remove its canonical ahead-of-pin expectation', owner: 'tests/TestCase/Converter/ConverterCorpusTest.php' },
   // Empty cross-engine skip-list for the include/transclusion conformance
   // vectors (markup-carve/carve-php#373). Two-way since carve-php#2491: the
   // staleness half re-runs each declared vector and fails when every golden
