@@ -1,1 +1,0 @@
-carve#4085: the pinned JavaScript reader folds the tab-led quote into the inner description's paragraph, so its formatter escapes the marker; the per-frame column opens a blockquote there.
