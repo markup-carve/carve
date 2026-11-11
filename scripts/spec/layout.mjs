@@ -1401,6 +1401,15 @@ function bodyEndsInOpenFence(bodyLines) {
   return false
 }
 
+const ONE_COMMENT_RUN = /^\{%(?![\p{Mn}\p{Mc}\p{Me}\u{FE00}-\u{FE0F}\u{200D}])(?:(?!%\})[\s\S])*%\}[ \t]*$/u
+// Whether the body lines from `from` are one braced comment run, closed on the
+// last line. A `%%` line in it is a line comment to the body reader, so it does not count.
+function closesOneCommentRun(bodyLines, from) {
+  const run = bodyLines.slice(from).map(stripLazy)
+  return run.every((line, k) => trimWs(line) !== '' && (k === 0 || !COMMENT_LINE.test(line))) &&
+    ONE_COMMENT_RUN.test(run.join('\n'))
+}
+
 function noteBodyParagraphOpen(bodyLines) {
   return bodyLeavesParagraphOpen(bodyLines)
 }
@@ -6832,6 +6841,14 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
       let commentScanFrom = 0
       let retainedParagraph = false
       let lazyParagraphOpen = null
+      // Where a lazy `{%` line began the trailing run, after a probe found the paragraph open.
+      let openRunFrom = -1
+      // A closed comment run is inline in the open paragraph and leaves it open,
+      // so only a body that grew past the run is probed again (carve#5911).
+      const noteParagraphOpen = () => {
+        if (openRunFrom !== -1 && closesOneCommentRun(bodyLines, openRunFrom)) return true
+        return paragraphOpenSince(bodyLines, commentScanFrom)
+      }
       let openFence = -1
       const missedLiveSpan = liveSpanTest(bodyLines, () => holdsOpenCommentSpanSince(bodyLines, commentScanFrom))
       const endsNoteAt = (at) => (ind(at)?.col === 0 && FOOTNOTE_DEF.test(ind(at).rest)) ||
@@ -6995,6 +7012,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           const end = footnoteBlankRunEnd(lines, i, n)
           for (let k = i; k < end; k++) bodyLines.push(dedent(lines[k], FOOTNOTE_BODY_COLUMN))
           lazyParagraphOpen = false
+          openRunFrom = -1
           i = end
         } else if (isBlank(lines[i]) && blankRunBeforeSpanComment(lines, i, n) !== -1 &&
             holdsOpenCommentSpanSince(bodyLines, commentScanFrom)) {
@@ -7020,6 +7038,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           markAttachmentBoundary(state, bodyLines)
           bodyLines.push('')
           lazyParagraphOpen = false
+          openRunFrom = -1
           attachPending = true
         } else if (attachPending && !isBlank(lines[i] ?? '')) {
           const stop = state.fenceHostMisses?.get(lines)?.find(index => index > i) ?? n
@@ -7030,6 +7049,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           attachedFenceScan = { index: attachedFrom, opaque: null, columns: [0] }
           for (let k = i; k < end; k++) bodyLines.push(lines[k])
           lazyParagraphOpen = null
+          openRunFrom = -1
           attachPending = false
           i = end
         } else if (measured.col < FOOTNOTE_BODY_COLUMN && matchMarkerAt(measured)) {
@@ -7044,6 +7064,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           // band this covers.
           bodyLines.push(keptCommentDelimiter(lines[i]))
           lazyParagraphOpen = false
+          openRunFrom = -1
           attachPending = false
           i++
         } else if (measured.col < FOOTNOTE_BODY_COLUMN && COMMENT_LINE.test(measured.rest)) {
@@ -7056,6 +7077,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
           bodyLines.push(isBulletLine(measured.rest) || isOrderedMarkerLine(measured.rest) ? lazyFrame(measured.rest) : measured.rest)
           afterComment = afterCommentTransition(afterComment, {})
           lazyParagraphOpen = true
+          openRunFrom = -1
           retainedParagraph = true
           i++
         } else if (!isBlank(lines[i]) && measured.col < FOOTNOTE_BODY_COLUMN &&
@@ -7068,7 +7090,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             !(attachedFrom !== -1 && isBlank(bodyLines.at(-1)) &&
               bodyHasOpenCodeFence(bodyLines, attachedFenceScan, bodyLines.length, k => indentCols(bodyLines[k]))) &&
             // A line that ended the span, or follows one, folds into the stanza it left open (PART 0 S4, carve#4956).
-            ((lazyParagraphOpen ??= paragraphOpenSince(bodyLines, commentScanFrom)) || verseSpanEnded ||
+            ((lazyParagraphOpen ??= noteParagraphOpen()) || verseSpanEnded ||
               hostEndsInLineBlockStanza(bodyLines, 0, true)) &&
             !startsVisibleBlock(lines[i]) && !isTableRow(lines[i]) &&
             !isColonBlockOpener(lines[i]) && !COLON_CLOSER.test(lines[i]) &&
@@ -7076,6 +7098,7 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             !(measured.col === 0 && COMMENT_FENCE.test(lines[i])) &&
             !(measured.col === 0 && (isDefinitionOrAttributeLine(measured.rest) ||
               tryAttrLine(lines, i)))) {
+          openRunFrom = lazyParagraphOpen && measured.rest.startsWith('{%') ? bodyLines.length : -1
           bodyLines.push(lazyFrame(measured.rest))
           noteBraceColumns[bodyLines.length - 1] = authoredBraceColumns.get(lines)?.[i] ?? measured.col
           noteCommentColumns[bodyLines.length - 1] = authoredCommentColumns.get(lines)?.[i] ?? measured.col
