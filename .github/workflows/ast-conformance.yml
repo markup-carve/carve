@@ -245,7 +245,16 @@ jobs:
       # rb-sys drives bindgen, which needs libclang. Same step carve-rb's own CI
       # runs; without it `rake compile` fails on a fresh runner.
       - name: Install libclang (rb-sys bindgen)
-        run: sudo apt-get update && sudo apt-get install -y libclang-dev
+        # Bounded retry: runner DNS outages ("Temporary failure resolving") void the whole run.
+        run: |
+          for attempt in 1 2 3; do
+            sudo apt-get -o Acquire::Retries=5 update \
+              && sudo apt-get -o Acquire::Retries=5 install -y libclang-dev \
+              && exit 0
+            echo "apt attempt $attempt failed"
+            [ "$attempt" -lt 3 ] && sleep 20
+          done
+          exit 1
 
       - name: Build carve-rb
         working-directory: carve-rb
