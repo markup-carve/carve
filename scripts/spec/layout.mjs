@@ -4081,12 +4081,19 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         rest = rest.slice(0, -nestedNote[2].length) + (lost ? losingNoteBody(plusLetter) : refusedNoteBody(plusLetter))
         if (!lost) refusedPlus.push(at)
       }
+      // A skipped note's body stays the note's (§15 A4): it keeps its offset from the
+      // definition, and an attribute line stands at the body column, as the walk writes it.
+      if (registers) skipped.note = walkIndent(raw).col
+      const noteOffset = skipped.note === undefined || registers || isBlank(raw) ? 0 : walkIndent(raw).col - skipped.note
+      const inNoteBody = noteOffset >= FOOTNOTE_BODY_COLUMN
       let bracePad = ''
       if (skipped.brace) {
-        bracePad = ' '.repeat(Math.max(0, walkIndent(raw).col - skipped.brace.col))
+        bracePad = ' '.repeat(Math.max(0, walkIndent(raw).col - skipped.brace.col) + skipped.brace.pad)
       } else if (rest.startsWith('{')) {
-        skipped.brace = { col: walkIndent(raw).col, comment: rest.startsWith('{%'), depth: 0, quote: null }
-      }
+        const pad = inNoteBody ? FOOTNOTE_BODY_COLUMN : 0
+        skipped.brace = { col: walkIndent(raw).col, comment: rest.startsWith('{%'), depth: 0, quote: null, pad }
+        bracePad = ' '.repeat(pad)
+      } else if (inNoteBody) bracePad = ' '.repeat(noteOffset)
       if (skipped.brace?.comment) {
         if (rest.includes('%}')) skipped.brace = null
       } else if (skipped.brace) {
@@ -5365,8 +5372,16 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // An attribute line left of the note's body column is the host's (carve#5576).
         const hostAttr = (j) => view(j)[0] === '{' && docColumn(lines[j], view(j)) < at + FOOTNOTE_BODY_COLUMN &&
           tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[j], hostIndex)?.rest ?? '').col)
+        // An attribute line in the note's body ends its paragraph (§15 A1), so no lazy line follows it.
+        let open = true
         while (k < lines.length && foldablePlainLine(view(k)) && !hostAttr(k) &&
-            (!offered || docColumn(lines[k], view(k)) !== column)) k++
+            (!offered || docColumn(lines[k], view(k)) !== column)) {
+          const inBody = docColumn(lines[k], view(k)) >= at + FOOTNOTE_BODY_COLUMN
+          if (!inBody && !open) break
+          const attr = inBody && view(k)[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
+          open = !attr
+          k = attr ? attr.next : k + 1
+        }
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {
         const attr = rest[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null

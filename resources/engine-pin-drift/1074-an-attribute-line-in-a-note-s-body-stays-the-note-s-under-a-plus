@@ -1,0 +1,1 @@
+carve#5957: the pinned JavaScript reader reads an attribute line in a plus-passed note's body as note text or as the host's, and lazies the next line into the note; the spec keeps it the note's and gives the next line to the plus.
