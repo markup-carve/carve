@@ -8486,7 +8486,11 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             const closerless = comment && qCommentOpenThrough?.depth === depth &&
               qCommentOpenThrough.markerQuotes === markerQuotes && qCommentOpenThrough.from < idx && qCommentOpenThrough.through > idx
             if (comment && !closerless &&
-                refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) qCommentThrough = idx + run.commentClosesAt
+                refusedBlockBraceRun(quoted, 0, run) === null && run.commentClosesAt > 0) {
+              qCommentThrough = idx + run.commentClosesAt
+              // A valid comment run is invisible: its opener closes no host frame either (CARVE-P9-013, carve#5893).
+              return
+            }
             if (comment && !closerless && run.commentClosesAt === undefined && run.commentScannedThrough > 0)
               qCommentOpenThrough = { from: idx, through: idx + run.commentScannedThrough, depth, markerQuotes }
             if (run.commentCloser?.from === 0) qCommentCloser = { from: idx, at: idx + run.commentCloser.at, depth, markerQuotes }
