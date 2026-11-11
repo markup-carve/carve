@@ -2160,19 +2160,30 @@ function carryPrefixMemo(state, source, index, target, targetIndex) {
 // `marker.text` drops the authored gap after a task box; retain it in source columns.
 const taskTextOffset = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH + marker.taskGap
 
+// A continuation of a run behind `quotes` quote prefixes, read past them at its
+// source column; undefined when it lacks one, as a lazy line ends the run (PART 4).
+function quotedRow(line, quotes) {
+  if (!quotes || line === undefined) return line
+  const rest = stripQuotes(line, quotes)?.rest
+  return rest === undefined ? undefined : ' '.repeat(sourcePrefixColumn(line, trimWsStart(rest))) + trimWsStart(rest)
+}
+
 // The text after the list markers and quote prefixes a line opens with, and its column (C3).
 function containerLeadText(text, column = 0) {
-  if (!text.includes('{')) return { text, column }
+  if (!text.includes('{')) return { text, column, quotes: 0 }
+  let quotes = 0
   for (let depth = 0; depth < MAX_NESTING_DEPTH && text.includes('{'); depth++) {
     const measured = indentCols(text)
     const marker = matchMarkerAt(measured)
     const quote = !marker && QUOTE.exec(measured.rest)
     if (!marker && !quote) break
-    column += marker ? marker.indent + marker.markerWidth + taskTextOffset(marker) : measured.col + measured.rest.length - (quote[1] ?? '').length
+    if (quote) quotes++
+    column += marker ? marker.indent + marker.markerWidth + markerLineSourceOffset(marker, column + marker.indent)
+      : measured.col + measured.rest.length - (quote[1] ?? '').length
     text = marker ? marker.text : quote[1] ?? ''
   }
   const measured = indentCols(text)
-  return { text: measured.rest, column: column + measured.col }
+  return { text: measured.rest, column: column + measured.col, quotes }
 }
 
 // Metadata has no width in the item's body frame, but it is still written
@@ -8568,7 +8579,9 @@ function* parseBlocksImpl(lines, state, top, inItem = false, seeded = undefined,
             if (authored === undefined || authored.includes(LAZY)) return undefined
             return dedent(authored, inner0.col)
           },
-        }), 0) : null
+          // Glued marker attributes add no content column but stand before the `{` (CARVE-P9-083).
+        }), 0, blockStart && !l.includes('\t') && l.endsWith(inner0.rest)
+          ? Math.max(0, sourcePrefixColumn(l, inner0.rest) - inner0.col) : 0) : null
         if (quotedAttributeRun) {
           qAttributeThrough = idx + quotedAttributeRun.next - 1
         }
@@ -11283,17 +11296,13 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
     const descendantColumns = new Set()
     let fenceBlankRun = 0
     // A run after nested markers on the marker line is measured from its `{` source column too (CARVE-P2-035).
-    const { text: headLead, column: headLeadColumn } = containerLeadText(head.text, markerSourceOffset)
+    const { text: headLead, column: headLeadColumn, quotes: headQuotes } = containerLeadText(head.text, markerSourceOffset)
     if (headLead.startsWith('{')) {
       // Lazy, so a scan reads only the lines the attribute run reaches.
       const below = dedentedWindow(lines, i, contentCol)
-      let requiredQuotes = 0
-      for (let rest = head.text, quoted; (quoted = QUOTE.exec(walkIndent(rest).rest)); rest = quoted[1] ?? '') requiredQuotes++
       const window = new Proxy([], {
         get: (_, key) => key === '0' ? headLead : key === 'length' ? below.length + 1
-          : typeof key === 'string' && /^\d+$/.test(key) &&
-            (!requiredQuotes || stripQuotes(lines[i + Number(key)] ?? '', requiredQuotes) !== null)
-            ? below[Number(key) - 1] : undefined,
+          : typeof key === 'string' && /^\d+$/.test(key) ? quotedRow(below[Number(key) - 1], headQuotes) : undefined,
       })
       const attributes = tryAttrLine(window, 0, headLeadColumn)
       if (attributes && attributes.next > 1) {
@@ -12287,13 +12296,13 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
         } else if (i > wrappedAttrEnd && col >= contentCol && lm.rest.includes('{') && !insideFence() && !nestedVerbatim()) {
           // So is one opened after a nested marker or description lead, measured from its `{` source column (CARVE-P2-035).
           const description = definitionListOpen && DESCRIPTION_LEAD.exec(lm.rest)
-          const { text: lead, column: opener } = description
+          const { text: lead, column: opener, quotes } = description
             ? containerLeadText(lm.rest.slice(description[0].length), description[0].length)
             : containerLeadText(lm.rest)
           if (lead.startsWith('{') && opener > 0) {
             const window = dedentedWindow(lines, i, lm.col)
             const attributes = tryAttrLine(new Proxy([], {
-              get: (_, key) => key === '0' ? lead : window[key],
+              get: (_, key) => key === '0' ? lead : key === 'length' ? window.length : quotedRow(window[key], quotes),
             }), 0, opener)
             if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
           }
