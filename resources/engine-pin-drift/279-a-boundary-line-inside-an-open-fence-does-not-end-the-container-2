@@ -1,1 +1,0 @@
-carve#5658 F06: the pinned JavaScript reader keeps the line after a blank inside an own-line note fence although it misses the note.
