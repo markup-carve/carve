@@ -37,9 +37,12 @@ jobs:
     timeout-minutes: 15
     steps:
       # Full history: the script reads the pack at each engine's pinned spec commit.
+      # main, not the event's ref: a release event checks out the tag, and a PR
+      # branched from it would revert everything merged since.
       - uses: actions/checkout@v6
         with:
           token: ${{ secrets.BUMP_TOKEN }}
+          ref: main
           fetch-depth: 0
       # The release each engine is measured at: the named ref, else its latest
       # published release. Resolved here so every engine checkout carries a ref.
