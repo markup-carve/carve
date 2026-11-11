@@ -3929,6 +3929,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   const refusedPlus = []
   const frameTabColumns = new Map()
   const braceTabLines = new Map()
+  let braceTabOpen = -1
   const acceptedPlusesByOwner = new Map()
   // Note labels in document order: a later definition's lone `+` takes nothing (PART 9R R2, carve#5474).
   const definedNotes = new Set()
@@ -4265,6 +4266,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     }
     const frameShiftedTab = () => src.slice(0, src.length - m.rest.length).includes('\t') &&
       segmentColumn() !== m.col
+    // Outside a quote or fence a tab-led brace line, and the tab-led lines of
+    // a run it leaves open, are read as their per-frame space spelling.
+    // The frames the line reaches stay as they are; only its column moves.
+    if ((m.rest[0] === '{' || braceTabOpen === at - 1) && frameShiftedTab() &&
+        !frames.some((f) => f.kind === 'quote' || f.kind === 'fence') &&
+        frames.every((f, k) => k === 0 || m.col < f.col || segmentColumn() >= f.col)) {
+      src = ' '.repeat(segmentColumn()) + m.rest
+      braceTabLines.set(at, src)
+      m = walkIndent(src)
+      if (!m.rest.includes('}')) braceTabOpen = at
+    }
     const attachedHostIndex = afterPlus || followsMarkerLine ? frames.indexOf(attachedTo?.host) : -1
     const lastHostQuote = attachedHostIndex < 0 ? -1 : frames.findLastIndex((frame, index) => index < attachedHostIndex && frame.kind === 'quote')
     let attachedColumnPlaced = false
@@ -4321,14 +4333,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       reached = k
     }
     // A leading tab is measured per frame (carve#5755); a brace run's reader needs that column, not the line-start one.
-    if (frameShiftedTab()) {
-      // Outside a quote or fence a tab-led brace line is read as its per-frame space spelling.
-      if (m.rest[0] === '{' && !frames.some((f) => f.kind === 'quote' || f.kind === 'fence')) {
-        src = ' '.repeat(segmentColumn()) + m.rest
-        braceTabLines.set(at, src)
-        m = walkIndent(src)
-      } else frameTabColumns.set(at, segmentColumn())
-    }
+    if (frameShiftedTab()) frameTabColumns.set(at, segmentColumn())
     // A comment or one-line definition closes no indentation frame: the next
     // visible line picks the owner (CARVE-P9-013).
     if (movedSpan && at <= movedSpan.end) {
@@ -5495,6 +5500,12 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     return { host, depth, endsAt, ownLine, frames: frames.slice() }
   }
 
+  // A brace run's lookahead measures a tab-led line per frame, as the walk will (carve#5755).
+  function perFrameLine(line) {
+    if (!/^[ \t]*\t/.test(line) || frames.some((f) => f.kind === 'quote' || f.kind === 'fence')) return line
+    return ' '.repeat(strippedColumn(line, frames.slice(1).map((f) => f.col + (f.tabShift ?? 0)))) + trimWsStart(line)
+  }
+
   function classify(rest, owner, at, col, missed = false) {
     // Line-final whitespace is trimmed before a line is read, so heads are measured without it.
     rest = trimLineEnd(rest)
@@ -5593,7 +5604,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (rest.startsWith('{%') && !rest.includes('%}')) {
         let end = at + 1
         for (; end < lines.length; end++) {
-          const body = stripQuotes(lines[end], depth)?.rest
+          const body = depth === 0 ? perFrameLine(lines[end]) : stripQuotes(lines[end], depth)?.rest
           if (body === undefined || indentCols(body).col <= col || isBlank(body)) break
           // The run is paragraph text, so a lazy line after it continues that paragraph (PART 9 §21a).
           if (body.includes('%}')) return { kind: 'leaf', interrupts: true, attrLines: end - at, para: true }
@@ -5605,6 +5616,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           if (key === '0') return rest
           const j = typeof key === 'string' && /^\d+$/.test(key) ? at + Number(key) : -1
           if (j < 0 || j >= lines.length) return undefined
+          if (depth === 0) return perFrameLine(lines[j])
           if (!tabbedQuoteBrace) return stripQuotes(lines[j], depth)?.rest ?? ''
           // Past the quote prefixes the line has, however few (CARVE-P2-035).
           const quoted = stripQuotesUpTo(lines[j], depth)

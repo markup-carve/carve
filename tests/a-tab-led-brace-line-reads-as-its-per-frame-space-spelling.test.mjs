@@ -36,3 +36,11 @@ test('a tab-led brace line in a code fence stays payload', () => {
   const source = '- a\n  ```\n\t\t{.x\n       .y}\n  ```\n'
   assert.match(html(source), /<pre><code> *\{\.x\n *\.y\}\n<\/code><\/pre>/)
 })
+
+// A tab-led continuation is measured per frame too, so literal `{` text after a blank stays its own paragraph.
+for (const [opener, closer] of [['{foo', '.y}'], ['{.x', '.y}'], ['{% x', '%}']]) {
+  test(`a loose ordered item: tab-led ${opener} / ${closer} reads as its space spelling`, () => {
+    const run = (lead) => `1. a\n\n${lead}${opener}\n${lead}${closer}\n`
+    assert.equal(html(run('\t\t')), html(run(' '.repeat(7))))
+  })
+}
