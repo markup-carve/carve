@@ -3926,6 +3926,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   // Every lone `+` the one rule refused; each is written as `%%` and renders nothing.
   const refusedPlus = []
   const frameTabColumns = new Map()
+  const braceTabLines = new Map()
   const acceptedPlusesByOwner = new Map()
   // Note labels in document order: a later definition's lone `+` takes nothing (PART 9R R2, carve#5474).
   const definedNotes = new Set()
@@ -4318,7 +4319,14 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       reached = k
     }
     // A leading tab is measured per frame (carve#5755); a brace run's reader needs that column, not the line-start one.
-    if (frameShiftedTab()) frameTabColumns.set(at, segmentColumn())
+    if (frameShiftedTab()) {
+      // Outside a quote or fence a tab-led brace line is read as its per-frame space spelling.
+      if (m.rest[0] === '{' && !frames.some((f) => f.kind === 'quote' || f.kind === 'fence')) {
+        src = ' '.repeat(segmentColumn()) + m.rest
+        braceTabLines.set(at, src)
+        m = walkIndent(src)
+      } else frameTabColumns.set(at, segmentColumn())
+    }
     // A comment or one-line definition closes no indentation frame: the next
     // visible line picks the owner (CARVE-P9-013).
     if (movedSpan && at <= movedSpan.end) {
@@ -5013,6 +5021,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
   const walked = frameTextFences(result, textFences)
   walked.refusedPlus = refusedPlus
   walked.frameTabColumns = frameTabColumns
+  walked.braceTabLines = braceTabLines
   walked.attachedFenceMisses = attachedFenceMisses
   walked.acceptedPlusesByOwner = acceptedPlusesByOwner
   return walked
@@ -5827,6 +5836,8 @@ function parseWithBoundaries(src, { stateSink = null, includeFiles = null, trace
   const decisions = trace ?? []
   const traceStart = decisions.length
   const walked = ownLines(authored, decisions, sentinel, allowFrontmatter)
+  // A tab-led brace line is written in its per-frame space spelling for every column reader (carve#5755).
+  for (const [at, text] of walked.braceTabLines) authored[at] = text
   const refusedPlusLines = walked.refusedPlus
   const refusedPlusSet = new Set(refusedPlusLines)
   const ownershipEvents = new Map(decisions.slice(traceStart).map(row =>
