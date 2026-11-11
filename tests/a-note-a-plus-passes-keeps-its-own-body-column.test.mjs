@@ -10,6 +10,7 @@ const sameLists = (out) => out.replace(/<ol[^>]*>|<ul>/g, '<L>').replace(/<\/ol>
 const NOTE_BODIES = {
   list: ['  - z'], ordered: ['  1. z'], quote: ['  > z'], heading: ['  # z'], fence: ['  ```', '  c', '  ```'],
   paragraph: ['', '  z2'], attribute: ['  {#i}'], continuation: ['  z'], 'list paragraph': ['  - z', '', '    more'],
+  'fence with a blank': ['  ```', '  a', '', '  c', '  ```'], 'indented fence': ['   ```', '', '   c', '   ```'], 'indented list': ['   - z'],
 }
 const TRAILS = { 'at the marker column': ['q'], 'one column in': [' q'], 'at the body column': ['  q'], none: [] }
 const OUTERS = { top: [], bullet: ['- '], ordered: ['1. '], nested: ['1. ', '- '] }
