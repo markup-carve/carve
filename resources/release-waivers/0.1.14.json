@@ -559,16 +559,11 @@
       "name": null,
       "ticket": 5472,
       "rows": [
-        "1033-a-quote-attached-colon-keeps-a-later-plus  carve#5658 ruling A: the pinned JavaScript reader treats the later host-column plus as a marker, but the open attached colon keeps it as text.",
-        "1034-an-item-attached-colon-keeps-a-later-plus  carve#5658 ruling A: the pinned JavaScript reader splits the open attached colon at a later host-column plus instead of keeping it as text.",
         "1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  carve#5874: the pinned JavaScript reader keeps a tab-led comment run whose closer misses the description body column; carve-js#4902 has the fix.",
         "1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  carve#5886: the pinned JavaScript reader does not let a lazy line continue a nested quote paragraph that ended a comment span; carve#5878 made the model fold it at every depth.",
         "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column.",
         "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column.",
-        "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column.",
-        "279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2  carve#5658 F06: the pinned JavaScript reader keeps the line after a blank inside an own-line note fence although it misses the note.",
-        "279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-3  carve#5658 F06: the pinned JavaScript reader keeps the line after a blank inside an own-line description fence although it misses the description.",
-        "279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-7  carve#5658 F06: the pinned JavaScript reader keeps the line after a blank inside an own-line item fence although it misses the item."
+        "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column."
       ]
     },
     {
