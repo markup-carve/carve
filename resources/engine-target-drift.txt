@@ -29,7 +29,6 @@ ansi/rust/864-a-leading-content-tab-sets-the-item-s-content-column-where-the-con
 ansi/php/933-a-list-marker-in-an-item-ends-a-comment-only-paragraph-2  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 html/rust/860-an-id-key-is-a-spelling-of-the-id-slot-3  carve-rs does not write the fixture yet; carve-rs declares the port pending in tests/corpus.rs, ruling markup-carve/carve#4534.
 html/rust/860-an-id-key-is-a-spelling-of-the-id-slot-4  carve-rs does not write the fixture yet; carve-rs declares the port pending in tests/corpus.rs, ruling markup-carve/carve#4534.
-html/php/872-the-third-confirmation-round-s-model-findings-5  carve-php does not write the fixture yet; carve-php declares the port pending in tests/CarveCorpusTest.php, ruling markup-carve/carve#4616.
 markdown/rust/12-inline-code-8  Row entered the formatter selection with the 0947cae0 spec pins; carve-rs writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/php/531-an-opener-under-a-quote-in-a-nested-host-opens-at-one-column-only-7  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
 markdown/php/620-generated-container-documents-23  Row entered the formatter selection with the 0947cae0 spec pins; carve-php writes this target differently from the other two engines, triage in markup-carve/carve#5185.
