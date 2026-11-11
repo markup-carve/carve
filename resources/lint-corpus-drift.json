@@ -3383,6 +3383,44 @@
           ]
         ]
       }
+    },
+    {
+      "file": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv",
+      "reason": "carve-js reads the attribute line in the plus-passed note body as escaping the note and reports no unattached-block-attribute; carve-php and carve-rs keep it in the note and report it.",
+      "issue": "https://github.com/markup-carve/carve/issues/5957",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ],
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ],
+          [
+            "unattached-block-attribute",
+            3,
+            3
+          ]
+        ]
+      }
     }
   ]
 }

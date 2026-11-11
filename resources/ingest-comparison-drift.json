@@ -455,6 +455,50 @@
       }
     },
     {
+      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/js->php",
+      "fingerprint": "15c4a442d45d94e034bdec29cc2137e647d9aedf2b237563e86ed1605981bff5",
+      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5957",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/js->rust",
+      "fingerprint": "15c4a442d45d94e034bdec29cc2137e647d9aedf2b237563e86ed1605981bff5",
+      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5957",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/php->js",
+      "fingerprint": "de218c5b24ca391c749f524516a864cf9381e58bac94f40c5ec064909f9c1d6a",
+      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5957",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/rust->js",
+      "fingerprint": "de218c5b24ca391c749f524516a864cf9381e58bac94f40c5ec064909f9c1d6a",
+      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
+      "issue": "https://github.com/markup-carve/carve/issues/5957",
+      "observation": {
+        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
       "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
