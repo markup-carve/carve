@@ -1714,6 +1714,19 @@ function dedentedWindow(lines, start, column, unframe = false) {
   })
 }
 
+// A column is one code point, never a UTF-16 unit (CARVE-P7-001 item 1).
+export const isTrailSurrogate = (text, k) =>
+  k > 0 && (text.charCodeAt(k) & 0xfc00) === 0xdc00 && (text.charCodeAt(k - 1) & 0xfc00) === 0xd800
+
+// The column after `text.slice(from, to)`, written from `column`; tabs advance to the next four-column stop.
+export function advanceColumn(text, from, to, column) {
+  for (let k = from; k < to; k++) {
+    if (isTrailSurrogate(text, k)) continue
+    column = text[k] === '\t' ? (Math.floor(column / 4) + 1) * 4 : column + 1
+  }
+  return column
+}
+
 function tryAttrLine(lines, i, openerColumn = 0) {
   let text = lines[i]
   if (text === undefined || text[0] !== '{') return null
@@ -1731,7 +1744,7 @@ function tryAttrLine(lines, i, openerColumn = 0) {
     // Each glued block has its own opening column, including padding between
     // blocks. Tabs advance to the next four-column stop.
     if (columnLine !== li) { columnLine = li; columnPos = 0; column = 0 }
-    for (let k = columnPos; k < pos; k++) column = text[k] === '\t' ? (Math.floor(column / 4) + 1) * 4 : column + 1
+    column = advanceColumn(text, columnPos, pos, column)
     columnPos = pos
     const blockColumn = column
     // find the matching close brace, possibly across lines; a `}` inside a
@@ -1880,7 +1893,7 @@ function refusedBlockBraceRun(lines, start, cache) {
       } else if (ch === '"' || ch === "'") quoted = ch
       else if (ch === '{' && depth === 0) { blockColumn = sourceColumn; depth = 1 }
       else if (ch === '}' && --depth < 0) return null
-      sourceColumn = ch === '\t' ? (Math.floor(sourceColumn / 4) + 1) * 4 : sourceColumn + 1
+      if (!isTrailSurrogate(line, k)) sourceColumn = ch === '\t' ? (Math.floor(sourceColumn / 4) + 1) * 4 : sourceColumn + 1
     }
     if (depth === 0) return shallow && refusedRunParses(run) ? i + 1 : null
   }

@@ -13,7 +13,7 @@ export const rawPassthrough = content => /^\n*$/.test(content) ? content : conte
  * disagreement before (carve#646).
  */
 
-import { Refuse, TIER1 } from './layout.mjs'
+import { Refuse, TIER1, isTrailSurrogate } from './layout.mjs'
 import { labelKey } from './label-key.mjs'
 import { delimitedRowCount } from './delimited-table.mjs'
 
@@ -476,7 +476,7 @@ function renderLineBlockLine(line) {
     if (ch !== ' ' && ch !== '\t') {
       out += ch
       seenContent = true
-      column++
+      if (!isTrailSurrogate(line, i)) column++
       i++
       continue
     }
