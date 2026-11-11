@@ -1,0 +1,37 @@
+A column after an astral character is one code point
+
+```
+{title="😀"}{.b
+            .c}
+p
+.
+<p title="😀" class="b c">p</p>
+```
+
+```
+> {.a}{title="𝒜𝒜"}{.b
+>                   .c}
+> p
+.
+<blockquote><p class="a b c" title="𝒜𝒜">p</p></blockquote>
+```
+
+```
+{title="😀"}{.b
+           .c}
+p
+.
+<p>{title=“😀”}{.b
+.c}
+p</p>
+```
+
+```
+::: |
+😀	x
+:::
+.
+<div class="line-block">
+  <p>😀&nbsp;&nbsp;&nbsp;x</p>
+</div>
+```
