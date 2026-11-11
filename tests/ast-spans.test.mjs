@@ -328,22 +328,31 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // Re-measured 2026-10-27 at the pinned JS, PHP and Rust revisions; corpus 697
 // adds one document to each extent count.
 // Re-measured 2026-11-06 in four AST shards at the current engine pins.
+// Re-measured 2026-11-11 from run 43030841923 at the 0.1.14 pins (carve#5960).
 const LAST_MEASURED = new Map([
-  ['list (extent)', 31],
-  ['list_item (extent)', 42],
-  ['definition_list (extent)', 4],
+  ['list (extent)', 44],
+  ['list_item (extent)', 56],
+  ['definition_list (extent)', 7],
   ['abbreviation_def (extent)', 2],
-  ['footnote (extent)', 25],
+  ['footnote (extent)', 36],
   ['comment (extent)', 3],
-  ['definition_description (extent)', 19],
+  ['definition_description (extent)', 22],
   ['list (presence)', 4],
   ['list_item (presence)', 3],
-  ['text (presence)', 3],
+  ['text (presence)', 19],
   ['block_quote (extent)', 7],
   ['definition_list (presence)', 2],
   ['definition_description (presence)', 2],
-  ['paragraph (presence)', 1],
+  ['paragraph (presence)', 8],
   ['figure_group (presence)', 1],
+  ['code_block (extent)', 8],
+  ['paragraph (extent)', 9],
+  ['non_breaking_space (presence)', 7],
+  ['code_block (presence)', 4],
+  ['soft_break (extent)', 6],
+  ['text (extent)', 1],
+  ['non_breaking_space (extent)', 1],
+  ['raw_block (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
