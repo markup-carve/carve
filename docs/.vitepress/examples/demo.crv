@@ -1,4 +1,4 @@
----
+---yaml
 title: Carve Feature Demo
 date: 2026-06-02
 author: Carve
@@ -209,7 +209,7 @@ Carve supports footnotes[^note] with definitions collected anywhere.[^second]
 Dashes and ellipsis: an em dash --- an en range 10--20 ... and so on.
 Arrows and comparisons: --> <-- <--> ==> <== <=> , != <= >= , (tm) +-.
 
----
+***
 
 ## List tables (Tier-2 extension)
 
