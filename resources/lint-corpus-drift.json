@@ -2,11 +2,11 @@
   "version": 1,
   "measured": {
     "date": "2026-11-11",
-    "spec": "2a94ded6774d2f4e8f245a1494c050701a4b41dd",
+    "spec": "bcf77224c0720b573cad5f9ed6f4ae8ad569d9a8",
     "js": "31e4be11ffe993a59abda36acb1d92254c615f1f",
     "php": "3e604b2970c7e2842fd3e0736adc196cdb67eb97",
     "rust": "51922596902e195c7955bc8038cb0f4843ef9aab",
-    "documents": 4751
+    "documents": 4755
   },
   "differences": [
     {
@@ -1512,6 +1512,22 @@
             9
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/1077-a-column-after-an-astral-character-is-one-code-point-2.crv",
+      "reason": "The pinned carve-php counts a glued brace column in bytes and reports a diagnostic carve-js and carve-rs do not; fixed on carve-php main after this pin (markup-carve/carve-php#5176, carve#5984).",
+      "issue": "https://github.com/markup-carve/carve/issues/5984",
+      "diagnostics": {
+        "js": [],
+        "php": [
+          [
+            "block-marker-as-text",
+            1,
+            3
+          ]
+        ],
+        "rust": []
       }
     }
   ]
