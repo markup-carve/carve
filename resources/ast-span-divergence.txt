@@ -43,26 +43,26 @@
 # parent's content column. The pin still carries these extent differences;
 # each engine's own opening-markup findings name the side that must move.
 
-list  (extent)  44  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845; the 0.1.14 pin rows are triaged in markup-carve/carve#5960.
-list_item  (extent)  56  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845; the 0.1.14 pin rows are triaged in markup-carve/carve#5960.
-definition_list  (extent)  7  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407; the 0.1.14 pin rows are triaged in markup-carve/carve#5960.
+list  (extent)  44  carve-php spans a trailing refused `+` (markup-carve/carve-php#5164) or a short unclosed `%%%` comment (markup-carve/carve-php#5165); fences a refused `+` ends, markup-carve/carve#5975; carve-rs item ends, markup-carve/carve-rs#4274 and markup-carve/carve-rs#4263; starts, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262.
+list_item  (extent)  56  the list rows above, plus carve-php `+`-host starts (markup-carve/carve-php#5167) and corpus 245 (markup-carve/carve#5063); same tickets: markup-carve/carve-php#5164, markup-carve/carve-php#5165, markup-carve/carve#5975, markup-carve/carve-rs#4274, markup-carve/carve-rs#4263, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262.
+definition_list  (extent)  7  carve-php spans a trailing refused `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.
 abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.
-footnote (extent)  36  Pin differential cause triage: markup-carve/carve#5231 and markup-carve/carve#5960.
-comment  (extent)  3  Pin differential cause triage: markup-carve/carve#5231.
-definition_description  (extent)  22  Pin differential cause triage: markup-carve/carve#5231 and markup-carve/carve#5960.
+footnote (extent)  36  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+` (markup-carve/carve-php#5164) and `+`-host starts (markup-carve/carve-php#5167); carve-js, markup-carve/carve-js#4955; carve-rs unplaced last child, markup-carve/carve-rs#4263; fixed on engine main: markup-carve/carve-php#5150.
+comment  (extent)  3  carve-php unclosed `%%%` comment, markup-carve/carve-php#5165; carve-rs, markup-carve/carve-rs#4274.
+definition_description  (extent)  22  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.
 list (presence)  4  Pin differential cause triage: markup-carve/carve#5231.
 list_item (presence)  3  Pin differential cause triage: markup-carve/carve#5231.
-text  (presence)  19  Pin differential cause triage: markup-carve/carve#5231 and markup-carve/carve#5960.
+text  (presence)  19  Owners per document in resources/ast-position-waivers.txt (markup-carve/carve-rs#4263); carve-php verse leads fixed on engine main, markup-carve/carve-php#5151.
 block_quote (extent)  7  Pin differential cause triage: markup-carve/carve#5231.
 definition_list (presence)  2  Pin differential cause triage: markup-carve/carve#5231.
 definition_description (presence)  2  Pin differential cause triage: markup-carve/carve#5231.
-paragraph (presence)  8  Pin differential cause triage: markup-carve/carve#5231 and markup-carve/carve#5960.
+paragraph (presence)  8  Owners per document in resources/ast-position-waivers.txt: markup-carve/carve-rs#4263, and one permitted carve-js row.
 figure_group (presence)  1  Pin differential cause triage: markup-carve/carve#5231.
-code_block (extent)  8  0.1.14 pin triage: markup-carve/carve#5960.
-paragraph (extent)  9  0.1.14 pin triage: markup-carve/carve#5960.
-non_breaking_space (presence)  7  0.1.14 pin triage: markup-carve/carve#5960.
-code_block (presence)  4  0.1.14 pin triage: markup-carve/carve#5960.
-soft_break (extent)  6  0.1.14 pin triage: markup-carve/carve#5960.
-text (extent)  1  0.1.14 pin triage: markup-carve/carve#5960.
-non_breaking_space (extent)  1  0.1.14 pin triage: markup-carve/carve#5960.
-raw_block (extent)  1  0.1.14 pin triage: markup-carve/carve#5960.
+code_block (extent)  8  Fences a refused `+` ends, markup-carve/carve#5975; carve-js own-line fence blank, markup-carve/carve-js#4956; carve-rs quoted fence, markup-carve/carve-rs#4275; fixed on engine main: markup-carve/carve-rs#4262.
+paragraph (extent)  9  carve-rs unplaced verse leads and children, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166; fixed on engine main: markup-carve/carve-php#5151, markup-carve/carve-php#5150.
+non_breaking_space (presence)  7  carve-rs omits verse-lead positions, markup-carve/carve-rs#4263.
+code_block (presence)  4  carve-rs, markup-carve/carve-rs#4263; placed on engine main, where the extent follows markup-carve/carve#5975.
+soft_break (extent)  6  carve-rs unplaced neighbors, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166.
+text (extent)  1  carve-php attribute shift, markup-carve/carve-php#5166.
+non_breaking_space (extent)  1  carve-rs verse lead, markup-carve/carve-rs#4263; agrees on engine main.
+raw_block (extent)  1  A raw fence a refused `+` ends, markup-carve/carve#5975.
