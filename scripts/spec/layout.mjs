@@ -2161,9 +2161,11 @@ function carryPrefixMemo(state, source, index, target, targetIndex) {
 const taskTextOffset = marker => marker.task === undefined ? 0 : TASK_MARKER_SOURCE_WIDTH + marker.taskGap
 
 // A continuation of a run behind `quotes` quote prefixes, read past them at its
-// source column; undefined when it lacks one, as a lazy line ends the run (PART 4).
-function quotedRow(line, quotes) {
+// source column. A line short of the container's `column` or of a prefix is
+// lazy, and a lazy line ends the run (PART 4, carve#5830).
+function quotedRow(source, line, quotes, column) {
   if (!quotes || line === undefined) return line
+  if (source === undefined || indentCols(source).col < column) return undefined
   const rest = stripQuotes(line, quotes)?.rest
   return rest === undefined ? undefined : ' '.repeat(sourcePrefixColumn(line, trimWsStart(rest))) + trimWsStart(rest)
 }
@@ -11302,7 +11304,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
       const below = dedentedWindow(lines, i, contentCol)
       const window = new Proxy([], {
         get: (_, key) => key === '0' ? headLead : key === 'length' ? below.length + 1
-          : typeof key === 'string' && /^\d+$/.test(key) ? quotedRow(below[Number(key) - 1], headQuotes) : undefined,
+          : typeof key === 'string' && /^\d+$/.test(key)
+            ? quotedRow(lines[i + Number(key) - 1], below[Number(key) - 1], headQuotes, contentCol) : undefined,
       })
       const attributes = tryAttrLine(window, 0, headLeadColumn)
       if (attributes && attributes.next > 1) {
@@ -12302,7 +12305,8 @@ function* collectItems(lines, i, list, state, ind, meas, inItem, top) {
           if (lead.startsWith('{') && opener > 0) {
             const window = dedentedWindow(lines, i, lm.col)
             const attributes = tryAttrLine(new Proxy([], {
-              get: (_, key) => key === '0' ? lead : key === 'length' ? window.length : quotedRow(window[key], quotes),
+              get: (_, key) => key === '0' ? lead : key === 'length' ? window.length
+                : quotedRow(lines[i + Number(key)], window[key], quotes, contentCol),
             }), 0, opener)
             if (attributes && attributes.next > 1) wrappedAttrEnd = i + attributes.next - 1
           }

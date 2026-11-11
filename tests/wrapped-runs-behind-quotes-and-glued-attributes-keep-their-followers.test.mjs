@@ -11,6 +11,8 @@ const emptyQuotedItemThenPlain = '<ul>\n  <li>\n    <blockquote>\n      <ul>\n  
 // carve#5882: a run refused at its written `{` behind glued attributes is paragraph text a lazy line continues.
 const refusedInQuotedItem = '<blockquote>\n  <ul>\n    <li class="a">{.x\n.y}\nplain</li>\n  </ul>\n</blockquote>'
 const validInQuotedItem = '<blockquote>\n  <ul>\n    <li class="a"></li>\n  </ul>\n</blockquote>\n<p>plain</p>'
+// A continuation short of the item is lazy and ends the run, whatever quote prefix it carries.
+const lazyContinuation = '<ul>\n  <li>\n    <blockquote><p>{.x</p></blockquote>\n  </li>\n</ul>\n<blockquote><p>.y}\ntail</p></blockquote>'
 const refusedInNestedItem = '<ul>\n  <li>\n    <ul>\n      <li class="a">{.x\n.y}\nplain</li>\n    </ul>\n  </li>\n</ul>'
 
 for (const [name, source, html] of [
@@ -21,6 +23,7 @@ for (const [name, source, html] of [
   ['glued attributes in a quote: continuation at the content column', '> -{.a} {.x\n>    .y}\nplain\n', refusedInQuotedItem],
   ['glued attributes in a quote: continuation under the brace', '> -{.a} {.x\n>       .y}\nplain\n', refusedInQuotedItem],
   ['glued attributes in a quote: continuation past the brace', '> -{.a} {.x\n>        .y}\nplain\n', validInQuotedItem],
+  ['quoted continuation short of the item', '- > {.x\n>   .y}\ntail\n', lazyContinuation],
   ['glued attributes on a nested marker line', '- -{.a} {.x\n     .y}\nplain\n', refusedInNestedItem],
 ]) {
   test(name, () => assert.equal(render(source), html))
