@@ -65,6 +65,7 @@
   "276-a-fence-opened-on-a-list-marker-line-body-below-the-content-column-4.fmt": "308492d6cd144acb",
   "279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2.fmt": "e68f269672836d84",
   "279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-3.fmt": "85f88f05e0376375",
+  "283-an-empty-footnote-body-is-written-with-the-empty-sentinel.md": "841aa59dcd974701",
   "284-a-ragged-table-keeps-each-row-s-cell-count-2.ansi": "b4853a0d3c1ce7c3",
   "284-a-ragged-table-keeps-each-row-s-cell-count-2.fmt": "b4853a0d3c1ce7c3",
   "284-a-ragged-table-keeps-each-row-s-cell-count-2.md": "b4853a0d3c1ce7c3",
@@ -249,5 +250,6 @@
   "97-boolean-attributes-2.fmt": "35ea9e3033788c4e",
   "97-boolean-attributes.fmt": "279b36bc776c78e8",
   "97-boolean-attributes.txt": "279b36bc776c78e8",
-  "99-table-cell-attributes.fmt": "60967eb4e3e5b9ca"
+  "99-table-cell-attributes.fmt": "60967eb4e3e5b9ca",
+  "992-a-losing-interleaved-note-plus-keeps-the-later-note-s-body.md": "4ac280d3ba9d5a6f"
 }
