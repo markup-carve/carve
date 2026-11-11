@@ -39,4 +39,4 @@
 # AN EMPTY FILE IS A REAL STATE, not a missing one: it says the three engines
 # agreed on every scalar the last run compared. It does not say they agree on
 # fields no corpus document reaches.
-comment.content  2  Pin differential cause triage: markup-carve/carve#5231.
+comment.content  8  Pin differential cause triage: markup-carve/carve#5231 and markup-carve/carve#5960.
