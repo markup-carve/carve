@@ -1441,7 +1441,7 @@
     },
     {
       "file": "tests/corpus/975-a-skipped-note-definition-cannot-claim-an-earlier-plus.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2539,7 +2539,7 @@
     },
     {
       "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing-3.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2592,7 +2592,7 @@
     },
     {
       "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing-4.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2640,7 +2640,7 @@
     },
     {
       "file": "tests/corpus/980-a-losing-duplicate-footnote-definition-s-plus-takes-nothing.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2673,7 +2673,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2716,7 +2716,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-3.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2759,7 +2759,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-4.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2807,7 +2807,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-5.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2860,7 +2860,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner-7.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2913,7 +2913,7 @@
     },
     {
       "file": "tests/corpus/981-a-losing-note-plus-leaves-following-blocks-with-their-owner.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -2989,7 +2989,7 @@
     },
     {
       "file": "tests/corpus/989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3037,7 +3037,7 @@
     },
     {
       "file": "tests/corpus/989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3105,7 +3105,7 @@
     },
     {
       "file": "tests/corpus/990-a-passed-note-keeps-its-blank-separated-continuation-2.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3138,7 +3138,7 @@
     },
     {
       "file": "tests/corpus/990-a-passed-note-keeps-its-blank-separated-continuation.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3171,7 +3171,7 @@
     },
     {
       "file": "tests/corpus/991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3214,7 +3214,7 @@
     },
     {
       "file": "tests/corpus/992-a-losing-interleaved-note-plus-keeps-the-later-note-s-body.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [
@@ -3333,7 +3333,7 @@
     },
     {
       "file": "tests/corpus/998-a-losing-note-plus-does-not-take-an-immediate-follower.crv",
-      "reason": "Which refused + on a losing or followed footnote definition lint reports, and under which rule, needs a decision.",
+      "reason": "Ruled A on carve#5953: every refused marker-line + reports as continuation-marker-refused, a losing duplicate's included, and a following definition is a sibling; the pinned engines have not ported it yet.",
       "issue": "https://github.com/markup-carve/carve/issues/5953",
       "diagnostics": {
         "js": [

@@ -766,6 +766,45 @@
       "expected": {
         "findings": []
       }
+    },
+    {
+      "name": "losing-duplicate-note-marker",
+      "description": "The plus on a losing duplicate definition is refused and reports next to the duplicate finding (carve#5953 ruling A).",
+      "source": "[^a]: x\n[^a]: +\n flush\n\nsee[^a]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 2,
+            "column": 7,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "note-marker-before-sibling-and-losing-duplicate",
+      "description": "A following definition is the host's sibling, and the losing duplicate's plus reports under this rule, not the own-line rule (carve#5953 ruling A).",
+      "source": "[^n]: +\n[^n]: +\n\n  para\n\nsee[^n]\n",
+      "expected": {
+        "findings": [
+          {
+            "line": 1,
+            "column": 7,
+            "includes": [
+              "+"
+            ]
+          },
+          {
+            "line": 2,
+            "column": 7,
+            "includes": [
+              "+"
+            ]
+          }
+        ]
+      }
     }
   ]
 }

@@ -394,8 +394,10 @@ The pinned carve-js build still reports own-line refusals as
 `> +`). It reports when the next line is blank or the input ends, lacks the
 prefix of a quote around the host, stands at another column, is the host's
 sibling (a list marker under a list item, a `: ` or `:: ` line under a
-description), or closes an open div (CARVE-P9-067, markup-carve/carve#3421,
-markup-carve/carve#4409, markup-carve/carve#5013). A `+` that PART 0 S2 reads
+description, a footnote definition under a footnote definition), or closes an open div (CARVE-P9-067, markup-carve/carve#3421,
+markup-carve/carve#4409, markup-carve/carve#5013). The `+` on a losing
+duplicate footnote definition reports too, next to `duplicate-footnote-definition`
+(markup-carve/carve#5953). A `+` that PART 0 S2 reads
 as a letter, including one past a quote's marker column or at document level,
 is quiet. PART 9 §17 L3 consumes a refused marker without text; a `+` at a
 fence's content column remains payload:
