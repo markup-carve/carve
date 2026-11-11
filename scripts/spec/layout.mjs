@@ -3937,6 +3937,9 @@ const TRACE_RULE = { blank: 'CARVE-P0-003', leaf: 'CARVE-P0-011' }
 const stackedOnMarker = (parent, host) => parent?.kind !== 'quote' && parent?.line === host.line
 
 function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter = true) {
+  // lazyRunMissesFrame: a stretch the last scan crossed without any closer character answers for
+  // every opener inside it, so a column of closerless openers is read once.
+  const lazyRunScans = new Map()
   const result = []
   const frames = [{ kind: 'doc', col: 0, canon: 0, cut: 0, para: false, last: null }]
   const attachedFenceMisses = []
@@ -5441,12 +5444,21 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     if (!comment && braceRunCloses(brace, text.slice(1))) return false
     let depth = 0
     for (let k = 1; k <= deeper; k++) if (frames[k].kind === 'quote') depth++
-    for (let j = at + 1; j < lines.length && !isBlank(lines[j]); j++) {
+    const key = `${comment}:${depth}:${frames[deeper].col}`
+    const known = lazyRunScans.get(key)
+    if (known && known.from <= at && at < known.to) return known.result
+    let clean = true
+    let j = at + 1
+    let result = false
+    for (; j < lines.length && !isBlank(lines[j]); j++) {
       const stands = stripQuotes(lines[j], depth)
-      if (!stands || walkIndent(stands.rest).col < frames[deeper].col) return true
-      if (comment ? lines[j].includes('%}') : braceRunCloses(brace, stands.rest)) return false
+      if (!stands || walkIndent(stands.rest).col < frames[deeper].col) { result = true; break }
+      if (lines[j].includes(comment ? '%}' : '}')) clean = false
+      // Every attribute line feeds the quote state, even one without a `}`.
+      if (comment ? !clean : braceRunCloses(brace, stands.rest)) break
     }
-    return false
+    if (clean) lazyRunScans.set(key, { from: at, to: j, result })
+    return result
   }
 
   // How deep the next visible line reaches through the indentation frames below `from`.
