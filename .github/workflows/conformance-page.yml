@@ -1,0 +1,127 @@
+name: Conformance page
+
+# Regenerates docs/conformance.md and the per-engine badge endpoints from the
+# released engines and opens a PR with the result. Release-tied on purpose: the
+# page states what a release measures, so it does not run on every push.
+# The engine repos send no event here, so a daily run picks up their latest
+# published releases; this repo's own releases, repository_dispatch (type
+# engine-released) and a manual run (which can name the engine refs) also run it.
+# Uses BUMP_TOKEN, as bump-engine-pin.yml does, so the PR triggers CI.
+
+on:
+  release:
+    types: [published]
+  schedule:
+    - cron: '17 6 * * *'
+  repository_dispatch:
+    types: [engine-released]
+  workflow_dispatch:
+    inputs:
+      carve-js:
+        description: carve-js ref to measure (default its latest release tag)
+        required: false
+      carve-php:
+        description: carve-php ref to measure (default its latest release tag)
+        required: false
+      carve-rs:
+        description: carve-rs ref to measure (default its latest release tag)
+        required: false
+
+concurrency:
+  group: conformance-page
+  cancel-in-progress: false
+
+jobs:
+  page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Full history: the script reads the pack at each engine's pinned spec commit.
+      # main, not the event's ref: a release event checks out the tag, and a PR
+      # branched from it would revert everything merged since.
+      - uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.BUMP_TOKEN }}
+          ref: main
+          fetch-depth: 0
+      # The release each engine is measured at: the named ref, else its latest
+      # published release. Resolved here so every engine checkout carries a ref.
+      - name: Resolve the engine releases
+        id: refs
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
+          JS_REF: ${{ inputs.carve-js || github.event.client_payload.carve-js }}
+          PHP_REF: ${{ inputs.carve-php || github.event.client_payload.carve-php }}
+          RS_REF: ${{ inputs.carve-rs || github.event.client_payload.carve-rs }}
+        run: |
+          set -euo pipefail
+          resolve() {
+            if [ -n "$2" ]; then echo "$2"; else gh release view --repo "markup-carve/$1" --json tagName --jq .tagName; fi
+          }
+          {
+            echo "carve-js=$(resolve carve-js "$JS_REF")"
+            echo "carve-php=$(resolve carve-php "$PHP_REF")"
+            echo "carve-rs=$(resolve carve-rs "$RS_REF")"
+          } | tee -a "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: ${{ steps.refs.outputs.carve-js }}
+          path: engines/carve-js
+          fetch-depth: 0
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: ${{ steps.refs.outputs.carve-php }}
+          path: engines/carve-php
+          fetch-depth: 0
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: ${{ steps.refs.outputs.carve-rs }}
+          path: engines/carve-rs
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+
+      - name: Regenerate the page and the badges
+        env:
+          JS_REF: ${{ steps.refs.outputs.carve-js }}
+          PHP_REF: ${{ steps.refs.outputs.carve-php }}
+          RS_REF: ${{ steps.refs.outputs.carve-rs }}
+        run: |
+          set -euo pipefail
+          node scripts/conformance-page.mjs \
+            --engine carve-js=engines/carve-js --engine carve-php=engines/carve-php --engine carve-rs=engines/carve-rs \
+            --ref "carve-js=$JS_REF" --ref "carve-php=$PHP_REF" --ref "carve-rs=$RS_REF" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Open or update the PR
+        env:
+          GH_TOKEN: ${{ secrets.BUMP_TOKEN }}
+          BRANCH: automation/conformance-page
+        run: |
+          set -euo pipefail
+          # -I: a run that only moves the "last regenerated" date opens no PR.
+          if git diff --quiet -I 'last regenerated' -- docs/conformance.md docs/public/badges && [ -z "$(git ls-files --others --exclude-standard -- docs/public/badges)" ]; then
+            echo "the conformance page is current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add docs/conformance.md docs/public/badges
+          git commit -q -m "docs: regenerate the conformance page for the latest releases"
+          git push --force-with-lease origin "$BRANCH"
+          body="Regenerated docs/conformance.md and the badge endpoints from the latest engine releases.
+
+          Opened by .github/workflows/conformance-page.yml."
+          existing="$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$existing" ]; then
+            gh pr create --base main --head "$BRANCH" \
+              --title "docs: regenerate the conformance page for the latest releases" \
+              --body "$body" --label documentation --label area:docs
+          else
+            gh api "repos/${GITHUB_REPOSITORY}/pulls/$existing" -X PATCH -f body="$body" >/dev/null
+          fi

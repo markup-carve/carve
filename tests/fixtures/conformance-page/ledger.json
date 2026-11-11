@@ -1,0 +1,7 @@
+{
+  "comment": "Fixture drift ledger for tests/conformance-page.test.mjs.",
+  "entries": [
+    { "ticket": "markup-carve/carve-js#1", "cause": "first cause", "cases": ["inline-aaaaaaaaaaaa", "fences-bbbbbbbbbbbb"] },
+    { "ticket": "markup-carve/carve-js#2", "cause": "second cause, one id the pack no longer has", "cases": ["inline-cccccccccccc", "lazy-gone00000000"] }
+  ]
+}

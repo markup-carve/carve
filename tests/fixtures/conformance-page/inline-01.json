@@ -1,0 +1,5 @@
+[
+{"id":"inline-aaaaaaaaaaaa","source":"*a*","html":"<p><strong>a</strong></p>"},
+{"id":"inline-cccccccccccc","source":"/c/","html":"<p><em>c</em></p>"},
+{"id":"inline-dddddddddddd","source":"d","html":"<p>d</p>"}
+]
