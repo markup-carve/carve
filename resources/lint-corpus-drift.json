@@ -3421,6 +3421,54 @@
           ]
         ]
       }
+    },
+    {
+      "file": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv",
+      "reason": "carve-php reports the tab-led attribute line in the note a nested plus passes as unattached-block-attribute, as it does for row 1074; carve-js and carve-rs read it outside the note and report none (row 1075).",
+      "issue": "https://github.com/markup-carve/carve/issues/5963",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ],
+          [
+            "unattached-block-attribute",
+            4,
+            7
+          ]
+        ],
+        "rust": [
+          [
+            "continuation-marker-refused",
+            2,
+            7
+          ],
+          [
+            "list-item-block-overindented",
+            4,
+            5
+          ]
+        ]
+      }
     }
   ]
 }

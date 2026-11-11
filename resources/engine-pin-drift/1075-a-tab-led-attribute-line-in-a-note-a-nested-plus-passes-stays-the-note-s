@@ -1,0 +1,1 @@
+carve#5963: the pinned JavaScript reader refuses a nested plus that passes a note with an attribute line in its body, so its next line stays in the outer item; the spec keeps the attribute line the note's (a tab stop restarts at each frame column) and gives the next line to the plus.

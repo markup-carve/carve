@@ -4083,8 +4083,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
       // A skipped note's body stays the note's (§15 A4): it keeps its offset from the
       // definition, and an attribute line stands at the body column, as the walk writes it.
-      if (registers) skipped.note = walkIndent(raw).col
-      const noteOffset = skipped.note === undefined || registers || isBlank(raw) ? 0 : walkIndent(raw).col - skipped.note
+      const noteCol = walkIndent(perFrameLine(raw)).col
+      if (registers) skipped.note = noteCol
+      const noteOffset = skipped.note === undefined || registers || isBlank(raw) ? 0 : noteCol - skipped.note
       const inNoteBody = noteOffset >= FOOTNOTE_BODY_COLUMN
       let bracePad = ''
       if (skipped.brace) {
@@ -5320,6 +5321,15 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     const content = !refused && ['item', 'dd', 'note'].includes(host.kind) ? host.docMarker + host.col - host.markerCol : Infinity
     // A line without the host's quote prefixes ends the quote, so no skipped construct reads it as text.
     const view = (k) => trimWsStart(throughQuotes(lines[k], hostIndex)?.rest ?? '')
+    // Columns follow C5: tab stops restart at each frame column (PART 9 §24).
+    const cols = new Map()
+    const colAt = (k) => {
+      if (!cols.has(k)) {
+        const line = perFrameLine(lines[k])
+        cols.set(k, line === lines[k] ? docColumn(line, view(k)) : line.length - trimWsStart(line).length)
+      }
+      return cols.get(k)
+    }
     const fromHere = new Proxy([], {
       get: (_, key) => key === 'length' ? lines.length : /^\d+$/.test(String(key)) && +key < lines.length
         ? throughQuotes(lines[+key], hostIndex)?.rest : undefined,
@@ -5333,7 +5343,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (definedNotes.has(key) || passedLabels.has(key) || at + 1 >= lines.length || throughQuotes(lines[at + 1], hostIndex) === null) return false
       const next = trimLineEnd(view(at + 1))
       return next !== '' && !FOOTNOTE_DEF.test(next) && !COMMENT_LINE.test(next) && !isDefinitionLine(next) &&
-        docColumn(lines[at + 1], view(at + 1)) > docColumn(lines[at], view(at)) && foldablePlainLine(next) &&
+        colAt(at + 1) > colAt(at) && foldablePlainLine(next) &&
         !(next[0] === '{' && tryAttrLine(new Proxy(fromHere, {
           get: (target, key) => key === String(at + 1) ? view(at + 1) : target[key],
         }), at + 1, indentCols(fromHere[at + 1]).col))
@@ -5345,7 +5355,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     while (k < lines.length) {
       if (throughQuotes(lines[k], hostIndex) === null) return k
       const rest = trimLineEnd(view(k))
-      const at = docColumn(lines[k], view(k))
+      const at = colAt(k)
       if (at !== column && at < content) return k
       const comment = COMMENT_FENCE_BODY.exec(rest)
       if (comment) {
@@ -5354,7 +5364,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // a span the host keeps at its content column is missed below that column.
         const bound = at === column ? column : content
         const closes = (j) => COMMENT_FENCE_BODY.exec(trimLineEnd(view(j)))?.[1].length === comment[1].length
-        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && docColumn(lines[j], view(j)) < bound)
+        const misses = (j) => throughQuotes(lines[j], hostIndex) === null || (trimLineEnd(view(j)) !== '' && colAt(j) < bound)
         while (k < lines.length && !closes(k) && !misses(k)) k++
         if (k < lines.length && closes(k)) k++
         for (let j = opener; fenced && j < Math.min(k, lines.length); j++) fenced.add(j)
@@ -5366,17 +5376,17 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         let body = k + 1
         while (body < lines.length && throughQuotes(lines[body], hostIndex) !== null && isBlank(view(body))) body++
         if (offered && body < lines.length &&
-            (ownsNextLine(k, rest) || docColumn(lines[body], view(body)) >= at + FOOTNOTE_BODY_COLUMN)) return k
+            (ownsNextLine(k, rest) || colAt(body) >= at + FOOTNOTE_BODY_COLUMN)) return k
         passedLabels.add(labelKey(FOOTNOTE_DEF.exec(rest)[1]))
         k++
         // An attribute line left of the note's body column is the host's (carve#5576).
-        const hostAttr = (j) => view(j)[0] === '{' && docColumn(lines[j], view(j)) < at + FOOTNOTE_BODY_COLUMN &&
+        const hostAttr = (j) => view(j)[0] === '{' && colAt(j) < at + FOOTNOTE_BODY_COLUMN &&
           tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[j], hostIndex)?.rest ?? '').col)
         // An attribute line in the note's body ends its paragraph (§15 A1), so no lazy line follows it.
         let open = true
         while (k < lines.length && foldablePlainLine(view(k)) && !hostAttr(k) &&
-            (!offered || docColumn(lines[k], view(k)) !== column)) {
-          const inBody = docColumn(lines[k], view(k)) >= at + FOOTNOTE_BODY_COLUMN
+            (!offered || colAt(k) !== column)) {
+          const inBody = colAt(k) >= at + FOOTNOTE_BODY_COLUMN
           if (!inBody && !open) break
           const attr = inBody && view(k)[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
           open = !attr
