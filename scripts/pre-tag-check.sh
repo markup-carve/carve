@@ -328,7 +328,7 @@ fi
 # installed build and no node_modules.
 if [ -f scripts/declaration-audit.mjs ]; then
   if AUDIT_OUT="$(node scripts/declaration-audit.mjs 2>&1)"; then
-    ok "every owed declaration list is empty"
+    ok "declaration lists are clear for this release"
   else
     bad "declaration lists are not clear - see below"
     printf '%s\n' "$AUDIT_OUT" | sed 's/^/         /'
