@@ -3469,6 +3469,28 @@
           ]
         ]
       }
+    },
+    {
+      "file": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv",
+      "reason": "carve-php does not report the code fence a text line at the item's column ends in a marker-line term's description as unclosed-code-fence; carve-js and carve-rs do (row 1076-5).",
+      "issue": "https://github.com/markup-carve/carve/issues/5969",
+      "diagnostics": {
+        "js": [
+          [
+            "unclosed-code-fence",
+            3,
+            9
+          ]
+        ],
+        "php": [],
+        "rust": [
+          [
+            "unclosed-code-fence",
+            3,
+            9
+          ]
+        ]
+      }
     }
   ]
 }
