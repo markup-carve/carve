@@ -2,10 +2,10 @@
   "version": 1,
   "measured": {
     "date": "2026-11-12",
-    "spec": "bcf77224c0720b573cad5f9ed6f4ae8ad569d9a8",
-    "js": "d6aff707139b96cda4bd4663b3e3de442f9c2edb",
-    "php": "aadd85e07068230ce63d1fbb6511a160454f093a",
-    "rust": "c736c74ccc0903ee2b15113b5ace59e921a11cdb",
+    "spec": "518379c8625ec232938fcebdbdb621d665502aa2",
+    "js": "efef22ad18d007edf978b6c8feae888a09390a26",
+    "php": "32d48beb54375f4669cc258d7dff2e150ddb2bfa",
+    "rust": "615e884e344ebab76d080a0f83bace54d47fd3ac",
     "coverage": {
       "full": {
         "documents": 4755,
@@ -147,6 +147,94 @@
       }
     },
     {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/js->php",
+      "fingerprint": "6c86ccf6738db9e23067af821b80442f741fa49ca18639f7e88f29183064118b",
+      "reason": "The pinned JavaScript engine hides the tab-led lazy comment run while the pinned PHP and Rust engines retain it (corpus 1070-4). Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/js->rust",
+      "fingerprint": "6c86ccf6738db9e23067af821b80442f741fa49ca18639f7e88f29183064118b",
+      "reason": "The pinned JavaScript engine hides the tab-led lazy comment run while the pinned PHP and Rust engines retain it (corpus 1070-4). Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/php->js",
+      "fingerprint": "4e0f9dea4137b6cba21f5d13012454c81ce13744a1f9f76875f1a6ca3f47c240",
+      "reason": "The pinned JavaScript engine hides the tab-led lazy comment run while the pinned PHP and Rust engines retain it (corpus 1070-4). Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/rust->js",
+      "fingerprint": "4e0f9dea4137b6cba21f5d13012454c81ce13744a1f9f76875f1a6ca3f47c240",
+      "reason": "The pinned JavaScript engine hides the tab-led lazy comment run while the pinned PHP and Rust engines retain it (corpus 1070-4). Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->php",
+      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->rust",
+      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/php->js",
+      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/rust->js",
+      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
+      }
+    },
+    {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
       "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
@@ -279,50 +367,6 @@
       "interpreters": {
         "js": "24.22.0",
         "php": "8.4.27"
-      }
-    },
-    {
-      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->php",
-      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
-      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
-      "issue": "https://github.com/markup-carve/carve/issues/5978",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->rust",
-      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
-      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
-      "issue": "https://github.com/markup-carve/carve/issues/5978",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/php->js",
-      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
-      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
-      "issue": "https://github.com/markup-carve/carve/issues/5978",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
-      }
-    },
-    {
-      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/rust->js",
-      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
-      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
-      "issue": "https://github.com/markup-carve/carve/issues/5978",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
       }
     }
   ]

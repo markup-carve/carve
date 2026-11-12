@@ -48,7 +48,7 @@ list_item  (extent)  4  the list rows above, plus carve-php `+`-host starts (mar
 abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.
 footnote (extent)  25  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+` (markup-carve/carve-php#5164) and `+`-host starts (markup-carve/carve-php#5167); carve-js, markup-carve/carve-js#4955; carve-rs unplaced last child, markup-carve/carve-rs#4263; fixed on engine main: markup-carve/carve-php#5150.
 comment  (extent)  2  carve-php unclosed `%%%` comment, markup-carve/carve-php#5165; carve-rs, markup-carve/carve-rs#4274.
-definition_description  (extent)  34  Starts in leading indentation, markup-carve/carve#5976 (carve-rs line open: carve-js and carve-php moved indented description starts to the owner's content column); carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.
+definition_description  (extent)  33  Starts in leading indentation, markup-carve/carve#5976 (carve-rs line open: carve-js and carve-php moved indented description starts to the owner's content column); carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.
 text  (presence)  3  Owners per document in resources/ast-position-waivers.txt (markup-carve/carve-rs#4263); carve-php verse leads fixed on engine main, markup-carve/carve-php#5151.
 block_quote (extent)  3  Pin differential cause triage: markup-carve/carve#5231. Corpus 1076-5, markup-carve/carve#5978.
 paragraph (presence)  1  Owners per document in resources/ast-position-waivers.txt: markup-carve/carve-rs#4263, and one permitted carve-js row.
