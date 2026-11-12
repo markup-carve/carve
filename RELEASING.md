@@ -145,9 +145,9 @@ CI green:
 4. **Run the pre-tag check locally** before submitting the cut PR. It checks
    the version, changelog, installed reference build, engine drift, declaration
    audit, and fleet spec pins. Run it again on `main` after the PR merges.
-   Two verdicts measure the engines rather than the spec and are printed as
-   `INFO` without gating: step 9 (do the three engines pin the same spec
-   commit) and the audit's `PIN STALENESS` (is the carve-js reference pin level
+   For the spec tag, two verdicts measure the engines rather than the spec and
+   are printed as `INFO` without gating: step 9 (do the three engines pin the
+   same spec commit) and the audit's `PIN STALENESS` (is the carve-js reference pin level
    with carve-js `main`). `PRE_TAG_FLEET=strict` makes both gate again:
 
    ```sh
@@ -284,10 +284,13 @@ and no per-repo gate can see it.
 
 `pre-tag-check.sh` step 9 compares the `spec` (carve-js) and `tests/spec`
 (carve-rs, carve-php) gitlinks across all three at `origin/main` and names each
-repo, its pin and the distance between them. It reports and does not gate the
-spec tag, since every engine merge during a cut would otherwise refuse it; set
-`PRE_TAG_FLEET=strict` to gate on it. At engine release time each engine's
-guard requires its pin to be a published spec tag. Run it on its own with:
+repo, its pin and the distance between them. For the spec tag, pin divergence
+alone is reported as `INFO` (with `--report-divergence`), since every engine
+merge during a cut would otherwise refuse it; an unreadable engine, a failed
+fetch or a bad exemption still fails, and `PRE_TAG_FLEET=strict` gates the
+divergence too. Run from an engine repo it gates as before, and each engine's
+release guard also requires its pin to be a published spec tag. Run it on its
+own with:
 
 ```sh
 npm run fleet:pin                  # the three engines at origin/main

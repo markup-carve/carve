@@ -364,17 +364,23 @@ fi
 # step 5a, for the same reason: a gate with no way to say "yes, on purpose" is
 # a gate somebody eventually deletes.
 #
-# Report-only unless PRE_TAG_FLEET=strict: an engine merge during a cut must not
-# refuse the spec tag. Each engine's release gates its own pin on a spec tag.
+# For the spec repo, pin divergence alone reports unless PRE_TAG_FLEET=strict:
+# an engine merge during a cut must not refuse the spec tag. Unreadable engines
+# and bad exemptions still fail. An engine release keeps the full gate.
 if [ -f "$SCRIPT_DIR/fleet-spec-pin-check.mjs" ]; then
-  if FLEET_OUT="$(node "$SCRIPT_DIR/fleet-spec-pin-check.mjs" 2>&1)"; then
-    ok "carve-js, carve-rs and carve-php pin the same spec commit"
-    printf '%s\n' "$FLEET_OUT" | sed 's/^/         /'
-  elif [ "$FLEET_MODE" = "strict" ]; then
-    bad "the engines do not pin the same spec commit - see below"
+  FLEET_ARGS=()
+  if [ "$FLEET_MODE" = "info" ] && [ -f scripts/fleet-spec-pin-check.mjs ]; then
+    FLEET_ARGS=(--report-divergence)
+  fi
+  if FLEET_OUT="$(node "$SCRIPT_DIR/fleet-spec-pin-check.mjs" "${FLEET_ARGS[@]}" 2>&1)"; then
+    if [ "${#FLEET_ARGS[@]}" -gt 0 ] && printf '%s\n' "$FLEET_OUT" | grep -q '\[info\] the engines do not implement the same spec'; then
+      info "the engines do not pin the same spec commit - INFO, not gating for the spec release (PRE_TAG_FLEET=strict gates it)"
+    else
+      ok "carve-js, carve-rs and carve-php pin the same spec commit"
+    fi
     printf '%s\n' "$FLEET_OUT" | sed 's/^/         /'
   else
-    info "the engines do not pin the same spec commit - INFO, not gating for the spec release (PRE_TAG_FLEET=strict gates it)"
+    bad "the fleet spec pin check failed - see below"
     printf '%s\n' "$FLEET_OUT" | sed 's/^/         /'
   fi
 fi
