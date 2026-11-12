@@ -17,6 +17,9 @@ name: Nightly fuzz differential
 # Findings keep the run GREEN; the issues are the signal. The run goes red only
 # when the harness breaks: an engine fails to build, nothing was compared, too
 # few unmutated corpus documents agree, or gh cannot file.
+#
+# 0.1.x is frozen while 0.2 is built on `next2`: the scheduled run prints its
+# plan and files nothing. A dispatch with file-issues still files.
 
 on:
   schedule:
@@ -35,7 +38,7 @@ on:
       file-issues:
         description: File and comment on issues (false prints the plan only)
         type: boolean
-        default: true
+        default: false
 
 permissions:
   contents: read
@@ -119,5 +122,5 @@ jobs:
       - name: File issues
         env:
           GH_TOKEN: ${{ github.token }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && !inputs.file-issues && '--dry-run' || '' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.file-issues && '' || '--dry-run' }}
         run: node scripts/fuzz-file-issues.mjs --report=/tmp/fuzz-nightly.json --repo="$GITHUB_REPOSITORY" $DRY_RUN
