@@ -330,26 +330,24 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // Re-measured 2026-11-06 in four AST shards at the current engine pins.
 // Re-measured 2026-11-11 from run 43030841923 at the 0.1.14 pins (carve#5960).
 const LAST_MEASURED = new Map([
-  ['list (extent)', 17],
-  ['list_item (extent)', 21],
-  ['definition_list (extent)', 3],
+  ['list (extent)', 4],
+  ['list_item (extent)', 5],
   ['abbreviation_def (extent)', 2],
-  ['footnote (extent)', 30],
-  ['comment (extent)', 3],
-  ['definition_description (extent)', 3],
-  ['list (presence)', 4],
+  ['footnote (extent)', 25],
+  ['comment (extent)', 2],
+  ['definition_description (extent)', 34],
+  ['list (presence)', 3],
   ['list_item (presence)', 3],
-  ['text (presence)', 14],
+  ['text (presence)', 3],
   ['block_quote (extent)', 3],
   ['definition_list (presence)', 2],
   ['definition_description (presence)', 2],
-  ['paragraph (presence)', 9],
-  ['code_block (extent)', 11],
-  ['paragraph (extent)', 8],
-  ['non_breaking_space (presence)', 7],
-  ['soft_break (extent)', 6],
+  ['paragraph (presence)', 1],
+  ['code_block (extent)', 1],
+  ['paragraph (extent)', 7],
+  ['non_breaking_space (presence)', 6],
+  ['soft_break (extent)', 1],
   ['text (extent)', 1],
-  ['raw_block (extent)', 1],
 ])
 
 const asMeasured = (counts) =>
