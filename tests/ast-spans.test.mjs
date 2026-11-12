@@ -335,7 +335,7 @@ const LAST_MEASURED = new Map([
   ['abbreviation_def (extent)', 2],
   ['footnote (extent)', 25],
   ['comment (extent)', 2],
-  ['definition_description (extent)', 34],
+  ['definition_description (extent)', 33],
   ['text (presence)', 3],
   ['block_quote (extent)', 3],
   ['paragraph (presence)', 1],
