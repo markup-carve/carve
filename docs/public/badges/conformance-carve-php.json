@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
   "label": "conformance",
-  "message": "not measured",
-  "color": "lightgrey"
+  "message": "99.98%",
+  "color": "green"
 }
