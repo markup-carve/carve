@@ -630,8 +630,8 @@ carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-c
 carve-rs  783-a-verbatim-run-a-continuation-row-opens-stays-open-into-the-next-continuation-row.crv  table_cell  1  permitted
 carve-rs  797-an-indented-continuation-row-continues-the-table-above-2.crv  table_cell  2  permitted
 carve-rs  797-an-indented-continuation-row-continues-the-table-above.crv  table_cell  1  permitted
-carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list  1  permitted
-carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list_item  1  permitted
+carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list  2  permitted
+carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list_item  2  permitted
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-2.crv  table_cell  3  permitted
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-3.crv  table_cell  1  permitted
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-4.crv  table_cell  2  permitted
