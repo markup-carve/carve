@@ -4,8 +4,8 @@
     "date": "2026-11-12",
     "spec": "bcf77224c0720b573cad5f9ed6f4ae8ad569d9a8",
     "js": "d6aff707139b96cda4bd4663b3e3de442f9c2edb",
-    "php": "aadd85e07068230ce63d1fbb6511a160454f093a",
-    "rust": "c736c74ccc0903ee2b15113b5ace59e921a11cdb",
+    "php": "5d61c97f739c159305be406cc2108eae8b6b0d9c",
+    "rust": "94023e24030a24540f75dfc5fc2b881e715c961e",
     "documents": 4755
   },
   "differences": [
