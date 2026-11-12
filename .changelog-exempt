@@ -159,3 +159,7 @@
 5814: 0.1.14 - moves the carve-js pin through the marker-line body-column ruling. Pin bump and measurement ledger.
 5869: 0.1.14 - moves the carve-js pin through the carve#5830 port. Pin bump and measurement ledger.
 5921: 0.1.14 - moves all three engine pins for the 0.1.14 cut and declares the next-minor engine lag. Pin bump and measurement ledger.
+5954: 0.1.14 - settles the cross-engine ledgers at the 0.1.14 engine pins. Measurement ledger.
+5961: 0.1.14 - reconciles the AST full-corpus verdict ledgers at the 0.1.14 pins. Measurement ledger.
+5964: 0.1.14 - declares corpus row 1074 in the ingest and lint ledgers. Measurement ledger.
+b01bd0df6: 0.1.14 - reached main without a pull request; the attribute line between two sub-lists is written up in the 0.1.14 list fixes entry.
