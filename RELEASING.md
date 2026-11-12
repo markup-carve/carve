@@ -13,9 +13,11 @@ release goes in dependency order so the engines pin a released spec.
 3. `carve-rs`
 4. `carve-php`
 
-Each engine then bumps its spec pin to the new spec TAG and releases. Its
-release guard refuses a spec pin that is not a published carve tag, and fleet
-agreement is checked there, one engine at a time, rather than at the spec tag.
+Then each engine moves its spec pin to the new spec TAG (one pin PR per
+engine), and once all three pin it, each engine releases. Fleet agreement is
+checked at engine release time (`pre-tag-check.sh` run from an engine repo still
+gates it), not at the spec tag. Each engine's release workflow also refuses a
+spec pin that is not a published carve tag.
 
 `tree-sitter-carve` and the other satellites release on their own cadence.
 
