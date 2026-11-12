@@ -6,10 +6,16 @@ release goes in dependency order so the engines pin a released spec.
 
 ## Order
 
-1. `carve` (spec + corpus + oracle)
+1. `carve` (spec + corpus + oracle). Tagged first, on its own evidence: the
+   model, the corpus, the changelog, and the installed reference build being
+   the one it pins. Engine pins do not gate it (see below).
 2. `carve-js`
 3. `carve-rs`
 4. `carve-php`
+
+Each engine then bumps its spec pin to the new spec TAG and releases. Its
+release guard refuses a spec pin that is not a published carve tag, and fleet
+agreement is checked there, one engine at a time, rather than at the spec tag.
 
 `tree-sitter-carve` and the other satellites release on their own cadence.
 
@@ -138,12 +144,17 @@ CI green:
    ```
 4. **Run the pre-tag check locally** before submitting the cut PR. It checks
    the version, changelog, installed reference build, engine drift, declaration
-   audit, and fleet spec pins. Run it again on `main` after the PR merges:
+   audit, and fleet spec pins. Run it again on `main` after the PR merges.
+   Two verdicts measure the engines rather than the spec and are printed as
+   `INFO` without gating: step 9 (do the three engines pin the same spec
+   commit) and the audit's `PIN STALENESS` (is the carve-js reference pin level
+   with carve-js `main`). `PRE_TAG_FLEET=strict` makes both gate again:
 
    ```sh
    bash scripts/pre-tag-check.sh X.Y.Z
    # or, from another repo, point at this script:
    bash ../carve/scripts/pre-tag-check.sh X.Y.Z
+   PRE_TAG_FLEET=strict bash scripts/pre-tag-check.sh X.Y.Z   # fleet verdicts gate
    ```
 
 5. Land steps 1-3 via a PR to `main` and merge it. Prepare a draft GitHub
@@ -153,7 +164,8 @@ CI green:
    Its manifest, changelog, draft, and pre-tag jobs must pass before the release
    environment asks for approval. The pre-tag job installs the pinned reference
    build, checks out the three engines, and runs the same script, including the
-   declaration audit and fleet spec-pin check. Approve the green run. It creates
+   declaration audit and fleet spec-pin check (the fleet verdicts as `INFO`).
+   Approve the green run. It creates
    the tag and then publishes the prepared draft. Do not publish the draft from
    the GitHub release page, since that bypasses the pre-tag gate.
 
@@ -272,7 +284,10 @@ and no per-repo gate can see it.
 
 `pre-tag-check.sh` step 9 compares the `spec` (carve-js) and `tests/spec`
 (carve-rs, carve-php) gitlinks across all three at `origin/main` and names each
-repo, its pin and the distance between them. Run it on its own with:
+repo, its pin and the distance between them. It reports and does not gate the
+spec tag, since every engine merge during a cut would otherwise refuse it; set
+`PRE_TAG_FLEET=strict` to gate on it. At engine release time each engine's
+guard requires its pin to be a published spec tag. Run it on its own with:
 
 ```sh
 npm run fleet:pin                  # the three engines at origin/main
@@ -294,8 +309,7 @@ outlive the divergence it describes and cover the next one.
 ## Never
 
 - Never tag before `pre-tag-check.sh` passes.
-- Never tag a round in which the three engines pin different spec commits, unless
-  the divergence is written down in `.fleet-pin-exempt` with its reason.
+- Never release an engine whose spec pin is not a published spec tag.
 - Never pass a boolean to `gh api` with `-f`. It becomes a string, and a
   string on `draft` reads as false - see the section above.
 - Never tag `carve` on a drift file nobody reconciled. CI gates that drift is

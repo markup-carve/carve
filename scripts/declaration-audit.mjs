@@ -23,8 +23,8 @@
  * The separate 0.1.14 release waiver names exact owed rows and expires at the
  * next version. A row an engine owes remains owed outside that release.
  *
- * `release` mode requires owed lists to be empty and the carve-js pin to be
- * current. `per-pr` mode accepts well-formed rows in ledgers marked
+ * `release` mode requires owed lists to be empty; it reports carve-js pin
+ * staleness and gates it only under PRE_TAG_FLEET=strict. `per-pr` mode accepts well-formed rows in ledgers marked
  * `prPolicy: 'declared'`, reports stale pins, and skips missing engine
  * checkouts. Live checks still guard drift in both directions. The pin and
  * format checks run in `engine:report -- --check` and
@@ -1129,8 +1129,23 @@ const seenWaiverLists = new Set()
 const width = { repo: 9, path: 60, name: 32, rows: 20 }
 const pad = (s, n) => String(s).padEnd(n).slice(0, n)
 
+// A stale pin is a RELEASE fault and a per-PR fact. It goes stale on every
+// carve-js merge, so gating a spec PR on it makes the pin bump a prerequisite
+// for landing a ruling, and a repo that is red as routine hides a regression in
+// the noise (carve#1811). The spec release is tagged on its own evidence, so the
+// release verdict reports it too unless PRE_TAG_FLEET=strict asks for the gate.
+const fleetMode = process.env.PRE_TAG_FLEET || 'info'
+if (fleetMode !== 'info' && fleetMode !== 'strict') {
+  console.error(`PRE_TAG_FLEET must be 'strict' or unset, got '${fleetMode}'`)
+  process.exit(2)
+}
+const pinVerdictIsGated = strict && fleetMode === 'strict'
+const pinNote = pinVerdictIsGated ? ''
+  : strict ? ' - INFO, not gating for the spec release (PRE_TAG_FLEET=strict gates it)'
+    : ' (reported, not gated in per-PR mode)'
+
 const MODE_BANNER = strict
-  ? 'RELEASE - is this tree clear to tag? Owed rows must be empty or explicitly waived for this version, and the reference build current.'
+  ? `RELEASE - is this tree clear to tag? Owed rows must be empty or explicitly waived for this version${pinVerdictIsGated ? ', and the reference build current' : ''}.`
   : 'PER-PR - is this pull request defective? A declared engine-pin window passes; pin staleness reports.'
 console.log(`Declaration audit - mode ${mode.toUpperCase()}`)
 console.log(`  ${MODE_BANNER}`)
@@ -1149,12 +1164,6 @@ if (duplicateManifestKeys.length > 0) {
   failed += duplicateManifestKeys.length
 }
 
-// A stale pin is a RELEASE fault and a per-PR fact. It goes stale on every
-// carve-js merge, so gating a spec PR on it makes the pin bump a prerequisite
-// for landing a ruling, and a repo that is red as routine hides a regression in
-// the noise (carve#1811). The pre-tag run still fails on it.
-const pinVerdictIsGated = strict
-const pinNote = pinVerdictIsGated ? '' : ' (reported, not gated in per-PR mode)'
 const pinStatus = carveJsPinStatus(REPOS['carve-js'].dir, ref === 'worktree' ? 'HEAD' : ref)
 if (pinStatus instanceof Error) {
   console.log(`PIN STALENESS  UNVERIFIABLE - ${pinStatus.message}${pinNote}\n`)
@@ -1435,7 +1444,7 @@ if (failed > 0) {
   console.log(
     `DECLARATION AUDIT PASSED (mode: ${mode}) - ` +
       (strict
-        ? 'every owed row is empty or explicitly waived for this version, the reference build is current, and every guard is two-directional.'
+        ? `every owed row is empty or explicitly waived for this version, ${pinVerdictIsGated ? 'the reference build is current, ' : ''}and every guard is two-directional.`
         : 'every owed list is empty, every engine-lag window is declared, and every guard is two-directional.'),
   )
 }
