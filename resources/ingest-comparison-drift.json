@@ -147,6 +147,50 @@
       }
     },
     {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/js->php",
+      "fingerprint": "6c86ccf6738db9e23067af821b80442f741fa49ca18639f7e88f29183064118b",
+      "reason": "carve-php and carve-rs still hide the tab-led lazy comment run that corpus 1070-4 refuses, so every pair between them and carve-js differs; carve-js matches the corpus since 0.1.17. Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/js->rust",
+      "fingerprint": "6c86ccf6738db9e23067af821b80442f741fa49ca18639f7e88f29183064118b",
+      "reason": "carve-php and carve-rs still hide the tab-led lazy comment run that corpus 1070-4 refuses, so every pair between them and carve-js differs; carve-js matches the corpus since 0.1.17. Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/php->js",
+      "fingerprint": "4e0f9dea4137b6cba21f5d13012454c81ce13744a1f9f76875f1a6ca3f47c240",
+      "reason": "carve-php and carve-rs still hide the tab-led lazy comment run that corpus 1070-4 refuses, so every pair between them and carve-js differs; carve-js matches the corpus since 0.1.17. Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
+      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4.crv/rust->js",
+      "fingerprint": "4e0f9dea4137b6cba21f5d13012454c81ce13744a1f9f76875f1a6ca3f47c240",
+      "reason": "carve-php and carve-rs still hide the tab-led lazy comment run that corpus 1070-4 refuses, so every pair between them and carve-js differs; carve-js matches the corpus since 0.1.17. Cause: markup-carve/carve#5940.",
+      "issue": "https://github.com/markup-carve/carve/issues/5940",
+      "observation": {
+        "expected": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n{% x\n%}</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+        "status": 0,
+        "actual": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>p</p>\n      <dl>\n        <dt>t</dt>\n        <dd>pre\n</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
+      }
+    },
+    {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
       "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
