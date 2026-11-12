@@ -10,7 +10,7 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
-## [0.1.14] - 2026-11-08
+## [0.1.14] - 2026-11-12
 
 The spec settles one attach rule for `+`, a four-step block layout, a braced table alignment spelling and a canonical `***` thematic break. The executable spec model now follows the layout clauses across lists, descriptions, quotes, notes and comments, and the corpus pins the readings the engines owe.
 
