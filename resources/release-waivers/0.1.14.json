@@ -7,26 +7,24 @@
       "name": null,
       "ticket": 5468,
       "rows": [
+        "list  (extent)  4  carve-php spans a trailing refused `+` (markup-carve/carve-php#5164) or a short unclosed `%%%` comment (markup-carve/carve-php#5165); fences a refused `+` ends, markup-carve/carve#5975; carve-rs item ends, markup-carve/carve-rs#4274 and markup-carve/carve-rs#4263; starts, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
+        "list_item  (extent)  5  the list rows above, plus carve-php `+`-host starts (markup-carve/carve-php#5167) and corpus 245 (markup-carve/carve#5063); same tickets: markup-carve/carve-php#5164, markup-carve/carve-php#5165, markup-carve/carve#5975, markup-carve/carve-rs#4274, markup-carve/carve-rs#4263, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
         "abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.",
-        "list (presence)  4  Pin differential cause triage: markup-carve/carve#5231.",
+        "footnote (extent)  25  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+` (markup-carve/carve-php#5164) and `+`-host starts (markup-carve/carve-php#5167); carve-js, markup-carve/carve-js#4955; carve-rs unplaced last child, markup-carve/carve-rs#4263; fixed on engine main: markup-carve/carve-php#5150.",
+        "comment  (extent)  2  carve-php unclosed `%%%` comment, markup-carve/carve-php#5165; carve-rs, markup-carve/carve-rs#4274.",
+        "definition_description  (extent)  34  Starts in leading indentation, markup-carve/carve#5976 (carve-rs line open: carve-js and carve-php moved indented description starts to the owner's content column); carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.",
+        "list (presence)  3  Pin differential cause triage: markup-carve/carve#5231.",
         "list_item (presence)  3  Pin differential cause triage: markup-carve/carve#5231.",
+        "text  (presence)  3  Owners per document in resources/ast-position-waivers.txt (markup-carve/carve-rs#4263); carve-php verse leads fixed on engine main, markup-carve/carve-php#5151.",
+        "block_quote (extent)  3  Pin differential cause triage: markup-carve/carve#5231. Corpus 1076-5, markup-carve/carve#5978.",
         "definition_list (presence)  2  Pin differential cause triage: markup-carve/carve#5231.",
         "definition_description (presence)  2  Pin differential cause triage: markup-carve/carve#5231.",
-        "list  (extent)  17  carve-php spans a trailing refused `+` (markup-carve/carve-php#5164) or a short unclosed `%%%` comment (markup-carve/carve-php#5165); fences a refused `+` ends, markup-carve/carve#5975; carve-rs item ends, markup-carve/carve-rs#4274 and markup-carve/carve-rs#4263; starts, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
-        "list_item  (extent)  21  the list rows above, plus carve-php `+`-host starts (markup-carve/carve-php#5167) and corpus 245 (markup-carve/carve#5063); same tickets: markup-carve/carve-php#5164, markup-carve/carve-php#5165, markup-carve/carve#5975, markup-carve/carve-rs#4274, markup-carve/carve-rs#4263, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
-        "definition_list  (extent)  3  carve-php spans a trailing refused `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.",
-        "footnote (extent)  30  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+` (markup-carve/carve-php#5164) and `+`-host starts (markup-carve/carve-php#5167); carve-js, markup-carve/carve-js#4955; carve-rs unplaced last child, markup-carve/carve-rs#4263; fixed on engine main: markup-carve/carve-php#5150.",
-        "comment  (extent)  3  carve-php unclosed `%%%` comment, markup-carve/carve-php#5165; carve-rs, markup-carve/carve-rs#4274.",
-        "definition_description  (extent)  3  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.",
-        "text  (presence)  14  Owners per document in resources/ast-position-waivers.txt (markup-carve/carve-rs#4263); carve-php verse leads fixed on engine main, markup-carve/carve-php#5151.",
-        "block_quote (extent)  3  Pin differential cause triage: markup-carve/carve#5231. Corpus 1076-5, markup-carve/carve#5978.",
-        "paragraph (presence)  9  Owners per document in resources/ast-position-waivers.txt: markup-carve/carve-rs#4263, and one permitted carve-js row.",
-        "code_block (extent)  11  Fences a refused `+` ends, markup-carve/carve#5975; carve-js own-line fence blank, markup-carve/carve-js#4956; carve-rs quoted fence, markup-carve/carve-rs#4275; fixed on engine main: markup-carve/carve-rs#4262.",
-        "paragraph (extent)  8  carve-rs unplaced verse leads and children, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166; fixed on engine main: markup-carve/carve-php#5151, markup-carve/carve-php#5150. Corpus 1076-5, markup-carve/carve#5978.",
-        "non_breaking_space (presence)  7  carve-rs omits verse-lead positions, markup-carve/carve-rs#4263.",
-        "soft_break (extent)  6  carve-rs unplaced neighbors, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166.",
-        "text (extent)  1  carve-php attribute shift, markup-carve/carve-php#5166.",
-        "raw_block (extent)  1  A raw fence a refused `+` ends, markup-carve/carve#5975."
+        "paragraph (presence)  1  Owners per document in resources/ast-position-waivers.txt: markup-carve/carve-rs#4263, and one permitted carve-js row.",
+        "code_block (extent)  1  Fences a refused `+` ends, markup-carve/carve#5975; carve-js own-line fence blank, markup-carve/carve-js#4956; carve-rs quoted fence, markup-carve/carve-rs#4275; fixed on engine main: markup-carve/carve-rs#4262.",
+        "paragraph (extent)  7  carve-rs unplaced verse leads and children, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166; fixed on engine main: markup-carve/carve-php#5151, markup-carve/carve-php#5150. Corpus 1076-5, markup-carve/carve#5978.",
+        "non_breaking_space (presence)  6  carve-rs omits verse-lead positions, markup-carve/carve-rs#4263.",
+        "soft_break (extent)  1  carve-rs unplaced neighbors, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166.",
+        "text (extent)  1  carve-php attribute shift, markup-carve/carve-php#5166."
       ]
     },
     {
@@ -35,7 +33,7 @@
       "name": null,
       "ticket": 5468,
       "rows": [
-        "comment.content  8  carve-rs keeps continuation indentation in a braced comment, markup-carve/carve-rs#4276; a `%%%` comment past its owner's content column, markup-carve/carve#5977."
+        "comment.content  2  carve-rs keeps continuation indentation in a braced comment, markup-carve/carve-rs#4276; a `%%%` comment past its owner's content column, markup-carve/carve#5977."
       ]
     },
     {
@@ -44,9 +42,7 @@
       "name": null,
       "ticket": 5468,
       "rows": [
-        "carve-php  starts-past-opening-markup  abbreviation_def  2  markup-carve/carve-php#4722",
-        "carve-php  starts-past-opening-markup  list  4  markup-carve/carve-php#5162",
-        "carve-php  starts-past-opening-markup  list_item  5  markup-carve/carve-php#5162"
+        "carve-php  starts-past-opening-markup  abbreviation_def  2  markup-carve/carve-php#4722"
       ]
     },
     {
@@ -219,13 +215,6 @@
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "markdown/js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "plain/js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "ansi/js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "carve/js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "html/js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "html/php/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: the engine measures a tab-led attribute line in a note a nested plus passes from the line start, not per frame (C5), so the plus is refused and q stays in the outer item.",
-        "html/rust/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: the engine measures a tab-led attribute line in a note a nested plus passes from the line start, not per frame (C5), so the plus is refused and q stays in the outer item.",
         "html/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
         "html/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
         "markdown/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
@@ -235,22 +224,7 @@
         "carve/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
         "carve/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
         "ansi/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
-        "ansi/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
-        "html/php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "markdown/php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "plain/php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "carve/php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "ansi/php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "html/php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "markdown/php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "plain/php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "carve/php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "ansi/php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "html/js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984).",
-        "markdown/js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984).",
-        "plain/js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984).",
-        "carve/js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984).",
-        "ansi/js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984)."
+        "ansi/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor)."
       ]
     },
     {
@@ -265,14 +239,8 @@
         "rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "js/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: carve-js reads the tab-led attribute line as note text and refuses the nested plus (regression vs 0.1.15).",
-        "php/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: the engine measures a tab-led attribute line in a note a nested plus passes from the line start, not per frame (C5), so the plus is refused and q stays in the outer item.",
-        "rust/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  markup-carve/carve#5987: the engine measures a tab-led attribute line in a note a nested plus passes from the line start, not per frame (C5), so the plus is refused and q stays in the outer item.",
         "php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
-        "rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
-        "php/1077-a-column-after-an-astral-character-is-one-code-point  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "php/1077-a-column-after-an-astral-character-is-one-code-point-2  markup-carve/carve-php#5176: the pinned carve-php counts a glued brace column in bytes; fixed on carve-php main after this pin (carve#5984).",
-        "js/1077-a-column-after-an-astral-character-is-one-code-point-3  markup-carve/carve-js#4967: the pinned carve-js counts a glued brace column in UTF-16 units; fixed on carve-js main after this pin (carve#5984)."
+        "rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor)."
       ]
     },
     {
@@ -386,36 +354,15 @@
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  block_quote  1  markup-carve/carve-rs#3934",
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list  1  markup-carve/carve-rs#3934",
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list_item  1  markup-carve/carve-rs#3934",
-        "carve-rs  855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-3.crv  list  1  markup-carve/carve-rs#3934",
         "carve-rs  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-3.crv  definition_description  1  markup-carve/carve-rs#3934",
         "carve-rs  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-5.crv  definition_description  1  markup-carve/carve-rs#3934",
         "carve-rs  962-a-document-owned-comment-run-stays-between-list-items.crv  list  1  markup-carve/carve-rs#3934",
-        "carve-rs  1029-a-quoted-note-run-uses-the-lazy-line-written-column.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  non_breaking_space  3  markup-carve/carve-rs#4263",
+        "carve-rs  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
         "carve-rs  1043-a-second-tab-keeps-two-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
-        "carve-rs  1043-a-second-tab-keeps-two-verse-spaces.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  non_breaking_space  3  markup-carve/carve-rs#4263",
-        "carve-rs  1046-a-description-item-measures-its-verse-lead-in-both-frames.crv  non_breaking_space  1  markup-carve/carve-rs#4263",
-        "carve-rs  1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv  paragraph  1  markup-carve/carve-rs#4263",
+        "carve-rs  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
         "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2.crv  non_breaking_space  1  markup-carve/carve-rs#4263",
         "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4.crv  non_breaking_space  3  markup-carve/carve-rs#4263",
-        "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  non_breaking_space  3  markup-carve/carve-rs#4263",
-        "carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-2.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-3.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-4.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation-2.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation-2.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv  text  1  markup-carve/carve-rs#4263",
-        "carve-rs  998-a-losing-note-plus-does-not-take-an-immediate-follower.crv  paragraph  1  markup-carve/carve-rs#4263",
-        "carve-rs  998-a-losing-note-plus-does-not-take-an-immediate-follower.crv  text  1  markup-carve/carve-rs#4263"
+        "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  non_breaking_space  3  markup-carve/carve-rs#4263"
       ]
     },
     {
@@ -424,26 +371,24 @@
       "name": "LAST_MEASURED",
       "ticket": 5468,
       "rows": [
+        "['list (extent)', 4]",
+        "['list_item (extent)', 5]",
         "['abbreviation_def (extent)', 2]",
-        "['comment (extent)', 3]",
-        "['list (presence)', 4]",
+        "['footnote (extent)', 25]",
+        "['comment (extent)', 2]",
+        "['definition_description (extent)', 34]",
+        "['list (presence)', 3]",
         "['list_item (presence)', 3]",
+        "['text (presence)', 3]",
+        "['block_quote (extent)', 3]",
         "['definition_list (presence)', 2]",
         "['definition_description (presence)', 2]",
-        "['list (extent)', 17]",
-        "['list_item (extent)', 21]",
-        "['definition_list (extent)', 3]",
-        "['footnote (extent)', 30]",
-        "['definition_description (extent)', 3]",
-        "['text (presence)', 14]",
-        "['block_quote (extent)', 3]",
-        "['paragraph (presence)', 9]",
-        "['code_block (extent)', 11]",
-        "['paragraph (extent)', 8]",
-        "['non_breaking_space (presence)', 7]",
-        "['soft_break (extent)', 6]",
-        "['text (extent)', 1]",
-        "['raw_block (extent)', 1]"
+        "['paragraph (presence)', 1]",
+        "['code_block (extent)', 1]",
+        "['paragraph (extent)', 7]",
+        "['non_breaking_space (presence)', 6]",
+        "['soft_break (extent)', 1]",
+        "['text (extent)', 1]"
       ]
     },
     {
@@ -452,7 +397,7 @@
       "name": "LAST_MEASURED",
       "ticket": 5468,
       "rows": [
-        "['comment.content', 8]"
+        "['comment.content', 2]"
       ]
     },
     {
@@ -556,9 +501,7 @@
       "name": null,
       "ticket": 5472,
       "rows": [
-        "1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  carve#5874: the pinned JavaScript reader keeps a tab-led comment run whose closer misses the description body column; carve-js#4902 has the fix.",
-        "1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s  carve#5987: the pinned JavaScript reader reads a tab-led attribute line in a note a nested plus passes as note text and refuses the plus, so its next line stays in the outer item; the spec measures the line per frame (C5), keeps the attribute line the note's and gives the next line to the plus.",
-        "1077-a-column-after-an-astral-character-is-one-code-point-3  carve#5984: the pinned JavaScript reader counts a glued brace column in UTF-16 units, so it takes a continuation on the brace column; carve-js#4967 has the fix."
+        "1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  carve#5874: the pinned JavaScript reader keeps a tab-led comment run whose closer misses the description body column; carve-js#4902 has the fix."
       ]
     },
     {
