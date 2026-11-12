@@ -53,6 +53,7 @@ for (const [engine, [command, ...prefix]] of Object.entries(engines)) {
 const inventory = JSON.parse(readFileSync(resolve(root, 'resources/markdown-import-inventory.json'), 'utf8'))
 const classes = new Map([
   ...inventory.constructs.map(row => [row.code, row]),
+  ['attribute-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
   ['bbcode-quote-field-dropped', { severity: 'warning', fidelity: 'dropped', confidence: 'exact' }],
   ['link-fragment-case-rewritten', { severity: 'info', fidelity: 'normalized', confidence: 'inferred', path: /^link:[^#]*#.+$/ }],
   ['markdown-github-alert', { severity: 'info', fidelity: 'normalized', confidence: 'exact' }],
@@ -61,7 +62,14 @@ const classes = new Map([
 // Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
 // write instead, compared exactly; once an engine writes the ruled report the row fails
 // until that engine is removed here, in the commit that moves its pin.
-const AHEAD_OF_PIN = {}
+const UNVERIFIED = { code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }
+const AHEAD_OF_PIN = {
+  // carve#6010: the pinned importers still write the denied destinations.
+  'markdown-denied-scheme-destination': {
+    engines: ['js', 'rust', 'php'],
+    pinned: { output: 'Siehe [x](javascript:alert(1)) und ![b](data:image/png;base64,AA).\n', diagnostics: [UNVERIFIED], exit: 1 },
+  },
+}
 // The engine pin can move a measured report before the importer manifest moves.
 // Keep the manifest read-only and gate exact, stale-checked pin variants here.
 const PIN_REPORT_OVERRIDES = JSON.parse(readFileSync(resolve(root, 'resources/migration-pin-overrides.json'), 'utf8'))
