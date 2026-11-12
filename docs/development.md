@@ -33,6 +33,10 @@ the reduced document, each output and the seed. A signature with an open issue
 gets a comment instead; one with a closed issue is not refiled. At most ten new
 issues go out a night, three per agreement pattern.
 
+While 0.1.x is frozen and 0.2 is built on `next2`, the scheduled run only
+prints its plan and files nothing. A manual dispatch with `file-issues` set
+still files.
+
 Findings leave the run green. It fails only when the harness breaks: an engine
 missing, no mutant compared, fewer than half of the unmutated seed documents
 agreeing, or `gh` failing.
