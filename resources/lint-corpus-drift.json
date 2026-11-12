@@ -1,11 +1,11 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-11",
+    "date": "2026-11-12",
     "spec": "bcf77224c0720b573cad5f9ed6f4ae8ad569d9a8",
-    "js": "31e4be11ffe993a59abda36acb1d92254c615f1f",
-    "php": "3e604b2970c7e2842fd3e0736adc196cdb67eb97",
-    "rust": "51922596902e195c7955bc8038cb0f4843ef9aab",
+    "js": "d6aff707139b96cda4bd4663b3e3de442f9c2edb",
+    "php": "aadd85e07068230ce63d1fbb6511a160454f093a",
+    "rust": "c736c74ccc0903ee2b15113b5ace59e921a11cdb",
     "documents": 4755
   },
   "differences": [
@@ -418,6 +418,50 @@
             10
           ]
         ]
+      }
+    },
+    {
+      "file": "tests/corpus/855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides.crv",
+      "reason": "carve-rs drops continuation-marker-refused when a %% comment follows a refused marker-line plus; a regression from carve-rs#4281 on carve-rs main after the previous pin (markup-carve/carve-rs#4286).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/4286",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "rust": []
+      }
+    },
+    {
+      "file": "tests/corpus/855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-3.crv",
+      "reason": "carve-rs drops continuation-marker-refused when a %% comment follows a refused marker-line plus; a regression from carve-rs#4281 on carve-rs main after the previous pin (markup-carve/carve-rs#4286).",
+      "issue": "https://github.com/markup-carve/carve-rs/issues/4286",
+      "diagnostics": {
+        "js": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "php": [
+          [
+            "continuation-marker-refused",
+            1,
+            3
+          ]
+        ],
+        "rust": []
       }
     },
     {
@@ -1440,59 +1484,6 @@
       }
     },
     {
-      "file": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv",
-      "reason": "carve-js reads the tab-led attribute line as note text and reports no unattached-block-attribute; carve-php and carve-rs report it at 4:5 (row 1075).",
-      "issue": "https://github.com/markup-carve/carve/issues/5987",
-      "diagnostics": {
-        "js": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            5
-          ]
-        ],
-        "php": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            4,
-            5
-          ]
-        ],
-        "rust": [
-          [
-            "continuation-marker-refused",
-            2,
-            7
-          ],
-          [
-            "list-item-block-overindented",
-            4,
-            5
-          ],
-          [
-            "unattached-block-attribute",
-            4,
-            5
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv",
       "reason": "carve-php does not report the code fence a text line at the item's column ends in a marker-line term's description as unclosed-code-fence; carve-js and carve-rs do (row 1076-5).",
       "issue": "https://github.com/markup-carve/carve/issues/5969",
@@ -1512,22 +1503,6 @@
             9
           ]
         ]
-      }
-    },
-    {
-      "file": "tests/corpus/1077-a-column-after-an-astral-character-is-one-code-point-2.crv",
-      "reason": "The pinned carve-php counts a glued brace column in bytes and reports a diagnostic carve-js and carve-rs do not; fixed on carve-php main after this pin (markup-carve/carve-php#5176, carve#5984).",
-      "issue": "https://github.com/markup-carve/carve/issues/5984",
-      "diagnostics": {
-        "js": [],
-        "php": [
-          [
-            "block-marker-as-text",
-            1,
-            3
-          ]
-        ],
-        "rust": []
       }
     }
   ]
