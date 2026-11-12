@@ -4332,6 +4332,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       }
     }
     let reached = 0
+    // The frame an erased `%%` line's own column reaches, before the walk moves it (carve#5178).
+    let ownReach = -1
     let plus = null
     let plusAccepted = false
     // The C5 column of the current quote segment, measured on demand.
@@ -4435,6 +4437,7 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       if (deeper > reached && !lazyRunMissesFrame(at, top().para ? frames.length - 1 : deeper)) {
         src = ' '.repeat(frames[deeper].col) + m.rest
         m = walkIndent(src)
+        ownReach = reached
         reached = deeper
         const end = invisibleCommentEnd(trimLineEnd(m.rest), at)
         const braceCol = m.rest.startsWith('{%')
@@ -4899,7 +4902,9 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
     } else if (trace) {
       const kind = TRACE_FORM[form.kind] ?? form.family ?? form.kind
       const cell = form.kind === 'colon-close' ? 'B-div-end' : TRACE_OPENS.has(form.kind) ? `B-${form.family ?? kind}-start` : undefined
-      emit(at, 'S5', applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
+      const erasedComment = form.kind === 'leaf' && ownReach >= 0 && COMMENT_LINE.test(m.rest) &&
+        !COMMENT_FENCE_BODY.test(m.rest) && !REGION_MARKER.test(m.rest)
+      emit(at, 'S5', erasedComment ? ownerPath(ownReach) : applied, TRACE_RULE[form.kind] ?? 'CARVE-P0-024', kind,
         { cell, closed: closed > 0 ? closed : undefined, reached: reachedPath, plus: plusFollower ? at : undefined })
     }
 
