@@ -62,20 +62,7 @@ const classes = new Map([
 // Rows whose ruled report the pinned engines do not write yet. `pinned` is what they
 // write instead, compared exactly; once an engine writes the ruled report the row fails
 // until that engine is removed here, in the commit that moves its pin.
-const UNVERIFIED = { code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }
-const AHEAD_OF_PIN = {
-  // carve#6010: the pinned carve-php and carve-rs importers still write the denied destinations;
-  // carve-js drops them but writes an unlocated, unassessed report (carve#6013).
-  'markdown-denied-scheme-destination': {
-    engines: ['js', 'rust', 'php'],
-    pinned: { output: 'Siehe [x](javascript:alert(1)) und ![b](data:image/png;base64,AA).\n', diagnostics: [UNVERIFIED], exit: 1 },
-    js: {
-      output: 'Siehe x und b.\n',
-      diagnostics: [UNVERIFIED, ...Array(2).fill({ code: 'attribute-dropped', severity: 'warning', fidelity: 'dropped', confidence: 'exact' })],
-      exit: 1,
-    },
-  },
-}
+const AHEAD_OF_PIN = {}
 // The engine pin can move a measured report before the importer manifest moves.
 // Keep the manifest read-only and gate exact, stale-checked pin variants here.
 const PIN_REPORT_OVERRIDES = JSON.parse(readFileSync(resolve(root, 'resources/migration-pin-overrides.json'), 'utf8'))
