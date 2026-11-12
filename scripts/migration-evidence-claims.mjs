@@ -64,10 +64,16 @@ const classes = new Map([
 // until that engine is removed here, in the commit that moves its pin.
 const UNVERIFIED = { code: 'fidelity-unverified', severity: 'warning', fidelity: 'dropped', confidence: 'fallback' }
 const AHEAD_OF_PIN = {
-  // carve#6010: the pinned importers still write the denied destinations.
+  // carve#6010: the pinned carve-php and carve-rs importers still write the denied destinations;
+  // carve-js drops them but writes an unlocated, unassessed report (carve#6013).
   'markdown-denied-scheme-destination': {
     engines: ['js', 'rust', 'php'],
     pinned: { output: 'Siehe [x](javascript:alert(1)) und ![b](data:image/png;base64,AA).\n', diagnostics: [UNVERIFIED], exit: 1 },
+    js: {
+      output: 'Siehe x und b.\n',
+      diagnostics: [UNVERIFIED, ...Array(2).fill({ code: 'attribute-dropped', severity: 'warning', fidelity: 'dropped', confidence: 'exact' })],
+      exit: 1,
+    },
   },
 }
 // The engine pin can move a measured report before the importer manifest moves.
