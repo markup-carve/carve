@@ -7,13 +7,13 @@ description: How closely each released Carve engine renders the conformance pack
 # Conformance
 
 Each released engine against the spec commit it pins. Checked daily against
-the latest published release of each engine; last regenerated 2026-11-11.
+the latest published release of each engine; last regenerated 2026-11-12.
 
 | Engine | Release | Spec it pins | Cases that differ | Matching | Tagged | Ledger |
 |---|---|---|---|---|---|---|
-| [carve-js](https://github.com/markup-carve/carve-js) | 0.1.15 (`c62fad2a`) | 0.1.12 + 24 commits (`32d724d1`) | not measured: the pinned spec predates the conformance pack | - | 2026-10-25 | - |
-| [carve-php](https://github.com/markup-carve/carve-php) | 0.1.16 (`20d92071`) | 0.1.12 + 24 commits (`32d724d1`) | not measured: the pinned spec predates the conformance pack | - | 2026-10-25 | - |
-| [carve-rs](https://github.com/markup-carve/carve-rs) | 0.1.13 (`5ec3c8ea`) | 0.1.12 + 24 commits (`32d724d1`) | not measured: the pinned spec predates the conformance pack | - | 2026-10-25 | - |
+| [carve-js](https://github.com/markup-carve/carve-js) | 0.1.16 (`130a0423`) | 0.1.14 (`51c56315`) | 1 of 12,000 | 99.99% | 2026-11-12 | [ledger](https://github.com/markup-carve/carve-js/blob/130a0423658b742ba9bda08e3ebf1ec31498072c/test/conformance-pack-drift.json) |
+| [carve-php](https://github.com/markup-carve/carve-php) | 0.1.17 (`fa017b5e`) | 0.1.14 (`51c56315`) | 2 of 12,000 | 99.98% | 2026-11-12 | [ledger](https://github.com/markup-carve/carve-php/blob/fa017b5e5260180e45cf8cb2add16c9adaad74a3/tests/fixtures/conformance-pack-drift.json) |
+| [carve-rs](https://github.com/markup-carve/carve-rs) | 0.1.14 (`0a56283f`) | 0.1.14 (`51c56315`) | 5 of 12,000 | 99.96% | 2026-11-12 | [ledger](https://github.com/markup-carve/carve-rs/blob/0a56283f1e745643bc78cdd6fb11ac7344fb88c7/tests/fixtures/conformance-pack-drift.json) |
 
 ## How this is measured
 
