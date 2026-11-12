@@ -367,6 +367,7 @@ const PERMITTED_PHRASE = {
   list_item: 'list item an erased comment line sits inside',
   definition_list: 'description list an erased comment line sits inside',
   definition_description: 'description an erased comment line sits inside',
+  footnote: 'footnote an erased comment line sits inside',
   link: 'link read across an escaped cell pipe',
   image: 'image read across an escaped cell pipe',
 }

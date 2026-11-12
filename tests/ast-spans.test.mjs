@@ -330,18 +330,14 @@ test('a row with a count but no reference is malformed, not declared', () => {
 // Re-measured 2026-11-06 in four AST shards at the current engine pins.
 // Re-measured 2026-11-11 from run 43030841923 at the 0.1.14 pins (carve#5960).
 const LAST_MEASURED = new Map([
-  ['list (extent)', 4],
-  ['list_item (extent)', 5],
+  ['list (extent)', 3],
+  ['list_item (extent)', 4],
   ['abbreviation_def (extent)', 2],
   ['footnote (extent)', 25],
   ['comment (extent)', 2],
   ['definition_description (extent)', 34],
-  ['list (presence)', 3],
-  ['list_item (presence)', 3],
   ['text (presence)', 3],
   ['block_quote (extent)', 3],
-  ['definition_list (presence)', 2],
-  ['definition_description (presence)', 2],
   ['paragraph (presence)', 1],
   ['code_block (extent)', 1],
   ['paragraph (extent)', 7],
