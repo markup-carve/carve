@@ -290,7 +290,8 @@ fidelity must report that loss when it has the original context.
 A destination whose scheme PART 9 §25's sink denylist blanks (`javascript`,
 `vbscript`, `data`, `file` and the OS-handler schemes such as `ms-msdt`) is
 imported like a missing destination: no link or image node, only the
-content and any surviving attributes (carve#2254). The
+content and any surviving attributes (carve#2254). This binds every importer,
+Markdown import included (carve#6010). The
 scheme is read the way the sink reads it, with controls and whitespace removed
 first, so `java&#9;script:` is denied too.
 

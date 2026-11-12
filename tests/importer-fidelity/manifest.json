@@ -1121,6 +1121,84 @@
       ]
     },
     {
+      "id": "markdown-denied-scheme-destination",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "Siehe [x](javascript:alert(1)) und ![b](data:image/png;base64,AA).\n",
+      "expected": {
+        "output": "Siehe x und b.\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "attribute-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "attribute-dropped",
+            "severity": "warning",
+            "fidelity": "dropped",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 1
+      },
+      "constructs": [
+        "paragraph",
+        "link",
+        "image"
+      ]
+    },
+    {
+      "id": "markdown-allowed-scheme-destination",
+      "sourceFormat": "markdown",
+      "runner": "core",
+      "repository": "markup-carve/carve",
+      "input": "Siehe [x](mailto:a@example.org) und ![b](/data:b.png).\n",
+      "expected": {
+        "output": "Siehe [x](mailto:a@example.org) und ![b](/data:b.png).\n",
+        "diagnostics": [
+          {
+            "code": "markdown-paragraph",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-link",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          },
+          {
+            "code": "markdown-image",
+            "severity": "info",
+            "fidelity": "preserved",
+            "confidence": "exact",
+            "path": "line:1"
+          }
+        ],
+        "exit": 0
+      },
+      "constructs": [
+        "paragraph",
+        "link",
+        "image"
+      ]
+    },
+    {
       "id": "markdown-paragraph-holding-a-pipe-is-assessed",
       "sourceFormat": "markdown",
       "runner": "core",

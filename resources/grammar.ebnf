@@ -7173,6 +7173,10 @@ EOF = (* end of file *) ;
         serializing source is not sanitization.
         Markdown is a lossy export for readers that this specification does
         not bind, so its destinations remain subject to the denylist.
+        AN IMPORTER WRITES NO DENIED DESTINATION. Every importer, HTML and
+        Markdown alike, writes a destination this denylist blanks as its
+        content only, with no link or image node, and reports one
+        `attribute-dropped` row at `warning` for it (carve#2254, carve#6010).
 
         WHAT IS BLANKED IS THE DESTINATION, NOT THE TEXT. A denied autolink's
         visible text IS its URL, and every target shows it. Blanking there
