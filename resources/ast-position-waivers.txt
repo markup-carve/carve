@@ -449,7 +449,6 @@ carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  
 carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  definition_list  1  markup-carve/carve-php#4725
 carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  paragraph  1  permitted
 carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  soft_break  1  permitted
-carve-php  493-empty-containers-share-one-html-body-shape-2.crv  figure_group  1  markup-carve/carve-php#4725
 carve-php  506-comment-columns-and-surviving-list-items-2.crv  paragraph  1  permitted
 carve-php  506-comment-columns-and-surviving-list-items-2.crv  soft_break  1  permitted
 carve-php  506-comment-columns-and-surviving-list-items-4.crv  list  1  permitted
@@ -549,6 +548,7 @@ carve-rs  381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-4.crv
 carve-rs  381-a-resumed-lazy-run-belongs-to-the-innermost-marker-line-item-4.crv  soft_break  1  permitted
 carve-rs  433-a-comment-in-a-footnote-body-is-invisible-in-both-spellings.crv  paragraph  1  permitted
 carve-rs  433-a-comment-in-a-footnote-body-is-invisible-in-both-spellings.crv  soft_break  1  permitted
+carve-rs  435-the-continuation-marker-s-column-gate-reaches-every-container-3.crv  footnote  1  permitted
 carve-rs  435-the-continuation-marker-s-column-gate-reaches-every-container-3.crv  paragraph  1  permitted
 carve-rs  435-the-continuation-marker-s-column-gate-reaches-every-container-3.crv  soft_break  1  permitted
 carve-rs  435-the-continuation-marker-s-column-gate-reaches-every-container-6.crv  definition_description  1  markup-carve/carve-rs#3934
@@ -570,12 +570,16 @@ carve-rs  446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-for
 carve-rs  446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does-2.crv  soft_break  1  permitted
 carve-rs  446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does-4.crv  paragraph  1  permitted
 carve-rs  446-a-degraded-comment-fence-leaves-a-lazy-follower-where-the-line-form-does-4.crv  soft_break  1  permitted
+carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-13.crv  definition_description  1  permitted
+carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-13.crv  definition_list  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-13.crv  paragraph  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-13.crv  soft_break  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv  definition_description  1  markup-carve/carve-rs#3934
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv  definition_list  1  markup-carve/carve-rs#3934
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv  paragraph  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv  soft_break  1  permitted
+carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  definition_description  1  permitted
+carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  definition_list  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  paragraph  1  permitted
 carve-rs  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  soft_break  1  permitted
 carve-rs  506-comment-columns-and-surviving-list-items-2.crv  paragraph  1  permitted
@@ -589,6 +593,8 @@ carve-rs  506-comment-columns-and-surviving-list-items-6.crv  list  1  markup-ca
 carve-rs  506-comment-columns-and-surviving-list-items-6.crv  list_item  1  markup-carve/carve-rs#3934
 carve-rs  506-comment-columns-and-surviving-list-items-6.crv  paragraph  1  permitted
 carve-rs  506-comment-columns-and-surviving-list-items-6.crv  soft_break  1  permitted
+carve-rs  506-comment-columns-and-surviving-list-items-7.crv  list  1  permitted
+carve-rs  506-comment-columns-and-surviving-list-items-7.crv  list_item  1  permitted
 carve-rs  506-comment-columns-and-surviving-list-items-7.crv  paragraph  1  permitted
 carve-rs  506-comment-columns-and-surviving-list-items-7.crv  soft_break  1  permitted
 carve-rs  506-comment-columns-and-surviving-list-items.crv  list  1  markup-carve/carve-rs#3934
@@ -626,7 +632,6 @@ carve-rs  797-an-indented-continuation-row-continues-the-table-above-2.crv  tabl
 carve-rs  797-an-indented-continuation-row-continues-the-table-above.crv  table_cell  1  permitted
 carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list  1  permitted
 carve-rs  826-a-comment-or-link-definition-at-a-body-s-column-refuses-a-first-block-plus-6.crv  list_item  1  permitted
-carve-rs  855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-3.crv  list  1  markup-carve/carve-rs#3934
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-2.crv  table_cell  3  permitted
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-3.crv  table_cell  1  permitted
 carve-rs  856-a-continuation-cell-past-the-last-column-is-a-new-cell-4.crv  table_cell  2  permitted
@@ -637,6 +642,8 @@ carve-rs  870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds-2
 carve-rs  870-a-caption-host-and-a-continuation-cell-read-what-the-block-holds.crv  table_cell  1  permitted
 carve-rs  873-a-delimited-body-s-overlapping-header-and-footer-make-no-header-cells-2.crv  table_cell  1  permitted
 carve-rs  936-an-invisible-line-keeps-a-description-entry-open-2.crv  definition_list  1  permitted
+carve-rs  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list  1  permitted
+carve-rs  936-an-invisible-line-keeps-a-description-entry-open-2.crv  list_item  1  permitted
 carve-rs  945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list-2.crv  list  1  permitted
 carve-rs  945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list-4.crv  list  1  permitted
 carve-rs  945-a-column-0-comment-before-a-sibling-keeps-the-blank-that-loosens-the-list.crv  list  1  permitted
@@ -648,7 +655,8 @@ carve-rs  962-a-document-owned-comment-run-stays-between-list-items.crv  list  1
 #
 # Permitted: 1026-3 is a cell and a verbatim run continued on a `+` line; 983-4
 # is a list joined across a `%%` line the layout erased; the 1071 columns are
-# line-block columns a tab expanded (CARVE-P12-004). The owed lines are one
+# line-block columns a tab expanded (CARVE-P12-004), and so are the 1077-4
+# columns a tab after an astral character expands. The owed lines are one
 # engine omitting what the other two place.
 
 carve-js  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  code  1  permitted
@@ -656,53 +664,25 @@ carve-js  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  table_cel
 carve-js  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv  non_breaking_space  4  permitted
 carve-js  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv  non_breaking_space  4  permitted
 carve-js  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv  non_breaking_space  4  permitted
+carve-js  1077-a-column-after-an-astral-character-is-one-code-point-4.crv  non_breaking_space  3  permitted
 carve-js  983-an-attribute-line-between-two-sub-lists-of-an-item-makes-the-second-a-different-list-4.crv  list  1  permitted
 carve-php  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  code  1  permitted
 carve-php  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  table_cell  1  permitted
+carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv  non_breaking_space  4  permitted
+carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv  non_breaking_space  4  permitted
+carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv  non_breaking_space  4  permitted
+carve-php  1077-a-column-after-an-astral-character-is-one-code-point-4.crv  non_breaking_space  3  permitted
 carve-php  983-an-attribute-line-between-two-sub-lists-of-an-item-makes-the-second-a-different-list-4.crv  list  1  permitted
 carve-rs  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  code  1  permitted
 carve-rs  1026-an-escaped-row-closer-stays-in-an-open-code-span-3.crv  table_cell  1  permitted
 carve-rs  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv  non_breaking_space  4  permitted
 carve-rs  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv  non_breaking_space  4  permitted
 carve-rs  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv  non_breaking_space  4  permitted
+carve-rs  1077-a-column-after-an-astral-character-is-one-code-point-4.crv  non_breaking_space  3  permitted
 carve-rs  983-an-attribute-line-between-two-sub-lists-of-an-item-makes-the-second-a-different-list-4.crv  list  1  permitted
-carve-php  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  text  1  markup-carve/carve-php#5151
-carve-php  1043-a-second-tab-keeps-two-verse-spaces.crv  text  1  markup-carve/carve-php#5151
-carve-php  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  text  1  markup-carve/carve-php#5151
-carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv  text  1  markup-carve/carve-php#5151
-carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv  text  1  markup-carve/carve-php#5151
-carve-php  1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv  text  1  markup-carve/carve-php#5151
-carve-php  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3.crv  text  1  markup-carve/carve-php#5151
-carve-php  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4.crv  text  1  markup-carve/carve-php#5151
-carve-php  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  text  1  markup-carve/carve-php#5151
-carve-rs  1029-a-quoted-note-run-uses-the-lazy-line-written-column.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  1036-a-nested-refused-plus-keeps-its-item.crv  code_block  1  markup-carve/carve-rs#4263
-carve-rs  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  non_breaking_space  3  markup-carve/carve-rs#4263
+carve-rs  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263
 carve-rs  1043-a-second-tab-keeps-two-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263
-carve-rs  1043-a-second-tab-keeps-two-verse-spaces.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  non_breaking_space  3  markup-carve/carve-rs#4263
-carve-rs  1046-a-description-item-measures-its-verse-lead-in-both-frames.crv  non_breaking_space  1  markup-carve/carve-rs#4263
-carve-rs  1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2.crv  non_breaking_space  3  markup-carve/carve-rs#4263
-carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4.crv  non_breaking_space  1  markup-carve/carve-rs#4263
-carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  non_breaking_space  1  markup-carve/carve-rs#4263
-carve-rs  627-a-refused-marker-leaves-an-open-fence-s-blank-payload-2.crv  code_block  1  markup-carve/carve-rs#4263
-carve-rs  627-a-refused-marker-leaves-an-open-fence-s-blank-payload-3.crv  code_block  1  markup-carve/carve-rs#4263
-carve-rs  627-a-refused-marker-leaves-an-open-fence-s-blank-payload.crv  code_block  1  markup-carve/carve-rs#4263
-carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-2.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-3.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open-4.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  963-a-multi-line-braced-comment-keeps-the-nested-list-open.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  981-a-losing-note-plus-leaves-following-blocks-with-their-owner-2.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  989-repeated-losing-note-pluses-leave-the-block-with-the-winning-note-2.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation-2.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation-2.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  990-a-passed-note-keeps-its-blank-separated-continuation.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  991-a-losing-note-plus-keeps-a-later-sibling-outside-the-note.crv  text  1  markup-carve/carve-rs#4263
-carve-rs  998-a-losing-note-plus-does-not-take-an-immediate-follower.crv  paragraph  1  markup-carve/carve-rs#4263
-carve-rs  998-a-losing-note-plus-does-not-take-an-immediate-follower.crv  text  1  markup-carve/carve-rs#4263
+carve-rs  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263
+carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2.crv  non_breaking_space  1  markup-carve/carve-rs#4263
+carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4.crv  non_breaking_space  3  markup-carve/carve-rs#4263
+carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  non_breaking_space  3  markup-carve/carve-rs#4263

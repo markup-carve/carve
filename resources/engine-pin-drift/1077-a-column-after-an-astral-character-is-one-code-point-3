@@ -1,1 +1,0 @@
-carve#5984: the pinned JavaScript reader counts a glued brace column in UTF-16 units, so it takes a continuation on the brace column; carve-js#4967 has the fix.

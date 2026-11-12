@@ -238,5 +238,3 @@
 # carve#5950: since the carve#5830 ruling an unindented brace-run continuation
 # refuses the run, so its opener is literal. carve-php and carve-rs still write
 # `{#one` unescaped from Djot, and the reparsed `#one` forms a hashtag.
-rust/40-djot-a-brace-run-continuation-must-be-indented  carve#5950: refused brace-run opener left unescaped
-php/40-djot-a-brace-run-continuation-must-be-indented  carve#5950: refused brace-run opener left unescaped

@@ -1,15 +1,15 @@
 {
   "version": 1,
   "measured": {
-    "date": "2026-11-08",
-    "spec": "78100bcfda3b10718fcdc19e6c2826fb573d25d9",
-    "js": "3f4aade88cad49c25ae6c9918824131c33e911ba",
-    "php": "25759013f5b96d1bed2273e5e13440886ae96c47",
-    "rust": "01a36468d3e4fcf5b9f3426a1f953e9ef09abdb2",
+    "date": "2026-11-12",
+    "spec": "bcf77224c0720b573cad5f9ed6f4ae8ad569d9a8",
+    "js": "d6aff707139b96cda4bd4663b3e3de442f9c2edb",
+    "php": "aadd85e07068230ce63d1fbb6511a160454f093a",
+    "rust": "c736c74ccc0903ee2b15113b5ace59e921a11cdb",
     "coverage": {
       "full": {
-        "documents": 4540,
-        "pairs": 40860
+        "documents": 4755,
+        "pairs": 42795
       }
     }
   },
@@ -147,424 +147,6 @@
       }
     },
     {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv/js->php",
-      "fingerprint": "f977e2533f7c6ad26c2ecb4ae28c50133707130a8d887e75214ed0581a3106f6",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n{% x\n%}</li>\n    </ul>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n</li>\n    </ul>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv/js->rust",
-      "fingerprint": "f977e2533f7c6ad26c2ecb4ae28c50133707130a8d887e75214ed0581a3106f6",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n{% x\n%}</li>\n    </ul>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n</li>\n    </ul>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv/php->js",
-      "fingerprint": "34c82203fc82e76ab5c2672c7ba57db7a921475c2204bd079e763c3ba69a8bca",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n</li>\n    </ul>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n{% x\n%}</li>\n    </ul>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2.crv/rust->js",
-      "fingerprint": "34c82203fc82e76ab5c2672c7ba57db7a921475c2204bd079e763c3ba69a8bca",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <ul>\n      <li>b\n</li>\n    </ul>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <ul>\n      <li>b\n{% x\n%}</li>\n    </ul>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written.crv/js->php",
-      "fingerprint": "22f5882a111ca27227ac3c2dea905072d23cbe112c07c0ff3fc1637b0892da39",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>b\n{% x\n%}</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>b\n</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written.crv/php->js",
-      "fingerprint": "157b63e0342728f2670ea8dc635d748a87fc70a7f41db4462981a76028b6822e",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>b\n</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>b\n{% x\n%}</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written.crv/php->rust",
-      "fingerprint": "157b63e0342728f2670ea8dc635d748a87fc70a7f41db4462981a76028b6822e",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>b\n</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>b\n{% x\n%}</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written.crv/rust->php",
-      "fingerprint": "22f5882a111ca27227ac3c2dea905072d23cbe112c07c0ff3fc1637b0892da39",
-      "reason": "A lazy braced comment opener short of its host body column: carve-php (1070, 1070-2) and carve-rs (1070-2) render it literally where the corpus hides it, so their pairs differ. Cause: markup-carve/carve#5895.",
-      "issue": "https://github.com/markup-carve/carve/issues/5895",
-      "observation": {
-        "expected": "<ul>\n  <li>b\n{% x\n%}</li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>b\n</li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv/js->php",
-      "fingerprint": "02789142621161fd1430fbee717bf5d43ba6a62cc9f656de3520b79bfa3d5245",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv/php->js",
-      "fingerprint": "65036ec2818f55541a8b49d43e2881f4685d8bad80d1ee3cc3b8dc1042f124b6",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv/php->rust",
-      "fingerprint": "65036ec2818f55541a8b49d43e2881f4685d8bad80d1ee3cc3b8dc1042f124b6",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3.crv/rust->php",
-      "fingerprint": "02789142621161fd1430fbee717bf5d43ba6a62cc9f656de3520b79bfa3d5245",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>",
-        "status": 0,
-        "actual": "<dl>\n  <dt>t</dt>\n  <dd>\n    <p>d</p>\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </dd>\n</dl>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv/js->php",
-      "fingerprint": "c12935f463de5537af3b83e082381e7349bdd62c96a1603c0a6b01733e0e2e8b",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv/php->js",
-      "fingerprint": "090d23e6f55d23fe8d6c656200536bb2e6b6973cf3ac15cf0ea577d512579f95",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv/php->rust",
-      "fingerprint": "090d23e6f55d23fe8d6c656200536bb2e6b6973cf3ac15cf0ea577d512579f95",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4.crv/rust->php",
-      "fingerprint": "c12935f463de5537af3b83e082381e7349bdd62c96a1603c0a6b01733e0e2e8b",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>",
-        "status": 0,
-        "actual": "<blockquote>\n  <ul>\n    <li>a\n      <div class=\"line-block\">\n        <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n      </div>\n    </li>\n  </ul>\n</blockquote>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv/js->php",
-      "fingerprint": "a1bc5d71e6175f8ac73a91c5814a32aab19cedd7275bb120a48f937262979751",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv/php->js",
-      "fingerprint": "7fad1878caec47b93d36385eaabe74d1ba6ee2c3524f357805362ae29f663eb9",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv/php->rust",
-      "fingerprint": "7fad1878caec47b93d36385eaabe74d1ba6ee2c3524f357805362ae29f663eb9",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave.crv/rust->php",
-      "fingerprint": "a1bc5d71e6175f8ac73a91c5814a32aab19cedd7275bb120a48f937262979751",
-      "reason": "carve-php renders a tab-led verse line under a list item with two lead columns where the corpus has four, so every pair it is in differs. Cause: markup-carve/carve-php#5151.",
-      "issue": "https://github.com/markup-carve/carve-php/issues/5151",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4.crv/js->php",
-      "fingerprint": "7f62f10d8c2fa27a0664a8184e038c9894bd5d99eab32f97856415aea0cf7db2",
-      "reason": "A lazy line after a quoted paragraph that ended a comment span: carve-js and carve-rs do not fold it at two quote levels, carve-php does as the corpus does. Cause: markup-carve/carve#5886.",
-      "issue": "https://github.com/markup-carve/carve/issues/5886",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z\nplain</p>\n  </blockquote>\n</blockquote>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z</p>\n  </blockquote>\n</blockquote>\n<p>plain</p>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4.crv/php->js",
-      "fingerprint": "bd9d5ba9e9935cb09ce3e520e976c8d65f9ee3b0dacc264372c518d82af27435",
-      "reason": "A lazy line after a quoted paragraph that ended a comment span: carve-js and carve-rs do not fold it at two quote levels, carve-php does as the corpus does. Cause: markup-carve/carve#5886.",
-      "issue": "https://github.com/markup-carve/carve/issues/5886",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z</p>\n  </blockquote>\n</blockquote>\n<p>plain</p>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z\nplain</p>\n  </blockquote>\n</blockquote>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4.crv/php->rust",
-      "fingerprint": "bd9d5ba9e9935cb09ce3e520e976c8d65f9ee3b0dacc264372c518d82af27435",
-      "reason": "A lazy line after a quoted paragraph that ended a comment span: carve-js and carve-rs do not fold it at two quote levels, carve-php does as the corpus does. Cause: markup-carve/carve#5886.",
-      "issue": "https://github.com/markup-carve/carve/issues/5886",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z</p>\n  </blockquote>\n</blockquote>\n<p>plain</p>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z\nplain</p>\n  </blockquote>\n</blockquote>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4.crv/rust->php",
-      "fingerprint": "7f62f10d8c2fa27a0664a8184e038c9894bd5d99eab32f97856415aea0cf7db2",
-      "reason": "A lazy line after a quoted paragraph that ended a comment span: carve-js and carve-rs do not fold it at two quote levels, carve-php does as the corpus does. Cause: markup-carve/carve#5886.",
-      "issue": "https://github.com/markup-carve/carve/issues/5886",
-      "observation": {
-        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z\nplain</p>\n  </blockquote>\n</blockquote>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li></li>\n    </ul>\n    <p>z</p>\n  </blockquote>\n</blockquote>\n<p>plain</p>\n<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3.crv/js->php",
-      "fingerprint": "81374b2768e66abed2b49de96da4f4c7377e7b6ba1304f67ebb8ed02311b8053",
-      "reason": "carve-php measures the verse lead under an opener indented past its item from the line start, where the corpus measures it per frame. Cause: markup-carve/carve#5885.",
-      "issue": "https://github.com/markup-carve/carve/issues/5885",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3.crv/php->js",
-      "fingerprint": "e7e37278e2330af3e2b38115ed06be91106f2a40833ede30468cff5cfb226af4",
-      "reason": "carve-php measures the verse lead under an opener indented past its item from the line start, where the corpus measures it per frame. Cause: markup-carve/carve#5885.",
-      "issue": "https://github.com/markup-carve/carve/issues/5885",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3.crv/php->rust",
-      "fingerprint": "e7e37278e2330af3e2b38115ed06be91106f2a40833ede30468cff5cfb226af4",
-      "reason": "carve-php measures the verse lead under an opener indented past its item from the line start, where the corpus measures it per frame. Cause: markup-carve/carve#5885.",
-      "issue": "https://github.com/markup-carve/carve/issues/5885",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3.crv/rust->php",
-      "fingerprint": "81374b2768e66abed2b49de96da4f4c7377e7b6ba1304f67ebb8ed02311b8053",
-      "reason": "carve-php measures the verse lead under an opener indented past its item from the line start, where the corpus measures it per frame. Cause: markup-carve/carve#5885.",
-      "issue": "https://github.com/markup-carve/carve/issues/5885",
-      "observation": {
-        "expected": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>&nbsp;&nbsp;&nbsp;&nbsp;x</p>\n    </div>\n  </li>\n</ul>",
-        "status": 0,
-        "actual": "<ul>\n  <li>a\n    <div class=\"line-block\">\n      <p>x</p>\n    </div>\n  </li>\n</ul>"
-      }
-    },
-    {
-      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/js->php",
-      "fingerprint": "15c4a442d45d94e034bdec29cc2137e647d9aedf2b237563e86ed1605981bff5",
-      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5957",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/js->rust",
-      "fingerprint": "15c4a442d45d94e034bdec29cc2137e647d9aedf2b237563e86ed1605981bff5",
-      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5957",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/php->js",
-      "fingerprint": "de218c5b24ca391c749f524516a864cf9381e58bac94f40c5ec064909f9c1d6a",
-      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5957",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1074-an-attribute-line-in-a-note-s-body-stays-the-note-s-under-a-plus.crv/rust->js",
-      "fingerprint": "de218c5b24ca391c749f524516a864cf9381e58bac94f40c5ec064909f9c1d6a",
-      "reason": "carve-js lets an attribute line in a plus-passed note body escape the note, so its direct render and every pair it is in differ from carve-php, carve-rs and the corpus (row 1074). Cause: markup-carve/carve#5957 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5957",
-      "observation": {
-        "expected": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{y}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ul>\n  <li></li>\n</ul>\n<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/js->php",
-      "fingerprint": "c3f97d9089855d72e44a4d1d7c6bffcba189b1315b5da7ae6b96c36acbc32837",
-      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/js->rust",
-      "fingerprint": "48a7275e86154baa14e6d04f92881daec63eec925b91144ef4c0ad88d05ecd24",
-      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/php->js",
-      "fingerprint": "f130040204a458fae6440102fa5694d390444a6ba54d303963923d91feec8d69",
-      "reason": "carve-js refuses a nested plus that passes a note with a tab-led attribute line in its body, so its direct render and every pair it is in differ from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-js line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/php->rust",
-      "fingerprint": "39193a029f9045b044cd08b3f9493c4dd67a6ef831be5c3c92f6f390fc80e676",
-      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/rust->js",
-      "fingerprint": "4c93e93e491cff29548ecae853912ff081162288103b417bdd5cf46ce6f2b507",
-      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n\n{<span class=\"tag\"><strong>#i</strong></span>}<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
-      "key": "tests/corpus/1075-a-tab-led-attribute-line-in-a-note-a-nested-plus-passes-stays-the-note-s.crv/rust->php",
-      "fingerprint": "57df95cf08f6872d75551603b16603a4c18897e863f7e8522a293dbe85e86313",
-      "reason": "carve-rs reads a tab-led attribute line after a three-column item prefix at its absolute tab stop, so the nested plus leaves the next line in the outer item and the pair differs from carve-php and the corpus (row 1075). Cause: markup-carve/carve#5963 (carve-rs line).",
-      "issue": "https://github.com/markup-carve/carve/issues/5963",
-      "observation": {
-        "expected": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    q\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
-        "status": 0,
-        "actual": "<ol>\n  <li>x\n    <ol>\n      <li></li>\n    </ol>\n    <p id=\"i\">q</p>\n  </li>\n</ol>\n<p>p<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>n<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>"
-      }
-    },
-    {
       "key": "tests/corpus/163-unresolved-footnote-reference-with-a-trailing-attribute-stays-literal.crv/js->js",
       "fingerprint": "20a766a609f728f79de8156417b427da4afd0bd502ab37231e73bfdbbde0fb8c",
       "reason": "PART 9 §16 permits an unresolved footnote reference to lose its trailing attribute run on AST JSON ingest; PART 9R R2 preserves it when rendering from Carve source (markup-carve/carve#5229).",
@@ -697,6 +279,50 @@
       "interpreters": {
         "js": "24.22.0",
         "php": "8.4.27"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->php",
+      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/js->rust",
+      "fingerprint": "e14bd13fef8340c5c135ca682bd7a25820ce9baa3b35cb31a6e9fbdf776df822",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/php->js",
+      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
+      }
+    },
+    {
+      "key": "tests/corpus/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5.crv/rust->js",
+      "fingerprint": "7ec131fe026ce465603cccfbae07571af2a4b7b44e3011edaae6fa457b416489",
+      "reason": "carve-php and carve-rs end the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph and every pair with carve-js differs (row 1076-5). Cause: markup-carve/carve#5978.",
+      "issue": "https://github.com/markup-carve/carve/issues/5978",
+      "observation": {
+        "expected": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\nplain\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>",
+        "status": 0,
+        "actual": "<blockquote>\n  <blockquote>\n    <ul>\n      <li>\n        <dl>\n          <dt>t</dt>\n          <dd>\n            <p>d</p>\n            <pre><code></code></pre>\n          </dd>\n        </dl>\n        z\n      </li>\n    </ul>\n  </blockquote>\n</blockquote>\n<p>plain</p>"
       }
     }
   ]

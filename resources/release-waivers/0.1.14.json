@@ -7,21 +7,20 @@
       "name": null,
       "ticket": 5468,
       "rows": [
-        "list  (extent)  31  corpus 503-9, 636, 697, 744, and 753: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.",
-        "list_item  (extent)  42  the list rows above, plus corpus 245: leading-indentation starts are owed under markup-carve/carve#5063; task ownership is tracked by markup-carve/carve#3845.",
-        "definition_list  (extent)  4  Corpus 744 and 753 task-child ownership differs at the pinned engine revisions; markup-carve/carve#3845 and markup-carve/carve-rs#3407.",
+        "list  (extent)  3  carve-php spans a trailing refused `+` (markup-carve/carve-php#5164) or a short unclosed `%%%` comment (markup-carve/carve-php#5165); fences a refused `+` ends, markup-carve/carve#5975; carve-rs item ends, markup-carve/carve-rs#4274 and markup-carve/carve-rs#4263; starts, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
+        "list_item  (extent)  4  the list rows above, plus carve-php `+`-host starts (markup-carve/carve-php#5167) and corpus 245 (markup-carve/carve#5063); same tickets: markup-carve/carve-php#5164, markup-carve/carve-php#5165, markup-carve/carve#5975, markup-carve/carve-rs#4274, markup-carve/carve-rs#4263, markup-carve/carve#5959; fixed on engine main: markup-carve/carve-php#5150, markup-carve/carve-rs#4262. Corpus 1076-5, markup-carve/carve#5978.",
         "abbreviation_def (extent)  2  Pin differential cause triage: markup-carve/carve#5231.",
-        "footnote (extent)  25  Pin differential cause triage: markup-carve/carve#5231.",
-        "comment  (extent)  3  Pin differential cause triage: markup-carve/carve#5231.",
-        "definition_description  (extent)  19  Pin differential cause triage: markup-carve/carve#5231.",
-        "list (presence)  4  Pin differential cause triage: markup-carve/carve#5231.",
-        "list_item (presence)  3  Pin differential cause triage: markup-carve/carve#5231.",
-        "text  (presence)  3  Pin differential cause triage: markup-carve/carve#5231.",
-        "block_quote (extent)  7  Pin differential cause triage: markup-carve/carve#5231.",
-        "definition_list (presence)  2  Pin differential cause triage: markup-carve/carve#5231.",
-        "definition_description (presence)  2  Pin differential cause triage: markup-carve/carve#5231.",
-        "paragraph (presence)  1  Pin differential cause triage: markup-carve/carve#5231.",
-        "figure_group (presence)  1  Pin differential cause triage: markup-carve/carve#5231."
+        "footnote (extent)  25  Starts in leading indentation, markup-carve/carve#5976; carve-php ends over a `+` (markup-carve/carve-php#5164) and `+`-host starts (markup-carve/carve-php#5167); carve-js, markup-carve/carve-js#4955; carve-rs unplaced last child, markup-carve/carve-rs#4263; fixed on engine main: markup-carve/carve-php#5150.",
+        "comment  (extent)  2  carve-php unclosed `%%%` comment, markup-carve/carve-php#5165; carve-rs, markup-carve/carve-rs#4274.",
+        "definition_description  (extent)  34  Starts in leading indentation, markup-carve/carve#5976 (carve-rs line open: carve-js and carve-php moved indented description starts to the owner's content column); carve-php ends over a `+`, markup-carve/carve-php#5164; carve-js ends, markup-carve/carve-js#4955 and markup-carve/carve-js#4956.",
+        "text  (presence)  3  Owners per document in resources/ast-position-waivers.txt (markup-carve/carve-rs#4263); carve-php verse leads fixed on engine main, markup-carve/carve-php#5151.",
+        "block_quote (extent)  3  Pin differential cause triage: markup-carve/carve#5231. Corpus 1076-5, markup-carve/carve#5978.",
+        "paragraph (presence)  1  Owners per document in resources/ast-position-waivers.txt: markup-carve/carve-rs#4263, and one permitted carve-js row.",
+        "code_block (extent)  1  Fences a refused `+` ends, markup-carve/carve#5975; carve-js own-line fence blank, markup-carve/carve-js#4956; carve-rs quoted fence, markup-carve/carve-rs#4275; fixed on engine main: markup-carve/carve-rs#4262.",
+        "paragraph (extent)  7  carve-rs unplaced verse leads and children, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166; fixed on engine main: markup-carve/carve-php#5151, markup-carve/carve-php#5150. Corpus 1076-5, markup-carve/carve#5978.",
+        "non_breaking_space (presence)  6  carve-rs omits verse-lead positions, markup-carve/carve-rs#4263.",
+        "soft_break (extent)  1  carve-rs unplaced neighbors, markup-carve/carve-rs#4263; carve-php attribute shift, markup-carve/carve-php#5166.",
+        "text (extent)  1  carve-php attribute shift, markup-carve/carve-php#5166."
       ]
     },
     {
@@ -30,7 +29,7 @@
       "name": null,
       "ticket": 5468,
       "rows": [
-        "comment.content  2  Pin differential cause triage: markup-carve/carve#5231."
+        "comment.content  2  carve-rs keeps continuation indentation in a braced comment, markup-carve/carve-rs#4276; a `%%%` comment past its owner's content column, markup-carve/carve#5977."
       ]
     },
     {
@@ -39,18 +38,7 @@
       "name": null,
       "ticket": 5468,
       "rows": [
-        "carve-js  starts-past-opening-markup  list  11  markup-carve/carve#5063",
-        "carve-js  starts-past-opening-markup  list_item  11  markup-carve/carve#5063",
-        "carve-php  starts-past-opening-markup  list  12  markup-carve/carve#5063",
-        "carve-php  starts-past-opening-markup  list_item  17  markup-carve/carve#5063",
-        "carve-rs  starts-past-opening-markup  list  11  markup-carve/carve#5063",
-        "carve-rs  starts-past-opening-markup  list_item  11  markup-carve/carve#5063",
-        "carve-php  starts-past-opening-markup  block_quote  2  markup-carve/carve-php#4646",
-        "carve-php  ends-past-last-child  list_item  30  markup-carve/carve-php#4723",
-        "carve-php  starts-past-opening-markup  abbreviation_def  2  markup-carve/carve-php#4722",
-        "carve-php  ends-past-last-child  block_quote  3  markup-carve/carve#5231",
-        "carve-php  ends-past-last-child  definition_description  4  markup-carve/carve#5231",
-        "carve-php  ends-past-last-child  footnote  4  markup-carve/carve#5231"
+        "carve-php  starts-past-opening-markup  abbreviation_def  2  markup-carve/carve-php#4722"
       ]
     },
     {
@@ -202,78 +190,37 @@
         "plain/rust/952-native-head-rows-with-span-placeholders-2  markup-carve/carve#5546: rust still emits an empty separator for a span-covered Plain cell; carve-js#4732 follows CARVE-P11-082.",
         "plain/php/953-a-deprecated-cell-alignment-prefix-reads-as-its-braced-run-3  markup-carve/carve#5546: php still emits an empty separator for a span-covered Plain cell; carve-js#4732 follows CARVE-P11-082.",
         "plain/rust/953-a-deprecated-cell-alignment-prefix-reads-as-its-braced-run-3  markup-carve/carve#5546: rust still emits an empty separator for a span-covered Plain cell; carve-js#4732 follows CARVE-P11-082.",
-        "ansi/js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "ansi/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "ansi/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "ansi/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "ansi/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "ansi/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "ansi/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "ansi/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "ansi/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "ansi/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "ansi/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "ansi/rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
         "carve/js/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "carve/js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
         "carve/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "carve/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "carve/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "carve/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "carve/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "carve/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "carve/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "carve/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "carve/rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
         "html/js/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "html/js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "html/js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "html/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
         "html/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "html/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "html/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "html/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "html/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "html/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "html/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "html/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "html/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
         "html/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "html/rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "html/rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "html/rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "markdown/js/1065-a-braced-comment-paragraph-with-text-misses-the-item-2  markup-carve/carve-js#4941: carve-js writes two blank quote lines around the hidden comment paragraph; next-minor under the 0.1.14 scope freeze.",
-        "markdown/js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "markdown/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "markdown/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "markdown/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "markdown/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "markdown/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "markdown/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "markdown/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "markdown/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "markdown/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "markdown/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "markdown/rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "plain/js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "plain/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "plain/php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "plain/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "plain/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "plain/php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "plain/php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "plain/rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "plain/rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "plain/rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port."
+        "html/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "html/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "markdown/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "markdown/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "plain/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "plain/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "carve/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "carve/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "ansi/php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "ansi/rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor)."
       ]
     },
     {
@@ -283,29 +230,13 @@
       "ticket": 5469,
       "rows": [
         "js/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "js/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "js/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
-        "php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
         "php/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-3  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "php/1071-a-tabbed-verse-line-keeps-the-lead-its-frames-leave-4  markup-carve/carve-php#5143: carve-php keeps two lead columns for a tab-led verse line where row 1071 keeps four; next-minor under the 0.1.14 scope freeze.",
-        "php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-3  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "php/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
         "rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
         "rust/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3  markup-carve/carve-rs#4259: carve-rs reads a block-shaped line inside a blank-separated comment run as a block; next-minor under the 0.1.14 scope freeze.",
-        "rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-2  markup-carve/carve#5895: carve-php and carve-rs keep a lazy comment opener literal that row 1070 hides; next-minor port.",
         "rust/1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  markup-carve/carve#5940: every engine hides the tab-led lazy comment run row 1070-4 refuses; next-minor under the 0.1.14 scope freeze.",
-        "rust/1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  markup-carve/carve#5886: carve-js and carve-rs end the quoted paragraph before the lazy line row 1072-4 folds in; next-minor port.",
-        "rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port.",
-        "rust/1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  markup-carve/carve#5885: the engines measure a verse lead under an indented opener from the line start; the ruling measures it per frame; next-minor port."
+        "php/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor).",
+        "rust/1076-a-line-that-ends-a-span-in-an-item-s-description-leaves-the-item-s-paragraph-open-5  markup-carve/carve#5978: the engine ends the paragraph a text line opens after an unterminated fence in a quoted description, so the lazy line becomes a root paragraph (next-minor)."
       ]
     },
     {
@@ -372,7 +303,6 @@
         "carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-5.crv  definition_list  1  markup-carve/carve-php#4725",
         "carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  definition_description  1  markup-carve/carve-php#4725",
         "carve-php  449-a-comment-below-a-description-body-s-column-ends-the-body-8.crv  definition_list  1  markup-carve/carve-php#4725",
-        "carve-php  493-empty-containers-share-one-html-body-shape-2.crv  figure_group  1  markup-carve/carve-php#4725",
         "carve-php  506-comment-columns-and-surviving-list-items-5.crv  list  1  markup-carve/carve-php#4725",
         "carve-php  506-comment-columns-and-surviving-list-items-5.crv  list_item  1  markup-carve/carve-php#4725",
         "carve-php  506-comment-columns-and-surviving-list-items-6.crv  list  1  markup-carve/carve-php#4725",
@@ -420,10 +350,15 @@
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  block_quote  1  markup-carve/carve-rs#3934",
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list  1  markup-carve/carve-rs#3934",
         "carve-rs  616-a-line-is-read-in-the-container-whose-column-it-reaches-2.crv  list_item  1  markup-carve/carve-rs#3934",
-        "carve-rs  855-invisible-lines-after-a-plus-are-skipped-and-the-first-visible-line-decides-3.crv  list  1  markup-carve/carve-rs#3934",
         "carve-rs  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-3.crv  definition_description  1  markup-carve/carve-rs#3934",
         "carve-rs  956-a-comment-between-a-term-and-its-description-is-the-description-s-first-block-5.crv  definition_description  1  markup-carve/carve-rs#3934",
-        "carve-rs  962-a-document-owned-comment-run-stays-between-list-items.crv  list  1  markup-carve/carve-rs#3934"
+        "carve-rs  962-a-document-owned-comment-run-stays-between-list-items.crv  list  1  markup-carve/carve-rs#3934",
+        "carve-rs  1042-a-quoted-nested-item-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
+        "carve-rs  1043-a-second-tab-keeps-two-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
+        "carve-rs  1044-a-nested-item-without-a-quote-keeps-three-verse-spaces.crv  non_breaking_space  2  markup-carve/carve-rs#4263",
+        "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2.crv  non_breaking_space  1  markup-carve/carve-rs#4263",
+        "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4.crv  non_breaking_space  3  markup-carve/carve-rs#4263",
+        "carve-rs  1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame.crv  non_breaking_space  3  markup-carve/carve-rs#4263"
       ]
     },
     {
@@ -432,21 +367,20 @@
       "name": "LAST_MEASURED",
       "ticket": 5468,
       "rows": [
-        "['list (extent)', 31]",
-        "['list_item (extent)', 42]",
-        "['definition_list (extent)', 4]",
+        "['list (extent)', 3]",
+        "['list_item (extent)', 4]",
         "['abbreviation_def (extent)', 2]",
         "['footnote (extent)', 25]",
-        "['comment (extent)', 3]",
-        "['definition_description (extent)', 19]",
-        "['list (presence)', 4]",
-        "['list_item (presence)', 3]",
+        "['comment (extent)', 2]",
+        "['definition_description (extent)', 34]",
         "['text (presence)', 3]",
-        "['block_quote (extent)', 7]",
-        "['definition_list (presence)', 2]",
-        "['definition_description (presence)', 2]",
+        "['block_quote (extent)', 3]",
         "['paragraph (presence)', 1]",
-        "['figure_group (presence)', 1]"
+        "['code_block (extent)', 1]",
+        "['paragraph (extent)', 7]",
+        "['non_breaking_space (presence)', 6]",
+        "['soft_break (extent)', 1]",
+        "['text (extent)', 1]"
       ]
     },
     {
@@ -559,11 +493,7 @@
       "name": null,
       "ticket": 5472,
       "rows": [
-        "1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  carve#5874: the pinned JavaScript reader keeps a tab-led comment run whose closer misses the description body column; carve-js#4902 has the fix.",
-        "1072-a-comment-span-under-a-marker-line-note-leaves-no-paragraph-4  carve#5886: the pinned JavaScript reader does not let a lazy line continue a nested quote paragraph that ended a comment span; carve#5878 made the model fold it at every depth.",
-        "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column.",
-        "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-2  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column.",
-        "1073-a-verse-lead-under-an-indented-opener-is-measured-per-frame-4  carve#5885: the pinned JavaScript reader measures a tabbed verse lead under an opener past its frame's column from the line start; the ruling (option 2) measures it per frame, less the opener's column."
+        "1070-a-lazy-comment-opener-is-measured-where-its-brace-is-written-4  carve#5874: the pinned JavaScript reader keeps a tab-led comment run whose closer misses the description body column; carve-js#4902 has the fix."
       ]
     },
     {
@@ -584,6 +514,15 @@
       "rows": [
         "( \"279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-2\", \"fmt\", \"carve#5658: note fence ownership is awaiting its separate port\", \"b\\n\\n```\\n\\nsee[^f]\\n```\\n\\n[^f]: n\\n\\n  ```\\n  a\\n\\n  ```\\n\", )",
         "( \"279-a-boundary-line-inside-an-open-fence-does-not-end-the-container-3\", \"fmt\", \"carve#5658: description fence ownership is awaiting its separate port\", \":: t\\n: d\\n\\n  ```\\n  a\\n\\n  ```\\n\\nb\\n\\n```\\n```\\n\", )"
+      ]
+    },
+    {
+      "repo": "carve-php",
+      "path": "tests/TestCase/Converter/ConverterCorpusTest.php",
+      "name": "CANONICAL_AHEAD_OF_PIN",
+      "ticket": 5472,
+      "rows": [
+        "'40-djot-a-brace-run-continuation-must-be-indented' => \"Inline {%%} remains.\\n\\n\\\\{% x\\ny %}\\n\\n%%\\n\\n\\\\{\\\\#one\\nkey=1}\\nalpha\\n\\n{#two key=\\\"2\\\"}\\nbeta\\n\\n# a\\n\\n\\\\{% x\\ny %}\\n\\\\# b\\n\""
       ]
     }
   ]

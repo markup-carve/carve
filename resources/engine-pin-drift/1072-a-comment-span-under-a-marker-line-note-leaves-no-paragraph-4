@@ -1,1 +1,0 @@
-carve#5886: the pinned JavaScript reader does not let a lazy line continue a nested quote paragraph that ended a comment span; carve#5878 made the model fold it at every depth.
