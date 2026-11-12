@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, next2]
   pull_request:
-    branches: [main]
+    branches: [main, next2]
   # Nightly: the Node versions pull requests skip.
   schedule:
     - cron: '25 3 * * *'
