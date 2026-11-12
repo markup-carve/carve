@@ -25,6 +25,11 @@
  *   node scripts/fleet-spec-pin-check.mjs --ref worktree   # engines as checked out
  *   node scripts/fleet-spec-pin-check.mjs --ref <rev>      # engines at some revision
  *   node scripts/fleet-spec-pin-check.mjs --no-fetch       # skip the git fetches
+ *   node scripts/fleet-spec-pin-check.mjs --report-divergence
+ *
+ * --report-divergence prints engines on different spec commits as INFO and does
+ * not count it: the spec tag uses it, since engine merges move those pins.
+ * Unreadable engines, failed fetches and bad exemptions still fail.
  *
  * Engine halves default to each engine's `origin/main`, for the reason
  * scripts/declaration-audit.mjs gives: a local engine checkout is usually parked
@@ -71,6 +76,7 @@ const ref = (() => {
   return value
 })()
 const doFetch = !argv.includes('--no-fetch') && ref === 'origin/main'
+const reportDivergence = argv.includes('--report-divergence')
 
 const SPEC_REMOTE = /markup-carve\/carve(\.git)?$/
 const SPEC_BRANCH = process.env.SPEC_DEFAULT_BRANCH ?? 'main'
@@ -399,7 +405,7 @@ if (readable.length === measured.length && judged.length < 2) {
     say(`  [ok]   ${judged.map((m) => m.name).join(', ')} all pin ${short(judged[0].sha)}`)
   } else {
     const newest = judged.reduce((a, b) => (a.behind <= b.behind ? a : b))
-    say('  [FAIL] the engines do not implement the same spec:')
+    say(`  ${reportDivergence ? '[info]' : '[FAIL]'} the engines do not implement the same spec:`)
     for (const m of judged) {
       const gap = m.sha === newest.sha ? 'the newest pin' : `${countBetween(m.sha, newest.sha)} behind ${newest.name}`
       say(`           ${pad(m.name, width)}  ${short(m.sha)}  ${m.info.date}  ${gap}`)
@@ -408,7 +414,8 @@ if (readable.length === measured.length && judged.length < 2) {
     say()
     say('         Move every engine to one spec commit before tagging, or declare the')
     say('         divergence in .fleet-pin-exempt with the reason it is deliberate.')
-    failed += 1
+    if (reportDivergence) say('         INFO, not gating (--report-divergence).')
+    else failed += 1
   }
 }
 
@@ -425,4 +432,6 @@ if (failed > 0) {
   say(`FLEET SPEC PIN CHECK FAILED - ${failed} finding(s). Not clear to tag.`)
   process.exit(1)
 }
-say('FLEET SPEC PIN CHECK PASSED - every judged engine pins the same spec commit.')
+say(reportDivergence
+  ? 'FLEET SPEC PIN CHECK PASSED - every engine was read; pin divergence, if any, is reported above.'
+  : 'FLEET SPEC PIN CHECK PASSED - every judged engine pins the same spec commit.')
