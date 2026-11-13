@@ -15,7 +15,7 @@ Conventions:
 
 Terms:
 
-- A *line* is a run of characters up to a line end. A line ends at LF; a CR directly before that LF is not part of the line, and a lone CR is not a line end. A *blank line* holds only spaces and tabs.
+- A *line* is a run of characters up to a line end (C2-B-010). A *blank line* holds only spaces and tabs.
 - A *container* is a block that holds other blocks: a quote, a list item, a description, a footnote body, a div. A *leaf* holds text: a paragraph, a heading, a term, a caption, a code block, a table row.
 - The *container stack* is the list of containers open at a line, outermost first.
 - A *marker* is a list marker, a description mark (`:`), a term mark (`::`) or a footnote definition marker. The *marker column* is the column of its first character. The *content column* is the column of the first content character on the marker line.
@@ -24,7 +24,7 @@ Terms:
 
 **C2-B-001** The role of a line depends only on that line and the container stack.
 
-**Exception C2-B-002** A pending attribute line (C2-B-070) is the one line whose role waits for the next line.
+**Exception C2-B-002** A pending attribute line (C2-B-092) is the one line whose role waits for the next line.
 
 **C2-B-003** Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space.
 
@@ -39,6 +39,8 @@ Terms:
 **C2-B-008** Prefixes are read outside-in, in the order the containers were opened: for a quote inside a list item the quote mark sits past the item's marker.
 
 **C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines.
+
+**C2-B-010** A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end.
 
 The second paragraph below starts with a tab, which counts as indent to column 4.
 
@@ -120,39 +122,134 @@ Example 4 (unverified)
 
 :::
 
+The same line is a list item at top level and code inside an open fence (C2-B-001).
+
+Example 5 (generated)
+
+::: compare
+
+````carve
+- a
+```
+- b
+```
+````
+
+```html
+<ul>
+  <li>a</li>
+</ul>
+<pre><code>- b
+</code></pre>
+```
+
+:::
+
+Column 0 of the quoted content is the column behind `> `, so the marker on line 2 is indented past the marker on line 1 (C2-B-003).
+
+Example 6 (generated)
+
+::: compare
+
+```carve
+> - a
+>   - b
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>b</li>
+      </ul>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+The tab on line 4 ends at column 4 of the line, which is column 2 of the quoted content. That is the marker column of `b` and not past it, so `c` belongs to the item `a` (C2-B-005).
+
+Example 7 (unverified)
+
+::: compare
+
+```carve
+> - a
+>   - b
+>
+> 	c
+```
+
+```html
+<blockquote>
+  <ul>
+    <li>a
+      <ul>
+        <li>b</li>
+      </ul>
+      <p>c</p>
+    </li>
+  </ul>
+</blockquote>
+```
+
+:::
+
+The opener is indented by 2. The tab on line 2 straddles that column, so it is kept (C2-B-007).
+
+Example 8 (unverified)
+
+::: compare
+
+````carve
+  ```
+	code
+  ```
+````
+
+```html
+<pre><code>	code
+</code></pre>
+```
+
+:::
+
 ## Paragraphs and interrupters
 
-**C2-B-010** A line that opens no other block opens a paragraph.
+**C2-B-011** A line that opens no other block opens a paragraph.
 
-**C2-B-011** An open paragraph takes every line that is not blank, whatever its indent or prefix; such a line is a *lazy line*.
+**C2-B-012** An open paragraph takes every line that is not blank, whatever its indent or prefix, and such a line is a *lazy line*.
 
-**C2-B-012** A paragraph closes at a blank line, at an interrupter or with its container.
+**C2-B-013** A paragraph closes at a blank line, at an interrupter or with its container.
 
 An *interrupter* is a line that ends an open paragraph without a blank line. There are five.
 
-**C2-B-013** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-080).
+**C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-014** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet.
 
-**C2-B-015** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
+**C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
-**C2-B-016** Interrupter (d): a caption line (C2-B-101), only when the paragraph so far holds nothing but an image.
+**C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far holds nothing but an image.
 
-**Exception C2-B-017** A caption line is also an interrupter when the paragraph is the last block of an open quote and the line does not carry that quote's mark: the line closes the quote and captions it.
+**Exception C2-B-018** A caption line is also an interrupter when the paragraph is the last block of an open quote and the line does not carry that quote's mark: the line closes the quote and captions it.
 
-**C2-B-018** Interrupter (e): a table row (C2-B-114).
+**C2-B-019** Interrupter (e): a table row (C2-B-166).
 
-Every other line is a lazy line: a heading, a quote, a thematic break, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
+**C2-B-020** Interrupters (b) and (c) count only on a line that carries the quote mark of every quote the list or the definition sits in, and a quote inside the item does not count.
 
-**C2-B-019** Interrupters (b) and (c) count only on a line that carries the quote mark of every quote the list or the definition sits in; a quote inside the item does not count.
+**C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
 
-**C2-B-020** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
+**Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, with lint.
 
-**Exception C2-B-021** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, with lint.
+**Exception C2-B-023** A term mark never opens a nested description list without a blank line: directly after paragraph text inside an item it is a lazy line.
 
-**Exception C2-B-022** A term mark never opens a nested description list without a blank line: directly after paragraph text inside an item it is a lazy line.
+**C2-B-024** Every line that is not one of the five interrupters is a lazy line of an open paragraph: a heading, a quote, a thematic break, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
 
-Example 5 (generated)
+Example 9 (generated)
 
 ::: compare
 
@@ -170,7 +267,7 @@ Some text
 
 :::
 
-Example 6 (unverified)
+Example 10 (unverified)
 
 ::: compare
 
@@ -194,7 +291,7 @@ Some text
 
 Lazy lines keep their paragraph at any indent.
 
-Example 7 (generated)
+Example 11 (generated)
 
 ::: compare
 
@@ -216,7 +313,7 @@ d</li>
 
 :::
 
-Example 8 (generated)
+Example 12 (generated)
 
 ::: compare
 
@@ -235,7 +332,7 @@ code
 
 :::
 
-Example 9 (generated)
+Example 13 (generated)
 
 ::: compare
 
@@ -255,9 +352,9 @@ text
 
 :::
 
-The list sits in the quote and the marker on line 2 does not carry the quote mark, so it is a lazy line (C2-B-019).
+The list sits in the quote and the marker on line 2 does not carry the quote mark, so it is a lazy line (C2-B-020).
 
-Example 10 (unverified)
+Example 14 (unverified)
 
 ::: compare
 
@@ -277,7 +374,7 @@ Example 10 (unverified)
 
 :::
 
-Example 11 (generated)
+Example 15 (generated)
 
 ::: compare
 
@@ -301,7 +398,7 @@ Example 11 (generated)
 
 The list does not sit in the quote, so line 2 is a sibling item.
 
-Example 12 (generated)
+Example 16 (generated)
 
 ::: compare
 
@@ -323,19 +420,19 @@ Example 12 (generated)
 
 ## Container ownership and stripping
 
-**C2-B-023** With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past, measured from that item's own marker column, also when the item joined its list at another column (C2-B-046, C2-B-047), and to a quote when it carries the quote mark.
+**C2-B-025** With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past, measured from that item's own marker column, also when the item joined its list at another column (C2-B-054, C2-B-055), and to a quote when it carries the quote mark.
 
-**C2-B-024** A container that does not own the line closes, with every container inside it.
+**C2-B-026** A container that does not own the line closes, with every container inside it.
 
-**C2-B-025** The content of an item, a description or a footnote body is stripped by at most its content column.
+**C2-B-027** The content of an item, a description or a footnote body is stripped by at most its content column.
 
-**C2-B-026** The first line of a nested block sets that block's base column.
+**C2-B-028** The first line of a nested block sets that block's base column.
 
-**C2-B-027** The content of a fence is stripped by at most the indent of its opener.
+**C2-B-029** The content of a fence is stripped by at most the indent of its opener.
 
-Right-aligned ordered markers are not supported: a marker left of the list's column, directly after item text, is a lazy line. Lint reports it.
+**C2-B-030** Right-aligned ordered markers are not supported: a marker left of the list's column, directly after item text, is a lazy line, and `ordered-marker-right-aligned` reports it.
 
-Example 13 (unverified)
+Example 17 (unverified)
 
 ::: compare
 
@@ -360,7 +457,7 @@ c
 
 One column past the marker column is enough.
 
-Example 14 (unverified)
+Example 18 (unverified)
 
 ::: compare
 
@@ -380,7 +477,7 @@ Example 14 (unverified)
 
 :::
 
-Example 15 (unverified)
+Example 19 (unverified)
 
 ::: compare
 
@@ -398,7 +495,7 @@ Example 15 (unverified)
 
 :::
 
-Example 16 (generated)
+Example 20 (generated)
 
 ::: compare
 
@@ -419,13 +516,38 @@ c
 
 :::
 
+The opener stands at column 4 and sets the base column of the code block (C2-B-028).
+
+Example 21 (generated)
+
+::: compare
+
+````carve
+-   ```
+    x
+     y
+    ```
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>x
+ y
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
+
 ## Block quotes
 
-**C2-B-028** The quote mark is `>` followed by a space or by the end of the line; `>a` is text.
+**C2-B-031** The quote mark is `>` followed by a space or by the end of the line, so `>a` is text.
 
-**C2-B-029** A quote owns a line only when the line carries its mark or is a lazy line, so a blank line without the mark ends the quote, and two quotes separated by a blank line are two quotes.
+**C2-B-032** A quote owns a line only when the line carries its mark or is a lazy line, so a blank line without the mark ends the quote, and two quotes separated by a blank line are two quotes.
 
-Example 17 (generated)
+Example 22 (generated)
 
 ::: compare
 
@@ -441,7 +563,7 @@ b</p></blockquote>
 
 :::
 
-Example 18 (generated)
+Example 23 (generated)
 
 ::: compare
 
@@ -460,7 +582,7 @@ Example 18 (generated)
 
 :::
 
-Example 19 (generated)
+Example 24 (generated)
 
 ::: compare
 
@@ -477,7 +599,7 @@ Example 19 (generated)
 
 :::
 
-Example 20 (generated)
+Example 25 (generated)
 
 ::: compare
 
@@ -493,7 +615,7 @@ Example 20 (generated)
 
 :::
 
-Example 21 (generated)
+Example 26 (generated)
 
 ::: compare
 
@@ -509,13 +631,13 @@ Example 21 (generated)
 
 ## Bullet lists
 
-**C2-B-030** Every marker needs one space and at least one further character on its line; a bare marker and a marker without its space are text.
+**C2-B-033** Every marker needs one space and at least one further character on its line, so a bare marker and a marker without its space are text.
 
-**C2-B-031** A bullet marker is `-` or `*`.
+**C2-B-034** A bullet marker is `-` or `*`.
 
-**C2-B-032** The bullet character is part of the list's kind, so an item with the other character starts another list (C2-B-041).
+**C2-B-035** The bullet character is part of the list's kind, so an item with the other character starts another list (C2-B-049).
 
-Example 22 (generated)
+Example 27 (generated)
 
 ::: compare
 
@@ -533,7 +655,7 @@ Example 22 (generated)
 
 :::
 
-Example 23 (generated)
+Example 28 (generated)
 
 ::: compare
 
@@ -553,7 +675,7 @@ Example 23 (generated)
 
 :::
 
-Example 24 (generated)
+Example 29 (generated)
 
 ::: compare
 
@@ -578,21 +700,27 @@ Example 24 (generated)
 
 ## Ordered lists
 
-**C2-B-033** An ordered marker is a number of one to nine digits, a letter or a roman numeral, followed by `.` or `)`, or the bare dot `.`; a bare `)` is never a marker, and a run of ten or more digits is text.
+**C2-B-036** An ordered marker is a number of one to nine digits, a letter or a roman numeral, followed by `.` or `)`, or the bare dot `.`, so a bare `)` is never a marker, and a run of ten or more digits is text.
 
-**C2-B-034** The kind of an ordered list is its numbering style and its delimiter, and the first marker alone fixes the style: digits and the bare dot are one style, decimal, a lone `i` or `I` is roman, any other single letter is alphabetic, and two or more roman letters are roman.
+**C2-B-037** The kind of an ordered list is its numbering style and its delimiter.
 
-**C2-B-035** In a roman list a single roman letter is a sibling.
+**C2-B-038** In a roman list a single roman letter is a sibling.
 
-**C2-B-036** In an alphabetic list every single letter is a sibling, `i` included.
+**C2-B-039** In an alphabetic list every single letter is a sibling, `i` included.
 
-**Exception C2-B-037** A letter marker or a roman marker with a dot needs two spaces before its content.
+**Exception C2-B-040** A letter marker or a roman marker with a dot needs two spaces before its content.
 
-**C2-B-038** The list starts at the value of its first marker, and the bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list.
+**C2-B-041** The list starts at the value of its first marker.
 
-A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item. Lint reports both. The `start` attribute keeps its 0.1 definition.
+**C2-B-042** The first marker alone fixes the style: digits and the bare dot are one style, decimal, a lone `i` or `I` is roman, any other single letter is alphabetic, and two or more roman letters are roman.
 
-Example 25 (generated)
+**C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list.
+
+**C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
+
+**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item (carried over from 0.1).
+
+Example 30 (generated)
 
 ::: compare
 
@@ -610,7 +738,7 @@ Example 25 (generated)
 
 :::
 
-Example 26 (generated)
+Example 31 (generated)
 
 ::: compare
 
@@ -628,7 +756,7 @@ Example 26 (generated)
 
 :::
 
-Example 27 (generated)
+Example 32 (generated)
 
 ::: compare
 
@@ -642,7 +770,7 @@ Example 27 (generated)
 
 :::
 
-Example 28 (generated)
+Example 33 (generated)
 
 ::: compare
 
@@ -660,7 +788,7 @@ Example 28 (generated)
 
 :::
 
-Example 29 (generated)
+Example 34 (generated)
 
 ::: compare
 
@@ -678,7 +806,7 @@ ii.  b
 
 :::
 
-Example 30 (generated)
+Example 35 (generated)
 
 ::: compare
 
@@ -696,7 +824,7 @@ i.  y
 
 :::
 
-Example 31 (generated)
+Example 36 (generated)
 
 ::: compare
 
@@ -710,7 +838,7 @@ i. a
 
 :::
 
-Example 32 (generated)
+Example 37 (generated)
 
 ::: compare
 
@@ -730,7 +858,7 @@ Example 32 (generated)
 
 :::
 
-Example 33 (unverified)
+Example 38 (unverified)
 
 ::: compare
 
@@ -744,15 +872,56 @@ Example 33 (unverified)
 
 :::
 
+In a roman list the single letter `v` is a sibling (C2-B-038).
+
+Example 39 (generated)
+
+::: compare
+
+```carve
+iv.  a
+v.  b
+```
+
+```html
+<ol type="i" start="4">
+  <li>a</li>
+  <li>b</li>
+</ol>
+```
+
+:::
+
+Example 40 (generated)
+
+::: compare
+
+```carve
+{start=5}
+. a
+. b
+```
+
+```html
+<ol start="5">
+  <li>a</li>
+  <li>b</li>
+</ol>
+```
+
+:::
+
 ## Task items
 
-**C2-B-039** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after a bullet's space and followed by one space and at least one further character.
+**C2-B-046** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after a bullet's space and followed by one space and at least one further character.
 
-**C2-B-040** In every other case the brackets are inline content: `- [ ]` with nothing after it is a plain item with that text, and an ordered marker and a description mark take no box.
+**C2-B-047** In every other case the brackets are inline content: `- [ ]` with nothing after it is a plain item with that text, and an ordered marker and a description mark take no box.
 
-Task items and plain items do not share a list (C2-B-041). `X` is read as `x`.
+**C2-B-048** The box character `X` is read as `x`.
 
-Example 34 (generated)
+Task items and plain items do not share a list (C2-B-049).
+
+Example 41 (generated)
 
 ::: compare
 
@@ -774,7 +943,7 @@ Example 34 (generated)
 
 :::
 
-Example 35 (generated)
+Example 42 (generated)
 
 ::: compare
 
@@ -790,7 +959,7 @@ Example 35 (generated)
 
 :::
 
-Example 36 (generated)
+Example 43 (generated)
 
 ::: compare
 
@@ -806,7 +975,7 @@ Example 36 (generated)
 
 :::
 
-Example 37 (generated)
+Example 44 (generated)
 
 ::: compare
 
@@ -828,21 +997,21 @@ Example 37 (generated)
 
 ## Siblings, adjacency and the three-blank-line boundary
 
-**C2-B-041** A list marker at an open list's column is a sibling when it matches the list in bullet character, or in ordered style and delimiter, and in being a task item or not.
+**C2-B-049** A list marker at an open list's column is a sibling when it matches the list in bullet character, or in ordered style and delimiter, and in being a task item or not.
 
-**C2-B-042** A list marker at an open list's column that does not match closes that list and opens a new one.
+**C2-B-050** A list marker at an open list's column that does not match closes that list and opens a new one.
 
-**C2-B-043** One or two blank lines do not end a bullet list, an ordered list or a description list.
+**C2-B-051** One or two blank lines do not end a bullet list, an ordered list or a description list.
 
-**C2-B-044** Three or more blank lines before a marker at the list's column end the list, and that marker starts a new one.
+**C2-B-052** Three or more blank lines before a marker at the list's column end the list, and that marker starts a new one.
 
-**C2-B-045** Two lists of the same kind in one container, with fewer than three blank lines between them, are one list.
+**C2-B-053** Two lists of the same kind in one container, with fewer than three blank lines between them, are one list.
 
-**C2-B-046** Adjacency holds at any column: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-041), with lint on the uneven indent.
+**C2-B-054** Adjacency holds at any column: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049), with lint on the uneven indent.
 
-**Exception C2-B-047** A marker between the columns of two open lists joins the deeper list, with lint.
+**Exception C2-B-055** A marker between the columns of two open lists joins the deeper list, with lint.
 
-Example 38 (generated)
+Example 45 (generated)
 
 ::: compare
 
@@ -862,7 +1031,7 @@ Example 38 (generated)
 
 :::
 
-Example 39 (generated)
+Example 46 (generated)
 
 ::: compare
 
@@ -885,7 +1054,7 @@ Example 39 (generated)
 
 :::
 
-Example 40 (generated)
+Example 47 (generated)
 
 ::: compare
 
@@ -905,7 +1074,7 @@ Example 40 (generated)
 
 :::
 
-Example 41 (generated)
+Example 48 (generated)
 
 ::: compare
 
@@ -930,7 +1099,7 @@ Example 41 (generated)
 
 One list. Without the blank line, line 3 would be a lazy line of `a`.
 
-Example 42 (generated)
+Example 49 (generated)
 
 ::: compare
 
@@ -951,7 +1120,7 @@ Example 42 (generated)
 
 The first item holds a heading, so no paragraph is open at line 2, and the two items are siblings by adjacency.
 
-Example 43 (unverified)
+Example 50 (unverified)
 
 ::: compare
 
@@ -973,17 +1142,21 @@ Example 43 (unverified)
 
 ## Nested lists and the marker line
 
-**C2-B-048** A list marker with content, indented past the marker of an item, a description or a footnote body, opens a nested list there without a blank line; an ordered child may start at any number.
+**C2-B-056** A list marker with content, indented past the marker of an item, a description or a footnote body, opens a nested list there without a blank line.
 
-**C2-B-049** An item may start with any block: the block opener stands directly after the marker, on the marker line.
+**C2-B-057** An item may start with any block: the block opener stands directly after the marker, on the marker line.
 
-**C2-B-050** A marker line that holds another marker with content has a nested list as the item's first block; `- -` is an item with the text `-`.
+**C2-B-058** A marker line that holds another marker with content has a nested list as the item's first block.
 
-**C2-B-051** A line that starts with `+` is text unless it is a table continuation row (C2-B-123).
+**C2-B-059** A line that starts with `+` is text unless it is a table continuation row (C2-B-175).
 
-A second block of an item stands after a blank line, indented past the marker (C2-B-023). A bare marker is text (C2-B-030), so the empty item is spelled with a comment (C2-B-094). A spaced run such as `- - -` reads as nested markers that end in a lone hyphen; lint names the 0.1 meaning.
+**C2-B-060** An ordered nested list may start at any number.
 
-Example 44 (generated)
+**C2-B-061** A marker line whose second marker has no content holds that marker as text: `- -` is an item with the text `-`.
+
+A second block of an item stands after a blank line, indented past the marker (C2-B-025). A bare marker is text (C2-B-033), so the empty item is spelled with a comment (C2-B-136). A spaced run such as `- - -` reads as nested markers that end in a lone hyphen (C2-B-058, C2-B-061), and `deprecated-spaced-thematic-break` reports it.
+
+Example 51 (generated)
 
 ::: compare
 
@@ -1008,7 +1181,7 @@ Example 44 (generated)
 
 :::
 
-Example 45 (generated)
+Example 52 (generated)
 
 ::: compare
 
@@ -1029,7 +1202,7 @@ Example 45 (generated)
 
 :::
 
-Example 46 (generated)
+Example 53 (generated)
 
 ::: compare
 
@@ -1051,7 +1224,7 @@ Example 46 (generated)
 
 Line 2 is a bare marker and therefore a lazy line.
 
-Example 47 (generated)
+Example 54 (generated)
 
 ::: compare
 
@@ -1071,7 +1244,7 @@ Example 47 (generated)
 
 :::
 
-Example 48 (unverified)
+Example 55 (unverified)
 
 ::: compare
 
@@ -1091,7 +1264,7 @@ Example 48 (unverified)
 
 :::
 
-Example 49 (generated)
+Example 56 (generated)
 
 ::: compare
 
@@ -1107,17 +1280,19 @@ Example 49 (generated)
 
 ## Tightness
 
-**C2-B-052** A list is loose only when a blank line stands between two of its items; a blank line counts for the list whose sibling follows it, and a list with one item is tight.
+**C2-B-062** A list is loose only when a blank line stands between two of its items, so a list with one item is tight.
 
-**C2-B-053** In a tight list a paragraph is rendered bare only when it is the item's first block; every other paragraph of the item gets `<p>`.
+**C2-B-063** In a tight list a paragraph is rendered bare only when it is the item's first block, and every other paragraph of the item gets `<p>`.
 
-**C2-B-054** In a loose list every paragraph of every item gets `<p>`.
+**C2-B-064** In a loose list every paragraph of every item gets `<p>`.
 
-There is no `{loose}` attribute.
+**C2-B-065** A blank line counts for the list whose sibling follows it.
+
+**C2-B-066** There is no `{loose}` attribute: the key `loose` on a list has no effect on tightness, and `deprecated-loose-attribute` reports it.
 
 The outer list is loose, the inner one tight.
 
-Example 50 (generated)
+Example 57 (generated)
 
 ::: compare
 
@@ -1143,7 +1318,7 @@ Example 50 (generated)
 
 The blank line stands inside the first item, not between two items.
 
-Example 51 (unverified)
+Example 58 (unverified)
 
 ::: compare
 
@@ -1165,7 +1340,7 @@ Example 51 (unverified)
 
 :::
 
-Example 52 (unverified)
+Example 59 (unverified)
 
 ::: compare
 
@@ -1192,7 +1367,7 @@ Example 52 (unverified)
 
 Neither item starts with a paragraph, so no paragraph is bare.
 
-Example 53 (generated)
+Example 60 (generated)
 
 ::: compare
 
@@ -1222,27 +1397,60 @@ Example 53 (generated)
 
 :::
 
+The key has no effect, and the list stays tight (C2-B-066).
+
+Example 61 (unverified)
+
+::: compare
+
+```carve
+{loose}
+- a
+- b
+```
+
+```html
+<ul loose="">
+  <li>a</li>
+  <li>b</li>
+</ul>
+```
+
+:::
+
 ## Description lists
 
-**C2-B-055** A term line (`::`) and a description line (`:`) at the list's column form a description list.
+**C2-B-067** A term line (`::`) and a description line (`:`) at the list's column form a description list.
 
-**C2-B-056** An entry with terms only is valid, and a description line with no term above it is text.
+**C2-B-068** An entry with terms only is valid.
 
-**C2-B-057** A term is one inline leaf: its text continues like paragraph text, and it takes no block opener.
+**C2-B-069** A term is one inline leaf: its text continues like paragraph text.
 
-**C2-B-058** A fence line or a table row directly below term text is an interrupter, and because a term owns no lines, it closes the description list, whatever its indent.
+**C2-B-070** A fence line or a table row directly below term text is an interrupter, and because a term owns no lines, it closes the description list, whatever its indent.
 
-**C2-B-059** A term owns no lines: after a blank line, a line that is not a description line or a term line at the list's column closes the list, whatever its indent.
+**C2-B-071** A term owns no lines: after a blank line, a line that is not a description line or a term line at the list's column closes the list, whatever its indent.
 
-**C2-B-060** A description may start with any block on its marker line, and its further blocks are indented past its mark.
+**C2-B-072** A description may start with any block on its marker line.
 
-**C2-B-061** A description with one block has a bare paragraph; in a description with several blocks every paragraph gets `<p>`.
+**C2-B-073** A description with one block has a bare paragraph.
 
-Below description text a fence line or a table row is an interrupter as in any paragraph: at the list's column it closes the list (C2-B-024), and indented past the description mark it stays in the description. Entries continue across one or two blank lines (C2-B-043). A nested description list starts on a description's marker line, or after a blank line, indented past the mark.
+**C2-B-074** A description line with no term above it is text.
+
+**C2-B-075** A term takes no block opener: a quote mark or a list marker after the term mark is term text.
+
+**C2-B-076** The further blocks of a description are indented past its mark.
+
+**C2-B-077** In a description with several blocks every paragraph gets `<p>`.
+
+**C2-B-078** Below description text a fence line or a table row is an interrupter as in any paragraph: at the list's column it closes the list (C2-B-026), and indented past the description mark it stays in the description.
+
+**C2-B-079** A nested description list starts on a description's marker line, or after a blank line, indented past the mark.
+
+**C2-B-080** One or two blank lines between a term and its description, between two descriptions or between two entries do not end the list (C2-B-051) and do not change what it renders.
 
 One entry with two descriptions:
 
-Example 54 (unverified)
+Example 62 (unverified)
 
 ::: compare
 
@@ -1265,7 +1473,7 @@ more term text</dt>
 
 :::
 
-Example 55 (unverified)
+Example 63 (unverified)
 
 ::: compare
 
@@ -1285,7 +1493,7 @@ indented line</dt>
 
 :::
 
-Example 56 (generated)
+Example 64 (generated)
 
 ::: compare
 
@@ -1305,7 +1513,7 @@ Example 56 (generated)
 
 :::
 
-Example 57 (generated)
+Example 65 (generated)
 
 ::: compare
 
@@ -1319,7 +1527,7 @@ Example 57 (generated)
 
 :::
 
-Example 58 (generated)
+Example 66 (generated)
 
 ::: compare
 
@@ -1339,7 +1547,7 @@ Example 58 (generated)
 
 :::
 
-Example 59 (generated)
+Example 67 (generated)
 
 ::: compare
 
@@ -1362,7 +1570,7 @@ Example 59 (generated)
 
 :::
 
-Example 60 (generated)
+Example 68 (generated)
 
 ::: compare
 
@@ -1383,7 +1591,7 @@ not indented
 
 :::
 
-Example 61 (generated)
+Example 69 (generated)
 
 ::: compare
 
@@ -1404,7 +1612,7 @@ code
 
 :::
 
-Example 62 (generated)
+Example 70 (generated)
 
 ::: compare
 
@@ -1428,7 +1636,7 @@ Example 62 (generated)
 
 :::
 
-Example 63 (generated)
+Example 71 (generated)
 
 ::: compare
 
@@ -1453,9 +1661,52 @@ Example 63 (generated)
 
 :::
 
-The list marker on line 3 is a lazy line (C2-B-021).
+After the blank line, line 3 is neither a description line nor a term line, so it closes the list at any indent (C2-B-071).
 
-Example 64 (unverified)
+Example 72 (generated)
+
+::: compare
+
+```carve
+:: t
+
+  x
+```
+
+```html
+<dl>
+  <dt>t</dt>
+</dl>
+<p>x</p>
+```
+
+:::
+
+Example 73 (generated)
+
+::: compare
+
+```carve
+:: t
+
+: d
+
+: d2
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>d</dd>
+  <dd>d2</dd>
+</dl>
+```
+
+:::
+
+The list marker on line 3 is a lazy line (C2-B-022).
+
+Example 74 (unverified)
 
 ::: compare
 
@@ -1475,9 +1726,9 @@ Example 64 (unverified)
 
 :::
 
-Lines 2 and 3 are lazy lines (C2-B-022).
+Lines 2 and 3 are lazy lines (C2-B-023).
 
-Example 65 (unverified)
+Example 75 (unverified)
 
 ::: compare
 
@@ -1501,21 +1752,27 @@ Example 65 (unverified)
 
 A *definition* is a footnote definition, a link definition or an abbreviation definition.
 
-**C2-B-062** A definition stands at column 0 outside every container; a definition-shaped line inside a container is text, with lint.
+**C2-B-081** A definition stands at column 0 outside every container, so a definition-shaped line inside a container is text, and `definition-in-container` reports it.
 
-**C2-B-063** A footnote definition is `[^label]:`, a space and content on the same line; its body is that content and the blocks indented past its marker.
+**C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line.
 
-**C2-B-064** A link definition is one line: `[label]:`, a space, a URL without spaces, which may be empty, and an optional quoted title.
+**C2-B-083** A link definition is one line: `[label]:`, a space, a URL without spaces, which may be empty, and an optional quoted title.
 
-**C2-B-065** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
+**C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
-**C2-B-066** For a duplicate label the first definition wins, with a warning.
+**C2-B-085** For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.
 
-**C2-B-067** Every paragraph of a footnote body gets `<p>`.
+**C2-B-086** Every paragraph of a footnote body gets `<p>`.
 
-References resolve after block parsing. A definition line directly after a paragraph line is a lazy line, with lint, unless it is a sibling of an open definition (C2-B-015). A definition takes an attribute line (C2-B-073). Anything after the URL or the title of a link definition makes the line text.
+**C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker.
 
-Example 66 (generated)
+**C2-B-088** References resolve after block parsing, so a reference may stand before its definition.
+
+**C2-B-089** Anything after the URL or the title of a link definition makes the line text.
+
+A definition line directly after a paragraph line is a lazy line (C2-B-012) unless it is a sibling of an open definition (C2-B-016). A definition takes an attribute line (C2-B-095).
+
+Example 76 (generated)
 
 ::: compare
 
@@ -1539,7 +1796,7 @@ Text[^n] here.
 
 :::
 
-Example 67 (generated)
+Example 77 (generated)
 
 ::: compare
 
@@ -1570,7 +1827,7 @@ Text[^n].
 
 Line 4 is a sibling of the open definition and ends its paragraph.
 
-Example 68 (generated)
+Example 78 (generated)
 
 ::: compare
 
@@ -1598,7 +1855,7 @@ One[^a] two[^b].
 
 :::
 
-Example 69 (generated)
+Example 79 (generated)
 
 ::: compare
 
@@ -1614,7 +1871,7 @@ body</p>
 
 :::
 
-Example 70 (generated)
+Example 80 (generated)
 
 ::: compare
 
@@ -1632,7 +1889,7 @@ HTML is plain.
 
 A label with any other character makes the line text.
 
-Example 71 (generated)
+Example 81 (generated)
 
 ::: compare
 
@@ -1646,7 +1903,7 @@ Example 71 (generated)
 
 :::
 
-Example 72 (unverified)
+Example 82 (unverified)
 
 ::: compare
 
@@ -1663,7 +1920,7 @@ Example 72 (unverified)
 
 :::
 
-Example 73 (unverified)
+Example 83 (unverified)
 
 ::: compare
 
@@ -1682,7 +1939,7 @@ text
 
 :::
 
-Example 74 (unverified)
+Example 84 (unverified)
 
 ::: compare
 
@@ -1703,33 +1960,45 @@ Example 74 (unverified)
 
 ## Attribute lines
 
-**C2-B-068** An attribute line is one or more glued brace blocks `{...}`, alone on its line.
+**C2-B-090** An attribute line is one or more glued brace blocks `{...}`, alone on its line.
 
-**C2-B-069** An attribute line applies to the block that starts on the next line and is owned by the same container; there is no column test.
+**C2-B-091** An attribute line applies to the block that starts on the next line and is owned by the same container, with no column test.
 
-**C2-B-070** An attribute line is held pending until the next line: a block takes it, and otherwise it becomes a closed one-line paragraph before the next line is classified.
+**C2-B-092** An attribute line is held pending until the next line: a block takes it, and otherwise it becomes a closed one-line paragraph before the next line is classified.
 
-**C2-B-071** Glued brace blocks merge, and consecutive attribute lines merge.
+**C2-B-093** Glued brace blocks merge into one.
 
-**C2-B-072** Glued attribute blocks after an inline host merge in the same way.
+**C2-B-094** Glued attribute blocks after an inline host merge in the same way.
 
-**C2-B-073** Every block takes an attribute line, a definition and a `%%%` comment block included.
+**C2-B-095** Every block takes an attribute line, a definition and a `%%%` comment block included.
 
-**Exception C2-B-074** A caption takes no attribute line.
+**Exception C2-B-096** A caption takes no attribute line.
 
-**Exception C2-B-075** An attribute line that its container does not own closes that container like any other line, and two lists with an attribute line between them are not adjacent (C2-B-045).
+**Exception C2-B-097** An attribute line that its container does not own closes that container like any other line, and two lists with an attribute line between them are not adjacent (C2-B-053).
 
-**C2-B-076** The order inside a brace block is fixed in the tree and the output: the id, then the classes, then the language, then the keys, classes and keys each as written; the language part, as in `{:en}`, is shorthand for the node's language field and is not a key.
+**C2-B-098** The order inside a brace block is fixed in the tree and the output: the id, then the classes, then the language, then the keys, classes and keys each as written.
 
-**C2-B-077** A key named `id` or `class`, in any ASCII letter case, folds into the id or the classes at parse time, and the last id written wins.
+**C2-B-099** A key named `id` or `class`, in any ASCII letter case, folds into the id or the classes at parse time.
 
-**C2-B-078** A brace block on a marker line closes on that line.
+**C2-B-100** A brace block on a marker line closes on that line.
 
-**C2-B-079** The attributes of an item or a cell abut the marker, as in `-{.i} b`.
+**C2-B-101** The attributes of an item or a cell abut the marker, as in `-{.i} b`.
 
-Directly after a paragraph line an attribute line is a lazy line, with lint. A blank line between an attribute line and a block leaves the attribute line without a block. An attribute block after an admonition name or after a fence language is an error diagnostic; the block still opens. The attributes of a link definition are merged into every link that uses it, and the link's own values win.
+**C2-B-102** Consecutive attribute lines merge into one.
 
-Example 75 (generated)
+**C2-B-103** The language part of a brace block, as in `{:en}`, is shorthand for the node's language field and is not a key.
+
+**C2-B-104** When a brace block or a merged run of them holds several ids, the last id written wins.
+
+**C2-B-105** An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error.
+
+**C2-B-106** The attributes of a link definition are merged into every link that uses it, and the link's own values win.
+
+**C2-B-107** The attribute line above a captioned block applies to the captioned whole: to the table for a table, and to the figure for every other target (carried over from 0.1).
+
+Directly after a paragraph line an attribute line is a lazy line (C2-B-012), and `block-opener-without-blank-line` reports it. A blank line between an attribute line and a block leaves the attribute line without a block (C2-B-091, C2-B-092).
+
+Example 85 (generated)
 
 ::: compare
 
@@ -1744,7 +2013,7 @@ para
 
 :::
 
-Example 76 (generated)
+Example 86 (generated)
 
 ::: compare
 
@@ -1759,7 +2028,7 @@ para
 
 :::
 
-Example 77 (generated)
+Example 87 (generated)
 
 ::: compare
 
@@ -1777,7 +2046,7 @@ para
 
 Two lists, with the class on the second:
 
-Example 78 (generated)
+Example 88 (generated)
 
 ::: compare
 
@@ -1799,7 +2068,7 @@ Example 78 (generated)
 
 :::
 
-Example 79 (generated)
+Example 89 (generated)
 
 ::: compare
 
@@ -1815,7 +2084,7 @@ Example 79 (generated)
 
 :::
 
-Example 80 (unverified)
+Example 90 (unverified)
 
 ::: compare
 
@@ -1833,7 +2102,7 @@ text
 
 The attribute line belongs to the item and finds no block there, so it becomes a paragraph of the item before line 4 is read.
 
-Example 81 (unverified)
+Example 91 (unverified)
 
 ::: compare
 
@@ -1855,7 +2124,7 @@ b
 
 :::
 
-Example 82 (unverified)
+Example 92 (unverified)
 
 ::: compare
 
@@ -1874,7 +2143,7 @@ para
 
 The comment block takes the attribute line and renders nothing.
 
-Example 83 (unverified)
+Example 93 (unverified)
 
 ::: compare
 
@@ -1892,7 +2161,7 @@ para
 
 :::
 
-Example 84 (unverified)
+Example 94 (unverified)
 
 ::: compare
 
@@ -1907,7 +2176,7 @@ para
 
 :::
 
-Example 85 (unverified)
+Example 95 (unverified)
 
 ::: compare
 
@@ -1922,7 +2191,7 @@ para
 
 :::
 
-Example 86 (unverified)
+Example 96 (unverified)
 
 ::: compare
 
@@ -1937,7 +2206,7 @@ para
 
 :::
 
-Example 87 (unverified)
+Example 97 (unverified)
 
 ::: compare
 
@@ -1954,7 +2223,7 @@ Example 87 (unverified)
 
 :::
 
-Example 88 (generated)
+Example 98 (unverified)
 
 ::: compare
 
@@ -1963,24 +2232,138 @@ Example 88 (generated)
 ```
 
 ```html
-<p><span class="a" id="i">span</span></p>
+<p><span id="i" class="a">span</span></p>
+```
+
+:::
+
+The caption takes no attribute line, so line 2 becomes a paragraph, and line 3 then stands below a paragraph and is text (C2-B-096).
+
+Example 99 (unverified)
+
+::: compare
+
+```carve
+| a |
+{.x}
+^ cap
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+<p>{.x}</p>
+<p>^ cap</p>
+```
+
+:::
+
+An attribute line may stand on a marker line. The paragraph of the item takes it.
+
+Example 100 (generated)
+
+::: compare
+
+```carve
+- {.c}
+  para
+```
+
+```html
+<ul>
+  <li><p class="c">para</p></li>
+</ul>
+```
+
+:::
+
+The brace block does not close on the marker line, so it is text (C2-B-100).
+
+Example 101 (generated)
+
+::: compare
+
+```carve
+- {.c
+  x}
+```
+
+```html
+<ul>
+  <li>{.c
+x}</li>
+</ul>
+```
+
+:::
+
+Example 102 (generated)
+
+::: compare
+
+```carve
+{#f .c}
+| a |
+^ cap
+```
+
+```html
+<table id="f" class="c">
+  <caption>cap</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Example 103 (generated)
+
+::: compare
+
+````carve
+{#f .c}
+```
+code
+```
+^ cap
+````
+
+```html
+<figure id="f" class="c">
+  <pre><code>code
+</code></pre>
+  <figcaption>cap</figcaption>
+</figure>
 ```
 
 :::
 
 ## Fences, divs and comment blocks
 
-**C2-B-080** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block.
+**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block.
 
-**C2-B-081** The closer has the opener's character and at least its length, on a line owned by the same container; there is no further column test.
+**C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test.
 
-**C2-B-082** The closer of a code fence and of a comment block is a bare run: a run followed by other text is content.
+**C2-B-110** The closer of a code fence is a bare run: a run followed by other text is code.
 
-**C2-B-083** An unclosed code fence, div or comment block ends with its container and never turns back into text; blank lines at the end of an unclosed code fence are not part of its body, so a trailing blank line never changes the tree.
+**C2-B-111** An unclosed code fence, div or comment block ends with its container and never turns back into text.
 
-**C2-B-084** The body of a code fence is code and the body of a comment block is hidden; neither is read for blocks or inline content, and each is opaque until its closer or the end of its container. The body of a div is read as blocks.
+**C2-B-112** The body of a code fence is code and the body of a comment block is hidden: neither is read for blocks or inline content.
 
-Example 89 (generated)
+**C2-B-113** Blank lines at the end of an unclosed code fence are not part of its body, so a trailing blank line never changes the tree.
+
+**C2-B-114** The body of a code fence and of a comment block is opaque until its closer or the end of its container.
+
+**C2-B-115** The body of a div is read as blocks.
+
+**C2-B-116** A code fence whose info string is `=` directly followed by a format name is a raw block: its body goes to an output of that format as written and is not code (carried over from 0.1).
+
+Example 104 (generated)
 
 ::: compare
 
@@ -1997,7 +2380,7 @@ code
 
 :::
 
-Example 90 (generated)
+Example 105 (generated)
 
 ::: compare
 
@@ -2014,7 +2397,7 @@ Example 90 (generated)
 
 :::
 
-Example 91 (generated)
+Example 106 (generated)
 
 ::: compare
 
@@ -2033,7 +2416,7 @@ code
 
 :::
 
-Example 92 (generated)
+Example 107 (generated)
 
 ::: compare
 
@@ -2051,7 +2434,7 @@ code
 
 The fence ends with its item at line 3.
 
-Example 93 (generated)
+Example 108 (generated)
 
 ::: compare
 
@@ -2075,7 +2458,7 @@ after
 
 The blank line before `after` is not code.
 
-Example 94 (unverified)
+Example 109 (unverified)
 
 ::: compare
 
@@ -2100,7 +2483,7 @@ after
 
 The closer is not tested for its column.
 
-Example 95 (unverified)
+Example 110 (unverified)
 
 ::: compare
 
@@ -2117,7 +2500,7 @@ code
 
 :::
 
-Example 96 (generated)
+Example 111 (generated)
 
 ::: compare
 
@@ -2135,7 +2518,7 @@ text
 
 :::
 
-Example 97 (generated)
+Example 112 (generated)
 
 ::: compare
 
@@ -2152,15 +2535,42 @@ after
 
 :::
 
+Raw HTML is off by default, so the raw block is written as a code block (C2-B-116).
+
+Example 113 (unverified)
+
+::: compare
+
+````carve
+```=html
+<b>x</b>
+```
+````
+
+```html
+<pre><code class="language-html">&lt;b&gt;x&lt;/b&gt;
+</code></pre>
+```
+
+:::
+
 ## The fence opener and titles
 
-**C2-B-085** After the run, a code fence opener holds an optional language word and an optional quoted title, and a div opener holds an optional name or sigil and an optional quoted title.
+**C2-B-117** After the run, a code fence opener holds an optional language word, an optional quoted title and an optional label in brackets, in that order.
 
-**Exception C2-B-086** A backtick run whose info string holds a backtick is not an opener.
+**Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-The backtick is the canonical fence character; the tilde is accepted. The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line. An unquoted title or further words in the info string are a diagnostic, and the block still opens.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order.
 
-Example 98 (generated)
+**C2-B-120** The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line.
+
+**C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group, and renders nothing in the core (carried over from 0.1).
+
+**C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.
+
+The backtick is the canonical fence character, and the tilde is accepted (C2-B-108).
+
+Example 114 (generated)
 
 ::: compare
 
@@ -2177,7 +2587,7 @@ code
 
 :::
 
-Example 99 (generated)
+Example 115 (generated)
 
 ::: compare
 
@@ -2194,7 +2604,7 @@ code
 
 :::
 
-Example 100 (generated)
+Example 116 (generated)
 
 ::: compare
 
@@ -2213,7 +2623,7 @@ text
 
 :::
 
-Example 101 (generated)
+Example 117 (generated)
 
 ::: compare
 
@@ -2229,21 +2639,48 @@ x</code></p>
 
 :::
 
+Example 118 (generated)
+
+::: compare
+
+````carve
+```php "t" [Composer]
+code
+```
+````
+
+```html
+<pre title="t"><code class="language-php">code
+</code></pre>
+```
+
+:::
+
 ## Sigil divs
 
 A *sigil div* is a div whose opener names how its body is read: `::: |` is a line block, `::: \` a hard-break block, `::: >` a quote fence.
 
-**C2-B-087** The body of a line block is one leaf that recognizes only prefixes and the closer: every other line is a line of text.
+**C2-B-123** The body of a line block is one leaf that recognizes only prefixes and the closer: every other line is a line of text.
 
-**C2-B-088** A hard-break block and a quote fence are containers, and their bodies are read as blocks.
+**C2-B-124** A hard-break block and a quote fence are containers, and their bodies are read as blocks.
 
-**C2-B-089** A bare colon run closes the innermost open div it is long enough for, and otherwise opens an anonymous div.
+**C2-B-125** A bare colon run closes the innermost open div it is long enough for, and otherwise opens an anonymous div.
 
-**C2-B-090** A colon run followed by a name or a sigil always opens a div, at any length.
+**C2-B-126** A colon run followed by a name or a sigil always opens a div, at any length.
 
-A stray `:::` at column 0 below an item follows from these clauses: the item closes (C2-B-024), no div is open, and an anonymous div opens at top level. This is an error diagnostic.
+**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` gives a figure group, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1).
 
-Example 102 (unverified)
+**C2-B-128** The classes of a div stand in one order: the name of a plain div first, then the classes of its attribute line as written, then the class of a sigil opener, `line-block` or `hardbreaks`, last.
+
+**C2-B-129** A hard-break block is the same as a bare div whose attribute line holds `hardbreaks` as its last class and whose lines each end in a hard break.
+
+**C2-B-130** A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1).
+
+**C2-B-131** A blank line in a line block ends a stanza, and the next line starts a new one (carried over from 0.1).
+
+**C2-B-132** A stray `:::` at column 0 below an item with an unclosed div closes the item (C2-B-026) and opens an anonymous div at top level (C2-B-125), and `unclosed-container-fence` reports it with severity error.
+
+Example 119 (unverified)
 
 ::: compare
 
@@ -2263,7 +2700,7 @@ Example 102 (unverified)
 
 :::
 
-Example 103 (generated)
+Example 120 (generated)
 
 ::: compare
 
@@ -2283,7 +2720,7 @@ Roses are red
 
 :::
 
-Example 104 (generated)
+Example 121 (generated)
 
 ::: compare
 
@@ -2303,7 +2740,7 @@ two</p>
 
 :::
 
-Example 105 (generated)
+Example 122 (generated)
 
 ::: compare
 
@@ -2324,7 +2761,7 @@ second
 
 :::
 
-Example 106 (generated)
+Example 123 (generated)
 
 ::: compare
 
@@ -2350,7 +2787,7 @@ outer
 
 The bare run on line 2 is too short for the open div, so it opens an anonymous div.
 
-Example 107 (generated)
+Example 124 (generated)
 
 ::: compare
 
@@ -2372,7 +2809,7 @@ x
 
 :::
 
-Example 108 (generated)
+Example 125 (generated)
 
 ::: compare
 
@@ -2398,33 +2835,122 @@ after
 
 :::
 
+Example 126 (generated)
+
+::: compare
+
+```carve
+::: spoiler
+x
+:::
+```
+
+```html
+<div class="spoiler">
+  <p>x</p>
+</div>
+```
+
+:::
+
+Example 127 (generated)
+
+::: compare
+
+```carve
+{.x}
+::: spoiler
+x
+:::
+```
+
+```html
+<div class="spoiler x">
+  <p>x</p>
+</div>
+```
+
+:::
+
+Example 128 (generated)
+
+::: compare
+
+```carve
+{.x}
+::: \
+a
+b
+:::
+```
+
+```html
+<div class="x hardbreaks">
+  <p>a<br>
+b</p>
+</div>
+```
+
+:::
+
+Two stanzas, and two leading spaces on line 3:
+
+Example 129 (generated)
+
+::: compare
+
+```carve
+::: |
+one
+  two
+
+three
+:::
+```
+
+```html
+<div class="line-block">
+  <p>one<br>
+&nbsp;&nbsp;two</p>
+  <p>three</p>
+</div>
+```
+
+:::
+
 ## Comments
 
-Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` and the block form `%%%`. The block form is a fence (C2-B-080, C2-B-081), and its node is owned by its container.
+Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` and the block form `%%%`. The block form is a fence (C2-B-108, C2-B-109), and its node is owned by its container.
 
-**C2-B-091** The line form is `%%` at the start of a line or after whitespace: it runs to the end of the line, it is an inline token, and it is never an interrupter; elsewhere `%%` is text.
+**C2-B-133** The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.
 
-**Exception C2-B-092** In a table row the cells are split first, so a line comment inside a cell ends at its cell.
+**Exception C2-B-134** In a table row the cells are split first, so a line comment inside a cell ends at its cell.
 
-**Exception C2-B-093** In the body of a code fence a `%%` line is code and never a comment, also when the fence is unclosed or sits in a list item, and the clause on comment-only lines (C2-B-095) does not apply there; in the body of a line block `%%` is text.
+**Exception C2-B-135** In the body of a code fence a `%%` line is code and never a comment, also when the fence is unclosed or sits in a list item, and the clause on comment-only lines (C2-B-137) does not apply there.
 
-**C2-B-094** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
+**C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
-**Exception C2-B-095** A *comment-only line*, a line that holds nothing but a line comment, is skipped by ownership, by a pending attribute line, by the count of blank lines and by the end of a table, and it does not separate a caption from its block.
+**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment, is skipped by ownership, by a pending attribute line, by the count of blank lines and by the end of a table, and it does not separate a caption from its block.
 
-**C2-B-096** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
+**C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
-**C2-B-097** Only the line form makes a comment-only line: a line that holds only a braced comment is a paragraph.
+**C2-B-139** Only the line form makes a comment-only line: a line that holds only a braced comment is a paragraph.
 
-**C2-B-098** A paragraph that holds only comments counts as content of its container and renders nothing: no empty paragraph element is written.
+**C2-B-140** A paragraph that holds only comments counts as content of its container and renders nothing: no empty paragraph element is written.
 
-**C2-B-099** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, with a lint warning.
+**C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and lint reports the unclosed braced comment as a warning.
 
-**C2-B-100** A `%%%` block at column 0 between two list items ends the first list and sits at top level, so there are two lists.
+**C2-B-142** A `%%%` block at column 0 between two list items ends the first list and sits at top level, so there are two lists.
+
+**C2-B-143** A line comment is an inline token and never an interrupter.
+
+**Exception C2-B-144** In the body of a line block `%%` is text, and `comment-line-in-line-block` reports it.
+
+**C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
 One paragraph, with the comment inside it:
 
-Example 109 (generated)
+Example 130 (generated)
 
 ::: compare
 
@@ -2443,7 +2969,7 @@ two</li>
 
 :::
 
-Example 110 (generated)
+Example 131 (generated)
 
 ::: compare
 
@@ -2459,7 +2985,7 @@ more</p>
 
 :::
 
-Example 111 (generated)
+Example 132 (generated)
 
 ::: compare
 
@@ -2475,7 +3001,7 @@ a%% b
 
 The comment-only line does not end the list.
 
-Example 112 (generated)
+Example 133 (generated)
 
 ::: compare
 
@@ -2496,7 +3022,7 @@ Example 112 (generated)
 
 The empty item:
 
-Example 113 (generated)
+Example 134 (generated)
 
 ::: compare
 
@@ -2512,7 +3038,7 @@ Example 113 (generated)
 
 :::
 
-Example 114 (unverified)
+Example 135 (generated)
 
 ::: compare
 
@@ -2521,12 +3047,54 @@ Example 114 (unverified)
 ```
 
 ```html
-<blockquote></blockquote>
+<blockquote>
+
+</blockquote>
 ```
 
 :::
 
-Example 115 (generated)
+Example 136 (generated)
+
+::: compare
+
+```carve
+:: %% c
+: d
+```
+
+```html
+<dl>
+  <dt></dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+The comment on line 3 stands after a blank line at column 0. It is skipped by ownership, the list stays open, and its node belongs to the first item, which HTML does not show (C2-B-138).
+
+Example 137 (generated)
+
+::: compare
+
+```carve
+- one
+
+%% c
+- two
+```
+
+```html
+<ul>
+  <li><p>one</p></li>
+  <li><p>two</p></li>
+</ul>
+```
+
+:::
+
+Example 138 (generated)
 
 ::: compare
 
@@ -2542,7 +3110,7 @@ Example 115 (generated)
 
 :::
 
-Example 116 (generated)
+Example 139 (generated)
 
 ::: compare
 
@@ -2561,7 +3129,7 @@ Example 116 (generated)
 
 The fence in the item is unclosed. Line 3 belongs to the item, so it is code.
 
-Example 117 (generated)
+Example 140 (generated)
 
 ::: compare
 
@@ -2587,7 +3155,7 @@ after
 
 Line 3 is not owned by the item, so it ends the item and with it the unclosed fence, and it is then a comment at top level. Lint reports the unclosed fence.
 
-Example 118 (unverified)
+Example 141 (unverified)
 
 ::: compare
 
@@ -2612,7 +3180,7 @@ Example 118 (unverified)
 
 Line 2 is an interrupter, so the braced comment does not close.
 
-Example 119 (generated)
+Example 142 (generated)
 
 ::: compare
 
@@ -2630,7 +3198,7 @@ Example 119 (generated)
 
 :::
 
-Example 120 (unverified)
+Example 143 (unverified)
 
 ::: compare
 
@@ -2653,7 +3221,7 @@ x
 
 :::
 
-Example 121 (generated)
+Example 144 (generated)
 
 ::: compare
 
@@ -2671,7 +3239,7 @@ Example 121 (generated)
 
 The paragraph on line 3 is the second block of the first item and renders nothing. No blank line stands between the two items, so the list is tight.
 
-Example 122 (unverified)
+Example 145 (unverified)
 
 ::: compare
 
@@ -2693,7 +3261,7 @@ Example 122 (unverified)
 
 The braced comment on line 2 is a paragraph, so it ends the table. The `%%` form would not.
 
-Example 123 (unverified)
+Example 146 (unverified)
 
 ::: compare
 
@@ -2720,15 +3288,19 @@ Example 123 (unverified)
 
 ## Captions
 
-**C2-B-101** A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block; there is no column test.
+**C2-B-146** A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.
 
-**C2-B-102** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group.
+**C2-B-147** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group.
 
-**C2-B-103** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
+**C2-B-148** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
 
-After a blank line or below any other block a caption line is text, with lint. Under ordinary paragraph text it is a lazy line (C2-B-016). Below a quote that ends in a paragraph, a caption line without the quote's mark closes the quote and captions it (C2-B-017); with the mark it is a lazy line of that paragraph. Inside an item or a quote a caption line carries that container's indent or mark like any other line.
+**C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.
 
-Example 124 (generated)
+**C2-B-150** The first bare `#` in a caption's text is the caption number mark, and the sequences and the label word that selects one keep their 0.1 definition (carried over from 0.1).
+
+Under ordinary paragraph text a caption line is a lazy line (C2-B-017). Below a quote that ends in a paragraph, a caption line without the quote's mark closes the quote and captions it (C2-B-018); with the mark it is a lazy line of that paragraph. Inside an item or a quote a caption line carries that container's indent or mark like any other line.
+
+Example 147 (generated)
 
 ::: compare
 
@@ -2746,7 +3318,7 @@ Example 124 (generated)
 
 :::
 
-Example 125 (generated)
+Example 148 (generated)
 
 ::: compare
 
@@ -2766,7 +3338,7 @@ Example 125 (generated)
 
 :::
 
-Example 126 (generated)
+Example 149 (generated)
 
 ::: compare
 
@@ -2787,7 +3359,7 @@ code
 
 :::
 
-Example 127 (generated)
+Example 150 (generated)
 
 ::: compare
 
@@ -2807,7 +3379,7 @@ q
 
 :::
 
-Example 128 (generated)
+Example 151 (generated)
 
 ::: compare
 
@@ -2825,7 +3397,7 @@ Example 128 (generated)
 
 :::
 
-Example 129 (generated)
+Example 152 (generated)
 
 ::: compare
 
@@ -2843,7 +3415,7 @@ $$`x^2`
 
 :::
 
-Example 130 (generated)
+Example 153 (generated)
 
 ::: compare
 
@@ -2865,7 +3437,7 @@ Example 130 (generated)
 
 :::
 
-Example 131 (generated)
+Example 154 (generated)
 
 ::: compare
 
@@ -2881,7 +3453,7 @@ text
 
 :::
 
-Example 132 (unverified)
+Example 155 (unverified)
 
 ::: compare
 
@@ -2903,7 +3475,7 @@ Example 132 (unverified)
 
 :::
 
-Example 133 (unverified)
+Example 156 (unverified)
 
 ::: compare
 
@@ -2920,7 +3492,7 @@ Example 133 (unverified)
 
 :::
 
-Example 134 (generated)
+Example 157 (generated)
 
 ::: compare
 
@@ -2944,7 +3516,7 @@ Example 134 (generated)
 
 :::
 
-Example 135 (generated)
+Example 158 (generated)
 
 ::: compare
 
@@ -2964,19 +3536,41 @@ Example 135 (generated)
 
 :::
 
+Example 159 (generated)
+
+::: compare
+
+```carve
+| a |
+^ Table #: one
+```
+
+```html
+<table>
+  <caption>Table 1: one</caption>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 ## Headings
 
-**C2-B-104** A heading is one to six `=`, one space and at least one further character that is not a space; seven or more markers or a bare marker run are text.
+**C2-B-151** A heading is one to six `=`, one space and at least one further character that is not a space, so seven or more markers or a bare marker run are text.
 
-**C2-B-105** `#` is accepted in place of `=`.
+**C2-B-152** `#` is accepted in place of `=`.
 
-**C2-B-106** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
+**C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-107** A heading is one line, and the next line starts a new block.
+**C2-B-154** A heading is one line, and the next line starts a new block.
 
-A heading's attributes stand on the line above it (C2-B-069). A heading may stand on a marker line or after a quote mark (C2-B-049). Directly after a paragraph line a heading line is a lazy line. `=` and `#` may mix in one document, with a lint note.
+**C2-B-155** `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.
 
-Example 136 (unverified)
+A heading's attributes stand on the line above it (C2-B-091). A heading may stand on a marker line or after a quote mark (C2-B-057). Directly after a paragraph line a heading line is a lazy line (C2-B-024).
+
+Example 160 (unverified)
 
 ::: compare
 
@@ -2994,7 +3588,7 @@ text
 
 :::
 
-Example 137 (generated)
+Example 161 (generated)
 
 ::: compare
 
@@ -3014,7 +3608,7 @@ text
 
 A level 4 heading with the text `Title ==`:
 
-Example 138 (unverified)
+Example 162 (unverified)
 
 ::: compare
 
@@ -3030,7 +3624,7 @@ Example 138 (unverified)
 
 :::
 
-Example 139 (generated)
+Example 163 (generated)
 
 ::: compare
 
@@ -3046,7 +3640,7 @@ Example 139 (generated)
 
 :::
 
-Example 140 (unverified)
+Example 164 (unverified)
 
 ::: compare
 
@@ -3063,7 +3657,7 @@ Example 140 (unverified)
 
 :::
 
-Example 141 (unverified)
+Example 165 (unverified)
 
 ::: compare
 
@@ -3080,7 +3674,7 @@ Example 141 (unverified)
 
 :::
 
-Example 142 (generated)
+Example 166 (generated)
 
 ::: compare
 
@@ -3100,13 +3694,15 @@ Example 142 (generated)
 
 ## One-line constructs
 
-**C2-B-108** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter.
+**C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1.
 
-**C2-B-109** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes holding nothing but one image.
+**C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes holding nothing but one image.
 
-A heading (C2-B-107) and a table row (C2-B-114) are one line each as well. The shape of the directive keeps its 0.1 definition. The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
+**C2-B-158** A paragraph that holds nothing but one display math span is a math block, decided when the paragraph closes like the promotion of a block image (carried over from 0.1).
 
-Example 143 (generated)
+A heading (C2-B-154) and a table row (C2-B-166) are one line each as well. The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
+
+Example 167 (generated)
 
 ::: compare
 
@@ -3122,7 +3718,7 @@ next line
 
 :::
 
-Example 144 (generated)
+Example 168 (generated)
 
 ::: compare
 
@@ -3138,7 +3734,7 @@ text
 
 :::
 
-Example 145 (generated)
+Example 169 (generated)
 
 ::: compare
 
@@ -3152,7 +3748,7 @@ Example 145 (generated)
 
 :::
 
-Example 146 (generated)
+Example 170 (generated)
 
 ::: compare
 
@@ -3168,13 +3764,45 @@ next line</p>
 
 :::
 
+Example 171 (generated)
+
+::: compare
+
+```carve
+$$`x^2`
+```
+
+```html
+<p><span class="math display" role="math">\[x^2\]</span></p>
+```
+
+:::
+
+Example 172 (generated)
+
+::: compare
+
+```carve
+$$`x^2`
+more
+```
+
+```html
+<p><span class="math display" role="math">\[x^2\]</span>
+more</p>
+```
+
+:::
+
 ## Thematic break
 
-**C2-B-110** A thematic break is a line that holds three or more `*` and nothing else; indent is allowed.
+**C2-B-159** A thematic break is a line that holds three or more `*` and nothing else, at any indent.
 
-A run of hyphens or underscores and the spaced forms are not thematic breaks. They are text, or nested markers for `- - -` (C2-B-050), and lint reports a line that holds only hyphens or underscores. Directly after a paragraph line a star run is a lazy line.
+**C2-B-160** A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.
 
-Example 147 (generated)
+Directly after a paragraph line a star run is a lazy line (C2-B-024).
+
+Example 173 (generated)
 
 ::: compare
 
@@ -3194,7 +3822,7 @@ b
 
 :::
 
-Example 148 (generated)
+Example 174 (generated)
 
 ::: compare
 
@@ -3208,7 +3836,7 @@ Example 148 (generated)
 
 :::
 
-Example 149 (generated)
+Example 175 (generated)
 
 ::: compare
 
@@ -3226,7 +3854,7 @@ Example 149 (generated)
 
 :::
 
-Example 150 (unverified)
+Example 176 (unverified)
 
 ::: compare
 
@@ -3242,7 +3870,7 @@ text
 
 :::
 
-Example 151 (unverified)
+Example 177 (unverified)
 
 ::: compare
 
@@ -3264,15 +3892,19 @@ b
 
 ## Frontmatter
 
-**C2-B-111** Line 1 opens frontmatter when it is exactly `---` at column 0, optionally followed by a format word and by trailing spaces; only a byte-order mark may come before it, and a longer run of hyphens is text.
+**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format word and by trailing spaces.
 
-**C2-B-112** The closer is a line that is exactly `---` plus trailing spaces.
+**C2-B-162** The closer is a line that is exactly `---` plus trailing spaces.
 
-**C2-B-113** An unclosed frontmatter block runs to the end of the document, with an error diagnostic.
+**C2-B-163** An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.
 
-The opener is taken without a scan for the closer. A document that starts with a thematic break writes `***`.
+**C2-B-164** The format word is glued to the hyphens, as in `---toml`, which is the canonical form, or stands after spaces, as in `--- toml`, and without a format word the format is YAML (carried over from 0.1).
 
-Example 152 (generated)
+**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text.
+
+The opener is taken without a scan for the closer (C2-B-189). A document that starts with a thematic break writes `***`.
+
+Example 178 (generated)
 
 ::: compare
 
@@ -3290,7 +3922,7 @@ text
 
 :::
 
-Example 153 (generated)
+Example 179 (generated)
 
 ::: compare
 
@@ -3307,7 +3939,7 @@ text
 
 :::
 
-Example 154 (generated)
+Example 180 (generated)
 
 ::: compare
 
@@ -3319,47 +3951,79 @@ text
 ```
 
 ```html
+```
+
+:::
+
+Example 181 (generated)
+
+::: compare
+
+```carve
+---toml
+a = 1
+---
+
+text
+```
+
+```html
+<p>text</p>
 ```
 
 :::
 
 ## Tables
 
-**C2-B-114** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, with at least two pipes; a pipe alone on a line is text.
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, with at least two pipes, so a pipe alone on a line is text.
 
-**C2-B-115** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment; the row still ends with a pipe.
+**C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment.
 
-**C2-B-116** A line that starts with a pipe and does not end with one is text: the table ends there, and the next row starts a new table, with lint.
+**C2-B-168** A line that starts with a pipe and does not end with one is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
 
-**C2-B-117** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
+**C2-B-169** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
 
-**C2-B-118** A table ends at the first line that is neither a row nor a continuation row.
+**C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
-**C2-B-119** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block, then one space; in that brace block the alignment mark comes first.
+**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block, then one space.
 
-**C2-B-120** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above; spans resolve backward only.
+**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above.
 
-**C2-B-121** A failed span is an empty cell.
+**C2-B-173** A failed span is an empty cell.
 
-**Exception C2-B-122** A row span does not cross the head boundary.
+**Exception C2-B-174** A row span does not cross the head boundary.
 
-**C2-B-123** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row, and each fragment joins the cell above it.
+**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row.
 
-**C2-B-124** A fragment past the last column forms a new cell.
+**C2-B-176** A fragment past the last column forms a new cell.
 
-**Exception C2-B-125** Without the closing pipe a `+` line is text and ends the table.
+**Exception C2-B-177** Without the closing pipe a `+` line is text and ends the table.
 
-**C2-B-126** The head of a table is its leading rows made only of header cells.
+**C2-B-178** The head of a table is its leading rows made only of header cells.
 
-**C2-B-127** `header-rows` sets the head of a delimited table and of a list-table; on a pipe table it has no effect on the head, with lint.
+**C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table.
 
-**C2-B-128** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table.
+**C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports bad quoting.
 
-**C2-B-129** An unclosed quote in a delimited table runs to the end of the fence body, with an error diagnostic: its cell holds everything after the quote character, line breaks and separators included, without the final line ending.
+**C2-B-181** An unclosed quote in a delimited table runs to the end of the fence body, with an error diagnostic: its cell holds everything after the quote character, line breaks and separators included, without the final line ending.
 
-`aligns`, `widths`, `header-cols` and `footer-rows` keep their 0.1 definitions. A fragment of a continuation row reads no cell prefix, no span mark and no row attribute. A row is an interrupter (C2-B-018).
+**C2-B-182** In the brace block of a cell prefix the alignment mark, `<`, `>` or `~`, comes first.
 
-Example 155 (generated)
+**C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
+
+**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing.
+
+**C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
+
+**C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
+
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, and `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1).
+
+**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
+
+A row is an interrupter (C2-B-019).
+
+Example 182 (generated)
 
 ::: compare
 
@@ -3381,7 +4045,7 @@ Example 155 (generated)
 
 :::
 
-Example 156 (generated)
+Example 183 (generated)
 
 ::: compare
 
@@ -3399,7 +4063,7 @@ Example 156 (generated)
 
 :::
 
-Example 157 (unverified)
+Example 184 (unverified)
 
 ::: compare
 
@@ -3417,7 +4081,7 @@ Example 157 (unverified)
 
 :::
 
-Example 158 (generated)
+Example 185 (generated)
 
 ::: compare
 
@@ -3443,7 +4107,7 @@ Example 158 (generated)
 
 :::
 
-Example 159 (generated)
+Example 186 (generated)
 
 ::: compare
 
@@ -3469,7 +4133,7 @@ Example 159 (generated)
 
 :::
 
-Example 160 (generated)
+Example 187 (generated)
 
 ::: compare
 
@@ -3487,7 +4151,7 @@ Example 160 (generated)
 
 :::
 
-Example 161 (generated)
+Example 188 (generated)
 
 ::: compare
 
@@ -3505,7 +4169,7 @@ Example 161 (generated)
 
 :::
 
-Example 162 (generated)
+Example 189 (generated)
 
 ::: compare
 
@@ -3526,7 +4190,7 @@ Example 162 (generated)
 
 :::
 
-Example 163 (generated)
+Example 190 (generated)
 
 ::: compare
 
@@ -3548,7 +4212,7 @@ Example 163 (generated)
 
 :::
 
-Example 164 (generated)
+Example 191 (generated)
 
 ::: compare
 
@@ -3570,7 +4234,7 @@ Example 164 (generated)
 
 :::
 
-Example 165 (generated)
+Example 192 (generated)
 
 ::: compare
 
@@ -3592,7 +4256,7 @@ Example 165 (generated)
 
 The row span would cross the head boundary, so it fails.
 
-Example 166 (unverified)
+Example 193 (unverified)
 
 ::: compare
 
@@ -3616,7 +4280,7 @@ Example 166 (unverified)
 
 :::
 
-Example 167 (generated)
+Example 194 (generated)
 
 ::: compare
 
@@ -3639,7 +4303,7 @@ Example 167 (generated)
 
 :::
 
-Example 168 (generated)
+Example 195 (generated)
 
 ::: compare
 
@@ -3658,7 +4322,7 @@ Example 168 (generated)
 
 :::
 
-Example 169 (generated)
+Example 196 (generated)
 
 ::: compare
 
@@ -3678,7 +4342,7 @@ Example 169 (generated)
 
 :::
 
-Example 170 (generated)
+Example 197 (generated)
 
 ::: compare
 
@@ -3703,9 +4367,75 @@ a,b
 
 :::
 
+The first fragment is empty and adds nothing. The second joins with one space.
+
+Example 198 (generated)
+
+::: compare
+
+```carve
+| 1 | 2 |
++ | b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>1</td><td>2 b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Example 199 (generated)
+
+::: compare
+
+```carve
+| a \| b | c |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a | b</td><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Example 200 (generated)
+
+::: compare
+
+````carve
+{table header-rows=2}
+```csv
+a,b
+c,d
+1,2
+```
+````
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+    <tr><th scope="col">c</th><th scope="col">d</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 The quote on line 4 never closes, so the last cell holds the rest of the body.
 
-Example 171 (unverified)
+Example 201 (unverified)
 
 ::: compare
 
@@ -3734,13 +4464,13 @@ a,b
 
 ## The fallback rule
 
-A line that is not a valid opener is text (C2-B-010).
+A line that is not a valid opener is text (C2-B-011).
 
-**C2-B-130** Whether a line is an opener is decided on that line alone and never by whether a closer follows, so a construct with a closer of its own always opens (C2-B-083).
+**C2-B-189** Whether a line is an opener is decided on that line alone and never by whether a closer follows, so a construct with a closer of its own always opens (C2-B-111).
 
-**C2-B-131** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text.
+**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text.
 
-Example 172 (generated)
+Example 202 (generated)
 
 ::: compare
 
@@ -3763,7 +4493,7 @@ Example 172 (generated)
 
 :::
 
-Example 173 (generated)
+Example 203 (generated)
 
 ::: compare
 
@@ -3780,7 +4510,7 @@ text
 
 :::
 
-Example 174 (generated)
+Example 204 (generated)
 
 ::: compare
 
@@ -3796,13 +4526,13 @@ hidden
 
 ## Facts set at close
 
-**C2-B-132** Four facts are set on a node when its block closes and are not roles of a line: the promotion of a block image (C2-B-109), the attachment of a caption (C2-B-102), the tightness of a list (C2-B-052) and the footer rows of a table (C2-B-127).
+**C2-B-191** Four facts are set on a node when its block closes and are not roles of a line: the promotion of a block image (C2-B-157), the attachment of a caption (C2-B-147), the tightness of a list (C2-B-062) and the footer rows of a table (C2-B-187).
 
 A streaming writer therefore buffers one paragraph, one captioned block, one list or one table.
 
 The last row becomes the footer when the table closes.
 
-Example 175 (generated)
+Example 205 (generated)
 
 ::: compare
 
@@ -3829,7 +4559,7 @@ Example 175 (generated)
 
 The list is loose from its first item, though the blank line comes after it.
 
-Example 176 (generated)
+Example 206 (generated)
 
 ::: compare
 
@@ -3852,39 +4582,39 @@ Example 176 (generated)
 
 ## Counts
 
-Budget: about 130 block clauses and at most 25 exceptions.
+Budget: about 130 block clauses and at most 25 exceptions. Every normative statement of the chapter now has a clause id, and clauses that joined independent statements are split.
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 9 | 1 | 2 | 2 |
-| Paragraphs and interrupters | 13 | 3 | 6 | 2 |
-| Container ownership and stripping | 5 | 0 | 1 | 3 |
+| Preliminaries | 10 | 1 | 4 | 4 |
+| Paragraphs and interrupters | 14 | 3 | 6 | 2 |
+| Container ownership and stripping | 6 | 0 | 2 | 3 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
-| Ordered lists | 6 | 1 | 8 | 1 |
-| Task items | 2 | 0 | 4 | 0 |
+| Ordered lists | 10 | 1 | 10 | 1 |
+| Task items | 3 | 0 | 4 | 0 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
-| Nested lists and the marker line | 4 | 0 | 5 | 1 |
-| Tightness | 3 | 0 | 2 | 2 |
-| Description lists | 7 | 0 | 8 | 4 |
-| Definitions | 6 | 0 | 6 | 3 |
-| Attribute lines | 12 | 2 | 6 | 8 |
-| Fences, divs and comment blocks | 5 | 0 | 7 | 2 |
-| The fence opener and titles | 2 | 1 | 4 | 0 |
-| Sigil divs | 4 | 0 | 6 | 1 |
-| Comments | 10 | 3 | 10 | 5 |
-| Captions | 3 | 0 | 10 | 2 |
-| Headings | 4 | 0 | 3 | 4 |
-| One-line constructs | 2 | 0 | 4 | 0 |
-| Thematic break | 1 | 0 | 3 | 2 |
-| Frontmatter | 3 | 0 | 3 | 0 |
-| Tables | 16 | 2 | 14 | 3 |
+| Nested lists and the marker line | 6 | 0 | 5 | 1 |
+| Tightness | 5 | 0 | 2 | 3 |
+| Description lists | 14 | 0 | 10 | 4 |
+| Definitions | 9 | 0 | 6 | 3 |
+| Attribute lines | 18 | 2 | 9 | 10 |
+| Fences, divs and comment blocks | 9 | 0 | 7 | 3 |
+| The fence opener and titles | 6 | 1 | 5 | 0 |
+| Sigil divs | 10 | 0 | 10 | 1 |
+| Comments | 13 | 4 | 13 | 4 |
+| Captions | 5 | 0 | 11 | 2 |
+| Headings | 5 | 0 | 3 | 4 |
+| One-line constructs | 3 | 0 | 6 | 0 |
+| Thematic break | 2 | 0 | 3 | 2 |
+| Frontmatter | 5 | 0 | 4 | 0 |
+| Tables | 23 | 2 | 17 | 3 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **132** | **14** | **130** | **46** |
+| **Total** | **191** | **15** | **155** | **51** |
 
-The chapter has 132 clauses against a budget of about 130, and 14 exceptions against a budget of 25. The clause count includes the exceptions.
+The chapter has 191 clauses against a budget of about 130, which is 61 over, and 15 exceptions against a budget of 25. The clause count includes the exceptions.
 
 ## Not covered
 
-This draft has no example for a list-table or for the depth cap. The whole-table attributes, the shape of the include directive and the `start` attribute are referred to their 0.1 definitions. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
+This draft has no example for a list-table, for the depth cap, for a byte-order mark before frontmatter or for a longer hyphen run on line 1. The whole-table attributes, the shape of the include directive and the `start` attribute are referred to their 0.1 definitions. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
