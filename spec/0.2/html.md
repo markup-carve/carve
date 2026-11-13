@@ -68,7 +68,7 @@ Example 1 (generated)
 
 **C2-H-015** An authored `align` key with the value `left`, `right` or `center` on a paragraph, a div or a heading is written as `style="text-align: VALUE;"`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
 
-**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute.
+**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name.
 
 **C2-H-017** Attribute names, attribute values and destinations pass the filter of C2-H-128 before they are written. The filter removes attributes and blanks destinations. It never removes an element.
 

@@ -37,8 +37,8 @@
       "name": "d",
       "label": "caption",
       "shapes": ["caption"],
-      "when": ["paragraph_is_one_block_image_line", "below_open_quote_line_without_its_mark"],
-      "clauses": ["C2-B-013", "C2-B-017", "C2-B-018"]
+      "when": ["paragraph_is_one_block_image_line", "paragraph_is_one_display_math_line", "below_open_quote_line_without_its_mark"],
+      "clauses": ["C2-B-013", "C2-B-017", "C2-B-018", "C2-B-198"]
     },
     {
       "name": "e",

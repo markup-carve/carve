@@ -39,7 +39,7 @@
                 "indented_past_enclosing_marker",
                 "mark_at_open_description_list_column",
                 "definition_at_column_0_while_definition_open",
-                "paragraph_is_one_block_image_line",
+                "paragraph_is_one_block_image_line", "paragraph_is_one_display_math_line",
                 "below_open_quote_line_without_its_mark"
               ]
             },

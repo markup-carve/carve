@@ -754,7 +754,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "A \"::: figure\" opener carrying a quoted title or [label] is not a composite figure; it renders as a generic container. Drop the title/label to open a figure group."
+        "A \"::: figure\" opener carries a quoted title or a [label]. It still opens a figure group (C2-B-127), and the title or label has no effect. Use a caption line below the group."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]
@@ -1328,7 +1328,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This thematic break is written \"${raw}\"; the canonical spelling is \"***\"."],
+      "messages": ["This line of \"${raw}\" is text in Carve 0.2. Write \"***\" for a thematic break."],
       "message_origin": "engine_0_1",
       "change": "new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2",
       "clauses": ["C2-B-160"]
@@ -1367,7 +1367,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This caption line is not directly below an image, table, code block, quote, math block or figure group, so it is text. Remove the blank line above it, or escape the caret."
+        "This caption line is not directly below an image, table, code block, quote, math block or figure group, so it is text. If a blank line separates it from such a block, remove the blank line; otherwise escape the caret."
       ],
       "message_origin": "data_file",
       "reports": "a caption line that is not directly below one of the six caption targets, a caption after a blank line among them",

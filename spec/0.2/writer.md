@@ -83,7 +83,7 @@ Conventions:
 
 **C2-W-031** A quote written with `>` lines carries `> ` on every line of its content and a bare `>` on a blank line inside it.
 
-**C2-W-032** A div, an admonition, a line block or a hard-break block with an empty body is written with one blank line between opener and closer.
+**C2-W-032** A div, an admonition or a hard-break block with an empty body is written with one blank line between opener and closer. An empty line block is written with its closer directly below its opener, because a blank line in it is a `line` (C2-A-069).
 
 **C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed. A supplied code or raw block whose value has no final line break (C2-A-047) is written with one, and the writer reports `field-unspellable` for `value`. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
 
@@ -113,7 +113,7 @@ Conventions:
 
 **C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
-**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031).
+**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045).
 
 **C2-W-046** A task item is written with the character in `task.mark` (C2-A-060). The tree holds `x` for an authored `X`, so `[X]` comes back as `[x]`.
 
@@ -141,7 +141,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -191,7 +191,7 @@ Conventions:
 
 **C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break and `hardbreaks` is the last of its classes, and the class form otherwise (C2-L-034). The opener adds the class last (C2-A-068), so the opener form on any other div would change the tree.
 
-**C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
+**C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A quote with no children is written as a quote fence in every case, because `>` lines cannot spell it. A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
 
 ## The sidecar
 
@@ -251,7 +251,7 @@ Conventions:
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
 
-**C2-W-099** A text line that holds only hyphens or only underscores is written as it is and needs no escape: it is not a thematic break (C2-B-159). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
+**C2-W-099** A text line that holds only hyphens or only underscores is written as it is and needs no escape: it is not a thematic break (C2-B-159). Line 1 of the document is the exception: a text line of exactly three hyphens there is written with its first hyphen escaped, because the bare line opens frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
 
 Example 1 (generated)
 
@@ -456,12 +456,12 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `emphasis-marker-before-attributes` | `This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text.`<br>`This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit.` | unchanged |
 | `empty-include-path` | `This "${text}" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces.` | unchanged |
 | `empty-link-destination` | `This link has an empty destination.` | unchanged |
-| `empty-reference-definition` | `This reference definition has an empty destination. Check that its URL was not removed by mistake.` | re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text |
+| `empty-reference-definition` | `This line is a label and a colon with nothing after it, so it is text and defines nothing. Add a destination, or remove the line.` | re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text |
 | `fence-opener-fallback` | `A code fence carries no inline attributes, so "${attributes}" after the info string is not valid. ${effect} (use: "${attributes}" on its own line directly above the fence, then "${opener}").`<br>`The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. ${effect} (use: "${respaced}").`<br>`This line starts like a fenced code block, but "${info}" is not a valid info string (a language, then an optional "title", then an optional [label]). ${effect}` `${effect}` says that the fence does not open and that the block renders as a paragraph; for an attribute block after the language it says that the fence opens and the attribute block is not applied (C2-B-105). | severity error for an attribute block after a fence language or an admonition name |
-| `fence-title-syntax` | `The title after "${type}" uses typographic quotes - usually a CMS "smart quote" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} "${title}"${label}.`<br>`A "{…}" on the fence line is not an attribute block - it makes the whole line plain text. Put attributes on their own line directly above the ":::" opener.`<br>`Text after the "${type}" fence type must be a quoted "title" or a [label] - unquoted it makes the whole line plain text. Did you mean ${fence} ${type} "${title}"${label}?`<br>`Invalid container metadata was dropped; the container and its children are preserved. ${hint}` | unchanged |
+| `fence-title-syntax` | `The title after "${type}" uses typographic quotes - usually a CMS "smart quote" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} "${title}"${label}.`<br>`A "{…}" on the fence line is not an attribute block and is not applied; the block still opens. Put attributes on their own line directly above the ":::" opener.`<br>`Text after the "${type}" fence type must be a quoted "title" or a [label]; unquoted it is not read as a title, and the block opens. Did you mean ${fence} ${type} "${title}"${label}?`<br>`Invalid container metadata was dropped; the container and its children are preserved. ${hint}` | unchanged |
 | `figure-group-empty` | `This "::: figure" group holds no captionable panel; the panels wrapper renders around the preserved content only.` | unchanged |
 | `figure-group-nested` | `A "::: figure" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group.` | unchanged |
-| `figure-group-opener-metadata` | `A "::: figure" opener carrying a quoted title or [label] is not a composite figure; it renders as a generic container. Drop the title/label to open a figure group.` | unchanged |
+| `figure-group-opener-metadata` | `A "::: figure" opener carries a quoted title or a [label]. It still opens a figure group (C2-B-127), and the title or label has no effect. Use a caption line below the group.` | new message text: in 0.1 such an opener gave a generic container |
 | `figure-group-panel-number` | `A "#" placeholder in a panel caption stays literal: panels are not numbering units, the group caption carries the number (and panel ids resolve with its letter).` | unchanged |
 | `figure-group-single-panel` | `This "::: figure" group holds a single panel; a plain captioned figure renders the same content without the group wrapper.` | unchanged |
 | `footnote-labels-differ-only-in-whitespace` | `Footnote definition [^${label}] normalizes to the same key as [^${twin}]; the first definition wins. Normalized key: ${key}.` | unchanged |
@@ -494,7 +494,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `table-shaped-paragraph` | `This table-shaped line lacks a closing pipe and renders as paragraph text; close the table row.` | stays: a line that starts with a pipe and does not end with one is text (C2-B-168) |
 | `table-span-marker-blocked` | `The "${marker}" span marker cannot extend a cell. ${reason} It renders as a cell of its own; escape it as "\${marker}" to keep the character as text, or remove it.` | also a row span stopped at the head boundary (C2-B-174) |
 | `table-width-total` | `The specified table column widths total more than 100%.` | unchanged |
-| `thematic-break-spelling` | `This thematic break is written "${raw}"; the canonical spelling is "***".` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
+| `thematic-break-spelling` | `This line of "${raw}" is text in Carve 0.2. Write "***" for a thematic break.` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
 | `unattached-block-attribute` | `This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.` | new message text; also an attribute line separated from its block by a blank line |
 | `unclosed-code-fence` | `The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop.` `${ending}` is "it runs to the end of the document", "a continuation marker on line ${line} ends it" or "it ends at the end of its container on line ${line}". | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-comment-fence` | `The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop.` | severity error; the block ends with its container (C2-B-111) |
@@ -512,7 +512,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `djot-emphasis-underscore` | `` Djot emphasis `_x_` renders as *underline* in Carve. `` | opt-in Djot check; new message text |
 | `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |
 | `djot-highlight-braces` | `` Djot highlight `{=x=}` is also Carve highlight (`{=x=}`). `` | opt-in Djot check; new message text |
-| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph. `` | opt-in Djot check |
+| `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check |
 | `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve ends the heading at the newline, so they are separate blocks and the heading id changes. `` | opt-in Djot check |
 | `a11y/image-alt` | `image has empty alternative text and is not marked decorative` | accessibility extension; severity warning, where the 0.1 source sets error |
 

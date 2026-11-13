@@ -2756,7 +2756,7 @@ after
 
 **C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it.
 
-**C2-B-120** The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line.
+**C2-B-120** The quoted title renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048).
 
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group, and renders nothing in the core (carried over from 0.1).
 
