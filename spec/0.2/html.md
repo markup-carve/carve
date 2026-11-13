@@ -1272,7 +1272,7 @@ in
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
-**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are not written in the content of a text node, of a code span, of a code block or of a raw block that is escaped: they can make source read in another order than it runs. They stay in the tree, in the canonical form and in attribute values, where C2-H-159 already removes them for the scheme test. (carried over from 0.1)
+**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are not written in the content of a text node, of a code span, of a code block or of a raw block that is escaped: they can make source read in another order than it runs. They stay in the tree, in the canonical form and in attribute values; the scheme test removes them from its copy (C2-H-159, `probe_removes`). (carried over from 0.1)
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
@@ -1280,7 +1280,7 @@ in
 
 **C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.
 
-**C2-H-167** A link carries one `rel` attribute. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`.
+**C2-H-167** A link carries at most one `rel` attribute, and none when neither the author nor the profile gives a word. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. The authored value passes C2-H-161 first, so a value that test empties gives no authored word. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`.
 
 **C2-H-164** The lists name 0.2 node types. An inline literal counted as code in 0.1, so `literal_inline` stands in the lists that hold `code`.
 

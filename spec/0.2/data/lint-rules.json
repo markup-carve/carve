@@ -29,7 +29,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "Bidi override/isolate control U+${code} is preserved by canonical Carve but stripped from presentation output; remove it unless intentional."
+        "Bidi override/isolate control U+${code} is preserved by canonical Carve but not written to the text and code of presentation output; remove it unless intentional."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]

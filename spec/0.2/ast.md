@@ -385,7 +385,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
 
-**C2-A-094** A continuation row leaves no node and no field. Its fragments join the cell above with one space before the cell's inline content is read (C2-B-184), and that space is ordinary text. Where the row broke is spelling and is in the sidecar.
+**C2-A-094** A continuation row leaves no node and no field. Its fragments join the cell above with one space before the cell's inline content is read (C2-B-184), and that space is ordinary text; inside a node whose value is its source the join is a line feed (C2-B-184). Where the row broke is spelling and is in the sidecar.
 
 **C2-A-095** A table has no field for the widths of a separator row, since 0.2 has no such row; no field for the kind of source content of a cell, since `cell_paragraph` says it; and no field for whether it was written as a pipe table or a delimited table, which is spelling.
 

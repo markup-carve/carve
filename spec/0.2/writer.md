@@ -121,7 +121,7 @@ Conventions:
 
 **C2-W-043** An ordered list keeps its style, its delimiter and its start value.
 
-**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written under a `start` attribute, with the bare dot when its delimiter is the period and with `1)` and the digits after it when its delimiter is `)`. A list of repeated `1.` markers is renumbered to sequential digits. A later marker whose number would have more than nine digits is written as `1`: only the first marker carries a value (C2-B-041). With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
+**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036) and cannot be a `start` attribute (C2-B-219): a parse never gives it, and for a supplied tree the writer writes the list from 1 and reports `field-unspellable` (C2-W-117). A list of repeated `1.` markers is renumbered to sequential digits. A later marker whose number would have more than nine digits is written as `1`: only the first marker carries a value (C2-B-041). With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
 
@@ -251,13 +251,13 @@ Written:
 
 ## Escaping
 
-**C2-W-088** A character is written with a backslash exactly when the output without that backslash would parse to a different tree. An escape that is not needed is a defect.
+**C2-W-088** A character is written with a backslash exactly when the output without that backslash, with the escapes to its left in place and none to its right, would parse to a different tree (C2-W-091). An escape this test does not ask for is a defect.
 
 **C2-W-089** The writer decides an escape by reparsing the candidate line in its context, with the 0.2 parser, and not from a list of characters. The lists below name the cases the test has to cover. They are not the rule. This is requirement W2.
 
 **C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text.
 
-**C2-W-091** One escape does not cause others. Each position is tested on its own, with the escapes already placed to its left. An escape that a later escape made needless is taken out again, so C2-W-088 holds for the result: in `x<a:b\>=}` the escape of `>` stops the autolink, and `<` needs none. A writer may bound this second step to 16 escapes for each group of blocks that a blank line separates; past that bound a needless escape may stay.
+**C2-W-091** One escape does not cause others. Each position is tested on its own, from left to right, with the escapes already placed to its left and the text to its right bare. The result is one form for each tree, found in one pass. It can hold an escape that a later one makes needless: `x<a:b>=}` as text is written `x\<a:b\>=}`, where the escape of `>` alone would do, and that form is the canonical one.
 
 **C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
 
@@ -470,7 +470,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | Rule | Messages in the source | In 0.2 |
 |---|---|---|
 | `bare-html-tag` | `This bare HTML tag is escaped as text; use a raw HTML block if markup is intended.` | unchanged |
-| `bidi-control-in-source` | `Bidi override/isolate control U+${code} is preserved by canonical Carve but stripped from presentation output; remove it unless intentional.` | unchanged |
+| `bidi-control-in-source` | `Bidi override/isolate control U+${code} is preserved by canonical Carve but not written to the text and code of presentation output; remove it unless intentional.` | narrowed to text and code (C2-H-172) |
 | `block-marker-as-text` | `This line begins like ${what} but parsed as plain text - the block did not open. Check this line's syntax and any unterminated fence above it.` | also a brace line that is not a valid one-line attribute line |
 | `block-opener-overindented` | `This ${kind} is indented ${past} column(s) past the content column of ${owner}, and it still opens a ${kind}, measured from its own line. Remove the indentation to make the structure explicit, or escape the opener to keep the line as text.` | unchanged |
 | `blockquote-marker-without-space` | `A blockquote marker must be either bare ">" or followed by a space. This line renders as literal text; write "> ${text}" to quote it.` | unchanged |
