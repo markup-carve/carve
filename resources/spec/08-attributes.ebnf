@@ -116,6 +116,12 @@ class_attribute = '.', explicit_identifier ;
    the `explicit_identifier` the fence word does while `attribute_value` reaches
    past it: `-col` and `w-1/2` are classes only the key-value form can spell.
    PART 4's three spellings of `lang` likewise share one slot.
+   A `class` key in another ASCII case (`CLASS=b`, PART 10 §1) is the same
+   slot in the AST too: its tokens join `attrs.classes` at their write
+   position, and only its spelling stays on the wire, as its `attrs.order`
+   entry, which names the slot when it is the slot's first write (carve#5991).
+   `[x](/u){.a CLASS=b .c}` encodes `"classes":["a","b","c"]` and
+   `"order":[".class","CLASS"]`, so a round trip renders `class="a b c"`.
 
    THE VALUE IS A LIST OF CLASS TOKENS. A parser splits the value on ASCII
    whitespace (space, tab, LF, FF, CR) and appends each token as its own

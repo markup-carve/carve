@@ -1,0 +1,35 @@
+A class key in any case joins the class slot in write order
+
+```
+[x](/u){.a CLASS=b .c}
+.
+<p><a href="/u" class="a b c">x</a></p>
+```
+
+```
+[x]{.a Class="b d" .c}
+.
+<p><span class="a b d c">x</span></p>
+```
+
+```
+{CLASS=b .a}
+:::
+y
+:::
+.
+<div CLASS="b a">
+  <p>y</p>
+</div>
+```
+
+```
+{.a cLaSs=b #i CLASS=d .c k=v}
+:::
+y
+:::
+.
+<div class="a b d c" id="i" k="v">
+  <p>y</p>
+</div>
+```
