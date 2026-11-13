@@ -163,7 +163,31 @@ Conventions:
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035). A break of the source that fell inside a label, which has no `value` to record it in (C2-L-020), is not kept: that cell is written on one line.
 
-**C2-W-068** The option `alignTables` pads the cells of each column to one display width. It is off by default, the tree is the same with it on, and the two gates hold in that mode too. As in 0.1 (CARVE-P11-071).
+**C2-W-068** The option `alignTables` pads the cells of each column to one display width. It is off by default, the tree is the same with it on, and the two gates hold in that mode too. As in 0.1 (CARVE-P11-071). C2-W-118 and C2-W-119 state the padding and the width.
+
+**C2-W-118** With `alignTables`, each cell of each line of a pipe table is a segment: the cell prefix, one space, the content as the writer spells it on that line, and one space. An empty cell is its prefix and one space. A span mark is the content of its own cell. On a continuation line the leading `+` takes the place of the leading pipe and is outside the first segment. The width of a column is the largest display width (C2-W-119) of its segments over every line of the table, continuation lines included. Each segment is padded with spaces after it, before the next pipe, up to that width; no space is added before the content, also for a right or centered cell. A row attribute behind the last pipe, a caption and the lines around the table count toward no width. A table written with `alignTables` and formatted again in that mode keeps its bytes, and `carve fmt --check` in that mode compares the source with the aligned form.
+
+**C2-W-119** The display width of a segment is the sum of the widths of its extended grapheme clusters, by UAX #29 of Unicode 18.0.0. A cluster has width 2 when any of its code points has the East Asian Width W or F of Unicode 18.0.0 (UAX #11), and width 1 otherwise, an ambiguous-width (A) cluster included. A padding space has width 1. These property values hold whatever Unicode version the host runtime has.
+
+Example 7 (generated, `--align-tables`)
+
+Input:
+
+```carve
+|= Name |={>} 価格 | Note |
+| tea | 2 | < |
++ green tea | | |
+| café | 12.5 | hot |
+```
+
+Written:
+
+```carve
+|= Name     |={>} 価格 | Note |
+| tea       | 2        | <    |
++ green tea |          |      |
+| café      | 12.5     | hot  |
+```
 
 ## Canonical forms: inline
 
@@ -758,12 +782,12 @@ One point is open.
 | What the writer cannot spell | 9 | 0 | 0 | 0 |
 | Layout | 19 | 3 | 0 | 0 |
 | Canonical forms: blocks | 26 | 0 | 0 | 0 |
-| Canonical forms: tables | 8 | 0 | 0 | 0 |
+| Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 15 | 1 | 0 | 0 |
 | The sidecar | 5 | 0 | 0 | 0 |
 | Escaping | 12 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **115** | **4** | **4** | **2** |
+| **Total** | **117** | **4** | **5** | **2** |
 
-The document has 115 clauses, 4 of them marked with the word "Exception", and 6 examples, 4 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 117 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

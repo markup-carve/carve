@@ -7,7 +7,7 @@
       "read_by": "format",
       "type": "boolean",
       "default": false,
-      "clauses": ["C2-H-137", "C2-W-068"]
+      "clauses": ["C2-H-137", "C2-W-068", "C2-W-118", "C2-W-119"]
     },
     {
       "name": "extensions",
