@@ -4099,7 +4099,10 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       // A skipped note's body stays the note's (§15 A4): it keeps its offset from the
       // definition, and an attribute line stands at the body column, as the walk writes it.
       const noteCol = walkIndent(perFrameLine(raw)).col
-      if (registers) skipped.note = noteCol
+      if (registers) {
+        skipped.note = noteCol
+        skipped.normal = passedNoteLines(at, noteCol)
+      }
       const noteOffset = skipped.note === undefined || registers || isBlank(raw) ? 0 : noteCol - skipped.note
       const inNoteBody = noteOffset >= FOOTNOTE_BODY_COLUMN
       let bracePad = ''
@@ -4133,7 +4136,8 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
           refusedPlus.push(at)
         } else rest = rest.replace('+', plusLetter)
       }
-      result.push(skipped.lead + (skipped.fenced.has(at) ? ' '.repeat(skipped.spanPad ?? 0) + '%%' : bracePad + rest))
+      const normal = registers ? undefined : skipped.normal?.get(at)
+      result.push(skipped.lead + (skipped.fenced.has(at) ? ' '.repeat(skipped.spanPad ?? 0) + '%%' : normal ?? bracePad + rest))
       // A skipped `%%%` span is one comment, so `parse` erases no line inside it (carve#5151).
       if (trace && skipped.fenced.has(at)) {
         const run = COMMENT_FENCE_BODY.exec(trimLineEnd(rest))?.[1].length
@@ -5092,7 +5096,11 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
             return level && nextCol > frame.docMarker && nextCol < frame.docMarker + frame.col - frame.markerCol
           })()) &&
           frames.length > 2 && frames.slice(1, -1).every((f) => f.kind === 'quote')
-        frame.para = !quotedRefusedNote && frame.plus !== at &&
+        // A definition the refused marker looked past ends its body: it owns the lines after it
+        // as it does without the marker (CARVE-P9-067, carve#5994).
+        const passedDefinition = refusedPlus.at(-1) === at && skipped?.host === frame &&
+          lines.slice(at + 1, skipped.end).some((line) => FOOTNOTE_DEF.test(trimWsStart(throughQuotes(line, frames.indexOf(frame))?.rest ?? '')))
+        frame.para = !quotedRefusedNote && frame.plus !== at && !passedDefinition &&
           (refusedPlus.at(-1) !== at || frames.some((f) => f.kind === 'note'))
         if (frame.para) frame.paraFrom = at
         frame.last = 'para'
@@ -5326,6 +5334,25 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
       lead: markerLead ?? prefix + ' '.repeat(host.markerCanon - (refused ? 0 : host.box ?? 0)) }
   }
 
+  // A passed note whose body holds a block reads as the note does on its own (carve#5993): its
+  // lines are walked alone, so each block lands at the column the walk gives it there.
+  function passedNoteLines(at, noteCol) {
+    const own = [trimWsStart(throughQuotes(lines[at], skipped.hostIndex).rest)]
+    let block = false
+    for (let j = at + 1; j < skipped.end; j++) {
+      const raw = throughQuotes(lines[j], skipped.hostIndex).rest
+      const rest = trimWsStart(raw)
+      if (FOOTNOTE_DEF.test(rest) || skipped.fenced.has(j) || CONT_MARKER.test(rest)) break
+      const col = walkIndent(perFrameLine(raw)).col
+      if (rest !== '' && col >= noteCol + FOOTNOTE_BODY_COLUMN && rest[0] !== '{' && !foldablePlainLine(rest)) block = true
+      own.push(isBlank(rest) ? '' : ' '.repeat(Math.max(0, col - noteCol)) + rest)
+    }
+    if (!block) return null
+    const walked = ownLines([...own, ''], null, plusLetter)
+    if (walked.length !== own.length + 1) return null
+    return new Map(walked.slice(1, own.length).map((line, k) => [at + 1 + k, line]))
+  }
+
   // A `%%%` span after a refused marker closes no item (PART 0 FAMILIES `invisible`, carve#5170),
   // so its placeholder lines stand at the host's content column, not below it.
   function spanPad(host) {
@@ -5402,15 +5429,45 @@ function ownLines(lines, trace = null, plusLetter = '\uE100', allowFrontmatter =
         // An attribute line left of the note's body column is the host's (carve#5576).
         const hostAttr = (j) => view(j)[0] === '{' && colAt(j) < at + FOOTNOTE_BODY_COLUMN &&
           tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[j], hostIndex)?.rest ?? '').col)
-        // An attribute line in the note's body ends its paragraph (§15 A1), so no lazy line follows it.
+        // Every line at or past the note's own body column is the note's, whatever block it
+        // opens (PART 9 §16, carve#5993); a line left of it is the note's only as a lazy line of
+        // an open paragraph (PART 0 L4). An attribute line ends that paragraph (§15 A1).
+        const bodyCol = at + FOOTNOTE_BODY_COLUMN
+        const inQuote = (j) => throughQuotes(lines[j], hostIndex) !== null
         let open = true
-        while (k < lines.length && foldablePlainLine(view(k)) && !hostAttr(k) &&
-            (!offered || colAt(k) !== column)) {
-          const inBody = colAt(k) >= at + FOOTNOTE_BODY_COLUMN
-          if (!inBody && !open) break
-          const attr = inBody && view(k)[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
-          open = !attr
-          k = attr ? attr.next : k + 1
+        let fence = null
+        while (k < lines.length && inQuote(k)) {
+          const line = trimLineEnd(view(k))
+          if (line === '') {
+            // A blank line refuses the `+` (CARVE-P9-067); a refused marker's skip still keeps the note.
+            if (!refused) return k
+            let j = k + 1
+            while (j < lines.length && inQuote(j) && isBlank(view(j))) j++
+            if (j >= lines.length || !inQuote(j) || colAt(j) < bodyCol) break
+            if (!fence) open = false
+            k = j
+            continue
+          }
+          if (colAt(k) < bodyCol) {
+            if (fence || !open || !foldablePlainLine(line) || hostAttr(k) || (offered && colAt(k) === column)) break
+            k++
+            continue
+          }
+          if (fence) {
+            if (PURE_FENCE.exec(line)?.[1].startsWith(fence)) fence = null
+            k++
+            continue
+          }
+          if (CONT_MARKER.test(line)) break
+          const attr = line[0] === '{' ? tryAttrLine(attrFromHere, k, indentCols(throughQuotes(lines[k], hostIndex)?.rest ?? '').col) : null
+          if (attr) {
+            open = false
+            k = attr.next
+            continue
+          }
+          if (isCodeBlockOpener(line)) fence = FENCE.exec(line)[1]
+          open = !fence && opensParagraph(line, true)
+          k++
         }
       } else if (COMMENT_LINE.test(rest) || isDefinitionLine(rest)) k++
       else {

@@ -1,0 +1,119 @@
+A note kept at a wider host's marker column keeps its own body column
+
+```
+1. x
+   1. +
+   [^m]: n
+     - z
+   q
+
+p[^m]
+.
+<ol>
+  <li>x
+    <ol>
+      <li></li>
+    </ol>
+  </li>
+</ol>
+<p>p<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <ul>
+        <li>z
+q</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+10. +
+[^m]: n
+  > z
+q
+
+p[^m]
+.
+<ol start="10">
+  <li></li>
+</ol>
+<p>p<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <blockquote><p>z
+q</p></blockquote>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+```
+- +
+[^m]: n
+  1. z
+
+     more
+
+p[^m]
+.
+<ul>
+  <li></li>
+</ul>
+<p>p<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <ol>
+        <li><p>z</p>
+          <p>more</p>
+        </li>
+      </ol>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+````
+- x
+  1. +
+  [^m]: n
+    ```
+    c
+    ```
+  q
+
+p[^m]
+.
+<ul>
+  <li>x
+    <ol>
+      <li>q</li>
+    </ol>
+  </li>
+</ul>
+<p>p<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n</p>
+      <pre><code>c
+</code></pre>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+````
