@@ -41,6 +41,8 @@ Terms:
 
 **C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines. A quote is the exception: a blank line without its mark ends it at once (C2-B-032).
 
+**C2-B-218** A U+0000 in the source is read as U+FFFD, in text, in code and in every other value, so a tree from a parse never holds U+0000 (C2-A-044). Offsets count the bytes of the source as it stands.
+
 **C2-B-010** A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end.
 
 The second paragraph below starts with a tab, which counts as indent to column 4.
@@ -718,6 +720,8 @@ Example 29 (generated)
 **C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list.
 
 **C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
+
+**C2-B-219** A `start` value of more than nine digits is no start value, as a marker of more than nine digits is no marker (C2-B-036): the list keeps the start of its first marker and `start` stays a key.
 
 **C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. The value is an unsigned decimal integer; on a list of letters or roman numerals it is at least 1. Any other value is no start value and stays an ordinary key. (carried over from 0.1)
 
@@ -4285,7 +4289,7 @@ b
 
 **C2-B-164** The format name is one word: a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, an uppercase letter or two spaces leave the line text. Without a name the format is YAML, for which the bare opener is the canonical form. As in 0.1.
 
-**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141).
+**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141). It is no code point of line 1, so the first character behind it has the column it would have without the mark.
 
 The opener is taken without a scan for the closer (C2-B-189). A document that starts with a thematic break writes `***`.
 
@@ -4892,7 +4896,7 @@ Example 219 (unverified)
 ```
 
 ```html
-<table header-rows="1">
+<table>
   <tbody>
     <tr><td>a</td></tr>
     <tr><td>b</td></tr>
@@ -4933,11 +4937,15 @@ a,b
 
 **C2-B-209** The head of a delimited table is its first row unless `header-rows` gives a count (C2-B-210). A count N makes the first N rows the head, and 0 gives a table with no head. A count larger than the number of rows gives no head: every cell of the table is a header cell, and all rows stand in one body.
 
+**C2-B-221** The `headRows` a table carries (C2-A-088) is the declared count, and at most the number of rows of the table: `header-rows=5` on a table of two rows gives `headRows` 2. `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187).
+
 **C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. Any other value is no count, and the attribute then has no effect: the table keeps the partition it has without the attribute.
 
 **C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry `left`, `right` or `center` sets `align` of that `table_column`. Any other entry, the empty one included, leaves the column unset. Entries past the last column are ignored. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.
 
 **C2-B-212** `widths` is a list of entries separated by commas, by position like `aligns`. An entry that is a decimal number greater than 0 and at most 100 is a percentage of the table width, and sets `width` of that `table_column` to the number divided by 100: `25` gives `0.25`. Any other entry leaves the column unset. Entries past the last column are ignored, and fewer entries are valid. The widths need not total 100; `table-width-total` reports a total above 100.
+
+**C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry sets no width.
 
 **C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it.
 
@@ -5144,12 +5152,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 10 | 1 | 4 | 4 |
+| Preliminaries | 11 | 1 | 4 | 4 |
 | Paragraphs and interrupters | 15 | 3 | 6 | 2 |
 | Container ownership and stripping | 6 | 0 | 2 | 3 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
-| Ordered lists | 10 | 1 | 10 | 2 |
+| Ordered lists | 11 | 1 | 10 | 2 |
 | Task items | 3 | 0 | 4 | 0 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
@@ -5166,12 +5174,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 3 | 2 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 29 | 2 | 20 | 4 |
+| Tables | 31 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **217** | **15** | **173** | **58** |
+| **Total** | **221** | **15** | **173** | **58** |
 
-The chapter has 217 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 221 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

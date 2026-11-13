@@ -40,6 +40,7 @@
       "name": "comment",
       "allowed_block": ["block_quote", "code_block", "list", "list_item", "paragraph"],
       "allowed_inline": [
+        "autolink",
         "code",
         "delete",
         "emphasis",

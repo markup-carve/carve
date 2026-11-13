@@ -43,7 +43,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-010** `path` is an RFC 6901 JSON Pointer into the tree. The empty string is the root, and `/children/2/children/0` is the first child of the third block. This is how every sidecar fact refers to its node.
 
-**C2-L-011** Entries are sorted by `path`, and no two entries have the same path.
+**C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. No two entries have the same path.
 
 **C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
 
@@ -197,6 +197,22 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 
 **C2-L-046** The writer reads seven facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
+
+**C2-L-047** Every block has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
+
+**C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has one wrap for that row with the path of its first inline node and `offset` 0. Where the break falls behind a hard break, the wrap names the node behind it with `offset` 0. Where a node with a `value` crosses the rows, as a code span does, the wrap names that node and `offset` is the byte behind the line feed in its value.
+
+**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the label, without an attribute block. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed, in a cell joined from continuation rows as well.
+
+**C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
+
+**C2-L-051** A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`.
+
+**C2-L-052** `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line. `lazy` is a later line of a paragraph inside the node, at any depth, that stands left of the content column; `indent` is a later line at or right of it.
+
+**C2-L-053** A line is blank inside a quote when it carries exactly the marks of the open quotes and nothing else. Blank lines behind the last content of a quote that still carry its mark are counted as `blankLinesAfter` of the last block of the quote; a blank line without the mark is outside the quote and counts for the blocks around the quote.
+
+**C2-L-054** A `figure_group` and a delimited table have no `openerRaw` and no `closerRaw`. A parse gives every `caption` the `attachment` `preceding`; `none` occurs only in a supplied record. A comment whose line lacks the mark of its quote has no `markerColumn`. `lineEndings` reports what the source holds, a lone CR included, although a lone CR ends no line (C2-B-010).
 
 ## Schema changes owed
 

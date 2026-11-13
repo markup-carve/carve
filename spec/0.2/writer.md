@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x`, `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
@@ -38,6 +38,8 @@ Conventions:
 **C2-W-011** A tree can hold a shape that no Carve source gives (C2-A-175). The writer writes what the table of C2-A-175 names and reports each dropped node or field in the diagnostics record (C2-W-103), with the code `structure-unspellable` for a node or a wrapper and `field-unspellable` for a field, which the entry names.
 
 **C2-W-117** The table of C2-A-175 is not the whole list. For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. No such loss is silent. Among these are: a frontmatter value that holds a line of three hyphens, and a frontmatter format that does not have the shape of a format name (C2-B-164); `spacing: "loose"` on a list of one item; a caption with more than one block; a class that holds a space, a tab or a line break; a definition key that holds a closing bracket with no backslash before it, or that folds to nothing; a line comment whose value holds a line break; a paragraph, a list or a description list with no children; `figure.kind` and `directive.tocTarget`; an `autolink` whose `text` differs from its target; an `abbreviation` with no definition of its key in the document; a mention with a `label` or a kind other than `user`; and `metadata`.
+
+**C2-W-124** Where a field that cannot be spelled makes its whole node read back as another type, as a frontmatter `format` that is no format name does, the report is `structure-unspellable` at that node. A loss is reported at the node that did not read back, not at a wrapper around it.
 
 **C2-W-012** Where blocks are written into a slot that holds only inline content, such as a caption, a title, a cell or a term, the writer puts a separator between the content of two former blocks, so that no word and no delimiter run is joined across the boundary.
 
@@ -79,6 +81,8 @@ Conventions:
 
 **C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). This is requirement W4.
 
+**C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list.
+
 **C2-W-029** Two lists are adjacent for C2-W-028 also when every block between them writes nothing.
 
 **C2-W-030** A loose list is written with one blank line between all of its items. A tight list is written with none, also when an item holds several blocks: the blank line then stands inside the item, before its later block. This is requirement W5.
@@ -88,6 +92,8 @@ Conventions:
 **C2-W-032** A div, an admonition or a hard-break block with an empty body is written with one blank line between opener and closer. An empty line block is written with its closer directly below its opener, because a blank line in it is a `line` (C2-A-069).
 
 **C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed. A supplied code or raw block whose value has no final line break (C2-A-047) is written with one, and the writer reports `field-unspellable` for `value`. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
+
+**C2-W-123** One fence is written without its closer: the last block of a list, a description list or a footnote body, when a comment follows that container as its sibling. Only the open fence lets the comment line end the container (C2-B-111, C2-B-135); behind a closed fence the comment would be a child of the item (C2-B-138).
 
 **C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073).
 
@@ -104,6 +110,8 @@ Conventions:
 **C2-W-038** The fence of a code block and of a raw block is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
 
 **C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
+
+**C2-W-120** A class has the shape of a div name when it holds only ASCII letters, digits, `_` and `-` (C2-I-030) and is none of the names of `data/div-names.json`. Any other first class stands on the attribute line, which gives the same tree (C2-B-128).
 
 **C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
@@ -143,7 +151,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. A path is written bare where the bare form holds it, and in double quotes where it holds a space or a character at which a bare path ends, such as `#`, `@`, `}` or a quote; inside the quotes a double quote and a backslash are written with a backslash before them. A path that holds a line break has no spelling and is reported (C2-W-117). The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line (C2-A-082); a heading before it needs none and gets none, which is an exception to the blank line of C2-W-017, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment, and `{%%}` when its value is empty. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075), and when the block before it is a table, because the comment would become a child of the table (C2-A-086); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line (C2-A-082); a heading before it needs none and gets none, which is an exception to the blank line of C2-W-017, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -211,7 +219,7 @@ Written:
 
 **C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
 
-**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is a resolution result (C2-A-133) and is not written. An inline node that needs content and has none in a supplied tree, such as an emphasis, a span or a link text with no children where the syntax needs at least one character, has no spelling: the writer leaves it out and reports `structure-unspellable`. A `cell_paragraph` is written as the content of its cell (C2-W-062).
+**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is written as `#`, the mark of C2-B-150; only its number is a resolution result (C2-A-133, C2-A-162) and is not written. An inline node that needs content and has none in a supplied tree, such as an emphasis, a span or a link text with no children where the syntax needs at least one character, has no spelling: the writer leaves it out and reports `structure-unspellable`. A `cell_paragraph` is written as the content of its cell (C2-W-062).
 
 **C2-W-079** A hard break is written as a backslash at the end of the line.
 
@@ -249,7 +257,9 @@ Written:
 
 **C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text.
 
-**C2-W-091** One escape does not cause others. Each position is tested on its own, with the escapes already placed to its left.
+**C2-W-091** One escape does not cause others. Each position is tested on its own, with the escapes already placed to its left. An escape that a later escape made needless is taken out again, so C2-W-088 holds for the result: in `x<a:b\>=}` the escape of `>` stops the autolink, and `<` needs none. A writer may bound this second step to 16 escapes for each group of blocks that a blank line separates; past that bound a needless escape may stay.
+
+**C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
 
 **C2-W-092** A paragraph line is tested for reading as a block opener or as an interrupter. The cases:
 
@@ -279,7 +289,7 @@ Written:
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
 
-**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088); a run in the position of a command-line flag stays bare, because it is text as typed (C2-I-112, C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
+**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088); a run in the position of a command-line flag stays bare, because it is text as typed (C2-I-112, C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
 
 Example 1 (generated)
 
@@ -779,15 +789,15 @@ One point is open.
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | The writer and its two gates | 10 | 0 | 0 | 0 |
-| What the writer cannot spell | 9 | 0 | 0 | 0 |
-| Layout | 19 | 3 | 0 | 0 |
-| Canonical forms: blocks | 26 | 0 | 0 | 0 |
+| What the writer cannot spell | 10 | 0 | 0 | 0 |
+| Layout | 21 | 3 | 0 | 0 |
+| Canonical forms: blocks | 27 | 0 | 0 | 0 |
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 15 | 1 | 0 | 0 |
 | The sidecar | 5 | 0 | 0 | 0 |
-| Escaping | 12 | 0 | 1 | 0 |
+| Escaping | 13 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **117** | **4** | **5** | **2** |
+| **Total** | **122** | **4** | **5** | **2** |
 
-The document has 117 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 122 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

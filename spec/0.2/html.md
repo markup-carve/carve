@@ -189,7 +189,7 @@ Example 4 (generated)
 
 **C2-H-146** Each maximal run of characters that are not an ASCII letter, an ASCII digit or a character at or above U+0080 is replaced by one hyphen. Leading and trailing hyphens are then removed. ASCII letters keep their case, and every character at or above U+0080 is kept as it is: letters of any script, symbols, punctuation outside ASCII, and the no-break space.
 
-**C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII and C2-H-146 is applied again. The transliteration table, and what it does with a character it cannot map, belong to the host. An id under `ascii` is outside conformance.
+**C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII, C2-H-146 is applied again, and the result is lowered as with `lower`. The transliteration table, and what it does with a character it cannot map, belong to the host. An id under `ascii` is outside conformance.
 
 **C2-H-148** A result whose first character is a Unicode number (general category N, not only an ASCII digit) gets the prefix `s-`, and an empty result becomes `s`. This is the slug. A duplicate slug then takes its suffix (C2-H-024), so the suffix follows the prefix: two headings `1` give `s-1` and `s-1-2`.
 
@@ -481,6 +481,8 @@ b</p>
 
 **C2-H-157** A plain div writes its title and its label as an admonition does, and carries no name and no generated id.
 
+**C2-H-169** The blocks inside the directive that places the footnote section are written before the section, in their order. The attributes of the directive are not written, and the section is named with `aria-labelledby` also when the directive carries an authored `aria-label`.
+
 **C2-H-158** A top-level `footnotes` directive places the footnote section (C2-H-093). Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. An extension registered for the kind writes it instead, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
 
 Example 28 (generated)
@@ -756,6 +758,8 @@ Example 14 (generated)
 
 **C2-H-150** The captions of footnote bodies take their numbers after every caption of the document body, in the order of the footnote numbers. A caption in an unused footnote definition takes none.
 
+**C2-H-170** Captions and numbered equations of one key are counted in document order, a node before the nodes inside it: the caption of a table takes its number before an equation in a cell of that table.
+
 **C2-H-151** In a supplied tree, a display `math` node that carries `numberPrefix` takes the next number of the sequence whose key is its `numberPrefix`, counted together with the captions of that key. The number is written after the math element as ` <span class="equation-number">PREFIX N</span>`. Inline math takes no number. A display math node inside a `figure` or `figure_group` whose caption has a mark takes no number of its own: the nearest such caption around it owns the number. `numberPrefix` has no source spelling, so a parsed tree holds no numbered equation, and `^ Equation #` numbers a caption.
 
 Example 26 (generated)
@@ -882,6 +886,8 @@ b {% mid %} c
 :::
 
 **C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section and the options in the order of C2-W-058, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
+
+**C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds, so `@cols:"a,,b"`, which is no list of names (C2-B-205), is written `@cols:a,,b`.
 
 ## Inline elements
 
@@ -1236,6 +1242,8 @@ in
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram or an equation without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
+**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source, with the attributes of the paragraph on `<pre>`. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+
 **C2-H-123** `renderers` maps an extension name to a build-time renderer and is read only in static mode.
 
 **C2-H-124** `symbols` maps a symbol name to its output (C2-H-101). The values are trusted and written verbatim.
@@ -1264,7 +1272,15 @@ in
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
+**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are not written in the content of a text node, of a code span, of a code block or of a raw block that is escaped: they can make source read in another order than it runs. They stay in the tree, in the canonical form and in attribute values, where C2-H-159 already removes them for the scheme test. (carried over from 0.1)
+
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
+
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a footnote reference and every other inline node with no children as its source text. A block becomes one paragraph of its plain text behind the mark of its kind: the heading marker and a space for a heading, `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value for a code or raw block, and the title and the blocks joined by single spaces for a div. A node that leaves no text is dropped. Each degraded node is reported once (C2-H-129).
+
+**C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.
+
+**C2-H-167** A link carries one `rel` attribute. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`.
 
 **C2-H-164** The lists name 0.2 node types. An inline literal counted as code in 0.1, so `literal_inline` stands in the lists that hold `code`.
 
@@ -1379,11 +1395,11 @@ One point is open.
 | Paragraphs, headings and sections | 17 | 1 | 3 | 0 |
 | Lists | 9 | 0 | 2 | 2 |
 | Description lists | 3 | 0 | 1 | 0 |
-| Quotes, divs and their sigil forms | 12 | 0 | 3 | 0 |
+| Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
 | Tables | 9 | 1 | 1 | 0 |
-| Captions and figures | 11 | 0 | 4 | 0 |
-| Comments, frontmatter and definitions | 4 | 0 | 1 | 0 |
+| Captions and figures | 12 | 0 | 4 | 0 |
+| Comments, frontmatter and definitions | 5 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 1 | 0 |
@@ -1391,8 +1407,8 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
-| Options | 18 | 0 | 3 | 0 |
+| Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **164** | **7** | **26** | **6** |
+| **Total** | **172** | **7** | **26** | **6** |
 
-The document has 164 clauses, 7 of them marked with the word "Exception", and 32 examples, 26 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 172 clauses, 7 of them marked with the word "Exception", and 32 examples, 26 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

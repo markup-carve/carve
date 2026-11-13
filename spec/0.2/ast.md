@@ -375,7 +375,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
-**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213. `resolvedAlign` of a column is the value `aligns` gives it, or else the alignment mark of the last head cell of that column (C2-B-182). A cell renders with its own mark, or else with the resolved alignment of its column; a mark on a body cell aligns that cell only.
+**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213. `resolvedAlign` of a column is the alignment mark of the last head cell of that column (C2-B-182), or else the value `aligns` gives it. A cell renders with its own mark, or else with the resolved alignment of its column; a mark on a body cell aligns that cell only.
 
 **C2-A-090** `table_column.authored` is `true` on a column the source spelled, which is one that `aligns` or `widths` gives a value, and absent on one the producer inferred. It is a tree fact and takes part in equality.
 
@@ -692,6 +692,8 @@ These clauses were added after other documents began to cite this one. They stan
 **C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node, and the comments of comment-only lines below it (C2-B-137), and carries `blockMath: true`. A parser sets the mark when the paragraph closes as one display math line (C2-B-158, C2-B-198); a paragraph whose only math span closes on a later line is an ordinary paragraph. Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
+
+**C2-A-187** The bracket label of a div, an admonition and a directive is the string `groupLabel`, the text between the brackets as written, with no inline parsing: in `::: tip [Tab *x*]` it is `Tab *x*`. In 0.1 the label was inline content.
 
 **C2-A-186** A parsed item, description, term or heading is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block, hard-break block or quote may have no children: a quote mark alone on its line is an empty quote (C2-B-031), as is a quote fence with no body (C2-W-032, C2-W-082). A tree that was not parsed from source may hold an item, description, term or heading with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
 
