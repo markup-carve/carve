@@ -69,7 +69,7 @@ Conventions:
 
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
-**C2-W-025** One space follows a list marker. A letter or roman marker with a dot takes two (C2-B-040), and the content column moves with it.
+**C2-W-025** One space follows a list marker. A marker of one uppercase letter and a dot takes two (C2-B-040), and the content column moves with it.
 
 **C2-W-026** A continuation line whose text would read as a list marker is kept text by an escape, not by a smaller indent.
 
@@ -141,7 +141,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -233,7 +233,7 @@ Conventions:
 - a description mark or a term mark, at the start of a paragraph and on every line inside a description list (C2-B-016);
 - a definition shape at column 0 (C2-B-081);
 - a quote mark and a space at the start of a paragraph (C2-B-031);
-- a run of three or more stars alone on the first line of a paragraph (C2-B-159);
+- a run of three or more stars alone on any line of a paragraph (C2-B-159, C2-B-200);
 - a brace block with content alone on a line, which would be an attribute line (C2-B-090, C2-B-193);
 - `{{` and `}}` around a whole line (C2-B-156);
 - `---` on line 1 of the document (C2-B-161);
@@ -543,7 +543,7 @@ The 29 rules of the migrate and lint design, with the later rulings applied. Sev
 
 | Rule | Severity | Reports | After the later rulings |
 |---|---|---|---|
-| `block-opener-without-blank-line` | warning | a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, a thematic break, an attribute line, a term or description mark, a definition | a table row is no trigger, because a row interrupts (C2-B-019) |
+| `block-opener-without-blank-line` | warning | a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition | a table row is no trigger, because a row interrupts (C2-B-019) |
 | `unattached-caption` | warning | a caption line that is not directly below one of the six caption targets, a caption after a blank line among them | the target list has six kinds, the figure group included |
 | `deprecated-continuation-marker` | warning | a line that holds only `+` outside a table and a fence, and an item whose first line is `+` | unchanged |
 | `definition-in-container` | warning | a definition shape inside a container or indented at the top level | unchanged |

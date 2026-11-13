@@ -69,9 +69,9 @@
         "This line looks like a (kind) but directly follows text, so it is part of the paragraph. Add a blank line before it."
       ],
       "message_origin": "design",
-      "reports": "a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, a thematic break, an attribute line, a term or description mark, a definition",
-      "change": "a table row is no trigger, because a row interrupts (C2-B-019)",
-      "clauses": ["C2-B-019"]
+      "reports": "a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition",
+      "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
+      "clauses": ["C2-B-019", "C2-B-200"]
     },
     {
       "id": "blockquote-marker-without-space",

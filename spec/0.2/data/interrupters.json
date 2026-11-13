@@ -46,6 +46,13 @@
       "shapes": ["table_row"],
       "when": ["always"],
       "clauses": ["C2-B-013", "C2-B-019", "C2-B-070", "C2-B-078"]
+    },
+    {
+      "name": "f",
+      "label": "thematic_break",
+      "shapes": ["thematic_break"],
+      "when": ["always"],
+      "clauses": ["C2-B-013", "C2-B-159", "C2-B-200"]
     }
   ],
   "lazy_shapes": [
@@ -58,7 +65,6 @@
     { "name": "include", "clauses": ["C2-B-012", "C2-B-024"] },
     { "name": "link_definition", "clauses": ["C2-B-012", "C2-B-024"] },
     { "name": "ordered", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "quote", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "thematic_break", "clauses": ["C2-B-012", "C2-B-024"] }
+    { "name": "quote", "clauses": ["C2-B-012", "C2-B-024"] }
   ]
 }

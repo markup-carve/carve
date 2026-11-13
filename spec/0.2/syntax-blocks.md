@@ -225,7 +225,7 @@ Example 8 (unverified)
 
 **C2-B-013** A paragraph closes at a blank line, at an interrupter or with its container.
 
-An *interrupter* is a line that ends an open paragraph without a blank line. There are five.
+An *interrupter* is a line that ends an open paragraph without a blank line. There are six.
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
@@ -239,6 +239,8 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-019** Interrupter (e): a table row (C2-B-166).
 
+**C2-B-200** Interrupter (f): a thematic break (C2-B-159). A line of three or more stars and nothing else has no reading as prose. Like a fence line it interrupts wherever it stands: at an open list's column it closes the list, and indented past a marker it stays in that item.
+
 **C2-B-020** Interrupters (b) and (c) count only on a line that carries the quote mark of every quote the list or the definition sits in, and a quote inside the item does not count.
 
 **C2-B-021** A list marker line without the quote mark, while the paragraph sits in a quote inside an item, closes that quote: at the list's column it is a sibling item, and indented past the item's marker it opens a nested list in the item.
@@ -247,7 +249,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-023** A term mark never opens a nested description list without a blank line: directly after paragraph text inside an item it is a lazy line.
 
-**C2-B-024** Every line that is not one of the five interrupters is a lazy line of an open paragraph: a heading, a quote, a thematic break, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
+**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
 
 Example 9 (generated)
 
@@ -275,7 +277,6 @@ Example 10 (unverified)
 Some text
 # not a heading
 > not a quote
-***
 {.x}
 ```
 
@@ -283,7 +284,6 @@ Some text
 <p>Some text
 # not a heading
 &gt; not a quote
-***
 {.x}</p>
 ```
 
@@ -708,7 +708,7 @@ Example 29 (generated)
 
 **C2-B-039** In an alphabetic list every single letter is a sibling, `i` included.
 
-**Exception C2-B-040** A letter marker or a roman marker with a dot needs two spaces before its content.
+**Exception C2-B-040** A marker of one uppercase letter and a dot needs two spaces before its content, so that an initial at the start of a paragraph, as in `A. Smith`, stays text. Every other marker needs one.
 
 **C2-B-041** The list starts at the value of its first marker.
 
@@ -829,11 +829,11 @@ Example 36 (generated)
 ::: compare
 
 ```carve
-i. a
+A. Smith
 ```
 
 ```html
-<p>i. a</p>
+<p>A. Smith</p>
 ```
 
 :::
@@ -1816,7 +1816,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line.
 
-**C2-B-083** A link definition is one line: `[label]:`, a space, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text.
+**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text.
 
 **C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
@@ -2754,7 +2754,7 @@ after
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one space behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it.
 
 **C2-B-120** The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line.
 
@@ -2893,7 +2893,7 @@ A *sigil div* is a div whose opener names how its body is read: `::: |` is a lin
 
 **C2-B-132** A stray `:::` at column 0 below an item with an unclosed div closes the item (C2-B-026) and opens an anonymous div at top level (C2-B-125), and `unclosed-container-fence` reports it with severity error.
 
-**C2-B-196** A sigil stands after one space behind the colon run: without the space the line is not a sigil div opener and is text.
+**C2-B-196** A sigil stands after one or more spaces behind the colon run: without the space the line is not a sigil div opener and is text.
 
 Example 130 (unverified)
 
@@ -4091,7 +4091,7 @@ more</p>
 
 **C2-B-160** A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.
 
-Directly after a paragraph line a star run is a lazy line (C2-B-024).
+Directly after a paragraph line a star run is an interrupter (C2-B-200).
 
 Example 188 (generated)
 
@@ -4145,7 +4145,7 @@ Example 190 (generated)
 
 :::
 
-Example 191 (unverified)
+Example 191 (generated)
 
 ::: compare
 
@@ -4155,8 +4155,8 @@ text
 ```
 
 ```html
-<p>text
-***</p>
+<p>text</p>
+<hr>
 ```
 
 :::
@@ -4962,7 +4962,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Preliminaries | 10 | 1 | 4 | 4 |
-| Paragraphs and interrupters | 14 | 3 | 6 | 2 |
+| Paragraphs and interrupters | 15 | 3 | 6 | 2 |
 | Container ownership and stripping | 6 | 0 | 2 | 3 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
@@ -4986,9 +4986,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 23 | 2 | 18 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **199** | **15** | **168** | **57** |
+| **Total** | **200** | **15** | **169** | **56** |
 
-The chapter has 199 clauses, which is the accepted size, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 200 clauses, which is the accepted size, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
