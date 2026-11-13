@@ -21,6 +21,7 @@ Terms:
 - A *marker* is a list marker, a description mark (`:`), a term mark (`::`) or a footnote definition marker. The *marker column* is the column of its first character. The *content column* is the column of the first content character on the marker line.
 - A *prefix* is what a line carries to stay inside an open container: the quote mark for a quote, indent for an item, a description or a footnote body.
 - The *indent* of a line is the column of its first character that is not a space or a tab.
+- A marker, a mark or an opener that needs *content* needs at least one character that is not a space or a tab behind it on its line. Spaces and tabs alone are no content, since they are dropped at the end of a line (C2-I-002).
 
 **C2-B-001** The role of a line depends only on that line, the container stack and five facts the scanner keeps about the lines directly above: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). No rule reads a line below the current one.
 
@@ -3815,7 +3816,7 @@ Example 172 (generated)
 
 ## Headings
 
-**C2-B-151** A heading is one to six `=`, one space and at least one further character that is not a space, so seven or more markers or a bare marker run are text.
+**C2-B-151** A heading is one to six `=`, one space and at least one further character that is not a space or a tab, so seven or more markers or a bare marker run are text.
 
 **C2-B-152** `#` is accepted in place of `=`.
 
