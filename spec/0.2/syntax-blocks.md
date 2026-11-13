@@ -2754,7 +2754,7 @@ after
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one space behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text.
 
 **C2-B-120** The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line.
 
@@ -4342,7 +4342,7 @@ title: x
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
-**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing.
+**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
 
 **C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
 
