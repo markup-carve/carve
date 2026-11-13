@@ -25,10 +25,20 @@
       "clauses": ["C2-B-172", "C2-B-173", "C2-B-174", "C2-B-183"]
     }
   ],
+  "continuation_fragment": {
+    "joins": "cell_of_its_column_in_row_above",
+    "joined_with": " ",
+    "empty_fragment": "adds_nothing",
+    "under_span_mark": "cell_that_covers_the_column_after_spans_resolve",
+    "under_failed_span_mark": "empty_cell_the_mark_leaves",
+    "past_last_column": "new_cell",
+    "reads": [],
+    "clauses": ["C2-B-173", "C2-B-176", "C2-B-184", "C2-B-185"]
+  },
   "alignment_marks": [
-    { "mark": "<", "clauses": ["C2-B-182"] },
-    { "mark": ">", "clauses": ["C2-B-182"] },
-    { "mark": "~", "clauses": ["C2-B-182"] }
+    { "mark": "<", "alignment": "left", "clauses": ["C2-B-182"] },
+    { "mark": ">", "alignment": "right", "clauses": ["C2-B-182"] },
+    { "mark": "~", "alignment": "center", "clauses": ["C2-B-182"] }
   ],
   "attributes": [
     { "name": "aligns", "clauses": ["C2-B-187"] },

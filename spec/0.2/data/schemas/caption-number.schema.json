@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 caption number mark",
+  "description": "The number mark of a caption. The block chapter carries the rule over from 0.1 (C2-B-150); the values here restate the 0.1 clause CARVE-P2-022.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "mark", "bare_when_followed_by", "not_a_mark", "label", "sequence"],
+  "properties": {
+    "$schema": { "const": "schemas/caption-number.schema.json" },
+    "mark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["char", "which", "clauses"],
+      "properties": {
+        "char": { "const": "#" },
+        "which": { "const": "first_bare_in_top_level_caption_text" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "bare_when_followed_by": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "The mark is bare when one of these follows it."
+    },
+    "not_a_mark": {
+      "type": "array",
+      "description": "A `#` in these places is not the number mark. Sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "spelling": { "type": "string", "description": "What the case looks like." }
+        }
+      }
+    },
+    "label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "trim", "clauses"],
+      "properties": {
+        "from": { "const": "inline_content_before_the_mark" },
+        "trim": { "const": "trailing_whitespace" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "The label word that selects a sequence."
+    },
+    "sequence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "start", "order", "assigned_in", "clauses"],
+      "properties": {
+        "key": { "const": "plain_text_of_label" },
+        "start": { "type": "integer", "minimum": 0, "description": "The first number of a sequence." },
+        "order": { "const": "document" },
+        "assigned_in": { "const": "resolution" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "One sequence per label: captions with the same key count together."
+    }
+  }
+}

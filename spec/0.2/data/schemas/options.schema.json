@@ -42,12 +42,14 @@
             "type": "array",
             "items": { "type": "string" },
             "uniqueItems": true,
-            "description": "The values of an `enum`. An unknown value is refused."
+            "description": "The values of an `enum`, or the entries a `list` accepts. An unknown value of an `enum` is refused."
           },
           "items": { "type": "string", "description": "What an entry of a `list` or a value of a `map` is." },
           "keys": { "type": "string", "description": "What a key of a `map` is." },
           "holds": { "type": "string", "description": "What a `structure` holds." },
-          "default": { "description": "The default. `null`: none. Absent where the documents do not state the value as data." },
+          "default": {
+            "description": "The default. `null`: none. Absent only where `default_from` names the file that holds it."
+          },
           "default_from": { "type": "string", "description": "The data file of this directory that holds the default of each entry." }
         }
       },

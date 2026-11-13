@@ -88,7 +88,11 @@
                 "uniqueItems": true,
                 "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
               },
-              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." }
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+              "non_ascii": {
+                "enum": ["any_but_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+              }
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
           },
@@ -159,9 +163,306 @@
                 "uniqueItems": true,
                 "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
               },
-              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." }
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+              "non_ascii": {
+                "enum": ["any_but_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+              }
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+          },
+          "url": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["scheme", "separator", "body"],
+            "properties": {
+              "scheme": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "rest": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "chars": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+                  "joiner": {
+                    "type": "string",
+                    "description": "A character that may stand between two runs of `chars`, one at a time."
+                  },
+                  "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+                  "not_last": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "not_first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "excluded": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+                  "non_ascii": {
+                    "enum": ["any_but_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                  }
+                },
+                "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+              },
+              "separator": { "const": ":" },
+              "body": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "rest": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "chars": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+                  "joiner": {
+                    "type": "string",
+                    "description": "A character that may stand between two runs of `chars`, one at a time."
+                  },
+                  "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+                  "not_last": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "not_first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "excluded": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+                  "non_ascii": {
+                    "enum": ["any_but_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                  }
+                },
+                "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+              }
+            },
+            "description": "The URL form of an autolink: a scheme, the separator and the body."
+          },
+          "email": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["local", "separator", "domain", "last_label"],
+            "properties": {
+              "local": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "rest": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "chars": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+                  "joiner": {
+                    "type": "string",
+                    "description": "A character that may stand between two runs of `chars`, one at a time."
+                  },
+                  "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+                  "not_last": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "not_first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "excluded": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+                  "non_ascii": {
+                    "enum": ["any_but_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                  }
+                },
+                "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+              },
+              "separator": { "const": "@" },
+              "domain": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "rest": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "chars": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+                  "joiner": {
+                    "type": "string",
+                    "description": "A character that may stand between two runs of `chars`, one at a time."
+                  },
+                  "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+                  "not_last": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "not_first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "excluded": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+                  "non_ascii": {
+                    "enum": ["any_but_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                  }
+                },
+                "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+              },
+              "last_label": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [],
+                "properties": {
+                  "first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "rest": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "chars": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+                  "joiner": {
+                    "type": "string",
+                    "description": "A character that may stand between two runs of `chars`, one at a time."
+                  },
+                  "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+                  "not_last": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "not_first": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "excluded": {
+                    "type": "array",
+                    "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                    "uniqueItems": true,
+                    "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+                  },
+                  "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+                  "non_ascii": {
+                    "enum": ["any_but_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                  }
+                },
+                "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+              }
+            },
+            "description": "The email form of an autolink: the local part, the separator, the domain, then a dot and `last_label`."
           },
           "reads_escapes": { "type": "boolean", "description": "False when a backslash inside the atom is content (C2-I-013)." },
           "crosses_lines": { "type": "boolean", "description": "True when the atom may hold a line break." },

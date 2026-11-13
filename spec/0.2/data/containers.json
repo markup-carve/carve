@@ -59,7 +59,8 @@
         "container_end"
       ],
       "body": "entries",
-      "clauses": ["C2-B-051", "C2-B-067", "C2-B-068", "C2-B-070", "C2-B-071", "C2-B-078", "C2-B-079", "C2-B-080"]
+      "counts_toward_depth": true,
+      "clauses": ["C2-B-051", "C2-B-067", "C2-B-068", "C2-B-070", "C2-B-071", "C2-B-078", "C2-B-079", "C2-B-080", "C2-B-190"]
     },
     {
       "name": "div",
@@ -92,6 +93,7 @@
       "continues": "until_closer",
       "closed_by": "frontmatter_closer",
       "closes_on": ["closer", "document_end"],
+      "body": "opaque",
       "unclosed_report": "unclosed-frontmatter",
       "clauses": ["C2-B-161", "C2-B-162", "C2-B-163"]
     },

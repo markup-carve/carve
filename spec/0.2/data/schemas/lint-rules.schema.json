@@ -33,7 +33,7 @@
           },
           "status": {
             "enum": ["kept", "new", "renamed", "obsolete", "void"],
-            "description": "`kept`: an id of 0.1. `new`: new in 0.2. `renamed`: a rule of 0.1 under a new id, with the old one in `renamed_from`. `obsolete`: an id of 0.1 that 0.2 retires. `void`: a rule of the 0.2 design that a later ruling emptied. Absent where the documents do not say whether the code is new."
+            "description": "`kept`: an id of 0.1. `new`: new in 0.2. `renamed`: a rule of 0.1 under a new id, with the old one in `renamed_from`. `obsolete`: an id of 0.1 that 0.2 retires. `void`: a rule of the 0.2 design that a later ruling emptied."
           },
           "renamed_from": {
             "type": "string",
@@ -50,11 +50,11 @@
             "description": "The default state of a lint rule. `off`: the rule is opt-in and is turned on by its id (C2-W-109)."
           },
           "enabled_by": { "enum": ["platforms"], "description": "The option that selects the rule." },
-          "messages_0_1": {
+          "messages": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": { "type": "string", "minLength": 1 },
             "uniqueItems": true,
-            "description": "The message texts of the 0.1 reference engine, as the writer document copies them. `${...}` stands for a value the engine fills in."
+            "description": "The message texts. `${...}` stands for a value the engine fills in, and a word in parentheses in a text of the design stands for one too. A rule with several messages lists all of them."
           },
           "message_notes": {
             "type": "array",
@@ -62,14 +62,11 @@
             "uniqueItems": true,
             "description": "What the writer document says about the placeholders and variants of the messages."
           },
-          "message_state": {
-            "enum": ["as_0_1", "new_text_owed"],
-            "description": "`as_0_1`: the 0.1 texts are the 0.2 texts. `new_text_owed`: the writer document asks for a new text and does not state it."
+          "message_origin": {
+            "enum": ["engine_0_1", "design", "data_file"],
+            "description": "Where the texts come from. `engine_0_1`: the 0.1 reference engine, as the writer document copies them or as the engine reports them. `design`: the migrate and lint design, which the writer document names as the source for the new rules. `data_file`: written for this file, because the writer document asks for a 0.2 text and gives none."
           },
-          "reports": {
-            "type": "string",
-            "description": "What the code reports, in the words of the writer document. Present where the document gives no message text."
-          },
+          "reports": { "type": "string", "description": "What the code reports, in the words of the writer document." },
           "channel_reports": {
             "type": "string",
             "description": "What the table of parse and render-loss codes says the code reports, where the rule also has messages."

@@ -73,7 +73,7 @@
           },
           "body": {
             "enum": ["blocks", "items", "entries", "lines", "opaque"],
-            "description": "`blocks`: read as blocks. `items`, `entries`: the children of a list. `lines`: one leaf in which only prefixes and the closer are recognized. `opaque`: not read for blocks, inline content or comments. Absent where the documents do not state it."
+            "description": "`blocks`: read as blocks. `items`, `entries`: the children of a list. `lines`: one leaf in which only prefixes and the closer are recognized. `opaque`: not read for blocks, inline content or comments."
           },
           "strip": {
             "enum": ["content_column", "opener_indent"],
@@ -85,7 +85,7 @@
           },
           "counts_toward_depth": {
             "type": "boolean",
-            "description": "True when an open block of this kind counts one toward the depth cap (C2-B-190). Absent where the clause does not name the kind."
+            "description": "True when an open block of this kind counts one toward the depth cap (C2-B-190). Absent: it does not count."
           },
           "unclosed_report": {
             "type": "string",

@@ -6,7 +6,8 @@
       "set_when_closes": "paragraph",
       "condition": "paragraph_is_one_block_image_line",
       "shape": "block_image",
-      "clauses": ["C2-B-157", "C2-B-191", "C2-B-197"]
+      "tree_field": "paragraph.blockImage",
+      "clauses": ["C2-B-157", "C2-B-191", "C2-B-197", "C2-A-136"]
     },
     {
       "name": "caption_attachment",
@@ -20,6 +21,7 @@
       "set_when_closes": "list",
       "condition": "blank_line_between_two_items",
       "values": ["loose", "tight"],
+      "tree_field": "list.spacing",
       "clauses": ["C2-B-062", "C2-B-065", "C2-B-191", "C2-A-059"]
     },
     {
@@ -27,7 +29,8 @@
       "set_when_closes": "paragraph",
       "condition": "paragraph_is_one_display_math_line",
       "shape": "display_math",
-      "clauses": ["C2-B-158", "C2-B-191", "C2-B-198"]
+      "tree_field": "paragraph.blockMath",
+      "clauses": ["C2-B-158", "C2-B-191", "C2-B-198", "C2-A-184"]
     },
     {
       "name": "table_footer_rows",

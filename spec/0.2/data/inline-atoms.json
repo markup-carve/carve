@@ -16,6 +16,48 @@
       "opener": "<",
       "closer": ">",
       "content": "url_or_email",
+      "url": {
+        "scheme": { "first": ["A-Z", "a-z"], "rest": ["+", "-", ".", "0-9", "A-Z", "a-z"] },
+        "separator": ":",
+        "body": {
+          "chars": [
+            "!",
+            "#",
+            "$",
+            "%",
+            "&",
+            "'",
+            "(",
+            ")",
+            "*",
+            "+",
+            ",",
+            "-",
+            ".",
+            "/",
+            "0-9",
+            ":",
+            ";",
+            "=",
+            "?",
+            "@",
+            "A-Z",
+            "[",
+            "]",
+            "_",
+            "a-z",
+            "~"
+          ],
+          "non_ascii": "any_but_format_and_control",
+          "min": 1
+        }
+      },
+      "email": {
+        "local": { "chars": ["+", "-", ".", "0-9", "A-Z", "_", "a-z"], "min": 1 },
+        "separator": "@",
+        "domain": { "chars": ["+", "-", ".", "0-9", "A-Z", "_", "a-z"], "min": 1 },
+        "last_label": { "chars": ["A-Z", "a-z"], "min": 1 }
+      },
       "reads_escapes": false,
       "unclosed": "text",
       "host": true,

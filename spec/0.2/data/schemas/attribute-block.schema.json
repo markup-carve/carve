@@ -146,7 +146,11 @@
                 "uniqueItems": true,
                 "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
               },
-              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." }
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+              "non_ascii": {
+                "enum": ["any_but_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+              }
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
           },
@@ -222,7 +226,7 @@
         "additionalProperties": false,
         "required": ["name", "rule", "clauses"],
         "properties": {
-          "name": { "enum": ["id", "classes", "keys"] },
+          "name": { "enum": ["id", "classes", "keys", "language"] },
           "rule": { "enum": ["add_in_written_order", "last_written_wins", "later_value_replaces_at_first_position"] },
           "clauses": {
             "type": "array",

@@ -1,12 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 smart punctuation runs",
-  "description": "The fixed runs of characters that smart typography replaces, and the similar runs the chapter names as text. The longest match is taken. Quotes and hyphen runs follow rules that are not table-shaped (C2-I-104 to C2-I-112). The glyph of each run is not in this file because the documents do not state it. Sorted by `source`.",
+  "description": "The fixed runs of characters that smart typography replaces, and the similar runs the chapter names as text. The longest match is taken. Quotes and hyphen runs follow rules that are not table-shaped (C2-I-104 to C2-I-112). `runs` is sorted by `source`, `quotes` and `dashes` by `kind`.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "$schema",
     "runs",
+    "quotes",
+    "dashes",
     "quote_opens_after",
     "quote_closes_after_hyphen_dash_or_slash_before",
     "apostrophe_words",
@@ -19,14 +21,56 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["source", "replaced", "kind", "clauses"],
+        "required": ["source", "replaced", "clauses"],
         "properties": {
           "source": { "type": "string", "description": "The characters as typed." },
-          "replaced": { "type": "boolean", "description": "True when the run becomes a smart-punctuation node." },
-          "kind": {
-            "enum": ["arrow", "comparison_sign", "ellipsis", "en_dash", "plus_minus_sign", "trademark_sign", "text"],
-            "description": "What the chapter calls the result."
+          "replaced": {
+            "type": "boolean",
+            "description": "True when the run becomes a smart-punctuation node. False: the chapter names the run as text."
           },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "kind": { "type": "string", "description": "The value of `kind` on the node." },
+          "glyph": { "type": "string", "description": "The glyph the node is written as." }
+        }
+      }
+    },
+    "quotes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "source", "glyph", "clauses"],
+        "properties": {
+          "kind": { "type": "string", "description": "The value of `kind` on the node." },
+          "source": { "type": "string", "description": "The straight quote as typed." },
+          "glyph": { "type": "string", "description": "The glyph." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "apostrophe": { "type": "boolean", "description": "True when the kind is also the apostrophe." }
+        }
+      }
+    },
+    "dashes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "source", "glyph", "clauses"],
+        "properties": {
+          "kind": { "type": "string", "description": "The value of `kind` on the node." },
+          "source": { "type": "string", "description": "The shortest hyphen run that gives one dash of the kind." },
+          "glyph": { "type": "string", "description": "The glyph." },
           "clauses": {
             "type": "array",
             "minItems": 1,

@@ -43,6 +43,22 @@
       "type": "map",
       "keys": "label key",
       "items": "text",
+      "default": {
+        "footnoteBacklink": "Back to reference",
+        "indexBackref": "Back to",
+        "tabsGroup": "Tabs",
+        "codeGroup": "Code examples",
+        "endnotes": "Footnotes",
+        "tocNav": "Table of contents",
+        "admonitionNote": "Note",
+        "admonitionTip": "Tip",
+        "admonitionWarning": "Warning",
+        "admonitionDanger": "Danger",
+        "admonitionInfo": "Info",
+        "admonitionSuccess": "Success",
+        "admonitionExample": "Example",
+        "admonitionQuote": "Quote"
+      },
       "clauses": ["C2-H-125", "C2-H-137"]
     },
     {
@@ -60,6 +76,7 @@
       "read_by": "lint",
       "type": "list",
       "items": "platform name",
+      "values": ["github"],
       "default": [],
       "clauses": ["C2-H-137", "C2-W-109"]
     },
@@ -165,6 +182,33 @@
       "read_by": "render",
       "type": "structure",
       "holds": "deny list or allow list of URL schemes",
+      "default": {
+        "deny": [
+          "javascript",
+          "vbscript",
+          "data",
+          "file",
+          "ms-msdt",
+          "ms-office",
+          "ms-word",
+          "ms-excel",
+          "ms-powerpoint",
+          "ms-access",
+          "ms-visio",
+          "ms-project",
+          "ms-publisher",
+          "ms-infopath",
+          "ms-spd",
+          "ms-search",
+          "search-ms",
+          "ms-cxh",
+          "ms-cxh-full",
+          "shell",
+          "vscode",
+          "vscode-insiders",
+          "jar"
+        ]
+      },
       "clauses": ["C2-H-128", "C2-H-137"]
     }
   ]

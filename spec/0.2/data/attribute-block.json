@@ -48,7 +48,11 @@
       "shape": { "first": ["A-Z", "_", "a-z"], "rest": ["-", "0-9", "A-Z", "_", "a-z"] },
       "clauses": ["C2-I-030"]
     },
-    { "name": "language_tag", "shape": { "joiner": "-", "may_be_empty": true }, "clauses": ["C2-I-030"] },
+    {
+      "name": "language_tag",
+      "shape": { "chars": ["0-9", "A-Z", "a-z"], "joiner": "-", "may_be_empty": true },
+      "clauses": ["C2-I-030"]
+    },
     { "name": "name", "shape": { "chars": ["-", "0-9", "A-Z", "_", "a-z"], "min": 1 }, "clauses": ["C2-I-030"] },
     {
       "name": "quoted_value",
@@ -81,7 +85,8 @@
       "clauses": ["C2-B-093", "C2-B-094", "C2-B-102", "C2-I-039", "C2-A-035"]
     },
     { "name": "id", "rule": "last_written_wins", "clauses": ["C2-B-104", "C2-I-039", "C2-I-042", "C2-A-034"] },
-    { "name": "keys", "rule": "later_value_replaces_at_first_position", "clauses": ["C2-I-039", "C2-A-035"] }
+    { "name": "keys", "rule": "later_value_replaces_at_first_position", "clauses": ["C2-I-039", "C2-A-035"] },
+    { "name": "language", "rule": "last_written_wins", "clauses": ["C2-I-039", "C2-A-037"] }
   ],
   "contexts": [
     {

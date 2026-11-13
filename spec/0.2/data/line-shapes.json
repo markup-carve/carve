@@ -1,5 +1,11 @@
 {
   "$schema": "schemas/line-shapes.schema.json",
+  "line_end": {
+    "terminator": "\n",
+    "dropped_before_terminator": "\r",
+    "lone_carriage_return": "content",
+    "clauses": ["C2-B-010"]
+  },
   "shapes": [
     {
       "name": "blank",
@@ -48,7 +54,11 @@
       "name": "comment_block_closer",
       "first": ["%"],
       "role": "closer",
-      "sequence": [{ "part": "run", "chars": ["%"], "min": 3, "same": true, "min_from": "opener_length" }, { "part": "end" }],
+      "sequence": [
+        { "part": "run", "chars": ["%"], "min": 3, "same": true, "min_from": "opener_length" },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
       "requires": ["open_comment_block"],
       "clauses": ["C2-B-109", "C2-B-110"]
     },
@@ -56,7 +66,7 @@
       "name": "comment_block_opener",
       "first": ["%"],
       "role": "opener",
-      "sequence": [{ "part": "run", "chars": ["%"], "min": 3, "same": true }],
+      "sequence": [{ "part": "run", "chars": ["%"], "min": 3, "same": true }, { "part": "content", "min": 0 }],
       "clauses": ["C2-B-108", "C2-B-189"]
     },
     {
@@ -87,8 +97,8 @@
       "sequence": [
         { "part": "run", "chars": ["-", "*"], "min": 1, "max": 1 },
         { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
-        { "part": "space", "min": 1, "max": 1 },
-        { "part": "content", "min": 1 }
+        { "part": "space", "min": 1 },
+        { "part": "content", "min": 1, "has_non_space": true }
       ],
       "clauses": ["C2-B-006", "C2-B-033", "C2-B-034", "C2-B-100", "C2-B-101"]
     },
@@ -96,7 +106,11 @@
       "name": "thematic_break",
       "first": ["*"],
       "role": "leaf",
-      "sequence": [{ "part": "run", "chars": ["*"], "min": 3, "same": true }, { "part": "end" }],
+      "sequence": [
+        { "part": "run", "chars": ["*"], "min": 3, "same": true },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
       "clauses": ["C2-B-159"]
     },
     {
@@ -116,7 +130,7 @@
       "name": "frontmatter_closer",
       "first": ["-"],
       "role": "closer",
-      "sequence": [{ "part": "literal", "text": "---" }, { "part": "trailing_spaces" }, { "part": "end" }],
+      "sequence": [{ "part": "literal", "text": "---" }, { "part": "trailing_whitespace" }, { "part": "end" }],
       "requires": ["open_frontmatter"],
       "clauses": ["C2-B-162"]
     },
@@ -146,28 +160,28 @@
               { "part": "run", "chars": ["0-9"], "min": 1, "max": 9 },
               { "part": "run", "chars": [".", ")"], "min": 1, "max": 1 },
               { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
-              { "part": "space", "min": 1, "max": 1 }
+              { "part": "space", "min": 1 }
             ],
             [
               { "part": "ref", "ref": "letter_or_roman_number" },
               { "part": "literal", "text": ")" },
               { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
-              { "part": "space", "min": 1, "max": 1 }
+              { "part": "space", "min": 1 }
             ],
             [
               { "part": "ref", "ref": "letter_or_roman_number" },
               { "part": "literal", "text": "." },
               { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
-              { "part": "space", "min": 2, "max": 2 }
+              { "part": "space", "min": 2 }
             ],
             [
               { "part": "literal", "text": "." },
               { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
-              { "part": "space", "min": 1, "max": 1 }
+              { "part": "space", "min": 1 }
             ]
           ]
         },
-        { "part": "content", "min": 1 }
+        { "part": "content", "min": 1, "has_non_space": true }
       ],
       "clauses": ["C2-B-006", "C2-B-033", "C2-B-036", "C2-B-040", "C2-B-043", "C2-B-100", "C2-B-101"]
     },
@@ -175,7 +189,11 @@
       "name": "description",
       "first": [":"],
       "role": "container",
-      "sequence": [{ "part": "literal", "text": ":" }, { "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
+      "sequence": [
+        { "part": "literal", "text": ":" },
+        { "part": "space", "min": 1 },
+        { "part": "content", "min": 1, "has_non_space": true }
+      ],
       "requires": ["term_above"],
       "clauses": ["C2-B-006", "C2-B-033", "C2-B-067", "C2-B-072", "C2-B-074", "C2-B-194"]
     },
@@ -183,7 +201,11 @@
       "name": "div_bare_run",
       "first": [":"],
       "role": "opener_or_closer",
-      "sequence": [{ "part": "run", "chars": [":"], "min": 3, "same": true }, { "part": "end" }],
+      "sequence": [
+        { "part": "run", "chars": [":"], "min": 3, "same": true },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
       "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
     },
     {
@@ -195,20 +217,47 @@
         {
           "part": "choice",
           "options": [
-            [{ "part": "space" }, { "part": "ref", "ref": "div_name" }],
-            [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "div_sigil" }]
+            [
+              { "part": "space", "min": 1, "max": 1 },
+              {
+                "part": "choice",
+                "options": [[{ "part": "ref", "ref": "div_name" }], [{ "part": "ref", "ref": "div_sigil" }]]
+              },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "quoted_title" }]
+              },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
+              }
+            ],
+            [
+              { "part": "space", "min": 1, "max": 1 },
+              { "part": "ref", "ref": "quoted_title" },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
+              }
+            ],
+            [
+              { "part": "optional", "sequence": [{ "part": "space", "min": 1, "max": 1 }] },
+              { "part": "ref", "ref": "bracket_label" }
+            ]
           ]
-        },
-        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
-        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "bracket_label" }] }
+        }
       ],
-      "clauses": ["C2-B-108", "C2-B-119", "C2-B-126", "C2-B-196", "C2-B-189"]
+      "clauses": ["C2-B-108", "C2-B-119", "C2-B-122", "C2-B-126", "C2-B-196", "C2-B-189"]
     },
     {
       "name": "term",
       "first": [":"],
       "role": "leaf",
-      "sequence": [{ "part": "literal", "text": "::" }, { "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
+      "sequence": [
+        { "part": "literal", "text": "::" },
+        { "part": "space", "min": 1 },
+        { "part": "content", "min": 1, "has_non_space": true }
+      ],
       "clauses": ["C2-B-006", "C2-B-033", "C2-B-067", "C2-B-069", "C2-B-075", "C2-B-194"]
     },
     {
@@ -246,7 +295,11 @@
         { "part": "literal", "text": "]:" },
         { "part": "space", "min": 1, "max": 1 },
         { "part": "ref", "ref": "destination" },
-        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
+        {
+          "part": "optional",
+          "sequence": [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "link_title" }]
+        },
+        { "part": "trailing_spaces" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-081", "C2-B-083", "C2-B-089"]
@@ -263,7 +316,11 @@
       "name": "code_fence_closer",
       "first": ["`", "~"],
       "role": "closer",
-      "sequence": [{ "part": "run", "chars": ["`", "~"], "min": 3, "same": true, "min_from": "opener_length" }, { "part": "end" }],
+      "sequence": [
+        { "part": "run", "chars": ["`", "~"], "min": 3, "same": true, "min_from": "opener_length" },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
       "requires": ["open_code_fence_of_same_character"],
       "clauses": ["C2-B-109", "C2-B-110"]
     },
@@ -273,27 +330,44 @@
       "role": "opener",
       "sequence": [
         { "part": "run", "chars": ["`", "~"], "min": 3, "same": true },
+        { "part": "optional", "sequence": [{ "part": "space", "min": 1, "max": 1 }] },
         {
-          "part": "optional",
-          "sequence": [
-            { "part": "space" },
-            {
-              "part": "choice",
-              "options": [[{ "part": "ref", "ref": "language_word" }], [{ "part": "ref", "ref": "raw_format" }]]
-            }
+          "part": "choice",
+          "options": [
+            [
+              {
+                "part": "choice",
+                "options": [[{ "part": "ref", "ref": "language_word" }], [{ "part": "ref", "ref": "raw_format" }]]
+              },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "quoted_title" }]
+              },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
+              }
+            ],
+            [
+              { "part": "ref", "ref": "quoted_title" },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
+              }
+            ],
+            [{ "part": "ref", "ref": "bracket_label" }],
+            []
           ]
-        },
-        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
-        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "bracket_label" }] }
+        }
       ],
       "excludes": ["backtick_in_info_string_of_backtick_run"],
-      "clauses": ["C2-B-108", "C2-B-116", "C2-B-117", "C2-B-118", "C2-B-189"]
+      "clauses": ["C2-B-108", "C2-B-116", "C2-B-117", "C2-B-118", "C2-B-122", "C2-B-189"]
     },
     {
       "name": "attribute_line",
       "first": ["{"],
       "role": "attribute",
-      "sequence": [{ "part": "ref", "ref": "brace_blocks" }, { "part": "end" }],
+      "sequence": [{ "part": "ref", "ref": "brace_blocks" }, { "part": "trailing_whitespace" }, { "part": "end" }],
       "clauses": ["C2-B-002", "C2-B-090", "C2-B-091", "C2-B-092", "C2-B-102", "C2-B-192", "C2-B-193"]
     },
     {
@@ -302,8 +376,19 @@
       "role": "leaf",
       "sequence": [
         { "part": "literal", "text": "{{" },
-        { "part": "content", "min": 0 },
+        { "part": "space", "min": 1 },
+        { "part": "ref", "ref": "include_path" },
+        {
+          "part": "optional",
+          "sequence": [
+            { "part": "optional", "sequence": [{ "part": "space", "min": 1 }] },
+            { "part": "ref", "ref": "include_section" }
+          ]
+        },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "include_options" }] },
+        { "part": "space", "min": 1 },
         { "part": "literal", "text": "}}" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-156"]
@@ -343,23 +428,84 @@
       "glued": true,
       "clauses": ["C2-B-090", "C2-B-093", "C2-B-193"]
     },
-    { "name": "bracket_label", "opener": "[", "closer": "]", "clauses": ["C2-B-117", "C2-B-119", "C2-B-121"] },
+    {
+      "name": "bracket_label",
+      "opener": "[",
+      "closer": "]",
+      "excluded": ["]"],
+      "clauses": ["C2-B-117", "C2-B-119", "C2-B-121"]
+    },
     { "name": "destination", "excluded": [" "], "clauses": ["C2-B-083"] },
     { "name": "display_math_span", "file": "inline-atoms.json", "clauses": ["C2-B-198", "C2-I-121"] },
-    { "name": "div_name", "file": "div-names.json", "clauses": ["C2-B-119", "C2-B-127"] },
+    {
+      "name": "div_name",
+      "file": "div-names.json",
+      "chars": ["-", "0-9", "A-Z", "_", "a-z"],
+      "min": 1,
+      "clauses": ["C2-B-119", "C2-B-127"]
+    },
     { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
     { "name": "format_name", "values": ["json", "toml", "yaml"], "clauses": ["C2-B-164"] },
     { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]"], "clauses": ["C2-B-197"] },
-    { "name": "label", "clauses": ["C2-I-079", "C2-I-087"] },
-    { "name": "language_word", "clauses": ["C2-B-117"] },
+    {
+      "name": "include_options",
+      "forms": ["one or more of: optional spaces, an at-sign, a key, and optionally a colon and a value"],
+      "clauses": ["C2-B-156"]
+    },
+    {
+      "name": "include_path",
+      "forms": [
+        "bare: no space, #, at-sign or }, and no leading double quote",
+        "double-quoted: a backslash takes the next character"
+      ],
+      "min": 1,
+      "clauses": ["C2-B-156"]
+    },
+    {
+      "name": "include_section",
+      "opener": "#",
+      "chars": ["-", "0-9", "A-Z", "_", "a-z"],
+      "not_first": ["-"],
+      "min": 1,
+      "clauses": ["C2-B-156"]
+    },
+    {
+      "name": "label",
+      "excluded": ["\n", "]"],
+      "min": 1,
+      "clauses": ["C2-B-082", "C2-B-083", "C2-I-079", "C2-I-087"]
+    },
+    {
+      "name": "language_word",
+      "chars": ["#", "+", "-", ".", "/", "0-9", "A-Z", "_", "a-z"],
+      "min": 1,
+      "clauses": ["C2-B-117"]
+    },
     {
       "name": "letter_or_roman_number",
       "forms": ["one_letter", "two_to_nine_roman_letters"],
+      "chars": ["A-Z", "a-z"],
+      "roman_chars": ["C", "D", "I", "L", "M", "V", "X", "c", "d", "i", "l", "m", "v", "x"],
+      "one_letter_case": true,
+      "valid_numeral_required": false,
       "max": 9,
       "clauses": ["C2-B-036", "C2-B-042"]
     },
     { "name": "line_comment", "file": "inline-atoms.json", "clauses": ["C2-B-133", "C2-B-167"] },
-    { "name": "quoted_title", "clauses": ["C2-B-083", "C2-B-117", "C2-B-119", "C2-B-120"] },
+    {
+      "name": "link_title",
+      "quotes": ["\"", "'"],
+      "reads_escapes": true,
+      "clauses": ["C2-B-083", "C2-I-013", "C2-I-068"]
+    },
+    {
+      "name": "quoted_title",
+      "opener": "\"",
+      "closer": "\"",
+      "excluded": ["\""],
+      "reads_escapes": false,
+      "clauses": ["C2-B-117", "C2-B-119", "C2-B-120"]
+    },
     { "name": "raw_format", "opener": "=", "clauses": ["C2-B-116"] }
   ]
 }

@@ -25,6 +25,7 @@ const DOCUMENTS = {
 // file -> the lists it holds, with the key that identifies a row and how the list is ordered.
 const FILES = {
   'attribute-block': { parts: ['name', 'name'], shapes: ['name', 'name'], order: ['name', 'rank'], folds: ['key', 'key'], merges: ['name', 'name'], contexts: ['name', 'name'] },
+  'caption-number': { not_a_mark: ['name', 'name'] },
   'close-facts': { facts: ['name', 'name'] },
   containers: { containers: ['name', 'name'] },
   'div-names': { names: ['name', 'name'], sigils: ['name', 'sigil'] },
@@ -32,7 +33,7 @@ const FILES = {
   'inline-atoms': { atoms: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },
-  'inline-scan': { steps: ['name', 'rank'] },
+  'inline-scan': { steps: ['name', 'rank'], fallbacks: ['name', 'name'] },
   'inline-delimiters': { delimiters: ['name', 'name'] },
   'inline-sigils': { sigils: ['name', 'name'] },
   interrupters: { interrupters: ['name', 'name'], lazy_shapes: ['name', 'name'] },
@@ -41,7 +42,7 @@ const FILES = {
   'line-shapes': { shapes: ['name', 'first'], refs: ['name', 'name'] },
   'lint-rules': { rules: ['id', 'id'] },
   options: { options: ['name', 'name'] },
-  'smart-punctuation': { runs: ['source', 'source'] },
+  'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
   'table-marks': { span_marks: ['mark', 'mark'], alignment_marks: ['mark', 'mark'], attributes: ['name', 'name'] },
   'task-states': { states: ['char', 'char'] },
 }
@@ -162,6 +163,7 @@ for (const row of data['escape-contexts']?.no_spelling ?? []) need(codes, row.re
 for (const row of data['inline-braces']?.order ?? []) {
   if (row.name !== 'braced_opener') need(atoms, row.name, 'inline-braces.json', 'row of inline-atoms.json')
 }
+for (const atom of data['inline-scan']?.never_fail ?? []) need(atoms, atom, 'inline-scan.json never_fail', 'row of inline-atoms.json')
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
 

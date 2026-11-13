@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 inline scan",
-  "description": "The four steps of the one left-to-right scan of a content, in their fixed order of precedence.",
+  "description": "The four steps of the one left-to-right scan of a content, in their fixed order of precedence, and what a form that fails leaves as text. A form with a closer opens only when its closer is found in the same content; the scan goes on directly behind a failed opener.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "steps"],
+  "required": ["$schema", "steps", "fallbacks", "never_fail", "content_end"],
   "properties": {
     "$schema": { "const": "schemas/inline-scan.schema.json" },
     "steps": {
@@ -32,6 +32,59 @@
       },
       "minItems": 4,
       "maxItems": 4
+    },
+    "fallbacks": {
+      "type": "array",
+      "description": "Sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "text", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "text": {
+            "type": "string",
+            "description": "What is literal text when the form fails, in the words of the chapter."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "never_fail": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$",
+        "description": "The identifier of the row, unique in its list."
+      },
+      "uniqueItems": true,
+      "description": "Rows of inline-atoms.json that have no failed form: unclosed, they run to the end of the content."
+    },
+    "content_end": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["closes", "clauses"],
+      "properties": {
+        "closes": { "const": "every_open_form" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "No inline form crosses the end of its content."
     }
   }
 }

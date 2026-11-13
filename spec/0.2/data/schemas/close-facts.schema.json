@@ -42,6 +42,10 @@
             "pattern": "^[a-z][a-z0-9_]*$",
             "description": "The identifier of the row, unique in its list."
           },
+          "tree_field": {
+            "type": "string",
+            "description": "The field of the tree that holds the fact, as node type and field name."
+          },
           "targets": {
             "type": "array",
             "items": {
