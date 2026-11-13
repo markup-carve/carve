@@ -146,13 +146,13 @@ Conventions:
 
 **C2-A-045** `code_block.value` holds every payload character, the final line break included. A closed fence with one line `a` has the value `"a\n"`, and a closed fence with no line has `""`. Container prefixes and fence delimiters are not payload.
 
-**C2-A-046** A fence that ends with its container keeps whether its last line had a line break. A producer does not add one.
+**C2-A-046** The value of a parsed fence ends with a line break after its last line, also where the fence is unclosed and the source ends on that line without one: the end of the source counts as a line ending. A producer adds nothing else.
 
 **C2-A-047** A built or imported code block may hold `"a"` with no final break, which is a different value from `"a\n"`. A reader does not append a break.
 
 **C2-A-048** `raw_block.value` follows the same rules as `code_block.value`.
 
-**C2-A-049** `frontmatter` is the first child when present. It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written. A producer does not publish parsed keys in its place.
+**C2-A-049** `frontmatter` is the first child when present. It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
 
 ## Node types
 
@@ -328,7 +328,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Comments
 
-**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one; `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body.
+**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one, and without spaces and tabs at its end, also where the comment ends at the pipe of a cell (C2-B-134); `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body.
 
 **C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-138).
 
@@ -369,7 +369,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Tables
 
-**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does.
+**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes, and after them the comment of a comment-only line that stands before its caption (C2-A-082). Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does.
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
@@ -567,7 +567,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-144** A child lies inside its parent: its `startOffset` is not before the parent's and its `endOffset` is not after it. A node without `pos` is skipped, and its children are compared with the nearest ancestor that has one.
 
-**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped.
+**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped. One case is exempt: the comment of a comment-only line that stands between an attribute line and the block that takes it (C2-B-137) lies inside the span of that block (C2-A-148) and is its sibling before it.
 
 **Exception C2-A-146** Two breaks that meet at one line ending share it, against C2-A-145.
 

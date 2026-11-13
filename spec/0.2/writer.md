@@ -67,7 +67,7 @@ Conventions:
 
 **C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending.
 
-**Exception C2-W-023** A line that ends in a line comment keeps the comment's own trailing content, because a `%%` comment runs to the end of its line.
+**Exception C2-W-023** A line that ends in a line comment keeps the comment's value as it is, because a `%%` comment runs to the end of its line. The value holds no spaces at its end (C2-A-074), so no trailing space is written for it.
 
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
@@ -115,7 +115,7 @@ Conventions:
 
 **C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written with the bare dot under a `start` attribute (C2-B-045). A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
-**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045).
+**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
 
 **C2-W-046** A task item is written with the character in `task.mark` (C2-A-060). The tree holds `x` for an authored `X`, so `[X]` comes back as `[x]`.
 

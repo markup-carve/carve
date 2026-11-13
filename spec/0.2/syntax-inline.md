@@ -1232,7 +1232,7 @@ Example 66 (generated)
 
 **Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
 
-**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. (carried over from 0.1)
+**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. (carried over from 0.1)
 
 **C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule. A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.
 
@@ -1988,7 +1988,7 @@ Example 104 (unverified)
 
 ## The fallback rule
 
-**C2-I-119** A form with a closer opens only when its closer is found in the same content. A failed opener is literal text, and the scan goes on directly behind it.
+**C2-I-119** A form with a closer opens only when its closer is found in the same content. A failed opener is literal text, and the scan goes on directly behind it. An opening brace that fails as an attribute block is first tried as the later braced forms (C2-I-043) and is text only when it opens none of them.
 
 **C2-I-120** No inline form crosses the end of its content: a table cell, a heading, a term, a caption and a paragraph each end every form that is open in them.
 
