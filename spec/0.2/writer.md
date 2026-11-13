@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
@@ -169,7 +169,7 @@ Conventions:
 
 **C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A table whose body carries `headRows` is written as a delimited table with its `header-rows` attribute, the only form that declares the field (C2-A-088). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
 
-**C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035). A break of the source that fell inside a label, which has no `value` to record it in (C2-L-020), is not kept: that cell is written on one line.
+**C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035), except where the value of a node in a cell holds a line feed, as a code span that crossed rows does (C2-B-184): there the writer breaks the row into continuation rows at each such line feed, the only spelling that keeps the value. A break of the source that fell inside a label, which has no `value` to record it in (C2-L-020), is not kept: that cell is written on one line.
 
 **C2-W-068** The option `alignTables` pads the cells of each column to one display width. It is off by default, the tree is the same with it on, and the two gates hold in that mode too. As in 0.1 (CARVE-P11-071). C2-W-118 and C2-W-119 state the padding and the width.
 
@@ -257,7 +257,7 @@ Written:
 
 **C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text.
 
-**C2-W-091** One escape does not cause others. Each position is tested on its own, from left to right, with the escapes already placed to its left and the text to its right bare. The result is one form for each tree, found in one pass. It can hold an escape that a later one makes needless. The text `x<a:b>=}` is written `x\<a:b\>=}`: `<` is escaped because, with the text to its right bare, it opens an autolink; `>` is escaped because behind `\<` the bare `>=` would read as the comparison sign (C2-I-117). The escape of `>` alone would have stopped the autolink too, and still the form with both is the canonical one.
+**C2-W-091** One escape does not cause others. Each position is tested on its own, from left to right, with the escapes already placed to its left and the text to its right bare. The result is one form for each tree, found in one pass. It can hold an escape that a later one makes needless. The text `x<a:b>=}` is written `x\<a:b\>=}`: `<` is escaped because, with the text to its right bare, it opens an autolink; `>` is escaped because behind `\<` the bare `>=` would read as the comparison sign (C2-I-117). The escape of `>` alone would have stopped the autolink too, and still the form with both is the canonical one. For a tree from a parse the pass keeps the tree. For a supplied tree it may not: an en dash node before a no-break space would be written `--\ x`, which reads as a flag (C2-I-112). The writer parses its finished form, compares it with the tree, and reports each node that did not read back as a loss (C2-W-011, C2-W-124).
 
 **C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
 

@@ -11,6 +11,7 @@
     { "name": "medium_mathematical_space", "from": "U+205F", "to": "U+205F", "clauses": ["C2-H-159", "C2-H-161"] },
     { "name": "narrow_no_break_space", "from": "U+202F", "to": "U+202F", "clauses": ["C2-H-159", "C2-H-161"] },
     { "name": "ogham_space_mark", "from": "U+1680", "to": "U+1680", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "replacement_character", "from": "U+FFFD", "to": "U+FFFD", "clauses": ["C2-H-159", "C2-H-161"] },
     { "name": "zero_width_no_break_space", "from": "U+FEFF", "to": "U+FEFF", "clauses": ["C2-H-159", "C2-H-161"] }
   ],
   "dropped_attributes": [

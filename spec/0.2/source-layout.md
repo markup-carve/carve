@@ -91,7 +91,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the node whose `value` holds the break, or, where the fragment starts a node, the pointer of that node, which then need not have a `value` (C2-L-048); and `offset`, the UTF-8 byte offset in that `value` at which the fragment of that row starts. A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
-**C2-L-021** The joining character that a continuation row leaves in the cell's text, a space, or a line feed inside a node whose value is its source (C2-A-094, C2-B-184), is the character before `offset`. A fragment that joins an empty cell has `offset` 0.
+**C2-L-021** The joining character that a continuation row leaves in the cell's text, a space, or a line feed inside a node whose value is its source (C2-A-094, C2-B-184), is the character before `offset`. An `offset` of 0 marks the start of the node the wrap names, which need not have a `value`; no joining character is located then. A fragment that joins an empty cell has `offset` 0.
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `form` (C2-A-105).
 
@@ -130,7 +130,7 @@ These facts are ported from the draft. Columns in them are the zero-based column
 | `markerRaw` | a `list_item`, a `definition_term`, a `definition_description`, a `heading`, a `thematic_break`, a definition | the marker as typed, without the space after it |
 | `markerColumn` | the same | the column of the marker's first character |
 | `contentColumn` | a `list_item`, a `definition_description`, a `footnote` | the content column |
-| `continuationStyle` | a block with later lines | `lazy`, `indent`, `marker_line` or `none` |
+| `continuationStyle` | a `list_item`, a `definition_description` and a `footnote` (C2-L-052) | `lazy`, `indent`, `marker_line` or `none` |
 | `blankLinesBefore`, `blankLinesAfter` | any block | the number of blank lines around the node inside its container |
 | `openerRaw`, `closerRaw` | a `code_block`, a `div`, an `admonition`, a `directive`, a `line_block`, a fenced `block_quote`, a block `comment`, a `raw_block`, `frontmatter` | the delimiter runs as typed, without the info string |
 | `metadataSeparatorRaw` | a definition, a `definition_term` | the separator between the label or term and its body, whitespace included |
