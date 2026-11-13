@@ -268,7 +268,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "This block opener is indented under a definition term, which has no content column, so it folds into the term as text. Dedent it to the container's content column to open the block, or put it in the term's \": \" description."
+        "This block opener is indented under a definition term, which has no content column, so it folds into the term as text (a fence line or a table row does not fold: it closes the description list). Dedent it to the container's content column to open the block, or put it in the term's \": \" description."
       ],
       "message_origin": "engine_0_1",
       "change": "a block opener under a term is term text (C2-B-075)",
@@ -742,7 +742,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "A \"::: figure\" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group."
+        "A \"::: figure\" inside a figure group is a figure group of its own and not a panel of the outer group. Move it out of the enclosing group."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]
@@ -754,7 +754,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "A \"::: figure\" opener carries a quoted title or a [label]. It still opens a figure group (C2-B-127), and the title or label has no effect. Use a caption line below the group."
+        "A \"::: figure\" opener carrying a quoted title or [label] is not a figure group; it is a plain container with the class \"figure\" (C2-B-127). Drop the title or label to open a figure group, and use a caption line below it."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]

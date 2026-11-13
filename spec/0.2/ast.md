@@ -185,7 +185,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `definition_term` | `definition_list` | inlines | none |
 | `delete` | inline | inlines | none |
 | `directive` | block | blocks | `kind`, `title`?, `groupLabel`?, `tocTarget`? |
-| `div` | block | blocks | `groupLabel`? |
+| `div` | block | blocks | `title`?, `groupLabel`? |
 | `document` | root | blocks | `astVersion`, `srcByteLength`?, `extensions`?, `stages`?, `resources`? |
 | `emphasis` | inline | inlines | none |
 | `figure` | block | blocks | `caption`?, `kind`? |

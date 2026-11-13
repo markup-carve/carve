@@ -348,7 +348,7 @@ Example 9 (generated)
 
 **C2-H-041** A quote is `<blockquote>`. The quote fence and `>` lines give the same output.
 
-**C2-H-042** A div is `<div>`. The name on its opener is its first class. An admonition and a directive render as in 0.1.
+**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1.
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
 

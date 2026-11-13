@@ -1824,7 +1824,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-086** Every paragraph of a footnote body gets `<p>`.
 
-**C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker.
+**C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker. The marker line may start with any block, as the marker line of an item does (C2-B-057): `[^n]: > q` holds a quote.
 
 **C2-B-088** References resolve after block parsing, so a reference may stand before its definition.
 
@@ -2756,7 +2756,7 @@ after
 
 **C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it.
 
-**C2-B-120** The quoted title renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048).
+**C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042).
 
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group, and renders nothing in the core (carried over from 0.1).
 
@@ -2881,7 +2881,7 @@ A *sigil div* is a div whose opener names how its body is read: `::: |` is a lin
 
 **C2-B-126** A colon run followed by a name or a sigil always opens a div, at any length.
 
-**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` gives a figure group, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1).
+**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1).
 
 **C2-B-128** The classes of a div stand in one order: the name of a plain div first, then the classes of its attribute line as written, then the class of a sigil opener, `line-block` or `hardbreaks`, last.
 
@@ -4107,7 +4107,7 @@ more</p>
 
 ## Thematic break
 
-**C2-B-159** A thematic break is a line that holds three or more `*` and nothing else, at any indent.
+**C2-B-159** A thematic break is a line that holds three or more `*` and nothing else but trailing spaces and tabs, at any indent.
 
 **C2-B-160** A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.
 
@@ -4863,7 +4863,7 @@ A line that is not a valid opener is text (C2-B-011).
 
 **C2-B-189** Whether a line is an opener is decided on that line alone and never by whether a closer follows, so a construct with a closer of its own always opens (C2-B-111).
 
-**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text.
+**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text. A marker that opens two containers at once, a list and its item or a description list and its entry, is tested as one: when both do not fit, the whole marker is text and neither opens.
 
 Example 221 (generated)
 
