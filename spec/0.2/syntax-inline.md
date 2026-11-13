@@ -28,7 +28,7 @@ Terms:
 
 **C2-I-001** Inline content is parsed one content at a time, after the block pass has settled every line of the document: no block decision depends on inline content, and every definition and heading is known when the first content is read.
 
-**C2-I-002** A content is the list of its source spans in order, one per line, without the prefixes of its containers, without markers and without indent.
+**C2-I-002** A content is the list of its source spans in order, one per line, without the prefixes of its containers, without markers and without indent. Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011).
 
 **C2-I-003** Two neighboring spans are joined by one line break.
 

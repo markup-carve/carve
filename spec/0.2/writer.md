@@ -65,7 +65,7 @@ Conventions:
 
 **C2-W-021** No line of the output holds only spaces or tabs: such a line is written empty. A line of a code block, a raw block or a comment block is data and is written as it is.
 
-**C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending.
+**C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending. The space of a no-break space, which a backslash escapes (C2-I-011), is not such a space and is written also at the end of a line.
 
 **Exception C2-W-023** A line that ends in a line comment keeps the comment's value as it is, because a `%%` comment runs to the end of its line. The value holds no spaces at its end (C2-A-074), so no trailing space is written for it.
 
@@ -143,7 +143,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. A path that holds a space is written in double quotes; a path that holds a double quote or a line break has no spelling and is reported (C2-W-117). The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075); a heading before it needs none, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -195,7 +195,7 @@ Conventions:
 
 **C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break and `hardbreaks` is the last of its classes, and the class form otherwise (C2-L-034). The opener adds the class last (C2-A-068), so the opener form on any other div would change the tree.
 
-**C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A quote with no children is written as a quote fence in every case, because `>` lines cannot spell it. A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
+**C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A quote with no children is written as one line that holds only `>`, or as a quote fence with no body where the sidecar records that form. A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
 
 ## The sidecar
 

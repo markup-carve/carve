@@ -693,7 +693,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 
-**C2-A-186** A parsed item, description, term, heading or quote written with `>` lines is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block, hard-break block or quote fence may have no children (C2-W-032, C2-W-082). A tree that was not parsed from source may hold an item, description, term, heading or quote with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
+**C2-A-186** A parsed item, description, term or heading is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block, hard-break block or quote may have no children: a quote mark alone on its line is an empty quote (C2-B-031), as is a quote fence with no body (C2-W-032, C2-W-082). A tree that was not parsed from source may hold an item, description, term or heading with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
 
 ```json
 {

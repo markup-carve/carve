@@ -1828,7 +1828,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-088** References resolve after block parsing, so a reference may stand before its definition.
 
-**C2-B-089** Anything after the URL or the title of a link definition makes the line text.
+**C2-B-089** Anything but spaces and tabs after the URL or the title of a link definition makes the line text.
 
 A definition line directly after a paragraph line is a lazy line (C2-B-012) unless it is a sibling of an open definition (C2-B-016). A definition takes an attribute line (C2-B-095).
 
@@ -3821,7 +3821,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, so text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -4205,7 +4205,7 @@ b
 
 **C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed directly by a format name and then by trailing spaces.
 
-**C2-B-162** The closer is a line that is exactly `---` plus trailing spaces.
+**C2-B-162** The closer is a line that is exactly `---` plus trailing spaces and tabs.
 
 **C2-B-163** An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.
 
