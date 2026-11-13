@@ -320,7 +320,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-070** A `heading` carries `level` and inline `children`, which hold a `soft_break` or a `hard_break` where the heading continues on a further line (C2-B-154). The marker character is not recorded in the tree, and the formatter writes `=`.
 
-**C2-A-071** `heading.level` is a positive integer. Carve source gives 1 to 6, an imported tree may hold more, and a renderer clamps for its target without changing the tree.
+**C2-A-071** `heading.level` is a positive integer. Carve source gives 1 to 6, an imported tree may hold more, and a renderer writes a level its target lacks in that target's own way, without changing the tree (C2-H-021).
 
 **C2-A-072** A `thematic_break` has no fields of its own: 0.2 has one spelling, the star run.
 

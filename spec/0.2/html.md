@@ -128,7 +128,7 @@ roses
 
 **C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written as the bare `<img>` on its own line.
 
-**C2-H-021** A heading is `<h1>` to `<h6>` by its level. A level above 6 in a supplied tree is written as `<h6>`.
+**C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
 **C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004). With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case, and `ascii` also transliterates it to ASCII, as the two 0.1 switches did.
 
