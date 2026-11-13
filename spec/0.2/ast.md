@@ -375,7 +375,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
-**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result.
+**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213.
 
 **C2-A-090** `table_column.authored` is `true` on a column the source spelled and absent on one the producer inferred. It is a tree fact and takes part in equality.
 

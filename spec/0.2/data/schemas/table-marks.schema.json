@@ -164,7 +164,14 @@
           },
           "applies_to": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
           "no_effect_on": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
-          "report": { "type": "string", "description": "The code that reports misuse. An id of lint-rules.json." }
+          "report": { "type": "string", "description": "The code that reports misuse. An id of lint-rules.json." },
+          "value": {
+            "enum": ["count", "alignment_list", "width_list", "flag"],
+            "description": "The shape of the value. count: decimal digits, and an empty value counts as one. alignment_list: comma-separated entries, each one of `entries` after its spaces are trimmed, else unset. width_list: comma-separated entries, each a decimal number above 0 and at most 100 after its spaces are trimmed, else unset. flag: the key alone."
+          },
+          "entries": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "The values an entry of an alignment_list takes." },
+          "sets": { "type": "string", "description": "The tree field the value sets, as `node.field`." },
+          "written_to_html": { "type": "boolean", "description": "False when the renderer consumes the key and writes no HTML attribute for it." }
         }
       }
     }

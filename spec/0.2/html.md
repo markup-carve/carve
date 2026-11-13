@@ -519,11 +519,11 @@ a `<i>y</i>`{=html} b
 
 **C2-H-056** A header cell is `<th>` and a data cell is `<td>`. A header cell in the head carries `scope="col"`, and one in a header column carries `scope="row"`.
 
-**C2-H-057** A cell with a resolved alignment carries `style="text-align: VALUE;"`. Vertical alignment adds `vertical-align: VALUE;` after it, one space apart. A cell with no alignment carries no `style`. An authored `style` keeps its value and takes the declarations after it.
+**C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. Vertical alignment adds `vertical-align: VALUE;` after it, one space apart. A cell with no alignment carries no `style`. An authored `style` keeps its value and takes the declarations after it.
 
 **C2-H-058** `rowspan` and `colspan` are written only for a count above 1. A cell that a span covers is not written.
 
-**C2-H-059** `widths` gives a `<colgroup>` as in 0.1.
+**C2-H-059** `widths` gives a `<colgroup>` as in 0.1. C2-H-152 states it.
 
 **Exception C2-H-060** A row span that crosses a group boundary cannot be written with separate groups. In a parsed tree only the boundary between body and foot can be crossed (C2-B-174). The table is then written with one `<tbody>` that holds every row, and cell kind, scope and alignment are still computed from the groups.
 
@@ -552,6 +552,10 @@ Example 12 (generated)
 ```
 
 :::
+
+**C2-H-152** A table with at least one column that has a `width` writes `<colgroup>` after its caption and before its first group, with one `<col>` per column. A column with a width carries `style="width: P%;"`, where P is the width times 100 written as a decimal number without trailing zeros, so `0.305` gives `30.5%` and `0.25` gives `25%`. A column without a width is a bare `<col>`. A table where no column has a width has no `<colgroup>`.
+
+**C2-H-153** `aligns`, `widths`, `header-rows` and `footer-rows` on a table are read and not written as HTML attributes, also where a value is invalid or has no effect. `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
 
 ## Captions and figures
 
@@ -1221,7 +1225,7 @@ One point is open.
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 7 | 0 | 1 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
-| Tables | 7 | 1 | 1 | 0 |
+| Tables | 9 | 1 | 1 | 0 |
 | Captions and figures | 11 | 0 | 4 | 0 |
 | Comments, frontmatter and definitions | 4 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
@@ -1233,6 +1237,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **151** | **7** | **21** | **6** |
+| **Total** | **153** | **7** | **21** | **6** |
 
-The document has 151 clauses, 7 of them marked with the word "Exception", and 27 examples, 21 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 153 clauses, 7 of them marked with the word "Exception", and 27 examples, 21 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

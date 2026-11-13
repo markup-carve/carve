@@ -4397,7 +4397,7 @@ title: x
 
 **C2-B-178** The head of a table is its leading rows made only of header cells.
 
-**C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table.
+**C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table. C2-B-209 and C2-B-210 state its default and its value.
 
 **C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports bad quoting with severity error.
 
@@ -4413,7 +4413,7 @@ title: x
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1).
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1). C2-B-210 to C2-B-214 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
@@ -4902,6 +4902,95 @@ a,b
 
 :::
 
+**C2-B-209** The head of a delimited table is its first row unless `header-rows` gives a count (C2-B-210). A count N makes the first N rows the head, and 0 gives a table with no head. A count larger than the number of rows gives no head: every cell of the table is a header cell, and all rows stand in one body.
+
+**C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. Any other value is no count, and the attribute then has no effect: the table keeps the partition it has without the attribute.
+
+**C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry `left`, `right` or `center` sets `align` of that `table_column`. Any other entry, the empty one included, leaves the column unset. Entries past the last column are ignored. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.
+
+**C2-B-212** `widths` is a list of entries separated by commas, by position like `aligns`. An entry that is a decimal number greater than 0 and at most 100 is a percentage of the table width, and sets `width` of that `table_column` to the number divided by 100: `25` gives `0.25`. Any other entry leaves the column unset. Entries past the last column are ignored, and fewer entries are valid. The widths need not total 100; `table-width-total` reports a total above 100.
+
+**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it.
+
+**C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
+
+Example 229 (generated)
+
+::: compare
+
+```carve
+{aligns="left,left,center" widths="25,25"}
+|={>} Name |={<} Qty |= Note |
+| tea |{~} 2 | hot |
+| milk | 3 | cold |
+```
+
+```html
+<table>
+  <colgroup>
+    <col style="width: 25%;">
+    <col style="width: 25%;">
+    <col>
+  </colgroup>
+  <thead>
+    <tr><th scope="col" style="text-align: right;">Name</th><th scope="col" style="text-align: left;">Qty</th><th scope="col" style="text-align: center;">Note</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right;">tea</td><td style="text-align: center;">2</td><td style="text-align: center;">hot</td></tr>
+    <tr><td style="text-align: right;">milk</td><td style="text-align: left;">3</td><td style="text-align: center;">cold</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Example 230 (generated)
+
+:::: compare
+
+````carve
+{table}
+```csv
+Name,Price
+tea,2
+```
+
+{table header-rows=0}
+```csv
+a,b
+```
+
+{table header-rows=5}
+```csv
+a,b
+c,d
+```
+````
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col">Price</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>tea</td><td>2</td></tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><th scope="row">a</th><th scope="row">b</th></tr>
+    <tr><th scope="row">c</th><th scope="row">d</th></tr>
+  </tbody>
+</table>
+```
+
+::::
+
 ## The fallback rule
 
 A line that is not a valid opener is text (C2-B-011).
@@ -5048,13 +5137,13 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 3 | 2 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 23 | 2 | 18 | 4 |
+| Tables | 29 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **208** | **15** | **170** | **58** |
+| **Total** | **214** | **15** | **172** | **58** |
 
-The chapter has 208 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 214 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
-This draft has no example for a list-table, for the depth cap or for a lone CR. The whole-table attributes and the `start` attribute are referred to their 0.1 definitions. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
+This draft has no example for a list-table, for the depth cap or for a lone CR. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
