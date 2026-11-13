@@ -21,7 +21,7 @@
       "opener": "{%",
       "condition": "closer_follows_in_content",
       "closer": "%}",
-      "clauses": ["C2-I-025", "C2-I-043"]
+      "clauses": ["C2-I-025", "C2-I-043", "C2-I-050"]
     },
     {
       "rank": 3,

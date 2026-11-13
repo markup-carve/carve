@@ -823,7 +823,7 @@ HTML and *HTML* and `HTML`.
 
 **C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the outer element is `<a class="mention" href="URL">` or `<a class="tag" href="URL">`.
 
-**C2-H-101** A symbol whose name is in the `symbols` table is written as the table's value, verbatim. A symbol with no entry is written as its source, `:NAME:`.
+**C2-H-101** A symbol whose name is in the `symbols` table is written as the table's value, verbatim. A symbol with no entry is written as its source, `:NAME:`. A symbol that carries attributes is wrapped in a `<span>` that carries them, around the value or the source.
 
 Example 22 (generated)
 

@@ -81,7 +81,7 @@
       "unclosed": "text",
       "host": false,
       "transparent_to_neighbors": true,
-      "clauses": ["C2-I-005", "C2-I-013", "C2-I-025", "C2-I-026", "C2-I-027", "C2-I-037", "C2-I-043"]
+      "clauses": ["C2-I-005", "C2-I-013", "C2-I-025", "C2-I-026", "C2-I-027", "C2-I-037", "C2-I-043", "C2-I-050"]
     },
     {
       "name": "code_span",

@@ -187,7 +187,7 @@ Example 7 (generated)
 
 **C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1)
 
-**C2-I-016** When the content of a closed span starts and ends with a space, one space is removed from each end. (carried over from 0.1)
+**C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
 
 **Exception C2-I-017** A code span never fails. With no closing run in the content it runs to the end of the content, and trailing whitespace is dropped.
 
@@ -295,7 +295,7 @@ the sum $`a + b
 
 Raw HTML is written only when the `rawHtml` option allows it. That is a rendering rule.
 
-Example 14 (generated)
+Example 14 (unverified)
 
 ::: compare
 
@@ -304,7 +304,7 @@ a `<br>`{=html} b
 ```
 
 ```html
-<p>a <br> b</p>
+<p>a &lt;br&gt; b</p>
 ```
 
 :::
@@ -430,7 +430,7 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-032** An unquoted value is one or more characters without a space, a tab, a quote, a backslash, a pipe and a closing brace.
 
-**C2-I-033** A quoted value stands in `"` or `'`. In it a backslash escapes, a closing brace is allowed, and the value may be empty.
+**C2-I-033** A quoted value stands in `"` or `'`. In it a backslash escapes as in text (C2-I-010, C2-I-012): before an ASCII punctuation character it is dropped and the character is literal, and before any other character it stays. A closing brace is allowed, and the value may be empty.
 
 **C2-I-034** One part that fits no shape makes the whole run no attribute block. Its opening brace is then read by the next rule of C2-I-043.
 
@@ -1228,7 +1228,7 @@ Example 66 (generated)
 
 **C2-I-075** A reference is a node whether or not its label resolves. The scan does not read the definitions.
 
-**C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no bracket, delimiter or sigil form is read in it, and its source is its key (C2-I-079).
+**C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no atom, bracket, delimiter or sigil form is read in it, a code span included, and its source is its key (C2-I-079). The line comment of C2-I-077 is the one exception.
 
 **Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
 
@@ -1489,7 +1489,7 @@ Example 79 (unverified)
 
 ## Footnotes
 
-**C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077.
+**C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077. A footnote reference takes no link tail and no reference label: `(` or `[` directly behind it starts ordinary text or the next construct, so `[^n](/u)` is a footnote reference and the text `(/u)`.
 
 **C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).
 
@@ -1711,7 +1711,7 @@ The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).
 
 ## Citations
 
-**C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key forms no construct: the brackets are text and the key is read as a mention (C2-I-078, C2-I-090). (carried over from 0.1)
+**C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key, and that no link tail and no reference label follows, forms no construct: the brackets are text and the key is read as a mention (C2-I-078, C2-I-090). With a tail or a label the pair is a link like any other (C2-I-066), so `[@a](/u)` is a link whose text holds a mention. (carried over from 0.1)
 
 Example 90 (generated)
 
@@ -1814,7 +1814,7 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-114** Three dots become an ellipsis. (carried over from 0.1)
 
-**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1)
+**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1)
 
 **Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
 
