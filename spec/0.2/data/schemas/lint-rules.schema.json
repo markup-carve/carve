@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 diagnostics catalog",
+  "description": "Every code of the diagnostics record: the lint rules, the codes of the parse channel and of the render-loss channel, and the ids that 0.2 retires. Sorted by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "rules"],
+  "properties": {
+    "$schema": { "const": "schemas/lint-rules.schema.json" },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "clauses"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(/[a-z0-9-]+|-[a-z0-9]+)*$",
+            "description": "The code. A code is a contract: it is not renamed and not reused."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clauses that define the finding or name the code. A row that cites only C2-W-106 has no clause of its own: its finding keeps its 0.1 definition and the row stands in the catalog by that clause."
+          },
+          "severity": { "enum": ["hint", "warning", "error"], "description": "The severity. Absent for a retired id." },
+          "channel": {
+            "enum": ["parse", "render-loss", "lint"],
+            "description": "The one channel of the code (C2-W-104, C2-W-113). Absent for a retired id."
+          },
+          "status": {
+            "enum": ["kept", "new", "renamed", "obsolete", "void"],
+            "description": "`kept`: an id of 0.1. `new`: new in 0.2. `renamed`: a rule of 0.1 under a new id, with the old one in `renamed_from`. `obsolete`: an id of 0.1 that 0.2 retires. `void`: a rule of the 0.2 design that a later ruling emptied. Absent where the documents do not say whether the code is new."
+          },
+          "renamed_from": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(/[a-z0-9-]+|-[a-z0-9]+)*$",
+            "description": "The code. A code is a contract: it is not renamed and not reused."
+          },
+          "replaced_by": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(/[a-z0-9-]+|-[a-z0-9]+)*$",
+            "description": "The code. A code is a contract: it is not renamed and not reused."
+          },
+          "default": {
+            "enum": ["on", "off"],
+            "description": "The default state of a lint rule. `off`: the rule is opt-in and is turned on by its id (C2-W-109)."
+          },
+          "enabled_by": { "enum": ["platforms"], "description": "The option that selects the rule." },
+          "messages_0_1": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The message texts of the 0.1 reference engine, as the writer document copies them. `${...}` stands for a value the engine fills in."
+          },
+          "message_notes": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "What the writer document says about the placeholders and variants of the messages."
+          },
+          "message_state": {
+            "enum": ["as_0_1", "new_text_owed"],
+            "description": "`as_0_1`: the 0.1 texts are the 0.2 texts. `new_text_owed`: the writer document asks for a new text and does not state it."
+          },
+          "reports": {
+            "type": "string",
+            "description": "What the code reports, in the words of the writer document. Present where the document gives no message text."
+          },
+          "channel_reports": {
+            "type": "string",
+            "description": "What the table of parse and render-loss codes says the code reports, where the rule also has messages."
+          },
+          "change": { "type": "string", "description": "What 0.2 changes for the rule, in the words of the writer document." },
+          "why": { "type": "string", "description": "Why the id is retired." }
+        }
+      }
+    }
+  }
+}

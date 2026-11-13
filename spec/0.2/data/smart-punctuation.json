@@ -1,0 +1,45 @@
+{
+  "$schema": "schemas/smart-punctuation.schema.json",
+  "runs": [
+    { "source": "!=", "replaced": true, "kind": "comparison_sign", "clauses": ["C2-I-117"] },
+    { "source": "(c)", "replaced": false, "kind": "text", "clauses": ["C2-I-117"] },
+    { "source": "(r)", "replaced": false, "kind": "text", "clauses": ["C2-I-117"] },
+    { "source": "(tm)", "replaced": true, "kind": "trademark_sign", "clauses": ["C2-I-117"] },
+    { "source": "+-", "replaced": true, "kind": "plus_minus_sign", "clauses": ["C2-I-117"] },
+    { "source": "-->", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115", "C2-I-116"] },
+    { "source": "->", "replaced": false, "kind": "text", "clauses": ["C2-I-115"] },
+    { "source": "...", "replaced": true, "kind": "ellipsis", "clauses": ["C2-I-114"] },
+    { "source": "<-", "replaced": false, "kind": "text", "clauses": ["C2-I-115"] },
+    { "source": "<--", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115", "C2-I-116"] },
+    { "source": "<-->", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115", "C2-I-116"] },
+    { "source": "<=", "replaced": true, "kind": "comparison_sign", "clauses": ["C2-I-117"] },
+    { "source": "<==", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115"] },
+    { "source": "<=>", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115"] },
+    { "source": "==>", "replaced": true, "kind": "arrow", "clauses": ["C2-I-115"] },
+    { "source": "=>", "replaced": false, "kind": "text", "clauses": ["C2-I-115"] },
+    { "source": ">=", "replaced": true, "kind": "comparison_sign", "clauses": ["C2-I-117"] },
+    { "source": "{--}", "replaced": true, "kind": "en_dash", "clauses": ["C2-I-113"] }
+  ],
+  "quote_opens_after": {
+    "positions": ["content_start", "whitespace", "no_break_space", "opening_curly_quote", "hyphen_or_dash"],
+    "chars": ["(", "/", ":", "=", "[", "{"],
+    "clauses": ["C2-I-104"]
+  },
+  "quote_closes_after_hyphen_dash_or_slash_before": {
+    "positions": ["content_end", "whitespace"],
+    "chars": ["!", "\"", "'", ")", ",", ".", ":", ";", "?", "]"],
+    "clauses": ["C2-I-106"]
+  },
+  "apostrophe_words": {
+    "words": ["bout", "cause", "em", "n", "til", "tis", "tisn", "twas", "twasn", "twere", "twill", "twould"],
+    "letter_case": "any",
+    "clauses": ["C2-I-107", "C2-I-108"]
+  },
+  "hyphen_run": {
+    "min": 2,
+    "divisible_by_3": "em_dashes",
+    "divisible_by_2": "en_dashes",
+    "otherwise": "one_em_dash_then_rest_by_same_rule",
+    "clauses": ["C2-I-111", "C2-I-112", "C2-I-116"]
+  }
+}

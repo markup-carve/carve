@@ -1,0 +1,55 @@
+{
+  "$schema": "schemas/ordered-styles.schema.json",
+  "styles": [
+    {
+      "name": "decimal",
+      "style": "1",
+      "first_marker": ["digits", "bare_dot"],
+      "html_type": null,
+      "clauses": ["C2-B-037", "C2-B-042", "C2-B-043", "C2-A-056", "C2-H-030"]
+    },
+    {
+      "name": "lower_alpha",
+      "style": "a",
+      "first_marker": ["one_lowercase_letter_other_than_i"],
+      "html_type": "a",
+      "sibling": "every_single_letter",
+      "clauses": ["C2-B-037", "C2-B-042", "C2-B-039", "C2-B-044", "C2-A-056", "C2-H-030"]
+    },
+    {
+      "name": "lower_roman",
+      "style": "i",
+      "first_marker": ["lone_lowercase_i", "two_or_more_lowercase_roman_letters"],
+      "html_type": "i",
+      "sibling": "single_roman_letter",
+      "clauses": ["C2-B-037", "C2-B-042", "C2-B-038", "C2-B-044", "C2-A-056", "C2-H-030"]
+    },
+    {
+      "name": "upper_alpha",
+      "style": "A",
+      "first_marker": ["one_uppercase_letter_other_than_i"],
+      "html_type": "A",
+      "sibling": "every_single_letter",
+      "clauses": ["C2-B-037", "C2-B-042", "C2-B-039", "C2-B-044", "C2-A-056", "C2-H-030"]
+    },
+    {
+      "name": "upper_roman",
+      "style": "I",
+      "first_marker": ["lone_uppercase_i", "two_or_more_uppercase_roman_letters"],
+      "html_type": "I",
+      "sibling": "single_roman_letter",
+      "clauses": ["C2-B-037", "C2-B-042", "C2-B-038", "C2-B-044", "C2-A-056", "C2-H-030"]
+    }
+  ],
+  "delimiters": [
+    { "name": "paren", "char": ")", "data_delim": ")", "clauses": ["C2-B-036", "C2-B-037", "C2-A-056", "C2-H-031"] },
+    { "name": "dot", "char": ".", "data_delim": null, "clauses": ["C2-B-036", "C2-B-037", "C2-A-056", "C2-H-031"] }
+  ],
+  "start": {
+    "from": "value_of_first_marker",
+    "attribute": "start",
+    "omitted_when": 1,
+    "nested_list": "any_number",
+    "clauses": ["C2-B-041", "C2-B-045", "C2-B-060", "C2-A-058", "C2-H-030"]
+  }
+}

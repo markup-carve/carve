@@ -1,0 +1,171 @@
+{
+  "$schema": "schemas/options.schema.json",
+  "options": [
+    {
+      "name": "alignTables",
+      "kind": "format",
+      "read_by": "format",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-137", "C2-W-068"]
+    },
+    {
+      "name": "extensions",
+      "kind": "parse",
+      "read_by": "parse",
+      "type": "list",
+      "items": "extension",
+      "default": [],
+      "clauses": ["C2-H-137"]
+    },
+    {
+      "name": "headingIds",
+      "kind": "resolution",
+      "read_by": "render",
+      "type": "enum",
+      "values": ["off", "keep-case", "lower", "ascii"],
+      "default": "keep-case",
+      "clauses": ["C2-H-131", "C2-H-137"]
+    },
+    {
+      "name": "includes",
+      "kind": "parse",
+      "read_by": "parse",
+      "type": "structure",
+      "holds": "include root or resolver, with its limits",
+      "default": null,
+      "clauses": ["C2-H-133", "C2-H-137"]
+    },
+    {
+      "name": "labels",
+      "kind": "render",
+      "read_by": "render",
+      "type": "map",
+      "keys": "label key",
+      "items": "text",
+      "clauses": ["C2-H-125", "C2-H-137"]
+    },
+    {
+      "name": "mode",
+      "kind": "render",
+      "read_by": "render",
+      "type": "enum",
+      "values": ["interactive", "static"],
+      "default": "interactive",
+      "clauses": ["C2-H-122", "C2-H-137"]
+    },
+    {
+      "name": "platforms",
+      "kind": "lint",
+      "read_by": "lint",
+      "type": "list",
+      "items": "platform name",
+      "default": [],
+      "clauses": ["C2-H-137", "C2-W-109"]
+    },
+    {
+      "name": "profile",
+      "kind": "render",
+      "read_by": "render",
+      "type": "enum",
+      "values": ["full", "article", "comment", "minimal"],
+      "default": "full",
+      "clauses": ["C2-H-129", "C2-H-137"]
+    },
+    {
+      "name": "rawHtml",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-127", "C2-H-137"]
+    },
+    {
+      "name": "renderers",
+      "kind": "render",
+      "read_by": "render",
+      "type": "map",
+      "keys": "extension name",
+      "items": "renderer",
+      "default": {},
+      "clauses": ["C2-H-123", "C2-H-137"]
+    },
+    {
+      "name": "roundtrip",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-127", "C2-H-137"]
+    },
+    {
+      "name": "rules",
+      "kind": "lint",
+      "read_by": "lint",
+      "type": "map",
+      "keys": "rule id",
+      "items": "on or off",
+      "default_from": "lint-rules.json",
+      "clauses": ["C2-H-137", "C2-W-109"]
+    },
+    {
+      "name": "sections",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": true,
+      "clauses": ["C2-H-127", "C2-H-137"]
+    },
+    {
+      "name": "smartTypography",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": true,
+      "clauses": ["C2-H-127", "C2-H-137"]
+    },
+    {
+      "name": "social",
+      "kind": "render",
+      "read_by": "render",
+      "type": "structure",
+      "holds": "URL templates and resolvers for mentions and tags",
+      "default": null,
+      "clauses": ["C2-H-126", "C2-H-137"]
+    },
+    {
+      "name": "sourceLines",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-127", "C2-H-137"]
+    },
+    {
+      "name": "strictLosses",
+      "kind": "render",
+      "read_by": "render",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-130", "C2-H-137"]
+    },
+    {
+      "name": "symbols",
+      "kind": "render",
+      "read_by": "render",
+      "type": "map",
+      "keys": "symbol name",
+      "items": "output",
+      "default": {},
+      "clauses": ["C2-H-124", "C2-H-137"]
+    },
+    {
+      "name": "urlPolicy",
+      "kind": "render",
+      "read_by": "render",
+      "type": "structure",
+      "holds": "deny list or allow list of URL schemes",
+      "clauses": ["C2-H-128", "C2-H-137"]
+    }
+  ]
+}

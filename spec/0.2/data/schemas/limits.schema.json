@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 limits",
+  "description": "The numbers of the syntax chapters that belong to no single line shape. Run lengths of markers and fences are in line-shapes.json. Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "limits"],
+  "properties": {
+    "$schema": { "const": "schemas/limits.schema.json" },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "value", "unit", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "value": { "type": "integer", "minimum": 0, "description": "The number." },
+          "unit": { "enum": ["open_nodes", "columns", "lines"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    }
+  }
+}

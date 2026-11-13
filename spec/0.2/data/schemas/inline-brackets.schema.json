@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 bracket constructs",
+  "description": "The forms built on a bracket pair. An opening bracket is pushed on the bracket stack, a closing bracket pairs with the nearest open one, and what is glued to the closing bracket decides the construct (C2-I-006). Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "brackets"],
+  "properties": {
+    "$schema": { "const": "schemas/inline-brackets.schema.json" },
+    "brackets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "content", "host", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "content": {
+            "enum": ["inline", "source", "label"],
+            "description": "`inline`: read as inline content. `source`: kept as written, not parsed. `label`: a label, taken whole (C2-I-076)."
+          },
+          "host": { "type": "boolean", "description": "True when an attribute block glued to the end attaches to it." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "opener": { "type": "string", "description": "The opening characters." },
+          "closer": {
+            "type": "string",
+            "description": "The closing character, where it is not the paired bracket of the stack."
+          },
+          "prefix": { "type": "string", "description": "A character glued before the opening bracket." },
+          "glued_after": {
+            "enum": ["attribute_block", "link_tail", "[label]", "[]", "anything_else"],
+            "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct, is plain text and bounds nothing."
+          },
+          "glued_after_any": {
+            "type": "array",
+            "items": {
+              "enum": ["attribute_block", "link_tail", "[label]", "[]", "anything_else"],
+              "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct, is plain text and bounds nothing."
+            },
+            "uniqueItems": true,
+            "description": "Any one of these."
+          },
+          "content_min": { "type": "integer", "minimum": 0, "description": "The lowest count of content characters." },
+          "nests_in_itself": {
+            "type": "boolean",
+            "description": "False when the form inside its own content is replaced by that content (C2-I-071)."
+          },
+          "unclosed": { "enum": ["text"], "description": "Without its closing bracket the opener is literal text." },
+          "file": { "type": "string", "description": "The data file of this directory that defines the opener." }
+        }
+      }
+    }
+  }
+}

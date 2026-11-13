@@ -1,0 +1,54 @@
+{
+  "$schema": "schemas/inline-sigils.schema.json",
+  "boundary": { "before": ["content_start", "not_unicode_letter_or_number"], "clauses": ["C2-I-026", "C2-I-090"] },
+  "sigils": [
+    {
+      "name": "inline_extension",
+      "sigil": ":",
+      "kind": "bracket_construct",
+      "name_shape": { "first": ["A-Z", "_", "a-z"], "rest": ["-", "0-9", "A-Z", "_", "a-z"] },
+      "glued_after": "[",
+      "content": "inline",
+      "unclosed": "text",
+      "host": true,
+      "clauses": ["C2-I-036", "C2-I-090", "C2-I-091", "C2-I-094", "C2-I-095"]
+    },
+    {
+      "name": "mention",
+      "sigil": "@",
+      "kind": "atom",
+      "name_shape": {
+        "chars": ["-", "0-9", "A-Z", "_", "a-z"],
+        "joiner": ".",
+        "must_contain": "ascii_letter",
+        "not_last": ["-", "."],
+        "min": 1
+      },
+      "host": false,
+      "clauses": ["C2-I-037", "C2-I-090", "C2-I-091", "C2-I-092", "C2-I-095"]
+    },
+    {
+      "name": "symbol",
+      "sigil": ":",
+      "kind": "atom",
+      "name_shape": { "first": ["+", "-", "0-9", "A-Z", "a-z"], "rest": ["+", "-", "0-9", "A-Z", "_", "a-z"], "not_last": ["-"] },
+      "glued_after": ":",
+      "host": true,
+      "clauses": ["C2-I-036", "C2-I-090", "C2-I-091", "C2-I-093", "C2-I-095"]
+    },
+    {
+      "name": "tag",
+      "sigil": "#",
+      "kind": "atom",
+      "name_shape": {
+        "chars": ["-", "0-9", "A-Z", "_", "a-z"],
+        "joiner": ".",
+        "must_contain": "ascii_letter",
+        "not_last": ["-", "."],
+        "min": 1
+      },
+      "host": false,
+      "clauses": ["C2-I-037", "C2-I-090", "C2-I-091", "C2-I-092", "C2-I-095"]
+    }
+  ]
+}

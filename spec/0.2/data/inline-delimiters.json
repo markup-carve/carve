@@ -1,0 +1,252 @@
+{
+  "$schema": "schemas/inline-delimiters.schema.json",
+  "delimiters": [
+    {
+      "name": "delete_braced",
+      "node": "delete",
+      "form": "braced",
+      "mark": "-",
+      "opener": "{-",
+      "closer": "-}",
+      "html": "del",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "emphasis_bare",
+      "node": "emphasis",
+      "form": "bare",
+      "mark": "/",
+      "opener": "/",
+      "closer": "/",
+      "html": "em",
+      "max_run": 1,
+      "can_open": { "before": "not_word_character", "after": "not_whitespace" },
+      "can_close": { "before": "not_whitespace", "after": "not_word_character" },
+      "text_when_followed_by": ["combining_mark", "variation_selector", "zero_width_joiner"],
+      "fails_when": ["own_mark_between_two_word_characters_inside"],
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-046",
+        "C2-I-047",
+        "C2-I-048",
+        "C2-I-049",
+        "C2-I-050",
+        "C2-I-051",
+        "C2-I-052",
+        "C2-I-053",
+        "C2-I-054"
+      ]
+    },
+    {
+      "name": "emphasis_braced",
+      "node": "emphasis",
+      "form": "braced",
+      "mark": "/",
+      "opener": "{/",
+      "closer": "/}",
+      "html": "em",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "highlight_braced",
+      "node": "highlight",
+      "form": "braced",
+      "mark": "=",
+      "opener": "{=",
+      "closer": "=}",
+      "html": "mark",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "insert_braced",
+      "node": "insert",
+      "form": "braced",
+      "mark": "+",
+      "opener": "{+",
+      "closer": "+}",
+      "html": "ins",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "strike_braced",
+      "node": "strike",
+      "form": "braced",
+      "mark": "~",
+      "opener": "{~",
+      "closer": "~}",
+      "html": "s",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "strong_bare",
+      "node": "strong",
+      "form": "bare",
+      "mark": "*",
+      "opener": "*",
+      "closer": "*",
+      "html": "strong",
+      "max_run": 1,
+      "can_open": { "before": "not_word_character", "after": "not_whitespace" },
+      "can_close": { "before": "not_whitespace", "after": "not_word_character" },
+      "text_when_followed_by": ["combining_mark", "variation_selector", "zero_width_joiner"],
+      "fails_when": ["own_mark_between_two_word_characters_inside"],
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-046",
+        "C2-I-047",
+        "C2-I-048",
+        "C2-I-049",
+        "C2-I-050",
+        "C2-I-051",
+        "C2-I-052",
+        "C2-I-053",
+        "C2-I-054"
+      ]
+    },
+    {
+      "name": "strong_braced",
+      "node": "strong",
+      "form": "braced",
+      "mark": "*",
+      "opener": "{*",
+      "closer": "*}",
+      "html": "strong",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "subscript_braced",
+      "node": "subscript",
+      "form": "braced",
+      "mark": ",",
+      "opener": "{,",
+      "closer": ",}",
+      "html": "sub",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "superscript_braced",
+      "node": "superscript",
+      "form": "braced",
+      "mark": "^",
+      "opener": "{^",
+      "closer": "^}",
+      "html": "sup",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    },
+    {
+      "name": "underline_braced",
+      "node": "underline",
+      "form": "braced",
+      "mark": "_",
+      "opener": "{_",
+      "closer": "_}",
+      "html": "u",
+      "clauses": [
+        "C2-I-008",
+        "C2-I-036",
+        "C2-I-043",
+        "C2-I-055",
+        "C2-I-056",
+        "C2-I-057",
+        "C2-I-058",
+        "C2-I-059",
+        "C2-I-060",
+        "C2-I-061"
+      ]
+    }
+  ],
+  "not_delimiters": [
+    { "chars": [",", "=", "^", "_", "~"], "form": "bare", "clauses": ["C2-I-046"] },
+    { "text": "~>", "clauses": ["C2-I-062"] }
+  ]
+}

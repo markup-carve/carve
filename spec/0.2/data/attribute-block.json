@@ -1,0 +1,133 @@
+{
+  "$schema": "schemas/attribute-block.schema.json",
+  "block": {
+    "opener": "{",
+    "closer": "}",
+    "padding": "optional_spaces",
+    "separator": "spaces",
+    "min_parts": 1,
+    "crosses_lines": false,
+    "invalid_part": "whole_run_is_no_attribute_block",
+    "unattached": "printed_as_written",
+    "clauses": ["C2-I-028", "C2-I-034", "C2-I-035", "C2-I-036"]
+  },
+  "parts": [
+    {
+      "name": "bare_key",
+      "key": "bare_key",
+      "implied_value": "",
+      "target": "keys",
+      "clauses": ["C2-I-029", "C2-I-031"]
+    },
+    { "name": "class", "sigil": ".", "value": "name", "target": "classes", "clauses": ["C2-I-029"] },
+    { "name": "id", "sigil": "#", "value": "name", "target": "id", "clauses": ["C2-I-029"] },
+    {
+      "name": "key_value",
+      "key": "key",
+      "separator": "=",
+      "value_any": ["quoted_value", "unquoted_value"],
+      "target": "keys",
+      "clauses": ["C2-I-029"]
+    },
+    {
+      "name": "language",
+      "sigil": ":",
+      "value": "language_tag",
+      "target": "lang",
+      "clauses": ["C2-I-029", "C2-B-103", "C2-A-037"]
+    }
+  ],
+  "shapes": [
+    {
+      "name": "bare_key",
+      "shape": { "first": ["A-Z", "a-z"], "rest": ["-", "0-9", "A-Z", "_", "a-z"] },
+      "clauses": ["C2-I-030", "C2-I-031"]
+    },
+    {
+      "name": "key",
+      "shape": { "first": ["A-Z", "_", "a-z"], "rest": ["-", "0-9", "A-Z", "_", "a-z"] },
+      "clauses": ["C2-I-030"]
+    },
+    { "name": "language_tag", "shape": { "joiner": "-", "may_be_empty": true }, "clauses": ["C2-I-030"] },
+    { "name": "name", "shape": { "chars": ["-", "0-9", "A-Z", "_", "a-z"], "min": 1 }, "clauses": ["C2-I-030"] },
+    {
+      "name": "quoted_value",
+      "quotes": ["\"", "'"],
+      "reads_escapes": true,
+      "allows": ["}"],
+      "shape": { "may_be_empty": true },
+      "clauses": ["C2-I-013", "C2-I-033"]
+    },
+    {
+      "name": "unquoted_value",
+      "shape": { "excluded": ["\t", " ", "\"", "'", "\\", "|", "}"], "min": 1 },
+      "clauses": ["C2-I-032"]
+    }
+  ],
+  "order": [
+    { "rank": 1, "name": "id", "clauses": ["C2-B-098", "C2-I-041", "C2-A-033"] },
+    { "rank": 2, "name": "classes", "within": "as_written", "clauses": ["C2-B-098", "C2-I-041", "C2-A-033"] },
+    { "rank": 3, "name": "language", "clauses": ["C2-B-098", "C2-I-041", "C2-A-033", "C2-A-037"] },
+    { "rank": 4, "name": "keys", "within": "as_written", "clauses": ["C2-B-098", "C2-I-041", "C2-A-033"] }
+  ],
+  "folds": [
+    { "key": "class", "letter_case": "any_ascii", "into": "classes", "clauses": ["C2-B-099", "C2-I-042", "C2-A-034"] },
+    { "key": "id", "letter_case": "any_ascii", "into": "id", "clauses": ["C2-B-099", "C2-I-042", "C2-A-034"] }
+  ],
+  "merges": [
+    {
+      "name": "classes",
+      "rule": "add_in_written_order",
+      "clauses": ["C2-B-093", "C2-B-094", "C2-B-102", "C2-I-039", "C2-A-035"]
+    },
+    { "name": "id", "rule": "last_written_wins", "clauses": ["C2-B-104", "C2-I-039", "C2-I-042", "C2-A-034"] },
+    { "name": "keys", "rule": "later_value_replaces_at_first_position", "clauses": ["C2-I-039", "C2-A-035"] }
+  ],
+  "contexts": [
+    {
+      "name": "attribute_line",
+      "where": "alone_on_line",
+      "applies_to": "block_on_next_line_in_same_container",
+      "clauses": ["C2-B-090", "C2-B-091", "C2-B-095", "C2-B-096"]
+    },
+    {
+      "name": "captioned_block",
+      "where": "attribute_line_above_captioned_block",
+      "applies_to": "table_for_a_table_and_figure_for_every_other_target",
+      "clauses": ["C2-B-107"]
+    },
+    {
+      "name": "cell_alignment",
+      "where": "first_in_brace_block_of_cell_prefix",
+      "marks": ["<", ">", "~"],
+      "clauses": ["C2-B-182"]
+    },
+    {
+      "name": "empty_block",
+      "spelling": "braces_around_nothing_or_spaces",
+      "valid": "only_in_glued_run_after_bracket_pair",
+      "otherwise": "text",
+      "clauses": ["C2-I-040", "C2-B-193"]
+    },
+    {
+      "name": "inline_host",
+      "where": "glued_to_end_of_formed_host",
+      "otherwise": "text",
+      "clauses": ["C2-I-009", "C2-I-036", "C2-I-037"]
+    },
+    {
+      "name": "link_definition",
+      "where": "attribute_line_above_link_definition",
+      "applies_to": "every_link_that_uses_the_definition",
+      "clauses": ["C2-B-106", "C2-I-082"]
+    },
+    {
+      "name": "marker_abutting",
+      "where": "glued_behind_list_marker_or_cell_mark",
+      "closes": "on_marker_line",
+      "not_after": ["description_mark", "term_mark"],
+      "clauses": ["C2-B-100", "C2-B-101", "C2-B-171", "C2-B-194"]
+    },
+    { "name": "table_row", "where": "glued_to_closing_pipe_or_one_space_after", "clauses": ["C2-B-167"] }
+  ]
+}

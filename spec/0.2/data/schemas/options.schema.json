@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 options",
+  "description": "The 19 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "options"],
+  "properties": {
+    "$schema": { "const": "schemas/options.schema.json" },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "read_by", "type", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][A-Za-z]*$",
+            "description": "The name of the option as the documents write it."
+          },
+          "kind": {
+            "enum": ["parse", "resolution", "render", "format", "lint"],
+            "description": "The kind the option list gives the option."
+          },
+          "read_by": {
+            "enum": ["parse", "render", "format", "lint"],
+            "description": "The stage that reads the option. `headingIds` switches a resolution result that the renderer reads."
+          },
+          "type": {
+            "enum": ["boolean", "enum", "list", "map", "structure"],
+            "description": "`structure`: a value whose shape another document defines; `holds` names it in the words of the option list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "values": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The values of an `enum`. An unknown value is refused."
+          },
+          "items": { "type": "string", "description": "What an entry of a `list` or a value of a `map` is." },
+          "keys": { "type": "string", "description": "What a key of a `map` is." },
+          "holds": { "type": "string", "description": "What a `structure` holds." },
+          "default": { "description": "The default. `null`: none. Absent where the documents do not state the value as data." },
+          "default_from": { "type": "string", "description": "The data file of this directory that holds the default of each entry." }
+        }
+      },
+      "minItems": 19,
+      "maxItems": 19
+    }
+  }
+}

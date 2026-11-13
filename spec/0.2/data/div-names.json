@@ -1,0 +1,32 @@
+{
+  "$schema": "schemas/div-names.schema.json",
+  "names": [
+    { "name": "bibliography", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "danger", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "example", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "figure", "kind": "figure_group", "clauses": ["C2-B-127"] },
+    { "name": "footnotes", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "glossary", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "index", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "info", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "list-table", "kind": "list_table", "clauses": ["C2-B-188"] },
+    { "name": "note", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "quote", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "references", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "success", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "tip", "kind": "admonition", "clauses": ["C2-B-127"] },
+    { "name": "toc", "kind": "directive", "clauses": ["C2-B-127"] },
+    { "name": "warning", "kind": "admonition", "clauses": ["C2-B-127"] }
+  ],
+  "other_name": { "kind": "plain_div", "class": "name", "comparison": "as_written", "clauses": ["C2-B-127", "C2-B-128"] },
+  "sigils": [
+    { "name": "quote_fence", "sigil": ">", "clauses": ["C2-B-124", "C2-B-196"] },
+    {
+      "name": "hardbreak_block",
+      "sigil": "\\",
+      "class": "hardbreaks",
+      "clauses": ["C2-B-124", "C2-B-128", "C2-B-129", "C2-B-196"]
+    },
+    { "name": "line_block", "sigil": "|", "class": "line-block", "clauses": ["C2-B-123", "C2-B-128", "C2-B-196"] }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "$schema": "schemas/inline-brackets.schema.json",
+  "brackets": [
+    {
+      "name": "collapsed_reference",
+      "opener": "[",
+      "glued_after": "[]",
+      "content": "inline",
+      "host": true,
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-038", "C2-I-072", "C2-I-075"]
+    },
+    {
+      "name": "footnote_reference",
+      "opener": "[^",
+      "closer": "]",
+      "content": "label",
+      "content_min": 1,
+      "host": true,
+      "clauses": ["C2-I-036", "C2-I-076", "C2-I-077", "C2-I-087", "C2-I-088"]
+    },
+    {
+      "name": "full_reference",
+      "opener": "[",
+      "glued_after": "[label]",
+      "content": "inline",
+      "host": true,
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-038", "C2-I-072", "C2-I-075", "C2-I-076", "C2-I-078"]
+    },
+    {
+      "name": "image",
+      "prefix": "!",
+      "opener": "[",
+      "glued_after_any": ["link_tail", "[label]", "[]"],
+      "content": "source",
+      "host": true,
+      "clauses": ["C2-I-006", "C2-I-036", "C2-I-074", "C2-I-083"]
+    },
+    {
+      "name": "inline_extension",
+      "file": "inline-sigils.json",
+      "content": "inline",
+      "host": true,
+      "unclosed": "text",
+      "clauses": ["C2-I-036", "C2-I-094", "C2-I-095"]
+    },
+    {
+      "name": "inline_footnote",
+      "opener": "^[",
+      "content": "inline",
+      "host": true,
+      "unclosed": "text",
+      "clauses": ["C2-I-036", "C2-I-089"]
+    },
+    {
+      "name": "inline_link",
+      "opener": "[",
+      "glued_after": "link_tail",
+      "content": "inline",
+      "host": true,
+      "nests_in_itself": false,
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-066", "C2-I-070", "C2-I-071"]
+    },
+    {
+      "name": "plain_pair",
+      "opener": "[",
+      "glued_after": "anything_else",
+      "content": "inline",
+      "host": false,
+      "clauses": ["C2-I-006", "C2-I-065", "C2-I-072", "C2-I-101"]
+    },
+    {
+      "name": "span",
+      "opener": "[",
+      "glued_after": "attribute_block",
+      "content": "inline",
+      "host": true,
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-040", "C2-I-064"]
+    }
+  ]
+}

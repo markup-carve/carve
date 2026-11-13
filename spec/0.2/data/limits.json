@@ -1,0 +1,8 @@
+{
+  "$schema": "schemas/limits.schema.json",
+  "limits": [
+    { "name": "depth_cap", "value": 200, "unit": "open_nodes", "clauses": ["C2-B-190", "C2-I-118"] },
+    { "name": "list_end_blank_lines", "value": 3, "unit": "lines", "clauses": ["C2-B-051", "C2-B-052", "C2-B-053"] },
+    { "name": "tab_stop", "value": 4, "unit": "columns", "clauses": ["C2-B-004", "C2-B-005"] }
+  ]
+}

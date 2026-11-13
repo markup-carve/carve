@@ -1,0 +1,365 @@
+{
+  "$schema": "schemas/line-shapes.schema.json",
+  "shapes": [
+    {
+      "name": "blank",
+      "first": [],
+      "role": "blank",
+      "sequence": [{ "part": "run", "chars": [" ", "\t"], "min": 0 }, { "part": "end" }],
+      "clauses": ["C2-B-009"]
+    },
+    { "name": "text", "first": [], "role": "paragraph", "clauses": ["C2-B-011", "C2-B-012", "C2-B-024"] },
+    {
+      "name": "block_image",
+      "first": ["!"],
+      "role": "close_fact",
+      "sequence": [
+        { "part": "ref", "ref": "image_form" },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+        { "part": "trailing_spaces" },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-157", "C2-B-197"]
+    },
+    {
+      "name": "heading",
+      "first": ["#", "="],
+      "role": "leaf",
+      "sequence": [
+        { "part": "run", "chars": ["=", "#"], "min": 1, "max": 6, "same": true },
+        { "part": "space", "min": 1, "max": 1 },
+        { "part": "content", "min": 1, "has_non_space": true }
+      ],
+      "clauses": ["C2-B-151", "C2-B-152", "C2-B-153", "C2-B-154"]
+    },
+    {
+      "name": "display_math",
+      "first": ["$"],
+      "role": "close_fact",
+      "sequence": [
+        { "part": "ref", "ref": "display_math_span" },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
+        { "part": "trailing_spaces" },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-158", "C2-B-198", "C2-I-121"]
+    },
+    {
+      "name": "comment_block_closer",
+      "first": ["%"],
+      "role": "closer",
+      "sequence": [{ "part": "run", "chars": ["%"], "min": 3, "same": true, "min_from": "opener_length" }, { "part": "end" }],
+      "requires": ["open_comment_block"],
+      "clauses": ["C2-B-109", "C2-B-110"]
+    },
+    {
+      "name": "comment_block_opener",
+      "first": ["%"],
+      "role": "opener",
+      "sequence": [{ "part": "run", "chars": ["%"], "min": 3, "same": true }],
+      "clauses": ["C2-B-108", "C2-B-189"]
+    },
+    {
+      "name": "comment_only",
+      "first": ["%"],
+      "role": "skipped",
+      "sequence": [{ "part": "literal", "text": "%%" }, { "part": "content", "min": 0 }],
+      "clauses": ["C2-B-133", "C2-B-137", "C2-B-139"]
+    },
+    {
+      "name": "abbreviation_definition",
+      "first": ["*"],
+      "role": "definition",
+      "at": { "column": 0, "container": "none" },
+      "sequence": [
+        { "part": "literal", "text": "*[" },
+        { "part": "run", "chars": ["a-z", "A-Z", "0-9"], "min": 1 },
+        { "part": "literal", "text": "]:" },
+        { "part": "space", "min": 1, "max": 1 },
+        { "part": "content", "min": 1 }
+      ],
+      "clauses": ["C2-B-081", "C2-B-084"]
+    },
+    {
+      "name": "bullet",
+      "first": ["*", "-"],
+      "role": "container",
+      "sequence": [
+        { "part": "run", "chars": ["-", "*"], "min": 1, "max": 1 },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+        { "part": "space", "min": 1, "max": 1 },
+        { "part": "content", "min": 1 }
+      ],
+      "clauses": ["C2-B-006", "C2-B-033", "C2-B-034", "C2-B-100", "C2-B-101"]
+    },
+    {
+      "name": "thematic_break",
+      "first": ["*"],
+      "role": "leaf",
+      "sequence": [{ "part": "run", "chars": ["*"], "min": 3, "same": true }, { "part": "end" }],
+      "clauses": ["C2-B-159"]
+    },
+    {
+      "name": "continuation_row",
+      "first": ["+"],
+      "role": "row",
+      "sequence": [
+        { "part": "literal", "text": "+" },
+        { "part": "content", "min": 0 },
+        { "part": "literal", "text": "|" },
+        { "part": "end" }
+      ],
+      "requires": ["below_table_row_or_continuation_row"],
+      "clauses": ["C2-B-059", "C2-B-175", "C2-B-176", "C2-B-177", "C2-B-184", "C2-B-185"]
+    },
+    {
+      "name": "frontmatter_closer",
+      "first": ["-"],
+      "role": "closer",
+      "sequence": [{ "part": "literal", "text": "---" }, { "part": "trailing_spaces" }, { "part": "end" }],
+      "requires": ["open_frontmatter"],
+      "clauses": ["C2-B-162"]
+    },
+    {
+      "name": "frontmatter_opener",
+      "first": ["-"],
+      "role": "opener",
+      "at": { "line": 1, "column": 0 },
+      "sequence": [
+        { "part": "literal", "text": "---" },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "format_name" }] },
+        { "part": "trailing_spaces" },
+        { "part": "end" }
+      ],
+      "requires": ["only_byte_order_mark_before"],
+      "clauses": ["C2-B-161", "C2-B-164", "C2-B-165", "C2-B-189"]
+    },
+    {
+      "name": "ordered",
+      "first": [".", "0-9", "A-Z", "a-z"],
+      "role": "container",
+      "sequence": [
+        {
+          "part": "choice",
+          "options": [
+            [
+              { "part": "run", "chars": ["0-9"], "min": 1, "max": 9 },
+              { "part": "run", "chars": [".", ")"], "min": 1, "max": 1 },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "space", "min": 1, "max": 1 }
+            ],
+            [
+              { "part": "ref", "ref": "letter_or_roman_number" },
+              { "part": "literal", "text": ")" },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "space", "min": 1, "max": 1 }
+            ],
+            [
+              { "part": "ref", "ref": "letter_or_roman_number" },
+              { "part": "literal", "text": "." },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "space", "min": 2, "max": 2 }
+            ],
+            [
+              { "part": "literal", "text": "." },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "space", "min": 1, "max": 1 }
+            ]
+          ]
+        },
+        { "part": "content", "min": 1 }
+      ],
+      "clauses": ["C2-B-006", "C2-B-033", "C2-B-036", "C2-B-040", "C2-B-043", "C2-B-100", "C2-B-101"]
+    },
+    {
+      "name": "description",
+      "first": [":"],
+      "role": "container",
+      "sequence": [{ "part": "literal", "text": ":" }, { "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
+      "requires": ["term_above"],
+      "clauses": ["C2-B-006", "C2-B-033", "C2-B-067", "C2-B-072", "C2-B-074", "C2-B-194"]
+    },
+    {
+      "name": "div_bare_run",
+      "first": [":"],
+      "role": "opener_or_closer",
+      "sequence": [{ "part": "run", "chars": [":"], "min": 3, "same": true }, { "part": "end" }],
+      "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
+    },
+    {
+      "name": "div_opener",
+      "first": [":"],
+      "role": "opener",
+      "sequence": [
+        { "part": "run", "chars": [":"], "min": 3, "same": true },
+        {
+          "part": "choice",
+          "options": [
+            [{ "part": "space" }, { "part": "ref", "ref": "div_name" }],
+            [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "div_sigil" }]
+          ]
+        },
+        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
+        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "bracket_label" }] }
+      ],
+      "clauses": ["C2-B-108", "C2-B-119", "C2-B-126", "C2-B-196", "C2-B-189"]
+    },
+    {
+      "name": "term",
+      "first": [":"],
+      "role": "leaf",
+      "sequence": [{ "part": "literal", "text": "::" }, { "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
+      "clauses": ["C2-B-006", "C2-B-033", "C2-B-067", "C2-B-069", "C2-B-075", "C2-B-194"]
+    },
+    {
+      "name": "quote",
+      "first": [">"],
+      "role": "container",
+      "sequence": [
+        { "part": "literal", "text": ">" },
+        { "part": "choice", "options": [[{ "part": "space", "min": 1, "max": 1 }], [{ "part": "end" }]] }
+      ],
+      "clauses": ["C2-B-006", "C2-B-031"]
+    },
+    {
+      "name": "footnote_definition",
+      "first": ["["],
+      "role": "container",
+      "at": { "column": 0, "container": "none" },
+      "sequence": [
+        { "part": "literal", "text": "[^" },
+        { "part": "ref", "ref": "label" },
+        { "part": "literal", "text": "]:" },
+        { "part": "space", "min": 1, "max": 1 },
+        { "part": "content", "min": 1 }
+      ],
+      "clauses": ["C2-B-081", "C2-B-082", "C2-B-087"]
+    },
+    {
+      "name": "link_definition",
+      "first": ["["],
+      "role": "definition",
+      "at": { "column": 0, "container": "none" },
+      "sequence": [
+        { "part": "literal", "text": "[" },
+        { "part": "ref", "ref": "label" },
+        { "part": "literal", "text": "]:" },
+        { "part": "space", "min": 1, "max": 1 },
+        { "part": "ref", "ref": "destination" },
+        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-081", "C2-B-083", "C2-B-089"]
+    },
+    {
+      "name": "caption",
+      "first": ["^"],
+      "role": "leaf",
+      "sequence": [{ "part": "literal", "text": "^" }, { "part": "space", "min": 1 }, { "part": "content", "min": 1 }],
+      "requires": ["directly_below_caption_target"],
+      "clauses": ["C2-B-146", "C2-B-147", "C2-B-148", "C2-B-149"]
+    },
+    {
+      "name": "code_fence_closer",
+      "first": ["`", "~"],
+      "role": "closer",
+      "sequence": [{ "part": "run", "chars": ["`", "~"], "min": 3, "same": true, "min_from": "opener_length" }, { "part": "end" }],
+      "requires": ["open_code_fence_of_same_character"],
+      "clauses": ["C2-B-109", "C2-B-110"]
+    },
+    {
+      "name": "code_fence_opener",
+      "first": ["`", "~"],
+      "role": "opener",
+      "sequence": [
+        { "part": "run", "chars": ["`", "~"], "min": 3, "same": true },
+        {
+          "part": "optional",
+          "sequence": [
+            { "part": "space" },
+            {
+              "part": "choice",
+              "options": [[{ "part": "ref", "ref": "language_word" }], [{ "part": "ref", "ref": "raw_format" }]]
+            }
+          ]
+        },
+        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "quoted_title" }] },
+        { "part": "optional", "sequence": [{ "part": "space" }, { "part": "ref", "ref": "bracket_label" }] }
+      ],
+      "excludes": ["backtick_in_info_string_of_backtick_run"],
+      "clauses": ["C2-B-108", "C2-B-116", "C2-B-117", "C2-B-118", "C2-B-189"]
+    },
+    {
+      "name": "attribute_line",
+      "first": ["{"],
+      "role": "attribute",
+      "sequence": [{ "part": "ref", "ref": "brace_blocks" }, { "part": "end" }],
+      "clauses": ["C2-B-002", "C2-B-090", "C2-B-091", "C2-B-092", "C2-B-102", "C2-B-192", "C2-B-193"]
+    },
+    {
+      "name": "include",
+      "first": ["{"],
+      "role": "leaf",
+      "sequence": [
+        { "part": "literal", "text": "{{" },
+        { "part": "content", "min": 0 },
+        { "part": "literal", "text": "}}" },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-156"]
+    },
+    {
+      "name": "table_row",
+      "first": ["|"],
+      "role": "row",
+      "sequence": [
+        { "part": "literal", "text": "|" },
+        { "part": "content", "min": 0 },
+        { "part": "literal", "text": "|" },
+        {
+          "part": "optional",
+          "sequence": [
+            {
+              "part": "choice",
+              "options": [
+                [{ "part": "ref", "ref": "brace_block" }],
+                [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "brace_block" }]
+              ]
+            }
+          ]
+        },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "line_comment" }] },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-166", "C2-B-167", "C2-B-168", "C2-B-170"]
+    }
+  ],
+  "refs": [
+    { "name": "brace_block", "file": "attribute-block.json", "clauses": ["C2-B-100", "C2-I-028"] },
+    {
+      "name": "brace_blocks",
+      "file": "attribute-block.json",
+      "min": 1,
+      "glued": true,
+      "clauses": ["C2-B-090", "C2-B-093", "C2-B-193"]
+    },
+    { "name": "bracket_label", "opener": "[", "closer": "]", "clauses": ["C2-B-117", "C2-B-119", "C2-B-121"] },
+    { "name": "destination", "excluded": [" "], "clauses": ["C2-B-083"] },
+    { "name": "display_math_span", "file": "inline-atoms.json", "clauses": ["C2-B-198", "C2-I-121"] },
+    { "name": "div_name", "file": "div-names.json", "clauses": ["C2-B-119", "C2-B-127"] },
+    { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
+    { "name": "format_name", "values": ["json", "toml", "yaml"], "clauses": ["C2-B-164"] },
+    { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]"], "clauses": ["C2-B-197"] },
+    { "name": "label", "clauses": ["C2-I-079", "C2-I-087"] },
+    { "name": "language_word", "clauses": ["C2-B-117"] },
+    {
+      "name": "letter_or_roman_number",
+      "forms": ["one_letter", "two_to_nine_roman_letters"],
+      "max": 9,
+      "clauses": ["C2-B-036", "C2-B-042"]
+    },
+    { "name": "line_comment", "file": "inline-atoms.json", "clauses": ["C2-B-133", "C2-B-167"] },
+    { "name": "quoted_title", "clauses": ["C2-B-083", "C2-B-117", "C2-B-119", "C2-B-120"] },
+    { "name": "raw_format", "opener": "=", "clauses": ["C2-B-116"] }
+  ]
+}

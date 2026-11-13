@@ -1,0 +1,14 @@
+{
+  "$schema": "schemas/inline-scan.schema.json",
+  "steps": [
+    { "rank": 1, "name": "atoms", "file": "inline-atoms.json", "clauses": ["C2-I-004", "C2-I-005"] },
+    {
+      "rank": 2,
+      "name": "bracket_stack",
+      "file": "inline-brackets.json",
+      "clauses": ["C2-I-004", "C2-I-006", "C2-I-007"]
+    },
+    { "rank": 3, "name": "delimiter_stack", "file": "inline-delimiters.json", "clauses": ["C2-I-004", "C2-I-008"] },
+    { "rank": 4, "name": "attachment", "file": "attribute-block.json", "clauses": ["C2-I-004", "C2-I-009"] }
+  ]
+}

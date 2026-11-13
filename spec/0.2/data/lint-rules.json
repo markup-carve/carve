@@ -1,0 +1,1409 @@
+{
+  "$schema": "schemas/lint-rules.schema.json",
+  "rules": [
+    {
+      "id": "a11y/image-alt",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["image has empty alternative text and is not marked decorative"],
+      "message_state": "as_0_1",
+      "change": "accessibility extension; severity warning, where the 0.1 source sets error",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "bare-html-tag",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This bare HTML tag is escaped as text; use a raw HTML block if markup is intended."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "bidi-control-in-source",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Bidi override/isolate control U+${code} is preserved by canonical Carve but stripped from presentation output; remove it unless intentional."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "block-marker-as-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This line begins like ${what} but parsed as plain text - the block did not open. Check this line's syntax and any unterminated fence above it."
+      ],
+      "message_state": "as_0_1",
+      "change": "also a brace line that is not a valid one-line attribute line",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "block-opener-overindented",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This ${kind} is indented ${past} column(s) past the content column of ${owner}, and it still opens a ${kind}, measured from its own line. Remove the indentation to make the structure explicit, or escape the opener to keep the line as text."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "block-opener-without-blank-line",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, a thematic break, an attribute line, a term or description mark, a definition",
+      "change": "a table row is no trigger, because a row interrupts (C2-B-019)",
+      "clauses": ["C2-B-019"]
+    },
+    {
+      "id": "blockquote-marker-without-space",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "A blockquote marker must be either bare \">\" or followed by a space. This line renders as literal text; write \"> ${text}\" to quote it."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "braced-comment-in-a-template-source",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This braced comment is a template tag. Liquid, Nunjucks, or Twig source may have reached Carve as text; the tag is parsed as an invisible comment."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "braced-span-opener-as-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a braced opener left as text because a bare delimiter inside it closed an outer span",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "broken-crossref",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Cross-reference </#${target}> matches no id; ${caseOnlyPhrase}, and cross-references are case-sensitive, so it renders as the literal text \"</#${target}>\".",
+        "Cross-reference </#${target}> names the id \"${id}\", which is on a ${kind}; a cross-reference reaches only headings and numbered captions, so it renders as the literal text \"</#${target}>\". Link to it with [text](#${id}).",
+        "Cross-reference </#${target}> has no matching heading id; it renders as the literal text \"</#${target}>\"."
+      ],
+      "message_notes": ["`${caseOnlyPhrase}` is \"the ${noun} ${id} differs only in case\" or its plural."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "broken-fragment-link",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Link to \"${href}\" matches no id; the id \"${caseOnly}\" differs only in case, and fragment links are case-sensitive, so the link goes nowhere.",
+        "Link to \"${href}\" matches no id in this document, so the link goes nowhere."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "caption-looking-paragraph",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This caption-looking paragraph sits next to a table or image; use a ^ caption line."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "carrier-attribute-dropped",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "kept",
+      "reports": "an authored attribute with a reserved carrier name under `roundtrip` (C2-H-116)",
+      "clauses": ["C2-H-116", "C2-H-132"]
+    },
+    {
+      "id": "carve-version-unsupported",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "document declares Carve ${version}; this engine implements ${SPEC_VERSION}, so constructs added after that version will not render as intended",
+        "document declares an unrecognized Carve version ${version}; this engine implements ${SPEC_VERSION}"
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "colon-fence-length-mismatch",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it currently opens a ${outcome}."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "comment-fence-closer-with-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195)",
+      "clauses": ["C2-B-110", "C2-B-195"]
+    },
+    {
+      "id": "comment-in-reference-label",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077)",
+      "clauses": ["C2-I-077"]
+    },
+    {
+      "id": "comment-line-in-line-block",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line of a line block that starts with `%%`",
+      "clauses": ["C2-B-144"]
+    },
+    {
+      "id": "comment-shaped-emphasis",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This emphasis looks like a C comment; use Carve comment syntax if you meant a comment."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "consumed-key-near-miss",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["\"${word}\" is not a consumed key here; did you mean {${key}}?"],
+      "message_state": "as_0_1",
+      "change": "`loose` leaves the list of consumed keys",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "continuation-marker-refused",
+      "status": "obsolete",
+      "replaced_by": "deprecated-continuation-marker",
+      "why": "the same",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "definition-in-container",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a definition shape inside a container or indented at the top level",
+      "clauses": ["C2-B-081"]
+    },
+    {
+      "id": "definition-term-block-folded",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This block opener is indented under a definition term, which has no content column, so it folds into the term as text. Dedent it to the container's content column to open the block, or put it in the term's \": \" description."
+      ],
+      "message_state": "as_0_1",
+      "change": "a block opener under a term is term text (C2-B-075)",
+      "clauses": ["C2-B-075"]
+    },
+    {
+      "id": "delimited-table-malformed",
+      "severity": "error",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": ["This marked CSV/TSV fence has malformed quoting, so it remains a code block."],
+      "message_state": "new_text_owed",
+      "channel_reports": "an unclosed quote in a delimited table (C2-B-181)",
+      "change": "severity error; new message text: the block stays a table (C2-B-181)",
+      "clauses": ["C2-B-180", "C2-B-181"]
+    },
+    {
+      "id": "delimited-table-wide-row",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["A CSV/TSV record has more fields than the first record; the table keeps the extra columns."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-bare-highlight",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "an equals pair that 0.1 read as highlight",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-bare-strike",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a tilde pair that 0.1 read as strike",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-bare-underline",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "an underscore pair that 0.1 read as underline",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-cell-alignment",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "The table cell alignment prefix \"${prefix}\" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write \"${braced}\" (carve fmt rewrites it)."
+      ],
+      "message_state": "as_0_1",
+      "change": "the glued alignment marker is cut; the rule stays on through 0.2.x",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-continuation-marker",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line that holds only `+` outside a table and a fence, and an item whose first line is `+`",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-loose-attribute",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a list that carries the key `loose`",
+      "clauses": ["C2-B-066"]
+    },
+    {
+      "id": "deprecated-separator-row",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a row in which every cell holds only hyphens and colons",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-spaced-thematic-break",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a line of three or more stars, hyphens or underscores with spaces between them",
+      "change": "unchanged; `- - -` is this case",
+      "clauses": ["C2-B-160"]
+    },
+    {
+      "id": "deprecated-substitution-arrow",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a braced strike span that holds `~>`",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "deprecated-table-attribute",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "`header-rows` on a pipe table",
+      "change": "only `header-rows`; `aligns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1",
+      "clauses": ["C2-B-186"]
+    },
+    {
+      "id": "description-separator-below-content-column",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "description-term-multi-line",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a term whose text spans several lines",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "destination-denied",
+      "severity": "error",
+      "channel": "render-loss",
+      "status": "kept",
+      "reports": "a destination that `urlPolicy` blanked (C2-H-082)",
+      "clauses": ["C2-H-082", "C2-H-132"]
+    },
+    {
+      "id": "djot-emphasis-underscore",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": ["Djot emphasis `_x_` renders as *underline* in Carve."],
+      "message_state": "new_text_owed",
+      "change": "opt-in Djot check; new message text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-heading-continuation",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": [
+        "Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve ends the heading at the newline, so they are separate blocks and the heading id changes."
+      ],
+      "message_state": "as_0_1",
+      "change": "opt-in Djot check",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-highlight-braces",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": ["Djot highlight `{=x=}` is also Carve highlight (`{=x=}`)."],
+      "message_state": "new_text_owed",
+      "change": "opt-in Djot check; new message text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-intraword-underscore",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": [
+        "Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant."
+      ],
+      "message_state": "as_0_1",
+      "change": "opt-in Djot check",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-plus-bullet",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": [
+        "Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph."
+      ],
+      "message_state": "as_0_1",
+      "change": "opt-in Djot check",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-subscript-tilde",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": ["Djot subscript `~x~` renders as *strikethrough* in Carve."],
+      "message_state": "new_text_owed",
+      "change": "opt-in Djot check; new message text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-subscript-tilde-braced",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": ["Djot subscript `{~x~}` renders as *strikethrough* in Carve."],
+      "message_state": "as_0_1",
+      "change": "opt-in Djot check",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "djot-superscript-caret",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "off",
+      "messages_0_1": ["Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only."],
+      "message_state": "as_0_1",
+      "change": "opt-in Djot check",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "duplicate-abbreviation-definition",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "reports": "an abbreviation definition whose key was defined before",
+      "channel_reports": "a second abbreviation definition for a key (C2-B-085)",
+      "clauses": ["C2-B-085"]
+    },
+    {
+      "id": "duplicate-footnote-definition",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": ["Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins."],
+      "message_state": "as_0_1",
+      "channel_reports": "a second footnote definition for a key (C2-B-085)",
+      "clauses": ["C2-B-085"]
+    },
+    {
+      "id": "duplicate-id",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "renamed",
+      "renamed_from": "duplicate-heading-id",
+      "messages_0_1": [
+        "Duplicate heading id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.",
+        "Heading slug \"${base}\" collides with another heading or an explicit id; its auto id becomes \"${id}\", and ambiguous references to \"${base}\" resolve to the first occurrence."
+      ],
+      "message_state": "as_0_1",
+      "channel_reports": "a second node with one authored id (C2-A-039)",
+      "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",
+      "clauses": ["C2-A-039"]
+    },
+    {
+      "id": "duplicate-link-reference-definition",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "reports": "a link definition whose key was defined before",
+      "channel_reports": "a second link definition for a key (C2-B-085)",
+      "clauses": ["C2-B-085"]
+    },
+    {
+      "id": "duplicate-reference-url",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This reference definition repeats an earlier URL."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "emphasis-as-heading",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This emphasized paragraph looks like a heading."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "emphasis-marker-before-attributes",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text.",
+        "This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "empty-include-path",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This \"${text}\" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "empty-link-destination",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This link has an empty destination."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "empty-reference-definition",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This reference definition has an empty destination. Check that its URL was not removed by mistake."],
+      "message_state": "new_text_owed",
+      "change": "re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text",
+      "clauses": ["C2-B-083"]
+    },
+    {
+      "id": "extension-fallback-rendered",
+      "severity": "warning",
+      "channel": "render-loss",
+      "reports": "an unknown optional extension that rendered through its fallback (C2-A-127, C2-H-076)",
+      "clauses": ["C2-A-127", "C2-H-076"]
+    },
+    {
+      "id": "fence-closer-indented",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a closer whose indent differs from its opener's",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "fence-opener-fallback",
+      "severity": "error",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": [
+        "A code fence carries no inline attributes, so \"${attributes}\" after the info string is not valid. ${effect} (use: \"${attributes}\" on its own line directly above the fence, then \"${opener}\").",
+        "The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. ${effect} (use: \"${respaced}\").",
+        "This line starts like a fenced code block, but \"${info}\" is not a valid info string (a language, then an optional \"title\", then an optional [label]). ${effect}"
+      ],
+      "message_notes": ["`${effect}` says that the fence does not open and that the block renders as a paragraph."],
+      "message_state": "as_0_1",
+      "channel_reports": "an attribute block after a fence language or an admonition name",
+      "change": "severity error for an attribute block after a fence language or an admonition name",
+      "clauses": ["C2-B-105"]
+    },
+    {
+      "id": "fence-title-syntax",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": [
+        "The title after \"${type}\" uses typographic quotes - usually a CMS \"smart quote\" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} \"${title}\"${label}.",
+        "A \"{…}\" on the fence line is not an attribute block - it makes the whole line plain text. Put attributes on their own line directly above the \":::\" opener.",
+        "Text after the \"${type}\" fence type must be a quoted \"title\" or a [label] - unquoted it makes the whole line plain text. Did you mean ${fence} ${type} \"${title}\"${label}?",
+        "Invalid container metadata was dropped; the container and its children are preserved. ${hint}"
+      ],
+      "message_state": "as_0_1",
+      "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
+      "clauses": ["C2-B-117", "C2-B-122"]
+    },
+    {
+      "id": "field-unspellable",
+      "severity": "warning",
+      "channel": "render-loss",
+      "reports": "a field the writer could not write (C2-W-011)",
+      "clauses": ["C2-W-011", "C2-W-016", "C2-W-056", "C2-W-099", "C2-W-104"]
+    },
+    {
+      "id": "figure-group-empty",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This \"::: figure\" group holds no captionable panel; the panels wrapper renders around the preserved content only."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "figure-group-nested",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "A \"::: figure\" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "figure-group-opener-metadata",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "A \"::: figure\" opener carrying a quoted title or [label] is not a composite figure; it renders as a generic container. Drop the title/label to open a figure group."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "figure-group-panel-number",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "A \"#\" placeholder in a panel caption stays literal: panels are not numbering units, the group caption carries the number (and panel ids resolve with its letter)."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "figure-group-single-panel",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This \"::: figure\" group holds a single panel; a plain captioned figure renders the same content without the group wrapper."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "footnote-labels-differ-only-in-whitespace",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Footnote definition [^${label}] normalizes to the same key as [^${twin}]; the first definition wins. Normalized key: ${key}."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "footnotes-placement-in-container",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This \"::: footnotes\" marker is inside a container, where it does not place: it renders as a plain typed div and the endnotes section goes where it would without the marker. Move the marker to document level, or delete it to accept the default position."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "frontmatter-shaped-thematic-break",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "frontmatter whose first line is blank or that holds no key line",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "gfm-delimiter-row",
+      "status": "obsolete",
+      "replaced_by": "deprecated-separator-row",
+      "why": "not found in the engine",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "github-alert-marker",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This github alert marker stays literal in a Carve quote; use an admonition fence."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "glob-shaped-strong",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This strong span looks like a file glob; escape the asterisk if you meant a glob."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "heading-closing-hashes",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["The closing \"${run}\" run is heading text in Carve, not a closing marker. Delete it."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "heading-level-skip",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This heading skips from level ${previous} to ${level}; use the next heading level for a continuous outline."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "heading-marker-mixed",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a document with `=` headings and `#` headings, once",
+      "clauses": ["C2-B-155"]
+    },
+    {
+      "id": "heading-trailing-attribute",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Trailing \"${block}\" on a heading is literal text in Carve, not an attribute block. Move it to a \"${block}\" line directly above the heading."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "html-comment-renders-as-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This HTML comment renders as visible text. Use %% for one line or %%% for a comment block."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "include-unresolved",
+      "severity": "warning",
+      "channel": "render-loss",
+      "reports": "an include directive that was not expanded (C2-H-133)",
+      "clauses": ["C2-H-133"]
+    },
+    {
+      "id": "indented-code-block",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["Four-space indentation does not make a code block in Carve; this renders as a paragraph. Use a ``` fence."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "link-gap-before-destination",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["The gap after this link label keeps the link as text; write ]( with no space."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "list-item-block-overindented",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This block opener is past the list item's canonical content column ${contentColumn}; it now parses structurally and the formatter will canonicalize it. Dedent it to column ${contentColumn} for an explicit structural spelling, or escape the opener to preserve the literal meaning used by older readers."
+      ],
+      "message_notes": [
+        "With an attributed item the message starts \"This line uses the attributed item's former full-prefix column.\""
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "list-item-body-below-content-column",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a block of an item that is indented past the marker and short of the content column",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "list-item-body-detached",
+      "status": "obsolete",
+      "replaced_by": "list-item-body-below-content-column",
+      "why": "a line past the marker column stays in the item",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "list-marker-below-content-column",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This list marker starts at column ${column}, below the content column ${contentColumn} of the list item above, ${reading}. Indent it to column ${contentColumn} to nest it under the item, or start it at column ${baseColumn} to put it at the item's own level."
+      ],
+      "message_notes": [
+        "`${reading}` is \"so it is a sibling item, not a nested one\" or \"so it starts a separate list instead of nesting\"."
+      ],
+      "message_state": "new_text_owed",
+      "change": "new message: the marker joins the deeper list (C2-B-055)",
+      "clauses": ["C2-B-055"]
+    },
+    {
+      "id": "list-marker-without-blank-line",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This list marker is part of the preceding paragraph; add a blank line before the list."],
+      "message_state": "new_text_owed",
+      "change": "also a list marker directly after term or description text (C2-B-022), with a second message",
+      "clauses": ["C2-B-022"]
+    },
+    {
+      "id": "markdown-definition-paragraph",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This markdown definition remains paragraph text; use a :: term line before the definition."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "markdown-italic-underline",
+      "status": "obsolete",
+      "replaced_by": "deprecated-bare-underline",
+      "why": "a bare underscore pair is text, not underline",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "markdown-strikethrough-double-tilde",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["Markdown `~~strikethrough~~` is not Carve — Carve strikethrough is a single `~`."],
+      "message_state": "new_text_owed",
+      "change": "new message text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "markdown-strong-double-star",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks."
+      ],
+      "message_state": "new_text_owed",
+      "change": "new message text",
+      "clauses": ["C2-I-049"]
+    },
+    {
+      "id": "non-descriptive-link-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["Use descriptive link text or a specific aria-label."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "ordered-list-kind-split",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a one-item letter list directly followed by a list of the other letter kind that continues it",
+      "clauses": ["C2-B-044"]
+    },
+    {
+      "id": "ordered-list-split-by-indent",
+      "status": "obsolete",
+      "replaced_by": "uneven-list-indent",
+      "why": "lists with markers at different columns are one list (C2-B-054)",
+      "clauses": ["C2-B-054"]
+    },
+    {
+      "id": "ordered-marker-right-aligned",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "an ordered marker left of its list that ends at the column where the list's markers end",
+      "clauses": ["C2-B-030"]
+    },
+    {
+      "id": "platform-issue-reference",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "enabled_by": "platforms",
+      "messages_0_1": [
+        "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\""
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "platform-mention-token",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "enabled_by": "platforms",
+      "messages_0_1": [
+        "${host} re-linkifies ${what} in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase"
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "profile-construct-degraded",
+      "severity": "warning",
+      "channel": "render-loss",
+      "reports": "a construct outside the active `profile` (C2-H-129)",
+      "clauses": ["C2-H-129"]
+    },
+    {
+      "id": "quote-fence-ends-the-quote-above",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "A \"::: >\" opener at the column of the quote above it ENDS that quote and opens a sibling one; the two render as adjacent blockquotes, not one nested in the other. Write \"> ::: >\" to nest it, or leave a blank line to make two quotes deliberate."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "raw-format-dropped",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "kept",
+      "reports": "raw content in a format the target does not write (C2-H-054)",
+      "clauses": ["C2-H-054", "C2-H-132"]
+    },
+    {
+      "id": "references-placement-in-container",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This \"::: references\" marker is inside a container and does not place the reference list. Move it to document level, or remove it if no placement is needed."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "refused-continuation-marker",
+      "status": "obsolete",
+      "replaced_by": "deprecated-continuation-marker",
+      "why": "there is no list continuation marker",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "region-marker-renders-as-text",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This line renders as text and is not a region marker for a Carve include. Use \"%% #region name\"."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "semantic-attribute-outside-span",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "\"${name}\" is a semantic span attribute (PART 9 §10) and only applies to an ordinary [content]{attrs} span; on ${type} it stays a raw attribute and renders as ${name}=\"${value}\"."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "semantic-attribute-value-ignored",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Value on the semantic attribute \"${name}\" is discarded: it selects the <${name}> element and reaches no output. Only abbr, dfn and time carry a value (as title or datetime)."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "setext-heading-underline",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Carve has no underline heading: this run is not a heading underline. Write the heading with a leading \"#\" instead."
+      ],
+      "message_state": "new_text_owed",
+      "change": "new message: a hyphen run under text is text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "sigil-after-letter",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a mention or tag shape directly after a letter or number outside ASCII",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "structure-unspellable",
+      "severity": "warning",
+      "channel": "render-loss",
+      "reports": "a node or wrapper the writer could not write (C2-W-011)",
+      "clauses": ["C2-W-011", "C2-W-057", "C2-W-104", "C2-W-112"]
+    },
+    {
+      "id": "table-column-arity",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "${key} supplies ${count} column entries for a ${widest}-column table; the unset tail is valid but may be accidental."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-column-overlap",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Column ${n} supplies the same alignment axis both in the table and in a table attribute; the in-table marker wins."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-marker-run-padding",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "\"${spelling}\" writes a cell's attribute block before its alignment marker, which Carve no longer reads as one. The block is part of the cell's marker run and the run ends at a space, so with the \"${marker}\" glued to it there is no run: the braces are content and the cell is neither attributed nor aligned. Write \"${marker}${block} \" to align it, or \"${block} ${marker}\" to keep the \"${marker}\" as content deliberately."
+      ],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-row-attribute-as-cell",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a row whose last cell holds only an attribute block",
+      "change": "the half about a row without a closing pipe is void",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-row-cell-count",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This table row has ${cells} cells; the header has ${width}. Add or remove a cell to match the table."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-row-without-closing-pipe",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "void",
+      "replaced_by": "table-shaped-paragraph",
+      "reports": "a row with no closing pipe",
+      "change": "void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it",
+      "clauses": ["C2-B-168"]
+    },
+    {
+      "id": "table-separator-near-miss",
+      "status": "obsolete",
+      "replaced_by": "deprecated-separator-row",
+      "why": "every separator row is a row of cells",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "table-shaped-paragraph",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This table-shaped line lacks a closing pipe and renders as paragraph text; close the table row."],
+      "message_state": "as_0_1",
+      "change": "stays: a line that starts with a pipe and does not end with one is text (C2-B-168)",
+      "clauses": ["C2-B-168"]
+    },
+    {
+      "id": "table-span-marker-blocked",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "The \"${marker}\" span marker cannot extend a cell. ${reason} It renders as a cell of its own; escape it as \"\\${marker}\" to keep the character as text, or remove it."
+      ],
+      "message_state": "as_0_1",
+      "change": "also a row span stopped at the head boundary (C2-B-174)",
+      "clauses": ["C2-B-174"]
+    },
+    {
+      "id": "table-width-total",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["The specified table column widths total more than 100%."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "thematic-break-spelling",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This thematic break is written \"${raw}\"; the canonical spelling is \"***\"."],
+      "message_state": "as_0_1",
+      "change": "new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2",
+      "clauses": ["C2-B-160"]
+    },
+    {
+      "id": "tight-list-item-with-blank-line",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "off",
+      "reports": "a tight list in which an item holds a blank line and a paragraph",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "unattached-block-attribute",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "This block attribute is the whole body of a ${construct}, so nothing is emitted for it and the attribute is discarded. Do not delete the line - the marker needs content, so a bare marker degrades to text. Write the empty-body sentinel `{empty}` if the body is meant to be empty, or give the body content.",
+        "This block attribute reaches no block - the document or the container holding it ends first - so nothing is emitted for it. Move it above the block it describes, or delete it."
+      ],
+      "message_state": "as_0_1",
+      "change": "also an attribute line separated from its block by a blank line, which is text",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "unattached-caption",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a caption line that is not directly below one of the six caption targets, a caption after a blank line among them",
+      "change": "the target list has six kinds, the figure group included",
+      "clauses": ["C2-B-149"]
+    },
+    {
+      "id": "unattached-inline-attribute",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "an attribute block in a paragraph that is glued to no host",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "unclosed-braced-comment",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141, C2-I-027)",
+      "clauses": ["C2-B-141", "C2-I-027"]
+    },
+    {
+      "id": "unclosed-code-fence",
+      "severity": "error",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": [
+        "The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop."
+      ],
+      "message_notes": [
+        "`${ending}` is \"it runs to the end of the document\", \"a continuation marker on line ${line} ends it\" or \"it ends at the end of its container on line ${line}\"."
+      ],
+      "message_state": "as_0_1",
+      "channel_reports": "a code fence that runs to the end of its container (C2-B-111)",
+      "change": "severity error; the block ends with its container (C2-B-111)",
+      "clauses": ["C2-B-111"]
+    },
+    {
+      "id": "unclosed-comment-fence",
+      "severity": "error",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": [
+        "The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop."
+      ],
+      "message_state": "as_0_1",
+      "channel_reports": "a comment block that runs to the end of its container (C2-B-111)",
+      "change": "severity error; the block ends with its container (C2-B-111)",
+      "clauses": ["C2-B-111"]
+    },
+    {
+      "id": "unclosed-container-fence",
+      "severity": "error",
+      "channel": "parse",
+      "status": "kept",
+      "messages_0_1": [
+        "This ${width}-colon ${kind} has no closer; it runs to the end of the document. Add a bare fence of ${width} colons to close it.",
+        "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."
+      ],
+      "message_state": "as_0_1",
+      "channel_reports": "a div that runs to the end of its container (C2-B-111, C2-B-125)",
+      "change": "severity error; the block ends with its container (C2-B-111)",
+      "clauses": ["C2-B-111", "C2-B-125", "C2-B-132"]
+    },
+    {
+      "id": "unclosed-frontmatter",
+      "severity": "error",
+      "channel": "parse",
+      "status": "new",
+      "reports": "frontmatter with no closer",
+      "channel_reports": "frontmatter with no closer (C2-B-163)",
+      "change": "unchanged (C2-B-163)",
+      "clauses": ["C2-B-163"]
+    },
+    {
+      "id": "unclosed-inline-emphasis",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This strong (or: emphasis) opener is unclosed in its paragraph; add a closer."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "uneven-list-indent",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "reports": "a marker left of every open list that continues the list above it (C2-B-054)",
+      "clauses": ["C2-B-054"]
+    },
+    {
+      "id": "unresolved-footnote",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["Footnote reference [^${id}] has no matching definition; it renders as literal text."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "unresolved-reference-link",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": [
+        "Reference link ${rawRef} matches no link definition or heading; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.",
+        "Reference link ${rawRef} has no matching link definition or heading; it renders as literal text.",
+        "Reference image ${rawRef} matches no link definition; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.",
+        "Reference image ${rawRef} has no matching link definition; it renders as literal text."
+      ],
+      "message_state": "as_0_1",
+      "change": "the full form and a wrapped label now reach the heading lookup (C2-I-080, C2-I-081)",
+      "clauses": ["C2-I-080", "C2-I-081"]
+    },
+    {
+      "id": "unused-footnote-definition",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["Footnote definition [^${label}] is never referenced, so it is omitted from the rendered document."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "unused-link-reference-definition",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages_0_1": ["This link reference definition is unused."],
+      "message_state": "as_0_1",
+      "clauses": ["C2-W-106"]
+    }
+  ]
+}

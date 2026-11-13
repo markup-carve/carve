@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 div names and sigils",
+  "description": "What the word or the sigil after a colon run makes of the div. `names` is sorted by name, `sigils` by the code point of the sigil.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "names", "other_name", "sigils"],
+  "properties": {
+    "$schema": { "const": "schemas/div-names.schema.json" },
+    "names": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "clauses"],
+        "properties": {
+          "name": { "type": "string", "description": "The name as written. Names are compared as written." },
+          "kind": { "enum": ["admonition", "figure_group", "directive", "list_table"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "other_name": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "class", "comparison", "clauses"],
+      "properties": {
+        "kind": { "const": "plain_div" },
+        "class": { "const": "name" },
+        "comparison": { "const": "as_written" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "Every name not listed: a plain div with the name as its first class."
+    },
+    "sigils": {
+      "type": "array",
+      "description": "The name of each row is a row of containers.json.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sigil", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "sigil": { "type": "string", "description": "The character after the colon run and one space." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "class": { "type": "string", "description": "The class the opener adds, last in the class list." }
+        }
+      }
+    }
+  }
+}

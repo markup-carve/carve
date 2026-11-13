@@ -1,0 +1,52 @@
+{
+  "$schema": "schemas/table-marks.schema.json",
+  "cell_split": {
+    "separator": "|",
+    "not_a_separator": ["escaped_pipe", "pipe_between_backtick_run_and_matching_run_on_same_line"],
+    "before": "reading_cell_content",
+    "clauses": ["C2-B-134", "C2-B-169"]
+  },
+  "cell_prefix": {
+    "sequence": [
+      { "part": "optional", "mark": "|=" },
+      { "part": "optional", "ref": "brace_block" },
+      { "part": "space", "min": 1, "max": 1 }
+    ],
+    "clauses": ["C2-B-171"]
+  },
+  "header_cell_mark": { "mark": "|=", "head": "leading_rows_of_only_header_cells", "clauses": ["C2-B-171", "C2-B-178"] },
+  "span_marks": [
+    { "mark": "<", "joins": "cell_to_left", "failed": "empty_cell", "clauses": ["C2-B-172", "C2-B-173", "C2-B-183"] },
+    {
+      "mark": "^",
+      "joins": "cell_above",
+      "failed": "empty_cell",
+      "blocked_by": ["head_boundary"],
+      "clauses": ["C2-B-172", "C2-B-173", "C2-B-174", "C2-B-183"]
+    }
+  ],
+  "alignment_marks": [
+    { "mark": "<", "clauses": ["C2-B-182"] },
+    { "mark": ">", "clauses": ["C2-B-182"] },
+    { "mark": "~", "clauses": ["C2-B-182"] }
+  ],
+  "attributes": [
+    { "name": "aligns", "clauses": ["C2-B-187"] },
+    { "name": "footer-rows", "clauses": ["C2-B-187"] },
+    { "name": "header-cols", "clauses": ["C2-B-187"] },
+    {
+      "name": "header-rows",
+      "applies_to": ["delimited_table", "list_table"],
+      "no_effect_on": ["pipe_table"],
+      "report": "deprecated-table-attribute",
+      "clauses": ["C2-B-179", "C2-B-186"]
+    },
+    {
+      "name": "table",
+      "applies_to": ["csv_fence", "tsv_fence"],
+      "report": "delimited-table-malformed",
+      "clauses": ["C2-B-180", "C2-B-181"]
+    },
+    { "name": "widths", "clauses": ["C2-B-187"] }
+  ]
+}

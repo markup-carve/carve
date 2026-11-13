@@ -1,0 +1,39 @@
+{
+  "$schema": "schemas/close-facts.schema.json",
+  "facts": [
+    {
+      "name": "block_image",
+      "set_when_closes": "paragraph",
+      "condition": "paragraph_is_one_block_image_line",
+      "shape": "block_image",
+      "clauses": ["C2-B-157", "C2-B-191", "C2-B-197"]
+    },
+    {
+      "name": "caption_attachment",
+      "set_when_closes": "caption",
+      "condition": "caption_directly_below_target",
+      "targets": ["code_block", "figure_group", "image", "math_block", "quote", "table"],
+      "clauses": ["C2-B-146", "C2-B-147", "C2-B-191"]
+    },
+    {
+      "name": "list_tightness",
+      "set_when_closes": "list",
+      "condition": "blank_line_between_two_items",
+      "values": ["loose", "tight"],
+      "clauses": ["C2-B-062", "C2-B-065", "C2-B-191", "C2-A-059"]
+    },
+    {
+      "name": "math_block",
+      "set_when_closes": "paragraph",
+      "condition": "paragraph_is_one_display_math_line",
+      "shape": "display_math",
+      "clauses": ["C2-B-158", "C2-B-191", "C2-B-198"]
+    },
+    {
+      "name": "table_footer_rows",
+      "set_when_closes": "table",
+      "condition": "footer_rows_attribute",
+      "clauses": ["C2-B-187", "C2-B-191"]
+    }
+  ]
+}

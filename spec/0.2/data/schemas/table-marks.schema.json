@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 table marks",
+  "description": "The marks of a pipe table: how a row splits into cells, the cell prefix, the span marks, the alignment marks and the whole-table attributes. The direction of each alignment mark is not in this file because the block chapter does not state it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "cell_split", "cell_prefix", "header_cell_mark", "span_marks", "alignment_marks", "attributes"],
+  "properties": {
+    "$schema": { "const": "schemas/table-marks.schema.json" },
+    "cell_split": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["separator", "not_a_separator", "before", "clauses"],
+      "properties": {
+        "separator": { "const": "|" },
+        "not_a_separator": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "Pipes that do not split."
+        },
+        "before": { "const": "reading_cell_content" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "cell_prefix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "clauses"],
+      "properties": {
+        "sequence": { "type": "array", "items": { "type": "object" }, "description": "The parts of the prefix in order." },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "header_cell_mark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mark", "head", "clauses"],
+      "properties": {
+        "mark": { "const": "|=" },
+        "head": { "type": "string", "description": "Which rows form the head." },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "span_marks": {
+      "type": "array",
+      "description": "A cell that holds only the mark joins another cell. Spans resolve backward only. Sorted by the code point of the mark.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "joins", "failed", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "joins": { "enum": ["cell_to_left", "cell_above"] },
+          "failed": { "enum": ["empty_cell"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "blocked_by": { "type": "array", "items": { "enum": ["head_boundary"] }, "uniqueItems": true }
+        }
+      }
+    },
+    "alignment_marks": {
+      "type": "array",
+      "description": "The marks that come first in the brace block of a cell prefix.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "alignment": { "enum": ["left", "right", "center"] }
+        }
+      }
+    },
+    "attributes": {
+      "type": "array",
+      "description": "Sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": { "type": "string", "description": "The key on the attribute line of the table." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "applies_to": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "no_effect_on": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "report": { "type": "string", "description": "The code that reports misuse. An id of lint-rules.json." }
+        }
+      }
+    }
+  }
+}

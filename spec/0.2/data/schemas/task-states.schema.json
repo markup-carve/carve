@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 task states",
+  "description": "The task box and its nine characters. `states` is sorted by the code point of `char`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "box", "states"],
+  "properties": {
+    "$schema": { "const": "schemas/task-states.schema.json" },
+    "box": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["opener", "closer", "after", "followed_by", "clauses"],
+      "properties": {
+        "opener": { "const": "[" },
+        "closer": { "const": "]" },
+        "after": {
+          "enum": ["bullet_marker_space"],
+          "description": "The box stands directly after the one space of a bullet marker. An ordered marker and a description mark take no box."
+        },
+        "followed_by": {
+          "type": "array",
+          "description": "What must stand behind the closing bracket, in the part notation of line-shapes.json.",
+          "items": { "type": "object" }
+        },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "states": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["char", "mark", "status", "state_attribute", "checked", "clauses"],
+        "properties": {
+          "char": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1,
+            "description": "The character between the brackets, as written."
+          },
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1, "description": "The value of `task.mark` in the tree." },
+          "status": {
+            "enum": ["todo", "done", "canceled", "in-progress", "blocked", "partial", "other"],
+            "description": "The value of `task.status` in the tree."
+          },
+          "state_attribute": {
+            "type": ["string", "null"],
+            "description": "The value of `data-task-state` on the item in HTML. `null`: the attribute is not written."
+          },
+          "checked": { "type": "boolean", "description": "True when the checkbox carries `checked`." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      },
+      "minItems": 9,
+      "maxItems": 9
+    }
+  }
+}

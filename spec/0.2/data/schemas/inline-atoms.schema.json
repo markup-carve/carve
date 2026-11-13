@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 inline atoms",
+  "description": "The forms whose characters are taken as one token (C2-I-005). The scan tries them before brackets and delimiters; nothing opens, closes or is matched inside one, and of two atoms the one that starts first wins. Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "atoms"],
+  "properties": {
+    "$schema": { "const": "schemas/inline-atoms.schema.json" },
+    "atoms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "opener": { "type": "string", "description": "The characters that start the atom." },
+          "opener_run": { "type": "string", "description": "The character whose run starts the atom; the opener is the whole run." },
+          "opener_min": { "type": "integer", "minimum": 0, "description": "The lowest length of the opener run." },
+          "closer": {
+            "type": "string",
+            "description": "The characters that end the atom, or `line_end`, or `run_of_opener_length` for a run of the opener character of exactly the opener length."
+          },
+          "prefix": { "type": "string", "description": "Characters glued before the opener of the base atom." },
+          "base": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "suffix_opener": { "type": "string", "description": "Characters glued behind the closed base atom that start the marker." },
+          "suffix_closer": { "type": "string", "description": "The character that ends the marker." },
+          "suffix_name": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "rest": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "chars": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+              "joiner": {
+                "type": "string",
+                "description": "A character that may stand between two runs of `chars`, one at a time."
+              },
+              "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+              "not_last": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "not_first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "excluded": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." }
+            },
+            "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+          },
+          "requires": { "enum": ["closed_plain_code_span"], "description": "A fact that must hold for the atom to form." },
+          "followed_by": {
+            "enum": ["ascii_punctuation", "space", "line_end_or_content_end", "any_other_character"],
+            "description": "What stands behind a backslash."
+          },
+          "result": {
+            "enum": ["literal_character", "no_break_space", "hard_break", "literal_backslash", "en_dash"],
+            "description": "What a one-token atom becomes."
+          },
+          "at": {
+            "type": "array",
+            "items": { "enum": ["line_start", "after_whitespace", "glued_to_closing_bracket_of_pair"] },
+            "uniqueItems": true,
+            "description": "Where the opener must stand. One of the entries is enough."
+          },
+          "content": {
+            "enum": ["verbatim", "literal", "hidden", "id", "url_or_email", "destination_and_title"],
+            "description": "How the characters between opener and closer are taken."
+          },
+          "content_min": { "type": "integer", "minimum": 0, "description": "The lowest count of content characters." },
+          "content_shape": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "rest": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "chars": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+              "joiner": {
+                "type": "string",
+                "description": "A character that may stand between two runs of `chars`, one at a time."
+              },
+              "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+              "not_last": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "not_first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "excluded": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." }
+            },
+            "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+          },
+          "reads_escapes": { "type": "boolean", "description": "False when a backslash inside the atom is content (C2-I-013)." },
+          "crosses_lines": { "type": "boolean", "description": "True when the atom may hold a line break." },
+          "nests": { "type": "boolean", "description": "False when an opener inside the atom is content." },
+          "trim": { "enum": ["one_space_each_end_when_both"], "description": "What is removed from the content." },
+          "unclosed": {
+            "enum": ["text", "runs_to_content_end", "next_brace_rule"],
+            "description": "What happens without a closer. `text`: the opener is literal text. `runs_to_content_end`: the atom never fails. `next_brace_rule`: the brace is read by the next entry of inline-braces.json."
+          },
+          "host": {
+            "type": "boolean",
+            "description": "True when an attribute block glued to the end of the form attaches to it (C2-I-036, C2-I-037)."
+          },
+          "transparent_to_neighbors": {
+            "type": "boolean",
+            "description": "True when the characters on its two sides are tested as if they were glued (C2-I-026)."
+          },
+          "not_in": {
+            "type": "array",
+            "items": { "enum": ["opaque_body", "line_block"] },
+            "uniqueItems": true,
+            "description": "Bodies in which the opener is content or text."
+          },
+          "ends_at": {
+            "type": "array",
+            "items": { "enum": ["line_end", "cell_end"] },
+            "uniqueItems": true,
+            "description": "Where the atom ends, whichever comes first."
+          },
+          "file": { "type": "string", "description": "The data file of this directory that defines the shape." }
+        }
+      }
+    }
+  }
+}

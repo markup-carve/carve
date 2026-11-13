@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 ordered list styles",
+  "description": "The kind of an ordered list: its numbering style, which the first marker alone fixes, and its delimiter. `styles` is sorted by name, `delimiters` by the code point of `char`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "styles", "delimiters", "start"],
+  "properties": {
+    "$schema": { "const": "schemas/ordered-styles.schema.json" },
+    "styles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "style", "first_marker", "html_type", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "style": { "enum": ["1", "a", "A", "i", "I"], "description": "The value of `marker.style` in the tree." },
+          "first_marker": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-z_]+$" },
+            "uniqueItems": true,
+            "description": "The first markers that give the style. The cited clauses define each."
+          },
+          "html_type": {
+            "enum": [null, "a", "A", "i", "I"],
+            "description": "The `type` attribute of the list in HTML. `null`: none is written."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "sibling": {
+            "enum": ["every_single_letter", "single_roman_letter"],
+            "description": "Which later one-letter marker is a sibling in a list of the style."
+          }
+        }
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "delimiters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "char", "data_delim", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "char": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "data_delim": {
+            "type": ["string", "null"],
+            "description": "The value of `data-delim` in HTML. `null`: the attribute is not written."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "start": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "attribute", "omitted_when", "nested_list", "clauses"],
+      "properties": {
+        "from": { "const": "value_of_first_marker" },
+        "attribute": {
+          "type": "string",
+          "description": "The key on the attribute line of the list that sets the number of the first item."
+        },
+        "omitted_when": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The start value that is not recorded in the tree and not written in HTML."
+        },
+        "nested_list": { "const": "any_number" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    }
+  }
+}
