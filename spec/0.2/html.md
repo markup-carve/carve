@@ -314,7 +314,7 @@ Example 8 (unverified)
 
 **C2-H-039** A term holds inline content and never a `<p>`.
 
-**C2-H-040** A description with one block writes a paragraph bare. A description with several blocks gives every paragraph `<p>`, the first one included (C2-B-073). The rule reads the blocks of the description. A description list has no `spacing` field.
+**C2-H-040** A description with one block writes a paragraph bare. A description with several blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the blocks of the description. A description list has no `spacing` field.
 
 Example 9 (generated)
 
@@ -607,7 +607,7 @@ b {% mid %} c
 
 :::
 
-**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section and the options in the order of the node, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
+**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section and the options in the order of C2-W-058, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
 
 ## Inline elements
 
@@ -636,7 +636,7 @@ b {% mid %} c
 
 **C2-H-076** The names `samp`, `var`, `cite` and `dfn` are not core. Without their extension, `[x]{samp}` is a span with the attribute `samp=""`. An inline extension with no renderer is `<span class="ext-NAME">` around its content. The core never turns an extension name into an element name. In 0.2.0 an extension gives core nodes and `inline_extension` nodes. `block_extension` is not part of 0.2.0. An unknown optional extension renders through its fallback and is reported with the code `extension-fallback-rendered`.
 
-**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
+**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198) and is the mark `mathBlock` (C2-A-184), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
 
 **C2-H-078** A smart-punctuation node is written as its glyph. With `smartTypography` off it is written as its `source` (C2-A-098).
 
@@ -657,9 +657,11 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 :::
 
+**C2-H-142** Three shapes reach the renderer only in a supplied tree (C2-A-175). `small_caps` is `<span class="smallcaps">` around its content. `ruby` is `<ruby>` that holds, for each pair, the base, then `<rp>(</rp>`, `<rt>` around the annotation and `<rp>)</rp>`. A `section` node is `<section>` around its blocks, indented like every container.
+
 ## Links, images and references
 
-**C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written.
+**C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written. The destination of an email autolink is `mailto:` followed by the address, and its content is the address.
 
 **C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has one. `alt` is always written, also when it is empty.
 
@@ -982,7 +984,7 @@ in
 
 ## The option list
 
-**C2-H-137** These are the 19 options, and there are no others. A host may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+**C2-H-137** These are the 19 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
 
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
@@ -1050,7 +1052,7 @@ One point is open.
 | Tables | 7 | 1 | 1 | 0 |
 | Captions and figures | 8 | 0 | 2 | 0 |
 | Comments, frontmatter and definitions | 4 | 0 | 1 | 0 |
-| Inline elements | 7 | 0 | 1 | 0 |
+| Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 1 | 0 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
@@ -1059,6 +1061,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **141** | **7** | **17** | **6** |
+| **Total** | **142** | **7** | **17** | **6** |
 
-The document has 141 clauses, 7 of them marked with the word "Exception", and 23 examples, 17 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 142 clauses, 7 of them marked with the word "Exception", and 23 examples, 17 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
