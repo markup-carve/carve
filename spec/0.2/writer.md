@@ -49,7 +49,7 @@ Conventions:
 
 **C2-W-112** Two code spans with nothing between them have no spelling: written together, the two runs read as one span. A parse never gives that pair. For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first.
 
-**C2-W-115** A math block is written as its display math span alone on its line, with an attached attribute block glued to the span (C2-B-198). The mark `mathBlock` is a fact of the tree (C2-A-184), and the written line gives it back when it is parsed.
+**C2-W-115** A math block is written as its display math span alone on its line, with an attached attribute block glued to the span (C2-B-198). The mark `blockMath` is a fact of the tree (C2-A-184), and the written line gives it back when it is parsed.
 
 ## Layout
 
