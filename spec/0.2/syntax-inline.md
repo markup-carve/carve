@@ -1244,7 +1244,7 @@ Example 66 (generated)
 
 **Exception C2-I-083** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
 
-**C2-I-084** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id.
+**C2-I-084** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id. A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
 
 **C2-I-085** An unresolved reference is still a reference node. It renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
 
