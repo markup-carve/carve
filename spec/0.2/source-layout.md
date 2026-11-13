@@ -152,7 +152,7 @@ These facts are ported from the draft. Columns in them are the zero-based column
 
 A writer that starts from a tree with no sidecar, or with a sidecar that lacks a fact, writes the canonical form of each spelling.
 
-**C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot. The first item carries a number only when `marker.start` is present, that is when the list does not start at 1; every later item is a bare dot.
+**C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot on every item, the first included. A list that does not start at 1 carries its start value in a `start` attribute on the attribute line above it (C2-B-045): a number on the first marker would be read back as the numbered form.
 
 **C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036).
 

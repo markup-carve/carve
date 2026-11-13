@@ -113,7 +113,7 @@ Conventions:
 
 **C2-W-043** An ordered list keeps its style, its delimiter and its start value.
 
-**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written with the bare dot under a `start` attribute (C2-B-045). A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
+**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written under a `start` attribute, with the bare dot when its delimiter is the period and with `1)` and the digits after it when its delimiter is `)`. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
 
@@ -179,7 +179,7 @@ Conventions:
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
-**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022) when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040).
+**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022) when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040). A key that starts with a caret or an at-sign is written with one space before it inside the brackets, since a label whose first character is one of them is no reference label (C2-I-078) and the space folds away (C2-I-079).
 
 **C2-W-076** An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).
 
@@ -193,7 +193,7 @@ Conventions:
 
 **Exception C2-W-080** Inside a line block, and inside a hard-break block written with its opener, a hard break is written as the bare line ending where reading that line ending gives the same tree.
 
-**C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break and `hardbreaks` is the last of its classes, and the class form otherwise (C2-L-034). The opener adds the class last (C2-A-068), so the opener form on any other div would change the tree.
+**C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break and `hardbreaks` is the last of its classes, and the class form otherwise (C2-L-034). The opener adds the class last (C2-A-068), so the opener form on any other div would change the tree. Where the opener is written, the class `hardbreaks` is not written on the attribute line: the opener stands for it.
 
 **C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A quote with no children is written as one line that holds only `>`, or as a quote fence with no body where the sidecar records that form. A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
 

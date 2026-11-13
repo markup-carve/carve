@@ -719,7 +719,7 @@ Example 29 (generated)
 
 **C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
 
-**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item (carried over from 0.1).
+**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. (carried over from 0.1)
 
 Example 30 (generated)
 
