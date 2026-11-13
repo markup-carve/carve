@@ -336,7 +336,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-081), so no definition is moved out of a container and no position rule covers that case.
 
-**C2-A-077** A `link_reference_definition` carries `key`, which is the folded label (C2-A-104), `namespace: "link"`, `href`, which may be the empty string, and an optional `title`.
+**C2-A-077** A `link_reference_definition` carries `key`, which is the folded label (C2-A-104), `namespace: "link"`, `href` and an optional `title`. A parsed tree never holds one with an empty `href`, because a label and a colon with no destination is text (C2-B-083). A tree that was not parsed from source may hold one; it is unspellable, and a Carve writer reports it.
 
 **C2-A-078** A `footnote` carries `key`, `namespace: "footnote"` and block `children`.
 
@@ -457,7 +457,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
 
-**C2-A-110** A trailing attribute block on a reference is ordinary `attrs`, resolved or not.
+**C2-A-110** A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (the classes of the definition first, then the reference's; the id and the keys of the reference win) is a resolution result: it is not written into `attrs` and takes no part in equality.
 
 ```json
 {
@@ -507,7 +507,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-127** An unknown optional extension renders through its fallback and is reported as a loss. An unknown required extension is refused.
 
-**C2-A-128** Reading a tree never runs anything in `payload`, `props` or `data`. A host enables active content only through a separate capability outside this contract.
+**C2-A-128** Reading a tree never runs anything in `payload`, `props` or `data`. An application enables active content only through a separate capability outside this contract.
 
 ```json
 {
@@ -683,7 +683,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An include directive (C2-B-156) is a block node of type `include`. It carries `path`, the path as written without its quotes; an optional `section`; and an optional `options` list of pairs, each a list of two strings, the option name and its value, in the order the writer writes them. It has no `children` and no `value`. Expanding it is the host's job, and what an unexpanded one renders is the HTML document's.
+**C2-A-181** An include directive (C2-B-156) is a block node of type `include`. It carries `path`, the path as written without its quotes; an optional `section`; and an optional `options` list of pairs, each a list of two strings, the option name and its value. The pairs stand in the fixed list order of the include directive grammar of 0.1, not sorted by name and not in the written order (C2-W-058). It has no `children` and no `value`. Expanding it is the application's job, and what an unexpanded one renders is the HTML document's.
 
 **C2-A-182** An `include` node has a position like any other block: it spans the directive from its opening braces to its closing braces.
 
