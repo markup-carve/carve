@@ -42,7 +42,7 @@
             "items": {
               "enum": [
                 "line_not_owned",
-                "line_without_mark",
+                "line_without_mark", "blank_line_without_mark", "interrupter_without_mark",
                 "caption_line_without_mark",
                 "list_marker_without_mark_inside_item",
                 "sibling_marker",
