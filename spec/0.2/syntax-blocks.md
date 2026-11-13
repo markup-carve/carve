@@ -3977,9 +3977,9 @@ Example 179 (generated)
 
 **C2-B-158** A paragraph that closes as exactly one display math line (C2-B-198) is a math block, a fact set at close like the promotion of a block image.
 
-**C2-B-197** A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)` or `![alt][label]`, an optional attribute block glued to it, and trailing spaces.
+**C2-B-197** A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)` or `![alt][label]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces. An image whose form runs over a line ending is not such a line.
 
-**C2-B-198** A display math line is decided by its shape and not by inline parsing: the line consists of exactly one display math span, `$$` glued to a code span, an optional attribute block glued to it, and trailing spaces.
+**C2-B-198** A display math line is decided by its shape and not by inline parsing: the line consists of exactly one display math span, `$$` glued to a code span, optional attribute blocks glued to it, and trailing spaces. A span that closes on a later line is not such a line.
 
 A heading (C2-B-154) and a table row (C2-B-166) are one line each as well. The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
 

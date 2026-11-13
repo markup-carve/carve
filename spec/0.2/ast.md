@@ -533,7 +533,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
-**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image`, and the comments of comment-only lines below it (C2-B-137), and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph that holds nothing but one image always has it. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
+**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image`, and the comments of comment-only lines below it (C2-B-137), and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph has it exactly when it closed as one block image line (C2-B-197). A paragraph whose only image runs over two lines, as a wrapped reference label does, is an ordinary paragraph. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
 
 **C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
 
@@ -689,7 +689,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
 
-**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node, and the comments of comment-only lines below it (C2-B-137), and carries `blockMath: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
+**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node, and the comments of comment-only lines below it (C2-B-137), and carries `blockMath: true`. A parser sets the mark when the paragraph closes as one display math line (C2-B-158, C2-B-198); a paragraph whose only math span closes on a later line is an ordinary paragraph. Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 

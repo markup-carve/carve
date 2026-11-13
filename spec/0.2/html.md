@@ -126,7 +126,7 @@ roses
 
 **C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case.
 
-**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written as the bare `<img>` on its own line.
+**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line, or, where the image is an unresolved reference, what C2-H-085 writes for it.
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 

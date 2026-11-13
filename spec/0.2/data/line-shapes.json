@@ -21,7 +21,7 @@
       "role": "close_fact",
       "sequence": [
         { "part": "ref", "ref": "image_form" },
-        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
         { "part": "trailing_spaces" },
         { "part": "end" }
       ],
