@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x`, `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-159, C2-A-160). This is a gate on every pull request.
+**C2-W-002** For every document `x`, `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
@@ -27,15 +27,15 @@ Conventions:
 
 **C2-W-007** The writer does not replace one construct by another that renders alike. It does not drop content, move content or re-wrap prose: a soft break stays where the tree has it.
 
-**C2-W-008** A backslash escape is not a node (C2-A-039), so an escape that the writer adds or removes never changes the tree.
+**C2-W-008** A backslash escape is not a node (C2-A-041), so an escape that the writer adds or removes never changes the tree.
 
-**C2-W-009** The writer keeps what the tree holds (C2-A-163), takes from the sidecar the author's form where 0.2 has two equal forms (C2-W-083), and writes the one canonical form everywhere else.
+**C2-W-009** The writer keeps what the tree holds (C2-A-166), takes from the sidecar the author's form where 0.2 has two equal forms (C2-W-083), and writes the one canonical form everywhere else.
 
 **C2-W-010** This document defines the output. How a writer finds it, by trial and reparse or by an exact test, is its own choice and has no effect on the bytes.
 
 ## What the writer cannot spell
 
-**C2-W-011** A tree can hold a shape that no Carve source gives (C2-A-172). The writer writes what the table of C2-A-172 names and reports each dropped node or field in the diagnostics record (C2-W-103), with the code `structure-unspellable` for a node or a wrapper and `field-unspellable` for a field, which the entry names.
+**C2-W-011** A tree can hold a shape that no Carve source gives (C2-A-175). The writer writes what the table of C2-A-175 names and reports each dropped node or field in the diagnostics record (C2-W-103), with the code `structure-unspellable` for a node or a wrapper and `field-unspellable` for a field, which the entry names.
 
 **C2-W-012** Where blocks are written into a slot that holds only inline content, such as a caption, a title, a cell or a term, the writer puts a separator between the content of two former blocks, so that no word and no delimiter run is joined across the boundary.
 
@@ -43,9 +43,11 @@ Conventions:
 
 **C2-W-014** The loss of such a bare wrapper is the only structural difference the gates forgive for a supplied tree. A wrapper that carries attributes, a label, a destination, a level or a kind is not bare.
 
-**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line. The promotion is a resolution result and not content (C2-A-135).
+**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line (C2-A-137). `blockImage` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
 
 **C2-W-016** A line after the first of a code span, a raw span, a literal-text span or a math span is a line of its leaf. Where that line would open a block (C2-B-013 to C2-B-018), no spelling keeps the value, and the writer refuses it with `field-unspellable`.
+
+**C2-W-112** Two code spans with nothing between them have no spelling: written together, the two runs read as one span. A parse never gives that pair. For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first.
 
 ## Layout
 
@@ -105,19 +107,19 @@ Conventions:
 
 **C2-W-043** An ordered list keeps its style, its delimiter and its start value.
 
-**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030).
+**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-033, C2-L-031).
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031).
 
-**C2-W-046** A task item is written with the character in `task.mark` (C2-A-058). The tree holds `x` for an authored `X`, so `[X]` comes back as `[x]`.
+**C2-W-046** A task item is written with the character in `task.mark` (C2-A-060). The tree holds `x` for an authored `X`, so `[X]` comes back as `[x]`.
 
 **C2-W-047** The attributes of a block are written as one brace block on one line directly above the block, with no blank line between. Glued blocks and consecutive attribute lines of the source are merged into it (C2-B-071). This is part of requirement W7.
 
-**C2-W-048** Inside a brace block the parts are written in the order id, classes, language, keys, classes and keys each in tree order, with one space between two parts and none inside the braces.
+**C2-W-048** Inside a brace block the parts are written in the order id, classes, language, keys, classes and keys each in tree order, with one space between two parts and none inside the braces. The language is written as `:tag` (C2-I-028, C2-A-037).
 
-**C2-W-049** A key whose value is the empty string is written as the bare key: `{kbd}`, not `{kbd=""}`.
+**C2-W-049** A key whose value is the empty string is written as the bare key: `{kbd}`, not `{kbd=""}`. A key that starts with `_` is written with an empty quoted value, `{_k=""}`, because a bare key does not start with `_` (C2-I-028).
 
-**C2-W-050** A value is written bare when the bare form reads back as the same value, and in double quotes otherwise. As in 0.1.
+**C2-W-050** A value is written unquoted when it has the shape of an unquoted value (C2-I-029), and in double quotes otherwise.
 
 **C2-W-051** The attributes of a list item and of a table cell are written glued to the marker (C2-B-079).
 
@@ -125,17 +127,17 @@ Conventions:
 
 **C2-W-053** A caption is written directly below its block, with no blank line (C2-B-101), as `^`, one space and its content. This is part of requirement W7.
 
-**C2-W-054** A generated heading id is not written: a heading gets an attribute line with an id only when the id was authored (C2-H-023). How the writer tells the two apart in the tree is open (Open, point 15).
+**C2-W-054** The writer writes an id on a heading exactly when `attrs.id` holds one (C2-A-038). A generated id is in `generatedId` (C2-A-134) and is never written.
 
-**C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-074). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-078).
+**C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-076). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
 
 **C2-W-056** A link definition is written as `[label]:`, one space, the URL and, when there is one, one space and the title in double quotes. A definition with an empty URL is written as `[label]:`.
 
-**C2-W-057** A footnote definition with no blocks is written as `[^label]: {empty}`, and a description with no blocks as `: {empty}`. As in 0.1 (CARVE-P11-019, CARVE-P11-040); see Open, point 4.
+**C2-W-057** A footnote definition with no blocks is written as `[^label]: {empty}`, and a description with no blocks as `: {empty}`. As in 0.1 (CARVE-P11-019, CARVE-P11-040); see Open, point 1.
 
-**C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts, and its options in a fixed order (Open, point 5).
+**C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options in the order of the include directive grammar of 0.1 (CARVE-P6-001). The `options` list of the node is kept in that order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-072): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-096).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-096).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -165,7 +167,7 @@ Conventions:
 
 **C2-W-071** Underline, strike and highlight are written in their braced forms, `{_text_}`, `{~text~}` and `{=text=}`. They have no bare form in 0.2 (C2-I-041).
 
-**C2-W-072** A replacement is written as a deletion directly followed by an insertion: `{-old-}{+new+}`. There is no arrow form (C2-A-095).
+**C2-W-072** A replacement is written as a deletion directly followed by an insertion: `{-old-}{+new+}`. There is no arrow form (C2-A-097).
 
 **C2-W-073** A link title is written in double quotes. Single quotes and a `title` key in an attribute block are rewritten to that form.
 
@@ -177,13 +179,13 @@ Conventions:
 
 **C2-W-077** A code span is written with the shortest backtick run that does not occur in its content, and with one space of padding on each side when the content starts or ends with a backtick or with a space that C2-I-015 would remove.
 
-**C2-W-078** A smart-punctuation node is written as its `source` (C2-A-096).
+**C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
 
 **C2-W-079** A hard break is written as a backslash at the end of the line.
 
 **Exception C2-W-080** Inside a line block, and inside a hard-break block written with its opener, a hard break is written as the bare line ending where reading that line ending gives the same tree.
 
-**C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break, and the class form otherwise (C2-L-034).
+**C2-W-081** A div with the class `hardbreaks` is written in the form the sidecar records (C2-L-018) when the tree allows it. With no fact the opener is used when every line break in the div is a hard break and `hardbreaks` is the last of its classes, and the class form otherwise (C2-L-034). The opener adds the class last (C2-A-068), so the opener form on any other div would change the tree.
 
 **C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033).
 
@@ -195,13 +197,13 @@ Conventions:
 |---|---|---|---|
 | ordered numbering | `bare` | bare dot or written numbers, as recorded | bare dot (C2-L-030) |
 | quote form | `fenced` | `>` lines or quote fence | `>` lines |
-| hard-break block | `hardBreakOpener` | opener or class form | opener when every break is hard, else class form |
+| hard-break block | `hardBreakOpener` | opener or class form | opener when every break is hard and the class is last, else class form |
 | table form | `sourceFormat` | pipe or delimited | pipe; delimited when the table has no rows |
 | continuation rows | `continuationLines`, `wraps` | rows broken at the recorded places | one line per row |
 
 **C2-W-084** The writer also takes `rawRef` (C2-W-075).
 
-**C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the quote character of a title, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records (C2-L-043).
+**C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the quote character of a title, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records (C2-L-043). The other facts of the sidecar are for editors and other tools (C2-L-045).
 
 **C2-W-086** The tree wins: a fact that contradicts the tree is ignored (C2-L-006).
 
@@ -245,7 +247,7 @@ Conventions:
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-117).
 
-**C2-W-099** A paragraph line can no longer read as a thematic break through hyphens or underscores (C2-B-110). The one line that still needs care is `---` as line 1 of the document (Open, point 6).
+**C2-W-099** A text line that holds only hyphens or only underscores is written as it is and needs no escape: it is not a thematic break (C2-B-110). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-111). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
 
 Example 1 (generated)
 
@@ -402,9 +404,9 @@ Written:
 
 ## Diagnostics and lint
 
-**C2-W-103** A parse, a render, a write and a lint run report into one diagnostics record (C2-A-169). Every entry has a code, a severity, a position, a message and a channel.
+**C2-W-103** A parse, a render, a write and a lint run report into one diagnostics record (C2-A-172). Every entry has a code, a severity, a position, a message and a channel (C2-A-173). The position is a byte range in the source, a path into the tree, or both: a finding of the writer on a supplied tree has the path alone.
 
-**C2-W-104** The channel is parse, render loss or lint (C2-A-170). A code belongs to one channel. The writer's codes `structure-unspellable` and `field-unspellable` are in the render-loss channel.
+**C2-W-104** The channel is `parse`, `render-loss` or `lint`. A code belongs to one channel. The writer's codes `structure-unspellable` and `field-unspellable` are in the render-loss channel.
 
 **C2-W-105** The severity is one of `Hint`, `warning` and `error`, as in the 0.1 catalog.
 
@@ -422,97 +424,107 @@ Written:
 
 ### Rules kept from 0.1
 
-The ids are those of the 0.1 reference engine (`src/lint.ts`, `src/djot-migrate.ts`, `src/extension/accessibility.ts`). Severity, default state and message are those of 0.1 unless the last column says otherwise.
+The ids, the severities and the messages are copied from the 0.1 reference engine (`src/lint.ts`, `src/djot-migrate.ts`, `src/extension/accessibility.ts`). `${...}` stands for a value the engine fills in. The source sets a severity on four of these rules. "not set" means the finding carries none, and the 0.1 tools report it as a warning. Where a rule has several messages the note says which one is shown. A message that names a 0.1 form, such as a leading `#` or a bare delimiter, gets new text in 0.2 (Open, point 2).
+
+| Rule | Severity in the source | Message in the source | In 0.2 |
+|---|---|---|---|
+| `bare-html-tag` | not set | `This bare HTML tag is escaped as text; use a raw HTML block if markup is intended.` | unchanged |
+| `bidi-control-in-source` | not set | `Bidi override/isolate control U+${code} is preserved by canonical Carve but stripped from presentation output; remove it unless intentional.` | unchanged |
+| `block-marker-as-text` | not set | `This line begins like ${what} but parsed as plain text - the block did not open. Check this line's syntax and any unterminated fence above it.` | also a brace line that is not a valid one-line attribute line |
+| `block-opener-overindented` | not set | `This ${kind} is indented ${past} column(s) past the content column of ${owner}, and it still opens a ${kind}, measured from its own line. Remove the indentation to make the structure explicit, or escape the opener to keep the line as text.` | unchanged |
+| `blockquote-marker-without-space` | not set | `A blockquote marker must be either bare ">" or followed by a space. This line renders as literal text; write "> ${text}" to quote it.` | unchanged |
+| `braced-comment-in-a-template-source` | not set | `This braced comment is a template tag. Liquid, Nunjucks, or Twig source may have reached Carve as text; the tag is parsed as an invisible comment.` | unchanged |
+| `broken-crossref` | not set | `Cross-reference </#${target}> matches no id; ${caseOnlyPhrase}, and cross-references are case-sensitive, so it renders as the literal text "</#${target}>".` (first of several) | unchanged |
+| `broken-fragment-link` | not set | `Link to "${href}" matches no id; the id "${caseOnly}" differs only in case, and fragment links are case-sensitive, so the link goes nowhere.` (first of two) | unchanged |
+| `caption-looking-paragraph` | not set | `This caption-looking paragraph sits next to a table or image; use a ^ caption line.` | unchanged |
+| `carve-version-unsupported` | not set | `document declares Carve ${version}; this engine implements ${SPEC_VERSION}, so constructs added after that version will not render as intended` (first of two) | unchanged |
+| `colon-fence-length-mismatch` | not set | `Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it currently opens a ${outcome}.` | unchanged |
+| `comment-shaped-emphasis` | Hint | `This emphasis looks like a C comment; use Carve comment syntax if you meant a comment.` | unchanged |
+| `consumed-key-near-miss` | not set | `"${word}" is not a consumed key here; did you mean {${key}}?` | `loose` leaves the list of consumed keys |
+| `definition-term-block-folded` | not set | `This block opener is indented under a definition term, which has no content column, so it folds into the term as text. Dedent it to the container's content column to open the block, or put it in the term's ": " description.` | a block opener under a term is term text (C2-B-057) |
+| `delimited-table-malformed` | not set | `This marked CSV/TSV fence has malformed quoting, so it remains a code block.` | severity error; new message: the block stays a table (C2-B-129) |
+| `delimited-table-wide-row` | not set | `A CSV/TSV record has more fields than the first record; the table keeps the extra columns.` | unchanged |
+| `deprecated-cell-alignment` | not set | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}" (carve fmt rewrites it).` | the glued alignment marker is cut; the rule stays on through 0.2.x |
+| `description-separator-below-content-column` | not set | `This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list.` | unchanged |
+| `duplicate-footnote-definition` | not set | `Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins.` | unchanged |
+| `duplicate-heading-id` | not set | `Duplicate heading id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.` (first of two) | unchanged |
+| `duplicate-reference-url` | not set | `This reference definition repeats an earlier URL.` | unchanged |
+| `emphasis-as-heading` | not set | `This emphasized paragraph looks like a heading.` | unchanged |
+| `emphasis-marker-before-attributes` | not set | `This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text.` (first of two) | unchanged |
+| `empty-include-path` | not set | `This "${text}" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces.` | unchanged |
+| `empty-link-destination` | not set | `This link has an empty destination.` | unchanged |
+| `empty-reference-definition` | not set | `This reference definition has an empty destination. Check that its URL was not removed by mistake.` | unchanged |
+| `fence-opener-fallback` | not set | `A code fence carries no inline attributes, so "${attributes}" after the info string is not valid. ${effect} (use: "${attributes}" on its own line directly above the fence, then "${opener}").` (first of three) | severity error for an attribute block after a fence language or an admonition name |
+| `fence-title-syntax` | not set | `The title after "${type}" uses typographic quotes - usually a CMS "smart quote" filter rewrote the source before Carve parsed it.` (first of several, start only) | unchanged |
+| `figure-group-empty` | not set | `This "::: figure" group holds no captionable panel; the panels wrapper renders around the preserved content only.` | unchanged |
+| `figure-group-nested` | not set | `A "::: figure" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group.` | unchanged |
+| `figure-group-opener-metadata` | not set | `A "::: figure" opener carrying a quoted title or [label] is not a composite figure; it renders as a generic container. Drop the title/label to open a figure group.` | unchanged |
+| `figure-group-panel-number` | not set | `A "#" placeholder in a panel caption stays literal: panels are not numbering units, the group caption carries the number (and panel ids resolve with its letter).` | unchanged |
+| `figure-group-single-panel` | not set | `This "::: figure" group holds a single panel; a plain captioned figure renders the same content without the group wrapper.` | unchanged |
+| `footnote-labels-differ-only-in-whitespace` | not set | `Footnote definition [^${label}] normalizes to the same key as [^${twin}]; the first definition wins. Normalized key: ${key}.` | unchanged |
+| `footnotes-placement-in-container` | not set | `This "::: footnotes" marker is inside a container, where it does not place: it renders as a plain typed div and the endnotes section goes where it would without the marker. Move the marker to document level, or delete it to accept the default position.` | unchanged |
+| `github-alert-marker` | not set | `This github alert marker stays literal in a Carve quote; use an admonition fence.` | unchanged |
+| `glob-shaped-strong` | Hint | `This strong span looks like a file glob; escape the asterisk if you meant a glob.` | unchanged |
+| `heading-closing-hashes` | not set | `The closing "${run}" run is heading text in Carve, not a closing marker. Delete it.` | unchanged |
+| `heading-level-skip` | not set | `This heading skips from level ${previous} to ${level}; use the next heading level for a continuous outline.` | unchanged |
+| `heading-trailing-attribute` | not set | `Trailing "${block}" on a heading is literal text in Carve, not an attribute block. Move it to a "${block}" line directly above the heading.` | unchanged |
+| `html-comment-renders-as-text` | not set | `This HTML comment renders as visible text. Use %% for one line or %%% for a comment block.` | unchanged |
+| `indented-code-block` | not set | ```` Four-space indentation does not make a code block in Carve; this renders as a paragraph. Use a ``` fence. ```` | unchanged |
+| `link-gap-before-destination` | not set | `The gap after this link label keeps the link as text; write ]( with no space.` | unchanged |
+| `list-item-block-overindented` | not set | `This block opener is past the list item's canonical content column ${contentColumn}; it now parses structurally and the formatter will canonicalize it. Dedent it to column ${contentColumn} for an explicit structural spelling, or escape the opener to preserve the literal meaning used by older readers.` (one of several) | unchanged |
+| `list-marker-below-content-column` | not set | `This list marker starts at column ${column}, below the content column ${contentColumn} of the list item above, ${reading}. Indent it to column ${contentColumn} to nest it under the item, or start it at column ${baseColumn} to put it at the item's own level.` | new message: the marker joins the deeper list (C2-B-047) |
+| `list-marker-without-blank-line` | not set | `This list marker is part of the preceding paragraph; add a blank line before the list.` | also a list marker directly after term or description text (C2-B-021), with a second message |
+| `markdown-definition-paragraph` | not set | `This markdown definition remains paragraph text; use a :: term line before the definition.` | unchanged |
+| `non-descriptive-link-text` | not set | `Use descriptive link text or a specific aria-label.` | unchanged |
+| `ordered-list-split-by-indent` | not set | `This ordered list continues the numbering of the list above (${firstStart}, then ${nextStart}), but its marker starts at column ${second} and the list above starts at column ${first}, so they are two lists. Start the markers at the same column.` (start only) | Open, point 3 |
+| `platform-issue-reference` | not set | `${host} re-linkifies a hash-number in published output, so "${text}" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as "item 1" / "point 1"` (built from parts) | unchanged |
+| `platform-mention-token` | not set | `${host} re-linkifies ${what} in published output, so "${text}" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase` (built from parts) | unchanged |
+| `quote-fence-ends-the-quote-above` | not set | `A "::: >" opener at the column of the quote above it ENDS that quote and opens a sibling one; the two render as adjacent blockquotes, not one nested in the other. Write "> ::: >" to nest it, or leave a blank line to make two quotes deliberate.` | unchanged |
+| `references-placement-in-container` | not set | `This "::: references" marker is inside a container and does not place the reference list. Move it to document level, or remove it if no placement is needed.` | unchanged |
+| `region-marker-renders-as-text` | not set | `This line renders as text and is not a region marker for a Carve include. Use "%% #region name".` | unchanged |
+| `semantic-attribute-outside-span` | not set | `"${name}" is a semantic span attribute (PART 9 §10) and only applies to an ordinary [content]{attrs} span; on ${type} it stays a raw attribute and renders as ${name}="${value}".` | unchanged |
+| `semantic-attribute-value-ignored` | not set | `Value on the semantic attribute "${name}" is discarded: it selects the <${name}> element and reaches no output. Only abbr, dfn and time carry a value (as title or datetime).` | unchanged |
+| `setext-heading-underline` | not set | `Carve has no underline heading: this run is not a heading underline. Write the heading with a leading "#" instead.` | new message: a hyphen run under text is text |
+| `table-column-arity` | not set | `${key} supplies ${count} column entries for a ${widest}-column table; the unset tail is valid but may be accidental.` | unchanged |
+| `table-column-overlap` | not set | `Column ${n} supplies the same alignment axis both in the table and in a table attribute; the in-table marker wins.` | unchanged |
+| `table-marker-run-padding` | not set | `"${spelling}" writes a cell's attribute block before its alignment marker, which Carve no longer reads as one. The block is part of the cell's marker run and the run ends at a space, so with the "${marker}" glued to it there is no run: the braces are content and the cell is neither attributed nor aligned. Write "${marker}${block} " to align it, or "${block} ${marker}" to keep the "${marker}" as content deliberately.` (one of several) | unchanged |
+| `table-row-cell-count` | not set | `This table row has ${cells} cells; the header has ${width}. Add or remove a cell to match the table.` | unchanged |
+| `table-shaped-paragraph` | not set | `This table-shaped line lacks a closing pipe and renders as paragraph text; close the table row.` | stays: a line that starts with a pipe and does not end with one is text (C2-B-116) |
+| `table-span-marker-blocked` | not set | `The "${marker}" span marker cannot extend a cell. ${reason} It renders as a cell of its own; escape it as "\${marker}" to keep the character as text, or remove it.` | also a row span stopped at the head boundary (C2-B-122) |
+| `table-width-total` | not set | `The specified table column widths total more than 100%.` | unchanged |
+| `thematic-break-spelling` | Hint | `This thematic break is written "${raw}"; the canonical spelling is "***".` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
+| `unattached-block-attribute` | not set | `This block attribute reaches no block - the document or the container holding it ends first - so nothing is emitted for it. Move it above the block it describes, or delete it.` (second of two) | also an attribute line separated from its block by a blank line, which is text |
+| `unclosed-code-fence` | not set | `The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop.` | the block ends with its container (C2-B-083) |
+| `unclosed-comment-fence` | not set | `The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop.` | the block ends with its container (C2-B-083) |
+| `unclosed-container-fence` | not set | `This ${width}-colon ${kind} has no closer; it runs to the end of the document. Add a bare fence of ${width} colons to close it.` (one of two) | the block ends with its container (C2-B-083) |
+| `unclosed-inline-emphasis` | not set | `This strong (or: emphasis) opener is unclosed in its paragraph; add a closer.` | unchanged |
+| `unresolved-footnote` | not set | `Footnote reference [^${id}] has no matching definition; it renders as literal text.` | unchanged |
+| `unresolved-reference-link` | not set | `Reference link ${rawRef} has no matching link definition or heading; it renders as literal text.` (one of two) | the full form and a wrapped label now reach the heading lookup (C2-I-075, C2-I-076) |
+| `unused-footnote-definition` | not set | `Footnote definition [^${label}] is never referenced, so it is omitted from the rendered document.` | unchanged |
+| `unused-link-reference-definition` | not set | `This link reference definition is unused.` | unchanged |
+| `markdown-strong-double-star` | not set | `` Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks. `` | new message (Open, point 2) |
+| `markdown-strikethrough-double-tilde` | not set | `` Markdown `~~strikethrough~~` is not Carve — Carve strikethrough is a single `~`. `` | new message (Open, point 2) |
+| `djot-subscript-tilde-braced` | not set | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check |
+| `djot-subscript-tilde` | not set | `` Djot subscript `~x~` renders as *strikethrough* in Carve. `` | opt-in Djot check; new message (Open, point 2) |
+| `djot-superscript-caret` | not set | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check |
+| `djot-emphasis-underscore` | not set | `` Djot emphasis `_x_` renders as *underline* in Carve. `` | opt-in Djot check; new message (Open, point 2) |
+| `djot-intraword-underscore` | not set | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |
+| `djot-highlight-braces` | not set | `` Djot highlight `{=x=}` is also Carve highlight (`{=x=}`). `` | opt-in Djot check; new message (Open, point 2) |
+| `djot-plus-bullet` | not set | `` Djot/Markdown `+` bullet is not a Carve bullet (`+` is the list-continuation marker) — this line renders as a paragraph. `` | opt-in Djot check |
+| `djot-heading-continuation` | not set | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve ends the heading at the newline, so they are separate blocks and the heading id changes. `` | opt-in Djot check |
+| `a11y/image-alt` | error | `image has empty alternative text and is not marked decorative` | accessibility extension |
+
+85 rules are kept.
+
+Three ids stand in `docs/validation.md` on `main` and were not found in the engine source:
 
 | Rule | In 0.2 |
 |---|---|
-| `bare-html-tag` | unchanged |
-| `bidi-control-in-source` | unchanged |
-| `block-marker-as-text` | also a brace line that is not a valid one-line attribute line |
-| `block-opener-overindented` | unchanged |
-| `blockquote-marker-without-space` | unchanged |
-| `braced-comment-in-a-template-source` | unchanged |
-| `broken-crossref` | unchanged |
-| `broken-fragment-link` | unchanged |
-| `caption-looking-paragraph` | unchanged |
-| `carve-version-unsupported` | unchanged |
-| `colon-fence-length-mismatch` | unchanged |
-| `comment-shaped-emphasis` | unchanged |
-| `consumed-key-near-miss` | `loose` leaves the list of consumed keys |
-| `definition-term-block-folded` | Open, point 10 |
-| `delimited-table-malformed` | severity error; new message: the block stays a table (C2-B-129) |
-| `delimited-table-wide-row` | unchanged |
-| `deprecated-cell-alignment` | the glued alignment marker is cut; the rule stays on through 0.2.x |
-| `description-separator-below-content-column` | unchanged |
-| `duplicate-footnote-definition` | unchanged |
-| `duplicate-heading-id` | unchanged |
-| `duplicate-reference-url` | unchanged |
-| `emphasis-as-heading` | unchanged |
-| `emphasis-marker-before-attributes` | unchanged |
-| `empty-include-path` | unchanged |
-| `empty-link-destination` | unchanged |
-| `empty-reference-definition` | unchanged |
-| `fence-opener-fallback` | severity error for an attribute block after a fence language or an admonition name |
-| `fence-title-syntax` | unchanged |
-| `figure-group-empty` | unchanged |
-| `figure-group-nested` | unchanged |
-| `figure-group-opener-metadata` | unchanged |
-| `figure-group-panel-number` | unchanged |
-| `figure-group-single-panel` | unchanged |
-| `footnote-labels-differ-only-in-whitespace` | unchanged |
-| `footnotes-placement-in-container` | unchanged |
-| `github-alert-marker` | unchanged |
-| `glob-shaped-strong` | unchanged |
-| `heading-closing-hashes` | unchanged |
-| `heading-level-skip` | unchanged |
-| `heading-trailing-attribute` | unchanged |
-| `html-comment-renders-as-text` | unchanged |
-| `indented-code-block` | unchanged |
-| `link-gap-before-destination` | unchanged |
-| `list-item-block-overindented` | unchanged |
-| `list-marker-below-content-column` | new message: the marker joins the deeper list (C2-B-047) |
-| `list-marker-without-blank-line` | also a list marker directly after term or description text (C2-B-021), with a second message |
-| `markdown-definition-paragraph` | unchanged |
-| `non-descriptive-link-text` | unchanged |
-| `ordered-list-split-by-indent` | Open, point 10 |
-| `platform-issue-reference` | unchanged |
-| `platform-mention-token` | unchanged |
-| `quote-fence-ends-the-quote-above` | unchanged |
-| `references-placement-in-container` | unchanged |
-| `region-marker-renders-as-text` | unchanged |
-| `semantic-attribute-outside-span` | unchanged |
-| `semantic-attribute-value-ignored` | unchanged |
-| `setext-heading-underline` | new message: a hyphen run under text is text |
-| `table-column-arity` | unchanged |
-| `table-column-overlap` | unchanged |
-| `table-marker-run-padding` | unchanged |
-| `table-row-cell-count` | unchanged |
-| `table-shaped-paragraph` | stays: a line that starts with a pipe and does not end with one is text (C2-B-116) |
-| `table-span-marker-blocked` | also a row span stopped at the head boundary (C2-B-122) |
-| `table-width-total` | unchanged |
-| `thematic-break-spelling` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
-| `unattached-block-attribute` | also an attribute line separated from its block by a blank line, which is text |
-| `unclosed-code-fence` | the block ends with its container (C2-B-083) |
-| `unclosed-comment-fence` | the block ends with its container (C2-B-083) |
-| `unclosed-container-fence` | the block ends with its container (C2-B-083) |
-| `unclosed-inline-emphasis` | unchanged |
-| `unresolved-footnote` | unchanged |
-| `unresolved-reference-link` | the full form and a wrapped label now reach the heading lookup (C2-I-075, C2-I-076) |
-| `unused-footnote-definition` | unchanged |
-| `unused-link-reference-definition` | unchanged |
-| `markdown-strong-double-star` | new message (Open, point 9) |
-| `markdown-strikethrough-double-tilde` | new message (Open, point 9) |
-| `djot-subscript-tilde-braced` | opt-in Djot check |
-| `djot-subscript-tilde` | opt-in Djot check; new message (Open, point 9) |
-| `djot-superscript-caret` | opt-in Djot check |
-| `djot-emphasis-underscore` | opt-in Djot check; new message (Open, point 9) |
-| `djot-intraword-underscore` | opt-in Djot check |
-| `djot-highlight-braces` | opt-in Djot check; new message (Open, point 9) |
-| `djot-plus-bullet` | opt-in Djot check |
-| `djot-heading-continuation` | opt-in Djot check |
-| `a11y/image-alt` | accessibility extension |
+| `gfm-delimiter-row` | not found in the engine; replaced by `deprecated-separator-row` |
+| `fence-delimiter-indentation` | not found in the engine; not in the catalog |
+| `bibliography-placement-in-container` | not found in the engine; not in the catalog |
 
-85 rules are kept.
+The `include-` rules of 0.1 belong to the Includes document, which follows later. `empty-include-path`, which reads the shape of the directive, is the one include rule in this catalog.
 
 ### New rules
 
@@ -552,6 +564,41 @@ The 29 rules of the migrate and lint design, with the later rulings applied. Sev
 
 Of the 29, 28 stay and one is void.
 
+### Rules added for findings the syntax chapters promise
+
+Two findings of the syntax chapters had no rule. Their ids are new in this document.
+
+| Rule | Severity | Reports |
+|---|---|---|
+| `unclosed-braced-comment` | warning | a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-099, C2-I-026) |
+| `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-072) |
+
+A glued attribute run is no finding: glued blocks merge (C2-B-071), `fmt` writes one block, and the tree is the same.
+
+### The codes of the parse channel and of the render-loss channel
+
+**C2-W-113** A finding that a syntax chapter calls a diagnostic or a warning is reported by the parser, in the parse channel. A finding that a chapter calls lint, and every other rule of this catalog, is reported in the lint channel. A code keeps its one channel in every tool.
+
+| Code | Channel | Severity | Reports |
+|---|---|---|---|
+| `unclosed-frontmatter` | parse | error | frontmatter with no closer (C2-B-113) |
+| `delimited-table-malformed` | parse | error | an unclosed quote in a delimited table (C2-B-129) |
+| `unclosed-container-fence` | parse | error for an anonymous div that a stray `:::` opened; warning otherwise | a div that runs to the end of its container (C2-B-083, C2-B-089) |
+| `fence-opener-fallback` | parse | error | an attribute block after a fence language or an admonition name |
+| `fence-title-syntax` | parse | warning | an unquoted title or further words in an info string (C2-B-085) |
+| `duplicate-footnote-definition` | parse | warning | a second footnote definition for a key (C2-B-066) |
+| `duplicate-link-reference-definition` | parse | warning | a second link definition for a key (C2-B-066) |
+| `duplicate-abbreviation-definition` | parse | warning | a second abbreviation definition for a key (C2-B-066) |
+| `duplicate-heading-id` | parse | warning | a second node with one authored id (C2-A-039) |
+| `raw-format-dropped` | render-loss | warning | raw content in a format the target does not write (C2-H-054) |
+| `destination-denied` | render-loss | warning | a destination that `urlPolicy` blanked (C2-H-082) |
+| `carrier-attribute-dropped` | render-loss | warning | an authored attribute with a reserved carrier name under `roundtrip` (C2-H-116) |
+| `include-unresolved` | render-loss | warning | an include directive that was not expanded (C2-H-133) |
+| `structure-unspellable` | render-loss | warning | a node or wrapper the writer could not write (C2-W-011) |
+| `field-unspellable` | render-loss | warning | a field the writer could not write (C2-W-011) |
+
+Two reports have no code yet: an unknown optional extension that renders through its fallback (C2-A-127), and a construct outside the `profile` (C2-H-129). See Open, point 2.
+
 ### Rules of 0.1 that become obsolete
 
 | Rule | Why | Replaced by |
@@ -584,6 +631,9 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an attribute line after a paragraph line | `block-opener-without-blank-line` |
 | an unclosed fence, div or comment block | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence` |
 | unclosed frontmatter | `unclosed-frontmatter` |
+| a stray `:::` that opens an anonymous div running to the end | `unclosed-container-fence`, with severity error |
+| a braced comment left unclosed by an interrupter line | `unclosed-braced-comment` |
+| a line comment inside a reference label | `comment-in-reference-label` |
 | a duplicate label | `duplicate-footnote-definition`, `duplicate-link-reference-definition`, `duplicate-abbreviation-definition` |
 | an unquoted fence title | `fence-title-syntax` |
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
@@ -640,7 +690,7 @@ Fates: *ported* (the rule holds, restated in 0.2 terms), *simplified* (one of th
 | CARVE-P11-040 | an empty description body | ported | C2-W-057 |
 | CARVE-P11-041 | the task marker | simplified | C2-W-046 |
 | CARVE-P11-042 | a block that opens a tight item, after a continuation marker | removed: 0.2 has no list continuation marker; the marker-line rule is C2-W-027 | none |
-| CARVE-P11-043 | the round-trip comparison list | removed: the gate compares trees (C2-A-160); its third entry is Open, point 7 | none |
+| CARVE-P11-043 | the round-trip comparison list | removed: the gate compares trees (C2-A-164); the case of its third entry is C2-W-112 | none |
 | CARVE-P11-044, 045 | Markdown escaping and delimiters | out of scope | none |
 | CARVE-P11-046 | the conversion-diagnostics channel | ported into the one record | C2-W-011, C2-W-104 |
 | CARVE-P11-047 | Markdown list tightness | out of scope | none |
@@ -675,29 +725,18 @@ Totals over the 82 clauses: 30 ported, 8 simplified, 4 removed, 40 out of scope.
 
 Points that the plan, the drafted chapters and 0.1 do not decide. None is decided here.
 
-1. **The diagnostics record.** The five fields are decided. Open: the spelling of the three channel values, and whether the position is a `pos` range, a path into the tree or both (AST Open, point 4). A writer diagnostic for a supplied tree has no source position.
-2. **Severity of the 0.1 rules.** The 0.1 source sets a severity on few rules and treats the rest as warnings, and the default state of several rules is documented only in prose. The catalog file has to state severity and default for every rule.
-3. **Three ids of the 0.1 documentation.** `gfm-delimiter-row`, `fence-delimiter-indentation` and `bibliography-placement-in-container` are in `docs/validation.md` on `main` and not in the engine source this catalog was read from. The first is replaced by `deprecated-separator-row` in any case. Whether the other two enter the 0.2 catalog is open.
-4. **Empty bodies.** The plan says an empty list item is a marker plus a comment. A footnote definition and a description with no blocks keep the 0.1 sentinel `{empty}` here by the carry-over rule. Options: (a) keep the sentinel; (b) a comment after the marker, as for the item. A `list_item` with no children at all, not even a comment, has no 0.2 spelling: options are a report as unspellable, or the sentinel.
-5. **Include directives.** The formatter pads and orders them. The order of the options is not stated anywhere. Options: (a) section, then `@` options in a fixed list order; (b) section, then `@` options sorted by name.
-6. **`---` as line 1.** A paragraph that starts the document with an em dash node whose source is `---` would be read as a frontmatter opener. 0.1 writes the glyph and lets the comparison treat a dash node and its glyph as equal. The 0.2 equality has no such entry. Options: (a) add the entry to the AST equality; (b) write `{--}`-style braced forms if one exists for the em dash; (c) write a backslash and accept a changed tree, which fails C2-W-002.
-7. **Two adjacent code spans.** 0.1 keeps two adjacent code spans apart with an empty braced comment and lets the comparison ignore it (CARVE-P11-043, entry N3). Under tree equality the comment is a node. Options: (a) an equality entry for an empty braced comment; (b) the pair is unspellable and reported; (c) a longer fence on one span, if that separates them.
-8. **A glued attribute run.** Glued brace blocks are valid and `fmt` merges them (C2-W-047). The plan names a lint finding for the run, and no rule id exists for it.
-9. **Message texts.** The Djot checks and `markdown-strong-double-star` name bare 0.1 forms in their advice and need new text. `markdown-strong-double-star` has to say that the doubled star is literal (C2-I-044).
-10. **Rules that 0.1 already calls retired.** `ordered-list-split-by-indent`, `definition-term-block-folded` and `fence-delimiter-indentation` have nothing left to report on `main` after its container rework. Whether they have a trigger under the 0.2 rules, or leave the catalog, needs a check against the block chapter.
-11. **The attribute value form.** C2-W-050 keeps the 0.1 rule for bare and quoted values. The valid shape of a bare value is one of the small cases that phase 1 still writes.
-12. **Where the language part is written.** The order is id, classes, language, keys. On a code block the language is the info string word. Which other blocks take a language part, and how it is spelled in a brace block, follows AST Open, point 7.
-13. **The opt-in group** of `tight-list-item-with-blank-line`, and the release in which the `deprecated-` rules are reviewed (the plan says the next major).
-14. **Include rules.** The `include-` rules of 0.1 belong to the Includes document, which follows later. Only `empty-include-path`, which reads the directive's shape, is in this catalog.
-15. **Authored and generated heading ids.** A generated id sits in `attrs.id` like an authored one (C2-A-132, AST Open, point 9). The writer must not write it. Options: (a) a tree field that marks the id as generated; (b) the writer recomputes the slug and omits an id that equals it, which also drops an authored id that happens to equal the slug; (c) the writer runs before resolution and never sees generated ids.
-16. **The gate for this document.** The plan asks for one. The two properties of C2-W-002 and C2-W-003 on the corpus and the enumerated sets are the gate of phase 5. A gate for the document itself, such as an example for every canonical form, is not stated.
+1. **Empty bodies.** The plan says an empty list item is a marker plus a comment. A footnote definition and a description with no blocks keep the 0.1 sentinel `{empty}` here by the carry-over rule (C2-W-057), and no syntax clause defines the sentinel. Options: (a) keep the sentinel and define it in the block chapter; (b) a comment after the marker, as for the item; (c) no spelling: a parsed body is never empty, and the writer reports a supplied one as unspellable. A `list_item` with no children at all is the same question.
+2. **Tasks for the catalog file.** Not questions: a severity and a default state for each of the 81 kept rules on which the source sets none; new message texts for the rules whose 0.1 message names a 0.1 form (the Djot checks, `markdown-strong-double-star`, which has to say that the doubled star is literal (C2-I-044), `setext-heading-underline`, `thematic-break-spelling`); and codes for the two reports named under C2-W-113. A duplicate authored id on a node that is not a heading is reported under `duplicate-heading-id` until a wider id exists.
+3. **The lint of C2-B-046.** A marker left of every open list continues the list above, "with lint on the uneven indent". No rule reports it: `list-marker-below-content-column` reads a marker past the item's marker, and `ordered-list-split-by-indent` reports two lists where 0.2 has one. Options: (a) `ordered-list-split-by-indent` gets this trigger and a new message; (b) a new rule, and `ordered-list-split-by-indent` leaves the catalog. `definition-term-block-folded` keeps a trigger in 0.2: a block opener under a term is term text (C2-B-057).
+4. **The opt-in group** of `tight-list-item-with-blank-line`, and the release in which the `deprecated-` rules are reviewed (the plan says the next major).
+5. **The gate for this document.** The plan asks for one. The two properties of C2-W-002 and C2-W-003 on the corpus and the enumerated sets are the gate of phase 5. A gate for the document itself, such as an example for every canonical form, is not stated.
 
 ## Counts
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | The writer and its two gates | 10 | 0 | 0 | 0 |
-| What the writer cannot spell | 6 | 0 | 0 | 0 |
+| What the writer cannot spell | 7 | 0 | 0 | 0 |
 | Layout | 18 | 3 | 0 | 0 |
 | Canonical forms: blocks | 26 | 0 | 0 | 0 |
 | Canonical forms: tables | 8 | 0 | 0 | 0 |
@@ -705,7 +744,7 @@ Points that the plan, the drafted chapters and 0.1 do not decide. None is decide
 | The sidecar | 5 | 0 | 0 | 0 |
 | Escaping | 12 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 9 | 0 | 0 | 0 |
-| **Total** | **111** | **4** | **4** | **2** |
+| Diagnostics and lint | 10 | 0 | 0 | 0 |
+| **Total** | **113** | **4** | **4** | **2** |
 
-The document has 111 clauses, 4 of them marked with the word "Exception", and 6 examples, 4 generated and 2 unverified. The clause count includes the exceptions.
+The document has 113 clauses, 4 of them marked with the word "Exception", and 6 examples, 4 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

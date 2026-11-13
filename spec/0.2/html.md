@@ -54,13 +54,13 @@ Example 1 (generated)
 
 ## Attributes
 
-**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language, then the keys in the order written, then the render annotation of C2-H-016.
+**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language, then the keys in the order written, then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037).
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
 **Exception C2-H-011** On a footnote reference the `id` stands before `href`. On a mention or a tag the class stands first.
 
-**C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`, `hardbreaks`.
+**C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068).
 
 **C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, and an authored key replaces every other generated attribute of the same name. No element carries one name twice.
 
@@ -126,15 +126,15 @@ roses
 
 **C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-098). A paragraph that holds only a braced comment is this case.
 
-**C2-H-020** A paragraph promoted to a block image (C2-B-109, C2-A-134) is written as the bare `<img>` on its own line.
+**C2-H-020** A paragraph promoted to a block image (C2-B-109, C2-A-136) is written as the bare `<img>` on its own line.
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. A level above 6 in a supplied tree is written as `<h6>`.
 
 **C2-H-022** With `headingIds` on, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004): case is kept and a run of spaces becomes one hyphen.
 
-**C2-H-023** A generated id is a resolution result (C2-A-131). It is not an authored id: the writer does not write it into the source (C2-W-054), and the carrier `data-carve-generated-id` marks it under `roundtrip`.
+**C2-H-023** A generated id is a resolution result and is read from `generatedId` (C2-A-134). It is not an authored id: `attrs.id` holds only what the author wrote (C2-A-038), the writer does not write a generated id into the source (C2-W-054), and the carrier `data-carve-generated-id` marks it under `roundtrip`.
 
-**C2-H-024** Ids are unique in the document. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. For a duplicate authored id the first node wins and each later one is reported (C2-A-037).
+**C2-H-024** Ids are unique in the document. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. For a duplicate authored id the first node wins and each later one is reported (C2-A-039).
 
 **Exception C2-H-025** The headings of a footnote body take their generated ids after every heading of the document body, in the order of the footnote numbers. A heading in an unused footnote definition takes none.
 
@@ -191,13 +191,13 @@ Example 4 (generated)
 
 **C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the item. The input carries `checked` before `disabled` when the mark is `x`. The list of task items carries the base class `task-list`.
 
-**C2-H-033** A task item carries `data-task-state` with its mark (C2-A-058). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
+**C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
 **C2-H-034** In a tight list a paragraph is written bare, without `<p>`, only when it is the first block of its item. Every other paragraph of the item gets `<p>` (C2-B-053).
 
 **C2-H-035** In a loose list every paragraph of every item gets `<p>` (C2-B-054).
 
-**C2-H-036** The renderer reads `list.spacing` (C2-A-057) and never derives tightness from blank lines or from the blocks of an item. A list with one item is always tight in a parsed tree (C2-B-052).
+**C2-H-036** The renderer reads `list.spacing` (C2-A-059) and never derives tightness from blank lines or from the blocks of an item. A list with one item is always tight in a parsed tree (C2-B-052).
 
 **C2-H-037** The bullet character adds nothing to the default output. Under `roundtrip` it is carried by `data-marker` (C2-H-112).
 
@@ -352,7 +352,7 @@ Example 9 (generated)
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
 
-**C2-H-044** A hard-break block is `<div class="hardbreaks">` around its blocks. The opener form and the class form (C2-A-066, C2-L-018) give the same output, and every line break inside a paragraph of the block is `<br>`.
+**C2-H-044** A hard-break block is `<div class="hardbreaks">` around its blocks. The opener form and the class form (C2-A-068, C2-L-018) give the same output, and every line break inside a paragraph of the block is `<br>`.
 
 **C2-H-045** A hard break is `<br>` followed by a line break. A soft break is a line break.
 
@@ -397,6 +397,8 @@ b</p>
 
 :::
 
+**C2-H-136** A line of a line block that holds only a braced comment is a `line` node that holds the comment (C2-A-069). It renders as an empty line.
+
 ## Code and raw content
 
 **C2-H-047** A code block is `<pre><code>` around its escaped value, with `class="language-X"` on `<code>` when it has a language. The value is written as it is, its final line ending included, and nothing is added.
@@ -434,6 +436,8 @@ a `<i>y</i>`{=html} b
 ```
 
 :::::
+
+**C2-H-134** With `rawHtml` on, a raw HTML block whose payload has no line and one whose payload is one blank line both write one empty line. HTML does not show the difference that `value` keeps (C2-A-048).
 
 ## Tables
 
@@ -479,17 +483,17 @@ Example 12 (generated)
 
 **C2-H-062** A captioned image, code block, quote or math block is written as `<figure>` around the block and then `<figcaption>` with the caption.
 
-**C2-H-063** The attribute line of a captioned block applies to the `<figure>`, its id included. The block inside carries only what it generates itself.
+**C2-H-063** The attribute line of a captioned block applies to the `<figure>`, its id included. The block inside carries only what it generates itself. In the tree these attributes are the `attrs` of the `figure` (C2-A-183).
 
 **C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it is `<figure class="carve-figure-panel">`, and the caption of the group is the last child of the group.
 
-**C2-H-065** A caption holds inline content. When it is written over several lines, the line breaks are soft breaks.
+**C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
 
 **C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. A panel caption takes no number.
 
 **C2-H-067** With `roundtrip` off the number is plain text. With it on, the number is wrapped in `<span data-carve-caption-number>`.
 
-**C2-H-068** `caption.short` is not written to HTML (C2-A-172).
+**C2-H-068** `caption.short` is not written to HTML (C2-A-175).
 
 Example 13 (generated)
 
@@ -570,13 +574,15 @@ Example 14 (generated)
 
 :::
 
+**C2-H-135** The label word of a caption selects its number sequence, as in 0.1. `figure.kind` (C2-A-083) selects it only in a supplied tree whose caption has no label word.
+
 ## Comments, frontmatter and definitions
 
 **C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written.
 
 **C2-H-070** Frontmatter renders nothing.
 
-**C2-H-071** A link definition and an abbreviation definition render nothing. A footnote definition renders only through the footnote section (C2-H-088).
+**C2-H-071** A link definition and an abbreviation definition render nothing. A footnote definition renders only through the footnote section (C2-H-089).
 
 Example 15 (generated)
 
@@ -601,6 +607,8 @@ b {% mid %} c
 
 :::
 
+**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds its source form as text, rebuilt from `path`, `section` and `options` as the writer writes it (C2-W-058), and it is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
+
 ## Inline elements
 
 **C2-H-072** The inline nodes map to elements as follows.
@@ -620,9 +628,9 @@ b {% mid %} c
 | `math` | `<span class="math inline" role="math">\(...\)</span>`, or `math display` with `\[...\]` |
 | `critic_comment` | `<span class="critic-comment">` |
 
-**C2-H-073** A replacement is a `delete` followed by an `insert` (C2-A-095) and renders as `<del>` directly followed by `<ins>`, with no wrapper.
+**C2-H-073** A replacement is a `delete` followed by an `insert` (C2-A-097) and renders as `<del>` directly followed by `<ins>`, with no wrapper.
 
-**C2-H-074** Emphasis and strong nest in the tree order: `<strong><em>` or `<em><strong>`, as written (C2-A-094).
+**C2-H-074** Emphasis and strong nest in the tree order: `<strong><em>` or `<em><strong>`, as written (C2-A-096).
 
 **C2-H-075** A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`. A value of `abbr` becomes `title`, a value of `time` becomes `datetime`, and a value of `kbd` is dropped. Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. An authored `title` or `datetime` wins over the derived one. As in 0.1 (CARVE-P10-003 to CARVE-P10-007).
 
@@ -630,7 +638,7 @@ b {% mid %} c
 
 **C2-H-077** A math block is `<p>` around the display form of C2-H-072.
 
-**C2-H-078** A smart-punctuation node is written as its glyph. With `smartTypography` off it is written as its `source` (C2-A-096).
+**C2-H-078** A smart-punctuation node is written as its glyph. With `smartTypography` off it is written as its `source` (C2-A-098).
 
 Example 16 (generated)
 
@@ -655,7 +663,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has one. `alt` is always written, also when it is empty.
 
-**C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-109).
+**C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-111).
 
 **C2-H-082** A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href="">`. The denial is reported as the render loss `destination-denied`.
 
@@ -663,7 +671,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **Exception C2-H-084** An image reference never resolves against the headings (C2-I-077).
 
-**C2-H-085** An unresolved reference renders its rebuilt source form as text: `[`, its children, `]`, then `[key]` for the form `full` or `[]` for the form `collapsed`; for an image, `!` first and the `alt` in place of the children (C2-A-106). An attribute block that attached to it is written after it as text.
+**C2-H-085** An unresolved reference renders its rebuilt source form as text: `[`, its children, `]`, then `[key]` for the form `full` or `[]` for the form `collapsed`; for an image, `!` first and the `alt` in place of the children (C2-A-108). An attribute block that attached to it is written after it as text.
 
 **C2-H-086** An unresolved footnote reference renders as `[^key]`, and an unresolved cross-reference as `</#key>`.
 
@@ -765,7 +773,7 @@ After.
 
 **C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-091).
 
-**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. The forms `number`, `page`, `title` and `full` (C2-A-114) select the text as in 0.1.
+**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. The forms `number`, `page`, `title` and `full` (C2-A-116) select the text as in 0.1.
 
 **C2-H-097** The generated text is plain text: no abbreviation, mention or typography rule is applied to it (C2-I-094).
 
@@ -831,7 +839,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 **C2-H-110** *Task lists and table groups.* The `task-list` class, the head of a table and the fallback of C2-H-060 are known when the list or the table closes.
 
-**C2-H-111** A renderer may buffer more than these clauses require. Its output has to equal the output of a renderer that works from the finished tree.
+**C2-H-111** A renderer may buffer more than these clauses require. Its output has to equal the output of a renderer that works from the finished tree. 0.2.0 defines no streaming renderer with weaker guarantees.
 
 ## Roundtrip carriers
 
@@ -844,7 +852,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | Attribute | On | Carries | 0.2 |
 |---|---|---|---|
 | `data-marker` | `<ul>` | the bullet character, when it is not `-` | stays: `marker.char` is in the tree |
-| `data-char` | `<hr>` | the character of a thematic break | goes: `thematic_break.marker` is deleted (C2-A-070) |
+| `data-char` | `<hr>` | the character of a thematic break | goes: `thematic_break.marker` is deleted (C2-A-072) |
 | `data-carve-explicit-id` | `<section>` or heading | the heading id was authored | stays |
 | `data-carve-id-slot` | `<section>` | the place of the id among the heading's attributes | goes: `attrs.order` is deleted (C2-A-033) |
 | `data-carve-generated-id` | `<section>` or heading | the heading id was generated | stays |
@@ -853,16 +861,16 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-footnote-label` | the reference `<a>`, the note `<li>` | the footnote key | stays |
 | `data-carve-inline-footnote` | the note `<li>` | the note is an inline footnote | stays |
 | `data-carve-raw` | `<span>` | a raw span and its format | stays |
-| `data-carve-escaped` | `<span>` | one escaped character | goes: `escaped_text` is not a node type (C2-A-039) |
+| `data-carve-escaped` | `<span>` | one escaped character | goes: `escaped_text` is not a node type (C2-A-041) |
 | `data-carve-abbreviations` | `<template>` | the abbreviation definitions, one per line | stays |
 | `data-carve-col-widths` | `<table>` | the dash widths of a separator row | goes: the separator row is cut and `table.separatorWidths` is deleted |
 | `data-carve-label` | `<pre>` | the label of a code fence | stays |
-| `data-carve-tight` | `<ul>`, `<ol>` | a tight list whose HTML reads as loose | stays; when it is written is open (Open, point 5) |
+| `data-carve-tight` | `<ul>`, `<ol>` | the list is tight | stays; written on every tight list (C2-H-138) |
 | `data-carve-xref` | `<a>` | the link is a cross-reference | stays |
 | `data-carve-caption-number` | `<span>` | the caption number mark | stays |
 | `data-carve-div` | `<div>` | a div with no other attribute | stays |
 | `data-carve-line-block` | `<div>` | a line block | stays |
-| `data-carve-substitution` | `<span>` | a substitution node | goes: a replacement is a `delete` and an `insert` (C2-A-095) |
+| `data-carve-substitution` | `<span>` | a substitution node | goes: a replacement is a `delete` and an `insert` (C2-A-097) |
 | `data-carve-src` | none | reserved, never written | stays reserved |
 
 Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data-carve-col-widths` and `data-carve-substitution`.
@@ -871,7 +879,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-116** With `roundtrip` on, an authored attribute with a reserved name is dropped on every element and reported as the render loss `carrier-attribute-dropped`. With it off, the attribute passes through.
 
-**C2-H-117** A presence carrier is written with the empty value or with `1`, and a reader does not compare its value.
+**C2-H-117** A presence carrier is written as the bare attribute name, with no value. A reader takes the name as presence and does not compare a value.
 
 **C2-H-118** `data-task-state`, `data-delim` and the `task-list` class are not carriers. Every render writes them (C2-H-031 to C2-H-033).
 
@@ -879,7 +887,9 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-120** How an importer reads the carriers (CARVE-P10-017, CARVE-P10-021) is part of the importer, which is not in 0.2.0. The names of C2-H-115 are fixed now so that 0.2.0 output can be read back later.
 
-Example 22 (generated, `--roundtrip`)
+The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
+
+Example 22 (unverified)
 
 ::: compare
 
@@ -897,9 +907,9 @@ in
 ```
 
 ```html
-<section data-carve-generated-id="1" id="H">
+<section data-carve-generated-id id="H">
   <h1>H</h1>
-  <p><a href="/u" data-carve-ref="r">x</a> <a href="#H" data-carve-xref>H</a> <a href="https://example.org" data-carve-autolink="1">https://example.org</a> a<a id="fnref1" href="#fn1" role="doc-noteref" data-carve-footnote-label="n"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+  <p><a href="/u" data-carve-ref="r">x</a> <a href="#H" data-carve-xref>H</a> <a href="https://example.org" data-carve-autolink>https://example.org</a> a<a id="fnref1" href="#fn1" role="doc-noteref" data-carve-footnote-label="n"><sup>1</sup></a> <a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
   <div data-carve-div>
     <p>in</p>
   </div>
@@ -910,7 +920,7 @@ in
     <li id="fn1" data-carve-footnote-label="n">
       <p>N.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
-    <li id="fn2" data-carve-inline-footnote="1">
+    <li id="fn2" data-carve-inline-footnote>
       <p>inl<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -918,6 +928,8 @@ in
 ```
 
 :::
+
+**C2-H-138** `data-carve-tight` is written on every tight list, with no test on its items.
 
 ## Options
 
@@ -935,15 +947,43 @@ in
 
 **C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off.
 
-**C2-H-128** `urlPolicy` sets which URL schemes pass on `href`, `src` and every other URL sink: a deny list, whose default is the 0.1 list of script schemes and protocol-handler schemes, or an allow list. The option has no off value. The filter also removes blocked attribute names, event handlers among them, and blanks a `style` value that holds a URL function, as in 0.1 (PART 9 section 25).
+**C2-H-128** `urlPolicy` sets which URL schemes pass on `href`, `src` and every other URL sink: a deny list, whose default is the 0.1 list of script schemes and protocol-handler schemes, or an allow list. The option has no off value. The filter also removes blocked attribute names, event handlers among them, and blanks a `style` value that holds a URL function, as in 0.1 (PART 9 section 25). The list of blocked attribute names is a data file in `resources/`.
 
 **C2-H-129** `profile` restricts the features a render accepts: `full`, `article`, `comment` or `minimal`, as in 0.1. A construct outside the profile renders in its degraded form and is reported.
 
-**C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-171): the render returns no output.
+**C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-174): the render returns no output.
 
-**C2-H-131** `headingIds` controls generated heading ids (C2-H-022). It replaces the two 0.1 switches for lower-case ids and for ASCII ids. Its values and its default are open (Open, point 1).
+**C2-H-131** `headingIds` controls generated heading ids (C2-H-022). An authored id is written whatever its value. Its values and its default are open (Open, point 1).
 
-**C2-H-132** A render loss is an entry of the diagnostics record with the channel for render losses (C2-A-170). The 0.1 loss codes that apply to HTML stay: `raw-format-dropped`, `destination-denied`, `carrier-attribute-dropped`.
+**C2-H-132** A render loss is an entry of the diagnostics record with the channel for render losses (C2-A-173). The 0.1 loss codes that apply to HTML stay: `raw-format-dropped`, `destination-denied`, `carrier-attribute-dropped`. The catalog lists every code of the channel (C2-W-113).
+
+## The option list
+
+**C2-H-137** These are the 19 options, and there are no others. A host may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+
+| Option | Kind | Type | Default | Defined in |
+|---|---|---|---|---|
+| `extensions` | parse | list of extensions | empty: the core alone | the extension API; the only option that changes parsing |
+| `includes` | parse | include root or resolver, with its limits | none: no directive is expanded (C2-H-133) | the Includes document |
+| `headingIds` | resolution | open | open | C2-H-131 |
+| `mode` | render | `interactive` or `static` | `interactive` | C2-H-122 |
+| `renderers` | render | map from extension name to renderer | empty | C2-H-123 |
+| `symbols` | render | map from symbol name to output | empty | C2-H-124 |
+| `labels` | render | map from label key to text | the English strings | C2-H-125 |
+| `social` | render | URL templates and resolvers for mentions and tags | none | C2-H-126 |
+| `sourceLines` | render | boolean | off | C2-H-127 |
+| `sections` | render | boolean | on | C2-H-127 |
+| `smartTypography` | render | boolean | on | C2-H-127 |
+| `roundtrip` | render | boolean | off | C2-H-127 |
+| `rawHtml` | render | boolean | off | C2-H-127 |
+| `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list | C2-H-128 |
+| `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
+| `strictLosses` | render | boolean | off | C2-H-130 |
+| `alignTables` | format | boolean | off | C2-W-068 |
+| `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
+| `platforms` | lint | list of platform names | empty | C2-W-109 |
+
+Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, one is a format option and two are lint options.
 
 ## The clauses of PART 10
 
@@ -956,7 +996,7 @@ in
 | CARVE-P10-009 | task list class and task state | C2-H-032, C2-H-033 |
 | CARVE-P10-010 | indentation of an element an extension places | not ported: belongs to the extension contract |
 | CARVE-P10-011 | directive classes follow element ownership | not ported: belongs to the extension contract |
-| CARVE-P10-012 | a raw block with no payload lines keeps its slot | open (Open, point 7) |
+| CARVE-P10-012 | a raw block with no payload lines keeps its slot | not ported: HTML shows no difference (C2-H-134) |
 | CARVE-P10-013 | an escaped raw block is written as code | C2-H-050 |
 | CARVE-P10-014 | `data-delim` | C2-H-031 |
 | CARVE-P10-015, 016 | the carriers | C2-H-112 to C2-H-115, five names removed |
@@ -969,21 +1009,13 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 
 ## Open
 
-Points that the plan, the drafted chapters and 0.1 do not decide. None is decided here.
+Points that the plan, the drafted chapters and 0.1 do not decide. None is decided here. Each needs the maintainer.
 
-1. **`headingIds`: values and default.** The plan merges the two 0.1 switches into one option and does not name its values. Options: (a) a boolean plus a style, such as `off`, `keep-case`, `lower`, `ascii`; (b) an object with two fields. The default has to keep case, as 0.1 does, for the migrate check. Related: with the option off, whether a heading has no id at all or only no generated id (AST Open, point 9).
-2. **The unresolved reference.** This document follows C2-A-106: the rebuilt form from `children`, `key` and `form`. The inline chapter says the source is written as typed (C2-I-079). The two differ when the text holds markup or the label has folded whitespace. One of the two documents has to change. Also open under the rebuilt form: whether the children are written as rendered HTML or as their source spelling.
+1. **`headingIds`: values and default.** The plan merges the two 0.1 switches into one option and does not name its values. Options: (a) one enum, such as `off`, `keep-case`, `lower`, `ascii`; (b) an object with two fields. The default has to keep case, as 0.1 does, for the migrate check.
+2. **The children of an unresolved reference.** The form is settled: rebuilt from `children`, `key` and `form` (C2-H-085, C2-A-108, C2-I-079). Open is whether the children are written as rendered HTML or as their source spelling. The source spelling makes the renderer depend on the inline rules of the writer.
 3. **`definition_list.spacing`.** C2-H-040 reads the blocks. What the field then means is AST Open, point 1.
-4. **The form of a reference under `roundtrip`.** 0.1 states that `data-carve-ref` does not recover the form. In 0.2 `form` is a tree field (C2-A-103), so an HTML round trip loses a tree fact. Options: (a) a second carrier; (b) the form in the value of `data-carve-ref`; (c) the loss stays and is stated.
-5. **`data-carve-tight`.** 0.1 writes it where a tight list keeps a `<p>`. Under C2-H-034 a tight list and a loose list give the same HTML exactly when no item starts with a paragraph. Options: (a) write the carrier in that case only; (b) write it on every tight list that holds a `<p>`; (c) carry the `spacing` value on every list.
-6. **The language part.** The fixed order is id, classes, language, keys. On a code block the language is the class on `<code>`. Where the language part of an attribute block on another element goes is not stated: (a) a `lang` attribute after `class`; (b) an ordinary key (AST Open, point 7).
-7. **A raw block with no payload lines.** CARVE-P10-012 keeps one line for it. Whether 0.2 keeps the distinction between zero lines and one blank line depends on the raw block clauses, which the block chapter refers to their 0.1 definition.
-8. **The include directive.** It is parsed in 0.2.0 and not expanded. What an unexpanded directive renders is not stated. Options: (a) its source as text, as an unresolved include does in 0.1; (b) nothing, with a diagnostic.
-9. **The blocked attribute list.** The plan makes the carve-php list of blocked attributes normative. The list is not written in any 0.2 document yet and belongs in C2-H-128 or in a data file.
-10. **The caption of a figure group and `kind`.** How `figure.kind` (C2-A-081) selects the caption sequence when the label word and the block disagree is carried from 0.1 and not restated.
-11. **A comment-only line in a line block.** 0.1 renders it as an empty stanza paragraph. In 0.2 a `%%` line in a line block is text (C2-B-093), and a line that holds only a braced comment is not stated: an empty line, or no line.
-12. **A streaming contract.** The section "State beyond the current block" states what has to be buffered. Whether 0.2 defines a streaming renderer with weaker guarantees, such as footnotes always at the end, is not decided.
-13. **The gate for this document.** The plan asks for one and states none. A candidate: every example of this document and of the Syntax chapters passes in phase 4, and no rendered byte depends on a sidecar.
+4. **The form of a reference under `roundtrip`.** 0.1 states that `data-carve-ref` does not recover the form. In 0.2 `form` is a tree field (C2-A-105), so an HTML round trip loses a tree fact. Options: (a) a second carrier; (b) the form in the value of `data-carve-ref`; (c) the loss stays and is stated.
+5. **The gate for this document.** The plan asks for one and states none. A candidate: every example of this document and of the Syntax chapters passes in phase 4, and no rendered byte depends on a sidecar.
 
 ## Counts
 
@@ -994,19 +1026,20 @@ Points that the plan, the drafted chapters and 0.1 do not decide. None is decide
 | Paragraphs, headings and sections | 11 | 1 | 1 | 0 |
 | Lists | 9 | 0 | 2 | 2 |
 | Description lists | 3 | 0 | 1 | 0 |
-| Quotes, divs and their sigil forms | 6 | 0 | 1 | 0 |
-| Code and raw content | 8 | 0 | 1 | 0 |
+| Quotes, divs and their sigil forms | 7 | 0 | 1 | 0 |
+| Code and raw content | 9 | 0 | 1 | 0 |
 | Tables | 7 | 1 | 1 | 0 |
-| Captions and figures | 7 | 0 | 2 | 0 |
-| Comments, frontmatter and definitions | 3 | 0 | 1 | 0 |
+| Captions and figures | 8 | 0 | 2 | 0 |
+| Comments, frontmatter and definitions | 4 | 0 | 1 | 0 |
 | Inline elements | 7 | 0 | 1 | 0 |
 | Links, images and references | 8 | 1 | 1 | 1 |
 | Footnotes | 8 | 0 | 1 | 0 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 9 | 0 | 1 | 0 |
+| Roundtrip carriers | 10 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
-| **Total** | **132** | **7** | **18** | **4** |
+| The option list | 1 | 0 | 0 | 0 |
+| **Total** | **138** | **7** | **17** | **5** |
 
-The document has 132 clauses, 7 of them marked with the word "Exception", and 22 examples, 18 generated and 4 unverified. The clause count includes the exceptions.
+The document has 138 clauses, 7 of them marked with the word "Exception", and 22 examples, 17 generated and 5 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
