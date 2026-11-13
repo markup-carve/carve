@@ -1507,7 +1507,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-064** A link definition is one line: `[label]:`, a space, a URL without spaces, which may be empty, and an optional quoted title.
 
-**C2-B-065** An abbreviation definition is one line: `*[label]:` with a label without spaces, a space, and a plain-text expansion that is not empty.
+**C2-B-065** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
 **C2-B-066** For a duplicate label the first definition wins, with a warning.
 
@@ -1630,7 +1630,23 @@ HTML is plain.
 
 :::
 
-Example 71 (unverified)
+A label with any other character makes the line text.
+
+Example 71 (generated)
+
+::: compare
+
+```carve
+*[a-b]: x
+```
+
+```html
+<p>*[a-b]: x</p>
+```
+
+:::
+
+Example 72 (unverified)
 
 ::: compare
 
@@ -1647,7 +1663,7 @@ Example 71 (unverified)
 
 :::
 
-Example 72 (unverified)
+Example 73 (unverified)
 
 ::: compare
 
@@ -1666,7 +1682,7 @@ text
 
 :::
 
-Example 73 (unverified)
+Example 74 (unverified)
 
 ::: compare
 
@@ -1703,7 +1719,7 @@ Example 73 (unverified)
 
 **Exception C2-B-075** An attribute line that its container does not own closes that container like any other line, and two lists with an attribute line between them are not adjacent (C2-B-045).
 
-**C2-B-076** The order inside a brace block is fixed in the tree and the output: the id, then the classes, then the keys, classes and keys each as written.
+**C2-B-076** The order inside a brace block is fixed in the tree and the output: the id, then the classes, then the language, then the keys, classes and keys each as written; the language part, as in `{:en}`, is shorthand for the node's language field and is not a key.
 
 **C2-B-077** A key named `id` or `class`, in any ASCII letter case, folds into the id or the classes at parse time, and the last id written wins.
 
@@ -1713,7 +1729,7 @@ Example 73 (unverified)
 
 Directly after a paragraph line an attribute line is a lazy line, with lint. A blank line between an attribute line and a block leaves the attribute line without a block. An attribute block after an admonition name or after a fence language is an error diagnostic; the block still opens. The attributes of a link definition are merged into every link that uses it, and the link's own values win.
 
-Example 74 (generated)
+Example 75 (generated)
 
 ::: compare
 
@@ -1728,7 +1744,7 @@ para
 
 :::
 
-Example 75 (generated)
+Example 76 (generated)
 
 ::: compare
 
@@ -1743,7 +1759,7 @@ para
 
 :::
 
-Example 76 (generated)
+Example 77 (generated)
 
 ::: compare
 
@@ -1761,7 +1777,7 @@ para
 
 Two lists, with the class on the second:
 
-Example 77 (generated)
+Example 78 (generated)
 
 ::: compare
 
@@ -1783,7 +1799,7 @@ Example 77 (generated)
 
 :::
 
-Example 78 (generated)
+Example 79 (generated)
 
 ::: compare
 
@@ -1799,7 +1815,7 @@ Example 78 (generated)
 
 :::
 
-Example 79 (unverified)
+Example 80 (unverified)
 
 ::: compare
 
@@ -1817,7 +1833,7 @@ text
 
 The attribute line belongs to the item and finds no block there, so it becomes a paragraph of the item before line 4 is read.
 
-Example 80 (unverified)
+Example 81 (unverified)
 
 ::: compare
 
@@ -1839,7 +1855,7 @@ b
 
 :::
 
-Example 81 (unverified)
+Example 82 (unverified)
 
 ::: compare
 
@@ -1858,7 +1874,7 @@ para
 
 The comment block takes the attribute line and renders nothing.
 
-Example 82 (unverified)
+Example 83 (unverified)
 
 ::: compare
 
@@ -1876,7 +1892,7 @@ para
 
 :::
 
-Example 83 (unverified)
+Example 84 (unverified)
 
 ::: compare
 
@@ -1891,7 +1907,22 @@ para
 
 :::
 
-Example 84 (unverified)
+Example 85 (unverified)
+
+::: compare
+
+```carve
+{k=v :en .c #i}
+para
+```
+
+```html
+<p id="i" class="c" lang="en" k="v">para</p>
+```
+
+:::
+
+Example 86 (unverified)
 
 ::: compare
 
@@ -1906,7 +1937,7 @@ para
 
 :::
 
-Example 85 (unverified)
+Example 87 (unverified)
 
 ::: compare
 
@@ -1923,7 +1954,7 @@ Example 85 (unverified)
 
 :::
 
-Example 86 (generated)
+Example 88 (generated)
 
 ::: compare
 
@@ -1949,7 +1980,7 @@ Example 86 (generated)
 
 **C2-B-084** The body of a code fence is code and the body of a comment block is hidden; neither is read for blocks or inline content, and each is opaque until its closer or the end of its container. The body of a div is read as blocks.
 
-Example 87 (generated)
+Example 89 (generated)
 
 ::: compare
 
@@ -1966,7 +1997,7 @@ code
 
 :::
 
-Example 88 (generated)
+Example 90 (generated)
 
 ::: compare
 
@@ -1983,7 +2014,7 @@ Example 88 (generated)
 
 :::
 
-Example 89 (generated)
+Example 91 (generated)
 
 ::: compare
 
@@ -2002,7 +2033,7 @@ code
 
 :::
 
-Example 90 (generated)
+Example 92 (generated)
 
 ::: compare
 
@@ -2020,7 +2051,7 @@ code
 
 The fence ends with its item at line 3.
 
-Example 91 (generated)
+Example 93 (generated)
 
 ::: compare
 
@@ -2044,7 +2075,7 @@ after
 
 The blank line before `after` is not code.
 
-Example 92 (unverified)
+Example 94 (unverified)
 
 ::: compare
 
@@ -2069,7 +2100,7 @@ after
 
 The closer is not tested for its column.
 
-Example 93 (unverified)
+Example 95 (unverified)
 
 ::: compare
 
@@ -2086,7 +2117,7 @@ code
 
 :::
 
-Example 94 (generated)
+Example 96 (generated)
 
 ::: compare
 
@@ -2104,7 +2135,7 @@ text
 
 :::
 
-Example 95 (generated)
+Example 97 (generated)
 
 ::: compare
 
@@ -2129,7 +2160,7 @@ after
 
 The backtick is the canonical fence character; the tilde is accepted. The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line. An unquoted title or further words in the info string are a diagnostic, and the block still opens.
 
-Example 96 (generated)
+Example 98 (generated)
 
 ::: compare
 
@@ -2146,7 +2177,7 @@ code
 
 :::
 
-Example 97 (generated)
+Example 99 (generated)
 
 ::: compare
 
@@ -2163,7 +2194,7 @@ code
 
 :::
 
-Example 98 (generated)
+Example 100 (generated)
 
 ::: compare
 
@@ -2182,7 +2213,7 @@ text
 
 :::
 
-Example 99 (generated)
+Example 101 (generated)
 
 ::: compare
 
@@ -2212,7 +2243,7 @@ A *sigil div* is a div whose opener names how its body is read: `::: |` is a lin
 
 A stray `:::` at column 0 below an item follows from these clauses: the item closes (C2-B-024), no div is open, and an anonymous div opens at top level. This is an error diagnostic.
 
-Example 100 (unverified)
+Example 102 (unverified)
 
 ::: compare
 
@@ -2232,7 +2263,7 @@ Example 100 (unverified)
 
 :::
 
-Example 101 (generated)
+Example 103 (generated)
 
 ::: compare
 
@@ -2252,7 +2283,7 @@ Roses are red
 
 :::
 
-Example 102 (generated)
+Example 104 (generated)
 
 ::: compare
 
@@ -2272,7 +2303,7 @@ two</p>
 
 :::
 
-Example 103 (generated)
+Example 105 (generated)
 
 ::: compare
 
@@ -2293,7 +2324,7 @@ second
 
 :::
 
-Example 104 (generated)
+Example 106 (generated)
 
 ::: compare
 
@@ -2319,7 +2350,7 @@ outer
 
 The bare run on line 2 is too short for the open div, so it opens an anonymous div.
 
-Example 105 (generated)
+Example 107 (generated)
 
 ::: compare
 
@@ -2341,7 +2372,7 @@ x
 
 :::
 
-Example 106 (generated)
+Example 108 (generated)
 
 ::: compare
 
@@ -2393,7 +2424,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 One paragraph, with the comment inside it:
 
-Example 107 (generated)
+Example 109 (generated)
 
 ::: compare
 
@@ -2412,7 +2443,7 @@ two</li>
 
 :::
 
-Example 108 (generated)
+Example 110 (generated)
 
 ::: compare
 
@@ -2428,7 +2459,7 @@ more</p>
 
 :::
 
-Example 109 (generated)
+Example 111 (generated)
 
 ::: compare
 
@@ -2444,7 +2475,7 @@ a%% b
 
 The comment-only line does not end the list.
 
-Example 110 (generated)
+Example 112 (generated)
 
 ::: compare
 
@@ -2465,7 +2496,7 @@ Example 110 (generated)
 
 The empty item:
 
-Example 111 (generated)
+Example 113 (generated)
 
 ::: compare
 
@@ -2481,7 +2512,7 @@ Example 111 (generated)
 
 :::
 
-Example 112 (unverified)
+Example 114 (unverified)
 
 ::: compare
 
@@ -2495,7 +2526,7 @@ Example 112 (unverified)
 
 :::
 
-Example 113 (generated)
+Example 115 (generated)
 
 ::: compare
 
@@ -2511,7 +2542,7 @@ Example 113 (generated)
 
 :::
 
-Example 114 (generated)
+Example 116 (generated)
 
 ::: compare
 
@@ -2530,7 +2561,7 @@ Example 114 (generated)
 
 The fence in the item is unclosed. Line 3 belongs to the item, so it is code.
 
-Example 115 (generated)
+Example 117 (generated)
 
 ::: compare
 
@@ -2554,9 +2585,34 @@ after
 
 :::
 
+Line 3 is not owned by the item, so it ends the item and with it the unclosed fence, and it is then a comment at top level. Lint reports the unclosed fence.
+
+Example 118 (unverified)
+
+::: compare
+
+```carve
+- ```
+  code
+%% c
+  more
+```
+
+```html
+<ul>
+  <li>
+    <pre><code>code
+</code></pre>
+  </li>
+</ul>
+<p>more</p>
+```
+
+:::
+
 Line 2 is an interrupter, so the braced comment does not close.
 
-Example 116 (generated)
+Example 119 (generated)
 
 ::: compare
 
@@ -2574,7 +2630,7 @@ Example 116 (generated)
 
 :::
 
-Example 117 (unverified)
+Example 120 (unverified)
 
 ::: compare
 
@@ -2597,7 +2653,7 @@ x
 
 :::
 
-Example 118 (generated)
+Example 121 (generated)
 
 ::: compare
 
@@ -2615,7 +2671,7 @@ Example 118 (generated)
 
 The paragraph on line 3 is the second block of the first item and renders nothing. No blank line stands between the two items, so the list is tight.
 
-Example 119 (unverified)
+Example 122 (unverified)
 
 ::: compare
 
@@ -2637,7 +2693,7 @@ Example 119 (unverified)
 
 The braced comment on line 2 is a paragraph, so it ends the table. The `%%` form would not.
 
-Example 120 (unverified)
+Example 123 (unverified)
 
 ::: compare
 
@@ -2672,7 +2728,7 @@ Example 120 (unverified)
 
 After a blank line or below any other block a caption line is text, with lint. Under ordinary paragraph text it is a lazy line (C2-B-016). Below a quote that ends in a paragraph, a caption line without the quote's mark closes the quote and captions it (C2-B-017); with the mark it is a lazy line of that paragraph. Inside an item or a quote a caption line carries that container's indent or mark like any other line.
 
-Example 121 (generated)
+Example 124 (generated)
 
 ::: compare
 
@@ -2690,7 +2746,7 @@ Example 121 (generated)
 
 :::
 
-Example 122 (generated)
+Example 125 (generated)
 
 ::: compare
 
@@ -2710,7 +2766,7 @@ Example 122 (generated)
 
 :::
 
-Example 123 (generated)
+Example 126 (generated)
 
 ::: compare
 
@@ -2731,7 +2787,7 @@ code
 
 :::
 
-Example 124 (generated)
+Example 127 (generated)
 
 ::: compare
 
@@ -2751,7 +2807,7 @@ q
 
 :::
 
-Example 125 (generated)
+Example 128 (generated)
 
 ::: compare
 
@@ -2769,7 +2825,7 @@ Example 125 (generated)
 
 :::
 
-Example 126 (generated)
+Example 129 (generated)
 
 ::: compare
 
@@ -2787,7 +2843,7 @@ $$`x^2`
 
 :::
 
-Example 127 (generated)
+Example 130 (generated)
 
 ::: compare
 
@@ -2809,7 +2865,7 @@ Example 127 (generated)
 
 :::
 
-Example 128 (generated)
+Example 131 (generated)
 
 ::: compare
 
@@ -2825,7 +2881,7 @@ text
 
 :::
 
-Example 129 (unverified)
+Example 132 (unverified)
 
 ::: compare
 
@@ -2847,7 +2903,7 @@ Example 129 (unverified)
 
 :::
 
-Example 130 (unverified)
+Example 133 (unverified)
 
 ::: compare
 
@@ -2864,7 +2920,7 @@ Example 130 (unverified)
 
 :::
 
-Example 131 (generated)
+Example 134 (generated)
 
 ::: compare
 
@@ -2888,7 +2944,7 @@ Example 131 (generated)
 
 :::
 
-Example 132 (generated)
+Example 135 (generated)
 
 ::: compare
 
@@ -2920,7 +2976,7 @@ Example 132 (generated)
 
 A heading's attributes stand on the line above it (C2-B-069). A heading may stand on a marker line or after a quote mark (C2-B-049). Directly after a paragraph line a heading line is a lazy line. `=` and `#` may mix in one document, with a lint note.
 
-Example 133 (unverified)
+Example 136 (unverified)
 
 ::: compare
 
@@ -2938,7 +2994,7 @@ text
 
 :::
 
-Example 134 (generated)
+Example 137 (generated)
 
 ::: compare
 
@@ -2958,7 +3014,7 @@ text
 
 A level 4 heading with the text `Title ==`:
 
-Example 135 (unverified)
+Example 138 (unverified)
 
 ::: compare
 
@@ -2974,7 +3030,7 @@ Example 135 (unverified)
 
 :::
 
-Example 136 (generated)
+Example 139 (generated)
 
 ::: compare
 
@@ -2990,7 +3046,7 @@ Example 136 (generated)
 
 :::
 
-Example 137 (unverified)
+Example 140 (unverified)
 
 ::: compare
 
@@ -3007,7 +3063,7 @@ Example 137 (unverified)
 
 :::
 
-Example 138 (unverified)
+Example 141 (unverified)
 
 ::: compare
 
@@ -3024,7 +3080,7 @@ Example 138 (unverified)
 
 :::
 
-Example 139 (generated)
+Example 142 (generated)
 
 ::: compare
 
@@ -3050,7 +3106,7 @@ Example 139 (generated)
 
 A heading (C2-B-107) and a table row (C2-B-114) are one line each as well. The shape of the directive keeps its 0.1 definition. The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
 
-Example 140 (generated)
+Example 143 (generated)
 
 ::: compare
 
@@ -3066,7 +3122,7 @@ next line
 
 :::
 
-Example 141 (generated)
+Example 144 (generated)
 
 ::: compare
 
@@ -3082,7 +3138,7 @@ text
 
 :::
 
-Example 142 (generated)
+Example 145 (generated)
 
 ::: compare
 
@@ -3096,7 +3152,7 @@ Example 142 (generated)
 
 :::
 
-Example 143 (generated)
+Example 146 (generated)
 
 ::: compare
 
@@ -3118,7 +3174,7 @@ next line</p>
 
 A run of hyphens or underscores and the spaced forms are not thematic breaks. They are text, or nested markers for `- - -` (C2-B-050), and lint reports a line that holds only hyphens or underscores. Directly after a paragraph line a star run is a lazy line.
 
-Example 144 (generated)
+Example 147 (generated)
 
 ::: compare
 
@@ -3138,7 +3194,7 @@ b
 
 :::
 
-Example 145 (generated)
+Example 148 (generated)
 
 ::: compare
 
@@ -3152,7 +3208,7 @@ Example 145 (generated)
 
 :::
 
-Example 146 (generated)
+Example 149 (generated)
 
 ::: compare
 
@@ -3170,7 +3226,7 @@ Example 146 (generated)
 
 :::
 
-Example 147 (unverified)
+Example 150 (unverified)
 
 ::: compare
 
@@ -3186,7 +3242,7 @@ text
 
 :::
 
-Example 148 (unverified)
+Example 151 (unverified)
 
 ::: compare
 
@@ -3216,7 +3272,7 @@ b
 
 The opener is taken without a scan for the closer. A document that starts with a thematic break writes `***`.
 
-Example 149 (generated)
+Example 152 (generated)
 
 ::: compare
 
@@ -3234,7 +3290,7 @@ text
 
 :::
 
-Example 150 (generated)
+Example 153 (generated)
 
 ::: compare
 
@@ -3251,7 +3307,7 @@ text
 
 :::
 
-Example 151 (generated)
+Example 154 (generated)
 
 ::: compare
 
@@ -3303,7 +3359,7 @@ text
 
 `aligns`, `widths`, `header-cols` and `footer-rows` keep their 0.1 definitions. A fragment of a continuation row reads no cell prefix, no span mark and no row attribute. A row is an interrupter (C2-B-018).
 
-Example 152 (generated)
+Example 155 (generated)
 
 ::: compare
 
@@ -3325,7 +3381,7 @@ Example 152 (generated)
 
 :::
 
-Example 153 (generated)
+Example 156 (generated)
 
 ::: compare
 
@@ -3343,7 +3399,7 @@ Example 153 (generated)
 
 :::
 
-Example 154 (unverified)
+Example 157 (unverified)
 
 ::: compare
 
@@ -3361,7 +3417,7 @@ Example 154 (unverified)
 
 :::
 
-Example 155 (generated)
+Example 158 (generated)
 
 ::: compare
 
@@ -3387,7 +3443,7 @@ Example 155 (generated)
 
 :::
 
-Example 156 (generated)
+Example 159 (generated)
 
 ::: compare
 
@@ -3413,7 +3469,7 @@ Example 156 (generated)
 
 :::
 
-Example 157 (generated)
+Example 160 (generated)
 
 ::: compare
 
@@ -3431,7 +3487,7 @@ Example 157 (generated)
 
 :::
 
-Example 158 (generated)
+Example 161 (generated)
 
 ::: compare
 
@@ -3449,7 +3505,7 @@ Example 158 (generated)
 
 :::
 
-Example 159 (generated)
+Example 162 (generated)
 
 ::: compare
 
@@ -3470,7 +3526,7 @@ Example 159 (generated)
 
 :::
 
-Example 160 (generated)
+Example 163 (generated)
 
 ::: compare
 
@@ -3492,7 +3548,7 @@ Example 160 (generated)
 
 :::
 
-Example 161 (generated)
+Example 164 (generated)
 
 ::: compare
 
@@ -3514,7 +3570,7 @@ Example 161 (generated)
 
 :::
 
-Example 162 (generated)
+Example 165 (generated)
 
 ::: compare
 
@@ -3536,7 +3592,7 @@ Example 162 (generated)
 
 The row span would cross the head boundary, so it fails.
 
-Example 163 (unverified)
+Example 166 (unverified)
 
 ::: compare
 
@@ -3560,7 +3616,7 @@ Example 163 (unverified)
 
 :::
 
-Example 164 (generated)
+Example 167 (generated)
 
 ::: compare
 
@@ -3583,7 +3639,7 @@ Example 164 (generated)
 
 :::
 
-Example 165 (generated)
+Example 168 (generated)
 
 ::: compare
 
@@ -3602,7 +3658,7 @@ Example 165 (generated)
 
 :::
 
-Example 166 (generated)
+Example 169 (generated)
 
 ::: compare
 
@@ -3622,7 +3678,7 @@ Example 166 (generated)
 
 :::
 
-Example 167 (generated)
+Example 170 (generated)
 
 ::: compare
 
@@ -3649,7 +3705,7 @@ a,b
 
 The quote on line 4 never closes, so the last cell holds the rest of the body.
 
-Example 168 (unverified)
+Example 171 (unverified)
 
 ::: compare
 
@@ -3684,7 +3740,7 @@ A line that is not a valid opener is text (C2-B-010).
 
 **C2-B-131** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text.
 
-Example 169 (generated)
+Example 172 (generated)
 
 ::: compare
 
@@ -3707,7 +3763,7 @@ Example 169 (generated)
 
 :::
 
-Example 170 (generated)
+Example 173 (generated)
 
 ::: compare
 
@@ -3724,7 +3780,7 @@ text
 
 :::
 
-Example 171 (generated)
+Example 174 (generated)
 
 ::: compare
 
@@ -3746,7 +3802,7 @@ A streaming writer therefore buffers one paragraph, one captioned block, one lis
 
 The last row becomes the footer when the table closes.
 
-Example 172 (generated)
+Example 175 (generated)
 
 ::: compare
 
@@ -3773,7 +3829,7 @@ Example 172 (generated)
 
 The list is loose from its first item, though the blank line comes after it.
 
-Example 173 (generated)
+Example 176 (generated)
 
 ::: compare
 
@@ -3811,12 +3867,12 @@ Budget: about 130 block clauses and at most 25 exceptions.
 | Nested lists and the marker line | 4 | 0 | 5 | 1 |
 | Tightness | 3 | 0 | 2 | 2 |
 | Description lists | 7 | 0 | 8 | 4 |
-| Definitions | 6 | 0 | 5 | 3 |
-| Attribute lines | 12 | 2 | 6 | 7 |
+| Definitions | 6 | 0 | 6 | 3 |
+| Attribute lines | 12 | 2 | 6 | 8 |
 | Fences, divs and comment blocks | 5 | 0 | 7 | 2 |
 | The fence opener and titles | 2 | 1 | 4 | 0 |
 | Sigil divs | 4 | 0 | 6 | 1 |
-| Comments | 10 | 3 | 10 | 4 |
+| Comments | 10 | 3 | 10 | 5 |
 | Captions | 3 | 0 | 10 | 2 |
 | Headings | 4 | 0 | 3 | 4 |
 | One-line constructs | 2 | 0 | 4 | 0 |
@@ -3825,7 +3881,7 @@ Budget: about 130 block clauses and at most 25 exceptions.
 | Tables | 16 | 2 | 14 | 3 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **132** | **14** | **129** | **44** |
+| **Total** | **132** | **14** | **130** | **46** |
 
 The chapter has 132 clauses against a budget of about 130, and 14 exceptions against a budget of 25. The clause count includes the exceptions.
 
