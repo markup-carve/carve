@@ -211,7 +211,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `math` | inline | none | `display`, `number`?, `value`, `numberPrefix`? |
 | `mention` | inline | none | `target`, `kind`, `label`? |
 | `non_breaking_space` | inline | none | none |
-| `paragraph` | block | inlines | `blockImage`?, `mathBlock`? |
+| `paragraph` | block | inlines | `blockImage`?, `blockMath`? |
 | `raw_block` | block | none | `format`, `value` |
 | `raw_inline` | inline | none | `format`, `value` |
 | `ruby` | inline | none | `pairs` |
@@ -689,7 +689,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
 
-**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node and carries `mathBlock: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
+**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node and carries `blockMath: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 
@@ -723,7 +723,7 @@ Definitions added (3):
 Added by the decisions of 2026-11-13 (3):
 
 43. `definition_list.spacing`: removed, also from `required`.
-44. `paragraph.mathBlock`: added, `const: true`, optional. The name is proposed here.
+44. `paragraph.blockMath`: added, `const: true`, optional.
 45. `document.stages`: remove `blockImagePromotion` from the enum.
 
 Enum values renamed (1):
@@ -759,7 +759,7 @@ Fields removed (15):
 
 Fields added (3):
 
-27. `heading.generatedId`: string, optional, a resolution result. The name is proposed here.
+27. `heading.generatedId`: string, optional, a resolution result.
 28. `link.form`: enum `full`, `collapsed`.
 29. `image.form`: the same enum.
 

@@ -636,7 +636,7 @@ b {% mid %} c
 
 **C2-H-076** The names `samp`, `var`, `cite` and `dfn` are not core. Without their extension, `[x]{samp}` is a span with the attribute `samp=""`. An inline extension with no renderer is `<span class="ext-NAME">` around its content. The core never turns an extension name into an element name. In 0.2.0 an extension gives core nodes and `inline_extension` nodes. `block_extension` is not part of 0.2.0. An unknown optional extension renders through its fallback and is reported with the code `extension-fallback-rendered`.
 
-**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198) and is the mark `mathBlock` (C2-A-184), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
+**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198) and is the mark `blockMath` (C2-A-184), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
 
 **C2-H-078** A smart-punctuation node is written as its glyph. With `smartTypography` off it is written as its `source` (C2-A-098).
 
