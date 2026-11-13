@@ -1176,9 +1176,9 @@ Example 63 (generated)
 
 **C2-I-078** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id.
 
-**C2-I-079** An unresolved reference renders its source as written, with an attribute block that attached to it. The source is not scanned again: every form inside it is written as typed.
+**C2-I-079** An unresolved reference is still a reference node. It renders its source form, rebuilt from its children, its key and its form (full or collapsed), with an attached attribute block written back in the fixed order (C2-I-037). Nothing is scanned again. The text as typed is kept in the source-layout sidecar, not in the tree, so a label that wrapped is written with one space where the line break was.
 
-**Exception C2-I-080** An inline footnote inside an unresolved reference is not a footnote: it takes no number and makes no note.
+**Exception C2-I-080** An inline footnote inside an unresolved reference is not a footnote: it takes no number and makes no note, and it is written in its source form with the rest.
 
 Example 64 (generated)
 
@@ -1285,7 +1285,24 @@ Example 69 (generated)
 
 :::
 
-Example 70 (generated)
+The rebuilt form has the folded key and the attribute block in the fixed order.
+
+Example 70 (unverified)
+
+::: compare
+
+```carve
+[a][no
+pe]{.c #i}
+```
+
+```html
+<p>[a][no pe]{#i .c}</p>
+```
+
+:::
+
+Example 71 (generated)
 
 ::: compare
 
@@ -1304,7 +1321,7 @@ Example 70 (generated)
 
 :::
 
-Example 71 (unverified)
+Example 72 (unverified)
 
 ::: compare
 
@@ -1327,7 +1344,7 @@ bar</a> and <a href="/v">x</a></p>
 
 The comment takes the closing bracket of the label.
 
-Example 72 (unverified)
+Example 73 (unverified)
 
 ::: compare
 
@@ -1341,7 +1358,7 @@ Example 72 (unverified)
 
 :::
 
-Example 73 (unverified)
+Example 74 (unverified)
 
 ::: compare
 
@@ -1361,13 +1378,13 @@ Example 73 (unverified)
 
 **C2-I-081** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-074, and it may wrap (C2-I-075). The label follows C2-I-071 and C2-I-072.
 
-**C2-I-082** A footnote reference with no definition renders its source text (C2-I-079).
+**C2-I-082** A footnote reference with no definition renders its source form, rebuilt from its key (C2-I-079).
 
 **C2-I-083** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content. Unclosed, the two characters are text. (carried over from 0.1)
 
 Numbering and the notes section are rendering rules.
 
-Example 74 (generated)
+Example 75 (generated)
 
 ::: compare
 
@@ -1394,7 +1411,7 @@ a[^n] and b[^missing] and c^[inline *note*] and d^[unclosed
 
 :::
 
-Example 75 (unverified)
+Example 76 (unverified)
 
 ::: compare
 
@@ -1437,7 +1454,7 @@ These four forms start with a sigil: the at-sign for a mention, `#` for a tag, `
 
 What a mention or a tag links to and what a symbol name stands for are host lookups. An unknown symbol renders its source.
 
-Example 76 (generated)
+Example 77 (generated)
 
 ::: compare
 
@@ -1451,7 +1468,7 @@ Example 76 (generated)
 
 :::
 
-Example 77 (generated)
+Example 78 (generated)
 
 ::: compare
 
@@ -1465,7 +1482,7 @@ color #fff, issue #123, C# and #tag/sub and #release-1.0.
 
 :::
 
-Example 78 (generated)
+Example 79 (generated)
 
 ::: compare
 
@@ -1483,7 +1500,7 @@ The colon follows a letter, so no extension starts. The bracket pair is text.
 
 The trailing hyphen is not part of the name, so the braced closer forms.
 
-Example 79 (unverified)
+Example 80 (unverified)
 
 ::: compare
 
@@ -1497,7 +1514,7 @@ Example 79 (unverified)
 
 :::
 
-Example 80 (unverified)
+Example 81 (unverified)
 
 ::: compare
 
@@ -1513,7 +1530,7 @@ see config:items[0]
 
 The boundary reads the Unicode class: a letter blocks the sigil, an underscore does not.
 
-Example 81 (unverified)
+Example 82 (unverified)
 
 ::: compare
 
@@ -1533,7 +1550,7 @@ Example 81 (unverified)
 
 **C2-I-091** The id is matched exactly, without case folding. An unresolved cross-reference renders its source. (carried over from 0.1)
 
-Example 82 (generated)
+Example 83 (generated)
 
 ::: compare
 
@@ -1563,7 +1580,7 @@ An abbreviation definition is a block line (C2-B-065). Its effect is inline.
 
 **Exception C2-I-094** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
 
-Example 83 (generated)
+Example 84 (generated)
 
 ::: compare
 
@@ -1583,7 +1600,7 @@ The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).
 
 **C2-I-095** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key forms no construct: the brackets are text and the key is read as a mention (C2-I-073, C2-I-084). (carried over from 0.1)
 
-Example 84 (generated)
+Example 85 (generated)
 
 ::: compare
 
@@ -1603,7 +1620,7 @@ See [@doe2020] and [see @doe2020, p. 3; @roe].
 
 **C2-I-097** Every other line break inside a leaf is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
 
-Example 85 (generated)
+Example 86 (generated)
 
 ::: compare
 
@@ -1619,7 +1636,7 @@ b</p>
 
 :::
 
-Example 86 (generated)
+Example 87 (generated)
 
 ::: compare
 
@@ -1637,7 +1654,7 @@ line three</p>
 
 :::
 
-Example 87 (generated)
+Example 88 (generated)
 
 ::: compare
 
@@ -1690,7 +1707,7 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-111** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `(c)` and `(r)` are text. (carried over from 0.1)
 
-Example 88 (generated)
+Example 89 (generated)
 
 ::: compare
 
@@ -1704,7 +1721,7 @@ Example 88 (generated)
 
 :::
 
-Example 89 (generated)
+Example 90 (generated)
 
 ::: compare
 
@@ -1718,7 +1735,7 @@ Example 89 (generated)
 
 :::
 
-Example 90 (generated)
+Example 91 (generated)
 
 ::: compare
 
@@ -1734,7 +1751,7 @@ Example 90 (generated)
 
 The opening quote has no partner and stays an opening quote.
 
-Example 91 (generated)
+Example 92 (generated)
 
 ::: compare
 
@@ -1748,7 +1765,7 @@ Example 91 (generated)
 
 :::
 
-Example 92 (unverified)
+Example 93 (unverified)
 
 ::: compare
 
@@ -1762,7 +1779,7 @@ say 'word
 
 :::
 
-Example 93 (generated)
+Example 94 (generated)
 
 ::: compare
 
@@ -1776,7 +1793,7 @@ pages 1--10 and a---b and a----b and git log --oneline and x --- y
 
 :::
 
-Example 94 (generated)
+Example 95 (generated)
 
 ::: compare
 
@@ -1790,7 +1807,7 @@ x {--}y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g
 
 :::
 
-Example 95 (generated)
+Example 96 (generated)
 
 ::: compare
 
@@ -1804,7 +1821,7 @@ a != b, a <= b, a >= b, 5 +- 1, Carve(tm), (c), x -> y, k => v
 
 :::
 
-Example 96 (generated)
+Example 97 (generated)
 
 ::: compare
 
@@ -1845,7 +1862,7 @@ The two forms that never fail are the code span and the math span (C2-I-016, C2-
 | unclosed autolink or cross-reference | the angle bracket (C2-I-068, C2-I-090) |
 | opener past the depth cap | the opener (C2-I-112) |
 
-Example 97 (generated)
+Example 98 (generated)
 
 ::: compare
 
@@ -1859,7 +1876,7 @@ Example 97 (generated)
 
 :::
 
-Example 98 (generated)
+Example 99 (generated)
 
 ::: compare
 
@@ -1891,7 +1908,7 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 9 | 1 | 5 | 1 |
-| Reference resolution | 11 | 4 | 6 | 4 |
+| Reference resolution | 11 | 4 | 6 | 5 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 0 |
@@ -1901,9 +1918,9 @@ There is no fixed budget for the inline chapter.
 | Smart typography | 14 | 7 | 8 | 1 |
 | The depth cap | 1 | 0 | 0 | 0 |
 | The fallback rule | 2 | 0 | 2 | 0 |
-| **Total** | **114** | **23** | **70** | **28** |
+| **Total** | **114** | **23** | **70** | **29** |
 
-The chapter has 114 clauses, 23 of them exceptions, and 98 examples. The clause count includes the exceptions.
+The chapter has 114 clauses, 23 of them exceptions, and 99 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
