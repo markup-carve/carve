@@ -12,7 +12,7 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 
 **C2-L-001** The sidecar is a record beside the tree. A producer returns it only when the caller asks, and never puts its content into the tree.
 
-**C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-160) does not read the sidecar.
+**C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-163) does not read the sidecar.
 
 **C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree.
 
@@ -45,9 +45,9 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-011** Entries are sorted by `path`, and no two entries have the same path.
 
-**C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of `source`, start inclusive and end exclusive. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
+**C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. They are the same offsets as `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
 
-**C2-L-013** A producer does not invent a range. What an entry holds for a node without a contiguous source range (C2-A-153) is open (Open, point 5).
+**C2-L-013** A producer does not invent a range. What an entry holds for a node without a contiguous source range (C2-A-156) is open (Open, point 4).
 
 **C2-L-014** Source and ranges are the minimum. Every fact is optional, and an absent fact means unknown: a producer omits what it did not measure, and a consumer does not read an absent fact as a value.
 
@@ -81,19 +81,19 @@ These six facts were tree fields in the `next-ast2` draft.
 | `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the last closing bracket | `link.rawRef`, `image.rawRef` |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
 
-**C2-L-016** `bare` says whether an ordered list was numbered with the bare dot or with written numbers. The tree holds only the start value (C2-A-054).
+**C2-L-016** `bare` says whether an ordered list was numbered with the bare dot or with written numbers. The tree holds only the start value (C2-A-056).
 
 **C2-L-017** `fenced` says which of the two quote forms the author wrote. Both give the same `block_quote`.
 
-**C2-L-018** `hardBreakOpener` says which of the two forms of a hard-break block the author wrote. Both give the same `div` (C2-A-066).
+**C2-L-018** `hardBreakOpener` says which of the two forms of a hard-break block the author wrote. Both give the same `div` (C2-A-068).
 
 **C2-L-019** `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included.
 
 **C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the node whose `value` holds the break; and `offset`, the UTF-8 byte offset in that `value` at which the fragment of that row starts. A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
-**C2-L-021** The joining space that a continuation row leaves in the cell's text (C2-A-092) is the character before `offset`. A fragment that joins an empty cell has `offset` 0.
+**C2-L-021** The joining space that a continuation row leaves in the cell's text (C2-A-094) is the character before `offset`. A fragment that joins an empty cell has `offset` 0.
 
-**C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `form` (C2-A-103).
+**C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `form` (C2-A-105).
 
 **C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells.
 
@@ -192,7 +192,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener, the quote character of a title.
 
-**C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-A-161).
+**C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-A-164).
 
 ## Schema changes owed
 
@@ -206,9 +206,8 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 ## Open
 
-1. **Byte ranges and `pos` offsets.** The draft counts sidecar bytes in the original input, with the BOM and CRLF bytes included, and says that such a range is not a `pos` offset. The 0.2 decision is that sidecar ranges are UTF-8 bytes like positions. Whether the two number spaces are the same for an input with a BOM or with CRLF line endings is not stated. Options: (a) both count bytes of the original input; (b) `pos` counts after line-ending normalization and the sidecar counts the original.
-2. **Names and shape of the moved facts.** `bare`, `fenced`, `rawRef` and `sourceFormat` keep their draft tree names. `hardBreakOpener`, `wraps` and `continuationLines` on a row entry are first drafted here. An alternative for the first two booleans is to derive them from `markerRaw` and `openerRaw`, which already tell a bare dot and a quote fence.
-3. **The marker column of a quoted comment line.** The tracking ticket rules that the column of the quote mark on a comment line is spelling and belongs in the sidecar. No fact is defined for it yet. A candidate: `markerColumn` on the entry of the comment.
-4. **`attachment: detached`.** The draft value records a caption position that was written but detached by blank lines. In 0.2 a caption stands directly below its block (C2-B-101), so the value has nothing left to record and item 4 above removes it. If a detached form returns, the value returns with it.
-5. **Entries for nodes without a range.** A node joined from continuation rows has no contiguous range (C2-L-013), yet its facts (`wraps`) need an entry. Options: (a) the entry carries the range from the first piece to the last; (b) `startByte` and `endByte` become optional; (c) the facts move to the nearest positioned ancestor. The example above uses (a).
-6. **The gate for this document.** The plan asks for one and states none. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
+1. **Names and shape of the moved facts.** `bare`, `fenced`, `rawRef` and `sourceFormat` keep their draft tree names. `hardBreakOpener`, `wraps` and `continuationLines` on a row entry are first drafted here. An alternative for the first two booleans is to derive them from `markerRaw` and `openerRaw`, which already tell a bare dot and a quote fence.
+2. **The marker column of a quoted comment line.** The tracking ticket rules that the column of the quote mark on a comment line is spelling and belongs in the sidecar. No fact is defined for it yet. A candidate: `markerColumn` on the entry of the comment.
+3. **`attachment: detached`.** The draft value records a caption position that was written but detached by blank lines. In 0.2 a caption stands directly below its block (C2-B-101), so the value has nothing left to record and item 4 of the schema list removes it. If a detached form returns, the value returns with it.
+4. **Entries for nodes without a range.** A node joined from continuation rows has no contiguous range (C2-L-013), yet its facts (`wraps`) need an entry. Options: (a) the entry carries the range from the first piece to the last; (b) `startByte` and `endByte` become optional; (c) the facts move to the nearest positioned ancestor. The example above uses (a).
+5. **The gate for this document.** The plan asks for one and states none. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
