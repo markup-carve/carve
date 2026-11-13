@@ -21,8 +21,9 @@
       "closed_by": "comment_block_closer",
       "closes_on": ["closer", "container_end"],
       "body": "opaque",
+      "strip": "opener_indent",
       "unclosed_report": "unclosed-comment-fence",
-      "clauses": ["C2-B-109", "C2-B-110", "C2-B-111", "C2-B-112", "C2-B-114", "C2-B-135", "C2-B-195"]
+      "clauses": ["C2-B-029", "C2-B-109", "C2-B-110", "C2-B-111", "C2-B-112", "C2-B-113", "C2-B-114", "C2-B-135", "C2-B-195"]
     },
     {
       "name": "description",

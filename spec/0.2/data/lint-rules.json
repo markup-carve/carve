@@ -178,7 +178,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it currently opens a ${outcome}."
+        "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it ${outcome}."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]

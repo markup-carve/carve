@@ -20,7 +20,7 @@ Terms:
 - The *container stack* is the list of containers open at a line, outermost first.
 - A *marker* is a list marker, a description mark (`:`), a term mark (`::`) or a footnote definition marker. The *marker column* is the column of its first character. The *content column* is the column of the first content character on the marker line.
 - A *prefix* is what a line carries to stay inside an open container: the quote mark for a quote, indent for an item, a description or a footnote body.
-- The *indent* of a line is the column of its first character that is not a space or a tab.
+- The *indent* of a line is the column of its first character that is not a space or a tab. Indent that remains after the prefixes of the open containers is skipped before the shape of a line is tested, so a heading, a quote, a table row or a list marker may stand at any indent. The clauses that pin a column say so: a definition and a frontmatter opener stand at column 0 (C2-B-081, C2-B-161).
 - A marker, a mark or an opener that needs *content* needs at least one character that is not a space or a tab behind it on its line. Spaces and tabs alone are no content, since they are dropped at the end of a line (C2-I-002).
 
 **C2-B-001** The role of a line depends only on that line, the container stack and five facts the scanner keeps about the lines directly above: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). No rule reads a line below the current one.
@@ -236,7 +236,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197) or one display math line (C2-B-198).
 
-**Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph.
+**Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, and owned by the container that holds the quote (C2-B-146), closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph. A caret line that the quote's container does not own, as at column 0 below a quote that sits in a list item, is a lazy line.
 
 **C2-B-019** Interrupter (e): a table row (C2-B-166).
 
@@ -701,7 +701,7 @@ Example 29 (generated)
 
 ## Ordered lists
 
-**C2-B-036** An ordered marker is a number of one to nine digits, a letter or a roman numeral of at most nine letters, followed by `.` or `)`, or the bare dot `.`, so a bare `)` is never a marker, and a run of ten or more digits or letters is text.
+**C2-B-036** An ordered marker is a number of one to nine digits, one ASCII letter, or a roman numeral of two to nine letters, followed by `.` or `)`, or the bare dot `.`, so a bare `)` is never a marker, and a run of ten or more digits or letters is text. A roman numeral is written in one letter case and in its standard form, from 1 to 3999: thousands as up to three `m`, then each lower place as `cm`, `cd` or an optional `d` and up to three `c`, and likewise with `x`, `l`, `c` and with `i`, `v`, `x`. Two or more letters that do not form such a numeral, as in `civil.` or `iiii.`, are text. The 0.1 engine took any run of these letters.
 
 **C2-B-037** The kind of an ordered list is its numbering style and its delimiter.
 
@@ -719,7 +719,7 @@ Example 29 (generated)
 
 **C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
 
-**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. (carried over from 0.1)
+**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. The value is an unsigned decimal integer; on a list of letters or roman numerals it is at least 1. Any other value is no start value and stays an ordinary key. (carried over from 0.1)
 
 Example 30 (generated)
 
@@ -1022,7 +1022,7 @@ Example 45 (generated)
 
 **C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart (C2-B-142).
 
-**C2-B-054** Adjacency holds at any column: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049), and `uneven-list-indent` reports it.
+**C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
 
 **Exception C2-B-055** A marker between the columns of two open lists joins the deeper list, and `list-marker-below-content-column` reports it.
 
@@ -2518,7 +2518,7 @@ code
 
 ## Fences, divs and comment blocks
 
-**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line is the first line of the comment's value, as in 0.1.
+**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line, without the spaces and tabs before it, is the first line of the comment's value, as in 0.1.
 
 **C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test.
 
@@ -2528,7 +2528,7 @@ code
 
 **C2-B-112** The body of a code fence is code and the body of a comment block is hidden: neither is read for blocks or inline content.
 
-**C2-B-113** Blank lines at the end of an unclosed code fence are not part of its body, so a trailing blank line never changes the tree.
+**C2-B-113** Blank lines at the end of an unclosed code fence or comment block are not part of its body, so a trailing blank line never changes the tree.
 
 **C2-B-114** The body of a code fence and of a comment block is opaque until its closer or the end of its container.
 
@@ -3822,7 +3822,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph, so every interrupter of a paragraph interrupts a heading too (C2-B-014 to C2-B-020, C2-B-200): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. A blank line ends the heading. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -3982,7 +3982,7 @@ Example 179 (generated)
 
 **C2-B-198** A display math line is decided by its shape and not by inline parsing: the line consists of exactly one display math span, `$$` glued to a code span, optional attribute blocks glued to it, and trailing spaces. A span that closes on a later line is not such a line.
 
-A heading (C2-B-154) and a table row (C2-B-166) are one line each as well. The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
+A table row (C2-B-166) is one line as well; a heading may continue on indented lines (C2-B-154). The reference engine that generated the two include examples reports the include as unresolved and prints the directive.
 
 Example 180 (generated)
 
@@ -4204,7 +4204,7 @@ b
 
 ## Frontmatter
 
-**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces.
+**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces and tabs.
 
 **C2-B-162** The closer is a line that is exactly `---` plus trailing spaces and tabs.
 
@@ -4337,7 +4337,7 @@ title: x
 
 **C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
-**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block, then one space.
+**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block. The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
 
 **C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above.
 
@@ -4864,7 +4864,7 @@ A line that is not a valid opener is text (C2-B-011).
 
 **C2-B-189** Whether a line is an opener is decided on that line alone and never by whether a closer follows, so a construct with a closer of its own always opens (C2-B-111).
 
-**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text. A marker that opens two containers at once, a list and its item or a description list and its entry, is tested as one: when both do not fit, the whole marker is text and neither opens.
+**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description list, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text. A marker that opens two containers at once, a list and its item or a description list and its first description, is tested as one: when both do not fit, the whole marker is text and neither opens.
 
 Example 221 (generated)
 

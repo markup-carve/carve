@@ -499,7 +499,7 @@
       "chars": ["A-Z", "a-z"],
       "roman_chars": ["C", "D", "I", "L", "M", "V", "X", "c", "d", "i", "l", "m", "v", "x"],
       "one_letter_case": true,
-      "valid_numeral_required": false,
+      "valid_numeral_required": true,
       "max": 9,
       "clauses": ["C2-B-036", "C2-B-042"]
     },
@@ -509,7 +509,7 @@
       "chars": ["A-Z", "a-z"],
       "roman_chars": ["C", "D", "I", "L", "M", "V", "X", "c", "d", "i", "l", "m", "v", "x"],
       "one_letter_case": true,
-      "valid_numeral_required": false,
+      "valid_numeral_required": true,
       "max": 9,
       "clauses": ["C2-B-036", "C2-B-040", "C2-B-042"]
     },
