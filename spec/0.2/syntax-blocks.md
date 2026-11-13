@@ -829,11 +829,11 @@ Example 36 (generated)
 ::: compare
 
 ```carve
-i. a
+A. Smith
 ```
 
 ```html
-<p>i. a</p>
+<p>A. Smith</p>
 ```
 
 :::
