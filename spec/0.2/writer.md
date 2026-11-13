@@ -93,7 +93,7 @@ Conventions:
 
 ## Canonical forms: blocks
 
-**C2-W-035** A heading is written with `=`, one per level, and one space. A `#` in the source is rewritten.
+**C2-W-035** A heading is written with `=`, one per level, and one space. A `#` in the source is rewritten. A line break inside a heading is kept, and each continuation line is written at the heading's content column, that is the marker width plus one (C2-B-154).
 
 **C2-W-036** A thematic break is written as `***`.
 
@@ -251,7 +251,7 @@ Conventions:
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
 
-**C2-W-099** A text line that holds only hyphens or only underscores is written as it is and needs no escape: it is not a thematic break (C2-B-159). Line 1 of the document is the exception: a text line of exactly three hyphens there is written with its first hyphen escaped, because the bare line opens frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
+**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens is written with every hyphen escaped, on any line, because the bare run reads as dashes (C2-I-111, C2-W-095); that also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
 
 Example 1 (generated)
 

@@ -256,8 +256,8 @@
   ],
   "no_escape": [
     {
-      "name": "hyphen_or_underscore_line",
-      "triggers": ["-", "_"],
+      "name": "underscore_line_or_single_hyphen",
+      "triggers": ["_", "-"],
       "positions": ["line_of_only_these_characters"],
       "clauses": ["C2-W-099", "C2-B-159"]
     }

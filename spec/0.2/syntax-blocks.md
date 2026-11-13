@@ -3821,7 +3821,27 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading is one line, and the next line starts a new block.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break. Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, so text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+
+Example 226 (unverified)
+
+::: compare
+
+```carve
+== A long heading that
+   continues here
+and a paragraph
+```
+
+```html
+<section id="A-long-heading-that-continues-here">
+  <h2>A long heading that
+continues here</h2>
+  <p>and a paragraph</p>
+</section>
+```
+
+:::
 
 **C2-B-155** `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.
 
@@ -3953,7 +3973,7 @@ Example 179 (generated)
 
 **C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1.
 
-**C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197).
+**C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197). Comment-only lines below that line do not count (C2-B-137), for a block image as for a math block (C2-B-158).
 
 **C2-B-158** A paragraph that closes as exactly one display math line (C2-B-198) is a math block, a fact set at close like the promotion of a block image.
 
@@ -4306,7 +4326,7 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, with at least two pipes, so a pipe alone on a line is text.
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer.
 
 **C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment.
 
@@ -4338,7 +4358,7 @@ title: x
 
 **C2-B-181** An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error: its cell holds everything after the quote character, line breaks and separators included, without the final line ending.
 
-**C2-B-182** In the brace block of a cell prefix the alignment mark, `<`, `>` or `~`, comes first.
+**C2-B-182** In the brace block of a cell prefix the alignment mark, `<`, `>` or `~`, comes first. The mark is not a part of the attribute grammar (C2-I-029): it is read before the parts, only in a cell prefix, and a block that holds nothing but the mark, as in `|={>} x |`, is valid there.
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
@@ -4979,14 +4999,14 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 14 | 4 | 13 | 4 |
 | Captions | 5 | 0 | 12 | 2 |
-| Headings | 5 | 0 | 3 | 4 |
+| Headings | 5 | 0 | 3 | 5 |
 | One-line constructs | 5 | 0 | 8 | 0 |
 | Thematic break | 2 | 0 | 3 | 2 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 23 | 2 | 18 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **200** | **15** | **169** | **56** |
+| **Total** | **200** | **15** | **169** | **57** |
 
 The chapter has 200 clauses, which is the accepted size, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

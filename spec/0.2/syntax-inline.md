@@ -448,7 +448,7 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-098). The written order of the parts is not kept.
 
-**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-099).
+**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-099). The value of a `class` key is split at runs of spaces and tabs, each piece is one class at the place of the key, and an empty value adds none.
 
 Example 21 (generated)
 

@@ -113,7 +113,7 @@ Conventions:
 
 **C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-099, C2-B-104).
 
-**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). A key occurs once in `keyValues`, at the place where it was first written.
+**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). Names are the same when they agree without regard to ASCII letter case, within one block as across merged blocks. A key occurs once in `keyValues`, at the place and in the spelling where it was first written, with the value written last.
 
 **C2-A-036** A reader never looks for nodes inside `keyValues`: `{type=widget}` is an ordinary attribute.
 
@@ -318,7 +318,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Headings, thematic breaks and code
 
-**C2-A-070** A `heading` carries `level` and inline `children`. The marker character is not recorded in the tree, and the formatter writes `=`.
+**C2-A-070** A `heading` carries `level` and inline `children`, which hold a `soft_break` or a `hard_break` where the heading continues on a further line (C2-B-154). The marker character is not recorded in the tree, and the formatter writes `=`.
 
 **C2-A-071** `heading.level` is a positive integer. Carve source gives 1 to 6, an imported tree may hold more, and a renderer clamps for its target without changing the tree.
 
@@ -369,7 +369,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Tables
 
-**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order.
+**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head.
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
@@ -533,7 +533,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
-**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image` and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph that holds nothing but one image always has it. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
+**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image`, and the comments of comment-only lines below it (C2-B-137), and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph that holds nothing but one image always has it. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
 
 **C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
 
@@ -689,7 +689,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
 
-**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node and carries `blockMath: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
+**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node, and the comments of comment-only lines below it (C2-B-137), and carries `blockMath: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 
