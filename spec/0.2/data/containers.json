@@ -177,7 +177,7 @@
       "kind": "container",
       "opened_by": ["quote"],
       "continues": "prefix_mark",
-      "closes_on": ["line_without_mark", "caption_line_without_mark", "list_marker_without_mark_inside_item", "container_end"],
+      "closes_on": ["blank_line_without_mark", "interrupter_without_mark", "caption_line_without_mark", "list_marker_without_mark_inside_item", "container_end"],
       "body": "blocks",
       "counts_toward_depth": true,
       "clauses": ["C2-B-003", "C2-B-008", "C2-B-018", "C2-B-021", "C2-B-025", "C2-B-026", "C2-B-031", "C2-B-032", "C2-B-190"]

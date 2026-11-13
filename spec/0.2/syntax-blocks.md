@@ -22,7 +22,7 @@ Terms:
 - A *prefix* is what a line carries to stay inside an open container: the quote mark for a quote, indent for an item, a description or a footnote body.
 - The *indent* of a line is the column of its first character that is not a space or a tab.
 
-**C2-B-001** The role of a line depends only on that line and the container stack.
+**C2-B-001** The role of a line depends only on that line, the container stack and five facts the scanner keeps about the lines directly above: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). No rule reads a line below the current one.
 
 **Exception C2-B-002** A pending attribute line (C2-B-092) is the one line whose role waits for the next line.
 
@@ -38,7 +38,7 @@ Terms:
 
 **C2-B-008** Prefixes are read outside-in, in the order the containers were opened: for a quote inside a list item the quote mark sits past the item's marker.
 
-**C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines.
+**C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines. A quote is the exception: a blank line without its mark ends it at once (C2-B-032).
 
 **C2-B-010** A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end.
 
@@ -233,7 +233,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
-**C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197).
+**C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197) or one display math line (C2-B-198).
 
 **Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph.
 
@@ -1019,7 +1019,7 @@ Example 45 (generated)
 
 **C2-B-052** Three or more blank lines before a marker at the list's column end the list, and that marker starts a new one.
 
-**C2-B-053** Two lists of the same kind in one container, with fewer than three blank lines between them, are one list.
+**C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart (C2-B-142).
 
 **C2-B-054** Adjacency holds at any column: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049), and `uneven-list-indent` reports it.
 
@@ -4324,7 +4324,7 @@ title: x
 
 **Exception C2-B-174** A row span does not cross the head boundary.
 
-**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row.
+**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them is skipped and does not break the adjacency (C2-B-137).
 
 **C2-B-176** A fragment past the last column forms a new cell.
 
@@ -4348,7 +4348,7 @@ title: x
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, and `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1).
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1).
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
