@@ -422,7 +422,7 @@ Example 9 (generated)
 
 **C2-H-041** A quote is `<blockquote>`. The quote fence and `>` lines give the same output.
 
-**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1.
+**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how.
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
 
@@ -472,6 +472,104 @@ b</p>
 :::
 
 **C2-H-136** A line of a line block that holds only a braced comment is a `line` node that holds the comment (C2-A-069). It renders as an empty line.
+
+**C2-H-154** An admonition is `<aside>` whose classes are `admonition`, then its kind, then the authored classes: `::: note` gives `<aside class="admonition note">`. A title on the opener is its first child, `<p class="admonition-title">`, and a label in brackets follows as `<p class="div-label">`. Each is written only when the author wrote it, and an empty quoted title still gives an empty title paragraph. No title is made from the kind.
+
+**C2-H-155** An admonition carries an accessible name. With a title, the title paragraph takes a generated id (C2-H-156) and the `<aside>` carries `aria-labelledby` with that id. Without a title, the `<aside>` carries `aria-label` with the `labels` string whose key is `admonition` followed by the kind with its first letter in upper case: `admonitionNote`, whose default is `Note`. When the attribute line carries `aria-label` or `aria-labelledby`, in any ASCII letter case, the renderer writes neither attribute itself and generates no id, and the title paragraph has no id.
+
+**C2-H-156** The generated ids are `adm-1`, `adm-2` and so on. They count the titled admonitions and the titled `footnotes` directives that place the footnote section, in document order, and then those inside footnote bodies, in the order of the footnote numbers. An unused footnote definition counts none. Every authored id and every generated heading id is reserved first. An `adm-N` that is taken gets the suffix `-2`, then `-3`, until it is free.
+
+**C2-H-157** A plain div writes its title and its label as an admonition does, and carries no name and no generated id.
+
+**C2-H-158** A top-level `footnotes` directive places the footnote section (C2-H-093). Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. An extension registered for the kind writes it instead, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
+
+Example 28 (generated)
+
+::: compare
+
+```carve
+::: note
+Plain.
+:::
+
+::: warning "Be careful"
+Body.
+:::
+
+::: tip [Tab]
+Labeled.
+:::
+
+::: custom "Title"
+c
+:::
+
+::: toc "Contents"
+:::
+
+::: index
+:::
+```
+
+```html
+<aside class="admonition note" aria-label="Note">
+  <p>Plain.</p>
+</aside>
+<aside class="admonition warning" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Be careful</p>
+  <p>Body.</p>
+</aside>
+<aside class="admonition tip" aria-label="Tip">
+  <p class="div-label">Tab</p>
+  <p>Labeled.</p>
+</aside>
+<div class="custom">
+  <p class="admonition-title">Title</p>
+  <p>c</p>
+</div>
+<div class="toc">
+  <p class="admonition-title">Contents</p>
+</div>
+<div class="index">
+
+</div>
+```
+
+:::
+
+Example 29 (generated)
+
+::: compare
+
+```carve
+Text[^1].
+
+::: footnotes "Notes"
+:::
+
+[^1]: A note.
+
+::: footnotes
+:::
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">Notes</p>
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>A note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<div class="footnotes">
+
+</div>
+```
+
+:::
 
 ## Code and raw content
 
@@ -1223,7 +1321,7 @@ One point is open.
 | Paragraphs, headings and sections | 17 | 1 | 3 | 0 |
 | Lists | 9 | 0 | 2 | 2 |
 | Description lists | 3 | 0 | 1 | 0 |
-| Quotes, divs and their sigil forms | 7 | 0 | 1 | 0 |
+| Quotes, divs and their sigil forms | 12 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
 | Tables | 9 | 1 | 1 | 0 |
 | Captions and figures | 11 | 0 | 4 | 0 |
@@ -1237,6 +1335,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **153** | **7** | **21** | **6** |
+| **Total** | **158** | **7** | **23** | **6** |
 
-The document has 153 clauses, 7 of them marked with the word "Exception", and 27 examples, 21 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 158 clauses, 7 of them marked with the word "Exception", and 29 examples, 23 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

@@ -59,7 +59,7 @@
         "admonitionExample": "Example",
         "admonitionQuote": "Quote"
       },
-      "clauses": ["C2-H-125", "C2-H-137"]
+      "clauses": ["C2-H-125", "C2-H-137", "C2-H-155"]
     },
     {
       "name": "mode",
