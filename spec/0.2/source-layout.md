@@ -45,9 +45,9 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-011** Entries are sorted by `path`, and no two entries have the same path.
 
-**C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. They are the same offsets as `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
+**C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
 
-**C2-L-013** A producer does not invent a range. What an entry holds for a node without a contiguous source range (C2-A-156) is open (Open, point 4).
+**C2-L-013** A producer does not invent a range. What an entry holds for a node without a contiguous source range (C2-A-156) is open (Open, point 3).
 
 **C2-L-014** Source and ranges are the minimum. Every fact is optional, and an absent fact means unknown: a producer omits what it did not measure, and a consumer does not read an absent fact as a value.
 
@@ -70,7 +70,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 ## Facts moved out of the tree
 
-These six facts were tree fields in the `next-ast2` draft.
+These facts hold spelling that the tree does not. The last column names the field that held it in the `next-ast2` draft.
 
 | Fact | On the entry of | Value | Draft tree field |
 | --- | --- | --- | --- |
@@ -144,7 +144,7 @@ These facts are ported from the draft. Columns in them are the zero-based column
 
 **C2-L-027** `openerRaw` and `closerRaw` come as a pair. An unclosed block has `closerRaw` present and empty. `openerRaw` is never empty.
 
-**C2-L-028** Facts and values of the draft that 0.2 has no syntax for are removed: the value `explicit` of `continuationStyle` and the value `continuation` of `attachment`, which both recorded the list continuation marker, and `leadingPipe` and `trailingPipe`, since a row always starts and ends with a pipe (C2-B-114).
+**C2-L-028** `continuationStyle` has no value for a list continuation marker and `attachment` has none for a block attached by one, since 0.2 has no such marker. No fact records a leading or a trailing pipe, since a row always starts and ends with a pipe (C2-B-114).
 
 **C2-L-029** A fact that the schema declares and this document does not define is a defect.
 
@@ -152,21 +152,21 @@ These facts are ported from the draft. Columns in them are the zero-based column
 
 A writer that starts from a tree with no sidecar, or with a sidecar that lacks a fact, writes the canonical form of each spelling.
 
-**C2-L-030** An ordered list is written with the bare dot. The first item carries a number only when `marker.start` is present, that is when the list does not start at 1; every later item is a bare dot.
+**C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot. The first item carries a number only when `marker.start` is present, that is when the list does not start at 1; every later item is a bare dot.
 
-**C2-L-031** A list whose `marker.style` is not `1` cannot use the bare dot and is written with its letters or numerals in sequence.
+**C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-033).
 
 **C2-L-032** A bullet list is written with the character in `marker.char`. A writer writes `-` only where the tree says `-`, and does not change the character to separate two lists.
 
 **C2-L-033** A quote is written with `>` lines.
 
-**C2-L-034** A div with the class `hardbreaks` is written with the hard-break opener when every line break inside it is a `hard_break`, and in the class form otherwise.
+**C2-L-034** A div with the class `hardbreaks` is written with the hard-break opener when every line break inside it is a `hard_break` and `hardbreaks` is the last of its classes, and in the class form otherwise. The opener adds the class last (C2-A-068), so the opener form on any other div would change the order of its classes.
 
 **C2-L-035** A table row is written on one line, with no continuation rows.
 
 **C2-L-036** A table is written as a pipe table. A table with no rows is written as a delimited table, because a pipe table needs a row.
 
-**C2-L-037** A code block is written with a backtick fence of the smallest length that is at least three and longer than every backtick run at the start of a line of its `value`. A fenced container is written with a colon run of the smallest length that is longer than the runs of the divs inside it.
+**C2-L-037** A code block is written with the shortest run of at least three backticks that is longer than every bare backtick run on a line of its `value`, at any indent (C2-W-038). A fenced container is written with a colon run of the smallest length that is longer than the runs of the divs inside it.
 
 **C2-L-038** A heading is written with `=`.
 
@@ -178,21 +178,23 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 | Spelling | Default with no fact | With a fact |
 | --- | --- | --- |
-| ordered numbering | bare dot | kept: bare dot or written numbers |
+| ordered numbering | bare dot for a decimal list with the period, written numbers otherwise | kept: bare dot or written numbers |
 | quote | `>` lines | kept: lines or fence |
-| hard-break block | opener when all breaks are hard, else class form | kept, when the tree allows it |
+| hard-break block | opener when all breaks are hard and the class is last, else class form | kept, when the tree allows it |
 | table row | one line | kept: continuation rows at the recorded places |
 | table form | pipe table, delimited when it has no rows | kept, when the tree allows it |
-| code fence | backticks, minimal length | normalized to the default |
+| code fence | backticks, shortest safe length | normalized to the default |
 | heading marker | `=` | normalized to `=` |
 | thematic break | `***` | normalized to `***` |
 | bullet character | from the tree | from the tree |
 
 **C2-L-042** Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering, the quote form, the hard-break form, the table form and continuation rows.
 
-**C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener, the quote character of a title.
+**C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener.
 
 **C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-A-164).
+
+**C2-L-045** The writer reads seven facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
 
 ## Schema changes owed
 
@@ -208,6 +210,5 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 1. **Names and shape of the moved facts.** `bare`, `fenced`, `rawRef` and `sourceFormat` keep their draft tree names. `hardBreakOpener`, `wraps` and `continuationLines` on a row entry are first drafted here. An alternative for the first two booleans is to derive them from `markerRaw` and `openerRaw`, which already tell a bare dot and a quote fence.
 2. **The marker column of a quoted comment line.** The tracking ticket rules that the column of the quote mark on a comment line is spelling and belongs in the sidecar. No fact is defined for it yet. A candidate: `markerColumn` on the entry of the comment.
-3. **`attachment: detached`.** The draft value records a caption position that was written but detached by blank lines. In 0.2 a caption stands directly below its block (C2-B-101), so the value has nothing left to record and item 4 of the schema list removes it. If a detached form returns, the value returns with it.
-4. **Entries for nodes without a range.** A node joined from continuation rows has no contiguous range (C2-L-013), yet its facts (`wraps`) need an entry. Options: (a) the entry carries the range from the first piece to the last; (b) `startByte` and `endByte` become optional; (c) the facts move to the nearest positioned ancestor. The example above uses (a).
-5. **The gate for this document.** The plan asks for one and states none. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
+3. **Entries for nodes without a range.** A node joined from continuation rows has no contiguous range (C2-L-013), yet its facts (`wraps`) need an entry. Options: (a) the entry carries the range from the first piece to the last; (b) `startByte` and `endByte` become optional; (c) the facts move to the nearest positioned ancestor. The example above uses (a).
+4. **The gate for this document.** The plan asks for one and states none. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
