@@ -20,7 +20,7 @@ Terms:
 - The *content* is the text of one of these, as the block pass left it. A table row is split into cells first, and each cell has a content of its own. Every rule below works on one content.
 - A *form* is one spelling of a construct, such as the braced form of emphasis. The `form` field of a reference node is written as a code word.
 - A *word character* is a Unicode letter or number (general category L or N).
-- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace.
+- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104, C2-I-106, C2-I-109, C2-I-112), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
 - Two things are *glued* when no character stands between them.
 - An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-005.
 - A *bracket construct* is a form built on a bracket pair: a span, a link, an image, a reference, an inline footnote, an inline extension.
@@ -327,7 +327,7 @@ Example 15 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text. A no-break space written as a backslash and a space counts as whitespace for this test.
+**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
 
 **C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
@@ -1790,7 +1790,7 @@ Example 93 (generated)
 
 Smart typography reads the text that the scan left as text and never reads inside an atom. Each match is a `smart_punctuation` node that keeps the typed characters in its `source` field (C2-A-098). The node is always built. The `smartTypography` option is a render option: it selects the glyph or the typed characters when the node is written (C2-H-078), and it does not change the tree. Where a clause below says that characters become a glyph, it names the glyph of that node.
 
-**C2-I-104** A straight quote opens at the start of content, after whitespace or a no-break space, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. The rule holds for every node with inline content: emphasis, strong, the braced forms, a span, a link, an inline footnote and an inline extension. (carried over from 0.1)
+**C2-I-104** A straight quote opens at the start of content, after whitespace, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. The rule holds for every node with inline content: emphasis, strong, the braced forms, a span, a link, an inline footnote and an inline extension. (carried over from 0.1)
 
 **Exception C2-I-105** A single quote before an ASCII digit is an apostrophe. (carried over from 0.1)
 
