@@ -2763,7 +2763,7 @@ after
 
 **C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042).
 
-**C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group, and renders nothing in the core (carried over from 0.1).
+**C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core (carried over from 0.1); on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
 
 **C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text.
 

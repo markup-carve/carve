@@ -81,7 +81,7 @@ Conventions:
 
 **C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). This is requirement W4.
 
-**C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list.
+**C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list. A line comment can follow a list, a description list or a footnote body as a sibling only in the case of C2-W-123: in every other place its line belongs to the last item (C2-B-138), a parse never gives that tree, and for a supplied tree the writer reports `structure-unspellable` (C2-W-117).
 
 **C2-W-029** Two lists are adjacent for C2-W-028 also when every block between them writes nothing.
 
@@ -257,7 +257,7 @@ Written:
 
 **C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text.
 
-**C2-W-091** One escape does not cause others. Each position is tested on its own, from left to right, with the escapes already placed to its left and the text to its right bare. The result is one form for each tree, found in one pass. It can hold an escape that a later one makes needless: `x<a:b>=}` as text is written `x\<a:b\>=}`, where the escape of `>` alone would do, and that form is the canonical one.
+**C2-W-091** One escape does not cause others. Each position is tested on its own, from left to right, with the escapes already placed to its left and the text to its right bare. The result is one form for each tree, found in one pass. It can hold an escape that a later one makes needless. The text `x<a:b>=}` is written `x\<a:b\>=}`: `<` is escaped because, with the text to its right bare, it opens an autolink; `>` is escaped because behind `\<` the bare `>=` would read as the comparison sign (C2-I-117). The escape of `>` alone would have stopped the autolink too, and still the form with both is the canonical one.
 
 **C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
 
