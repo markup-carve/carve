@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 heading slug",
+  "description": "The two character tables of the slug that gives a heading its generated id (C2-H-143 to C2-H-148): the characters removed before the slug is computed, and the glyphs written back to their ASCII source. `removed` is sorted by `code_point`, `reversed` by `glyph`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "removed", "reversed"],
+  "properties": {
+    "$schema": { "const": "schemas/heading-slug.schema.json" },
+    "removed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code_point", "name", "clauses"],
+        "properties": {
+          "code_point": { "type": "string", "pattern": "^U\\+[0-9A-F]{4,6}$", "description": "The removed character, as `U+` and four to six upper-case hex digits, since most of these characters are invisible." },
+          "name": { "type": "string", "description": "The Unicode name of the character, in lower case." },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    },
+    "reversed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["glyph", "ascii", "clauses"],
+        "properties": {
+          "glyph": { "type": "string", "minLength": 1, "description": "One character, typed or written by smart typography." },
+          "ascii": { "type": "string", "minLength": 1, "pattern": "^[\\x21-\\x7e]+$", "description": "The ASCII characters that stand for the glyph in the slug." },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "clauses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+      "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+    }
+  }
+}

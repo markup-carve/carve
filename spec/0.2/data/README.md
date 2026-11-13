@@ -16,6 +16,7 @@ The files are normative together with the clauses they cite. Every row has a `cl
 | `task-states.json` | the task box and its nine characters |
 | `table-marks.json` | cell split, cell prefix, span marks, alignment marks, table attributes |
 | `limits.json` | the depth cap, the tab stop, the blank lines that end a list |
+| `heading-slug.json` | the characters a heading slug removes, and the glyphs it writes back to ASCII |
 | `inline-scan.json` | the four steps of the inline scan, and what a failed form leaves as text |
 | `inline-atoms.json` | the forms taken as one token |
 | `inline-brackets.json` | the forms built on a bracket pair |

@@ -130,7 +130,7 @@ roses
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
-**C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004). With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case, and `ascii` also transliterates it to ASCII, as the two 0.1 switches did.
+**C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004) and stated in C2-H-143 to C2-H-148. With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case, and `ascii` also transliterates it to ASCII, as the two 0.1 switches did.
 
 **C2-H-023** A generated id is a resolution result and is read from `generatedId` (C2-A-134). It is not an authored id: `attrs.id` holds only what the author wrote (C2-A-038), the writer does not write a generated id into the source (C2-W-054), and the carrier `data-carve-generated-id` marks it under `roundtrip`.
 
@@ -176,6 +176,80 @@ Example 4 (generated)
       <h1 id="Quoted">Quoted</h1>
     </blockquote>
   </section>
+</section>
+```
+
+:::
+
+**C2-H-143** The plain text of a heading is the text its inline nodes give, in order. `text`, `code`, `literal_inline` and `math` give their value, and `non_breaking_space` gives a no-break space. `soft_break` and `hard_break` give one space. `smart_punctuation` gives the glyph it is written as. `image` gives its alt text, `autolink` its visible text, `abbreviation` the term as written, `mention` an at-sign and its target, `tag` a `#` and its name, and `caption_number` its number, or nothing while it has none. A `ruby` gives, for each pair, the base, `(`, the annotation and `)`. Every other node with inline children gives the text of its children: emphasis, strong, the braced forms, a span, a link and an inline extension. An inline extension named `index` gives nothing. `footnote_ref`, `inline_footnote`, `xref`, `symbol`, `raw_inline`, `critic_comment`, `comment` and `citation_group` give nothing, so a comment never moves an id. Which nodes give text is fixed by the node type, before any reference or symbol is resolved.
+
+**C2-H-144** The plain text is normalized to NFC, so a precomposed and a decomposed character give the same id. Then the bidirectional controls and the invisible characters of the list `removed` in `data/heading-slug.json` are removed.
+
+**C2-H-145** Each glyph of the list `reversed` in `data/heading-slug.json` is replaced by its ASCII source, whether smart typography wrote it or the author typed it: `’` becomes `'` and `→` becomes `-->`. Every other character stays.
+
+**C2-H-146** Each maximal run of characters that are not an ASCII letter, an ASCII digit or a character at or above U+0080 is replaced by one hyphen. Leading and trailing hyphens are then removed. ASCII letters keep their case, and every character at or above U+0080 is kept as it is: letters of any script, symbols, punctuation outside ASCII, and the no-break space.
+
+**C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII and C2-H-146 is applied again. The transliteration table, and what it does with a character it cannot map, belong to the host. An id under `ascii` is outside conformance.
+
+**C2-H-148** A result whose first character is a Unicode number (general category N, not only an ASCII digit) gets the prefix `s-`, and an empty result becomes `s`. This is the slug. A duplicate slug then takes its suffix (C2-H-024), so the suffix follows the prefix: two headings `1` give `s-1` and `s-1-2`.
+
+Example 24 (generated)
+
+::: compare
+
+```carve
+# Hello, World!
+
+# Don't stop -- go
+
+# Café 日本語
+
+# 2nd *try*
+
+# ***
+
+# Hello-World
+```
+
+```html
+<section id="Hello-World">
+  <h1>Hello, World!</h1>
+</section>
+<section id="Don-t-stop-go">
+  <h1>Don’t stop – go</h1>
+</section>
+<section id="Café-日本語">
+  <h1>Café 日本語</h1>
+</section>
+<section id="s-2nd-try">
+  <h1>2nd <strong>try</strong></h1>
+</section>
+<section id="s">
+  <h1>***</h1>
+</section>
+<section id="Hello-World-2">
+  <h1>Hello-World</h1>
+</section>
+```
+
+:::
+
+Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
+
+::: compare
+
+```carve
+# Ärger mit ΣΑΣ
+
+# İstanbul Straße
+```
+
+```html
+<section id="ärger-mit-σασ">
+  <h1>Ärger mit ΣΑΣ</h1>
+</section>
+<section id="i̇stanbul-straße">
+  <h1>İstanbul Straße</h1>
 </section>
 ```
 
@@ -1044,7 +1118,7 @@ One point is open.
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 1 | 1 |
-| Paragraphs, headings and sections | 11 | 1 | 1 | 0 |
+| Paragraphs, headings and sections | 17 | 1 | 3 | 0 |
 | Lists | 9 | 0 | 2 | 2 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 7 | 0 | 1 | 0 |
@@ -1061,6 +1135,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **142** | **7** | **17** | **6** |
+| **Total** | **148** | **7** | **19** | **6** |
 
-The document has 142 clauses, 7 of them marked with the word "Exception", and 23 examples, 17 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 148 clauses, 7 of them marked with the word "Exception", and 25 examples, 19 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
