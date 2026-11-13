@@ -1130,7 +1130,7 @@ Example 60 (generated)
 
 **C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. A collapsed reference whose own text folds to an empty key (C2-I-079) is no reference: its brackets are text. (carried over from 0.1)
 
-**C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1)
+**C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1) C2-I-122 to C2-I-124 state the characters.
 
 **C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1)
 
@@ -1220,6 +1220,29 @@ Example 66 (generated)
 
 ```html
 <p><img src="/i.png" alt="alt"> and <img src="/i.png" alt="*alt*" title="T" class="c"> and a ![x] b</p>
+```
+
+:::
+
+**C2-I-122** A URL character is an ASCII letter or digit, one of `-`, `.`, `_`, `~`, `:`, `/`, `?`, `#`, `[`, `]`, `@`, `!`, `$`, `&`, `'`, `(`, `)`, `*`, `+`, `,`, `;`, `=` and `%`, or a character outside ASCII that is not whitespace, not a control character (general category Cc) and not a format character (Cf). Every other ASCII character is no URL character, among them a space, `"`, `\`, a backtick, `{`, `}`, `|`, `^`, `<` and `>`. The scheme holds ASCII characters only, so `<1a:x>` is no autolink.
+
+**C2-I-123** The local part and the domain of an email address are each one or more ASCII letters, digits, `.`, `-`, `_` and `+`. The domain is followed by a dot and one or more ASCII letters, which end the address. So `<a@b>` and `<a@b.c1>` are no autolinks, and an address with a character outside ASCII is none either.
+
+**C2-I-124** The body of an autolink is everything between `<` and the next `>`. The autolink forms only when the whole body is one URL or one email address; otherwise `<`, the body and `>` are text, read as any other inline content. The destination of a URL autolink is its body, and that of an email autolink is `mailto:` followed by its body. An attribute block glued to the `>` attaches to the autolink (C2-I-036).
+
+Example 108 (generated)
+
+::: compare
+
+```carve
+<https://例え.jp/パス?q=1#f> <h:x> <a@b.co.uk> <x+y@b-c.de>
+
+<1a:x> <http://a b> <http://a|b> <a@b.c1> <a_b@c_d.e-f>
+```
+
+```html
+<p><a href="https://例え.jp/パス?q=1#f">https://例え.jp/パス?q=1#f</a> <a href="h:x">h:x</a> <a href="mailto:a@b.co.uk">a@b.co.uk</a> <a href="mailto:x+y@b-c.de">x+y@b-c.de</a></p>
+<p>&lt;1a:x&gt; &lt;http://a b&gt; &lt;http://a|b&gt; &lt;a@b.c1&gt; &lt;a_b@c_d.e-f&gt;</p>
 ```
 
 :::
@@ -2075,7 +2098,7 @@ There is no fixed budget for the inline chapter.
 | Emphasis and strong | 9 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
-| Links and images | 9 | 1 | 5 | 1 |
+| Links and images | 12 | 1 | 6 | 1 |
 | Reference resolution | 12 | 3 | 6 | 7 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
@@ -2087,9 +2110,9 @@ There is no fixed budget for the inline chapter.
 | The depth cap | 1 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **121** | **23** | **75** | **32** |
+| **Total** | **124** | **23** | **76** | **32** |
 
-The chapter has 121 clauses, 23 of them exceptions, and 107 examples. The clause count includes the exceptions.
+The chapter has 124 clauses, 23 of them exceptions, and 108 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

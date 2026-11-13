@@ -61,7 +61,7 @@
       "reads_escapes": false,
       "unclosed": "text",
       "host": true,
-      "clauses": ["C2-I-005", "C2-I-013", "C2-I-036", "C2-I-073"]
+      "clauses": ["C2-I-005", "C2-I-013", "C2-I-036", "C2-I-073", "C2-I-122", "C2-I-123", "C2-I-124"]
     },
     {
       "name": "backslash_escape",
