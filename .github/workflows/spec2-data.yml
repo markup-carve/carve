@@ -1,0 +1,31 @@
+name: 0.2 spec data
+
+# The data files of spec/0.2 against the six documents. Work on next2 lands by
+# push as well as by pull request, so the check runs on both.
+on:
+  push:
+    branches: [next2]
+    paths:
+      - 'spec/0.2/**'
+      - 'scripts/spec2-data-check.mjs'
+      - '.github/workflows/spec2-data.yml'
+  pull_request:
+    branches: [next2]
+    paths:
+      - 'spec/0.2/**'
+      - 'scripts/spec2-data-check.mjs'
+      - '.github/workflows/spec2-data.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  data:
+    name: data files match the documents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - run: npm run spec2:data
