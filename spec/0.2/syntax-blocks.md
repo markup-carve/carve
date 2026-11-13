@@ -1816,7 +1816,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line.
 
-**C2-B-083** A link definition is one line: `[label]:`, a space, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text.
+**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text.
 
 **C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
@@ -2754,7 +2754,7 @@ after
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one space behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it.
 
 **C2-B-120** The quoted title is another spelling of the `title` attribute, which is also accepted on an attribute line.
 
@@ -2893,7 +2893,7 @@ A *sigil div* is a div whose opener names how its body is read: `::: |` is a lin
 
 **C2-B-132** A stray `:::` at column 0 below an item with an unclosed div closes the item (C2-B-026) and opens an anonymous div at top level (C2-B-125), and `unclosed-container-fence` reports it with severity error.
 
-**C2-B-196** A sigil stands after one space behind the colon run: without the space the line is not a sigil div opener and is text.
+**C2-B-196** A sigil stands after one or more spaces behind the colon run: without the space the line is not a sigil div opener and is text.
 
 Example 130 (unverified)
 

@@ -241,7 +241,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-051** A list of blocks admits only content blocks. A type that exists only inside its container (`list_item`, `definition_term`, `definition_description`, `line`, the table groups, `table_row`, `table_cell`, `cell_paragraph`, `caption`, `citation`, `rubyPair`, `table_column`) is refused anywhere else.
 
-**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-081). A reader refuses one inside a container.
+**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-081). Each stands at its place in source order among the other blocks; no definition is moved or collected. A reader refuses one inside a container.
 
 ## Blocks
 

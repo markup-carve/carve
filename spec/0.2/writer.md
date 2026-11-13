@@ -141,7 +141,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
