@@ -327,7 +327,7 @@ Example 15 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
+**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text. A no-break space written as a backslash and a space counts as whitespace for this test.
 
 **C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
@@ -444,7 +444,7 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-094.
 
-**Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text.
+**Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text. It is read only behind a pair that is a span, also behind another block of that span; behind a link, an inline footnote or an inline extension it is text.
 
 **C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-098). The written order of the parts is not kept.
 
@@ -916,7 +916,7 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-056** A braced opener only opens, and a braced closer only closes.
 
-**C2-I-057** A mark followed by `}` is a braced closer only while a braced opener of that mark is open. Otherwise the mark is read by the bare rules (C2-I-051), where a slash or a star can close a bare span, and the brace is text.
+**C2-I-057** A mark followed by `}` is a braced closer only while a braced opener of that mark is open. Otherwise the mark is read by the bare rules (C2-I-051), where a slash or a star can close a bare span, and the brace is text. Of a run of marks before `}` only the last is the closer and the marks before it are text; with no braced opener of that mark open, the whole run is text.
 
 **C2-I-058** A braced closer pairs with the nearest open braced opener of its mark. A braced token never pairs with a bare delimiter.
 
@@ -928,7 +928,7 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-062** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
 
-**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and not a host. (carried over from 0.1)
+**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and not a host. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text. (carried over from 0.1)
 
 A span no longer shields its content: a delimiter inside a braced span can close a span that opened outside it. An author escapes that delimiter.
 
@@ -1128,7 +1128,7 @@ Example 60 (generated)
 
 **Exception C2-I-071** Links do not nest: a link inside link text renders as its own content, and the outer link keeps its destination. The inner link stays a node in the tree (C2-A-111). An image and a span inside link text stay. (carried over from 0.1)
 
-**C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. (carried over from 0.1)
+**C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. A collapsed reference whose own text folds to an empty key (C2-I-079) is no reference: its brackets are text. (carried over from 0.1)
 
 **C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1)
 
@@ -1232,7 +1232,7 @@ Example 66 (generated)
 
 **Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
 
-**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. (carried over from 0.1)
+**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. The first character is that of the label's source, before folding: `[a][ @b]` is a reference with the key `@b`. (carried over from 0.1)
 
 **C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule. A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.
 
@@ -1489,7 +1489,7 @@ Example 79 (unverified)
 
 ## Footnotes
 
-**C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077. A footnote reference takes no link tail and no reference label: `(` or `[` directly behind it starts ordinary text or the next construct, so `[^n](/u)` is a footnote reference and the text `(/u)`.
+**C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077. A footnote reference takes no link tail and no reference label: `(` or `[` directly behind it starts ordinary text or the next construct, so `[^n](/u)` is a footnote reference and the text `(/u)`. Where the label is none (C2-I-079), the `[` is text and opens no bracket pair, so a link tail behind it forms nothing.
 
 **C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).
 
@@ -1790,13 +1790,13 @@ Example 93 (generated)
 
 Smart typography reads the text that the scan left as text and never reads inside an atom. Each match is a `smart_punctuation` node that keeps the typed characters in its `source` field (C2-A-098). The node is always built. The `smartTypography` option is a render option: it selects the glyph or the typed characters when the node is written (C2-H-078), and it does not change the tree. Where a clause below says that characters become a glyph, it names the glyph of that node.
 
-**C2-I-104** A straight quote opens at the start of content, after whitespace or a no-break space, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. (carried over from 0.1)
+**C2-I-104** A straight quote opens at the start of content, after whitespace or a no-break space, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. The rule holds for every node with inline content: emphasis, strong, the braced forms, a span, a link, an inline footnote and an inline extension. (carried over from 0.1)
 
 **Exception C2-I-105** A single quote before an ASCII digit is an apostrophe. (carried over from 0.1)
 
-**Exception C2-I-106** After a hyphen, a dash or a slash, a quote closes when the next character is absent, whitespace or one of `"`, `'`, `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]`. (carried over from 0.1)
+**Exception C2-I-106** After a hyphen, a dash or a slash, a quote closes when the next character is absent, whitespace or one of `"`, `'`, `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]`. The next character is read from the source as written, so the backslash of a hard break is that character; only a braced comment is skipped (C2-I-026). (carried over from 0.1)
 
-**Exception C2-I-107** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe.
+**Exception C2-I-107** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe. The word is the run of ASCII letters behind the quote and ends where they end: a digit or punctuation may follow it, a letter outside ASCII may not.
 
 **Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens.
 
@@ -1808,7 +1808,7 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-111** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule.
 
-**Exception C2-I-112** A hyphen run after whitespace, or after an opening parenthesis or quote that itself follows whitespace, and before a character that is not whitespace is a command-line flag and stays as typed. (carried over from 0.1)
+**Exception C2-I-112** A hyphen run after whitespace, or after an opening parenthesis or quote that itself follows whitespace, and before a character that is not whitespace is a command-line flag and stays as typed. An escaped parenthesis or quote is not such a character. (carried over from 0.1)
 
 **C2-I-113** `{--}` is an en dash. It is the spelling for the position that C2-I-112 keeps literal.
 
@@ -1966,7 +1966,7 @@ Example 103 (generated)
 
 ## The depth cap
 
-**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-190: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual.
+**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-190: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual. An open bracket counts one while it is open, whether or not its pair later forms a construct: an opening bracket is text when the block depth and the open brackets reach the cap. When delimiters pair, a delimiter opener is text when the block depth, the open delimiter entries and the bracket constructs around it reach the cap, and a bracket construct that would lie past the cap is text with its brackets, its tail or label as typed.
 
 The cap applies to every opener that takes content: a bracket, a bare delimiter, a braced opener, `^[` and the bracket of an inline extension.
 

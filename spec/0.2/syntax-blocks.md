@@ -1815,7 +1815,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-081** A definition stands at column 0 outside every container, so a definition-shaped line inside a container is text, and `definition-in-container` reports it.
 
-**C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line.
+**C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line. The label follows the rules of a footnote reference label (C2-I-087): it may hold spaces, and it holds no unescaped bracket.
 
 **C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
 
@@ -2057,7 +2057,7 @@ Example 89 (generated)
 
 ## Attribute lines
 
-**C2-B-090** An attribute line is one or more glued brace blocks `{...}`, alone on its line.
+**C2-B-090** An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.
 
 **C2-B-091** An attribute line applies to the block that starts on the next line and is owned by the same container, with no column test.
 
