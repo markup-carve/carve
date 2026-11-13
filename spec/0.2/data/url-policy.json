@@ -1,0 +1,92 @@
+{
+  "$schema": "schemas/url-policy.schema.json",
+  "probe_removes": [
+    { "name": "c0_controls_and_space", "from": "U+0000", "to": "U+0020", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "del_c1_controls_and_no_break_space", "from": "U+007F", "to": "U+00A0", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "en_quad_to_hair_space", "from": "U+2000", "to": "U+200A", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "ideographic_space", "from": "U+3000", "to": "U+3000", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "line_and_paragraph_separator", "from": "U+2028", "to": "U+2029", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "medium_mathematical_space", "from": "U+205F", "to": "U+205F", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "narrow_no_break_space", "from": "U+202F", "to": "U+202F", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "ogham_space_mark", "from": "U+1680", "to": "U+1680", "clauses": ["C2-H-159", "C2-H-161"] },
+    { "name": "zero_width_no_break_space", "from": "U+FEFF", "to": "U+FEFF", "clauses": ["C2-H-159", "C2-H-161"] }
+  ],
+  "dropped_attributes": [
+    { "name": "formaction", "match": "name", "clauses": ["C2-H-161"] },
+    { "name": "on", "match": "prefix", "clauses": ["C2-H-161"] },
+    { "name": "srcdoc", "match": "name", "clauses": ["C2-H-161"] }
+  ],
+  "url_list_attributes": [
+    { "name": "attributionsrc", "separators": ["ascii_whitespace"], "clauses": ["C2-H-161"] },
+    { "name": "imagesrcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-161"] },
+    { "name": "ping", "separators": ["ascii_whitespace"], "clauses": ["C2-H-161"] },
+    { "name": "srcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-161"] }
+  ],
+  "style_patterns": [
+    { "text": "-moz-binding", "clauses": ["C2-H-162"] },
+    { "text": "@import", "clauses": ["C2-H-162"] },
+    { "text": "behavior:", "clauses": ["C2-H-162"] },
+    { "text": "expression(", "clauses": ["C2-H-162"] },
+    { "text": "url(", "clauses": ["C2-H-162"] }
+  ],
+  "profiles": [
+    {
+      "name": "article",
+      "denied_block": ["raw_block"],
+      "denied_inline": ["raw_inline"],
+      "clauses": ["C2-H-129", "C2-H-163"]
+    },
+    {
+      "name": "comment",
+      "allowed_block": ["block_quote", "code_block", "list", "list_item", "paragraph"],
+      "allowed_inline": [
+        "code",
+        "delete",
+        "emphasis",
+        "hard_break",
+        "highlight",
+        "inline_extension",
+        "insert",
+        "link",
+        "literal_inline",
+        "mention",
+        "soft_break",
+        "strike",
+        "strong",
+        "subscript",
+        "superscript",
+        "text",
+        "underline"
+      ],
+      "link_rel": ["nofollow", "ugc"],
+      "max_nesting": 4,
+      "max_length": 100000,
+      "clauses": ["C2-H-129", "C2-H-163", "C2-H-164"]
+    },
+    { "name": "full", "clauses": ["C2-H-129", "C2-H-163"] },
+    {
+      "name": "minimal",
+      "allowed_block": ["list", "list_item", "paragraph"],
+      "allowed_inline": [
+        "code",
+        "delete",
+        "emphasis",
+        "hard_break",
+        "inline_extension",
+        "insert",
+        "literal_inline",
+        "mention",
+        "soft_break",
+        "strike",
+        "strong",
+        "subscript",
+        "superscript",
+        "text",
+        "underline"
+      ],
+      "max_nesting": 2,
+      "max_length": 10000,
+      "clauses": ["C2-H-129", "C2-H-163", "C2-H-164"]
+    }
+  ]
+}

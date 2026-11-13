@@ -1246,15 +1246,73 @@ in
 
 **C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off.
 
-**C2-H-128** `urlPolicy` sets which URL schemes pass on `href`, `src` and every other URL sink: a deny list, whose default is the 0.1 list of script schemes and protocol-handler schemes, or an allow list. The option has no off value. The filter also removes blocked attribute names, event handlers among them, and blanks a `style` value that holds a URL function, as in 0.1 (PART 9 section 25). The list of blocked attribute names is a data file in `resources/`.
+**C2-H-128** `urlPolicy` sets which URL schemes pass on `href`, `src` and every other URL sink: a deny list, whose default is the 0.1 list of script schemes and protocol-handler schemes, or an allow list. The option has no off value. The filter also removes blocked attribute names, event handlers among them, and blanks a `style` value that holds a URL function, as in 0.1 (PART 9 section 25). The list of blocked attribute names is a data file in `resources/`. C2-H-159 to C2-H-162 state the test and the filter.
 
-**C2-H-129** `profile` restricts the features a render accepts: `full`, `article`, `comment` or `minimal`, as in 0.1. A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`.
+**C2-H-129** `profile` restricts the features a render accepts: `full`, `article`, `comment` or `minimal`, as in 0.1. C2-H-163 and C2-H-164 state what each one accepts. A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`.
 
 **C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-174): the render returns no output.
 
 **C2-H-131** `headingIds` controls generated heading ids (C2-H-022). Its values are `off`, `keep-case`, `lower` and `ascii`, and the default is `keep-case`. With `off` no id is generated, and an authored id is still written.
 
 **C2-H-132** A render loss is an entry of the diagnostics record with the channel for render losses (C2-A-173). The 0.1 loss codes that apply to HTML stay: `raw-format-dropped`, `destination-denied`, `carrier-attribute-dropped`. The catalog lists every code of the channel (C2-W-113). `destination-denied` has the severity error.
+
+**C2-H-159** The URL sinks are the `href` of a link and of an autolink, the `src` of an image, and a URL that a `social` template gives (C2-H-126). A destination is tested on a copy: first every character of the list `probe_removes` of `data/url-policy.json` is removed from it, anywhere in the value, so `java` U+0001 `script:` tests as `javascript:`. When the rest starts with an ASCII letter, then ASCII letters, digits, `+`, `-` and `.`, and then a colon, that run is the scheme, compared without ASCII case. A destination with no scheme, such as a relative path or a fragment, passes under a deny list and under an allow list. The `default` of `urlPolicy` in `data/options.json` is the default deny list.
+
+**C2-H-160** Under a deny list a destination fails when its scheme is on the list, and under an allow list when it is not. A failed destination is written as the empty value, `href=""` or `src=""`, and is reported with `destination-denied` once per destination. The link text, the alt text and the visible text of an autolink stay. An authored `href` on a link and an authored `src` on an image are not written: the destination stands, so an attribute block cannot bring back a failed one.
+
+**C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written.
+
+**C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
+
+**C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
+
+**C2-H-164** The lists name 0.2 node types. An inline literal counted as code in 0.1, so `literal_inline` stands in the lists that hold `code`.
+
+Example 30 (generated)
+
+::: compare
+
+```carve
+[bad](javascript:alert(1)) <JavaScript:x> [ok](/a#b) ![p](data:image/png;base64,AA)
+
+{title="Shell: bash" onclick="x()" style="color: u\72l(a)"}
+Text.
+```
+
+```html
+<p><a href="">bad</a> <a href="">JavaScript:x</a> <a href="/a#b">ok</a> <img src="" alt="p"></p>
+<p title="" style="">Text.</p>
+```
+
+:::
+
+Example 31 (generated, `--profile comment`)
+
+::: compare
+
+```carve
+See [docs](https://x.org) and *bold*.
+```
+
+```html
+<p>See <a href="https://x.org" rel="nofollow ugc">docs</a> and <strong>bold</strong>.</p>
+```
+
+:::
+
+Example 32 (generated, `--profile minimal`)
+
+::: compare
+
+```carve
+See [docs](https://x.org) and *bold*.
+```
+
+```html
+<p>See docs and <strong>bold</strong>.</p>
+```
+
+:::
 
 ## The option list
 
@@ -1275,7 +1333,7 @@ in
 | `smartTypography` | render | boolean | on | C2-H-127 |
 | `roundtrip` | render | boolean | off | C2-H-127 |
 | `rawHtml` | render | boolean | off | C2-H-127 |
-| `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list | C2-H-128 |
+| `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list, listed in `data/options.json` | C2-H-128 |
 | `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
 | `strictLosses` | render | boolean | off | C2-H-130 |
 | `alignTables` | format | boolean | off | C2-W-068 |
@@ -1333,8 +1391,8 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
-| Options | 12 | 0 | 0 | 0 |
+| Options | 18 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **158** | **7** | **23** | **6** |
+| **Total** | **164** | **7** | **26** | **6** |
 
-The document has 158 clauses, 7 of them marked with the word "Exception", and 29 examples, 23 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 164 clauses, 7 of them marked with the word "Exception", and 32 examples, 26 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

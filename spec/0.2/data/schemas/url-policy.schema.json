@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 URL policy and profiles",
+  "description": "The tables of the URL filter and of the four profiles (C2-H-159 to C2-H-164). The default deny list of schemes is the default of `urlPolicy` in options.json. Every list is sorted by its identifier: `probe_removes`, `dropped_attributes`, `url_list_attributes` and `profiles` by `name`, `style_patterns` by `text`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "probe_removes", "dropped_attributes", "url_list_attributes", "style_patterns", "profiles"],
+  "properties": {
+    "$schema": { "const": "schemas/url-policy.schema.json" },
+    "probe_removes": {
+      "description": "The characters removed from a value before its scheme is read: every code point from `from` to `to`, both included.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "from", "to", "clauses"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "from": { "$ref": "#/$defs/code_point" },
+          "to": { "$ref": "#/$defs/code_point" },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    },
+    "dropped_attributes": {
+      "description": "Attribute names the renderer never writes, compared without ASCII case. name: the whole name. prefix: every name that starts with it.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "match", "clauses"],
+        "properties": {
+          "name": { "type": "string" },
+          "match": { "enum": ["name", "prefix"] },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    },
+    "url_list_attributes": {
+      "description": "Attributes whose value is a list of URLs, tested token by token. The separators split the value into tokens; ascii_whitespace is tab, line feed, form feed, carriage return and space.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "separators", "clauses"],
+        "properties": {
+          "name": { "type": "string" },
+          "separators": { "type": "array", "uniqueItems": true, "minItems": 1, "items": { "enum": ["comma", "ascii_whitespace"] } },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    },
+    "style_patterns": {
+      "description": "A `style` value that holds one of these texts, after its CSS escapes are decoded, its whitespace removed and its ASCII letters lowered, is written empty.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "clauses"],
+        "properties": {
+          "text": { "type": "string" },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    },
+    "profiles": {
+      "description": "The four values of `profile`. An absent allow list allows every type of its axis; an absent deny list denies none; an absent limit is no limit.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": { "enum": ["article", "comment", "full", "minimal"] },
+          "allowed_block": { "$ref": "#/$defs/types" },
+          "allowed_inline": { "$ref": "#/$defs/types" },
+          "denied_block": { "$ref": "#/$defs/types" },
+          "denied_inline": { "$ref": "#/$defs/types" },
+          "link_rel": { "type": "array", "uniqueItems": true, "items": { "type": "string" }, "description": "The tokens of the `rel` attribute written on every link." },
+          "max_nesting": { "type": "integer", "minimum": 1, "description": "The deepest level a node may stand at below the document, every block and inline level counted." },
+          "max_length": { "type": "integer", "minimum": 1, "description": "The longest input accepted, in UTF-8 bytes." },
+          "clauses": { "$ref": "#/$defs/clauses" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "code_point": { "type": "string", "pattern": "^U\\+[0-9A-F]{4,6}$" },
+    "types": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z_]*$" }, "description": "Node types of C2-A-050, sorted." },
+    "clauses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+      "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+    }
+  }
+}

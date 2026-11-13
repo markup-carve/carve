@@ -87,7 +87,7 @@
       "type": "enum",
       "values": ["full", "article", "comment", "minimal"],
       "default": "full",
-      "clauses": ["C2-H-129", "C2-H-137"]
+      "clauses": ["C2-H-129", "C2-H-137", "C2-H-163"]
     },
     {
       "name": "rawHtml",
@@ -209,7 +209,7 @@
           "jar"
         ]
       },
-      "clauses": ["C2-H-128", "C2-H-137"]
+      "clauses": ["C2-H-128", "C2-H-137", "C2-H-159", "C2-H-160"]
     }
   ]
 }

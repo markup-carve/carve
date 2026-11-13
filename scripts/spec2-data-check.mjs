@@ -46,6 +46,7 @@ const FILES = {
   options: { options: ['name', 'name'] },
   'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
   'table-marks': { span_marks: ['mark', 'mark'], alignment_marks: ['mark', 'mark'], attributes: ['name', 'name'] },
+  'url-policy': { probe_removes: ['name', 'name'], dropped_attributes: ['name', 'name'], url_list_attributes: ['name', 'name'], style_patterns: ['text', 'text'], profiles: ['name', 'name'] },
   'task-states': { states: ['char', 'char'] },
 }
 
