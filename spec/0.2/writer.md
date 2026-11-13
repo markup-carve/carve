@@ -61,7 +61,7 @@ Conventions:
 
 **Exception C2-W-019** In a tight list no blank line stands between two items.
 
-**C2-W-020** A run of blank lines is written as one blank line, except the three of C2-W-028.
+**C2-W-020** A run of blank lines is written as one blank line, except the three of C2-W-028. Blank lines inside verbatim content, which is the value of a code block, a raw block, a comment block and frontmatter, are data and are written as they are.
 
 **C2-W-021** No line of the output holds only spaces or tabs: such a line is written empty. A line of a code block, a raw block or a comment block is data and is written as it is.
 
@@ -69,7 +69,7 @@ Conventions:
 
 **Exception C2-W-023** A line that ends in a line comment keeps the comment's value as it is, because a `%%` comment runs to the end of its line. The value holds no spaces at its end (C2-A-074), so no trailing space is written for it.
 
-**C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
+**C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. A continuation line of a caption or of a term is written at the column of the first character of its text, behind the mark and its space. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
 **C2-W-025** One space follows a list marker. A marker of one uppercase letter and a dot takes two (C2-B-040), and the content column moves with it.
 
@@ -101,9 +101,9 @@ Conventions:
 
 **C2-W-037** A code block is written with a backtick fence. A tilde fence is rewritten.
 
-**C2-W-038** The fence is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
+**C2-W-038** The fence of a code block and of a raw block is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
 
-**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
+**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
 
 **C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
@@ -113,7 +113,7 @@ Conventions:
 
 **C2-W-043** An ordered list keeps its style, its delimiter and its start value.
 
-**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written under a `start` attribute, with the bare dot when its delimiter is the period and with `1)` and the digits after it when its delimiter is `)`. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
+**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written under a `start` attribute, with the bare dot when its delimiter is the period and with `1)` and the digits after it when its delimiter is `)`. A list of repeated `1.` markers is renumbered to sequential digits. A later marker whose number would have more than nine digits is written as `1`: only the first marker carries a value (C2-B-041). With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
 
@@ -179,7 +179,7 @@ Conventions:
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
-**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022) when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040). A key that starts with a caret or an at-sign is written with one space before it inside the brackets, since a label whose first character is one of them is no reference label (C2-I-078) and the space folds away (C2-I-079).
+**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022), without spaces and tabs at the end of a line of it (C2-W-022), when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040). A key that starts with a caret or an at-sign is written with one space before it inside the brackets, since a label whose first character is one of them is no reference label (C2-I-078) and the space folds away (C2-I-079).
 
 **C2-W-076** An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).
 
@@ -255,7 +255,7 @@ Conventions:
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
 
-**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every hyphen escaped, on any line (C2-I-111, C2-W-095); a run in the position of a command-line flag stays bare, because it is text as typed (C2-I-112, C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
+**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088); a run in the position of a command-line flag stays bare, because it is text as typed (C2-I-112, C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). An em dash node whose source is `---`, as the whole of line 1 of the document, has no spelling, because the line opens frontmatter (C2-B-161). A parse never gives that tree. For a supplied tree the writer reports `field-unspellable`.
 
 Example 1 (generated)
 
@@ -451,7 +451,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `definition-term-block-folded` | `This block opener is indented under a definition term, which has no content column, so it folds into the term as text (a fence line or a table row does not fold: it closes the description list). Dedent it to the container's content column to open the block, or put it in the term's ": " description.` | a block opener under a term is term text (C2-B-075) |
 | `delimited-table-malformed` | `This marked CSV/TSV fence has malformed quoting, so it remains a code block.` | severity error; new message text: the block stays a table (C2-B-181) |
 | `delimited-table-wide-row` | `A CSV/TSV record has more fields than the first record; the table keeps the extra columns.` | unchanged |
-| `deprecated-cell-alignment` | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}" (carve fmt rewrites it).` | the glued alignment marker is cut; the rule stays on through 0.2.x |
+| `deprecated-cell-alignment` | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}". In 0.2 the old prefix is cell text, so the formatter leaves it; the upgrade tool rewrites it.` | the glued alignment marker is cut; the rule stays on through 0.2.x |
 | `description-separator-below-content-column` | `This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list.` | unchanged |
 | `duplicate-footnote-definition` | `Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins.` | unchanged |
 | `duplicate-id` | `Duplicate id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`<br>`Heading slug "${base}" collides with another heading or an explicit id; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.` | renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039) |

@@ -337,7 +337,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "The table cell alignment prefix \"${prefix}\" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write \"${braced}\" (carve fmt rewrites it)."
+        "The table cell alignment prefix \"${prefix}\" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write \"${braced}\". In 0.2 the old prefix is cell text, so the formatter leaves it; the upgrade tool rewrites it."
       ],
       "message_origin": "engine_0_1",
       "change": "the glued alignment marker is cut; the rule stays on through 0.2.x",
