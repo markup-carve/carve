@@ -4204,13 +4204,13 @@ b
 
 ## Frontmatter
 
-**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces and tabs.
+**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name glued to them, and then by trailing spaces and tabs.
 
 **C2-B-162** The closer is a line that is exactly `---` plus trailing spaces and tabs.
 
 **C2-B-163** An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.
 
-**C2-B-164** The format name is `yaml`, `toml` or `json`, glued to the hyphens as in `---toml` or after one space as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any other word leaves the line text. Without a name the format is YAML, for which the bare opener is the canonical form.
+**C2-B-164** The format name is one word glued to the hyphens, as in `---toml`: a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. Anything else behind the hyphens leaves the line text, a space included: `--- toml` does not open frontmatter, because a spaced first line such as `--- notes` would otherwise take the rest of the document. Without a name the format is YAML, for which the bare opener is the canonical form. The 0.1 engine read one word after an optional space.
 
 **C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text.
 

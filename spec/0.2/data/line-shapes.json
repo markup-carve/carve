@@ -141,13 +141,7 @@
       "at": { "line": 1, "column": 0 },
       "sequence": [
         { "part": "literal", "text": "---" },
-        {
-          "part": "optional",
-          "sequence": [
-            { "part": "optional", "sequence": [{ "part": "space", "min": 1, "max": 1 }] },
-            { "part": "ref", "ref": "format_name" }
-          ]
-        },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "format_name" }] },
         { "part": "trailing_spaces" },
         { "part": "end" }
       ],
@@ -457,7 +451,7 @@
       "clauses": ["C2-B-119", "C2-B-127"]
     },
     { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
-    { "name": "format_name", "values": ["json", "toml", "yaml"], "clauses": ["C2-B-164"] },
+    { "name": "format_name", "forms": ["a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens"], "clauses": ["C2-B-164"] },
     { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]"], "clauses": ["C2-B-197"] },
     {
       "name": "include_options",
