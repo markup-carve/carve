@@ -14,7 +14,7 @@
         "additionalProperties": false,
         "required": ["name", "label", "shapes", "when", "clauses"],
         "properties": {
-          "name": { "enum": ["a", "b", "c", "d", "e"], "description": "The letter the block chapter gives the interrupter." },
+          "name": { "enum": ["a", "b", "c", "d", "e", "f"], "description": "The letter the block chapter gives the interrupter." },
           "label": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
@@ -71,8 +71,8 @@
           }
         }
       },
-      "minItems": 5,
-      "maxItems": 5
+      "minItems": 6,
+      "maxItems": 6
     },
     "lazy_shapes": {
       "type": "array",

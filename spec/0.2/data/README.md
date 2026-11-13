@@ -7,7 +7,7 @@ The files are normative together with the clauses they cite. Every row has a `cl
 | File | Holds |
 |---|---|
 | `line-shapes.json` | the line end, and every line shape of the block pass, keyed by the first character after the prefixes, with what must follow |
-| `interrupters.json` | the five paragraph interrupters, and the shapes that are lazy lines |
+| `interrupters.json` | the six paragraph interrupters, and the shapes that are lazy lines |
 | `containers.json` | each block that owns lines: how a line continues it, what closes it, how its body is read |
 | `close-facts.json` | the five facts set when a block closes |
 | `caption-number.json` | the number mark of a caption |
