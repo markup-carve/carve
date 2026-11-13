@@ -4440,7 +4440,7 @@ title: x
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
-**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing. Inside a code span or another node whose value is its source as written (C2-I-015), the join is the line feed and not the space, as in a paragraph: `` `a `` continued by `` b` `` is a code span with the value `a`, a line feed and `b`. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
+**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing. Inside an inline node that carries a `value`, which are a code span, a raw span, a literal span, math and a braced comment (C2-I-015, C2-I-025), the join is the line feed and not the space, as in a paragraph: `` `a `` continued by `` b` `` is a code span with the value `a`, a line feed and `b`. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
 
 **C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
 

@@ -89,7 +89,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-019** `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included.
 
-**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the node whose `value` holds the break, or, where the fragment starts a node, the pointer of that node, which then need not have a `value` (C2-L-048); and `offset`, the UTF-8 byte offset in that `value` at which the fragment of that row starts. A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
+**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the node whose `value` holds the break, or, where the fragment starts a node, the pointer of that node, which then need not have a `value` (C2-L-048); and `offset`, the UTF-8 byte offset in that `value` at which the fragment of that row starts, or 0 where the wrap names the start of a node (C2-L-021). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
 **C2-L-021** The joining character that a continuation row leaves in the cell's text, a space, or a line feed inside a node whose value is its source (C2-A-094, C2-B-184), is the character before `offset`. An `offset` of 0 marks the start of the node the wrap names, which need not have a `value`; no joining character is located then. A fragment that joins an empty cell has `offset` 0.
 
