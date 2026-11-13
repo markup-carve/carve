@@ -331,13 +331,13 @@ Carve has three comment forms. The block form `%%%` is defined in the block chap
 
 **C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
-Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in a code fence and in a line block are block clauses (C2-B-092, C2-B-093).
+Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in a code fence and in a line block are block clauses (C2-B-134, C2-B-135).
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 
 **Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. It is not a host, and an attribute block behind it attaches to nothing. (carried over from 0.1)
 
-**Exception C2-I-027** Block rules classify lines first: a braced comment whose closer stands behind an interrupter line is unclosed and stays text (C2-B-099).
+**Exception C2-I-027** Block rules classify lines first: a braced comment whose closer stands behind an interrupter line is unclosed and stays text (C2-B-141). Lint reports it as `unclosed-braced-comment`.
 
 Example 16 (generated)
 
@@ -442,13 +442,13 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-038** A reference is a host whether or not its label resolves (C2-I-075).
 
-**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-072.
+**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-094.
 
 **Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text.
 
-**C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-076). The written order of the parts is not kept.
+**C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-098). The written order of the parts is not kept.
 
-**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-077).
+**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-099).
 
 Example 21 (generated)
 
@@ -1230,7 +1230,7 @@ Example 66 (generated)
 
 **C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no bracket, delimiter or sigil form is read in it, and its source is its key (C2-I-079).
 
-**Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports the comment inside the label; the catalog has no rule id for this finding yet.
+**Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
 
 **Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. (carried over from 0.1)
 
@@ -1240,15 +1240,15 @@ Example 66 (generated)
 
 **C2-I-081** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form.
 
-**C2-I-082** The attributes of a link definition merge into every reference that resolves to it, as if they were a block glued before the reference's own blocks (C2-I-039): the reference's own values win.
+**C2-I-082** The attributes of a link definition merge into every reference that resolves to it: the classes of the definition and of the reference add up, the definition's first, and the reference's own id and keys win over the definition's.
 
 **Exception C2-I-083** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
 
 **C2-I-084** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id.
 
-**C2-I-085** An unresolved reference is still a reference node. It renders its source form, rebuilt from its children, its key and its `form` field (full or collapsed), with an attached attribute block written back in the fixed order (C2-I-041). Nothing is scanned again. The text as typed is kept in the source-layout sidecar, not in the tree, so a label that wrapped is written with one space where the line break was.
+**C2-I-085** An unresolved reference is still a reference node. It renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
 
-**Exception C2-I-086** An inline footnote inside an unresolved reference is not a footnote: it takes no number and makes no note, and it is written in its source form with the rest.
+**C2-I-086** A footnote reference and an inline footnote inside an unresolved reference are ordinary footnotes: each takes its number and makes its note.
 
 Example 67 (generated)
 
@@ -1271,16 +1271,40 @@ Example 68 (generated)
 ::: compare
 
 ```carve
-[text][nope] and [*a*][nope] and [a ^[n] b][nope] and [a][nope]{.c}
+[text][nope] and [nope][] and [a][nope]{.c}
 ```
 
 ```html
-<p>[text][nope] and [*a*][nope] and [a ^[n] b][nope] and [a][nope]{.c}</p>
+<p>[text][nope] and [nope][] and [a][nope]{.c}</p>
 ```
 
 :::
 
-Example 69 (generated)
+The children are rendered. The inline footnote is a footnote.
+
+Example 69 (unverified)
+
+::: compare
+
+```carve
+[*a*][nope] and [a ^[n] b][nope]
+```
+
+```html
+<p>[<strong>a</strong>][nope] and [a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> b][nope]</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Example 70 (generated)
 
 ::: compare
 
@@ -1296,7 +1320,7 @@ Example 69 (generated)
 
 :::
 
-Example 70 (generated)
+Example 71 (generated)
 
 ::: compare
 
@@ -1317,7 +1341,7 @@ Example 70 (generated)
 
 The full form reaches a heading too.
 
-Example 71 (unverified)
+Example 72 (unverified)
 
 ::: compare
 
@@ -1336,7 +1360,7 @@ Example 71 (unverified)
 
 :::
 
-Example 72 (generated)
+Example 73 (generated)
 
 ::: compare
 
@@ -1357,7 +1381,7 @@ Example 72 (generated)
 
 The classes add up, and the reference's own key wins.
 
-Example 73 (unverified)
+Example 74 (unverified)
 
 ::: compare
 
@@ -1374,9 +1398,9 @@ Example 73 (unverified)
 
 :::
 
-The rebuilt form has the folded key and the attribute block in the fixed order.
+The label is written from the folded key, and the attribute block in the fixed order.
 
-Example 74 (unverified)
+Example 75 (unverified)
 
 ::: compare
 
@@ -1391,7 +1415,7 @@ pe]{.c #i}
 
 :::
 
-Example 75 (generated)
+Example 76 (generated)
 
 ::: compare
 
@@ -1410,7 +1434,7 @@ Example 75 (generated)
 
 :::
 
-Example 76 (unverified)
+Example 77 (unverified)
 
 ::: compare
 
@@ -1433,7 +1457,7 @@ bar</a> and <a href="/v">x</a></p>
 
 The comment takes the closing bracket of the label.
 
-Example 77 (unverified)
+Example 78 (unverified)
 
 ::: compare
 
@@ -1447,7 +1471,7 @@ Example 77 (unverified)
 
 :::
 
-Example 78 (unverified)
+Example 79 (unverified)
 
 ::: compare
 
@@ -1467,13 +1491,13 @@ Example 78 (unverified)
 
 **C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077.
 
-**C2-I-088** A footnote reference with no definition renders its source form, rebuilt from its key (C2-I-085).
+**C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).
 
 **C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content. Unclosed, the two characters are text. (carried over from 0.1)
 
 Numbering and the notes section are rendering rules.
 
-Example 79 (generated)
+Example 80 (generated)
 
 ::: compare
 
@@ -1500,7 +1524,7 @@ a[^n] and b[^missing] and c^[inline *note*] and d^[unclosed
 
 :::
 
-Example 80 (unverified)
+Example 81 (unverified)
 
 ::: compare
 
@@ -1541,9 +1565,9 @@ These four forms start with a sigil: the at-sign for a mention, `#` for a tag, `
 
 **C2-I-095** A mention, a tag and a symbol are atoms. An inline extension is a bracket construct.
 
-What a mention or a tag links to and what a symbol name stands for are lookups of the application. An unknown symbol renders its source.
+What a mention or a tag links to and what a symbol name stands for are lookups of the application. An unknown symbol is written as the characters typed.
 
-Example 81 (generated)
+Example 82 (generated)
 
 ::: compare
 
@@ -1557,7 +1581,7 @@ Example 81 (generated)
 
 :::
 
-Example 82 (generated)
+Example 83 (generated)
 
 ::: compare
 
@@ -1571,16 +1595,16 @@ color #fff, issue #123, C# and #tag/sub and #release-1.0.
 
 :::
 
-Example 83 (generated)
+Example 84 (generated)
 
 ::: compare
 
 ```carve
-at 10:30:00 and :+1: and :a b: and :note[a *b* c] and :1note[t] and :note[a
+at 10:30:00 and :+1: and :-: and :a b: and :note[a *b* c] and :1note[t] and :note[a
 ```
 
 ```html
-<p>at 10:30:00 and :+1: and :a b: and <span class="ext-note">a <strong>b</strong> c</span> and :1note[t] and :note[a</p>
+<p>at 10:30:00 and :+1: and :-: and :a b: and <span class="ext-note">a <strong>b</strong> c</span> and :1note[t] and :note[a</p>
 ```
 
 :::
@@ -1589,7 +1613,7 @@ The colon follows a letter, so no extension starts. The bracket pair is text.
 
 The trailing hyphen is not part of the name, so the braced closer forms.
 
-Example 84 (unverified)
+Example 85 (unverified)
 
 ::: compare
 
@@ -1603,7 +1627,7 @@ Example 84 (unverified)
 
 :::
 
-Example 85 (unverified)
+Example 86 (unverified)
 
 ::: compare
 
@@ -1619,7 +1643,7 @@ see config:items[0]
 
 The boundary reads the Unicode class: a letter blocks the sigil, an underscore does not.
 
-Example 86 (unverified)
+Example 87 (unverified)
 
 ::: compare
 
@@ -1637,9 +1661,9 @@ Example 86 (unverified)
 
 **C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom and not a host. (carried over from 0.1)
 
-**C2-I-097** The id is matched exactly, without case folding. An unresolved cross-reference renders its source. (carried over from 0.1)
+**C2-I-097** The id is matched exactly, without case folding. An unresolved cross-reference is written as the characters typed. (carried over from 0.1)
 
-Example 87 (generated)
+Example 88 (generated)
 
 ::: compare
 
@@ -1661,7 +1685,7 @@ See </#intro> and </#Intro> and </#intro>{.c}
 
 ## Abbreviations
 
-An abbreviation definition is a block line (C2-B-065). Its effect is inline.
+An abbreviation definition is a block line (C2-B-084). Its effect is inline.
 
 **C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. (carried over from 0.1)
 
@@ -1669,7 +1693,7 @@ An abbreviation definition is a block line (C2-B-065). Its effect is inline.
 
 **Exception C2-I-100** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
 
-Example 88 (generated)
+Example 89 (generated)
 
 ::: compare
 
@@ -1689,7 +1713,7 @@ The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).
 
 **C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key forms no construct: the brackets are text and the key is read as a mention (C2-I-078, C2-I-090). (carried over from 0.1)
 
-Example 89 (generated)
+Example 90 (generated)
 
 ::: compare
 
@@ -1709,7 +1733,7 @@ See [@doe2020] and [see @doe2020, p. 3; @roe].
 
 **C2-I-103** Every other line break inside a content is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
 
-Example 90 (generated)
+Example 91 (generated)
 
 ::: compare
 
@@ -1725,7 +1749,7 @@ b</p>
 
 :::
 
-Example 91 (generated)
+Example 92 (generated)
 
 ::: compare
 
@@ -1743,7 +1767,7 @@ line three</p>
 
 :::
 
-Example 92 (generated)
+Example 93 (generated)
 
 ::: compare
 
@@ -1798,7 +1822,7 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `(c)` and `(r)` are text. (carried over from 0.1)
 
-Example 93 (generated)
+Example 94 (generated)
 
 ::: compare
 
@@ -1812,7 +1836,7 @@ Example 93 (generated)
 
 :::
 
-Example 94 (generated)
+Example 95 (generated)
 
 ::: compare
 
@@ -1826,7 +1850,7 @@ Example 94 (generated)
 
 :::
 
-Example 95 (generated)
+Example 96 (generated)
 
 ::: compare
 
@@ -1842,7 +1866,7 @@ Example 95 (generated)
 
 The opening quote has no partner and stays an opening quote.
 
-Example 96 (generated)
+Example 97 (generated)
 
 ::: compare
 
@@ -1856,7 +1880,7 @@ Example 96 (generated)
 
 :::
 
-Example 97 (unverified)
+Example 98 (unverified)
 
 ::: compare
 
@@ -1870,7 +1894,7 @@ say 'word
 
 :::
 
-Example 98 (generated)
+Example 99 (generated)
 
 ::: compare
 
@@ -1886,7 +1910,7 @@ pages 1--10 and a---b and a----b and git log --oneline and x --- y
 
 An arrow needs its exact run. With three hyphens the run is an em dash and the angle bracket is text.
 
-Example 99 (generated)
+Example 100 (generated)
 
 ::: compare
 
@@ -1900,7 +1924,7 @@ a--->b and a<---b and a --> b
 
 :::
 
-Example 100 (generated)
+Example 101 (generated)
 
 ::: compare
 
@@ -1914,7 +1938,7 @@ x {--}y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g
 
 :::
 
-Example 101 (generated)
+Example 102 (generated)
 
 ::: compare
 
@@ -1928,7 +1952,7 @@ a != b, a <= b, a >= b, 5 +- 1, Carve(tm), (c), x -> y, k => v
 
 :::
 
-Example 102 (generated)
+Example 103 (generated)
 
 ::: compare
 
@@ -1944,13 +1968,13 @@ Example 102 (generated)
 
 ## The depth cap
 
-**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-131: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual.
+**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-190: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual.
 
 The cap applies to every opener that takes content: a bracket, a bare delimiter, a braced opener, `^[` and the bracket of an inline extension.
 
 The paragraph has no container, so 200 superscripts nest. The opener number 201 is text, and so is the last closer, which finds no open opener (C2-I-057).
 
-Example 103 (unverified)
+Example 104 (unverified)
 
 ::: compare
 
@@ -1985,7 +2009,7 @@ The two forms that never fail are the code span and the math span (C2-I-017, C2-
 | unclosed autolink or cross-reference | the angle bracket (C2-I-073, C2-I-096) |
 | opener past the depth cap | the opener (C2-I-118) |
 
-Example 104 (generated)
+Example 105 (generated)
 
 ::: compare
 
@@ -1999,7 +2023,7 @@ Example 104 (generated)
 
 :::
 
-Example 105 (generated)
+Example 106 (generated)
 
 ::: compare
 
@@ -2009,6 +2033,29 @@ later markup still works: [a and *b* and {=c and `d`
 
 ```html
 <p>later markup still works: [a and <strong>b</strong> and {=c and <code>d</code></p>
+```
+
+:::
+
+## The display math line
+
+The block chapter makes a paragraph a math block when it holds exactly one display math span (C2-B-158). That test reads a shape, not parsed inline content.
+
+**C2-I-121** A display math span is `$$`, a backtick run, the content and a closing backtick run of the opener's length (C2-I-019, C2-I-015). A line consists of exactly one display math span when it starts with `$$` and the opening run, the closing run stands on the same line, and nothing follows it but attribute blocks glued to it and trailing whitespace.
+
+Example 107 (generated)
+
+::: compare
+
+```carve
+$$`E = mc^2`
+
+text $$`E = mc^2`
+```
+
+```html
+<p><span class="math display" role="math">\[E = mc^2\]</span></p>
+<p>text <span class="math display" role="math">\[E = mc^2\]</span></p>
 ```
 
 :::
@@ -2031,7 +2078,7 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 9 | 1 | 5 | 1 |
-| Reference resolution | 12 | 4 | 6 | 6 |
+| Reference resolution | 12 | 3 | 6 | 7 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 0 |
@@ -2041,9 +2088,10 @@ There is no fixed budget for the inline chapter.
 | Smart typography | 14 | 7 | 9 | 1 |
 | The depth cap | 1 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
-| **Total** | **120** | **24** | **74** | **31** |
+| The display math line | 1 | 0 | 1 | 0 |
+| **Total** | **121** | **23** | **75** | **32** |
 
-The chapter has 120 clauses, 24 of them exceptions, and 105 examples. The clause count includes the exceptions.
+The chapter has 121 clauses, 23 of them exceptions, and 107 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
@@ -2052,7 +2100,7 @@ For comparison, counted with the rubric of the inline review (one atomic stateme
 | Carve 0.1 | about 204 | 30 |
 | CommonMark 0.31.2 | about 80 | 6 |
 | Djot | about 50 | 2 |
-| This chapter | 120 | 24 |
+| This chapter | 121 | 23 |
 
 The numbers are not like for like. Several clauses here join two or three atomic statements, as the first draft of the block chapter did, so a strict recount lands higher. Carve also has about 35 inline constructs against 20 in Djot and 11 in CommonMark.
 
