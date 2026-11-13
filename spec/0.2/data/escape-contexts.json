@@ -233,9 +233,9 @@
       "name": "star_run",
       "group": "block",
       "triggers": ["***"],
-      "positions": ["alone_on_first_line_of_paragraph"],
+      "positions": ["alone_on_any_line_of_paragraph"],
       "shapes": ["thematic_break"],
-      "clauses": ["C2-W-092", "C2-B-159"]
+      "clauses": ["C2-W-092", "C2-B-159", "C2-B-200"]
     },
     {
       "name": "symbol",

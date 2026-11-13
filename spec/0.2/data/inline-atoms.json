@@ -91,7 +91,7 @@
       "content": "verbatim",
       "reads_escapes": false,
       "crosses_lines": true,
-      "trim": "one_space_each_end_when_both",
+      "trim": "one_space_each_end_when_both_and_not_only_spaces",
       "unclosed": "runs_to_content_end",
       "host": true,
       "clauses": ["C2-I-005", "C2-I-013", "C2-I-014", "C2-I-015", "C2-I-016", "C2-I-017", "C2-I-036"]

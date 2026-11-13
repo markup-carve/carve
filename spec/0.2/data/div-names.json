@@ -9,7 +9,6 @@
     { "name": "glossary", "kind": "directive", "clauses": ["C2-B-127"] },
     { "name": "index", "kind": "directive", "clauses": ["C2-B-127"] },
     { "name": "info", "kind": "admonition", "clauses": ["C2-B-127"] },
-    { "name": "list-table", "kind": "list_table", "clauses": ["C2-B-188"] },
     { "name": "note", "kind": "admonition", "clauses": ["C2-B-127"] },
     { "name": "quote", "kind": "admonition", "clauses": ["C2-B-127"] },
     { "name": "references", "kind": "directive", "clauses": ["C2-B-127"] },

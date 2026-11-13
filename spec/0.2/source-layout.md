@@ -95,7 +95,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `form` (C2-A-105).
 
-**C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells.
+**C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells, apart from `headRows`, which only a `header-rows` attribute declares (C2-A-088).
 
 ```json
 {

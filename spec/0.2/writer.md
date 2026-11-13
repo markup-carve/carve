@@ -157,7 +157,7 @@ Conventions:
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). A table whose body carries `headRows` is written as a delimited table with its `header-rows` attribute, the only form that declares the field (C2-A-088). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035).
 
@@ -177,13 +177,15 @@ Conventions:
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
-**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022) when that text still folds to the tree's `key`. Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040).
+**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022) when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040).
 
 **C2-W-076** An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).
 
 **C2-W-077** A code span is written with the shortest backtick run that does not occur in its content, and with one space of padding on each side when the content starts or ends with a backtick or with a space that C2-I-016 would remove.
 
 **C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
+
+**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is a resolution result (C2-A-133) and is not written. A `cell_paragraph` is written as the content of its cell (C2-W-062).
 
 **C2-W-079** A hard break is written as a backslash at the end of the line.
 
@@ -450,7 +452,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `deprecated-cell-alignment` | `The table cell alignment prefix "${prefix}" is the deprecated 0.1.13 spelling, removed in 0.2.0. Alignment symbols now lead the cell's attribute block: write "${braced}" (carve fmt rewrites it).` | the glued alignment marker is cut; the rule stays on through 0.2.x |
 | `description-separator-below-content-column` | `This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list.` | unchanged |
 | `duplicate-footnote-definition` | `Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins.` | unchanged |
-| `duplicate-id` | `Duplicate heading id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`<br>`Heading slug "${base}" collides with another heading or an explicit id; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.` | renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039) |
+| `duplicate-id` | `Duplicate id "${explicit}": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.`<br>`Heading slug "${base}" collides with another heading or an explicit id; its auto id becomes "${id}", and ambiguous references to "${base}" resolve to the first occurrence.` | renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039) |
 | `duplicate-reference-url` | `This reference definition repeats an earlier URL.` | unchanged |
 | `emphasis-as-heading` | `This emphasized paragraph looks like a heading.` | unchanged |
 | `emphasis-marker-before-attributes` | `This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text.`<br>`This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit.` | unchanged |
@@ -498,7 +500,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `unattached-block-attribute` | `This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.` | new message text; also an attribute line separated from its block by a blank line |
 | `unclosed-code-fence` | `The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop.` `${ending}` is "it runs to the end of the document", "a continuation marker on line ${line} ends it" or "it ends at the end of its container on line ${line}". | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-comment-fence` | `The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop.` | severity error; the block ends with its container (C2-B-111) |
-| `unclosed-container-fence` | `This ${width}-colon ${kind} has no closer; it runs to the end of the document. Add a bare fence of ${width} colons to close it.`<br>`This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it.` | severity error; the block ends with its container (C2-B-111) |
+| `unclosed-container-fence` | `This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it.`<br>`This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it.` | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-inline-emphasis` | `This strong (or: emphasis) opener is unclosed in its paragraph; add a closer.` | unchanged |
 | `unresolved-footnote` | `Footnote reference [^${id}] has no matching definition; it renders as literal text.` | unchanged |
 | `unresolved-reference-link` | `Reference link ${rawRef} matches no link definition or heading; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.`<br>`Reference link ${rawRef} has no matching link definition or heading; it renders as literal text.`<br>`Reference image ${rawRef} matches no link definition; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.`<br>`Reference image ${rawRef} has no matching link definition; it renders as literal text.` | the full form and a wrapped label now reach the heading lookup (C2-I-080, C2-I-081) |
@@ -509,11 +511,11 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check |
 | `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text |
 | `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check |
-| `djot-emphasis-underscore` | `` Djot emphasis `_x_` renders as *underline* in Carve. `` | opt-in Djot check; new message text |
+| `djot-emphasis-underscore` | `` Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`. `` | opt-in Djot check; new message text |
 | `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |
 | `djot-highlight-braces` | `` Djot highlight `{=x=}` is also Carve highlight (`{=x=}`). `` | opt-in Djot check; new message text |
 | `djot-plus-bullet` | `` Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`. `` | opt-in Djot check |
-| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve ends the heading at the newline, so they are separate blocks and the heading id changes. `` | opt-in Djot check |
+| `djot-heading-continuation` | `` Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes. `` | opt-in Djot check |
 | `a11y/image-alt` | `image has empty alternative text and is not marked decorative` | accessibility extension; severity warning, where the 0.1 source sets error |
 
 84 rules are kept, one of them under a new id.
@@ -539,7 +541,7 @@ The `include-` rules of 0.1 belong to the Includes document, which follows later
 
 ### New rules
 
-The 29 rules of the migrate and lint design, with the later rulings applied. Severity and message are those of the design unless the last column says otherwise.
+The 29 rules of the migrate and lint design and one rule added later, with the later rulings applied. Severity and message are those of the design unless the last column says otherwise.
 
 | Rule | Severity | Reports | After the later rulings |
 |---|---|---|---|
@@ -558,6 +560,7 @@ The 29 rules of the migrate and lint design, with the later rulings applied. Sev
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |
 | `deprecated-spaced-thematic-break` | warning | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |
+| `deprecated-indented-line-under-heading` | warning | a line directly below a heading line that is indented past the heading marker and so continues the heading, where 0.1 started a paragraph (C2-B-154) | added with the heading continuation rule |
 | `description-term-multi-line` | hint | a term whose text spans several lines | unchanged |
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
@@ -754,7 +757,7 @@ One point is open.
 | Layout | 19 | 3 | 0 | 0 |
 | Canonical forms: blocks | 26 | 0 | 0 | 0 |
 | Canonical forms: tables | 8 | 0 | 0 | 0 |
-| Canonical forms: inline | 14 | 1 | 0 | 0 |
+| Canonical forms: inline | 15 | 1 | 0 | 0 |
 | The sidecar | 5 | 0 | 0 | 0 |
 | Escaping | 12 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |

@@ -226,8 +226,8 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `subscript` | inline | inlines | none |
 | `superscript` | inline | inlines | none |
 | `symbol` | inline | none | `name` |
-| `table` | block | table groups | `columns`, `caption`? |
-| `table_body` | `table` | `table_row` | `headRows`?, `rowHeadColumns`? |
+| `table` | block | table groups, `comment` | `columns`, `caption`? |
+| `table_body` | `table` | `table_row`, `comment` | `headRows`?, `rowHeadColumns`? |
 | `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`? |
 | `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`?, `authored`? |
 | `table_foot` | `table` | `table_row` | none |
@@ -369,7 +369,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Tables
 
-**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head.
+**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does.
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
@@ -479,7 +479,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip` and `resourceId`. An absent `alt` means none was given.
 
-**C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link.
+**C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link. Core source gives no `form` (C2-I-096): an extension or a supplied tree sets it, and a Carve writer reports `field-unspellable` for it.
 
 **C2-A-117** A `footnote_ref` carries `key` and `namespace: "footnote"`, and `number` once resolved. An `abbreviation` carries `key` and `namespace: "abbr"`, and may carry `expansion`.
 

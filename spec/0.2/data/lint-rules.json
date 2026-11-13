@@ -66,7 +66,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This line looks like a (kind) but directly follows text, so it is part of the paragraph. Add a blank line before it."
+        "This line looks like a (kind) but directly follows text, so it is part of the paragraph or caption above it. Add a blank line before it."
       ],
       "message_origin": "design",
       "reports": "a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition",
@@ -357,6 +357,20 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "deprecated-indented-line-under-heading",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        "This indented line directly below a heading is part of the heading in 0.2; in 0.1 it started a paragraph. Remove the indent to keep it a paragraph."
+      ],
+      "message_origin": "design",
+      "reports": "a line directly below a heading line that is indented past the heading marker and so continues the heading",
+      "change": "added with the heading continuation rule",
+      "clauses": ["C2-B-154"]
+    },
+    {
       "id": "deprecated-loose-attribute",
       "severity": "warning",
       "channel": "lint",
@@ -474,7 +488,7 @@
       "status": "kept",
       "default": "off",
       "messages": [
-        "Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve ends the heading at the newline, so they are separate blocks and the heading id changes."
+        "Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes."
       ],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
@@ -576,7 +590,7 @@
       "status": "renamed",
       "renamed_from": "duplicate-heading-id",
       "messages": [
-        "Duplicate heading id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.",
+        "Duplicate id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.",
         "Heading slug \"${base}\" collides with another heading or an explicit id; its auto id becomes \"${id}\", and ambiguous references to \"${base}\" resolve to the first occurrence."
       ],
       "message_origin": "engine_0_1",
@@ -1435,7 +1449,7 @@
       "channel": "parse",
       "status": "kept",
       "messages": [
-        "This ${width}-colon ${kind} has no closer; it runs to the end of the document. Add a bare fence of ${width} colons to close it.",
+        "This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it.",
         "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."
       ],
       "message_origin": "engine_0_1",
