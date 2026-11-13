@@ -134,7 +134,7 @@ roses
 
 **C2-H-023** A generated id is a resolution result and is read from `generatedId` (C2-A-134). It is not an authored id: `attrs.id` holds only what the author wrote (C2-A-038), the writer does not write a generated id into the source (C2-W-054), and the carrier `data-carve-generated-id` marks it under `roundtrip`.
 
-**C2-H-024** Ids are unique in the document. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. For a duplicate authored id the first node wins and each later one is reported (C2-A-039).
+**C2-H-024** Generated ids are unique in the document. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. An authored id is written as the author wrote it, also where two nodes carry the same one: the renderer does not change it, each later one is reported (C2-A-039), and a reference to that id resolves to the first node that carries it.
 
 **Exception C2-H-025** The headings of a footnote body take their generated ids after every heading of the document body, in the order of the footnote numbers. A heading in an unused footnote definition takes none.
 
