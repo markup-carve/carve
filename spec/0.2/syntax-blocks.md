@@ -3972,7 +3972,7 @@ Example 179 (generated)
 
 ## One-line constructs
 
-**C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1.
+**C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1. C2-B-201 to C2-B-206 state it.
 
 **C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197). Comment-only lines below that line do not count (C2-B-137), for a block image as for a math block (C2-B-158).
 
@@ -4102,6 +4102,46 @@ more
 ```html
 <p><span class="math display" role="math">\[x^2\]</span>
 more</p>
+```
+
+:::
+
+**C2-B-201** An include directive is `{{`, one or more spaces, a path, an optional section, zero or more options, one or more spaces and `}}`, with only spaces and tabs after it on the line. Spaces before the section and before each option are optional: `{{ a.crv#s@shift:1 }}` is a directive. A tab is not such a space, so `{{` followed by a tab is text. The closing `}}` is the first one outside a quoted path and a quoted value, so a quoted run may hold `}}`.
+
+**C2-B-202** A path is bare or quoted. A bare path is one or more characters, none of them a space, `#`, `@`, `}`, `"` or `“` (U+201C), so a bare path ends at the section or at the first option. A double-quoted path is `"`, one or more characters and `"`: a backslash takes the next character with it, and an unescaped `"` and a line end do not occur. Its value is read like a quoted attribute value (C2-I-033): a backslash before an ASCII punctuation character is dropped, and a backslash before any other character stays, so `"a\.crv"` names `a.crv` and `"notes\new.crv"` names `notes\new.crv`. A path in curly quotes, `“`, one or more characters other than `”` and `”`, is read as written, with no escape. An empty path in any form makes the line text (`empty-include-path`).
+
+**C2-B-203** A section is `#` and a name: an ASCII letter, digit or `_`, then ASCII letters, digits, `_` and `-`. A directive holds at most one section. The section names a heading or a block of the included file by its id; selecting it is the expansion's job.
+
+**C2-B-204** An option is `@`, a key and, optionally, `:` and a value. The key is an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. An unquoted value is one or more characters that are not `@`, `}`, a space, a tab or a line end, so an unquoted value ends at the next option: `@shift:1@lines:1-8` is two options. A value that starts with `"` or `'` is a quoted value as in C2-I-033, and may hold `@`, spaces and `}}`. Outside `cols`, quoting a value only delimits it: `@lines:"1-2"` is `@lines:1-2`.
+
+**C2-B-205** The six keys and the shape of each value are listed in `data/include-options.json`. `lines` and `rows` take a range `N-M`: two decimal numbers without a leading zero, the first at least 1 and not greater than the second. `region` takes an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. `cols` takes a range or a double-quoted list of column names separated by commas, in which each name is not empty and a backslash takes the next character. `shift` takes `auto` or a decimal integer with an optional `+` or `-`. `code` stands alone or takes a language: one or more ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`.
+
+**C2-B-206** A line that has the shape of C2-B-201 is no include directive, and is read as a paragraph, when it holds a second section, a key that is not one of the six, or an option that the column `without_value`, `outside_shape` or `repeated` of `data/include-options.json` sends to `paragraph`. An option that the table sends to `include_node` leaves an include node, and an expansion reports the option. Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion.
+
+Example 227 (unverified)
+
+::: compare
+
+```carve
+{{ "my file.crv"   #Intro @shift:1 @lines:1-5 }}
+```
+
+```html
+<p>{{ "my file.crv" #Intro @lines:1-5 @shift:1 }}</p>
+```
+
+:::
+
+Example 228 (generated)
+
+::: compare
+
+```carve
+{{ a.crv @shift:x }}
+```
+
+```html
+<p>{{ a.crv <span class="mention"><strong>@shift</strong></span>:x }}</p>
 ```
 
 :::
@@ -5001,16 +5041,16 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Comments | 14 | 4 | 13 | 4 |
 | Captions | 5 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 5 |
-| One-line constructs | 5 | 0 | 8 | 0 |
+| One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 3 | 2 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 23 | 2 | 18 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **200** | **15** | **169** | **57** |
+| **Total** | **206** | **15** | **170** | **58** |
 
-The chapter has 200 clauses, which is the accepted size, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 206 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
-This draft has no example for a list-table, for the depth cap or for a lone CR. The whole-table attributes, the shape of the include directive and the `start` attribute are referred to their 0.1 definitions. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
+This draft has no example for a list-table, for the depth cap or for a lone CR. The whole-table attributes and the `start` attribute are referred to their 0.1 definitions. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.

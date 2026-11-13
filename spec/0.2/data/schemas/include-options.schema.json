@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 include directive options",
+  "description": "The six option keys of an include directive (C2-B-204, C2-B-205), in the order the writer and the tree list them (C2-W-058, C2-A-181). Every other key makes the line a paragraph. `options` is sorted by `rank`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "options"],
+  "properties": {
+    "$schema": { "const": "schemas/include-options.schema.json" },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rank", "name", "kind", "value", "without_value", "outside_shape", "repeated", "clauses"],
+        "properties": {
+          "rank": { "type": "integer", "minimum": 1, "description": "The place of the option in the written and the tree order." },
+          "name": { "type": "string", "description": "The key, written after `@`." },
+          "kind": {
+            "enum": ["selection", "transform", "mode"],
+            "description": "selection: chooses the included content. transform: reshapes the selected content. mode: decides what the content becomes. The expansion reads the kind; the parser does not."
+          },
+          "value": {
+            "enum": ["range", "identifier", "range_or_names", "signed_integer_or_auto", "language"],
+            "description": "The shape of the value (C2-B-205). range: `N-M`, decimal, no leading zero, N at least 1 and at most M. identifier: an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. range_or_names: a range, or a quoted list of column names. signed_integer_or_auto: an optional `+` or `-` and decimal digits, or `auto`. language: ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`."
+          },
+          "without_value": {
+            "enum": ["paragraph", "include_node", "valid"],
+            "description": "What the key written with no colon gives. paragraph: the line is no include directive. include_node: the line is an include node, and an expansion reports the option. valid: the bare key is a well-formed option."
+          },
+          "outside_shape": {
+            "enum": ["paragraph", "include_node"],
+            "description": "What a value outside the shape gives, an empty value after the colon included."
+          },
+          "repeated": {
+            "enum": ["paragraph", "include_node"],
+            "description": "What a second option with the same key gives."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    }
+  }
+}

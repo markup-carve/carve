@@ -31,6 +31,7 @@ const FILES = {
   'div-names': { names: ['name', 'name'], sigils: ['name', 'sigil'] },
   'escape-contexts': { contexts: ['name', 'name'], no_escape: ['name', 'name'], no_spelling: ['name', 'name'] },
   'heading-slug': { removed: ['code_point', 'code_point'], reversed: ['glyph', 'glyph'] },
+  'include-options': { options: ['name', 'rank'] },
   'inline-atoms': { atoms: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },

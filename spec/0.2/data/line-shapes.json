@@ -403,7 +403,7 @@
         { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
-      "clauses": ["C2-B-156"]
+      "clauses": ["C2-B-156", "C2-B-201"]
     },
     {
       "name": "table_row",
@@ -461,17 +461,19 @@
     { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]"], "clauses": ["C2-B-197"] },
     {
       "name": "include_options",
+      "file": "include-options.json",
       "forms": ["one or more of: optional spaces, an at-sign, a key, and optionally a colon and a value"],
-      "clauses": ["C2-B-156"]
+      "clauses": ["C2-B-156", "C2-B-204", "C2-B-205", "C2-B-206"]
     },
     {
       "name": "include_path",
       "forms": [
-        "bare: no space, #, at-sign or }, and no leading double quote",
-        "double-quoted: a backslash takes the next character"
+        "bare: no space, #, at-sign, }, double quote or left curly double quote",
+        "double-quoted: a backslash takes the next character",
+        "curly-quoted: no right curly double quote, no escape"
       ],
       "min": 1,
-      "clauses": ["C2-B-156"]
+      "clauses": ["C2-B-156", "C2-B-202"]
     },
     {
       "name": "include_section",
@@ -479,7 +481,7 @@
       "chars": ["-", "0-9", "A-Z", "_", "a-z"],
       "not_first": ["-"],
       "min": 1,
-      "clauses": ["C2-B-156"]
+      "clauses": ["C2-B-156", "C2-B-203"]
     },
     {
       "name": "label",

@@ -1,0 +1,65 @@
+{
+  "$schema": "schemas/include-options.schema.json",
+  "options": [
+    {
+      "rank": 1,
+      "name": "lines",
+      "kind": "selection",
+      "value": "range",
+      "without_value": "paragraph",
+      "outside_shape": "include_node",
+      "repeated": "paragraph",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    },
+    {
+      "rank": 2,
+      "name": "region",
+      "kind": "selection",
+      "value": "identifier",
+      "without_value": "paragraph",
+      "outside_shape": "paragraph",
+      "repeated": "paragraph",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    },
+    {
+      "rank": 3,
+      "name": "rows",
+      "kind": "selection",
+      "value": "range",
+      "without_value": "include_node",
+      "outside_shape": "include_node",
+      "repeated": "include_node",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    },
+    {
+      "rank": 4,
+      "name": "cols",
+      "kind": "transform",
+      "value": "range_or_names",
+      "without_value": "include_node",
+      "outside_shape": "include_node",
+      "repeated": "include_node",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    },
+    {
+      "rank": 5,
+      "name": "shift",
+      "kind": "transform",
+      "value": "signed_integer_or_auto",
+      "without_value": "paragraph",
+      "outside_shape": "paragraph",
+      "repeated": "paragraph",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    },
+    {
+      "rank": 6,
+      "name": "code",
+      "kind": "mode",
+      "value": "language",
+      "without_value": "valid",
+      "outside_shape": "paragraph",
+      "repeated": "paragraph",
+      "clauses": ["C2-B-204", "C2-B-205", "C2-W-058"]
+    }
+  ]
+}
