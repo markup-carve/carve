@@ -4285,7 +4285,7 @@ b
 
 **C2-B-164** The format name is one word: a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, an uppercase letter or two spaces leave the line text. Without a name the format is YAML, for which the bare opener is the canonical form. As in 0.1.
 
-**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text.
+**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141).
 
 The opener is taken without a scan for the closer (C2-B-189). A document that starts with a thematic break writes `***`.
 

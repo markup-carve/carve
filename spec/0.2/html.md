@@ -60,9 +60,9 @@ Example 1 (generated)
 
 **Exception C2-H-011** On a footnote reference the `id` stands before `href`. On a mention or a tag the class stands first.
 
-**C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068).
+**C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068). A class that occurs more than once is written once, at its first place; the tree keeps every occurrence.
 
-**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice.
+**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written.
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
@@ -126,7 +126,7 @@ roses
 
 **C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case.
 
-**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line, or, where the image is an unresolved reference, what C2-H-085 writes for it.
+**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`.
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
@@ -263,7 +263,7 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the item. The input carries `checked` before `disabled` when the mark is `x`. The list of task items carries the base class `task-list`.
+**C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the paragraphs and headings that are direct children of the item, in order, and is empty when there are none. The input carries `checked` before `disabled` when the mark is `x`. The list of task items carries the base class `task-list`.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -615,7 +615,7 @@ a `<i>y</i>`{=html} b
 
 **C2-H-055** A table is `<table>` with `<thead>`, `<tbody>` and `<tfoot>` for its groups. Each group tag stands on its own line and each row is one line: `<tr>`, its cells, `</tr>`. An empty group is not written.
 
-**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. A header cell in the head carries `scope="col"`, and one in a header column carries `scope="row"`.
+**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. A header cell in the head carries `scope="col"`, and every header cell outside the head carries `scope="row"`.
 
 **C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. Vertical alignment adds `vertical-align: VALUE;` after it, one space apart. A cell with no alignment carries no `style`. An authored `style` keeps its value and takes the declarations after it.
 
@@ -665,7 +665,7 @@ Example 12 (generated)
 
 **C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
 
-**C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. C2-B-207, C2-B-208 and C2-H-149 to C2-H-151 state them. A panel caption takes no number.
+**C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. C2-B-207, C2-B-208 and C2-H-149 to C2-H-151 state them. A panel caption takes no number. The number mark of a caption that takes no number, such as the caption of a panel, is written as the character `#`.
 
 **C2-H-067** With `roundtrip` off the number is plain text. With it on, the number is wrapped in `<span data-carve-caption-number>`.
 
@@ -852,7 +852,7 @@ See[^a].
 
 ## Comments, frontmatter and definitions
 
-**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written.
+**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A comment-only line inside a paragraph or another leaf takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The tree keeps both breaks.
 
 **C2-H-070** Frontmatter renders nothing.
 
@@ -1016,7 +1016,7 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 ## Footnotes
 
-**C2-H-087** Footnotes are numbered from 1 in the order of their first reference in the document. A labeled footnote and an inline footnote share the one sequence. A later reference to the same label reuses its number.
+**C2-H-087** Footnotes are numbered from 1 in the order of their first reference in the document. A labeled footnote and an inline footnote share the one sequence. A later reference to the same label reuses its number. References in the body of the document are numbered first, in document order; references that stand inside a note are numbered after them, note by note in the order of the notes' numbers.
 
 **C2-H-088** A footnote reference is `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on. An id the author wrote on the reference replaces the generated one, and the backlink of the note points to it.
 
@@ -1069,7 +1069,7 @@ After.
 
 **C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-097).
 
-**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. The forms `number`, `page`, `title` and `full` (C2-A-116) select the text as in 0.1.
+**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `form` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
 
 **C2-H-097** The generated text is plain text: no abbreviation, mention or typography rule is applied to it (C2-I-100).
 

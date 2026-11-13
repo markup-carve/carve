@@ -328,7 +328,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Comments
 
-**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one, and without spaces and tabs at its end, also where the comment ends at the pipe of a cell (C2-B-134); `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body.
+**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one, and without spaces and tabs at its end, also where the comment ends at the pipe of a cell (C2-B-134); `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body, with a line break between two lines and none after the last.
 
 **C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-138).
 
@@ -375,13 +375,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
-**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213.
+**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213. `resolvedAlign` of a column is the value `aligns` gives it, or else the alignment mark of the last head cell of that column (C2-B-182). A cell renders with its own mark, or else with the resolved alignment of its column; a mark on a body cell aligns that cell only.
 
-**C2-A-090** `table_column.authored` is `true` on a column the source spelled and absent on one the producer inferred. It is a tree fact and takes part in equality.
+**C2-A-090** `table_column.authored` is `true` on a column the source spelled, which is one that `aligns` or `widths` gives a value, and absent on one the producer inferred. It is a tree fact and takes part in equality.
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks.
 
-**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it.
+**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it. The cell that held a span mark stays in its row with `span` and no content, and the covering cell carries the count. The mark cell has no position.
 
 **C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
 
@@ -539,7 +539,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ## Positions
 
-**C2-A-138** Every node of a tree that a parser built from source carries `pos`, except the root and the node types of C2-A-158. Positions are always on; there is no parse option that turns them off.
+**C2-A-138** Every node of a tree that a parser built from source carries `pos`, except the root and the node types of C2-A-158. A parser builds positions unless the caller asks for a tree without them; a tree built that way omits `pos` on every node and is otherwise the same. Rendering from source needs no positions and builds none, unless `sourceLines` is on.
 
 **C2-A-139** A node that has no position omits `pos`. `pos` is never `null`, and a producer never invents a range.
 
