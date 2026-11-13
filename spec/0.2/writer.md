@@ -75,7 +75,7 @@ Conventions:
 
 **C2-W-027** An item, a description or a footnote body whose first block is not a paragraph is written with that block's opener on the marker line (C2-B-057, C2-B-072). This is requirement W8.
 
-**C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032). This is requirement W4.
+**C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). This is requirement W4.
 
 **C2-W-029** Two lists are adjacent for C2-W-028 also when every block between them writes nothing.
 
@@ -85,7 +85,7 @@ Conventions:
 
 **C2-W-032** A div, an admonition, a line block or a hard-break block with an empty body is written with one blank line between opener and closer.
 
-**C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
+**C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed. A supplied code or raw block whose value has no final line break (C2-A-047) is written with one, and the writer reports `field-unspellable` for `value`. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
 
 **C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073).
 
@@ -105,7 +105,7 @@ Conventions:
 
 **C2-W-040** The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
-**C2-W-041** The title of a code block is written in the info string, in double quotes. A `title` key on the attribute line above is rewritten to that form.
+**C2-W-041** The title of a code block is written in the info string, in double quotes. A `title` key on the attribute line above stays a key: it is a different tree (C2-A-032).
 
 **C2-W-042** A bullet item is written with the character in `marker.char`. `-` and `*` make different lists (C2-B-035), and the writer changes neither.
 
@@ -137,7 +137,7 @@ Conventions:
 
 **C2-W-056** A link definition is written as `[label]:`, one space, the destination and, when there is one, one space and the title in double quotes. A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.
 
-**C2-W-057** There is no sentinel for an empty body. A parsed item, description, term or footnote body is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
+**C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
@@ -157,7 +157,7 @@ Conventions:
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036).
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035).
 
@@ -173,7 +173,7 @@ Conventions:
 
 **C2-W-072** A replacement is written as a deletion directly followed by an insertion: `{-old-}{+new+}`. There is no arrow form (C2-A-097).
 
-**C2-W-073** A link title is written in double quotes. Single quotes and a `title` key in an attribute block are rewritten to that form.
+**C2-W-073** A link title is written in double quotes. Single quotes are rewritten to that form. A `title` key in an attribute block stays a key: it is a different tree (C2-A-032).
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
@@ -457,7 +457,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `empty-include-path` | `This "${text}" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces.` | unchanged |
 | `empty-link-destination` | `This link has an empty destination.` | unchanged |
 | `empty-reference-definition` | `This reference definition has an empty destination. Check that its URL was not removed by mistake.` | re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text |
-| `fence-opener-fallback` | `A code fence carries no inline attributes, so "${attributes}" after the info string is not valid. ${effect} (use: "${attributes}" on its own line directly above the fence, then "${opener}").`<br>`The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. ${effect} (use: "${respaced}").`<br>`This line starts like a fenced code block, but "${info}" is not a valid info string (a language, then an optional "title", then an optional [label]). ${effect}` `${effect}` says that the fence does not open and that the block renders as a paragraph. | severity error for an attribute block after a fence language or an admonition name |
+| `fence-opener-fallback` | `A code fence carries no inline attributes, so "${attributes}" after the info string is not valid. ${effect} (use: "${attributes}" on its own line directly above the fence, then "${opener}").`<br>`The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. ${effect} (use: "${respaced}").`<br>`This line starts like a fenced code block, but "${info}" is not a valid info string (a language, then an optional "title", then an optional [label]). ${effect}` `${effect}` says that the fence does not open and that the block renders as a paragraph; for an attribute block after the language it says that the fence opens and the attribute block is not applied (C2-B-105). | severity error for an attribute block after a fence language or an admonition name |
 | `fence-title-syntax` | `The title after "${type}" uses typographic quotes - usually a CMS "smart quote" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} "${title}"${label}.`<br>`A "{…}" on the fence line is not an attribute block - it makes the whole line plain text. Put attributes on their own line directly above the ":::" opener.`<br>`Text after the "${type}" fence type must be a quoted "title" or a [label] - unquoted it makes the whole line plain text. Did you mean ${fence} ${type} "${title}"${label}?`<br>`Invalid container metadata was dropped; the container and its children are preserved. ${hint}` | unchanged |
 | `figure-group-empty` | `This "::: figure" group holds no captionable panel; the panels wrapper renders around the preserved content only.` | unchanged |
 | `figure-group-nested` | `A "::: figure" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group.` | unchanged |
@@ -495,7 +495,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `table-span-marker-blocked` | `The "${marker}" span marker cannot extend a cell. ${reason} It renders as a cell of its own; escape it as "\${marker}" to keep the character as text, or remove it.` | also a row span stopped at the head boundary (C2-B-174) |
 | `table-width-total` | `The specified table column widths total more than 100%.` | unchanged |
 | `thematic-break-spelling` | `This thematic break is written "${raw}"; the canonical spelling is "***".` | new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2 |
-| `unattached-block-attribute` | `` This block attribute is the whole body of a ${construct}, so nothing is emitted for it and the attribute is discarded. Do not delete the line - the marker needs content, so a bare marker degrades to text. Write the empty-body sentinel `{empty}` if the body is meant to be empty, or give the body content. ``<br>`This block attribute reaches no block - the document or the container holding it ends first - so nothing is emitted for it. Move it above the block it describes, or delete it.` | also an attribute line separated from its block by a blank line, which is text |
+| `unattached-block-attribute` | `This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.` | new message text; also an attribute line separated from its block by a blank line |
 | `unclosed-code-fence` | `The ${marker} fence opened here has no closing fence; ${ending}. Add a closing ${marker} where the code should stop.` `${ending}` is "it runs to the end of the document", "a continuation marker on line ${line} ends it" or "it ends at the end of its container on line ${line}". | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-comment-fence` | `The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop.` | severity error; the block ends with its container (C2-B-111) |
 | `unclosed-container-fence` | `This ${width}-colon ${kind} has no closer; it runs to the end of the document. Add a bare fence of ${width} colons to close it.`<br>`This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it.` | severity error; the block ends with its container (C2-B-111) |
@@ -505,9 +505,9 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `unused-footnote-definition` | `Footnote definition [^${label}] is never referenced, so it is omitted from the rendered document.` | unchanged |
 | `unused-link-reference-definition` | `This link reference definition is unused.` | unchanged |
 | `markdown-strong-double-star` | `` Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks. `` | new message text |
-| `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is not Carve — Carve strikethrough is a single `~`. `` | new message text |
+| `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`. `` | new message text |
 | `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check |
-| `djot-subscript-tilde` | `` Djot subscript `~x~` renders as *strikethrough* in Carve. `` | opt-in Djot check; new message text |
+| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text |
 | `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check |
 | `djot-emphasis-underscore` | `` Djot emphasis `_x_` renders as *underline* in Carve. `` | opt-in Djot check; new message text |
 | `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |

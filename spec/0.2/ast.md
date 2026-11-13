@@ -487,7 +487,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-118** A `citation_group` carries `children` of `citation` nodes and `raw`. A `citation` occurs nowhere else.
 
-**C2-A-119** `citation_group.raw` is the bracket text as written. It stays in the tree, because it is what renders when a key has no entry.
+**C2-A-119** `citation_group.raw` is the bracket text as written. It stays in the tree, because it is what renders when a key has no entry. Core has no citation spelling (C2-I-101): where no extension handles citations, HTML writes `raw` as text and a `citation_definition` writes nothing, and a Carve writer writes `raw` and reports `structure-unspellable` for a `citation_definition`.
 
 **C2-A-120** Each `citation` may carry its own `mode`. A group `mode` is shorthand, and a group that has `mode` while one of its items lacks it is refused.
 
@@ -581,7 +581,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-151** A span ends directly after the last source character the construct owns. A closing delimiter and an attached attribute block are inside; a following line ending, a blank line and an attribute line that attached to nothing are outside.
 
-**C2-A-152** A break owns its line ending, so its end is column 1 of the next line. A hard break also spans its backslash.
+**C2-A-152** A break owns its line ending, so its end is column 1 of the next line. A hard break also spans its backslash. A hard break at the end of the content with no line ending after it, as at the end of a table cell (C2-I-102), spans its backslash only.
 
 **C2-A-153** A break that a parser makes from a plain line ending, with no backslash in the source, has a span: the line ending itself. It is not among the nodes that omit `pos`.
 
@@ -603,7 +603,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-161** Two trees are equal when they agree in node types, in every field this document names, in the order of every node list, in `attrs`, in `metadata` and in `data`, after text coalescing (C2-A-040) and the normalization of C2-A-058.
 
-**C2-A-162** Not compared: `pos`, `segments`, and the resolution results of C2-A-133, a generated heading id included. Each has its own check. `paragraph.blockImage` is compared (C2-A-136).
+**C2-A-162** Not compared: `pos`, `segments`, `srcByteLength`, and the resolution results of C2-A-133, a generated heading id included. Each has its own check. `paragraph.blockImage` is compared (C2-A-136).
 
 **C2-A-163** Equality compares the tree only. Sidecars and the diagnostics record are not part of it, so a formatter may normalize any spelling the sidecar holds without changing the document.
 
@@ -693,7 +693,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 
-**C2-A-186** A parsed container is never empty: an item or a quote with nothing else holds a comment node (C2-B-136). A tree that was not parsed from source may hold a container with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
+**C2-A-186** A parsed item, description, term, heading or quote is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block or hard-break block may have no children (C2-W-032). A tree that was not parsed from source may hold an item, description, term, heading or quote with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
 
 ```json
 {

@@ -62,7 +62,7 @@ Example 1 (generated)
 
 **C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068).
 
-**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, and an authored key replaces every other generated attribute of the same name. No element carries one name twice.
+**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice.
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
@@ -663,7 +663,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written. The destination of an email autolink is `mailto:` followed by the address, and its content is the address.
 
-**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has one. `alt` is always written, also when it is empty.
+**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has one. `alt` is always written, also when it is empty. A supplied image with no `src` is written with `src=""`, and one with no `alt` with `alt=""`.
 
 **C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-111).
 
@@ -754,7 +754,7 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 **C2-H-092** A footnote definition that no reference uses is not written.
 
-**C2-H-093** The section stands at the end of the document, after the last block. A top-level `::: footnotes` div moves it to the place of that div. A `::: footnotes` div inside a container places nothing and renders as `<div class="footnotes">`. As in 0.1 (CARVE-P9-073).
+**C2-H-093** The section stands at the end of the document, after the last block. A top-level `::: footnotes` directive (C2-A-066) moves it to the place of that directive. A `::: footnotes` directive inside a container places nothing and renders as `<div class="footnotes">`. As in 0.1 (CARVE-P9-073).
 
 **C2-H-094** With no numbered footnote in the document, no section is written.
 

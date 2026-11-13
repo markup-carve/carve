@@ -1126,7 +1126,7 @@ Example 60 (generated)
 
 **C2-I-070** Link text is inline content and may cross line breaks.
 
-**Exception C2-I-071** Links do not nest: a link inside link text is replaced by its own content, and the outer link keeps its destination. An image and a span inside link text stay. (carried over from 0.1)
+**Exception C2-I-071** Links do not nest: a link inside link text renders as its own content, and the outer link keeps its destination. The inner link stays a node in the tree (C2-A-111). An image and a span inside link text stay. (carried over from 0.1)
 
 **C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. (carried over from 0.1)
 

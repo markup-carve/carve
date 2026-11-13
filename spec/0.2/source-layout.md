@@ -81,7 +81,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 | `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the last closing bracket | `link.rawRef`, `image.rawRef` |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
 
-**C2-L-016** `bare` says whether an ordered list was numbered with the bare dot or with written numbers. The tree holds only the start value (C2-A-056).
+**C2-L-016** `bare` says whether an ordered list was numbered with the bare dot or with written numbers. A list that mixes both (C2-B-043) records the form of its first marker, and the formatter writes the whole list in that form. The tree holds only the start value (C2-A-056).
 
 **C2-L-017** `fenced` says which of the two quote forms the author wrote. Both give the same `block_quote`.
 
