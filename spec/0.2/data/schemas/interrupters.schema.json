@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 paragraph interrupters",
+  "description": "The five line kinds that end an open paragraph without a blank line. Every other line that is not blank is a lazy line of the paragraph.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "interrupters", "lazy_shapes"],
+  "properties": {
+    "$schema": { "const": "schemas/interrupters.schema.json" },
+    "interrupters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "label", "shapes", "when", "clauses"],
+        "properties": {
+          "name": { "enum": ["a", "b", "c", "d", "e"], "description": "The letter the block chapter gives the interrupter." },
+          "label": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "shapes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true,
+            "description": "Names of rows in line-shapes.json. A line interrupts only when it has one of these shapes."
+          },
+          "when": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "always",
+                "at_open_list_column",
+                "indented_past_enclosing_marker",
+                "mark_at_open_description_list_column",
+                "definition_at_column_0_while_definition_open",
+                "paragraph_is_one_block_image_line",
+                "below_open_quote_line_without_its_mark"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "The line interrupts when it has one of the shapes and at least one of these conditions holds. `always`: the shape alone decides."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "carries_quote_marks": {
+            "type": "boolean",
+            "description": "True when the line must carry the quote mark of every quote the list or the definition sits in (C2-B-020)."
+          },
+          "not_when": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "at_description_list_column_after_term_or_description_text",
+                "left_of_list_column_after_item_text",
+                "term_mark_after_paragraph_text_inside_item"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "Cases the exceptions take out: the line is a lazy line."
+          }
+        }
+      },
+      "minItems": 5,
+      "maxItems": 5
+    },
+    "lazy_shapes": {
+      "type": "array",
+      "description": "The shapes of line-shapes.json that C2-B-024 names as lazy lines of an open paragraph. A bullet or an ordered marker is lazy only where no list is open.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    }
+  }
+}

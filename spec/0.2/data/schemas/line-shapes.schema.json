@@ -1,0 +1,321 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 line shapes",
+  "description": "The shapes a line can have in the block pass, keyed by the first character after the prefixes of the open containers (quote marks and indent). A shape is tested only on a line that starts with one of its `first` characters; `blank` and `text` have none. The order of `shapes` is by the lowest code point in `first`, then by name, and is not a priority. Several shapes can share a first character; the clauses decide between them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "line_end", "shapes", "refs"],
+  "properties": {
+    "$schema": { "const": "schemas/line-shapes.schema.json" },
+    "line_end": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["terminator", "dropped_before_terminator", "lone_carriage_return", "clauses"],
+      "properties": {
+        "terminator": { "const": "\n" },
+        "dropped_before_terminator": { "const": "\r" },
+        "lone_carriage_return": { "const": "content" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "Where a line ends: at the terminator. The character named in `dropped_before_terminator`, directly before it, is not part of the line. A lone carriage return is content and ends no line."
+    },
+    "shapes": {
+      "type": "array",
+      "description": "One row per line shape.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "first", "role", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "first": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "The characters the line can start with after the prefixes. An entry is one character or a range such as `a-z`. Empty for `blank` and `text`."
+          },
+          "role": {
+            "enum": [
+              "blank",
+              "paragraph",
+              "leaf",
+              "container",
+              "opener",
+              "closer",
+              "opener_or_closer",
+              "definition",
+              "attribute",
+              "row",
+              "skipped",
+              "close_fact"
+            ],
+            "description": "What a line of the shape does: `container` opens a container on its marker line, `opener` opens a fenced block, `closer` closes one, `opener_or_closer` closes an open div it is long enough for and otherwise opens one, `skipped` is the comment-only line, `close_fact` is a shape read when a paragraph closes and never a role of a line."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "sequence": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/part" },
+            "description": "What the line holds from its first character on. The shape matches when the whole sequence matches. When the last part is not `end`, the rest of the line is not constrained by this file. Absent for `text`, which is every line that matches nothing else."
+          },
+          "at": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "line": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "The line of the document the shape is bound to, counted from 1."
+              },
+              "column": { "type": "integer", "minimum": 0, "description": "The column the shape is bound to (C2-B-003)." },
+              "container": { "enum": ["none"], "description": "`none`: the shape counts only outside every container." }
+            },
+            "description": "Where the line must stand."
+          },
+          "requires": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "open_comment_block",
+                "open_code_fence_of_same_character",
+                "open_frontmatter",
+                "below_table_row_or_continuation_row",
+                "term_above",
+                "directly_below_caption_target",
+                "only_byte_order_mark_before"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "Facts of the container stack or of the line above that must hold. The cited clauses define each."
+          },
+          "excludes": {
+            "type": "array",
+            "items": { "enum": ["backtick_in_info_string_of_backtick_run"] },
+            "uniqueItems": true,
+            "description": "Cases in which a line that matches the sequence is not the shape."
+          }
+        }
+      }
+    },
+    "refs": {
+      "type": "array",
+      "description": "The forms that a `ref` part names, by name. A form with no shape field here has none stated in the documents.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "file": { "type": "string", "description": "The data file of this directory that defines the form." },
+          "values": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The complete list of spellings, when the form is a closed list."
+          },
+          "forms": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The spellings of the form as the clause names them."
+          },
+          "opener": { "type": "string", "description": "The characters that start the form." },
+          "closer": { "type": "string", "description": "The characters that end it." },
+          "excluded": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "chars": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "not_first": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "roman_chars": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "quotes": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "one_letter_case": { "type": "boolean", "description": "True when all letters of one marker are in one letter case." },
+          "valid_numeral_required": {
+            "type": "boolean",
+            "description": "False when any run of roman letters is a marker, whether or not it is a well-formed numeral."
+          },
+          "reads_escapes": { "type": "boolean", "description": "True when a backslash escapes inside the form." },
+          "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters or repeats." },
+          "max": { "type": "integer", "minimum": 0, "description": "The highest count of characters." },
+          "glued": { "type": "boolean", "description": "True when the repeats stand with no character between them." }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "part": {
+      "description": "One part of a sequence. `part` selects the kind.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "text"],
+          "properties": { "part": { "const": "literal" }, "text": { "type": "string", "description": "The exact characters." } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "chars", "min"],
+          "properties": {
+            "part": { "const": "run" },
+            "chars": {
+              "type": "array",
+              "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+              "uniqueItems": true,
+              "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+            },
+            "min": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "The lowest length. With `min_from`, the lowest length in every case."
+            },
+            "max": { "type": "integer", "minimum": 0, "description": "The highest length. Absent: no upper bound." },
+            "same": { "type": "boolean", "description": "True when the run repeats one character." },
+            "min_from": {
+              "enum": ["opener_length"],
+              "description": "The run is at least as long as the run of the opener it closes."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "min"],
+          "properties": {
+            "part": { "const": "space" },
+            "min": { "type": "integer", "minimum": 0, "description": "The lowest count of spaces." },
+            "max": { "type": "integer", "minimum": 0, "description": "The highest count. Absent: no upper bound." }
+          },
+          "description": "Spaces (U+0020), never tabs (C2-B-006)."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "min"],
+          "properties": {
+            "part": { "const": "content" },
+            "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+            "has_non_space": { "type": "boolean", "description": "True when at least one character is not a space." }
+          },
+          "description": "Any characters."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "ref"],
+          "properties": {
+            "part": { "const": "ref" },
+            "ref": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            }
+          },
+          "description": "A form listed in `refs`."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "sequence"],
+          "properties": {
+            "part": { "const": "optional" },
+            "sequence": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/part" },
+              "description": "Parts in order, each directly behind the one before."
+            }
+          },
+          "description": "A sequence that may be absent as a whole."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part", "options"],
+          "properties": {
+            "part": { "const": "choice" },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/part" },
+                "description": "Parts in order, each directly behind the one before."
+              }
+            }
+          },
+          "description": "Exactly one of the sequences. An empty sequence is the choice of nothing."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part"],
+          "properties": { "part": { "const": "trailing_spaces" } },
+          "description": "Zero or more spaces before the end of the line."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part"],
+          "properties": { "part": { "const": "trailing_whitespace" } },
+          "description": "Zero or more spaces and tabs before the end of the line."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["part"],
+          "properties": { "part": { "const": "end" } },
+          "description": "The end of the line."
+        }
+      ]
+    }
+  }
+}

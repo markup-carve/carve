@@ -1,0 +1,19 @@
+{
+  "$schema": "schemas/caption-number.schema.json",
+  "mark": { "char": "#", "which": "first_bare_in_top_level_caption_text", "clauses": ["C2-B-150"] },
+  "bare_when_followed_by": ["whitespace", ":", ".", "caption_end", "character_that_starts_no_tag_name"],
+  "not_a_mark": [
+    { "name": "escaped", "spelling": "\\#", "clauses": ["C2-B-150"] },
+    { "name": "inside_inline_markup", "clauses": ["C2-B-150"] },
+    { "name": "later_bare_mark", "clauses": ["C2-B-150"] },
+    { "name": "tag", "spelling": "#name", "clauses": ["C2-B-150", "C2-I-092"] }
+  ],
+  "label": { "from": "inline_content_before_the_mark", "trim": "trailing_whitespace", "clauses": ["C2-B-150"] },
+  "sequence": {
+    "key": "plain_text_of_label",
+    "start": 1,
+    "order": "document",
+    "assigned_in": "resolution",
+    "clauses": ["C2-B-150"]
+  }
+}

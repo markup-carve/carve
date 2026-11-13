@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 containers",
+  "description": "Each block that owns lines past its first: how a later line stays inside it, what closes it and how its body is read. An open paragraph inside any of them also takes lazy lines (C2-B-012). Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "containers"],
+  "properties": {
+    "$schema": { "const": "schemas/containers.schema.json" },
+    "containers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "opened_by", "continues", "closes_on", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "kind": {
+            "enum": ["container", "leaf"],
+            "description": "`container`: the body holds blocks, items or entries. `leaf`: the body holds lines or opaque text."
+          },
+          "opened_by": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true,
+            "description": "Names of rows in line-shapes.json."
+          },
+          "continues": {
+            "enum": ["prefix_mark", "indent_past_marker", "sibling_marker", "until_closer"],
+            "description": "How a line continues the block. `prefix_mark`: the line carries the quote mark. `indent_past_marker`: with no paragraph open, the line is indented past the marker column of the block (C2-B-025). `sibling_marker`: the line is a marker that matches the list. `until_closer`: every line the enclosing container owns, up to the closer."
+          },
+          "closes_on": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "line_not_owned",
+                "line_without_mark",
+                "caption_line_without_mark",
+                "list_marker_without_mark_inside_item",
+                "sibling_marker",
+                "marker_of_other_kind_at_list_column",
+                "three_blank_lines_before_marker",
+                "line_after_blank_below_term_that_is_no_mark",
+                "interrupter_below_term_text",
+                "closer",
+                "container_end",
+                "document_end"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "What closes the block. The cited clauses define each case."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "sigil": { "type": "string", "description": "For a sigil div, the character after the colon run and its one space." },
+          "closed_by": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "body": {
+            "enum": ["blocks", "items", "entries", "lines", "opaque"],
+            "description": "`blocks`: read as blocks. `items`, `entries`: the children of a list. `lines`: one leaf in which only prefixes and the closer are recognized. `opaque`: not read for blocks, inline content or comments."
+          },
+          "strip": {
+            "enum": ["content_column", "opener_indent"],
+            "description": "The most that is stripped from the start of each body line (C2-B-027, C2-B-029)."
+          },
+          "bare_paragraph": {
+            "enum": ["first_block_in_tight_list", "only_block", "never"],
+            "description": "Which paragraph of the body is rendered without its paragraph element. Every other paragraph gets one."
+          },
+          "counts_toward_depth": {
+            "type": "boolean",
+            "description": "True when an open block of this kind counts one toward the depth cap (C2-B-190). Absent: it does not count."
+          },
+          "unclosed_report": {
+            "type": "string",
+            "description": "The diagnostic code that reports the block when it ends without its closer. An id of lint-rules.json."
+          }
+        }
+      }
+    }
+  }
+}

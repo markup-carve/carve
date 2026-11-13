@@ -1,0 +1,211 @@
+{
+  "$schema": "schemas/containers.schema.json",
+  "containers": [
+    {
+      "name": "code_fence",
+      "kind": "leaf",
+      "opened_by": ["code_fence_opener"],
+      "continues": "until_closer",
+      "closed_by": "code_fence_closer",
+      "closes_on": ["closer", "container_end"],
+      "body": "opaque",
+      "strip": "opener_indent",
+      "unclosed_report": "unclosed-code-fence",
+      "clauses": ["C2-B-007", "C2-B-029", "C2-B-109", "C2-B-110", "C2-B-111", "C2-B-112", "C2-B-113", "C2-B-114", "C2-B-135"]
+    },
+    {
+      "name": "comment_block",
+      "kind": "leaf",
+      "opened_by": ["comment_block_opener"],
+      "continues": "until_closer",
+      "closed_by": "comment_block_closer",
+      "closes_on": ["closer", "container_end"],
+      "body": "opaque",
+      "unclosed_report": "unclosed-comment-fence",
+      "clauses": ["C2-B-109", "C2-B-110", "C2-B-111", "C2-B-112", "C2-B-114", "C2-B-135", "C2-B-195"]
+    },
+    {
+      "name": "description",
+      "kind": "container",
+      "opened_by": ["description"],
+      "continues": "indent_past_marker",
+      "closes_on": ["line_not_owned", "sibling_marker", "container_end"],
+      "body": "blocks",
+      "strip": "content_column",
+      "bare_paragraph": "only_block",
+      "counts_toward_depth": true,
+      "clauses": [
+        "C2-B-025",
+        "C2-B-026",
+        "C2-B-027",
+        "C2-B-072",
+        "C2-B-073",
+        "C2-B-076",
+        "C2-B-077",
+        "C2-B-078",
+        "C2-B-079",
+        "C2-B-190"
+      ]
+    },
+    {
+      "name": "description_list",
+      "kind": "container",
+      "opened_by": ["description", "term"],
+      "continues": "sibling_marker",
+      "closes_on": [
+        "line_not_owned",
+        "line_after_blank_below_term_that_is_no_mark",
+        "interrupter_below_term_text",
+        "container_end"
+      ],
+      "body": "entries",
+      "counts_toward_depth": true,
+      "clauses": ["C2-B-051", "C2-B-067", "C2-B-068", "C2-B-070", "C2-B-071", "C2-B-078", "C2-B-079", "C2-B-080", "C2-B-190"]
+    },
+    {
+      "name": "div",
+      "kind": "container",
+      "opened_by": ["div_bare_run", "div_opener"],
+      "continues": "until_closer",
+      "closed_by": "div_bare_run",
+      "closes_on": ["closer", "container_end"],
+      "body": "blocks",
+      "counts_toward_depth": true,
+      "unclosed_report": "unclosed-container-fence",
+      "clauses": ["C2-B-109", "C2-B-111", "C2-B-115", "C2-B-125", "C2-B-126", "C2-B-132", "C2-B-190"]
+    },
+    {
+      "name": "footnote_body",
+      "kind": "container",
+      "opened_by": ["footnote_definition"],
+      "continues": "indent_past_marker",
+      "closes_on": ["line_not_owned", "container_end"],
+      "body": "blocks",
+      "strip": "content_column",
+      "bare_paragraph": "never",
+      "counts_toward_depth": true,
+      "clauses": ["C2-B-025", "C2-B-026", "C2-B-027", "C2-B-086", "C2-B-087", "C2-B-190"]
+    },
+    {
+      "name": "frontmatter",
+      "kind": "leaf",
+      "opened_by": ["frontmatter_opener"],
+      "continues": "until_closer",
+      "closed_by": "frontmatter_closer",
+      "closes_on": ["closer", "document_end"],
+      "body": "opaque",
+      "unclosed_report": "unclosed-frontmatter",
+      "clauses": ["C2-B-161", "C2-B-162", "C2-B-163"]
+    },
+    {
+      "name": "hardbreak_block",
+      "kind": "container",
+      "sigil": "\\",
+      "opened_by": ["div_opener"],
+      "continues": "until_closer",
+      "closed_by": "div_bare_run",
+      "closes_on": ["closer", "container_end"],
+      "body": "blocks",
+      "counts_toward_depth": true,
+      "unclosed_report": "unclosed-container-fence",
+      "clauses": ["C2-B-109", "C2-B-111", "C2-B-124", "C2-B-129", "C2-B-190", "C2-B-196"]
+    },
+    {
+      "name": "line_block",
+      "kind": "leaf",
+      "sigil": "|",
+      "opened_by": ["div_opener"],
+      "continues": "until_closer",
+      "closed_by": "div_bare_run",
+      "closes_on": ["closer", "container_end"],
+      "body": "lines",
+      "strip": "content_column",
+      "unclosed_report": "unclosed-container-fence",
+      "clauses": ["C2-B-109", "C2-B-111", "C2-B-123", "C2-B-130", "C2-B-131", "C2-B-144", "C2-B-196"]
+    },
+    {
+      "name": "list",
+      "kind": "container",
+      "opened_by": ["bullet", "ordered"],
+      "continues": "sibling_marker",
+      "closes_on": ["line_not_owned", "marker_of_other_kind_at_list_column", "three_blank_lines_before_marker", "container_end"],
+      "body": "items",
+      "counts_toward_depth": true,
+      "clauses": [
+        "C2-B-035",
+        "C2-B-037",
+        "C2-B-049",
+        "C2-B-050",
+        "C2-B-051",
+        "C2-B-052",
+        "C2-B-053",
+        "C2-B-054",
+        "C2-B-055",
+        "C2-B-097",
+        "C2-B-142",
+        "C2-B-190"
+      ]
+    },
+    {
+      "name": "list_item",
+      "kind": "container",
+      "opened_by": ["bullet", "ordered"],
+      "continues": "indent_past_marker",
+      "closes_on": ["line_not_owned", "sibling_marker", "container_end"],
+      "body": "blocks",
+      "strip": "content_column",
+      "bare_paragraph": "first_block_in_tight_list",
+      "counts_toward_depth": true,
+      "clauses": [
+        "C2-B-009",
+        "C2-B-025",
+        "C2-B-026",
+        "C2-B-027",
+        "C2-B-028",
+        "C2-B-056",
+        "C2-B-057",
+        "C2-B-058",
+        "C2-B-061",
+        "C2-B-062",
+        "C2-B-063",
+        "C2-B-064",
+        "C2-B-190"
+      ]
+    },
+    {
+      "name": "quote",
+      "kind": "container",
+      "opened_by": ["quote"],
+      "continues": "prefix_mark",
+      "closes_on": ["line_without_mark", "caption_line_without_mark", "list_marker_without_mark_inside_item", "container_end"],
+      "body": "blocks",
+      "counts_toward_depth": true,
+      "clauses": ["C2-B-003", "C2-B-008", "C2-B-018", "C2-B-021", "C2-B-025", "C2-B-026", "C2-B-031", "C2-B-032", "C2-B-190"]
+    },
+    {
+      "name": "quote_fence",
+      "kind": "container",
+      "sigil": ">",
+      "opened_by": ["div_opener"],
+      "continues": "until_closer",
+      "closed_by": "div_bare_run",
+      "closes_on": ["closer", "container_end"],
+      "body": "blocks",
+      "counts_toward_depth": true,
+      "unclosed_report": "unclosed-container-fence",
+      "clauses": ["C2-B-109", "C2-B-111", "C2-B-124", "C2-B-190", "C2-B-196"]
+    },
+    {
+      "name": "raw_block",
+      "kind": "leaf",
+      "opened_by": ["code_fence_opener"],
+      "continues": "until_closer",
+      "closed_by": "code_fence_closer",
+      "closes_on": ["closer", "container_end"],
+      "body": "opaque",
+      "strip": "opener_indent",
+      "unclosed_report": "unclosed-code-fence",
+      "clauses": ["C2-B-029", "C2-B-109", "C2-B-110", "C2-B-111", "C2-B-116", "C2-B-135"]
+    }
+  ]
+}

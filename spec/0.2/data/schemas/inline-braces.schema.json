@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 forms at an opening brace",
+  "description": "What the scan tries at an opening brace, in order: the entry with the lowest rank that matches is taken. Two entries with one rank are tried together.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "order", "otherwise"],
+  "properties": {
+    "$schema": { "const": "schemas/inline-braces.schema.json" },
+    "order": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rank", "name", "opener", "condition", "clauses"],
+        "properties": {
+          "rank": { "type": "integer", "minimum": 0, "description": "The place in the order, from 1." },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "A row of inline-atoms.json, or `braced_opener` for the braced rows of inline-delimiters.json."
+          },
+          "opener": { "type": "string", "description": "The characters the entry starts with." },
+          "condition": {
+            "enum": [
+              "valid_attribute_block",
+              "glued_to_closed_plain_code_span",
+              "closer_follows_in_content",
+              "closer_follows_with_one_character_between",
+              "exact",
+              "followed_by_mark"
+            ],
+            "description": "What must hold for the entry to match."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "closer": { "type": "string", "description": "The closer the condition looks for." },
+          "marks": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          }
+        }
+      }
+    },
+    "otherwise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "clauses"],
+      "properties": {
+        "result": { "const": "text" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      },
+      "description": "A brace that starts none of the entries."
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "$schema": "schemas/task-states.schema.json",
+  "box": {
+    "opener": "[",
+    "closer": "]",
+    "after": "bullet_marker_space",
+    "followed_by": [{ "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
+    "clauses": ["C2-B-046", "C2-B-047"]
+  },
+  "states": [
+    {
+      "char": " ",
+      "mark": " ",
+      "status": "todo",
+      "state_attribute": null,
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "!",
+      "mark": "!",
+      "status": "blocked",
+      "state_attribute": "!",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "-",
+      "mark": "-",
+      "status": "canceled",
+      "state_attribute": "-",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "/",
+      "mark": "/",
+      "status": "in-progress",
+      "state_attribute": "/",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": ">",
+      "mark": ">",
+      "status": "partial",
+      "state_attribute": ">",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "?",
+      "mark": "?",
+      "status": "other",
+      "state_attribute": "?",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "X",
+      "mark": "x",
+      "status": "done",
+      "state_attribute": "x",
+      "checked": true,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "_",
+      "mark": "_",
+      "status": "todo",
+      "state_attribute": "_",
+      "checked": false,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    },
+    {
+      "char": "x",
+      "mark": "x",
+      "status": "done",
+      "state_attribute": "x",
+      "checked": true,
+      "clauses": ["C2-B-046", "C2-B-048", "C2-A-060", "C2-A-061", "C2-H-032", "C2-H-033"]
+    }
+  ]
+}

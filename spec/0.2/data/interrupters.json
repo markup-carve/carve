@@ -1,0 +1,64 @@
+{
+  "$schema": "schemas/interrupters.schema.json",
+  "interrupters": [
+    {
+      "name": "a",
+      "label": "fence_line",
+      "shapes": [
+        "code_fence_closer",
+        "code_fence_opener",
+        "comment_block_closer",
+        "comment_block_opener",
+        "div_bare_run",
+        "div_opener"
+      ],
+      "when": ["always"],
+      "clauses": ["C2-B-013", "C2-B-014", "C2-B-070", "C2-B-078"]
+    },
+    {
+      "name": "b",
+      "label": "list_marker",
+      "shapes": ["bullet", "ordered"],
+      "when": ["at_open_list_column", "indented_past_enclosing_marker"],
+      "carries_quote_marks": true,
+      "not_when": ["at_description_list_column_after_term_or_description_text", "left_of_list_column_after_item_text"],
+      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-056"]
+    },
+    {
+      "name": "c",
+      "label": "description_or_definition",
+      "shapes": ["abbreviation_definition", "description", "footnote_definition", "link_definition", "term"],
+      "when": ["mark_at_open_description_list_column", "definition_at_column_0_while_definition_open"],
+      "carries_quote_marks": true,
+      "not_when": ["term_mark_after_paragraph_text_inside_item"],
+      "clauses": ["C2-B-013", "C2-B-016", "C2-B-020", "C2-B-023"]
+    },
+    {
+      "name": "d",
+      "label": "caption",
+      "shapes": ["caption"],
+      "when": ["paragraph_is_one_block_image_line", "below_open_quote_line_without_its_mark"],
+      "clauses": ["C2-B-013", "C2-B-017", "C2-B-018"]
+    },
+    {
+      "name": "e",
+      "label": "table_row",
+      "shapes": ["table_row"],
+      "when": ["always"],
+      "clauses": ["C2-B-013", "C2-B-019", "C2-B-070", "C2-B-078"]
+    }
+  ],
+  "lazy_shapes": [
+    { "name": "abbreviation_definition", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "attribute_line", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "bullet", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "comment_only", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "footnote_definition", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "heading", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "include", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "link_definition", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "ordered", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "quote", "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "thematic_break", "clauses": ["C2-B-012", "C2-B-024"] }
+  ]
+}

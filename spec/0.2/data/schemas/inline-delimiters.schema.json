@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 inline delimiters",
+  "description": "The delimiter kinds of the one delimiter stack: two bare, nine braced. Every closed span is a host for an attribute block. Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "delimiters", "not_delimiters"],
+  "properties": {
+    "$schema": { "const": "schemas/inline-delimiters.schema.json" },
+    "delimiters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "node", "form", "mark", "opener", "closer", "html", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "node": { "type": "string", "description": "The node type of the AST document." },
+          "form": { "enum": ["bare", "braced"] },
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1, "description": "The delimiter character." },
+          "opener": { "type": "string", "description": "The opening token." },
+          "closer": { "type": "string", "description": "The closing token." },
+          "html": { "type": "string", "description": "The HTML element of the span." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "max_run": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The longest run of the mark that is a delimiter. A longer run is text, each character of it."
+          },
+          "can_open": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["before", "after"],
+            "properties": {
+              "before": {
+                "enum": ["not_word_character", "not_whitespace"],
+                "description": "A test on one neighbor character. A word character is a Unicode letter or number (general category L or N). Whitespace is a space, a tab or a line break, and the start and the end of the content count as whitespace."
+              },
+              "after": {
+                "enum": ["not_word_character", "not_whitespace"],
+                "description": "A test on one neighbor character. A word character is a Unicode letter or number (general category L or N). Whitespace is a space, a tab or a line break, and the start and the end of the content count as whitespace."
+              }
+            },
+            "description": "The delimiter can open when both tests hold. Absent: no condition on the neighbors."
+          },
+          "can_close": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["before", "after"],
+            "properties": {
+              "before": {
+                "enum": ["not_word_character", "not_whitespace"],
+                "description": "A test on one neighbor character. A word character is a Unicode letter or number (general category L or N). Whitespace is a space, a tab or a line break, and the start and the end of the content count as whitespace."
+              },
+              "after": {
+                "enum": ["not_word_character", "not_whitespace"],
+                "description": "A test on one neighbor character. A word character is a Unicode letter or number (general category L or N). Whitespace is a space, a tab or a line break, and the start and the end of the content count as whitespace."
+              }
+            },
+            "description": "The delimiter can close when both tests hold. Absent: no condition on the neighbors."
+          },
+          "text_when_followed_by": {
+            "type": "array",
+            "items": { "enum": ["combining_mark", "variation_selector", "zero_width_joiner"] },
+            "uniqueItems": true,
+            "description": "The mark is text when one of these follows it (C2-I-050). The clause applies to the mark of a braced opener too."
+          },
+          "fails_when": {
+            "type": "array",
+            "items": { "enum": ["own_mark_between_two_word_characters_inside"] },
+            "uniqueItems": true,
+            "description": "Cases in which a paired span does not form (C2-I-053)."
+          }
+        }
+      }
+    },
+    "not_delimiters": {
+      "type": "array",
+      "description": "Spellings the chapter names as text.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["clauses"],
+        "properties": {
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "chars": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "text": { "type": "string", "description": "Characters that form nothing." },
+          "form": { "enum": ["bare"] }
+        }
+      }
+    }
+  }
+}

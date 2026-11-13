@@ -1,0 +1,273 @@
+{
+  "$schema": "schemas/escape-contexts.schema.json",
+  "rule": {
+    "test": "reparse_candidate_line_in_context",
+    "unit": "opener",
+    "escape_character": "\\",
+    "clauses": ["C2-W-088", "C2-W-089", "C2-W-090", "C2-W-091"]
+  },
+  "contexts": [
+    {
+      "name": "angle_opener",
+      "group": "sigil",
+      "triggers": ["<"],
+      "positions": ["before_url_email_or_cross_reference"],
+      "atoms": ["autolink", "cross_reference"],
+      "clauses": ["C2-W-095"]
+    },
+    {
+      "name": "attribute_line",
+      "group": "block",
+      "triggers": ["{"],
+      "positions": ["alone_on_line"],
+      "shapes": ["attribute_line"],
+      "clauses": ["C2-W-092", "C2-B-090", "C2-B-193"]
+    },
+    {
+      "name": "backslash",
+      "group": "backslash",
+      "triggers": ["\\"],
+      "positions": ["before_ascii_punctuation", "before_space", "line_end"],
+      "written_as": "\\\\",
+      "clauses": ["C2-W-097", "C2-I-010", "C2-I-011", "C2-I-012"]
+    },
+    {
+      "name": "backtick_run",
+      "group": "sigil",
+      "triggers": ["`"],
+      "positions": ["anywhere"],
+      "atoms": ["code_span"],
+      "clauses": ["C2-W-090", "C2-W-095"]
+    },
+    {
+      "name": "bracket_pair_with_tail",
+      "group": "bracket",
+      "triggers": ["[", "]"],
+      "positions": ["pair_followed_by_link_tail_label_or_brace_block"],
+      "clauses": ["C2-W-094"]
+    },
+    {
+      "name": "caption_mark",
+      "group": "block",
+      "triggers": ["^"],
+      "positions": ["directly_below_caption_target", "below_image_paragraph", "after_open_quote_line_without_mark"],
+      "shapes": ["caption"],
+      "clauses": ["C2-W-092", "C2-B-017", "C2-B-018", "C2-B-146"]
+    },
+    {
+      "name": "cell_pipe",
+      "group": "table",
+      "triggers": ["|"],
+      "positions": ["text_of_table_cell_outside_code_span"],
+      "clauses": ["C2-W-098", "C2-B-169"]
+    },
+    {
+      "name": "continuation_plus",
+      "group": "block",
+      "triggers": ["+"],
+      "positions": ["line_start_of_line_ending_with_pipe_below_table_row"],
+      "shapes": ["continuation_row"],
+      "clauses": ["C2-W-092", "C2-B-175"]
+    },
+    {
+      "name": "definition_shape",
+      "group": "block",
+      "triggers": ["[", "*["],
+      "positions": ["column_0"],
+      "shapes": ["abbreviation_definition", "footnote_definition", "link_definition"],
+      "clauses": ["C2-W-092", "C2-B-081"]
+    },
+    {
+      "name": "delimiter_in_braced_span",
+      "group": "delimiter",
+      "triggers": [],
+      "positions": ["inside_braced_span_where_it_would_close_outer_span"],
+      "clauses": ["C2-W-093"]
+    },
+    {
+      "name": "delimiter_pairing",
+      "group": "delimiter",
+      "triggers": ["/", "*"],
+      "positions": ["where_it_would_open_or_close"],
+      "clauses": ["C2-W-093"]
+    },
+    {
+      "name": "description_or_term_mark",
+      "group": "block",
+      "triggers": [":", "::"],
+      "positions": ["paragraph_start", "line_inside_description_list"],
+      "shapes": ["description", "term"],
+      "clauses": ["C2-W-092", "C2-B-016"]
+    },
+    {
+      "name": "fence_run",
+      "group": "block",
+      "triggers": ["```", "~~~", ":::", "%%%"],
+      "positions": ["line_start"],
+      "shapes": [
+        "code_fence_closer",
+        "code_fence_opener",
+        "comment_block_closer",
+        "comment_block_opener",
+        "div_bare_run",
+        "div_opener"
+      ],
+      "clauses": ["C2-W-090", "C2-W-092", "C2-B-014"]
+    },
+    {
+      "name": "footnote_reference_opener",
+      "group": "bracket",
+      "triggers": ["[^"],
+      "positions": ["anywhere"],
+      "clauses": ["C2-W-094"]
+    },
+    {
+      "name": "frontmatter_opener",
+      "group": "block",
+      "triggers": ["---"],
+      "positions": ["document_line_1"],
+      "shapes": ["frontmatter_opener"],
+      "clauses": ["C2-W-092", "C2-B-161"]
+    },
+    {
+      "name": "heading_marker",
+      "group": "block",
+      "triggers": ["=", "#"],
+      "positions": ["paragraph_start"],
+      "shapes": ["heading"],
+      "clauses": ["C2-W-092", "C2-B-151", "C2-B-152"]
+    },
+    {
+      "name": "image_prefix",
+      "group": "bracket",
+      "triggers": ["!["],
+      "positions": ["anywhere"],
+      "clauses": ["C2-W-094"]
+    },
+    {
+      "name": "include_braces",
+      "group": "block",
+      "triggers": ["{{", "}}"],
+      "positions": ["around_whole_line"],
+      "shapes": ["include"],
+      "clauses": ["C2-W-092", "C2-B-156"]
+    },
+    {
+      "name": "inline_extension",
+      "group": "sigil",
+      "triggers": [":"],
+      "positions": ["name_then_bracket"],
+      "clauses": ["C2-W-095"]
+    },
+    {
+      "name": "inline_footnote_opener",
+      "group": "bracket",
+      "triggers": ["^["],
+      "positions": ["anywhere"],
+      "clauses": ["C2-W-094"]
+    },
+    {
+      "name": "line_comment",
+      "group": "block",
+      "triggers": ["%%"],
+      "positions": ["line_start", "after_whitespace"],
+      "atoms": ["line_comment"],
+      "clauses": ["C2-W-092", "C2-B-133"]
+    },
+    {
+      "name": "list_marker",
+      "group": "block",
+      "triggers": [],
+      "positions": ["paragraph_start", "line_inside_item_description_or_footnote_body"],
+      "shapes": ["bullet", "ordered"],
+      "clauses": ["C2-W-092", "C2-B-015"]
+    },
+    {
+      "name": "math_prefix",
+      "group": "sigil",
+      "triggers": ["$"],
+      "positions": ["before_backtick_run"],
+      "atoms": ["math_display", "math_inline"],
+      "clauses": ["C2-W-095"]
+    },
+    {
+      "name": "mention_or_tag_sigil",
+      "group": "sigil",
+      "triggers": ["@", "#"],
+      "positions": ["before_name_after_boundary"],
+      "atoms": ["mention", "tag"],
+      "clauses": ["C2-W-095", "C2-I-090"]
+    },
+    {
+      "name": "opening_brace",
+      "group": "brace",
+      "triggers": ["{"],
+      "positions": ["where_it_would_form"],
+      "file": "inline-braces.json",
+      "clauses": ["C2-W-096", "C2-I-043"]
+    },
+    {
+      "name": "quote_mark",
+      "group": "block",
+      "triggers": [">"],
+      "positions": ["paragraph_start"],
+      "shapes": ["quote"],
+      "clauses": ["C2-W-092", "C2-B-031"]
+    },
+    {
+      "name": "resolving_label",
+      "group": "bracket",
+      "triggers": ["[", "]"],
+      "positions": ["pair_whose_label_would_resolve"],
+      "clauses": ["C2-W-094"]
+    },
+    {
+      "name": "smart_punctuation_run",
+      "group": "sigil",
+      "triggers": [],
+      "positions": ["where_tree_holds_text_and_not_smart_punctuation_node"],
+      "file": "smart-punctuation.json",
+      "clauses": ["C2-W-095"]
+    },
+    {
+      "name": "star_run",
+      "group": "block",
+      "triggers": ["***"],
+      "positions": ["alone_on_first_line_of_paragraph"],
+      "shapes": ["thematic_break"],
+      "clauses": ["C2-W-092", "C2-B-159"]
+    },
+    {
+      "name": "symbol",
+      "group": "sigil",
+      "triggers": [":"],
+      "positions": ["name_then_colon"],
+      "atoms": ["symbol"],
+      "clauses": ["C2-W-095"]
+    },
+    {
+      "name": "table_row_pipe",
+      "group": "block",
+      "triggers": ["|"],
+      "positions": ["line_start_of_line_ending_with_pipe"],
+      "shapes": ["table_row"],
+      "clauses": ["C2-W-092", "C2-B-166"]
+    }
+  ],
+  "no_escape": [
+    {
+      "name": "hyphen_or_underscore_line",
+      "triggers": ["-", "_"],
+      "positions": ["line_of_only_these_characters"],
+      "clauses": ["C2-W-099", "C2-B-159"]
+    }
+  ],
+  "no_spelling": [
+    {
+      "name": "em_dash_as_document_line_1",
+      "source": "---",
+      "report": "field-unspellable",
+      "clauses": ["C2-W-099", "C2-B-161"]
+    }
+  ]
+}

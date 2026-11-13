@@ -1,0 +1,44 @@
+{
+  "$schema": "schemas/inline-scan.schema.json",
+  "steps": [
+    { "rank": 1, "name": "atoms", "file": "inline-atoms.json", "clauses": ["C2-I-004", "C2-I-005"] },
+    {
+      "rank": 2,
+      "name": "bracket_stack",
+      "file": "inline-brackets.json",
+      "clauses": ["C2-I-004", "C2-I-006", "C2-I-007"]
+    },
+    { "rank": 3, "name": "delimiter_stack", "file": "inline-delimiters.json", "clauses": ["C2-I-004", "C2-I-008"] },
+    { "rank": 4, "name": "attachment", "file": "attribute-block.json", "clauses": ["C2-I-004", "C2-I-009"] }
+  ],
+  "fallbacks": [
+    {
+      "name": "bracket_pair_with_broken_link_tail",
+      "text": "the pair and the tail",
+      "clauses": ["C2-I-069", "C2-I-119"]
+    },
+    { "name": "opener_past_depth_cap", "text": "the opener", "clauses": ["C2-I-118", "C2-I-119"] },
+    {
+      "name": "unclosed_autolink_or_cross_reference",
+      "text": "the angle bracket",
+      "clauses": ["C2-I-073", "C2-I-096", "C2-I-119"]
+    },
+    { "name": "unclosed_bare_delimiter", "text": "the delimiter", "clauses": ["C2-I-054", "C2-I-119"] },
+    { "name": "unclosed_braced_opener", "text": "the brace and its mark", "clauses": ["C2-I-060", "C2-I-119"] },
+    {
+      "name": "unclosed_braced_or_editorial_comment",
+      "text": "the brace and its mark",
+      "clauses": ["C2-I-043", "C2-I-119"]
+    },
+    { "name": "unclosed_bracket", "text": "the bracket", "clauses": ["C2-I-006", "C2-I-119"] },
+    {
+      "name": "unclosed_inline_extension",
+      "text": "the sigil, the name and the bracket",
+      "clauses": ["C2-I-094", "C2-I-119"]
+    },
+    { "name": "unclosed_inline_footnote", "text": "^[", "clauses": ["C2-I-089", "C2-I-119"] },
+    { "name": "unclosed_or_invalid_attribute_block", "text": "the whole run", "clauses": ["C2-I-034", "C2-I-119"] }
+  ],
+  "never_fail": ["code_span", "math_display", "math_inline"],
+  "content_end": { "closes": "every_open_form", "clauses": ["C2-I-120"] }
+}

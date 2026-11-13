@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 facts set at close",
+  "description": "The five facts that are set on a node when its block closes and are not roles of a line (C2-B-191). Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "facts"],
+  "properties": {
+    "$schema": { "const": "schemas/close-facts.schema.json" },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "set_when_closes", "condition", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "set_when_closes": { "enum": ["paragraph", "caption", "list", "table"], "description": "The block whose close sets the fact." },
+          "condition": {
+            "enum": [
+              "paragraph_is_one_block_image_line",
+              "paragraph_is_one_display_math_line",
+              "caption_directly_below_target",
+              "blank_line_between_two_items",
+              "footer_rows_attribute"
+            ],
+            "description": "What is tested at close."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "shape": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "tree_field": {
+            "type": "string",
+            "description": "The field of the tree that holds the fact, as node type and field name."
+          },
+          "targets": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true,
+            "description": "The blocks a caption attaches to."
+          },
+          "values": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The values the fact can take."
+          }
+        }
+      },
+      "minItems": 5,
+      "maxItems": 5
+    }
+  }
+}

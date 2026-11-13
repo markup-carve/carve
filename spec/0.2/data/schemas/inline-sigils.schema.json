@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 sigil forms",
+  "description": "The four forms that start with a sigil. The name is ASCII and is the longest run that fits its shape; a sigil with no such name is text. Sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "boundary", "sigils"],
+  "properties": {
+    "$schema": { "const": "schemas/inline-sigils.schema.json" },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "clauses"],
+      "properties": {
+        "before": {
+          "type": "array",
+          "items": { "enum": ["content_start", "not_unicode_letter_or_number"] },
+          "uniqueItems": true,
+          "description": "A sigil starts a form only when one of these holds for the position before it. A braced comment before it counts as nothing."
+        },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "sigils": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sigil", "kind", "name_shape", "host", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "sigil": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "kind": { "enum": ["atom", "bracket_construct"] },
+          "name_shape": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "rest": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "chars": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+              "joiner": {
+                "type": "string",
+                "description": "A character that may stand between two runs of `chars`, one at a time."
+              },
+              "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+              "not_last": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "not_first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "excluded": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+              "non_ascii": {
+                "enum": ["any_but_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+              }
+            },
+            "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+          },
+          "host": { "type": "boolean", "description": "True when an attribute block glued to the end attaches to it." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "glued_after": { "type": "string", "description": "The character glued behind the name." },
+          "content": { "enum": ["inline"] },
+          "unclosed": { "enum": ["text"] }
+        }
+      }
+    }
+  }
+}

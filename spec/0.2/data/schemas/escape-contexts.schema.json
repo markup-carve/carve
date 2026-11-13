@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 escape contexts",
+  "description": "The cases the writer has to test for an escape. They are not the rule: the writer decides each escape by reparsing the candidate line in its context (C2-W-089), and a backslash is written exactly when the output without it would parse to a different tree (C2-W-088). `contexts` is sorted by name.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "rule", "contexts", "no_escape", "no_spelling"],
+  "properties": {
+    "$schema": { "const": "schemas/escape-contexts.schema.json" },
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["test", "unit", "escape_character", "clauses"],
+      "properties": {
+        "test": { "const": "reparse_candidate_line_in_context" },
+        "unit": {
+          "enum": ["opener"],
+          "description": "Where a construct opens on a run of characters, the escape is placed so that the whole run reads as text."
+        },
+        "escape_character": { "const": "\\" },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "group", "triggers", "positions", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "group": {
+            "enum": ["block", "delimiter", "bracket", "sigil", "brace", "backslash", "table"],
+            "description": "The clause of the list the case comes from: a block opener or interrupter, delimiter pairing, a bracket construct, a sigil form, an opening brace, a backslash in text, a table cell."
+          },
+          "triggers": {
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true,
+            "description": "The characters at which the test is made. For a run, its shortest form. Empty where the case is a shape and not a fixed character."
+          },
+          "positions": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+            "uniqueItems": true,
+            "description": "Where the characters must stand for the case to apply. One entry is enough. The cited clauses define each."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "shapes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true,
+            "description": "Rows of line-shapes.json the text could be read as."
+          },
+          "atoms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true,
+            "description": "Rows of inline-atoms.json the text could be read as."
+          },
+          "file": { "type": "string", "description": "The data file of this directory that lists the forms." },
+          "written_as": { "type": "string", "description": "What the writer writes for the trigger." }
+        }
+      }
+    },
+    "no_escape": {
+      "type": "array",
+      "description": "Text that looks like an opener of other languages and needs no escape.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "triggers", "positions", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "triggers": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "positions": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }, "uniqueItems": true },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "no_spelling": {
+      "type": "array",
+      "description": "Text that no escape can spell.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "source", "report", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "source": { "type": "string", "description": "The source of the node." },
+          "report": { "type": "string", "description": "The code the writer reports. An id of lint-rules.json." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    }
+  }
+}

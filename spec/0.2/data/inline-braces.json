@@ -1,0 +1,45 @@
+{
+  "$schema": "schemas/inline-braces.schema.json",
+  "order": [
+    {
+      "rank": 1,
+      "name": "attribute_block",
+      "opener": "{",
+      "condition": "valid_attribute_block",
+      "clauses": ["C2-I-028", "C2-I-034", "C2-I-043"]
+    },
+    {
+      "rank": 1,
+      "name": "raw_inline",
+      "opener": "{=",
+      "condition": "glued_to_closed_plain_code_span",
+      "clauses": ["C2-I-021", "C2-I-022", "C2-I-045"]
+    },
+    {
+      "rank": 2,
+      "name": "braced_comment",
+      "opener": "{%",
+      "condition": "closer_follows_in_content",
+      "closer": "%}",
+      "clauses": ["C2-I-025", "C2-I-043"]
+    },
+    {
+      "rank": 3,
+      "name": "editorial_comment",
+      "opener": "{#",
+      "condition": "closer_follows_with_one_character_between",
+      "closer": "#}",
+      "clauses": ["C2-I-043", "C2-I-063"]
+    },
+    { "rank": 4, "name": "en_dash", "opener": "{--}", "condition": "exact", "clauses": ["C2-I-043", "C2-I-113"] },
+    {
+      "rank": 5,
+      "name": "braced_opener",
+      "opener": "{",
+      "condition": "followed_by_mark",
+      "marks": ["*", "+", ",", "-", "/", "=", "^", "_", "~"],
+      "clauses": ["C2-I-043", "C2-I-055"]
+    }
+  ],
+  "otherwise": { "result": "text", "clauses": ["C2-I-044"] }
+}

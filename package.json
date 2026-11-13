@@ -10,6 +10,7 @@
   "scripts": {
     "spec:write": "node scripts/spec-source.mjs --write",
     "spec:check": "node scripts/spec-source.mjs --check && node scripts/grammar-character-check.mjs",
+    "spec2:data": "node scripts/spec2-data-check.mjs",
     "bench:inline": "node scripts/bench-inline-pairing.mjs",
     "spec:rules:write": "node scripts/spec-rule-index.mjs --write",
     "rules:coverage": "node scripts/rule-coverage.mjs",

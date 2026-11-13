@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 attribute block",
+  "description": "The grammar of an attribute block `{...}`: its parts, the shapes of names and values, the fixed order in the tree and the output, the folding of the `id` and `class` keys, the merging of glued blocks, and where a block stands.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "block", "parts", "shapes", "order", "folds", "merges", "contexts"],
+  "properties": {
+    "$schema": { "const": "schemas/attribute-block.schema.json" },
+    "block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "opener",
+        "closer",
+        "padding",
+        "separator",
+        "min_parts",
+        "crosses_lines",
+        "invalid_part",
+        "unattached",
+        "clauses"
+      ],
+      "properties": {
+        "opener": { "const": "{" },
+        "closer": { "const": "}" },
+        "padding": { "enum": ["optional_spaces"], "description": "What may stand between a brace and the nearest part." },
+        "separator": { "enum": ["spaces"], "description": "What stands between two parts." },
+        "min_parts": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The lowest count of parts. See the `empty_block` context for the block with none."
+        },
+        "crosses_lines": { "type": "boolean", "description": "False: the whole block stands on one line." },
+        "invalid_part": { "enum": ["whole_run_is_no_attribute_block"] },
+        "unattached": { "enum": ["printed_as_written"] },
+        "clauses": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+        }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "description": "The part kinds, sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "target", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "target": { "enum": ["id", "classes", "lang", "keys"], "description": "Where the part goes on the node." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "sigil": { "type": "string", "minLength": 1, "maxLength": 1, "description": "The character the part starts with." },
+          "value": {
+            "enum": ["name", "key", "bare_key", "language_tag", "unquoted_value", "quoted_value"],
+            "description": "A row of `shapes`."
+          },
+          "key": {
+            "enum": ["name", "key", "bare_key", "language_tag", "unquoted_value", "quoted_value"],
+            "description": "A row of `shapes`."
+          },
+          "separator": { "type": "string", "description": "The character between key and value." },
+          "value_any": {
+            "type": "array",
+            "items": {
+              "enum": ["name", "key", "bare_key", "language_tag", "unquoted_value", "quoted_value"],
+              "description": "A row of `shapes`."
+            },
+            "uniqueItems": true,
+            "description": "The value has one of these shapes."
+          },
+          "implied_value": { "type": "string", "description": "The value of a part that writes none." }
+        }
+      }
+    },
+    "shapes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "shape", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "shape": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+              "first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "rest": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "chars": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "min": { "type": "integer", "minimum": 0, "description": "The lowest count of characters." },
+              "joiner": {
+                "type": "string",
+                "description": "A character that may stand between two runs of `chars`, one at a time."
+              },
+              "must_contain": { "enum": ["ascii_letter"], "description": "A character class the name must hold at least once." },
+              "not_last": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "not_first": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "excluded": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+                "uniqueItems": true,
+                "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+              },
+              "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
+              "non_ascii": {
+                "enum": ["any_but_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+              }
+            },
+            "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "quotes": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "reads_escapes": { "type": "boolean", "description": "True when a backslash escapes inside the value." },
+          "allows": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          }
+        }
+      }
+    },
+    "order": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rank", "name", "clauses"],
+        "properties": {
+          "rank": { "type": "integer", "minimum": 0, "description": "The place in the fixed order, from 1." },
+          "name": { "enum": ["id", "classes", "language", "keys"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "within": { "enum": ["as_written"], "description": "The order among several of the kind." }
+        }
+      }
+    },
+    "folds": {
+      "type": "array",
+      "description": "Keys that are not kept as keys.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "letter_case", "into", "clauses"],
+        "properties": {
+          "key": { "type": "string", "description": "The key name." },
+          "letter_case": { "enum": ["any_ascii"], "description": "The key matches in any ASCII letter case." },
+          "into": { "enum": ["id", "classes"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "merges": {
+      "type": "array",
+      "description": "How glued blocks and consecutive attribute lines merge into one.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "rule", "clauses"],
+        "properties": {
+          "name": { "enum": ["id", "classes", "keys", "language"] },
+          "rule": { "enum": ["add_in_written_order", "last_written_wins", "later_value_replaces_at_first_position"] },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "contexts": {
+      "type": "array",
+      "description": "Where a block is read and what limits apply there. Sorted by name.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "clauses"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "description": "The identifier of the row, unique in its list."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          },
+          "where": { "type": "string", "description": "Where the block stands." },
+          "spelling": { "type": "string", "description": "What the block looks like." },
+          "valid": { "type": "string", "description": "Where the spelling is valid." },
+          "otherwise": { "enum": ["text"] },
+          "applies_to": { "type": "string", "description": "What the block attaches to." },
+          "closes": { "type": "string", "description": "Where the block must close." },
+          "not_after": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$",
+              "description": "The identifier of the row, unique in its list."
+            },
+            "uniqueItems": true
+          },
+          "marks": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
+            "uniqueItems": true,
+            "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          }
+        }
+      }
+    }
+  }
+}
