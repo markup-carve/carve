@@ -348,7 +348,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-081** A caption is a `caption` node with block `children` and an optional inline `short`. A producer does not derive `short` from the full caption.
 
-**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption.
+**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption. The comment of a comment-only line between a block and its caption (C2-B-137) is a child of that `figure`, after the block, and for a table it is the last child of the table, so that no sibling lies inside another's span (C2-A-145).
 
 **C2-A-083** A `figure` carries block `children`, an optional `caption` and an optional `kind` (`image`, `table`, `listing`, `equation` or `other`). An absent `kind` makes no claim.
 
@@ -369,7 +369,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Tables
 
-**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object.
+**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order.
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
@@ -381,7 +381,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks.
 
-**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1.
+**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it.
 
 **C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
 
@@ -573,7 +573,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-147** A comment that came from a comment-only line satisfies C2-A-144 and C2-A-145 in the node list C2-A-075 puts it in: the open leaf, or else the innermost open container.
 
-**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is inside the span of a container and outside the span of a leaf.
+**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is inside the span of a container and outside the span of a leaf. A block that took attribute lines (C2-B-091) starts at the first of them.
 
 **Exception C2-A-149** A table cell does not start at its opening markup, against C2-A-148: it spans the text between its pipes.
 
@@ -693,7 +693,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
 
-**C2-A-186** A parsed item, description, term, heading or quote is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block or hard-break block may have no children (C2-W-032). A tree that was not parsed from source may hold an item, description, term, heading or quote with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
+**C2-A-186** A parsed item, description, term, heading or quote written with `>` lines is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block, hard-break block or quote fence may have no children (C2-W-032, C2-W-082). A tree that was not parsed from source may hold an item, description, term, heading or quote with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
 
 ```json
 {
