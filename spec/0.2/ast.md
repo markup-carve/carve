@@ -263,7 +263,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-060** A task item carries `task`, an object with `mark` and `status`. `mark` is one of the eight characters space, `x`, `_`, `-`, `/`, `!`, `>` and `?`. An authored `X` is recorded as `x`. `_` is kept as its own value, because it renders differently from the space.
 
-**C2-A-061** `status` follows from `mark`: space and `_` are `todo`, `x` is `done`, `-` is `cancelled`, `/` is `in-progress`, `!` is `blocked`, `>` is `partial` and `?` is `other`. A node whose pair disagrees is invalid.
+**C2-A-061** `status` follows from `mark`: space and `_` are `todo`, `x` is `done`, `-` is `canceled`, `/` is `in-progress`, `!` is `blocked`, `>` is `partial` and `?` is `other`. A node whose pair disagrees is invalid.
 
 ```json
 {
@@ -668,6 +668,7 @@ The invariants below are written so that a test can check each one on any tree a
 | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped |
 | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated |
 | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one |
+| the task status `cancelled`, in a draft tree or a 1.2 tree | `canceled` |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
 | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class |
@@ -710,6 +711,10 @@ Definitions added (3):
 
 5. `line`: `type`, inline `children` (required), and the common fields.
 41. `include`: `type`, `path` (string, required), `section` (string), `options` (array of arrays of exactly two strings), and the common fields. It is added to the `blockNode` enum and dispatch. This item has the last number because it was added last.
+
+Enum values renamed (1):
+
+42. `taskState.status`: the value `cancelled` becomes `canceled`, in the enum and in the condition that ties it to the mark `-`.
 6. `documentChild`: a union of `blockNode` plus `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition`.
 
 Unions and slots changed (5):
