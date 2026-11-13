@@ -363,7 +363,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This indented line directly below a heading is part of the heading in 0.2; in 0.1 it started a paragraph. Remove the indent to keep it a paragraph."
+        "This indented line directly below a heading is part of the heading in 0.2; in 0.1 it started a paragraph. Remove the indent to make it a separate block again; if it then reads as a list marker or another opener and a paragraph is meant, escape its first character."
       ],
       "message_origin": "design",
       "reports": "a line directly below a heading line that is indented past the heading marker and so continues the heading",

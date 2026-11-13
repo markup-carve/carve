@@ -93,7 +93,7 @@ Conventions:
 
 ## Canonical forms: blocks
 
-**C2-W-035** A heading is written with `=`, one per level, and one space. A `#` in the source is rewritten. A line break inside a heading is kept, and each continuation line is written at the heading's content column, that is the marker width plus one (C2-B-154).
+**C2-W-035** A heading is written with `=`, one per level, and one space. A `#` in the source is rewritten. A level above six, which only a supplied tree holds (C2-A-071), is written with six markers, and the writer reports `field-unspellable` for `level`. A line break inside a heading is kept, and each continuation line is written at the heading's content column, that is the marker width plus one (C2-B-154).
 
 **C2-W-036** A thematic break is written as `***`.
 
@@ -103,7 +103,7 @@ Conventions:
 
 **C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it.
 
-**C2-W-040** The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
+**C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
 **C2-W-041** The title of a code block is written in the info string, in double quotes. A `title` key on the attribute line above stays a key: it is a different tree (C2-A-032).
 
@@ -111,7 +111,7 @@ Conventions:
 
 **C2-W-043** An ordered list keeps its style, its delimiter and its start value.
 
-**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
+**C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. A start value of more than nine digits cannot be a marker (C2-B-036): such a list is written with the bare dot under a `start` attribute (C2-B-045). A list of repeated `1.` markers is renumbered to sequential digits. With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031).
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045).
 
@@ -141,7 +141,7 @@ Conventions:
 
 **C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
-**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
+**C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
 
@@ -185,7 +185,7 @@ Conventions:
 
 **C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
 
-**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is a resolution result (C2-A-133) and is not written. A `cell_paragraph` is written as the content of its cell (C2-W-062).
+**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is a resolution result (C2-A-133) and is not written. An inline node that needs content and has none in a supplied tree, such as an emphasis, a span or a link text with no children where the syntax needs at least one character, has no spelling: the writer leaves it out and reports `structure-unspellable`. A `cell_paragraph` is written as the content of its cell (C2-W-062).
 
 **C2-W-079** A hard break is written as a backslash at the end of the line.
 

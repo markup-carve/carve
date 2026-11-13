@@ -4,7 +4,7 @@
     { "name": "bibliography", "kind": "directive", "clauses": ["C2-B-127"] },
     { "name": "danger", "kind": "admonition", "clauses": ["C2-B-127"] },
     { "name": "example", "kind": "admonition", "clauses": ["C2-B-127"] },
-    { "name": "figure", "kind": "figure_group", "clauses": ["C2-B-127"] },
+    { "name": "figure", "kind": "figure_group", "when": "no_title_and_no_label", "clauses": ["C2-B-127"] },
     { "name": "footnotes", "kind": "directive", "clauses": ["C2-B-127"] },
     { "name": "glossary", "kind": "directive", "clauses": ["C2-B-127"] },
     { "name": "index", "kind": "directive", "clauses": ["C2-B-127"] },

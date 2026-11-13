@@ -16,6 +16,7 @@
         "properties": {
           "name": { "type": "string", "description": "The name as written. Names are compared as written." },
           "kind": { "enum": ["admonition", "figure_group", "directive", "list_table"] },
+          "when": { "enum": ["no_title_and_no_label"], "description": "A condition on the opener. Where it does not hold, the name gives a plain div." },
           "clauses": {
             "type": "array",
             "minItems": 1,

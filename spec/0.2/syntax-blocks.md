@@ -2760,7 +2760,7 @@ after
 
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group, and renders nothing in the core (carried over from 0.1).
 
-**C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.
+**C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text.
 
 The backtick is the canonical fence character, and the tilde is accepted (C2-B-108).
 
@@ -3821,7 +3821,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break. Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, so text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph: a fence line, a table row and a thematic break still interrupt (C2-B-014, C2-B-019, C2-B-200), and a blank line ends the heading. A line that is not indented past the marker starts a new block, so text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -4326,11 +4326,11 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer.
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer.
 
 **C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment.
 
-**C2-B-168** A line that starts with a pipe and does not end with one is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
+**C2-B-168** A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
 
 **C2-B-169** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
 

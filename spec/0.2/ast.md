@@ -230,8 +230,8 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `table_body` | `table` | `table_row`, `comment` | `headRows`?, `rowHeadColumns`? |
 | `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`? |
 | `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`?, `authored`? |
-| `table_foot` | `table` | `table_row` | none |
-| `table_head` | `table` | `table_row` | none |
+| `table_foot` | `table` | `table_row`, `comment` | none |
+| `table_head` | `table` | `table_row`, `comment` | none |
 | `table_row` | table group | `table_cell` | none |
 | `tag` | inline | none | `name` |
 | `text` | inline | none | `value` |
@@ -291,7 +291,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-065** A quote is a `block_quote` with block `children`, whether it was written with `>` lines or as a quote fence. Which of the two the author wrote is not in the tree.
 
-**C2-A-066** The opener of a div decides its node type. A name from `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` gives an `admonition` of that `kind`. A name from `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` gives a `directive`. The bare name `figure` gives a `figure_group`. Any other name gives a `div` whose first class is the name. An opener with no name gives a `div`.
+**C2-A-066** The opener of a div decides its node type. A name from `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` gives an `admonition` of that `kind`. A name from `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` gives a `directive`. The name `figure` with no title and no label gives a `figure_group`, and with one of them a `div` whose first class is `figure` (C2-B-127). Any other name gives a `div` whose first class is the name. An opener with no name gives a `div`.
 
 **C2-A-067** A `directive` always carries `children` and may carry a `title` and `tocTarget` (`headings`, `figures`, `tables` or `listings`).
 
@@ -328,7 +328,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Comments
 
-**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again.
+**C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one; `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body.
 
 **C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-138).
 
@@ -348,7 +348,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-081** A caption is a `caption` node with block `children` and an optional inline `short`. A producer does not derive `short` from the full caption.
 
-**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption. The comment of a comment-only line between a block and its caption (C2-B-137) is a child of that `figure`, after the block, and for a table it is the last child of the table, so that no sibling lies inside another's span (C2-A-145).
+**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption. The comment of a comment-only line between a block and its caption (C2-B-137) is a child of that `figure`, after the block; below a block image or a math block it is a child of that paragraph, which is still open when the comment is read (C2-A-136, C2-A-184); and for a table it is the last child of the table, so that no sibling lies inside another's span (C2-A-145).
 
 **C2-A-083** A `figure` carries block `children`, an optional `caption` and an optional `kind` (`image`, `table`, `listing`, `equation` or `other`). An absent `kind` makes no claim.
 

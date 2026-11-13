@@ -1234,7 +1234,7 @@ Example 66 (generated)
 
 **Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. (carried over from 0.1)
 
-**C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule.
+**C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule. A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.
 
 **C2-I-080** A label may wrap: a line break with the whitespace around it folds to one space. A blank line ends the content and the label with it. A definition line stays on one line.
 
