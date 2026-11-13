@@ -447,7 +447,7 @@ Written:
 
 **C2-W-108** Lint never changes the tree and never changes the output of `fmt`.
 
-**C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1. A rule that is off by default is turned on by its id. There is no named group of rules.
+**C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules.
 
 **C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are on by default through 0.2.x.
 

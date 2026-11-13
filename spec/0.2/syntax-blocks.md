@@ -3180,7 +3180,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
-**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes keep their 0.1 definitions (carried over from 0.1).
+**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes keep their 0.1 definitions (carried over from 0.1). C2-B-215 to C2-B-217 state them.
 
 One paragraph, with the comment inside it:
 
@@ -3516,6 +3516,35 @@ Example 158 (unverified)
     <tr><td>b</td></tr>
   </tbody>
 </table>
+```
+
+:::
+
+**C2-B-215** A lint control comment is a line comment whose `%%` is followed by exactly one space and then by one of the keywords `carve-lint-disable-line`, `carve-lint-disable-next-line`, `carve-lint-disable` and `carve-lint-enable`. The keyword ends the comment, or is followed by spaces or commas and a list of rule ids separated by spaces or commas. No id means every rule. A keyword with another character glued to it, and a `%%` followed by two spaces, give no control comment. A control comment may stand on a comment-only line or behind content. It is a comment like any other: it renders nothing and changes no block. Text of this shape in a code span, a code block, raw content, a braced comment or a comment block controls nothing.
+
+**C2-B-216** `carve-lint-disable-line` suppresses the named rules for the findings reported on its own line, and `carve-lint-disable-next-line` for those on the next line, also where that line belongs to another container. `carve-lint-disable` suppresses them from its own line to the end of the document, and `carve-lint-enable` lifts that from its own line. For each rule, the last of these two that names it, or names no rule, decides. An enable does not lift a line scope. A finding counts at the line it reports. In an included file the line scopes count the lines of that file, and a document scope ends with the file.
+
+**C2-B-217** A region marker of an include is a line that holds, after optional spaces and tabs, a line comment whose content is `#region` and a name, or `#endregion` and an optional name, and after that only spaces and tabs. Spaces and tabs may stand between `%%` and the keyword and between the keyword and the name. The name is an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. The keywords are case-sensitive. A keyword run on by a letter, a digit or `_`, as in `#regional`, makes no marker; run on by any other character, as in `#region-x`, it makes a malformed marker, which an expansion reports. A `%%%` run opens a comment block and is never a marker. A marker renders nothing; what a region selects is the expansion's job.
+
+Example 231 (generated)
+
+::: compare
+
+```carve
+%% #region intro
+%% carve-lint-disable-next-line empty-link-destination
+See [a]().
+
+See [b](). %% carve-lint-disable-line
+
+See [c]().
+%% #endregion intro
+```
+
+```html
+<p>See <a href="">a</a>.</p>
+<p>See <a href="">b</a>.</p>
+<p>See <a href="">c</a>.</p>
 ```
 
 :::
@@ -5131,7 +5160,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 10 | 0 | 7 | 4 |
 | The fence opener and titles | 6 | 1 | 6 | 0 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 14 | 4 | 13 | 4 |
+| Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 5 |
 | One-line constructs | 11 | 0 | 9 | 1 |
@@ -5140,9 +5169,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 29 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **214** | **15** | **172** | **58** |
+| **Total** | **217** | **15** | **173** | **58** |
 
-The chapter has 214 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 217 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
