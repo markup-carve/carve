@@ -331,7 +331,7 @@ Carve has three comment forms. The block form `%%%` is defined in the block chap
 
 **C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
-Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in a code fence and in a line block are block clauses (C2-B-134, C2-B-135).
+Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-134, C2-B-135, C2-B-144).
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 
@@ -686,7 +686,7 @@ a {'x'} b and {"a": "b"}
 
 **C2-I-048** A delimiter can close when the character before it is not whitespace and the character after it is not a word character. (carried over from 0.1)
 
-**Exception C2-I-049** A run of two or more of one bare delimiter character is not a delimiter, for the slash as for the star: each character in it is text. `**bold**` is literal, and lint points to the single star.
+**Exception C2-I-049** A run of two or more of one bare delimiter character is not a delimiter, for the slash as for the star: each character in it is text. `**bold**` is literal, and lint reports it as `markdown-strong-double-star`.
 
 **Exception C2-I-050** A delimiter is a whole character: a bare delimiter, or the mark of a braced opener or of a comment opener, that is followed by a combining mark (category Mn, Mc or Me), a variation selector or a zero-width joiner is text. (carried over from 0.1)
 
@@ -1801,8 +1801,6 @@ Smart typography reads the text that the scan left as text and never reads insid
 **Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens.
 
 **Exception C2-I-109** Single quotes do not nest. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
-
-The quote clauses still owe a re-run of the carve#2873 measurement with the demotion off.
 
 **C2-I-110** A quote that was emitted is never changed: an opening single quote stays an opening quote when no closing quote follows.
 
