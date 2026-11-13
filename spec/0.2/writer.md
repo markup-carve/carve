@@ -37,6 +37,8 @@ Conventions:
 
 **C2-W-011** A tree can hold a shape that no Carve source gives (C2-A-175). The writer writes what the table of C2-A-175 names and reports each dropped node or field in the diagnostics record (C2-W-103), with the code `structure-unspellable` for a node or a wrapper and `field-unspellable` for a field, which the entry names.
 
+**C2-W-117** The table of C2-A-175 is not the whole list. For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. No such loss is silent. Among these are: a frontmatter value that holds a line of three hyphens, and a frontmatter format other than `yaml`, `toml` and `json`; `spacing: "loose"` on a list of one item; a caption with more than one block; a class that holds a space or another character outside the class-name grammar; a definition key that holds a closing bracket or folds to nothing; a line comment whose value holds a line break; a paragraph, a list or a description list with no children; `figure.kind` and `directive.tocTarget`; an `autolink` whose `text` differs from its target; an `abbreviation` with no definition of its key in the document; a mention with a `label` or a kind other than `user`; and `metadata`.
+
 **C2-W-012** Where blocks are written into a slot that holds only inline content, such as a caption, a title, a cell or a term, the writer puts a separator between the content of two former blocks, so that no word and no delimiter run is joined across the boundary.
 
 **C2-W-013** Where the whole content of a block is one node whose own spelling at the block's column reads back as a block of another kind, the wrapper is lost. The loss is reported and never silent.
@@ -101,7 +103,7 @@ Conventions:
 
 **C2-W-038** The fence is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
 
-**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it.
+**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
 
 **C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
@@ -133,13 +135,13 @@ Conventions:
 
 **C2-W-054** The writer writes an id on a heading exactly when `attrs.id` holds one (C2-A-038). A generated id is in `generatedId` (C2-A-134) and is never written.
 
-**C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-076). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
+**C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-076). A footnote definition is `[^key]:`, one space and its first block on the marker line, with its later blocks at the content column (C2-W-024, C2-W-027). An abbreviation definition is `*[key]:`, one space and the expansion. The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
 
 **C2-W-056** A link definition is written as `[label]:`, one space, the destination and, when there is one, one space and the title in double quotes. A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.
 
 **C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
-**C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
+**C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. A path that holds a space is written in double quotes; a path that holds a double quote or a line break has no spelling and is reported (C2-W-117). The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181).
 
 **C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, because without the blank line the comment would be a lazy line of that paragraph and move into it (C2-B-024, C2-A-075); in every other place it stands directly below the block before it. Such a blank line stands inside an item and does not make a list loose (C2-W-030).
 
@@ -753,7 +755,7 @@ One point is open.
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | The writer and its two gates | 10 | 0 | 0 | 0 |
-| What the writer cannot spell | 8 | 0 | 0 | 0 |
+| What the writer cannot spell | 9 | 0 | 0 | 0 |
 | Layout | 19 | 3 | 0 | 0 |
 | Canonical forms: blocks | 26 | 0 | 0 | 0 |
 | Canonical forms: tables | 8 | 0 | 0 | 0 |

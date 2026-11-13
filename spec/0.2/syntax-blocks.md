@@ -1816,7 +1816,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line.
 
-**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text.
+**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
 
 **C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
@@ -2517,7 +2517,7 @@ code
 
 ## Fences, divs and comment blocks
 
-**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block.
+**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line is the first line of the comment's value, as in 0.1.
 
 **C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test.
 
