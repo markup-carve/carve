@@ -169,10 +169,16 @@
               { "part": "space", "min": 1 }
             ],
             [
-              { "part": "ref", "ref": "letter_or_roman_number" },
+              { "part": "run", "chars": ["A-Z"], "min": 1, "max": 1 },
               { "part": "literal", "text": "." },
               { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
               { "part": "space", "min": 2 }
+            ],
+            [
+              { "part": "ref", "ref": "letter_or_roman_number_not_one_uppercase" },
+              { "part": "literal", "text": "." },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "space", "min": 1 }
             ],
             [
               { "part": "literal", "text": "." },
@@ -490,6 +496,16 @@
       "valid_numeral_required": false,
       "max": 9,
       "clauses": ["C2-B-036", "C2-B-042"]
+    },
+    {
+      "name": "letter_or_roman_number_not_one_uppercase",
+      "forms": ["one_lowercase_letter", "two_to_nine_roman_letters"],
+      "chars": ["A-Z", "a-z"],
+      "roman_chars": ["C", "D", "I", "L", "M", "V", "X", "c", "d", "i", "l", "m", "v", "x"],
+      "one_letter_case": true,
+      "valid_numeral_required": false,
+      "max": 9,
+      "clauses": ["C2-B-036", "C2-B-040", "C2-B-042"]
     },
     { "name": "line_comment", "file": "inline-atoms.json", "clauses": ["C2-B-133", "C2-B-167"] },
     {

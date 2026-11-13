@@ -708,7 +708,7 @@ Example 29 (generated)
 
 **C2-B-039** In an alphabetic list every single letter is a sibling, `i` included.
 
-**Exception C2-B-040** A letter marker or a roman marker with a dot needs two spaces before its content.
+**Exception C2-B-040** A marker of one uppercase letter and a dot needs two spaces before its content, so that an initial at the start of a paragraph, as in `A. Smith`, stays text. Every other marker needs one.
 
 **C2-B-041** The list starts at the value of its first marker.
 

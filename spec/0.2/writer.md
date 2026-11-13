@@ -69,7 +69,7 @@ Conventions:
 
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
-**C2-W-025** One space follows a list marker. A letter or roman marker with a dot takes two (C2-B-040), and the content column moves with it.
+**C2-W-025** One space follows a list marker. A marker of one uppercase letter and a dot takes two (C2-B-040), and the content column moves with it.
 
 **C2-W-026** A continuation line whose text would read as a list marker is kept text by an escape, not by a smaller indent.
 
