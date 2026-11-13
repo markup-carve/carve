@@ -2,7 +2,7 @@
 
 Status: first draft on `next2`. Nothing in this chapter is implemented yet.
 
-This chapter defines how the text of a leaf block becomes inline nodes. Block structure, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of an inline decision.
+This chapter defines how inline content becomes inline nodes. Block structure, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of an inline decision.
 
 Conventions:
 
@@ -16,21 +16,25 @@ Conventions:
 
 Terms:
 
-- A *leaf* is a block that holds text: a paragraph, a heading, a term, a caption, a table cell. Its *content* is what the block pass left of its lines.
+- *Leaf* and *container* have the meaning of the block chapter. Inline content is read in a paragraph, a heading, a term, a caption, a line of a line block and each cell of a table row.
+- The *content* is the text of one of these, as the block pass left it. A table row is split into cells first, and each cell has a content of its own. Every rule below works on one content.
+- A *form* is one spelling of a construct, such as the braced form of emphasis. The `form` field of a reference node is written as a code word.
 - A *word character* is a Unicode letter or number (general category L or N).
-- *Whitespace* is a space, a tab or a line break. The start and the end of a leaf's content count as whitespace.
+- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace.
 - Two things are *glued* when no character stands between them.
-- An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-004.
+- An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-005.
 - A *bracket construct* is a form built on a bracket pair: a span, a link, an image, a reference, an inline footnote, an inline extension.
-- A *host* is an inline node that an attribute block can attach to (C2-I-032).
+- A *host* is an inline node that an attribute block can attach to (C2-I-036). The program that embeds Carve is called the application.
 
-**C2-I-001** Inline content is parsed one leaf at a time, after the block pass has settled every line of the document: no block decision depends on inline content, and every definition and heading is known when the first leaf is read.
+**C2-I-001** Inline content is parsed one content at a time, after the block pass has settled every line of the document: no block decision depends on inline content, and every definition and heading is known when the first content is read.
 
-**C2-I-002** The content of a leaf is the list of its source spans in order, one per line, without container prefixes, markers and indent; two neighboring spans are joined by one line break.
+**C2-I-002** A content is the list of its source spans in order, one per line, without the prefixes of its containers, without markers and without indent.
 
-**C2-I-003** The content is read in one left-to-right scan with four steps in a fixed order of precedence: atoms, the bracket stack, the delimiter stack, attachment.
+**C2-I-003** Two neighboring spans are joined by one line break.
 
-**C2-I-004** At each position the scan tries the atoms first. An atom that matches is taken whole: no bracket, delimiter or other atom opens, closes or is matched inside it, and of two atoms the one that starts first wins.
+**C2-I-004** The content is read in one left-to-right scan with four steps in a fixed order of precedence: atoms, the bracket stack, the delimiter stack, attachment.
+
+**C2-I-005** At each position the scan tries the atoms first. An atom that matches is taken whole: no bracket, delimiter or other atom opens, closes or is matched inside it, and of two atoms the one that starts first wins.
 
 The atoms, each defined in its own section:
 
@@ -43,17 +47,57 @@ The atoms, each defined in its own section:
 - a link tail, which is the parenthesized destination and title glued to the closing bracket of a pair;
 - a mention, a tag and a symbol.
 
-**C2-I-005** An opening bracket is pushed on the bracket stack. A closing bracket pairs with the nearest open one, and what is glued to the closing bracket decides the construct. A pair that forms no construct is plain text: its content is read as inline content all the same, and it bounds nothing. A closing bracket with no open bracket is text.
+**C2-I-006** An opening bracket is pushed on the bracket stack. A closing bracket pairs with the nearest open one, and what is glued to the closing bracket decides the construct. A pair that forms no construct is plain text: its content is read as inline content all the same, and it bounds nothing. A closing bracket with no open bracket is text.
 
-**C2-I-006** A bracket construct is settled before delimiters pair: a delimiter inside its content pairs only inside it, and a delimiter outside it pairs only outside it.
+**C2-I-007** A bracket construct is settled before delimiters pair: a delimiter inside its content pairs only inside it, and a delimiter outside it pairs only outside it.
 
-**C2-I-007** Emphasis, strong and the braced forms pair on one delimiter stack (C2-I-046, C2-I-054).
+**C2-I-008** Emphasis, strong and the braced forms pair on one delimiter stack (C2-I-051, C2-I-059).
 
-**C2-I-008** Attachment comes last: an attribute block attaches only to a host that has already formed.
+**C2-I-009** Attachment comes last: an attribute block attaches only to a host that has already formed.
 
 The backtick opens a code span before the star can close, so the strong span never forms.
 
+The block pass comes first: the blank line ends the paragraph, and neither the star nor the code span reaches across it.
+
 Example 1 (generated)
+
+::: compare
+
+```carve
+*a
+
+b* and `c
+
+d`
+```
+
+```html
+<p>*a</p>
+<p>b* and <code>c</code></p>
+<p>d<code></code></p>
+```
+
+:::
+
+The quote marks are no part of the content, so the strong span crosses the line break.
+
+Example 2 (generated)
+
+::: compare
+
+```carve
+> *a
+> b* c
+```
+
+```html
+<blockquote><p><strong>a
+b</strong> c</p></blockquote>
+```
+
+:::
+
+Example 3 (generated)
 
 ::: compare
 
@@ -69,7 +113,7 @@ Example 1 (generated)
 
 The link forms first. The star inside it has no partner inside, and the star outside has none outside.
 
-Example 2 (generated)
+Example 4 (generated)
 
 ::: compare
 
@@ -85,7 +129,7 @@ Example 2 (generated)
 
 The brackets form no construct, so the stars pair across them.
 
-Example 3 (unverified)
+Example 5 (unverified)
 
 ::: compare
 
@@ -101,15 +145,15 @@ Example 3 (unverified)
 
 ## Backslash escapes
 
-**C2-I-009** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
+**C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
 
-**C2-I-010** A backslash before a space is a no-break space. (carried over from 0.1)
+**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1)
 
-**C2-I-011** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-096). (carried over from 0.1)
+**C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
 
-**C2-I-012** Escapes are not read inside a code span, an autolink, a cross-reference, a comment or an editorial comment. A link destination reads only the escaped parenthesis and the escaped backslash. A link title and a quoted attribute value read escapes. (carried over from 0.1)
+**C2-I-013** Escapes are not read inside a code span, an autolink, a cross-reference, a comment or an editorial comment. A link destination reads only the escaped parenthesis and the escaped backslash. A link title and a quoted attribute value read escapes. (carried over from 0.1)
 
-Example 4 (generated)
+Example 6 (generated)
 
 ::: compare
 
@@ -123,7 +167,7 @@ Example 4 (generated)
 
 :::
 
-Example 5 (generated)
+Example 7 (generated)
 
 ::: compare
 
@@ -139,19 +183,19 @@ Example 5 (generated)
 
 ## Code spans
 
-**C2-I-013** A run of one or more backticks opens a code span. The opener is the whole run. (carried over from 0.1)
+**C2-I-014** A run of one or more backticks opens a code span. The opener is the whole run. (carried over from 0.1)
 
-**C2-I-014** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1)
+**C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1)
 
-**C2-I-015** When the content of a closed span starts and ends with a space, one space is removed from each end. (carried over from 0.1)
+**C2-I-016** When the content of a closed span starts and ends with a space, one space is removed from each end. (carried over from 0.1)
 
-**Exception C2-I-016** A code span never fails. With no closing run in the leaf it runs to the end of the leaf, and the leaf's trailing whitespace is dropped.
+**Exception C2-I-017** A code span never fails. With no closing run in the content it runs to the end of the content, and trailing whitespace is dropped.
 
-**C2-I-017** A `!` glued before the opening run makes a literal-text span: its content is written as escaped text with no code element. With an attribute block it is written as a span element that carries the attributes.
+**C2-I-018** A `!` glued before the opening run makes a literal-text span: its content is written as escaped text with no code element. With an attribute block it is written as a span element that carries the attributes.
 
 A literal `!` before a code span is written with a backslash.
 
-Example 6 (generated)
+Example 8 (generated)
 
 ::: compare
 
@@ -165,7 +209,7 @@ Example 6 (generated)
 
 :::
 
-Example 7 (generated)
+Example 9 (generated)
 
 ::: compare
 
@@ -181,7 +225,7 @@ c</code> d</p>
 
 :::
 
-Example 8 (generated)
+Example 10 (generated)
 
 ::: compare
 
@@ -195,7 +239,7 @@ see `unclosed *x* and [y](/u)
 
 :::
 
-Example 9 (generated)
+Example 11 (generated)
 
 ::: compare
 
@@ -211,11 +255,11 @@ Example 9 (generated)
 
 ## Math spans
 
-**C2-I-018** A `$` glued before a code span makes inline math, and `$$` makes display math. The content is the span's verbatim text. A `$` with no backtick run after it is text. (carried over from 0.1)
+**C2-I-019** A `$` glued before a code span makes inline math, and `$$` makes display math. The content is the span's verbatim text. A `$` with no backtick run after it is text. (carried over from 0.1)
 
-**C2-I-019** A math span follows C2-I-016: unclosed, it runs to the end of its leaf.
+**C2-I-020** A math span follows C2-I-017: unclosed, it runs to the end of its content.
 
-Example 10 (generated)
+Example 12 (generated)
 
 ::: compare
 
@@ -229,7 +273,7 @@ $`x^2` and $$`E = mc^2` and $5 and $`x`{.c}
 
 :::
 
-Example 11 (generated)
+Example 13 (generated)
 
 ::: compare
 
@@ -245,13 +289,13 @@ the sum $`a + b
 
 ## Raw inline
 
-**C2-I-020** A closed code span with `{=name}` glued to it is raw inline. The name is a letter or `_`, then letters, digits, `_` and `-`. The content is written unescaped to the output format of that name and dropped for every other format. (carried over from 0.1)
+**C2-I-021** A closed code span with `{=name}` glued to it is raw inline. The name is a letter or `_`, then letters, digits, `_` and `-`. The content is written unescaped to the output format of that name and dropped for every other format. (carried over from 0.1)
 
-**Exception C2-I-021** Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-039).
+**Exception C2-I-022** Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-043).
 
 Raw HTML is written only when the `rawHtml` option allows it. That is a rendering rule.
 
-Example 12 (generated)
+Example 14 (generated)
 
 ::: compare
 
@@ -265,7 +309,7 @@ a `<br>`{=html} b
 
 :::
 
-Example 13 (generated)
+Example 15 (generated)
 
 ::: compare
 
@@ -283,19 +327,19 @@ Example 13 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-022** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
+**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
 
-**C2-I-023** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
+**C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
-Inside an atom that started earlier on the line, `%%` is content (C2-I-004): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in a code fence and in a line block are block clauses (C2-B-092, C2-B-093).
+Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in a code fence and in a line block are block clauses (C2-B-092, C2-B-093).
 
-**C2-I-024** `{%` opens a braced comment that closes at the first `%}` in the leaf. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
+**C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 
-**Exception C2-I-025** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-042), for the sigil boundary (C2-I-084) and for typography. It is not a host, and an attribute block behind it attaches to nothing. (carried over from 0.1)
+**Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. It is not a host, and an attribute block behind it attaches to nothing. (carried over from 0.1)
 
-**Exception C2-I-026** Block rules classify lines first: a braced comment whose closer stands behind an interrupter line is unclosed and stays text (C2-B-099).
+**Exception C2-I-027** Block rules classify lines first: a braced comment whose closer stands behind an interrupter line is unclosed and stays text (C2-B-099).
 
-Example 14 (generated)
+Example 16 (generated)
 
 ::: compare
 
@@ -313,7 +357,7 @@ b and 50%% and a%%b</p>
 
 The comment takes the closing star. The strong span closes on the next line.
 
-Example 15 (generated)
+Example 17 (generated)
 
 ::: compare
 
@@ -331,7 +375,7 @@ c</strong> d</p>
 
 The comment takes the closing bracket and the link tail, so the bracket is text.
 
-Example 16 (unverified)
+Example 18 (unverified)
 
 ::: compare
 
@@ -345,7 +389,7 @@ Example 16 (unverified)
 
 :::
 
-Example 17 (generated)
+Example 19 (generated)
 
 ::: compare
 
@@ -359,7 +403,7 @@ Example 17 (generated)
 
 :::
 
-Example 18 (generated)
+Example 20 (generated)
 
 ::: compare
 
@@ -376,31 +420,37 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 ## Attribute blocks
 
-**C2-I-027** A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.
+**C2-I-028** A valid attribute block is `{`, optional spaces, one or more parts separated by spaces, optional spaces and `}`, all on one line.
 
-**C2-I-028** A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value. A name is one or more ASCII letters, digits, `_` and `-`. A key is an ASCII letter or `_`, then letters, digits, `_` and `-`; a bare key does not start with `_`. A language tag is empty or runs of letters and digits joined by single hyphens.
+**C2-I-029** A part is `#name` for the id, `.name` for a class, `:tag` for the language, `key=value`, or a bare `key`, which is a key with an empty value.
 
-**C2-I-029** A value is unquoted or quoted. An unquoted value is one or more characters without a space, a tab, a quote, a backslash, a pipe and a closing brace. A quoted value stands in `"` or `'`; in it a backslash escapes, a closing brace is allowed, and the value may be empty.
+**C2-I-030** A name is one or more ASCII letters, digits, `_` and `-`. A key is an ASCII letter or `_`, then letters, digits, `_` and `-`. A language tag is empty or runs of letters and digits joined by single hyphens.
 
-**C2-I-030** One part that fits no shape makes the whole run no attribute block. Its opening brace is then read by the next rule of C2-I-039.
+**Exception C2-I-031** A bare key does not start with `_`.
 
-**C2-I-031** A valid attribute block is one atom wherever it stands. One that attaches to nothing is printed as written: nothing inside it is transformed, smart quotes included.
+**C2-I-032** An unquoted value is one or more characters without a space, a tab, a quote, a backslash, a pipe and a closing brace.
 
-**C2-I-032** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span, a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
+**C2-I-033** A quoted value stands in `"` or `'`. In it a backslash escapes, a closing brace is allowed, and the value may be empty.
 
-**C2-I-033** A word is not a host. Neither is a mention, a tag, a cross-reference, a comment, an editorial comment, raw inline, a quote or a typography replacement.
+**C2-I-034** One part that fits no shape makes the whole run no attribute block. Its opening brace is then read by the next rule of C2-I-043.
 
-**C2-I-034** A reference is a host whether or not its label resolves (C2-I-070).
+**C2-I-035** A valid attribute block is one atom wherever it stands. One that attaches to nothing is printed as written: nothing inside it is transformed, smart quotes included.
 
-**C2-I-035** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-072.
+**C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span, a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
 
-**Exception C2-I-036** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text.
+**C2-I-037** A word is not a host. Neither is a mention, a tag, a cross-reference, a comment, an editorial comment, raw inline, a quote or a typography replacement.
 
-**C2-I-037** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-076). The written order of the parts is not kept.
+**C2-I-038** A reference is a host whether or not its label resolves (C2-I-075).
 
-**C2-I-038** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-077).
+**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-072.
 
-Example 19 (generated)
+**Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text.
+
+**C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-076). The written order of the parts is not kept.
+
+**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-077).
+
+Example 21 (generated)
 
 ::: compare
 
@@ -414,7 +464,7 @@ Example 19 (generated)
 
 :::
 
-Example 20 (generated)
+Example 22 (generated)
 
 ::: compare
 
@@ -428,7 +478,7 @@ Example 20 (generated)
 
 :::
 
-Example 21 (generated)
+Example 23 (generated)
 
 ::: compare
 
@@ -444,7 +494,7 @@ Example 21 (generated)
 
 A mention, a tag and a cross-reference are not hosts.
 
-Example 22 (generated)
+Example 24 (generated)
 
 ::: compare
 
@@ -460,7 +510,7 @@ Example 22 (generated)
 
 The block is an atom, so the star in it closes nothing.
 
-Example 23 (unverified)
+Example 25 (unverified)
 
 ::: compare
 
@@ -476,7 +526,7 @@ Example 23 (unverified)
 
 The block is valid and its host is a word, so it is text. Being an atom, it cannot be the start of an editorial comment.
 
-Example 24 (unverified)
+Example 26 (unverified)
 
 ::: compare
 
@@ -490,7 +540,7 @@ a*{#b} c #}
 
 :::
 
-Example 25 (unverified)
+Example 27 (unverified)
 
 ::: compare
 
@@ -504,7 +554,7 @@ word{k="v"} and "v"
 
 :::
 
-Example 26 (generated)
+Example 28 (generated)
 
 ::: compare
 
@@ -518,7 +568,7 @@ Example 26 (generated)
 
 :::
 
-Example 27 (unverified)
+Example 29 (unverified)
 
 ::: compare
 
@@ -532,7 +582,7 @@ Example 27 (unverified)
 
 :::
 
-Example 28 (unverified)
+Example 30 (unverified)
 
 ::: compare
 
@@ -546,7 +596,7 @@ Example 28 (unverified)
 
 :::
 
-Example 29 (generated)
+Example 31 (generated)
 
 ::: compare
 
@@ -562,13 +612,15 @@ Example 29 (generated)
 
 ## The opening brace
 
-**C2-I-039** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the leaf. Three: `{#`, an editorial comment, when `#}` follows in the leaf with at least one character between. Four: `{--}`, the en dash. Five: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack. Otherwise the brace is text.
+**C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{--}`, the en dash. Five: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
 
-**Exception C2-I-040** Glued to a closed code span, `{=name}` is tried together with the attribute block, before the highlight opener (C2-I-020).
+**C2-I-044** A brace that starts none of these is text.
+
+**Exception C2-I-045** Glued to a closed code span, `{=name}` is tried together with the attribute block, before the highlight opener (C2-I-021).
 
 There are no braced quote forms: `{'` and `{"` are a brace followed by a quote. An include directive `{{ ... }}` is a block line; inside inline content each of its braces is read on its own.
 
-Example 30 (generated)
+Example 32 (generated)
 
 ::: compare
 
@@ -582,7 +634,7 @@ Example 30 (generated)
 
 :::
 
-Example 31 (generated)
+Example 33 (generated)
 
 ::: compare
 
@@ -598,7 +650,7 @@ a {=a}b=} c and {--} and {---} and [s]{=x=}
 
 The run is a valid attribute block with the key `_k`, so it is not an underline.
 
-Example 32 (unverified)
+Example 34 (unverified)
 
 ::: compare
 
@@ -612,7 +664,7 @@ a {_k=v_} b and {_a_}
 
 :::
 
-Example 33 (generated)
+Example 35 (generated)
 
 ::: compare
 
@@ -628,25 +680,25 @@ a {'x'} b and {"a": "b"}
 
 ## Emphasis and strong
 
-**C2-I-041** `/` is the emphasis delimiter and `*` is the strong delimiter. No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.
+**C2-I-046** `/` is the emphasis delimiter and `*` is the strong delimiter. No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.
 
-**C2-I-042** A delimiter can open when the character before it is not a word character and the character after it is not whitespace. A bare underscore is ordinary punctuation for this test and for C2-I-043. (carried over from 0.1)
+**C2-I-047** A delimiter can open when the character before it is not a word character and the character after it is not whitespace. A bare underscore is ordinary punctuation for this test and for C2-I-048. (carried over from 0.1)
 
-**C2-I-043** A delimiter can close when the character before it is not whitespace and the character after it is not a word character. (carried over from 0.1)
+**C2-I-048** A delimiter can close when the character before it is not whitespace and the character after it is not a word character. (carried over from 0.1)
 
-**Exception C2-I-044** A run of two or more of one bare delimiter character is not a delimiter, for the slash as for the star: each character in it is text. `**bold**` is literal, and lint points to the single star.
+**Exception C2-I-049** A run of two or more of one bare delimiter character is not a delimiter, for the slash as for the star: each character in it is text. `**bold**` is literal, and lint points to the single star.
 
-**Exception C2-I-045** A delimiter is a whole character: a bare delimiter, or the mark of a braced opener or of a comment opener, that is followed by a combining mark (category Mn, Mc or Me), a variation selector or a zero-width joiner is text. (carried over from 0.1)
+**Exception C2-I-050** A delimiter is a whole character: a bare delimiter, or the mark of a braced opener or of a comment opener, that is followed by a combining mark (category Mn, Mc or Me), a variation selector or a zero-width joiner is text. (carried over from 0.1)
 
-**C2-I-046** A delimiter that can close, with an open entry of its kind on the stack, closes the nearest such entry. Every entry above it is removed, and its characters are text. Otherwise, a delimiter that can open is pushed, also while an entry of its kind is open, so a kind nests in itself. Otherwise it is text.
+**C2-I-051** A delimiter that can close, with an open entry of its kind on the stack, closes the nearest such entry. Every entry above it is removed, and its characters are text. Otherwise, a delimiter that can open is pushed, also while an entry of its kind is open, so a kind nests in itself. Otherwise it is text.
 
-**C2-I-047** There is no combined token for strong emphasis. Each order of the two delimiters is plain nesting, in the order written.
+**C2-I-052** There is no combined token for strong emphasis. Each order of the two delimiters is plain nesting, in the order written.
 
-**Exception C2-I-048** A bare span that holds its own delimiter character between two word characters does not form: its entry leaves the stack, every other entry stays, and both delimiters are text. Only the span's own content counts, not the inside of an atom, of a bracket construct or of a braced span. (carried over from 0.1)
+**Exception C2-I-053** A bare span that holds its own delimiter character between two word characters does not form: its entry leaves the stack, every other entry stays, and both delimiters are text. Only the span's own content counts, not the inside of an atom, of a bracket construct or of a braced span. (carried over from 0.1)
 
-**C2-I-049** An opener with no closer in its leaf is text.
+**C2-I-054** An opener with no closer in its content is text.
 
-Example 34 (generated)
+Example 36 (generated)
 
 ::: compare
 
@@ -662,9 +714,25 @@ b</strong> and * a* and *a *</p>
 
 :::
 
+A combining acute accent follows the first star, so that star is text and the span never opens.
+
+Example 37 (generated)
+
+::: compare
+
+```carve
+*́a* and *a*
+```
+
+```html
+<p>*́a* and <strong>a</strong></p>
+```
+
+:::
+
 The closer pairs with the nearest opener, so the inner pair forms first.
 
-Example 35 (unverified)
+Example 38 (unverified)
 
 ::: compare
 
@@ -680,7 +748,7 @@ Example 35 (unverified)
 
 The underscores are text and do not block the stars.
 
-Example 36 (unverified)
+Example 39 (unverified)
 
 ::: compare
 
@@ -694,7 +762,7 @@ a_*x* and _*x*_
 
 :::
 
-Example 37 (unverified)
+Example 40 (unverified)
 
 ::: compare
 
@@ -708,7 +776,7 @@ Example 37 (unverified)
 
 :::
 
-Example 38 (unverified)
+Example 41 (unverified)
 
 ::: compare
 
@@ -724,7 +792,7 @@ Example 38 (unverified)
 
 Prose that stays literal:
 
-Example 39 (generated)
+Example 42 (generated)
 
 ::: compare
 
@@ -738,7 +806,7 @@ a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, --flag, 50%, a = b = c
 
 :::
 
-Example 40 (unverified)
+Example 43 (unverified)
 
 ::: compare
 
@@ -752,7 +820,7 @@ x =1, y= 2 and ~/config and _id
 
 :::
 
-Example 41 (unverified)
+Example 44 (unverified)
 
 ::: compare
 
@@ -768,7 +836,7 @@ snake_case_name and _private and __init__ and ~5 minutes~ and a == b
 
 The own-delimiter rule keeps a path with an inner slash literal. A path with no inner slash is emphasis.
 
-Example 42 (generated)
+Example 45 (generated)
 
 ::: compare
 
@@ -784,7 +852,7 @@ the /etc/ dir and /usr/local/ and /etc/hosts/ file
 
 Two collisions stay in 0.2. A code span or a backslash avoids them.
 
-Example 43 (generated)
+Example 46 (generated)
 
 ::: compare
 
@@ -798,7 +866,7 @@ cd /tmp/ && ls /var/
 
 :::
 
-Example 44 (generated)
+Example 47 (generated)
 
 ::: compare
 
@@ -814,7 +882,7 @@ glob *.js or src/* and 5 *3 and 4* 2
 
 The strong span closes first, and the open emphasis entry above it becomes text.
 
-Example 45 (generated)
+Example 48 (generated)
 
 ::: compare
 
@@ -830,41 +898,41 @@ Example 45 (generated)
 
 ## Braced delimiters
 
-A braced form is a mark between braces. It works inside a word.
+A braced form is a mark between braces. It works inside a word. The node names are those of the AST document; the prose calls an `insert` node an insertion and a `delete` node a deletion.
 
 | Form | Node | HTML |
 |---|---|---|
-| `{/x/}` | emphasis | `em` |
-| `{*x*}` | strong | `strong` |
-| `{_x_}` | underline | `u` |
-| `{~x~}` | strike | `s` |
-| `{=x=}` | highlight | `mark` |
-| `{^x^}` | superscript | `sup` |
-| `{,x,}` | subscript | `sub` |
-| `{+x+}` | insertion | `ins` |
-| `{-x-}` | deletion | `del` |
+| `{/x/}` | `emphasis` | `em` |
+| `{*x*}` | `strong` | `strong` |
+| `{_x_}` | `underline` | `u` |
+| `{~x~}` | `strike` | `s` |
+| `{=x=}` | `highlight` | `mark` |
+| `{^x^}` | `superscript` | `sup` |
+| `{,x,}` | `subscript` | `sub` |
+| `{+x+}` | `insert` | `ins` |
+| `{-x-}` | `delete` | `del` |
 
-**C2-I-050** A braced opener is `{` and a mark, and a braced closer is the mark and `}`. Each is one token and has no condition on the characters around it.
+**C2-I-055** A braced opener is `{` and a mark, and a braced closer is the mark and `}`. Each is one token and has no condition on the characters around it.
 
-**C2-I-051** A braced opener only opens, and a braced closer only closes.
+**C2-I-056** A braced opener only opens, and a braced closer only closes.
 
-**C2-I-052** A mark followed by `}` is a braced closer only while a braced opener of that mark is open. Otherwise the mark is read by the bare rules (C2-I-046), where a slash or a star can close a bare span, and the brace is text.
+**C2-I-057** A mark followed by `}` is a braced closer only while a braced opener of that mark is open. Otherwise the mark is read by the bare rules (C2-I-051), where a slash or a star can close a bare span, and the brace is text.
 
-**C2-I-053** A braced closer pairs with the nearest open braced opener of its mark. A braced token never pairs with a bare delimiter.
+**C2-I-058** A braced closer pairs with the nearest open braced opener of its mark. A braced token never pairs with a bare delimiter.
 
-**C2-I-054** Bare and braced entries share the one delimiter stack, and the first pair closed wins: when a pair closes, every entry opened after its opener is removed, bare or braced, and is text (C2-I-046).
+**C2-I-059** Bare and braced entries share the one delimiter stack, and the first pair closed wins: when a pair closes, every entry opened after its opener is removed, bare or braced, and is text (C2-I-051).
 
-**C2-I-055** A braced opener that finds no closer, or that is removed, is text: its two characters are literal, the scan goes on behind them, and the mark is not read again as a bare delimiter.
+**C2-I-060** A braced opener that finds no closer, or that is removed, is text: its two characters are literal, the scan goes on behind them, and the mark is not read again as a bare delimiter.
 
-**Exception C2-I-056** A braced opener glued to its own closer forms nothing, and both tokens are text. (carried over from 0.1)
+**Exception C2-I-061** A braced opener glued to its own closer forms nothing, and both tokens are text. (carried over from 0.1)
 
-**C2-I-057** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
+**C2-I-062** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
 
-**C2-I-058** `{#` opens an editorial comment that closes at the first `#}` in the leaf. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and not a host. (carried over from 0.1)
+**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and not a host. (carried over from 0.1)
 
 A span no longer shields its content: a delimiter inside a braced span can close a span that opened outside it. An author escapes that delimiter.
 
-Example 46 (generated)
+Example 49 (generated)
 
 ::: compare
 
@@ -878,7 +946,7 @@ Example 46 (generated)
 
 :::
 
-Example 47 (generated)
+Example 50 (generated)
 
 ::: compare
 
@@ -894,7 +962,7 @@ foo{*bar*}baz and {*a {/b/} c*} and {/a/b/} and {*a*}{.c}
 
 The inner star closes the strong span. The braced opener above it is removed and its closer has no partner.
 
-Example 48 (unverified)
+Example 51 (unverified)
 
 ::: compare
 
@@ -908,7 +976,7 @@ Example 48 (unverified)
 
 :::
 
-Example 49 (generated)
+Example 52 (generated)
 
 ::: compare
 
@@ -924,7 +992,7 @@ Example 49 (generated)
 
 No braced opener is open, so each mark is a bare closer and the brace is text.
 
-Example 50 (generated)
+Example 53 (generated)
 
 ::: compare
 
@@ -940,7 +1008,7 @@ Example 50 (generated)
 
 The insertion closes first, so the strong opener inside it is text.
 
-Example 51 (unverified)
+Example 54 (unverified)
 
 ::: compare
 
@@ -956,7 +1024,7 @@ Example 51 (unverified)
 
 The braced opener fails and is two characters of text. The bare stars pair with each other.
 
-Example 52 (unverified)
+Example 55 (unverified)
 
 ::: compare
 
@@ -970,7 +1038,7 @@ Example 52 (unverified)
 
 :::
 
-Example 53 (generated)
+Example 56 (generated)
 
 ::: compare
 
@@ -984,7 +1052,7 @@ Example 53 (generated)
 
 :::
 
-Example 54 (unverified)
+Example 57 (unverified)
 
 ::: compare
 
@@ -998,7 +1066,7 @@ Example 54 (unverified)
 
 :::
 
-Example 55 (generated)
+Example 58 (generated)
 
 ::: compare
 
@@ -1014,11 +1082,11 @@ Example 55 (generated)
 
 ## Spans
 
-**C2-I-059** A bracket pair with a valid attribute block glued to it is a span. Its content is inline content, and the block and every block glued behind it attach to it (C2-I-035, C2-I-036).
+**C2-I-064** A bracket pair with a valid attribute block glued to it is a span. Its content is inline content, and the block and every block glued behind it attach to it (C2-I-039, C2-I-040).
 
-**C2-I-060** A bracket pair followed by anything else that forms no link, image or reference is text (C2-I-005).
+**C2-I-065** A bracket pair followed by anything else that forms no link, image or reference is text (C2-I-006).
 
-Example 56 (generated)
+Example 59 (generated)
 
 ::: compare
 
@@ -1032,7 +1100,7 @@ Example 56 (generated)
 
 :::
 
-Example 57 (generated)
+Example 60 (generated)
 
 ::: compare
 
@@ -1048,25 +1116,25 @@ Example 57 (generated)
 
 ## Links and images
 
-**C2-I-061** A bracket pair with a link tail glued to it is an inline link. The tail is `(`, a destination, an optional title and `)`.
+**C2-I-066** A bracket pair with a link tail glued to it is an inline link. The tail is `(`, a destination, an optional title and `)`.
 
-**C2-I-062** A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty. (carried over from 0.1)
+**C2-I-067** A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty. (carried over from 0.1)
 
-**C2-I-063** A title follows the destination after exactly one space. It stands in double quotes, which is the canonical form, or in single quotes, which the formatter rewrites. A backslash escapes the quote in it, and spaces may follow it. (carried over from 0.1)
+**C2-I-068** A title follows the destination after exactly one space. It stands in double quotes, which is the canonical form, or in single quotes, which the formatter rewrites. A backslash escapes the quote in it, and spaces may follow it. (carried over from 0.1)
 
-**C2-I-064** The link tail is an atom and stands on one line. It is read only glued to the closing bracket of a pair: with no open bracket, no destination is read. A tail with a space in the destination, a broken title or a line break is no tail: the bracket pair is text and the parenthesis is text.
+**C2-I-069** The link tail is an atom and stands on one line. It is read only glued to the closing bracket of a pair: with no open bracket, no destination is read. A tail with a space in the destination, a broken title or a line break is no tail: the bracket pair is text and the parenthesis is text.
 
-**C2-I-065** Link text is inline content and may cross line breaks.
+**C2-I-070** Link text is inline content and may cross line breaks.
 
-**Exception C2-I-066** Links do not nest: a link inside link text is replaced by its own content, and the outer link keeps its destination. An image and a span inside link text stay. (carried over from 0.1)
+**Exception C2-I-071** Links do not nest: a link inside link text is replaced by its own content, and the outer link keeps its destination. An image and a span inside link text stay. (carried over from 0.1)
 
-**C2-I-067** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. (carried over from 0.1)
+**C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. (carried over from 0.1)
 
-**C2-I-068** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1)
+**C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1)
 
-**C2-I-069** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1)
+**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1)
 
-Example 58 (generated)
+Example 61 (generated)
 
 ::: compare
 
@@ -1080,7 +1148,7 @@ Example 58 (generated)
 
 :::
 
-Example 59 (generated)
+Example 62 (generated)
 
 ::: compare
 
@@ -1096,7 +1164,7 @@ v)</p>
 
 :::
 
-Example 60 (generated)
+Example 63 (generated)
 
 ::: compare
 
@@ -1114,7 +1182,7 @@ b</a> and <a href="/z">x</a></p>
 
 The closing bracket has no partner, so the parentheses are text and the stars pair.
 
-Example 61 (unverified)
+Example 64 (unverified)
 
 ::: compare
 
@@ -1128,7 +1196,7 @@ a](b *c) d*
 
 :::
 
-Example 62 (generated)
+Example 65 (generated)
 
 ::: compare
 
@@ -1142,7 +1210,7 @@ Example 62 (generated)
 
 :::
 
-Example 63 (generated)
+Example 66 (generated)
 
 ::: compare
 
@@ -1158,29 +1226,31 @@ Example 63 (generated)
 
 ## Reference resolution
 
-**C2-I-070** A reference is a node whether or not its label resolves. The scan does not read the definitions.
+**C2-I-075** A reference is a node whether or not its label resolves. The scan does not read the definitions.
 
-**C2-I-071** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no bracket, delimiter or sigil form is read in it, and its source is its key (C2-I-074).
+**C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no bracket, delimiter or sigil form is read in it, and its source is its key (C2-I-079).
 
-**Exception C2-I-072** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-023): the label is unclosed and the brackets are text, with lint.
+**Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports the comment inside the label; the catalog has no rule id for this finding yet.
 
-**Exception C2-I-073** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. (carried over from 0.1)
+**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. (carried over from 0.1)
 
-**C2-I-074** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule.
+**C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule.
 
-**C2-I-075** A label may wrap: a line break with the whitespace around it folds to one space. A blank line ends the leaf and the label with it. A definition line stays on one line.
+**C2-I-080** A label may wrap: a line break with the whitespace around it folds to one space. A blank line ends the content and the label with it. A definition line stays on one line.
 
-**C2-I-076** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form.
+**C2-I-081** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form.
 
-**Exception C2-I-077** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
+**C2-I-082** The attributes of a link definition merge into every reference that resolves to it, as if they were a block glued before the reference's own blocks (C2-I-039): the reference's own values win.
 
-**C2-I-078** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id.
+**Exception C2-I-083** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
 
-**C2-I-079** An unresolved reference is still a reference node. It renders its source form, rebuilt from its children, its key and its form (full or collapsed), with an attached attribute block written back in the fixed order (C2-I-037). Nothing is scanned again. The text as typed is kept in the source-layout sidecar, not in the tree, so a label that wrapped is written with one space where the line break was.
+**C2-I-084** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id.
 
-**Exception C2-I-080** An inline footnote inside an unresolved reference is not a footnote: it takes no number and makes no note, and it is written in its source form with the rest.
+**C2-I-085** An unresolved reference is still a reference node. It renders its source form, rebuilt from its children, its key and its `form` field (full or collapsed), with an attached attribute block written back in the fixed order (C2-I-041). Nothing is scanned again. The text as typed is kept in the source-layout sidecar, not in the tree, so a label that wrapped is written with one space where the line break was.
 
-Example 64 (generated)
+**Exception C2-I-086** An inline footnote inside an unresolved reference is not a footnote: it takes no number and makes no note, and it is written in its source form with the rest.
+
+Example 67 (generated)
 
 ::: compare
 
@@ -1196,7 +1266,7 @@ Example 64 (generated)
 
 :::
 
-Example 65 (generated)
+Example 68 (generated)
 
 ::: compare
 
@@ -1210,7 +1280,7 @@ Example 65 (generated)
 
 :::
 
-Example 66 (generated)
+Example 69 (generated)
 
 ::: compare
 
@@ -1226,7 +1296,7 @@ Example 66 (generated)
 
 :::
 
-Example 67 (generated)
+Example 70 (generated)
 
 ::: compare
 
@@ -1247,7 +1317,7 @@ Example 67 (generated)
 
 The full form reaches a heading too.
 
-Example 68 (unverified)
+Example 71 (unverified)
 
 ::: compare
 
@@ -1266,7 +1336,7 @@ Example 68 (unverified)
 
 :::
 
-Example 69 (generated)
+Example 72 (generated)
 
 ::: compare
 
@@ -1285,9 +1355,28 @@ Example 69 (generated)
 
 :::
 
+The classes add up, and the reference's own key wins.
+
+Example 73 (unverified)
+
+::: compare
+
+```carve
+[a][r] and [b][r]{.own k=2}
+
+{.def k=1}
+[r]: /u
+```
+
+```html
+<p><a href="/u" class="def" k="1">a</a> and <a href="/u" class="def own" k="2">b</a></p>
+```
+
+:::
+
 The rebuilt form has the folded key and the attribute block in the fixed order.
 
-Example 70 (unverified)
+Example 74 (unverified)
 
 ::: compare
 
@@ -1302,7 +1391,7 @@ pe]{.c #i}
 
 :::
 
-Example 71 (generated)
+Example 75 (generated)
 
 ::: compare
 
@@ -1321,7 +1410,7 @@ Example 71 (generated)
 
 :::
 
-Example 72 (unverified)
+Example 76 (unverified)
 
 ::: compare
 
@@ -1344,7 +1433,7 @@ bar</a> and <a href="/v">x</a></p>
 
 The comment takes the closing bracket of the label.
 
-Example 73 (unverified)
+Example 77 (unverified)
 
 ::: compare
 
@@ -1358,7 +1447,7 @@ Example 73 (unverified)
 
 :::
 
-Example 74 (unverified)
+Example 78 (unverified)
 
 ::: compare
 
@@ -1376,15 +1465,15 @@ Example 74 (unverified)
 
 ## Footnotes
 
-**C2-I-081** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-074, and it may wrap (C2-I-075). The label follows C2-I-071 and C2-I-072.
+**C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077.
 
-**C2-I-082** A footnote reference with no definition renders its source form, rebuilt from its key (C2-I-079).
+**C2-I-088** A footnote reference with no definition renders its source form, rebuilt from its key (C2-I-085).
 
-**C2-I-083** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content. Unclosed, the two characters are text. (carried over from 0.1)
+**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content. Unclosed, the two characters are text. (carried over from 0.1)
 
 Numbering and the notes section are rendering rules.
 
-Example 75 (generated)
+Example 79 (generated)
 
 ::: compare
 
@@ -1411,7 +1500,7 @@ a[^n] and b[^missing] and c^[inline *note*] and d^[unclosed
 
 :::
 
-Example 76 (unverified)
+Example 80 (unverified)
 
 ::: compare
 
@@ -1440,21 +1529,21 @@ note] b
 
 These four forms start with a sigil: the at-sign for a mention, `#` for a tag, `:` for a symbol and for an inline extension.
 
-**C2-I-084** A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class.
+**C2-I-090** A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class.
 
-**C2-I-085** The name is ASCII and is the longest run that fits its shape. A sigil with no such name is text, and so is whatever follows a name.
+**C2-I-091** The name is ASCII and is the longest run that fits its shape. A sigil with no such name is text, and so is whatever follows a name.
 
-**C2-I-086** The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter. It does not end with a dot or a hyphen: a trailing one is text behind the name.
+**C2-I-092** The name of a mention or a tag is one or more runs of letters, digits, `_` and `-`, joined by single dots, and holds at least one letter. It does not end with a dot or a hyphen: a trailing one is text behind the name.
 
-**C2-I-087** A symbol is `:`, a name and `:`. The name is a letter, a digit, `+` or `-`, then letters, digits, `_`, `+` and `-`. It does not end with a hyphen.
+**C2-I-093** A symbol is `:`, a name and `:`. The name is a letter, a digit, `+` or `-`, then letters, digits, `_`, `+` and `-`. It does not end with a hyphen.
 
-**C2-I-088** An inline extension is `:`, a name, `[`, content and the matching `]`. The name is a letter or `_`, then letters, digits, `_` and `-`, and the bracket is glued to it. The content is inline content. Unclosed, the form is text. (carried over from 0.1)
+**C2-I-094** An inline extension is `:`, a name, `[`, content and the matching `]`. The name is a letter or `_`, then letters, digits, `_` and `-`, and the bracket is glued to it. The content is inline content. Unclosed, the form is text. (carried over from 0.1)
 
-**C2-I-089** A mention, a tag and a symbol are atoms. An inline extension is a bracket construct.
+**C2-I-095** A mention, a tag and a symbol are atoms. An inline extension is a bracket construct.
 
-What a mention or a tag links to and what a symbol name stands for are host lookups. An unknown symbol renders its source.
+What a mention or a tag links to and what a symbol name stands for are lookups of the application. An unknown symbol renders its source.
 
-Example 77 (generated)
+Example 81 (generated)
 
 ::: compare
 
@@ -1468,7 +1557,7 @@ Example 77 (generated)
 
 :::
 
-Example 78 (generated)
+Example 82 (generated)
 
 ::: compare
 
@@ -1482,7 +1571,7 @@ color #fff, issue #123, C# and #tag/sub and #release-1.0.
 
 :::
 
-Example 79 (generated)
+Example 83 (generated)
 
 ::: compare
 
@@ -1500,7 +1589,7 @@ The colon follows a letter, so no extension starts. The bracket pair is text.
 
 The trailing hyphen is not part of the name, so the braced closer forms.
 
-Example 80 (unverified)
+Example 84 (unverified)
 
 ::: compare
 
@@ -1514,7 +1603,7 @@ Example 80 (unverified)
 
 :::
 
-Example 81 (unverified)
+Example 85 (unverified)
 
 ::: compare
 
@@ -1530,7 +1619,7 @@ see config:items[0]
 
 The boundary reads the Unicode class: a letter blocks the sigil, an underscore does not.
 
-Example 82 (unverified)
+Example 86 (unverified)
 
 ::: compare
 
@@ -1546,11 +1635,11 @@ Example 82 (unverified)
 
 ## Cross-references
 
-**C2-I-090** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom and not a host. (carried over from 0.1)
+**C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom and not a host. (carried over from 0.1)
 
-**C2-I-091** The id is matched exactly, without case folding. An unresolved cross-reference renders its source. (carried over from 0.1)
+**C2-I-097** The id is matched exactly, without case folding. An unresolved cross-reference renders its source. (carried over from 0.1)
 
-Example 83 (generated)
+Example 87 (generated)
 
 ::: compare
 
@@ -1574,13 +1663,13 @@ See </#intro> and </#Intro> and </#intro>{.c}
 
 An abbreviation definition is a block line (C2-B-065). Its effect is inline.
 
-**C2-I-092** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. (carried over from 0.1)
+**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. (carried over from 0.1)
 
-**C2-I-093** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. (carried over from 0.1)
+**C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. (carried over from 0.1)
 
-**Exception C2-I-094** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
+**Exception C2-I-100** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
 
-Example 84 (generated)
+Example 88 (generated)
 
 ::: compare
 
@@ -1598,9 +1687,9 @@ The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).
 
 ## Citations
 
-**C2-I-095** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key forms no construct: the brackets are text and the key is read as a mention (C2-I-073, C2-I-084). (carried over from 0.1)
+**C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key forms no construct: the brackets are text and the key is read as a mention (C2-I-078, C2-I-090). (carried over from 0.1)
 
-Example 85 (generated)
+Example 89 (generated)
 
 ::: compare
 
@@ -1616,11 +1705,11 @@ See [@doe2020] and [see @doe2020, p. 3; @roe].
 
 ## Hard break and soft break
 
-**C2-I-096** A backslash at the end of a line is a hard break. So is a backslash at the end of the leaf's content and at the end of a table cell. (carried over from 0.1)
+**C2-I-102** A backslash at the end of a line is a hard break. So is a backslash at the end of the content, which includes the end of a table cell. (carried over from 0.1)
 
-**C2-I-097** Every other line break inside a leaf is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
+**C2-I-103** Every other line break inside a content is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
 
-Example 86 (generated)
+Example 90 (generated)
 
 ::: compare
 
@@ -1636,7 +1725,7 @@ b</p>
 
 :::
 
-Example 87 (generated)
+Example 91 (generated)
 
 ::: compare
 
@@ -1654,7 +1743,7 @@ line three</p>
 
 :::
 
-Example 88 (generated)
+Example 92 (generated)
 
 ::: compare
 
@@ -1675,39 +1764,41 @@ Example 88 (generated)
 
 ## Smart typography
 
-Smart typography rewrites text that the scan left as text. It never reads inside an atom. The `smartTypography` option turns it off, and the tree keeps the typed characters.
+Smart typography reads the text that the scan left as text and never reads inside an atom. Each match is a `smart_punctuation` node that keeps the typed characters in its `source` field (C2-A-098). The node is always built. The `smartTypography` option is a render option: it selects the glyph or the typed characters when the node is written (C2-H-078), and it does not change the tree. Where a clause below says that characters become a glyph, it names the glyph of that node.
 
-**C2-I-098** A straight quote opens at the start of content, after whitespace or a no-break space, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. (carried over from 0.1)
+**C2-I-104** A straight quote opens at the start of content, after whitespace or a no-break space, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. (carried over from 0.1)
 
-**Exception C2-I-099** A single quote before an ASCII digit is an apostrophe. (carried over from 0.1)
+**Exception C2-I-105** A single quote before an ASCII digit is an apostrophe. (carried over from 0.1)
 
-**Exception C2-I-100** After a hyphen, a dash or a slash, a quote closes when the next character is absent, whitespace or one of `"`, `'`, `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]`. (carried over from 0.1)
+**Exception C2-I-106** After a hyphen, a dash or a slash, a quote closes when the next character is absent, whitespace or one of `"`, `'`, `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]`. (carried over from 0.1)
 
-**Exception C2-I-101** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe.
+**Exception C2-I-107** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe.
 
-**Exception C2-I-102** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens.
+**Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens.
 
-**Exception C2-I-103** Single quotes do not nest. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per leaf, and an inline footnote has its own. (carried over from 0.1; this clause owes the re-run of the carve#2873 measurement with the demotion off)
+**Exception C2-I-109** Single quotes do not nest. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
 
-**C2-I-104** A quote that was emitted is never changed: an opening single quote stays an opening quote when no closing quote follows.
+The quote clauses still owe a re-run of the carve#2873 measurement with the demotion off.
+
+**C2-I-110** A quote that was emitted is never changed: an opening single quote stays an opening quote when no closing quote follows.
 
 Where the guess is wrong, the author types the curly character.
 
-**C2-I-105** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule.
+**C2-I-111** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule.
 
-**Exception C2-I-106** A hyphen run after whitespace, or after an opening parenthesis or quote that itself follows whitespace, and before a character that is not whitespace is a command-line flag and stays as typed. (carried over from 0.1)
+**Exception C2-I-112** A hyphen run after whitespace, or after an opening parenthesis or quote that itself follows whitespace, and before a character that is not whitespace is a command-line flag and stays as typed. (carried over from 0.1)
 
-**C2-I-107** `{--}` is an en dash. It is the spelling for the position that C2-I-106 keeps literal.
+**C2-I-113** `{--}` is an en dash. It is the spelling for the position that C2-I-112 keeps literal.
 
-**C2-I-108** Three dots become an ellipsis. (carried over from 0.1)
+**C2-I-114** Three dots become an ellipsis. (carried over from 0.1)
 
-**C2-I-109** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1)
+**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1)
 
-**Exception C2-I-110** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
+**Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
 
-**C2-I-111** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `(c)` and `(r)` are text. (carried over from 0.1)
+**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `(c)` and `(r)` are text. (carried over from 0.1)
 
-Example 89 (generated)
+Example 93 (generated)
 
 ::: compare
 
@@ -1721,7 +1812,7 @@ Example 89 (generated)
 
 :::
 
-Example 90 (generated)
+Example 94 (generated)
 
 ::: compare
 
@@ -1735,7 +1826,7 @@ Example 90 (generated)
 
 :::
 
-Example 91 (generated)
+Example 95 (generated)
 
 ::: compare
 
@@ -1751,7 +1842,7 @@ Example 91 (generated)
 
 The opening quote has no partner and stays an opening quote.
 
-Example 92 (generated)
+Example 96 (generated)
 
 ::: compare
 
@@ -1765,7 +1856,7 @@ Example 92 (generated)
 
 :::
 
-Example 93 (unverified)
+Example 97 (unverified)
 
 ::: compare
 
@@ -1779,7 +1870,7 @@ say 'word
 
 :::
 
-Example 94 (generated)
+Example 98 (generated)
 
 ::: compare
 
@@ -1793,7 +1884,23 @@ pages 1--10 and a---b and a----b and git log --oneline and x --- y
 
 :::
 
-Example 95 (generated)
+An arrow needs its exact run. With three hyphens the run is an em dash and the angle bracket is text.
+
+Example 99 (generated)
+
+::: compare
+
+```carve
+a--->b and a<---b and a --> b
+```
+
+```html
+<p>a—&gt;b and a&lt;—b and a → b</p>
+```
+
+:::
+
+Example 100 (generated)
 
 ::: compare
 
@@ -1807,7 +1914,7 @@ x {--}y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g
 
 :::
 
-Example 96 (generated)
+Example 101 (generated)
 
 ::: compare
 
@@ -1821,7 +1928,7 @@ a != b, a <= b, a >= b, 5 +- 1, Carve(tm), (c), x -> y, k => v
 
 :::
 
-Example 97 (generated)
+Example 102 (generated)
 
 ::: compare
 
@@ -1837,32 +1944,48 @@ Example 97 (generated)
 
 ## The depth cap
 
-**C2-I-112** Blocks and inline nodes share one depth count: the depth of the leaf's containers plus the open inline nodes, 200 in total. An opener that would pass it is plain text: the scan goes on behind it and reads the following content as usual.
+**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-131: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual.
 
 The cap applies to every opener that takes content: a bracket, a bare delimiter, a braced opener, `^[` and the bracket of an inline extension.
 
+The paragraph has no container, so 200 superscripts nest. The opener number 201 is text, and so is the last closer, which finds no open opener (C2-I-057).
+
+Example 103 (unverified)
+
+::: compare
+
+```carve
+{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^x^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}
+```
+
+```html
+<p><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup>{^x</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>^}</p>
+```
+
+:::
+
 ## The fallback rule
 
-**C2-I-113** A form with a closer opens only when its closer is found in the same leaf. A failed opener is literal text, and the scan goes on directly behind it.
+**C2-I-119** A form with a closer opens only when its closer is found in the same content. A failed opener is literal text, and the scan goes on directly behind it.
 
-**C2-I-114** No inline form crosses the end of its leaf: a table cell, a heading, a term, a caption and a paragraph each end every form that is open in them.
+**C2-I-120** No inline form crosses the end of its content: a table cell, a heading, a term, a caption and a paragraph each end every form that is open in them.
 
-The two forms that never fail are the code span and the math span (C2-I-016, C2-I-019).
+The two forms that never fail are the code span and the math span (C2-I-017, C2-I-020).
 
 | Form that fails | What is text |
 |---|---|
-| unclosed bracket | the bracket (C2-I-005) |
-| bracket pair with a broken link tail | the pair and the tail (C2-I-064) |
-| unclosed inline footnote | `^[` (C2-I-083) |
-| unclosed inline extension | the sigil, the name and the bracket (C2-I-088) |
-| unclosed or invalid attribute block | the whole run (C2-I-030) |
-| unclosed bare delimiter | the delimiter (C2-I-049) |
-| unclosed braced opener | the brace and its mark (C2-I-055) |
-| unclosed braced comment or editorial comment | the brace and its mark (C2-I-039) |
-| unclosed autolink or cross-reference | the angle bracket (C2-I-068, C2-I-090) |
-| opener past the depth cap | the opener (C2-I-112) |
+| unclosed bracket | the bracket (C2-I-006) |
+| bracket pair with a broken link tail | the pair and the tail (C2-I-069) |
+| unclosed inline footnote | `^[` (C2-I-089) |
+| unclosed inline extension | the sigil, the name and the bracket (C2-I-094) |
+| unclosed or invalid attribute block | the whole run (C2-I-034) |
+| unclosed bare delimiter | the delimiter (C2-I-054) |
+| unclosed braced opener | the brace and its mark (C2-I-060) |
+| unclosed braced comment or editorial comment | the brace and its mark (C2-I-043) |
+| unclosed autolink or cross-reference | the angle bracket (C2-I-073, C2-I-096) |
+| opener past the depth cap | the opener (C2-I-118) |
 
-Example 98 (generated)
+Example 104 (generated)
 
 ::: compare
 
@@ -1876,7 +1999,7 @@ Example 98 (generated)
 
 :::
 
-Example 99 (generated)
+Example 105 (generated)
 
 ::: compare
 
@@ -1896,31 +2019,31 @@ There is no fixed budget for the inline chapter.
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 8 | 0 | 2 | 1 |
+| Preliminaries | 9 | 0 | 4 | 1 |
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 1 | 4 | 0 |
 | Math spans | 2 | 0 | 2 | 0 |
 | Raw inline | 2 | 1 | 2 | 0 |
 | Comments | 5 | 2 | 4 | 1 |
-| Attribute blocks | 12 | 1 | 6 | 5 |
-| The opening brace | 2 | 1 | 3 | 1 |
-| Emphasis and strong | 9 | 3 | 6 | 6 |
+| Attribute blocks | 15 | 2 | 6 | 5 |
+| The opening brace | 3 | 1 | 3 | 1 |
+| Emphasis and strong | 9 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 9 | 1 | 5 | 1 |
-| Reference resolution | 11 | 4 | 6 | 5 |
+| Reference resolution | 12 | 4 | 6 | 6 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 0 |
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 1 | 0 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
-| Smart typography | 14 | 7 | 8 | 1 |
-| The depth cap | 1 | 0 | 0 | 0 |
+| Smart typography | 14 | 7 | 9 | 1 |
+| The depth cap | 1 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
-| **Total** | **114** | **23** | **70** | **29** |
+| **Total** | **120** | **24** | **74** | **31** |
 
-The chapter has 114 clauses, 23 of them exceptions, and 99 examples. The clause count includes the exceptions.
+The chapter has 120 clauses, 24 of them exceptions, and 105 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
@@ -1929,13 +2052,13 @@ For comparison, counted with the rubric of the inline review (one atomic stateme
 | Carve 0.1 | about 204 | 30 |
 | CommonMark 0.31.2 | about 80 | 6 |
 | Djot | about 50 | 2 |
-| This chapter | 114 | 23 |
+| This chapter | 120 | 24 |
 
 The numbers are not like for like. Several clauses here join two or three atomic statements, as the first draft of the block chapter did, so a strict recount lands higher. Carve also has about 35 inline constructs against 20 in Djot and 11 in CommonMark.
 
 ## Not covered
 
-This draft has no example for the depth cap and for the whole-character rule (C2-I-045). A depth cap example cannot be generated: 0.1 counts inline depth alone and keeps the whole spelling literal past the cap. The citation syntax itself is defined with its extension. The element a span becomes for the keys `kbd`, `abbr` and `time`, footnote numbering, the links of mentions and tags, the symbol table and URL filtering belong to the HTML rendering document.
+The citation syntax itself is defined with its extension. The element a span becomes for the keys `kbd`, `abbr` and `time`, footnote numbering, the links of mentions and tags, the `mailto:` link of an email autolink, the symbol table and URL filtering belong to the HTML rendering document. That a line of a line block keeps its leading spaces is a block rule.
 
 ## Open questions found while writing
 
