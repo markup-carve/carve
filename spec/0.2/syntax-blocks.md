@@ -3530,7 +3530,7 @@ Example 158 (unverified)
 
 **C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.
 
-**C2-B-150** The first bare `#` in a caption's text is the caption number mark, and the sequences and the label word that selects one keep their 0.1 definition (carried over from 0.1).
+**C2-B-150** The first bare `#` in a caption's text is the caption number mark, and the sequences and the label word that selects one keep their 0.1 definition (carried over from 0.1). C2-B-207 and C2-B-208 state the mark and the label, and C2-H-149 to C2-H-151 the numbering.
 
 Under ordinary paragraph text a caption line is a lazy line (C2-B-017). Directly below a line of a quote, a caption line without the quote's mark closes the quote and captions it (C2-B-018). With the mark it belongs to the quote, where it is a lazy line of an open paragraph. Inside an item or a quote a caption line carries that container's indent or mark like any other line.
 
@@ -3813,6 +3813,10 @@ Example 172 (generated)
 ```
 
 :::
+
+**C2-B-207** The mark is the first `#` in the top-level inline content of a caption that is followed by whitespace, `:`, `.`, the end of the caption or a character that cannot start a tag name (C2-I-092). A `#` before a tag-name character is a tag or text, so `#1` is text. `\#` is a literal `#`. A `#` inside inline markup, such as emphasis, a link or a span, is no mark. Every `#` after the mark is text.
+
+**C2-B-208** The label of a caption with a mark is its inline content before the mark, without trailing whitespace. Its sequence key is the plain text of the label, computed as for a heading (C2-H-143), except that a symbol gives the text the caption writes for it (C2-H-101). So `*Figure* #` and `Figure #` have the key `Figure`, a comment in the label changes no key, and `^ #` has the empty key. Keys are compared exactly, case included.
 
 ## Headings
 
@@ -5039,7 +5043,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | The fence opener and titles | 6 | 1 | 6 | 0 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 14 | 4 | 13 | 4 |
-| Captions | 5 | 0 | 12 | 2 |
+| Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 5 |
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 3 | 2 |
@@ -5047,9 +5051,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 23 | 2 | 18 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **206** | **15** | **170** | **58** |
+| **Total** | **208** | **15** | **170** | **58** |
 
-The chapter has 206 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 208 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

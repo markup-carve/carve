@@ -563,7 +563,7 @@ Example 12 (generated)
 
 **C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
 
-**C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. A panel caption takes no number.
+**C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. C2-B-207, C2-B-208 and C2-H-149 to C2-H-151 state them. A panel caption takes no number.
 
 **C2-H-067** With `roundtrip` off the number is plain text. With it on, the number is wrapped in `<span data-carve-caption-number>`.
 
@@ -648,7 +648,105 @@ Example 14 (generated)
 
 :::
 
-**C2-H-135** The label word of a caption selects its number sequence, as in 0.1. `figure.kind` (C2-A-083) selects it only in a supplied tree whose caption has no label word.
+**C2-H-135** The label word of a caption selects its number sequence, as in 0.1 (C2-B-208, C2-H-149). `figure.kind` (C2-A-083) selects it only in a supplied tree whose caption has no label word.
+
+**C2-H-149** Each sequence key (C2-B-208) has its own count, from 1, in document order. Each caption with a mark takes the next number of the sequence of its key. The label words are not a closed list: `Figure`, `Table`, `Listing` and `Equation` have no special meaning, the block under the caption does not select the sequence, and `Fig.`, `figure` and `Figure` count apart. The number is written in place of the mark as a decimal number, and the rest of the caption is written as it stands. A caption without a mark is written as it stands and takes no number.
+
+**C2-H-150** The captions of footnote bodies take their numbers after every caption of the document body, in the order of the footnote numbers. A caption in an unused footnote definition takes none.
+
+**C2-H-151** In a supplied tree, a display `math` node that carries `numberPrefix` takes the next number of the sequence whose key is its `numberPrefix`, counted together with the captions of that key. The number is written after the math element as ` <span class="equation-number">PREFIX N</span>`. Inline math takes no number. A display math node inside a `figure` or `figure_group` whose caption has a mark takes no number of its own: the nearest such caption around it owns the number. `numberPrefix` has no source spelling, so a parsed tree holds no numbered equation, and `^ Equation #` numbers a caption.
+
+Example 26 (generated)
+
+::: compare
+
+```carve
+![a](a.png)
+^ Figure #: One
+
+![b](b.png)
+^ *Figure* #. Two # more
+
+![c](c.png)
+^ Fig. # Three
+
+![d](d.png)
+^ figure #: Four
+
+![e](e.png)
+^ Figure \#5
+```
+
+```html
+<figure>
+  <img src="a.png" alt="a">
+  <figcaption>Figure 1: One</figcaption>
+</figure>
+<figure>
+  <img src="b.png" alt="b">
+  <figcaption><strong>Figure</strong> 2. Two # more</figcaption>
+</figure>
+<figure>
+  <img src="c.png" alt="c">
+  <figcaption>Fig. 1 Three</figcaption>
+</figure>
+<figure>
+  <img src="d.png" alt="d">
+  <figcaption>figure 1: Four</figcaption>
+</figure>
+<figure>
+  <img src="e.png" alt="e">
+  <figcaption>Figure #5</figcaption>
+</figure>
+```
+
+:::
+
+Example 27 (generated)
+
+::: compare
+
+```carve
+See[^a].
+
+![a](a.png)
+^ Table #: Body
+
+[^a]: Note.
+
+    | x |
+    ^ Table #: In the note
+
+[^b]: Unused.
+
+    | y |
+    ^ Table #: Never
+```
+
+```html
+<p>See<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<figure>
+  <img src="a.png" alt="a">
+  <figcaption>Table 1: Body</figcaption>
+</figure>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>Note.</p>
+      <table>
+        <caption>Table 2: In the note</caption>
+        <tbody>
+          <tr><td>x</td></tr>
+        </tbody>
+      </table>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 ## Comments, frontmatter and definitions
 
@@ -1124,7 +1222,7 @@ One point is open.
 | Quotes, divs and their sigil forms | 7 | 0 | 1 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
 | Tables | 7 | 1 | 1 | 0 |
-| Captions and figures | 8 | 0 | 2 | 0 |
+| Captions and figures | 11 | 0 | 4 | 0 |
 | Comments, frontmatter and definitions | 4 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
@@ -1135,6 +1233,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 12 | 0 | 0 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **148** | **7** | **19** | **6** |
+| **Total** | **151** | **7** | **21** | **6** |
 
-The document has 148 clauses, 7 of them marked with the word "Exception", and 25 examples, 19 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 151 clauses, 7 of them marked with the word "Exception", and 27 examples, 21 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
