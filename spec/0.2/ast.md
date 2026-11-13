@@ -109,11 +109,11 @@ Conventions:
 
 **C2-A-032** `attrs` holds the attribute blocks attached to a node: an optional single `id`, an ordered `classes` list and `keyValues`, an ordered list of pairs. Each pair is a list of two strings, the key and its value, and the pairs stand in written order. A bare key has the empty string as its value.
 
-**C2-A-033** The tree records no order between the kinds of parts. The written order is fixed: the id, then the classes as written, then the language, then the keys as written (C2-B-076).
+**C2-A-033** The tree records no order between the kinds of parts. The written order is fixed: the id, then the classes as written, then the language, then the keys as written (C2-B-098).
 
-**C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-077).
+**C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-099, C2-B-104).
 
-**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-071, C2-I-035). A key occurs once in `keyValues`, at the place where it was first written.
+**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). A key occurs once in `keyValues`, at the place where it was first written.
 
 **C2-A-036** A reader never looks for nodes inside `keyValues`: `{type=widget}` is an ordinary attribute.
 
@@ -121,7 +121,7 @@ Conventions:
 
 **C2-A-038** `attrs.id` holds only an id the author wrote. A generated heading id is not stored there (C2-A-134).
 
-**C2-A-039** `attrs.id` is an anchor in the document. For a duplicate id the first node in document order wins, and the producer reports each later one as a diagnostic.
+**C2-A-039** `attrs.id` is an anchor in the document. For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type.
 
 ```json
 {
@@ -181,7 +181,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `comment` | block, inline | none | `form`, `value` |
 | `critic_comment` | inline | none | `value` |
 | `definition_description` | `definition_list` | blocks | none |
-| `definition_list` | block | `definition_term`, `definition_description` | `spacing` |
+| `definition_list` | block | `definition_term`, `definition_description` | none |
 | `definition_term` | `definition_list` | inlines | none |
 | `delete` | inline | inlines | none |
 | `directive` | block | blocks | `kind`, `title`?, `groupLabel`?, `tocTarget`? |
@@ -211,7 +211,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `math` | inline | none | `display`, `number`?, `value`, `numberPrefix`? |
 | `mention` | inline | none | `target`, `kind`, `label`? |
 | `non_breaking_space` | inline | none | none |
-| `paragraph` | block | inlines | `blockImage`? |
+| `paragraph` | block | inlines | `blockImage`?, `mathBlock`? |
 | `raw_block` | block | none | `format`, `value` |
 | `raw_inline` | inline | none | `format`, `value` |
 | `ruby` | inline | none | `pairs` |
@@ -241,7 +241,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-051** A list of blocks admits only content blocks. A type that exists only inside its container (`list_item`, `definition_term`, `definition_description`, `line`, the table groups, `table_row`, `table_cell`, `cell_paragraph`, `caption`, `citation`, `rubyPair`, `table_column`) is refused anywhere else.
 
-**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-062). A reader refuses one inside a container.
+**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-081). A reader refuses one inside a container.
 
 ## Blocks
 
@@ -251,7 +251,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-054** A bullet marker is `{"kind": "bullet", "char": c}` where `c` is `-` or `*`.
 
-**C2-A-055** `marker.char` is meaning: an item with the other character starts another list (C2-B-032).
+**C2-A-055** `marker.char` is meaning: an item with the other character starts another list (C2-B-035).
 
 **C2-A-056** An ordered marker has `kind: "ordered"` and may carry `style` (`1`, `a`, `A`, `i` or `I`), `delimiter` (`.` or `)`) and `start`. Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
 
@@ -259,7 +259,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-058** `marker.start` is the value of the first marker and is omitted when it is 1. A reader that meets `start: 1` drops it.
 
-**C2-A-059** `list.spacing` is `tight` or `loose` and is set when the list closes (C2-B-052). No list attribute overrides it.
+**C2-A-059** `list.spacing` is `tight` or `loose` and is set when the list closes (C2-B-062). No list attribute overrides it.
 
 **C2-A-060** A task item carries `task`, an object with `mark` and `status`. `mark` is one of the eight characters space, `x`, `_`, `-`, `/`, `!`, `>` and `?`. An authored `X` is recorded as `x`. `_` is kept as its own value, because it renders differently from the space.
 
@@ -285,7 +285,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-063** The grouping of terms and descriptions is not published. A run of terms belongs to the descriptions that follow it.
 
-**C2-A-064** A `definition_list` carries `spacing`, `tight` or `loose`. What the value means in 0.2 is open (Open, point 1).
+**C2-A-064** A `definition_list` has no `spacing` field. A renderer reads the blocks of each description (C2-B-073, C2-B-077).
 
 ### Quotes, divs and their sigil forms
 
@@ -297,7 +297,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-068** A hard-break block is not a node type and not a field. It is a `div` with the class `hardbreaks` in which every line end is a `hard_break` node. The opener form adds the class after the classes the author wrote, so it comes last in `attrs.classes`; the class form has it where it was written. The two forms give the same tree when `hardbreaks` is the last class. Which form the author wrote is in the sidecar.
 
-**C2-A-069** A line block is a `line_block` whose `children` are `line` nodes, one per line of its body in order. A `line` holds inline `children`. An empty line of the body is a `line` with no children, and it ends a stanza.
+**C2-A-069** A line block is a `line_block` whose `children` are `line` nodes, one per line of its body in order. A `line` holds inline `children`. An empty line of the body is a `line` with no children, and it ends a stanza. A line that holds only a braced comment is a `line` that holds the comment.
 
 ```json
 {
@@ -330,11 +330,11 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again.
 
-**C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-096).
+**C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-138).
 
 ### Definitions
 
-**C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-062), so no definition is moved out of a container and no position rule covers that case.
+**C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-081), so no definition is moved out of a container and no position rule covers that case.
 
 **C2-A-077** A `link_reference_definition` carries `key`, which is the folded label (C2-A-104), `namespace: "link"`, `href`, which may be the empty string, and an optional `title`.
 
@@ -342,13 +342,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-079** An `abbreviation_def` carries `key`, `namespace: "abbr"` and `expansion`.
 
-**C2-A-080** Definitions are nodes with a position, so document order decides which of two definitions wins: the first one (C2-B-066).
+**C2-A-080** Definitions are nodes with a position, so document order decides which of two definitions wins: the first one (C2-B-085).
 
 ### Figures and captions
 
 **C2-A-081** A caption is a `caption` node with block `children` and an optional inline `short`. A producer does not derive `short` from the full caption.
 
-**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-102). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption.
+**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption.
 
 **C2-A-083** A `figure` carries block `children`, an optional `caption` and an optional `kind` (`image`, `table`, `listing`, `equation` or `other`). An absent `kind` makes no claim.
 
@@ -371,7 +371,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object.
 
-**C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-126).
+**C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
@@ -385,7 +385,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
 
-**C2-A-094** A continuation row leaves no node and no field. Its fragments join the cell above with one space before the cell's inline content is read (C2-B-123), and that space is ordinary text. Where the row broke is spelling and is in the sidecar.
+**C2-A-094** A continuation row leaves no node and no field. Its fragments join the cell above with one space before the cell's inline content is read (C2-B-184), and that space is ordinary text. Where the row broke is spelling and is in the sidecar.
 
 **C2-A-095** A table has no field for the widths of a separator row, since 0.2 has no such row; no field for the kind of source content of a cell, since `cell_paragraph` says it; and no field for whether it was written as a pipe table or a delimited table, which is spelling.
 
@@ -419,7 +419,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-096** `emphasis` and `strong` nest in the order written. There is no combined token and no field for one.
 
-**C2-A-097** A replacement is a `delete` node directly followed by an `insert` node (C2-I-057). There is no `critic_substitution` node.
+**C2-A-097** A replacement is a `delete` node directly followed by an `insert` node (C2-I-062). There is no `critic_substitution` node.
 
 ```json
 {
@@ -445,7 +445,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-103** A reference use and a definition carry `key` and `namespace` together. The namespaces are `link`, `footnote`, `citation`, `abbr` and `heading`. A direct link or image carries neither.
 
-**C2-A-104** `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-074). Uses and definitions fold the same way, so two keys match when they are equal strings.
+**C2-A-104** `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-079). Uses and definitions fold the same way, so two keys match when they are equal strings.
 
 **C2-A-105** A link or image written as a reference carries the reference form in `form`: `full` for `[text][label]` and `collapsed` for `[text][]`. `form` is present exactly when `key` is. No tree field holds the reference as typed: the verbatim text is in the sidecar.
 
@@ -453,9 +453,9 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-107** On a reference use an absent `href` or `src` means unresolved, and the empty string means a destination that is empty. There is no `resolved` field.
 
-**C2-A-108** An unresolved reference is still a `link` or an `image` node, never text. It renders from its `children` (or its `alt`), its `key` and its `form`: the renderer rebuilds the source form, the content in brackets followed by `[key]` for `full` or `[]` for `collapsed`. The text as typed is not consulted; it is in the sidecar only.
+**C2-A-108** An unresolved reference is still a `link` or an `image` node, never text. It keeps its `children` (or its `alt`), its `key`, its `form` and its `attrs`. How it renders is the HTML document's rule: the brackets and the label are literal text, and the children render as they would anywhere else. A footnote reference or an inline footnote among the children is an ordinary one.
 
-**C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-076, C2-I-078). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
+**C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
 
 **C2-A-110** A trailing attribute block on a reference is ordinary `attrs`, resolved or not.
 
@@ -501,7 +501,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-124** A name without a dot is the name of an inline extension written in Carve source. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback.
 
-**C2-A-125** A `block_extension` has no source spelling, so its name is always qualified and it always carries a `fallback`.
+**C2-A-125** A `block_extension` has no source spelling, so its name is always qualified and it always carries a `fallback`. It is not part of 0.2.0: the extension scope of 0.2.0 is core nodes and `inline_extension`, and no 0.2.0 parser or extension produces a `block_extension`. The definition stands for a later version.
 
 **C2-A-126** A fallback is core content of the node's own role, block or inline, and validates as such.
 
@@ -529,11 +529,11 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-133** Results that a consumer could only get by repeating the resolution are published in the tree, beside the authored construct: footnote numbers, caption numbers, generated heading ids, resolved destinations, resolved column alignment and resolved span counts.
 
-**C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`.
+**C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`. The `headingIds` option is `off`, `keep-case`, `lower` or `ascii`, and `keep-case` is the default; with `off` no `generatedId` is produced, and an authored id stays.
 
-**C2-A-135** The root `stages` list names the resolution stages that ran: `blockImagePromotion`, `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
+**C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
-**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image` and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-109, C2-B-132). The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks.
+**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image` and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph that holds nothing but one image always has it. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
 
 **C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
 
@@ -593,7 +593,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-157** Such a node may carry `segments`, a list of ranges in the shape of `pos`, one per source piece in order.
 
-**C2-A-158** In a tree a parser built from source, only these node types may omit `pos`: `table_column` and `caption_number`, which have no source text; a `table_row`, a `table_cell`, a `cell_paragraph` and the inline nodes of a cell that a continuation row joined; the cells of a delimited table; and a `text` node merged from pieces that are not adjacent in the source. The final list is open (Open, point 2).
+**C2-A-158** In a tree a parser built from source, only these node types may omit `pos`: `table_column` and `caption_number`, which have no source text; a `table_row`, a `table_cell`, a `cell_paragraph` and the inline nodes of a cell that a continuation row joined; the cells of a delimited table; and a `text` node merged from pieces that are not adjacent in the source. The final list is open (Open, point 1).
 
 **C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `rubyPair`, `small_caps` and `block_extension` have no source spelling and are never positioned by a parser.
 
@@ -623,13 +623,13 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-170** A reader refuses a payload that does not validate against `resources/ast-schema.json`, at decode and not in a later step.
 
-**C2-A-171** A reader accepts every tree its own parser can produce at the nesting cap (C2-B-131) and refuses deeper input. It derives its bound from the cap by the worst cost per level of its own encoding.
+**C2-A-171** A reader accepts every tree its own parser can produce at the nesting cap (C2-B-190) and refuses deeper input. It derives its bound from the cap by the worst cost per level of its own encoding.
 
 ## Diagnostics
 
 **C2-A-172** A parse, a render, a write and a lint run report into one diagnostics record that sits beside the tree. Nothing in the tree marks a node as diagnosed.
 
-**C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is parse, render loss or lint, and a code belongs to one channel (C2-W-104).
+**C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is `parse`, `render-loss` or `lint`, and a code belongs to one channel (C2-W-104). The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone.
 
 **C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1. The `strictLosses` option turns render-loss entries into errors.
 
@@ -668,6 +668,8 @@ The invariants below are written so that a test can check each one on any tree a
 | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped |
 | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated |
 | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one |
+| `definition_list.spacing` | dropped |
+| `blockImagePromotion` in `stages` | dropped; `blockImage` stays as the tree has it |
 | the task status `cancelled`, in a draft tree or a 1.2 tree | `canceled` |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
@@ -681,11 +683,17 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An include directive (C2-B-108) is a block node of type `include`. It carries `path`, the path as written without its quotes; an optional `section`; and an optional `options` list of pairs, each a list of two strings, the option name and its value, in the order the writer writes them. It has no `children` and no `value`. Expanding it is the host's job, and what an unexpanded one renders is the HTML document's.
+**C2-A-181** An include directive (C2-B-156) is a block node of type `include`. It carries `path`, the path as written without its quotes; an optional `section`; and an optional `options` list of pairs, each a list of two strings, the option name and its value, in the order the writer writes them. It has no `children` and no `value`. Expanding it is the host's job, and what an unexpanded one renders is the HTML document's.
 
 **C2-A-182** An `include` node has a position like any other block: it spans the directive from its opening braces to its closing braces.
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
+
+**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node and carries `mathBlock: true`. A parser sets the mark when the paragraph closes (C2-B-158). Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
+
+**C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
+
+**C2-A-186** A parsed container is never empty: an item or a quote with nothing else holds a comment node (C2-B-136). A tree that was not parsed from source may hold a container with no children. There is no sentinel for it, and a Carve writer reports it as unspellable.
 
 ```json
 {
@@ -711,6 +719,12 @@ Definitions added (3):
 
 5. `line`: `type`, inline `children` (required), and the common fields.
 41. `include`: `type`, `path` (string, required), `section` (string), `options` (array of arrays of exactly two strings), and the common fields. It is added to the `blockNode` enum and dispatch. This item has the last number because it was added last.
+
+Added by the decisions of 2026-11-13 (3):
+
+43. `definition_list.spacing`: removed, also from `required`.
+44. `paragraph.mathBlock`: added, `const: true`, optional. The name is proposed here.
+45. `document.stages`: remove `blockImagePromotion` from the enum.
 
 Enum values renamed (1):
 
@@ -772,8 +786,7 @@ Files that follow from the schema: `resources/node-roles.json` is regenerated (t
 
 Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
 
-1. **`definition_list.spacing`.** Description lists render as on `main`: a description with one block has a bare paragraph, and one with several blocks wraps every paragraph (C2-B-061). That rule reads the blocks, not `spacing`. Options: (a) `spacing` stays an authored fact as on `main` and only a writer reads it; (b) it is derived, `loose` exactly when some description has more than one block, and becomes a resolution result outside equality; (c) the field is removed. It is settled with the HTML rendering document.
-2. **The list of synthesized node types.** C2-A-158 gives the candidates. Not settled: whether the cells of a delimited table can be positioned, and whether table groups always have a position.
-3. **The extension API and extension nodes.** How the three stages of the extension API (matcher, transform, renderer) map to `inline_extension` and `block_extension` is not stated. Known so far: the list-table pilot emits core `table` nodes because `block_extension` has no source spelling, and the citation pilot emits the core citation nodes. Options: (a) an extension may only emit core nodes and `inline_extension`; (b) a registered extension may emit qualified extension nodes with a fallback.
-4. **Block-boundary anchors and edit binding** of the annotation-range sidecar (points F2 and F3 of the tracking ticket) are deferred past 0.2.0. The draft text on `next-ast2` (CARVE-P12-062) already describes both; 0.2.0 does not require them.
-5. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.
+1. **The list of synthesized node types.** C2-A-158 gives the candidates. Not settled: whether the cells of a delimited table can be positioned, and whether table groups always have a position.
+2. **The extension API and extension nodes.** The scope of 0.2.0 is decided: an extension emits core nodes and `inline_extension`, and `block_extension` waits for a later version. How the three stages of the extension API (matcher, transform, renderer) produce those nodes is written in phase 6.
+3. **Block-boundary anchors and edit binding** of the annotation-range sidecar (points F2 and F3 of the tracking ticket) are deferred past 0.2.0. The draft text on `next-ast2` (CARVE-P12-062) already describes both; 0.2.0 does not require them.
+4. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.
