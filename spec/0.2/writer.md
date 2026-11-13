@@ -505,9 +505,9 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `unused-footnote-definition` | `Footnote definition [^${label}] is never referenced, so it is omitted from the rendered document.` | unchanged |
 | `unused-link-reference-definition` | `This link reference definition is unused.` | unchanged |
 | `markdown-strong-double-star` | `` Djot/Markdown `**strong**` is not Carve bold — Carve bold is a single `*`, so this renders with literal asterisks. `` | new message text |
-| `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is not Carve: it is literal text. Carve strikethrough is `{~text~}`. `` | new message text |
+| `markdown-strikethrough-double-tilde` | `` Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`. `` | new message text |
 | `djot-subscript-tilde-braced` | `` Djot subscript `{~x~}` renders as *strikethrough* in Carve. `` | opt-in Djot check |
-| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is `{,x,}`. `` | opt-in Djot check; new message text |
+| `djot-subscript-tilde` | `` Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`. `` | opt-in Djot check; new message text |
 | `djot-superscript-caret` | `` Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only. `` | opt-in Djot check |
 | `djot-emphasis-underscore` | `` Djot emphasis `_x_` renders as *underline* in Carve. `` | opt-in Djot check; new message text |
 | `djot-intraword-underscore` | `` Djot emphasizes this intraword `_x_`; the migration leaves it literal, so the emphasis is lost. Brace it as `{/x/}` if it was meant. `` | opt-in Djot check |

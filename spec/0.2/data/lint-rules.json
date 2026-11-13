@@ -1353,8 +1353,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "This block attribute is the whole body of a ${construct}, so nothing is emitted for it and the attribute is discarded. Give the body content, or write a comment after the marker if the body is meant to be empty.",
-        "This block attribute reaches no block - the document or the container holding it ends first - so nothing is emitted for it. Move it above the block it describes, or delete it.",
+        "This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.",
         "This attribute line is separated from its block by a blank line, so it is text. Remove the blank line."
       ],
       "message_origin": "data_file",
