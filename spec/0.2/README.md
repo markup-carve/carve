@@ -1,5 +1,7 @@
 # Carve 0.2 specification (draft)
 
+For existing documents and integrations, see [Upgrading from Carve 0.1](UPGRADING.md) and its [machine-readable upgrade map](data/upgrade-map.json).
+
 This tree holds the specification of Carve 0.2, written fresh from the 0.2 rule set instead of edited from the 0.1 text.
 It is a draft on the `next2` branch: nothing here is released. The reference engine is being built from it in `carve-js` under `v2/` on the same branch name: the block pass and the inline pass exist, the tree output and the HTML renderer are in work.
 Documents: Syntax blocks (`syntax-blocks.md`, which includes tables), Syntax inline, HTML rendering, AST 2.0, extensions (`extensions.md`), the source-layout sidecar, and Writer and fmt.

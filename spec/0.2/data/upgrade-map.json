@@ -1,0 +1,1379 @@
+{
+  "$schema": "schemas/upgrade-map.schema.json",
+  "source": [
+    {
+      "id": "U-001",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n# Heading\n",
+      "to": "Some text\n\n# Heading\n",
+      "meaning02": "<p>Some text\n# Heading</p>",
+      "toolEntry": "U-001",
+      "silent": true
+    },
+    {
+      "id": "U-002",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n> quote\n",
+      "to": "Some text\n\n> quote\n",
+      "meaning02": "<p>Some text\n&gt; quote</p>",
+      "toolEntry": "U-002",
+      "silent": true
+    },
+    {
+      "id": "U-003",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n{.x}\nNext block\n",
+      "to": "Some text\n\n{.x}\nNext block\n",
+      "meaning02": "<p>Some text\n{.x}\nNext block</p>",
+      "toolEntry": "U-003",
+      "silent": true
+    },
+    {
+      "id": "U-004",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n:: term\n: description\n",
+      "to": "Some text\n\n:: term\n: description\n",
+      "meaning02": "<p>Some text\n:: term\n: description</p>",
+      "toolEntry": "U-004",
+      "silent": true
+    },
+    {
+      "id": "U-005",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n[ref]: https://example.com\n\nSee [ref][].\n",
+      "to": "Some text\n\n[ref]: https://example.com\n\nSee [ref][].\n",
+      "meaning02": "<p>Some text\n[ref]: https://example.com</p>\n<p>See [ref][].</p>",
+      "toolEntry": "U-005",
+      "silent": true
+    },
+    {
+      "id": "U-006",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "- item text\n# Heading\n",
+      "to": "- item text\n\n# Heading\n",
+      "meaning02": "<ul>\n  <li>item text\n# Heading</li>\n</ul>",
+      "toolEntry": "U-006",
+      "silent": true
+    },
+    {
+      "id": "U-007",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "> - a\n- b\n",
+      "to": "> - a\n\n- b\n",
+      "meaning02": "<blockquote>\n  <ul>\n    <li>a\n- b</li>\n  </ul>\n</blockquote>",
+      "toolEntry": "U-007",
+      "silent": true
+    },
+    {
+      "id": "U-008",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": ":: term\n: desc\n- item\n",
+      "to": ":: term\n: desc\n\n- item\n",
+      "meaning02": "<dl>\n  <dt>term</dt>\n  <dd>desc\n- item</dd>\n</dl>",
+      "toolEntry": "U-008",
+      "silent": true
+    },
+    {
+      "id": "U-009",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "- text\n  :: term\n  : desc\n",
+      "to": "- text\n\n  :: term\n  : desc\n",
+      "meaning02": "<ul>\n  <li>text\n:: term\n: desc</li>\n</ul>",
+      "toolEntry": "U-009",
+      "silent": true
+    },
+    {
+      "id": "U-010",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "| a | b |\n^ Caption\n# Heading\n",
+      "to": "| a | b |\n^ Caption\n\n# Heading\n",
+      "meaning02": "<table>\n  <caption>Caption\n1 Heading</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-010",
+      "silent": true
+    },
+    {
+      "id": "U-011",
+      "kind": "report",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n{{ other.crv }}\n",
+      "to": "Some text\n{{ other.crv }}\n",
+      "meaning02": "<p>Some text\n{{ other.crv }}</p>",
+      "toolEntry": "U-011",
+      "silent": false
+    },
+    {
+      "id": "U-012",
+      "kind": "none",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n- item\n",
+      "to": "Some text\n- item\n",
+      "meaning02": "<p>Some text\n- item</p>",
+      "toolEntry": "U-012",
+      "silent": false
+    },
+    {
+      "id": "U-013",
+      "kind": "none",
+      "group": "paragraphs and blocks",
+      "from": "Some text\n| a | b |\n\nSome text\n```\ncode\n```\n\nSome text\n***\nmore\n",
+      "to": "Some text\n| a | b |\n\nSome text\n```\ncode\n```\n\nSome text\n***\nmore\n",
+      "meaning02": "<p>Some text</p>\n<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>Some text</p>\n<pre><code>code\n</code></pre>\n<p>Some text</p>\n<hr>\n<p>more</p>",
+      "toolEntry": "U-013",
+      "silent": false
+    },
+    {
+      "id": "U-014",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- step one\n+\n> a note\n- step two\n",
+      "to": "- step one\n\n  > a note\n- step two\n",
+      "meaning02": "<ul>\n  <li>step one\n+\n&gt; a note</li>\n  <li>step two</li>\n</ul>",
+      "toolEntry": "U-014",
+      "silent": true
+    },
+    {
+      "id": "U-015",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- a\n+\nsecond\n- b\n",
+      "to": "- a\n\n  second\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-015",
+      "silent": true
+    },
+    {
+      "id": "U-016",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "> quoted\n+\n- a list inside the quote\n",
+      "to": "> quoted\n>\n> - a list inside the quote\n",
+      "meaning02": "<blockquote><p>quoted\n+\n- a list inside the quote</p></blockquote>",
+      "toolEntry": "U-016",
+      "silent": true
+    },
+    {
+      "id": "U-017",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- +\n  ```\n  code\n  ```\n- two\n",
+      "to": "- ```\n  code\n  ```\n- two\n",
+      "meaning02": "<ul>\n  <li>+\n    <pre><code>code\n</code></pre>\n  </li>\n  <li>two</li>\n</ul>",
+      "toolEntry": "U-017",
+      "silent": true
+    },
+    {
+      "id": "U-018",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- a\n\n  second\n- b\n",
+      "to": "- a\n\n  second\n\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n    <p>second</p>\n  </li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-018",
+      "silent": true
+    },
+    {
+      "id": "U-019",
+      "kind": "report",
+      "group": "lists",
+      "from": "- # Heading\n  more\n- b\n",
+      "to": "- # Heading\n  more\n- b\n",
+      "meaning02": "<ul>\n  <li>\n    <h1 id=\"Heading\">Heading</h1>\n    <p>more</p>\n  </li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-019",
+      "silent": true
+    },
+    {
+      "id": "U-020",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "{loose}\n- a\n- b\n",
+      "to": "- a\n\n- b\n",
+      "meaning02": "<ul loose=\"\">\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-020",
+      "silent": true
+    },
+    {
+      "id": "U-021",
+      "kind": "report",
+      "group": "lists",
+      "from": "{loose}\n- Note text.\n",
+      "to": "- Note text.\n",
+      "meaning02": "<ul loose=\"\">\n  <li>Note text.</li>\n</ul>",
+      "toolEntry": "U-021",
+      "silent": true
+    },
+    {
+      "id": "U-022",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": " 9. a\n10. b\n",
+      "to": " 9. a\n10. b\n",
+      "meaning02": "<ol start=\"9\">\n  <li>a</li>\n  <li>b</li>\n</ol>",
+      "toolEntry": "U-022",
+      "silent": false
+    },
+    {
+      "id": "U-023",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- item text\n 3. child\n",
+      "to": "- item text\n3. child\n",
+      "meaning02": "<ul>\n  <li>item text\n3. child</li>\n</ul>",
+      "toolEntry": "U-023",
+      "silent": true
+    },
+    {
+      "id": "U-024",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "i) one\nj) two\n",
+      "to": "{start=9}\na) one\nb) two\n",
+      "meaning02": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol>",
+      "toolEntry": "U-024",
+      "silent": true
+    },
+    {
+      "id": "U-025",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "1234567890. x\n",
+      "to": "{start=1234567890}\n. x\n",
+      "meaning02": "<p>1234567890. x</p>",
+      "toolEntry": "U-025",
+      "silent": true
+    },
+    {
+      "id": "U-026",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- a\n%%%\nx\n%%%\n- b\n",
+      "to": "- a\n  %%%\n  x\n  %%%\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-026",
+      "silent": true
+    },
+    {
+      "id": "U-027",
+      "kind": "none",
+      "group": "lists",
+      "from": "- a\n\n\n\n- b\n",
+      "to": "- a\n\n\n\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n</ul>\n<ul>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-027",
+      "silent": false
+    },
+    {
+      "id": "U-028",
+      "kind": "none",
+      "group": "lists",
+      "from": "- one\n* two\n",
+      "to": "- one\n* two\n",
+      "meaning02": "<ul>\n  <li>one</li>\n</ul>\n<ul>\n  <li>two</li>\n</ul>",
+      "toolEntry": "U-028",
+      "silent": false
+    },
+    {
+      "id": "U-029",
+      "kind": "none",
+      "group": "lists",
+      "from": "- a\n%% c\n- b\n",
+      "to": "- a\n%% c\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-029",
+      "silent": false
+    },
+    {
+      "id": "U-030",
+      "kind": "none",
+      "group": "lists",
+      "from": "A. Smith went home.\n\nA.  one\nB.  two\n",
+      "to": "A. Smith went home.\n\nA.  one\nB.  two\n",
+      "meaning02": "<p>A. Smith went home.</p>\n<ol type=\"A\">\n  <li>one</li>\n  <li>two</li>\n</ol>",
+      "toolEntry": "U-030",
+      "silent": false
+    },
+    {
+      "id": "U-031",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "{.note}\n\nParagraph.\n",
+      "to": "{.note}\nParagraph.\n",
+      "meaning02": "<p>{.note}</p>\n<p>Paragraph.</p>",
+      "toolEntry": "U-031",
+      "silent": true
+    },
+    {
+      "id": "U-032",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "{.a\n .b}\nParagraph.\n",
+      "to": "{.a .b}\nParagraph.\n",
+      "meaning02": "<p>{.a\n.b}\nParagraph.</p>",
+      "toolEntry": "U-032",
+      "silent": true
+    },
+    {
+      "id": "U-033",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "- a\n{.x}\n- b\n",
+      "to": "- a\n\n{.x}\n- b\n",
+      "meaning02": "<ul>\n  <li>a\n{.x}</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-033",
+      "silent": true
+    },
+    {
+      "id": "U-034",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "Paragraph.\n\n{.x}\n",
+      "to": "Paragraph.\n",
+      "meaning02": "<p>Paragraph.</p>\n<p>{.x}</p>",
+      "toolEntry": "U-034",
+      "silent": true
+    },
+    {
+      "id": "U-035",
+      "kind": "none",
+      "group": "attributes",
+      "from": "{.a}{#b}\nParagraph.\n",
+      "to": "{.a}{#b}\nParagraph.\n",
+      "meaning02": "<p id=\"b\" class=\"a\">Paragraph.</p>",
+      "toolEntry": "U-035",
+      "silent": true
+    },
+    {
+      "id": "U-036",
+      "kind": "report",
+      "group": "attributes",
+      "from": "{.a #b}\nParagraph.\n\n[x]{.a #b}\n",
+      "to": "{.a #b}\nParagraph.\n\n[x]{.a #b}\n",
+      "meaning02": "<p id=\"b\" class=\"a\">Paragraph.</p>\n<p><span id=\"b\" class=\"a\">x</span></p>",
+      "toolEntry": "U-036",
+      "silent": true
+    },
+    {
+      "id": "U-037",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "```js {.x}\ncode\n```\n\n::: note {.x}\nbody\n:::\n",
+      "to": "```js\ncode\n```\n\n::: note\nbody\n:::\n",
+      "meaning02": "<pre><code class=\"language-js\">code\n</code></pre>\n<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>body</p>\n</aside>",
+      "toolEntry": "U-037",
+      "silent": false
+    },
+    {
+      "id": "U-038",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "> See [ref][].\n>\n> [ref]: https://example.com\n\nOutside [ref][].\n",
+      "to": "> See [ref][].\n\n[ref]: https://example.com\n\nOutside [ref][].\n",
+      "meaning02": "<blockquote>\n  <p>See [ref][].</p>\n  <p>[ref]: https://example.com</p>\n</blockquote>\n<p>Outside [ref][].</p>",
+      "toolEntry": "U-038",
+      "silent": true
+    },
+    {
+      "id": "U-039",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "Text [a][].\n\n [a]: /u\n",
+      "to": "Text [a][].\n\n[a]: /u\n",
+      "meaning02": "<p>Text [a][].</p>\n<p>[a]: /u</p>",
+      "toolEntry": "U-039",
+      "silent": true
+    },
+    {
+      "id": "U-040",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "[a]: /one\n[a]: /two\n\n[x][a]\n",
+      "to": "[a]: /two\n\n[x][a]\n",
+      "meaning02": "<p><a href=\"/one\">x</a></p>",
+      "toolEntry": "U-040",
+      "silent": true
+    },
+    {
+      "id": "U-041",
+      "kind": "rewrite",
+      "group": "definitions",
+      "from": "*[HTML]: First\n*[HTML]: Second\n\nHTML here.\n",
+      "to": "*[HTML]: Second\n\nHTML here.\n",
+      "meaning02": "<p><abbr title=\"First\">HTML</abbr> here.</p>",
+      "toolEntry": "U-041",
+      "silent": true
+    },
+    {
+      "id": "U-042",
+      "kind": "none",
+      "group": "definitions",
+      "from": "Text[^n].\n\n[^n]: first\n[^n]: second\n",
+      "to": "Text[^n].\n\n[^n]: first\n[^n]: second\n",
+      "meaning02": "<p>Text<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>first<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-042",
+      "silent": false
+    },
+    {
+      "id": "U-043",
+      "kind": "none",
+      "group": "headings",
+      "from": "# One\n# Two\n",
+      "to": "# One\n# Two\n",
+      "meaning02": "<section id=\"One\">\n  <h1>One</h1>\n</section>\n<section id=\"Two\">\n  <h1>Two</h1>\n</section>",
+      "toolEntry": "U-043",
+      "silent": false
+    },
+    {
+      "id": "U-044",
+      "kind": "rewrite",
+      "group": "breaks",
+      "from": "para\n\n---\n\nnext\n\n___\n\n-----\n",
+      "to": "para\n\n***\n\nnext\n\n***\n\n***\n",
+      "meaning02": "<p>para</p>\n<p>—</p>\n<p>next</p>\n<p>___</p>\n<p>—–</p>",
+      "toolEntry": "U-044",
+      "silent": true
+    },
+    {
+      "id": "U-045",
+      "kind": "rewrite",
+      "group": "breaks",
+      "from": "* * *\n\n- - -\n",
+      "to": "***\n\n***\n",
+      "meaning02": "<ul>\n  <li>\n    <ul>\n      <li>*</li>\n    </ul>\n  </li>\n</ul>\n<ul>\n  <li>\n    <ul>\n      <li>-</li>\n    </ul>\n  </li>\n</ul>",
+      "toolEntry": "U-045",
+      "silent": true
+    },
+    {
+      "id": "U-046",
+      "kind": "none",
+      "group": "breaks",
+      "from": "_ _ _\n",
+      "to": "_ _ _\n",
+      "meaning02": "<p>_ _ _</p>",
+      "toolEntry": "U-046",
+      "silent": false
+    },
+    {
+      "id": "U-047",
+      "kind": "none",
+      "group": "frontmatter",
+      "from": "--- toml\na = 1\n---\ntext\n",
+      "to": "--- toml\na = 1\n---\ntext\n",
+      "meaning02": "<p>text</p>",
+      "toolEntry": "U-047",
+      "silent": false
+    },
+    {
+      "id": "U-048",
+      "kind": "none",
+      "group": "frontmatter",
+      "from": "---markdown\na = 1\n---\ntext\n",
+      "to": "---markdown\na = 1\n---\ntext\n",
+      "meaning02": "<p>text</p>",
+      "toolEntry": "U-048",
+      "silent": false
+    },
+    {
+      "id": "U-049",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "```\ncode\n   ```\nafter\n",
+      "to": "````\ncode\n   ```\nafter\n````\n",
+      "meaning02": "<pre><code>code\n</code></pre>\n<p>after</p>",
+      "toolEntry": "U-049",
+      "silent": true
+    },
+    {
+      "id": "U-050",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "%%%\nhidden\n%%% visible?\nafter\n",
+      "to": "%%%\nhidden\nvisible?\n%%%\nafter\n",
+      "meaning02": "",
+      "toolEntry": "U-050",
+      "silent": true
+    },
+    {
+      "id": "U-051",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "```js My Title\ncode\n```\n\n::: note My Title\nbody\n:::\n",
+      "to": "```js\ncode\n```\n\n::: note\nbody\n:::\n",
+      "meaning02": "<pre><code class=\"language-js\">code\n</code></pre>\n<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>body</p>\n</aside>",
+      "toolEntry": "U-051",
+      "silent": false
+    },
+    {
+      "id": "U-052",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "::: |\none\n%% hidden\ntwo\n:::\n",
+      "to": "::: |\none\n{% hidden %}\ntwo\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>one<br>\n%% hidden<br>\ntwo</p>\n</div>",
+      "toolEntry": "U-052",
+      "silent": true
+    },
+    {
+      "id": "U-053",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "- item\n\n\t```\n\tx\n\t\ty\n\t```\n",
+      "to": "- item\n\n\t```\n\tx\n\t    y\n\t```\n",
+      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul>",
+      "toolEntry": "U-053",
+      "silent": true
+    },
+    {
+      "id": "U-054",
+      "kind": "none",
+      "group": "fences, quotes, comments",
+      "from": "{title=\"T\"}\n```js\ncode\n```\n",
+      "to": "{title=\"T\"}\n```js\ncode\n```\n",
+      "meaning02": "<pre title=\"T\"><code class=\"language-js\">code\n</code></pre>",
+      "toolEntry": "U-054",
+      "silent": false
+    },
+    {
+      "id": "U-055",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "| a | b |\n|---|--:|\n| 1 | 2 |\n",
+      "to": "|= a |={>} b |\n| 1 | 2 |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>—</td><td>–:</td></tr>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-055",
+      "silent": true
+    },
+    {
+      "id": "U-056",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "|=< a |=> b |=~ c |\n| 1 | 2 | 3 |\n",
+      "to": "|={<} a |={>} b |={~} c |\n| 1 | 2 | 3 |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">&lt; a</th><th scope=\"col\">&gt; b</th><th scope=\"col\">~ c</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td><td>2</td><td>3</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-056",
+      "silent": true
+    },
+    {
+      "id": "U-057",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "| a | b \\|\n",
+      "to": "| a | b \\| |\n",
+      "meaning02": "<p>| a | b |</p>",
+      "toolEntry": "U-057",
+      "silent": true
+    },
+    {
+      "id": "U-058",
+      "kind": "rewrite",
+      "group": "tables",
+      "from": "{header-rows=1}\n| a | b |\n| 1 | 2 |\n",
+      "to": "|= a |= b |\n| 1 | 2 |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>1</td><td>2</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-058",
+      "silent": true
+    },
+    {
+      "id": "U-059",
+      "kind": "report",
+      "group": "tables",
+      "from": "{footer-rows=1}\n|= a |= b |\n",
+      "to": "{footer-rows=1}\n|= a |= b |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+      "toolEntry": "U-059",
+      "silent": true
+    },
+    {
+      "id": "U-060",
+      "kind": "report",
+      "group": "tables",
+      "from": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
+      "to": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td></td><td>2</td></tr>\n    <tr><td>3</td><td>4</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-060",
+      "silent": true
+    },
+    {
+      "id": "U-061",
+      "kind": "report",
+      "group": "tables",
+      "from": "{table}\n```csv\na,\"b\nc,d\n```\n",
+      "to": "{table}\n```csv\na,\"b\nc,d\n```\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b\nc,d</th></tr>\n  </thead>\n</table>",
+      "toolEntry": "U-061",
+      "silent": true
+    },
+    {
+      "id": "U-062",
+      "kind": "none",
+      "group": "tables",
+      "from": "| a | b\n| c | d\n",
+      "to": "| a | b\n| c | d\n",
+      "meaning02": "<p>| a | b\n| c | d</p>",
+      "toolEntry": "U-062",
+      "silent": false
+    },
+    {
+      "id": "U-063",
+      "kind": "rewrite",
+      "group": "captions",
+      "from": "| a | b |\n\n^ Caption\n",
+      "to": "| a | b |\n^ Caption\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>\n<p>^ Caption</p>",
+      "toolEntry": "U-063",
+      "silent": true
+    },
+    {
+      "id": "U-064",
+      "kind": "none",
+      "group": "captions",
+      "from": "```js\nlet x = 1\n```\n^ Listing one\n",
+      "to": "```js\nlet x = 1\n```\n^ Listing one\n",
+      "meaning02": "<figure>\n  <pre><code class=\"language-js\">let x = 1\n</code></pre>\n  <figcaption>Listing one</figcaption>\n</figure>",
+      "toolEntry": "U-064",
+      "silent": false
+    },
+    {
+      "id": "U-065",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "an _underlined_ word and snake_case and _id\n",
+      "to": "an {_underlined_} word and snake_case and _id\n",
+      "meaning02": "<p>an _underlined_ word and snake_case and _id</p>",
+      "toolEntry": "U-065",
+      "silent": true
+    },
+    {
+      "id": "U-066",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "a ~struck~ word and ~/config\n",
+      "to": "a {~struck~} word and ~/config\n",
+      "meaning02": "<p>a ~struck~ word and ~/config</p>",
+      "toolEntry": "U-066",
+      "silent": true
+    },
+    {
+      "id": "U-067",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "a =marked= word and x =1, y= 2\n",
+      "to": "a {=marked=} word and x {=1, y=} 2\n",
+      "meaning02": "<p>a =marked= word and x =1, y= 2</p>",
+      "toolEntry": "U-067",
+      "silent": true
+    },
+    {
+      "id": "U-068",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "/*bold italic*/ and */bold italic/*\n",
+      "to": "*/bold italic/* and */bold italic/*\n",
+      "meaning02": "<p><em><strong>bold italic</strong></em> and <strong><em>bold italic</em></strong></p>",
+      "toolEntry": "U-068",
+      "silent": true
+    },
+    {
+      "id": "U-069",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "{~old~>new~}\n",
+      "to": "{-old-}{+new+}\n",
+      "meaning02": "<p><s>old~&gt;new</s></p>",
+      "toolEntry": "U-069",
+      "silent": true
+    },
+    {
+      "id": "U-070",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "*bold {/note*/} more*\n",
+      "to": "*bold {/note\\*/} more*\n",
+      "meaning02": "<p><strong>bold {/note</strong>/} more*</p>",
+      "toolEntry": "U-070",
+      "silent": true
+    },
+    {
+      "id": "U-071",
+      "kind": "rewrite",
+      "group": "inline emphasis and typography",
+      "from": "said 'Bob and left.\n",
+      "to": "said ’Bob and left.\n",
+      "meaning02": "<p>said ‘Bob and left.</p>",
+      "toolEntry": "U-071",
+      "silent": true
+    },
+    {
+      "id": "U-072",
+      "kind": "report",
+      "group": "inline emphasis and typography",
+      "from": "a*{#b} c #}\n",
+      "to": "a*{#b} c #}\n",
+      "meaning02": "<p>a*{#b} c #}</p>",
+      "toolEntry": "U-072",
+      "silent": true
+    },
+    {
+      "id": "U-073",
+      "kind": "report",
+      "group": "inline emphasis and typography",
+      "from": "see config:items[0] and :smile: and x:smile:\n",
+      "to": "see config:items[0] and :smile: and x:smile:\n",
+      "meaning02": "<p>see config:items[0] and :smile: and x:smile:</p>",
+      "toolEntry": "U-073",
+      "silent": true
+    },
+    {
+      "id": "U-074",
+      "kind": "none",
+      "group": "inline emphasis and typography",
+      "from": "***bold italic*** here\n",
+      "to": "***bold italic*** here\n",
+      "meaning02": "<p>***bold italic*** here</p>",
+      "toolEntry": "U-074",
+      "silent": false
+    },
+    {
+      "id": "U-075",
+      "kind": "none",
+      "group": "references and footnotes",
+      "from": "See [^n](/u).\n\n[^n]: Note.\n",
+      "to": "See [^n](/u).\n\n[^n]: Note.\n",
+      "meaning02": "<p>See <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>(/u).</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Note.<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-075",
+      "silent": false
+    },
+    {
+      "id": "U-076",
+      "kind": "report",
+      "group": "HTML",
+      "from": "```=html\n<b>x</b>\n```\n",
+      "to": "```=html\n<b>x</b>\n```\n",
+      "meaning02": "<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>",
+      "toolEntry": "U-076",
+      "silent": true
+    },
+    {
+      "id": "U-077",
+      "kind": "report",
+      "group": "HTML",
+      "from": "a `<b>x</b>`{=html} b\n",
+      "to": "a `<b>x</b>`{=html} b\n",
+      "meaning02": "<p>a &lt;b&gt;x&lt;/b&gt; b</p>",
+      "toolEntry": "U-077",
+      "silent": true
+    },
+    {
+      "id": "U-078",
+      "kind": "none",
+      "group": "HTML",
+      "from": "a <b>bold</b> tag\n",
+      "to": "a <b>bold</b> tag\n",
+      "meaning02": "<p>a &lt;b&gt;bold&lt;/b&gt; tag</p>",
+      "toolEntry": "U-078",
+      "silent": false
+    },
+    {
+      "id": "U-079",
+      "kind": "report",
+      "group": "host options",
+      "from": "(host render options)",
+      "to": "(review host options)",
+      "meaning02": "(depends on host options)",
+      "toolEntry": "U-079",
+      "silent": false
+    },
+    {
+      "id": "U-101",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "= 4 is the answer\nand more.\n",
+      "to": "\\= 4 is the answer\nand more.\n",
+      "meaning02": "<section id=\"s-4-is-the-answer\">\n  <h1>4 is the answer</h1>\n  <p>and more.</p>\n</section>",
+      "toolEntry": "U-101",
+      "silent": true
+    },
+    {
+      "id": "U-102",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "# Heading\n  indented text\n",
+      "to": "# Heading\nindented text\n",
+      "meaning02": "<section id=\"Heading-indented-text\">\n  <h1>Heading\nindented text</h1>\n</section>",
+      "toolEntry": "U-102",
+      "silent": true
+    },
+    {
+      "id": "U-103",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "a. one\nb. two\n",
+      "to": "a\\. one\nb. two\n",
+      "meaning02": "<ol type=\"a\">\n  <li>one</li>\n  <li>two</li>\n</ol>",
+      "toolEntry": "U-103",
+      "silent": true
+    },
+    {
+      "id": "U-104",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "::: > \"T\"\nquoted\n:::\n",
+      "to": "\\::: > \"T\"\nquoted\n:::\n",
+      "meaning02": "<blockquote><p>quoted</p></blockquote>",
+      "toolEntry": "U-104",
+      "silent": true
+    },
+    {
+      "id": "U-105",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "```=html \"T\"\n<b>x</b>\n```\n",
+      "to": "{%%}```=html \"T\"\n<b>x</b>\n```\n",
+      "meaning02": "<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>",
+      "toolEntry": "U-105",
+      "silent": true
+    },
+    {
+      "id": "U-106",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": ":: term\nmore term text\n: first description\n",
+      "to": ":: term\n\nmore term text\n: first description\n",
+      "meaning02": "<dl>\n  <dt>term\nmore term text</dt>\n  <dd>first description</dd>\n</dl>",
+      "toolEntry": "U-106",
+      "silent": true
+    },
+    {
+      "id": "U-107",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "| a | b |\n^ first\n^ second\n",
+      "to": "| a | b |\n^ first\n\n^ second\n",
+      "meaning02": "<table>\n  <caption>first\n^ second</caption>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-107",
+      "silent": true
+    },
+    {
+      "id": "U-108",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "| a | b | {.r}\n",
+      "to": "| a | b | \\{.r}\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr class=\"r\"><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-108",
+      "silent": true
+    },
+    {
+      "id": "U-109",
+      "kind": "escape",
+      "group": "new block shapes",
+      "from": "- item\n\n second paragraph\n",
+      "to": "- item\n\nsecond paragraph\n",
+      "meaning02": "<ul>\n  <li>item\n    <p>second paragraph</p>\n  </li>\n</ul>",
+      "toolEntry": "U-109",
+      "silent": true
+    },
+    {
+      "id": "U-110",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "# My Heading\n\nSee [My Heading][] and [the text][My Heading].\n",
+      "to": "# My Heading\n\nSee [My Heading][] and \\[the text][My Heading].\n",
+      "meaning02": "<section id=\"My-Heading\">\n  <h1>My Heading</h1>\n  <p>See <a href=\"#My-Heading\">My Heading</a> and <a href=\"#My-Heading\">the text</a>.</p>\n</section>",
+      "toolEntry": "U-110",
+      "silent": true
+    },
+    {
+      "id": "U-111",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [the text][a long\nlabel] here.\n\n[a long label]: /u\n",
+      "to": "See \\[the text][a long\nlabel] here.\n\n[a long label]: /u\n",
+      "meaning02": "<p>See <a href=\"/u\">the text</a> here.</p>",
+      "toolEntry": "U-111",
+      "silent": true
+    },
+    {
+      "id": "U-112",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [x][^n].\n\n[^n]: Note.\n",
+      "to": "See [x]\\[^n].\n\n[^n]: Note.\n",
+      "meaning02": "<p>See [x]<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>.</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>Note.<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-112",
+      "silent": true
+    },
+    {
+      "id": "U-113",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "See [*b* and /i/][nope] and [`c`][].\n",
+      "to": "See [\\*b\\* and \\/i\\/][nope] and [\\`c\\`][].\n",
+      "meaning02": "<p>See [<strong>b</strong> and <em>i</em>][nope] and [<code>c</code>][].</p>",
+      "toolEntry": "U-113",
+      "silent": true
+    },
+    {
+      "id": "U-114",
+      "kind": "none",
+      "group": "new inline shapes",
+      "from": ". first\n. second\n",
+      "to": ". first\n. second\n",
+      "meaning02": "<ol>\n  <li>first</li>\n  <li>second</li>\n</ol>",
+      "toolEntry": "U-114",
+      "silent": false
+    },
+    {
+      "id": "U-115",
+      "kind": "escape",
+      "group": "new inline shapes",
+      "from": "a{--}b and --flag\n",
+      "to": "a--b and -\\-flag\n",
+      "meaning02": "<p>a{–}b and –flag</p>",
+      "toolEntry": "U-115",
+      "silent": true
+    },
+    {
+      "id": "U-116",
+      "kind": "rewrite",
+      "group": "later rulings",
+      "from": "~~~js\nx\n~~~\n",
+      "to": "```js\nx\n```\n",
+      "meaning02": "<p>~~~js\nx\n~~~</p>",
+      "toolEntry": "U-116",
+      "silent": true
+    },
+    {
+      "id": "U-117",
+      "kind": "rewrite",
+      "group": "later rulings",
+      "from": "- [ ] a\n- b\n",
+      "to": "- [ ] a\n\n\n\n- b\n",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\"><input type=\"checkbox\" disabled aria-label=\"a\"> a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-117",
+      "silent": true
+    },
+    {
+      "id": "U-118",
+      "kind": "none",
+      "group": "later rulings",
+      "from": "II. Background\n",
+      "to": "II. Background\n",
+      "meaning02": "<p>II. Background</p>",
+      "toolEntry": "U-118",
+      "silent": false
+    },
+    {
+      "id": "U-119",
+      "kind": "none",
+      "group": "later rulings",
+      "from": "  - a\n- b\n",
+      "to": "  - a\n- b\n",
+      "meaning02": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
+      "toolEntry": "U-119",
+      "silent": false
+    }
+  ],
+  "tree": [
+    {
+      "id": "T-001",
+      "kind": "split",
+      "from": "`critic_substitution` with `old` and `new`",
+      "to": "a `delete` holding `old`, directly followed by an `insert` holding `new`",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-002",
+      "kind": "merge",
+      "from": "`escaped_text`",
+      "to": "`text` with the same `value`, then coalesced with its neighbors",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-003",
+      "kind": "merge",
+      "from": "`cell_wrap`",
+      "to": "a `text` node holding one space, then coalesced",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-004",
+      "kind": "drop",
+      "from": "`cellWraps` on `code`, `math` and `raw_inline`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-005",
+      "kind": "move",
+      "from": "`rawRef`",
+      "to": "dropped; `refForm` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-006",
+      "kind": "merge",
+      "from": "`key` on definitions and footnote references",
+      "to": "folded",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-007",
+      "kind": "merge",
+      "from": "`attrs.order` and the `keyValues` object",
+      "to": "`keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-008",
+      "kind": "move",
+      "from": "an `image` in a list of blocks",
+      "to": "a `paragraph` with `role: \"image\"` that holds the image",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-009",
+      "kind": "split",
+      "from": "a `line_block` with block children",
+      "to": "`line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-010",
+      "kind": "move",
+      "from": "a heading id in `attrs.id`",
+      "to": "kept as an authored id: the draft tree does not say which ids were generated",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-011",
+      "kind": "move",
+      "from": "`marker.bare`, `block_quote.fenced`, `table.sourceFormat`",
+      "to": "dropped from the tree; written to a source-layout sidecar when the caller asks for one",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-012",
+      "kind": "drop",
+      "from": "`definition_list.spacing`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-013",
+      "kind": "drop",
+      "from": "`blockImagePromotion` in `stages`",
+      "to": "dropped; `role: \"image\"` stays as the tree has it",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-014",
+      "kind": "drop",
+      "from": "the task status `cancelled`, in a draft tree or a 1.2 tree",
+      "to": "removed; status derives from the mark",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-015",
+      "kind": "rename",
+      "from": "`link.form` and `image.form`",
+      "to": "`refForm`; the name identifies reference spelling rather than xref display.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-016",
+      "kind": "rename",
+      "from": "`xref.form`",
+      "to": "`display`; the name identifies generated display text rather than reference spelling.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-017",
+      "kind": "rename",
+      "from": "`link_reference_definition.title`",
+      "to": "`tooltip`; all link target strings use one name, while visible titles stay inline lists.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-018",
+      "kind": "merge",
+      "from": "`paragraph.blockImage` and `paragraph.blockMath`",
+      "to": "`role: \"image\"` and `role: \"math\"`; one field makes the two exclusive.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-019",
+      "kind": "rename",
+      "from": "`rubyPair`",
+      "to": "`ruby_pair`; the type follows snake_case and carries common node fields.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-020",
+      "kind": "rename",
+      "from": "`citation.suppressAuthor`",
+      "to": "`citation.mode: \"suppress-author\"`; one field determines the mode.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-021",
+      "kind": "drop",
+      "from": "`citation_group.mode`",
+      "to": "removed; every item carries its own mode.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-022",
+      "kind": "merge",
+      "from": "`citation.locatorLabel` and `citation.locatorValue`",
+      "to": "`locator` object with label and inline children; its parts cannot disagree.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-023",
+      "kind": "drop",
+      "from": "`task.status`",
+      "to": "removed; the state derives from `task.mark`.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-024",
+      "kind": "rename",
+      "from": "`include.options` string pairs",
+      "to": "decoded typed option object; source quoting moves to layout.",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-025",
+      "kind": "drop",
+      "from": "`thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic`",
+      "to": "dropped",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-026",
+      "kind": "move",
+      "from": "a definition inside a container",
+      "to": "not produced by the draft, which moves it to the document; no change",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-027",
+      "kind": "move",
+      "from": "a named `admonition` whose `kind` is not one of the eight admonition names",
+      "to": "a `div` with the name as its first class",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-028",
+      "kind": "version",
+      "from": "1.x bare document or envelope",
+      "to": "document.astVersion = \"2.0\" and matching envelope.astVersion; reject other major versions",
+      "migrationRule": "C2-A-012 C2-A-176 C2-A-177",
+      "silent": false
+    },
+    {
+      "id": "T-029",
+      "kind": "add",
+      "from": "common node fields",
+      "to": "optional typed metadata, opaque data, dir, lang and segments; only declared child slots contain nodes",
+      "migrationRule": "C2-A-027 C2-A-189",
+      "silent": false
+    },
+    {
+      "id": "T-030",
+      "kind": "rename",
+      "from": "definition/ref label or abbr",
+      "to": "key plus namespace; abbreviation.abbr becomes key",
+      "migrationRule": "C2-A-050 C2-A-070",
+      "silent": false
+    },
+    {
+      "id": "T-031",
+      "kind": "rename",
+      "from": "code_block.content, header and label",
+      "to": "value, syntax, title and groupLabel; code_block language is syntax",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-032",
+      "kind": "rename",
+      "from": "frontmatter/raw_block/raw_inline/literal_inline/math content; critic_comment.text",
+      "to": "value",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-033",
+      "kind": "split",
+      "from": "comment block, delimited and content",
+      "to": "form and value",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-034",
+      "kind": "merge",
+      "from": "list ordered, start, olType, delim, bareMarker, bulletChar; tight",
+      "to": "marker object; spacing = tight or loose",
+      "migrationRule": "C2-A-053 C2-A-054",
+      "silent": false
+    },
+    {
+      "id": "T-035",
+      "kind": "rename",
+      "from": "list.items, definition_list.items, table.rows, table_row.cells, citation_group.items",
+      "to": "children with typed child slots",
+      "migrationRule": "C2-A-050 C2-A-051",
+      "silent": false
+    },
+    {
+      "id": "T-036",
+      "kind": "split",
+      "from": "table.rows and rowGroups",
+      "to": "table_head, table_body, table_foot children; table columns move to table_column nodes",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-037",
+      "kind": "split",
+      "from": "table_cell inline children and blocks",
+      "to": "cell_paragraph child for inline content; block children for other content",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-038",
+      "kind": "rename",
+      "from": "figure.target and shortCaption",
+      "to": "figure.kind and caption.short",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-039",
+      "kind": "rename",
+      "from": "mention.user",
+      "to": "target, kind and optional label",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-040",
+      "kind": "rename",
+      "from": "inline_footnote.inline",
+      "to": "children",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-041",
+      "kind": "rename",
+      "from": "inline_extension.content",
+      "to": "children; declared props, slots, fallback, payload and resourceIds",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-042",
+      "kind": "rename",
+      "from": "heading_ref",
+      "to": "xref with key, namespace, href and display",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-043",
+      "kind": "split",
+      "from": "substitution or critic_substitution",
+      "to": "delete followed by insert",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-044",
+      "kind": "add",
+      "from": "image alt and target fields",
+      "to": "optional decorative, longDescription, targetKind and resourceId",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-045",
+      "kind": "add",
+      "from": "table cell accessibility",
+      "to": "optional scope and headerIds",
+      "migrationRule": "C2-A-050",
+      "silent": false
+    },
+    {
+      "id": "T-046",
+      "kind": "add",
+      "from": "resolution outputs",
+      "to": "generatedId, number, resolvedAlign, href or src, display and table span counts remain in resolved tree",
+      "migrationRule": "C2-A-106 C2-A-162",
+      "silent": false
+    },
+    {
+      "id": "T-047",
+      "kind": "move",
+      "from": "source spelling and physical layout",
+      "to": "source-layout record from parseWithLayout; marker, fences, wraps, whitespace and quote choices",
+      "migrationRule": "C2-L-003",
+      "silent": false
+    },
+    {
+      "id": "T-048",
+      "kind": "drop",
+      "from": "0.1 rawRef, sourceFormat and layout-only fields",
+      "to": "use semantic fields; original spelling is unavailable without source/layout",
+      "migrationRule": "C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-049",
+      "kind": "add",
+      "from": "include directive",
+      "to": "include with path, section and typed options; no expansion in core tree",
+      "migrationRule": "C2-A-181",
+      "silent": false
+    }
+  ]
+}

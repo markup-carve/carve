@@ -50,6 +50,7 @@ const FILES = {
   'table-marks': { span_marks: ['mark', 'mark'], alignment_marks: ['mark', 'mark'], attributes: ['name', 'name'] },
   'url-policy': { probe_removes: ['name', 'name'], dropped_attributes: ['name', 'name'], url_list_attributes: ['name', 'name'], style_patterns: ['text', 'text'], profiles: ['name', 'name'] },
   'task-states': { states: ['char', 'char'] },
+  'upgrade-map': { source: ['id', 'id'], tree: ['id', 'id'] },
 }
 
 const errors = []
@@ -236,6 +237,22 @@ for (const row of data['inline-braces']?.order ?? []) {
 for (const atom of data['inline-scan']?.never_fail ?? []) need(atoms, atom, 'inline-scan.json never_fail', 'row of inline-atoms.json')
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
+
+// The non-normative guide and the machine-readable map must enumerate the same changes.
+const guidePath = join(root, 'spec/0.2/UPGRADING.md')
+if (!existsSync(guidePath)) fail('UPGRADING.md: guide is missing')
+else {
+  const guide = readFileSync(guidePath, 'utf8')
+  const listed = [...guide.matchAll(/^\| (U-\d{3}|T-\d{3}) \|/gm)].map(match => match[1])
+  const expected = [...(data['upgrade-map']?.source ?? []), ...(data['upgrade-map']?.tree ?? [])].map(row => row.id)
+  const seen = new Set()
+  for (const id of listed) {
+    if (seen.has(id)) fail(`UPGRADING.md: ${id} appears in more than one table row`)
+    seen.add(id)
+    if (!expected.includes(id)) fail(`UPGRADING.md: ${id} is absent from upgrade-map.json`)
+  }
+  for (const id of expected) if (!seen.has(id)) fail(`UPGRADING.md: missing table row ${id}`)
+}
 
 console.log(`Documents: ${sources.join('; ')}`)
 console.log(`Clauses defined: ${defined.size}. Clauses cited by a data row: ${cited.size}.`)
