@@ -251,13 +251,15 @@ Written:
 
 ## Escaping
 
-**C2-W-088** The escapes of a text are found by one procedure. The text is written bare and parsed in its context. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A backslash this procedure does not place is a defect, and so is a missing one.
+**C2-W-088** The escapes of a text are found by one procedure. The text is written bare and parsed in its context. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A backslash this procedure does not place is a defect, and so is a missing one; C2-W-125 names the few it adds.
 
 **C2-W-089** The writer decides an escape by reparsing the candidate line in its context, with the 0.2 parser, and not from a list of characters. The lists below name the cases the test has to cover. They are not the rule. This is requirement W2.
 
-**C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text.
+**C2-W-090** The unit of an escape is the opener: where a construct opens on a run of characters, the escape is placed so that the whole run reads as text. The backslash stands before the first ASCII punctuation character of the construct, with two exceptions. In a hyphen run it stands before the second hyphen (C2-W-099), or before the first when the second starts a dash that the tree holds. In a sigil glued to a bracket or a backtick (`![`, `^[`, `!` or `$` before a backtick) it stands before the bracket or the backtick, or before the sigil when the bracket or backtick opens a construct that the tree holds.
 
 **C2-W-091** The procedure gives one form for each tree. It can hold an escape that a later one makes needless, and it does not go back to take one out. The text `x<a:b>=}` is written `x\<a:b\>=}`: bare, `<a:b>` reads as an autolink, so `<` is escaped; then `>=` reads as the comparison sign (C2-I-117), so `>` is escaped. The escape of `>` alone would have stopped both, and still the form with two is the canonical one. The text `x(/u)(/u)/` is written `x(\/u)(\/u)/`: bare, the third and fourth slash pair, so the third is escaped; then the first and fourth pair, so the first is escaped. An engine may find the same form with fewer parses, as long as the form is the same. For a tree from a parse the procedure keeps the tree. For a supplied tree it may not: the writer compares the parse of its finished form with the tree and reports each node that did not read back as a loss (C2-W-011, C2-W-124).
+
+**C2-W-125** The procedure of C2-W-088 can end while a node of the tree has not formed, because a character that opens nothing in the bare text keeps it from forming. The writer then places one backslash more, and these are the only cases. A bare opening brace that reads on into a later construct of the tree gets the backslash: `x\{#a` for the text `x{` and a tag, `x *\{*` for a strong `{`. Where the right neighbor decides the direction of a smart quote of the tree, the neighbor gets it: `x/"\]` for a left double quote before `]`. Where a sigil stands before the bracket of a footnote reference of the tree, the sigil gets it: `x\^[^[]`. Where a hyphen run starts with a dash of the tree and ends in text, the first hyphen behind the dash gets it: `x--\-` for an en dash and a hyphen. A form with these backslashes is the canonical one, and C2-W-088 does not call them defects.
 
 **C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
 
@@ -795,9 +797,9 @@ One point is open.
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 15 | 1 | 0 | 0 |
 | The sidecar | 5 | 0 | 0 | 0 |
-| Escaping | 13 | 0 | 1 | 0 |
+| Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **122** | **4** | **5** | **2** |
+| **Total** | **123** | **4** | **5** | **2** |
 
-The document has 122 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 123 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
