@@ -39,17 +39,19 @@
           "prefix": { "type": "string", "description": "A character glued before the opening bracket." },
           "glued_after": {
             "enum": ["attribute_block", "link_tail", "[label]", "[]", "anything_else"],
-            "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct, is plain text and bounds nothing."
+            "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct when no definition matches, is plain text and bounds nothing."
           },
           "glued_after_any": {
             "type": "array",
             "items": {
               "enum": ["attribute_block", "link_tail", "[label]", "[]", "anything_else"],
-              "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct, is plain text and bounds nothing."
+              "description": "What is glued to the closing bracket. `anything_else`: the pair forms no construct when no definition matches, is plain text and bounds nothing."
             },
             "uniqueItems": true,
             "description": "Any one of these."
           },
+          "condition": { "enum": ["defined_folded_content"], "description": "The folded pair content matches a link definition anywhere in the document." },
+          "or_condition": { "enum": ["defined_folded_content"], "description": "This condition forms the construct even without one of the glued tails." },
           "content_min": { "type": "integer", "minimum": 0, "description": "The lowest count of content characters." },
           "nests_in_itself": {
             "type": "boolean",

@@ -263,7 +263,7 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** This replaces the earlier draft dependence on a stylesheet rule. A task item carries the base class `task` and `style="list-style: none"`, so its bullet is never shown. An authored `style` follows the declaration after `; `. It starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text of its direct paragraph and heading children. A list with a task item carries class `task-list`; its other items are plain `<li>` elements.
+**C2-H-032** A task item carries the base class `task`. In a bullet list it also carries `style="list-style: none"`, so its bullet is never shown. In an ordered list the number remains visible and the item has no generated style declaration. An authored `style` follows the generated declaration after `; ` where there is one. The item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text of its direct paragraph and heading children. A `<ul>` or `<ol>` with a task item carries class `task-list`; its other items are plain `<li>` elements. The ordered list's `start` and `type` attributes follow C2-H-030.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -953,7 +953,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **Exception C2-H-084** An image reference never resolves against the headings (C2-I-083).
 
-**C2-H-085** An unresolved reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: "full"` or `[]` for `refForm: "collapsed"`. An image adds `!` and uses its `alt` as text. No source form is rebuilt for the children. A footnote reference or inline footnote among them keeps its ordinary meaning.
+**C2-H-085** An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: "full"` or `[]` for `refForm: "collapsed"`. An image adds `!` and uses its `alt` as text. No source form is rebuilt for the children. A footnote reference or inline footnote among them keeps its ordinary meaning. A shortcut of parsed source has a matching definition and never reaches this rule (C2-I-125).
 
 **C2-H-086** An unresolved footnote reference renders as the text `[^key]`, and an unresolved cross-reference as the text `</#key>`. A footnote reference or an inline footnote inside an unresolved reference is an ordinary one: it takes its number and makes its note.
 
@@ -1160,6 +1160,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-generated-id` | `<section>` or heading | the heading id was generated | stays |
 | `data-carve-ref` | `<a>`, `<img>` | the key of a reference | stays; its value is the folded `key` |
 | `data-carve-ref-collapsed` | `<a>`, `<img>` | the reference was written in the collapsed form | new in 0.2 (C2-H-140) |
+| `data-carve-ref-shortcut` | `<a>`, `<img>` | the reference was written in the shortcut form | new in 0.2 (C2-H-140) |
 | `data-carve-autolink` | `<a>` | the link is an autolink | stays |
 | `data-carve-footnote-label` | the reference `<a>`, the note `<li>` | the footnote key | stays |
 | `data-carve-inline-footnote` | the note `<li>` | the note is an inline footnote | stays |
@@ -1234,7 +1235,7 @@ in
 
 **C2-H-138** `data-carve-tight` is written on every tight list, with no test on its items.
 
-**C2-H-140** Under `roundtrip` a resolved reference written in the collapsed form carries the presence carrier `data-carve-ref-collapsed` beside `data-carve-ref`. A reference in the full form carries `data-carve-ref` alone.
+**C2-H-140** Under `roundtrip` a resolved reference written in the collapsed form carries the presence carrier `data-carve-ref-collapsed` beside `data-carve-ref`. A reference in the full form carries `data-carve-ref` alone. A shortcut reference carries the presence carrier `data-carve-ref-shortcut` beside `data-carve-ref`.
 
 ## Options
 

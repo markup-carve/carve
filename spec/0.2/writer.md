@@ -213,7 +213,7 @@ Written:
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
-**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022), without spaces and tabs at the end of a line of it (C2-W-022), when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed` (C2-L-040). A key that starts with a caret or an at-sign is written with one space before it inside the brackets, since a label whose first character is one of them is no reference label (C2-I-078) and the space folds away (C2-I-079).
+**C2-W-075** A reference is written with the verbatim text the sidecar records (C2-L-022), without spaces and tabs at the end of a line of it (C2-W-022), when reading that text gives the node the tree holds: the same content, the same `key` and the same form (C2-L-006). Otherwise it is written from the tree: its content, then `[key]` for the form `full` or `[]` for the form `collapsed`, and no label tail for the form `shortcut` (C2-L-040). A key that starts with a caret or an at-sign is written with one space before it inside the label brackets, since a label whose first character is one of them is no reference label (C2-I-078) and the space folds away (C2-I-079).
 
 **C2-W-076** An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).
 
@@ -251,11 +251,11 @@ Written:
 
 **C2-W-087** Both gates hold with and without a sidecar. `fmt` reads the sidecar of its own parse, so C2-W-003 is tested on that path.
 
-**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", and a reference is written from its key and not from `rawRef` (C2-W-084). So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
+**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", and a reference is written from its key and not from `rawRef` (C2-W-084). It keeps the reference form, including `shortcut`. So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
 
 ## Escaping
 
-**C2-W-088** The escapes of a text are found by one procedure. The text is written bare and parsed in its context. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A backslash this procedure does not place is a defect, and so is a missing one; C2-W-125 names the few it adds.
+**C2-W-088** The escapes of a text are found by one procedure. The text is written bare and parsed in its context, including the link definitions of the whole document. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A bare `[text]` that would form a shortcut because of a definition receives a backslash when the tree holds that bracket pair as text. A backslash this procedure does not place is a defect, and so is a missing one; C2-W-125 names the few it adds.
 
 **C2-W-089** The writer decides an escape by reparsing the candidate line in its context, with the 0.2 parser, and not from a list of characters. The lists below name the cases the test has to cover. They are not the rule. This is requirement W2.
 
@@ -796,14 +796,14 @@ One point is open.
 |---|---|---|---|---|
 | The writer and its two gates | 10 | 0 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 22 | 3 | 0 | 0 |
+| Layout | 23 | 3 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
-| Canonical forms: inline | 15 | 1 | 0 | 0 |
+| Canonical forms: inline | 16 | 1 | 0 | 0 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **125** | **4** | **5** | **2** |
+| **Total** | **127** | **4** | **5** | **2** |
 
-The document has 125 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 127 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

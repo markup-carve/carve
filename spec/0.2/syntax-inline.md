@@ -46,7 +46,7 @@ The atoms, each defined in its own section:
 - a link tail, which is the parenthesized destination and title glued to the closing bracket of a pair;
 - a mention, a tag and a symbol.
 
-**C2-I-006** An opening bracket is pushed on the bracket stack. A closing bracket pairs with the nearest open one, and what is glued to the closing bracket decides the construct. A pair that forms no construct is plain text: its content is read as inline content all the same, and it bounds nothing. A closing bracket with no open bracket is text.
+**C2-I-006** An opening bracket is pushed on the bracket stack. A closing bracket pairs with the nearest open one, and what is glued to the closing bracket decides the construct. Where no glued tail forms another construct, C2-I-072 tests the pair for a defined shortcut. A pair that forms no construct is plain text: its content is read as inline content all the same, and it bounds nothing. A closing bracket with no open bracket is text.
 
 **C2-I-007** A bracket construct is settled before delimiters pair: a delimiter inside its content pairs only inside it, and a delimiter outside it pairs only outside it.
 
@@ -1083,7 +1083,7 @@ Example 58 (generated)
 
 **C2-I-064** A bracket pair with a valid attribute block glued to it is a span. Its content is inline content, and the block and every block glued behind it attach to it (C2-I-039, C2-I-040).
 
-**C2-I-065** A bracket pair followed by anything else that forms no link, image or reference is text (C2-I-006).
+**C2-I-065** A bracket pair followed by anything else that forms no link, image, span or reference is text when its folded content matches no link definition (C2-I-006, C2-I-072).
 
 Example 59 (generated)
 
@@ -1127,7 +1127,7 @@ Example 60 (generated)
 
 **Exception C2-I-071** Links do not nest: a link inside link text renders as its own content, and the outer link keeps its destination. The inner link stays a node in the tree (C2-A-111). An image and a span inside link text stay. (carried over from 0.1)
 
-**C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. There is no shortcut form: a bare `[label]` is text. A collapsed reference whose own text folds to an empty key (C2-I-079) is no reference: its brackets are text. (carried over from 0.1)
+**C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. A pair without another bracket construct glued to it is a shortcut reference when the folded source of its text is a key of a link definition in the document. A shortcut has no separate label. Without a matching definition the brackets are text, and no reference node forms. A collapsed reference whose own text folds to an empty key (C2-I-079) is no reference: its brackets are text.
 
 **C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1) C2-I-122 to C2-I-124 state the characters.
 
@@ -1248,7 +1248,7 @@ Example 108 (generated)
 
 ## Reference resolution
 
-**C2-I-075** A reference is a node whether or not its label resolves. The scan does not read the definitions.
+**C2-I-075** A full or collapsed reference is a node whether or not its label resolves. The inline scan reads the definition keys to decide whether a shortcut forms. Resolution reads the definition values later.
 
 **C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no atom, bracket, delimiter or sigil form is read in it, a code span included, and its source is its key (C2-I-079). The line comment of C2-I-077 is the one exception.
 
@@ -1260,7 +1260,7 @@ Example 108 (generated)
 
 **C2-I-080** A label may wrap: a line break with the whitespace around it folds to one space. A blank line ends the content and the label with it. A definition line stays on one line.
 
-**C2-I-081** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form.
+**C2-I-081** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form. A heading alone never forms a shortcut reference.
 
 **C2-I-082** The attributes of a link definition merge into every reference that resolves to it: the classes of the definition and of the reference add up, the definition's first, and the reference's own id and keys win over the definition's.
 
@@ -1272,7 +1272,25 @@ Example 108 (generated)
 
 **C2-I-086** A footnote reference and an inline footnote inside an unresolved reference are ordinary footnotes: each takes its number and makes its note.
 
-Example 67 (generated)
+**C2-I-125** The block pass has read every top-level link definition before the inline pass decides shortcuts. A definition anywhere in the document counts, including one after the use. The inline link tail, full reference label, collapsed reference label and glued attribute block take precedence over a shortcut. An inline footnote, inline extension, footnote reference, citation form, sigil form, task box in marker position and every other bracket construct of this chapter keep their own reading. A failed inline link tail keeps the pair as text under C2-I-069. A following footnote or citation bracket keeps the preceding pair as text under C2-I-078. A shortcut image `![text]` uses the same definition test as a shortcut link `[text]`. An unresolved shortcut does not exist.
+
+Example 109 (unverified)
+
+::: compare
+
+```carve
+[later] and ![later] and [missing]
+
+[later]: /u
+```
+
+```html
+<p><a href="/u">later</a> and <img src="/u" alt="later"> and [missing]</p>
+```
+
+:::
+
+Example 67 (unverified)
 
 ::: compare
 
@@ -1283,7 +1301,7 @@ Example 67 (generated)
 ```
 
 ```html
-<p><a href="/u" title="T">text</a> and <a href="/u" title="T">ref</a> and [ref] and <img src="/u" alt="img" title="T"></p>
+<p><a href="/u" title="T">text</a> and <a href="/u" title="T">ref</a> and <a href="/u" title="T">ref</a> and <img src="/u" alt="img" title="T"></p>
 ```
 
 :::
@@ -1733,14 +1751,16 @@ The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).
 
 ## Citations
 
-**C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key, and that no link tail and no reference label follows, forms no construct: the brackets are text and the key is read as a mention (C2-I-078, C2-I-090). With a tail or a label the pair is a link like any other (C2-I-066), so `[@a](/u)` is a link whose text holds a mention. (carried over from 0.1)
+**C2-I-101** Citations are a Tier 2 extension and have no core form. In the core, a bracket pair whose content starts with an at-sign and a key, and that no link tail and no reference label follows, forms no construct, even when a link definition matches its folded content. The brackets are text and the key is read as a mention (C2-I-078, C2-I-090). With a tail or a label the pair is a link like any other (C2-I-066), so `[@a](/u)` is a link whose text holds a mention.
 
-Example 90 (generated)
+Example 90 (unverified)
 
 ::: compare
 
 ```carve
 See [@doe2020] and [see @doe2020, p. 3; @roe].
+
+[@doe2020]: /u
 ```
 
 ```html
@@ -2086,7 +2106,7 @@ There is no fixed budget for the inline chapter.
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 1 | 4 | 0 |
 | Math spans | 2 | 0 | 2 | 0 |
-| Raw inline | 2 | 1 | 2 | 0 |
+| Raw inline | 2 | 1 | 1 | 1 |
 | Comments | 5 | 2 | 4 | 1 |
 | Attribute blocks | 15 | 2 | 6 | 5 |
 | The opening brace | 3 | 1 | 3 | 1 |
@@ -2094,20 +2114,20 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 1 |
-| Reference resolution | 12 | 3 | 6 | 7 |
+| Reference resolution | 13 | 3 | 5 | 9 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 0 |
 | Abbreviations | 3 | 1 | 1 | 0 |
-| Citations | 1 | 0 | 1 | 0 |
+| Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
 | Smart typography | 12 | 6 | 9 | 1 |
 | The depth cap | 1 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **122** | **22** | **76** | **32** |
+| **Total** | **123** | **22** | **73** | **36** |
 
-The chapter has 122 clauses, 22 of them exceptions, and 108 examples. The clause count includes the exceptions.
+The chapter has 123 clauses, 22 of them exceptions, and 109 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

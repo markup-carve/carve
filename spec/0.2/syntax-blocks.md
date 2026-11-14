@@ -932,13 +932,11 @@ mmmmmmmmmm) a
 
 ## Task items
 
-**C2-B-046** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after a bullet's space and followed by one space and at least one further character.
+**C2-B-046** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after the required space of a bullet or ordered marker and followed by one space and at least one further character. Every ordered style and delimiter takes a box under the same conditions.
 
-**C2-B-047** In every other case the brackets are inline content: `- [ ]` with nothing after it is a plain item with that text, and an ordered marker and a description mark take no box.
+**C2-B-047** In every other case the brackets are inline content: `- [ ]` and `1. [ ]` with nothing after the box are plain items with that text, and a description mark takes no box.
 
 **C2-B-048** The box character `X` is read as `x`.
-
-Task items and plain items do not share a list (C2-B-049).
 
 Example 42 (unverified)
 
@@ -978,7 +976,7 @@ Example 43 (generated)
 
 :::
 
-Example 44 (generated)
+Example 44 (unverified)
 
 ::: compare
 
@@ -987,8 +985,26 @@ Example 44 (generated)
 ```
 
 ```html
-<ol>
-  <li>[x] a</li>
+<ol class="task-list">
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="a"> a</li>
+</ol>
+```
+
+:::
+
+Example 232 (unverified)
+
+::: compare
+
+```carve
+II) [x] a
+III) b
+```
+
+```html
+<ol type="I" start="2" data-delim=")" class="task-list">
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="a"> a</li>
+  <li>b</li>
 </ol>
 ```
 
@@ -5157,7 +5173,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
-| Task items | 3 | 0 | 2 | 2 |
+| Task items | 3 | 0 | 1 | 4 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
@@ -5176,7 +5192,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 31 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **221** | **15** | **170** | **61** |
+| **Total** | **221** | **15** | **169** | **63** |
 
 The chapter has 221 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

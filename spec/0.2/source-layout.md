@@ -174,7 +174,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-039** A thematic break is written as `***`.
 
-**C2-L-040** A reference is written from the tree: its text, then `[key]` for the form `full` or `[]` for the form `collapsed`.
+**C2-L-040** A reference is written from the tree: its text, then `[key]` for the form `full` or `[]` for the form `collapsed`. The form `shortcut` writes only its text in brackets, with no label tail.
 
 **C2-L-041** The remaining layout is the canonical layout of the Writer document: one blank line between blocks where the tree's `spacing` does not say otherwise, content indented to the content column, a bare `---` for YAML frontmatter, double quotes for a title.
 
@@ -204,7 +204,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has one wrap for that row with the path of its first inline node and `offset` 0. Where the break falls behind a hard break, the wrap names the node behind it with `offset` 0. Where a node with a `value` crosses the rows, as a code span does, the wrap names that node and `offset` is the byte behind the line feed in its value.
 
-**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the label, without an attribute block. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed, in a cell joined from continuation rows as well.
+**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed, in a cell joined from continuation rows as well.
 
 **C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
 

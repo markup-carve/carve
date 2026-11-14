@@ -7,9 +7,9 @@ This is a non-normative guide. Carve 0.2 is still a draft. The [0.2 specificatio
 | Check first | 0.1 habit | 0.2 result | Action |
 | --- | --- | --- | --- |
 | Blocks under text | A heading, quote, definition, or attribute line could start a block at once. | Most such lines continue the paragraph. | Insert a blank line; `U-001` to `U-010`. **SILENT** |
-| Lists | `+`, `{loose}`, marker columns, and task boxes controlled list shape. | Blank lines and content columns control shape; mixed task and plain items share a list. | Run the tool, then inspect list HTML; `U-014` to `U-030`, `U-117` to `U-119`. **SILENT** |
+| Lists | `+`, `{loose}`, marker columns, and task boxes controlled list shape. | Blank lines and content columns control shape; mixed task and plain items share a list, including ordered items. | Run the tool, then inspect list HTML; `U-014` to `U-030`, `U-117` to `U-120`. **SILENT** |
 | Breaks, fences, tables | `---`, `___`, `~~~`, and GFM separator rows had special meanings. | These are text, typography, or table rows. | Use `***`, backticks, and 0.2 cell marks; `U-044` to `U-062`, `U-116`. **SILENT** |
-| Inline | Bare `_`, `~`, `=`, substitution, flags, and references changed. | Several now print literally or gain a new interpretation. | Use braced spans and inspect escapes; `U-065` to `U-075`, `U-101` to `U-115`. **SILENT** |
+| Inline | Bare `_`, `~`, `=`, substitution, flags, and references changed. | Several now print literally or gain a new interpretation, including defined shortcuts. | Use braced spans and inspect escapes; `U-065` to `U-075`, `U-101` to `U-115`, `U-121`. **SILENT** |
 | Raw HTML | Raw block and span forms emitted HTML by default. | `rawHtml` defaults to false and escapes it. | Decide whether the host may enable `rawHtml`; `U-076`, `U-077`, `U-079`. **SILENT** |
 
 The tables below enumerate every entry in the shipped tool contract. The “0.2 unchanged” column shows the beginning of HTML from the 0.2 renderer for the first contract input. It is a rendering observation, not a proposed source spelling. The full input, output, and rendered HTML are in the map. A row marked `none` needs no source edit. A `report` needs a person. `rewrite` changes the spelling. `escape` keeps old literal text literal. The tool may report a case even when it cannot preserve its exact HTML.
@@ -185,7 +185,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
 | U-110 | Full reference whose label is a heading **SILENT** | &lt;section id="My-Heading"&gt; ⏎ &lt;h1&gt;My Heading&lt;/h1&gt; ⏎ &lt;p&gt;See &lt;a hr… | # My Heading ⏎ ⏎ See [My Heading][] and \[the text][My Heading]. ⏎ ; escape |
-| U-111 | Reference label that wraps **SILENT** | &lt;p&gt;See &lt;a href="/u"&gt;the text&lt;/a&gt; here.&lt;/p&gt; | See \[the text][a long ⏎ label] here. ⏎ ⏎ [a long label]: /u ⏎ ; escape |
+| U-111 | Reference label that wraps **SILENT** | &lt;p&gt;See &lt;a href="/u"&gt;the text&lt;/a&gt; here.&lt;/p&gt; | See \[the text]\[a long ⏎ label] here. ⏎ ⏎ [a long label]: /u ⏎ ; escape |
 | U-112 | Reference label that starts with a caret **SILENT** | &lt;p&gt;See [x]&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&… | See [x]\[^n]. ⏎ ⏎ [^n]: Note. ⏎ ; escape |
 | U-113 | Markup inside an unresolved reference **SILENT** | &lt;p&gt;See [&lt;strong&gt;b&lt;/strong&gt; and &lt;em&gt;i&lt;/em&gt;][nope] and [&lt;c… | See [\*b\* and \/i\/][nope] and [\&#96;c\&#96;][]. ⏎ ; escape |
 | U-114 | New spellings that 0.1 already had | &lt;ol&gt; ⏎ &lt;li&gt;first&lt;/li&gt; ⏎ &lt;li&gt;second&lt;/li&gt; ⏎ &lt;/ol&gt; | Keep it; none |
@@ -199,6 +199,8 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-117 | List of task items next to a list of plain items **SILENT** | &lt;ul class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled … | - [ ] a ⏎ ⏎ ⏎ ⏎ - b ⏎ ; rewrite |
 | U-118 | Uppercase marker with a dot and one space | &lt;p&gt;II. Background&lt;/p&gt; | Keep it; none |
 | U-119 | List marker left of every open list under item text | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |
+| U-120 | Ordered marker followed by task box text **SILENT** | &lt;ol class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled aria-label="x"&gt; x&lt;/li&gt; ⏎ &lt;/ol&gt; | `1. \[ ] x`; escape |
+| U-121 | Defined shortcut that was text **SILENT** | &lt;p&gt;&lt;a href="/u"&gt;text&lt;/a&gt;&lt;/p&gt; | `\[text]` before `[text]: /u`; escape |
 
 ### Worked source changes
 
@@ -268,6 +270,8 @@ Task and plain items now share one list (`U-117`). The tool puts four line break
 ```
 
 This preserves two lists, but the 0.2 engine adds `class="task"` on the boxed item. If one mixed list is what you want, keep the original two lines and update the page CSS. In a new document, one mixed list is valid. An uppercase ordered marker with a dot needs two spaces after it, including roman numerals (`U-118`). Right-aligned numbers such as ` 9.` and `10.` form one ordered list (`U-022`, `U-119`).
+
+In 0.1, `1. [ ] x` is an ordered item whose text starts with `[ ] x`. In 0.2 the box is a task field and the ordered number stays visible. The tool writes `1. \[ ] x` to keep the old text (`U-120`). In 0.1, `[text]` and `![text]` remain text even when `[text]: /u` is defined. In 0.2 both are shortcut references. The tool escapes their opening brackets to keep the old text (`U-121`).
 
 A 0.2 heading may start with `=` and continue on indented lines. For example, `= Heading` followed by two spaces and `continued` makes one heading. The 0.1 engine treats those lines as a paragraph. The 0.2 formatter accepts `normalize: true` to choose its canonical spelling when the source layout offered alternatives; `carve fmt --normalize` is a specified command, but a 0.2 CLI is not shipped yet.
 
@@ -440,7 +444,7 @@ The table groups differences observed by rendering the same source with both eng
 | Heading ids | The default case-preserving slug and duplicate suffix still rendered `Héllo-World` and `Héllo-World-2` in both engines for the tested heading. The 0.2 `headingIds` option can move, fold, or suppress generated ids; authored ids remain. | Check every `#fragment` link and any script that finds ids. |
 | Section wrappers | Both default renderers wrap top-level headings in `<section id="…">`. With `sections: false`, ids are on headings. A changed block boundary changes which wrapper owns a block. | Check `section > *`, sibling, and child-index selectors. |
 | Lists | A changed item boundary can add or remove `<ul>` or `<ol>`, nested lists, `<p>` in `<li>`, and `start` or `type` attributes. A later paragraph in a tight item gains `<p>` in 0.2 (`U-019`). | Review list spacing and selectors based on list depth. |
-| Tasks | 0.1 split a task item next to a plain item into two lists. 0.2 uses one list with `class="task-list"` on the `<ul>` and `class="task"` on the boxed `<li>`. Checkbox inputs and `data-task-state` remain. | Add a `li.task` rule for the bullet and review list grouping. The current engine omits the specified inline `list-style: none` style. |
+| Tasks | 0.1 split a task item next to a plain item into two lists. 0.2 uses one list with `class="task-list"` on `<ul>` or `<ol>` and `class="task"` on the boxed `<li>`. Checkbox inputs and `data-task-state` remain. | Add a `li.task` rule for bullet items and review list grouping. Ordered task items keep their visible number. |
 | Description lists and quotes | Lazy lines and continuation changes alter `<dt>`, `<dd>`, `<blockquote>`, and their child paragraphs. A caption may cease to wrap a quote in `<figure>`. | Review quote and definition layout. |
 | Tables | Old GFM separator rows can become data rows; 0.2 cell marks can change `<thead>`, `<tbody>`, `<tfoot>`, `<th>`, `<td>`, `scope`, `rowspan`, `colspan`, and cell alignment. A row span into a head is reported. | Compare table structure and header associations. |
 | Captions and images | A caption separated by a blank line no longer supplies `<figure>` and `<figcaption>`. A shaped block image still does in the tested direct-caption case. | Check figure selectors and caption scripts. |
@@ -489,7 +493,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-002 | merge | `escaped_text` | `text` with the same `value`, then coalesced with its neighbors | C2-A-178 |
 | T-003 | merge | `cell_wrap` | a `text` node holding one space, then coalesced | C2-A-178 |
 | T-004 | drop | `cellWraps` on `code`, `math` and `raw_inline` | dropped | C2-A-178 |
-| T-005 | move | `rawRef` | dropped; `refForm` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded | C2-A-178 |
+| T-005 | move | `rawRef` | dropped; 0.1 references become `collapsed` when `rawRef` ends in `[]` and `full` otherwise; 0.1 has no `shortcut` form; `key` is folded | C2-A-178 |
 | T-006 | merge | `key` on definitions and footnote references | folded | C2-A-178 |
 | T-007 | merge | `attrs.order` and the `keyValues` object | `keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in | C2-A-178 |
 | T-008 | move | an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image | C2-A-178 |

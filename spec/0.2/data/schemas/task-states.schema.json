@@ -15,8 +15,8 @@
         "opener": { "const": "[" },
         "closer": { "const": "]" },
         "after": {
-          "enum": ["bullet_marker_space"],
-          "description": "The box stands directly after the one space of a bullet marker. An ordered marker and a description mark take no box."
+          "enum": ["list_marker_space"],
+          "description": "The box stands directly after the required space of a bullet or ordered marker. A description mark takes no box."
         },
         "followed_by": {
           "type": "array",

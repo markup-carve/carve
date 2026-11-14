@@ -896,7 +896,7 @@
       "kind": "escape",
       "group": "new inline shapes",
       "from": "See [the text][a long\nlabel] here.\n\n[a long label]: /u\n",
-      "to": "See \\[the text][a long\nlabel] here.\n\n[a long label]: /u\n",
+      "to": "See \\[the text]\\[a long\nlabel] here.\n\n[a long label]: /u\n",
       "meaning02": "<p>See <a href=\"/u\">the text</a> here.</p>",
       "toolEntry": "U-111",
       "silent": true
@@ -980,6 +980,26 @@
       "meaning02": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
       "toolEntry": "U-119",
       "silent": false
+    },
+    {
+      "id": "U-120",
+      "kind": "escape",
+      "group": "later rulings",
+      "from": "1. [ ] x\n",
+      "to": "1. \\[ ] x\n",
+      "meaning02": "<ol class=\"task-list\">\n  <li class=\"task\"><input type=\"checkbox\" disabled aria-label=\"x\"> x</li>\n</ol>",
+      "toolEntry": "U-120",
+      "silent": true
+    },
+    {
+      "id": "U-121",
+      "kind": "escape",
+      "group": "later rulings",
+      "from": "[text]\n\n[text]: /u\n",
+      "to": "\\[text]\n\n[text]: /u\n",
+      "meaning02": "<p><a href=\"/u\">text</a></p>",
+      "toolEntry": "U-121",
+      "silent": true
     }
   ],
   "tree": [
@@ -1019,7 +1039,7 @@
       "id": "T-005",
       "kind": "move",
       "from": "`rawRef`",
-      "to": "dropped; `refForm` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded",
+      "to": "dropped; 0.1 references become `collapsed` when `rawRef` ends in `[]` and `full` otherwise; 0.1 has no `shortcut` form; `key` is folded",
       "migrationRule": "C2-A-178",
       "silent": false
     },

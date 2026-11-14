@@ -447,13 +447,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-104** `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-079). Uses and definitions fold the same way, so two keys match when they are equal strings.
 
-**C2-A-105** A reference `link` or `image` carries `refForm`, `full` or `collapsed`, exactly when it carries `key`. This field records reference spelling separately from cross-reference display. The verbatim text is in the sidecar.
+**C2-A-105** A reference `link` or `image` carries `refForm`, `full`, `collapsed` or `shortcut`, exactly when it carries `key`. This field records reference spelling separately from cross-reference display. The verbatim text is in the sidecar.
 
 **C2-A-106** The tree is pre-resolve. A resolution result is added beside the authored construct and never replaces it.
 
 **C2-A-107** On a reference use an absent `href` or `src` means unresolved, and the empty string means a destination that is empty. There is no `resolved` field.
 
-**C2-A-108** An unresolved reference remains a `link` or `image` with its `children` or `alt`, `key`, `refForm` and `attrs`; it never becomes text. HTML renders its brackets and label as literal text.
+**C2-A-108** An unresolved full or collapsed reference remains a `link` or `image` with its `children` or `alt`, `key`, `refForm` and `attrs`; it never becomes text. HTML renders its brackets and label as literal text. A shortcut forms only for a defined key and is therefore never unresolved when parsed from source.
 
 **C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
 
@@ -665,7 +665,7 @@ The invariants below are written so that a test can check each one on any tree a
 | `escaped_text` | `text` with the same `value`, then coalesced with its neighbors |
 | `cell_wrap` | a `text` node holding one space, then coalesced |
 | `cellWraps` on `code`, `math` and `raw_inline` | dropped |
-| `rawRef` | dropped; `refForm` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded |
+| `rawRef` | dropped; 0.1 references become `collapsed` when `rawRef` ends in `[]` and `full` otherwise; 0.1 has no `shortcut` form; `key` is folded |
 | `key` on definitions and footnote references | folded |
 | `attrs.order` and the `keyValues` object | `keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in |
 | an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image |

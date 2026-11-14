@@ -3,7 +3,7 @@
   "box": {
     "opener": "[",
     "closer": "]",
-    "after": "bullet_marker_space",
+    "after": "list_marker_space",
     "followed_by": [{ "part": "space", "min": 1, "max": 1 }, { "part": "content", "min": 1 }],
     "clauses": ["C2-B-046", "C2-B-047"]
   },

@@ -8792,7 +8792,8 @@
         "refForm": {
           "enum": [
             "full",
-            "collapsed"
+            "collapsed",
+            "shortcut"
           ]
         },
         "longDescription": {
@@ -11075,7 +11076,8 @@
         "refForm": {
           "enum": [
             "full",
-            "collapsed"
+            "collapsed",
+            "shortcut"
           ]
         }
       },

@@ -31,6 +31,7 @@
       "prefix": "!",
       "opener": "[",
       "glued_after_any": ["link_tail", "[label]", "[]"],
+      "or_condition": "defined_folded_content",
       "content": "source",
       "host": true,
       "clauses": ["C2-I-006", "C2-I-036", "C2-I-074", "C2-I-083"]
@@ -67,6 +68,14 @@
       "content": "inline",
       "host": false,
       "clauses": ["C2-I-006", "C2-I-065", "C2-I-072", "C2-I-101"]
+    },
+    {
+      "name": "shortcut_reference",
+      "opener": "[",
+      "condition": "defined_folded_content",
+      "content": "inline",
+      "host": true,
+      "clauses": ["C2-I-072", "C2-I-125", "C2-A-105"]
     },
     {
       "name": "span",
