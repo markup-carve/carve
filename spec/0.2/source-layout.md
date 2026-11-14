@@ -43,7 +43,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-010** `path` is an RFC 6901 JSON Pointer into the tree. The empty string is the root, and `/children/2/children/0` is the first child of the third block. This is how every sidecar fact refers to its node.
 
-**C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. No two entries have the same path.
+**C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. The slots of one node are visited in the order `title`, `children`, `caption`. No two entries have the same path.
 
 **C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
 
