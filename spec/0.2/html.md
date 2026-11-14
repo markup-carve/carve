@@ -887,7 +887,7 @@ b {% mid %} c
 
 **C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section and the options in the order of C2-W-058, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
 
-**C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds, so `@cols:"a,,b"`, which is no list of names (C2-B-205), is written `@cols:a,,b`.
+**C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds, so `@cols:"a,,b"`, which is no list of names (C2-B-205), is written `@cols:a,,b`. A `cols` value that kept its quotes in the tree (C2-A-181) is written as stored, with no second pair. The writer does the same (C2-W-058).
 
 ## Inline elements
 
