@@ -91,7 +91,7 @@ Conventions:
 
 **C2-A-024** Content with a different role sits in a named secondary slot: `caption` on a table, a figure and a figure group, `short` on a caption, `prefix`, `locator` and `suffix` on a citation, `pairs` on ruby with `base` and `annotation` on each pair, `title` on a code block, an admonition and a directive, `fallback` on an extension node, and each entry of an extension node's `slots`.
 
-**C2-A-025** A walker visits `children` first and then the secondary slots in the order of C2-A-024. It does not treat a string `value`, a `source`, a URL, opaque `data` or an extension `payload` as a child.
+**C2-A-025** A walker visits `children` first and then the secondary slots in the order of C2-A-024. It does not treat a string `value`, a `source`, a URL, opaque `data` or an extension `payload` as a child. Resolution is the exception: it numbers and resolves in document order, which visits `title`, then `children`, then `caption` (C2-L-011), so a footnote in the title of an admonition takes its number before one in the body.
 
 **C2-A-026** The slot table `resources/node-roles.json` is generated from the schema and names every slot that holds nodes, so a walker needs no knowledge of single node types.
 
@@ -431,7 +431,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 }
 ```
 
-**C2-A-098** A `smart_punctuation` node carries `kind` and `source`, the characters as typed, and may carry `glyph`. `source` stays in the tree, because a renderer with `smartTypography` off prints it.
+**C2-A-098** A `smart_punctuation` node carries `kind` and `source`, the characters as typed, and may carry `glyph`. `source` stays in the tree, because a renderer with `smartTypography` off prints it. The `kind` of a smart punctuation node is one of the kinds of `data/smart-punctuation.json`; a reader refuses any other value.
 
 **C2-A-099** A line break inside a leaf is a `soft_break` or a `hard_break`. Neither has a value.
 
@@ -479,7 +479,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip` and `resourceId`. An absent `alt` means none was given. `tooltip` is the title of the link tail, on a `link` as on an `image`; a definition names the same text `title` (C2-A-077). A resolved reference keeps no `tooltip` of its own: the renderer takes the title from the definition.
 
-**C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link. Core source gives no `form` (C2-I-096): an extension or a supplied tree sets it, and a Carve writer reports `field-unspellable` for it.
+**C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link. Core source gives no `form` (C2-I-096): an extension or a supplied tree sets it, and a Carve writer reports `field-unspellable` for it. The parser gives an `xref` the namespace `heading`; a supplied tree may hold any namespace of C2-A-103.
 
 **C2-A-117** A `footnote_ref` carries `key` and `namespace: "footnote"`, and `number` once resolved. An `abbreviation` carries `key` and `namespace: "abbr"`, and may carry `expansion`.
 
