@@ -243,7 +243,8 @@ const guidePath = join(root, 'spec/0.2/UPGRADING.md')
 if (!existsSync(guidePath)) fail('UPGRADING.md: guide is missing')
 else {
   const guide = readFileSync(guidePath, 'utf8')
-  const listed = [...guide.matchAll(/^\| (U-\d{3}|T-\d{3}) \|/gm)].map(match => match[1])
+  const tableRows = [...guide.matchAll(/^\| (U-\d{3}|T-\d{3}) \|[^\n]*$/gm)]
+  const listed = tableRows.map(match => match[1])
   const expected = [...(data['upgrade-map']?.source ?? []), ...(data['upgrade-map']?.tree ?? [])].map(row => row.id)
   const seen = new Set()
   for (const id of listed) {
@@ -252,6 +253,16 @@ else {
     if (!expected.includes(id)) fail(`UPGRADING.md: ${id} is absent from upgrade-map.json`)
   }
   for (const id of expected) if (!seen.has(id)) fail(`UPGRADING.md: missing table row ${id}`)
+  const shown = new Map(tableRows.map(match => [match[1], match[0]]))
+  for (const row of data['upgrade-map']?.source ?? []) {
+    const line = shown.get(row.id) ?? ''
+    if (row.toolEntry !== row.id) fail(`upgrade-map.json: ${row.id} has a different toolEntry`)
+    if (!line.endsWith(`; ${row.kind} |`)) fail(`UPGRADING.md: ${row.id} has a different tool class`)
+    if (line.includes('**SILENT**') !== row.silent) fail(`UPGRADING.md: ${row.id} has a different silent flag`)
+  }
+  for (const row of data['upgrade-map']?.tree ?? []) {
+    if (!(shown.get(row.id) ?? '').startsWith(`| ${row.id} | ${row.kind} |`)) fail(`UPGRADING.md: ${row.id} has a different change kind`)
+  }
 }
 
 console.log(`Documents: ${sources.join('; ')}`)

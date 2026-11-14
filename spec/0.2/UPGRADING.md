@@ -332,7 +332,7 @@ The 0.2 entry point is `carve-js/v2/src/index.ts` in this checkout. The current 
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
 | `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | No 0.2 counterpart. |
-| Extension factories such as `smartQuotes`, `tableOfContents`, `tabs`, `mermaid`, `mathBlock`, `wikilinks`, and `listTable` | No 0.2 extension API; nonempty `extensions` or `renderers` options are rejected. |
+| Extension factories such as `smartQuotes`, `tableOfContents`, `tabs`, `mermaid`, `mathBlock`, `wikilinks`, and `listTable` | The 0.2 extension interface is specified, but the current engine has no implementation; nonempty `extensions` or `renderers` options are rejected. |
 
 The 0.2 entry point also exposes `format`, `formatWithDiagnostics`, `writeWithDiagnostics`, `validateTree`, `validateLayout`, and low-level scanner and event helpers. Those are new APIs, not drop-in replacements for the 0.1 helpers with similar names.
 
@@ -534,6 +534,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-047 | move | source spelling and physical layout | source-layout record from parseWithLayout; marker, fences, wraps, whitespace and quote choices | C2-L-003 |
 | T-048 | drop | 0.1 rawRef, sourceFormat and layout-only fields | use semantic fields; original spelling is unavailable without source/layout | C2-A-178 |
 | T-049 | add | include directive | include with path, section and typed options; no expansion in core tree | C2-A-181 |
+| T-050 | add | no extension source record; block extension deferred in an earlier draft | qualified `block_extension` and `inline_extension` may carry a typed `source` record; a block extension has a required core fallback | C2-A-122 C2-A-125 C2-X-024 |
 
 ### Reading and storing 2.0 trees
 
@@ -545,7 +546,7 @@ A resolution result is computed beside authored content. In the 0.2 schema, exam
 
 For stored 1.x JSON, first identify the producer's exact contract version. Map old fields and node types using the table, preserve the order of authored children, and add `astVersion: "2.0"` to the root and envelope. Turn `list.items`, `table.rows` and `table_row.cells` into typed `children`; derive list `marker` and `spacing`; fold definition and reference labels into `key` and `namespace`; convert retired nodes; move only known spelling into a layout record if the original source is available. Keep `pos` byte offsets only if they still match the original source. Then validate against [the 2.0 schema](data/ast-schema.json) and decode with `decodeTree`. A 1.2 tree takes the earlier draft migration first, then the rows under `C2-A-178`. Record losses where a construct has no 2.0 representation. **The current 0.2 engine has no migration function for stored 1.x or draft JSON.** `decodeTree` validates and refuses them.
 
-Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown optional data, but never walk node-shaped objects inside it. Typed `metadata` declares the child slots that walkers do visit. A known extension should produce core nodes or a declared `inline_extension` with a valid same-role fallback. The 0.2.0 extension API is not built yet. `block_extension` appears in the schema as a future form but is outside the 0.2.0 extension scope. For unknown required extensions, refuse the tree; for unknown optional ones, use the valid fallback as the spec directs. Do not silently discard an extension's payload or `data` on storage round trips.
+Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown optional data. Walk only declared child slots; the typed root header and footer lists are a stated exception. Typed `metadata` declares the other child slots that walkers visit. The [0.2 extension interface](extensions.md) lets a registered matcher claim a core inline, div, or code-block node and transform it into a declared `inline_extension` or `block_extension`. Both need a valid same-role fallback; qualified forms may carry a typed `source` record for the writer. `carve.tabs` is the specified standard extension. The interface is specified but is not built in the current engine. For unknown required extensions, refuse the tree; for unknown optional ones, use the valid fallback as the spec directs. Do not silently discard an extension's payload or `data` on storage round trips.
 
 ## Open work
 

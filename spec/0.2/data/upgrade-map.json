@@ -1374,6 +1374,14 @@
       "to": "include with path, section and typed options; no expansion in core tree",
       "migrationRule": "C2-A-181",
       "silent": false
+    },
+    {
+      "id": "T-050",
+      "kind": "add",
+      "from": "no extension source record; block extension deferred in an earlier draft",
+      "to": "qualified block_extension and inline_extension may carry a typed source record; a block extension has a required core fallback",
+      "migrationRule": "C2-A-122 C2-A-125 C2-X-024",
+      "silent": false
     }
   ]
 }
