@@ -1008,7 +1008,10 @@
           "additionalProperties": {
             "type": "array",
             "items": {
-              "oneOf": [
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/frontmatter"
+                },
                 {
                   "$ref": "#/$defs/admonition"
                 },
@@ -1065,9 +1068,129 @@
                 },
                 {
                   "$ref": "#/$defs/thematic_break"
+                },
+                {
+                  "$ref": "#/$defs/footnote"
+                },
+                {
+                  "$ref": "#/$defs/link_reference_definition"
+                },
+                {
+                  "$ref": "#/$defs/abbreviation_def"
+                },
+                {
+                  "$ref": "#/$defs/citation_definition"
+                },
+                {
+                  "$ref": "#/$defs/abbreviation"
+                },
+                {
+                  "$ref": "#/$defs/autolink"
+                },
+                {
+                  "$ref": "#/$defs/caption_number"
+                },
+                {
+                  "$ref": "#/$defs/citation_group"
+                },
+                {
+                  "$ref": "#/$defs/code"
+                },
+                {
+                  "$ref": "#/$defs/critic_comment"
+                },
+                {
+                  "$ref": "#/$defs/delete"
+                },
+                {
+                  "$ref": "#/$defs/emphasis"
+                },
+                {
+                  "$ref": "#/$defs/footnote_ref"
+                },
+                {
+                  "$ref": "#/$defs/hard_break"
+                },
+                {
+                  "$ref": "#/$defs/highlight"
+                },
+                {
+                  "$ref": "#/$defs/image"
+                },
+                {
+                  "$ref": "#/$defs/inline_extension"
+                },
+                {
+                  "$ref": "#/$defs/inline_footnote"
+                },
+                {
+                  "$ref": "#/$defs/insert"
+                },
+                {
+                  "$ref": "#/$defs/link"
+                },
+                {
+                  "$ref": "#/$defs/literal_inline"
+                },
+                {
+                  "$ref": "#/$defs/math"
+                },
+                {
+                  "$ref": "#/$defs/mention"
+                },
+                {
+                  "$ref": "#/$defs/non_breaking_space"
+                },
+                {
+                  "$ref": "#/$defs/raw_inline"
+                },
+                {
+                  "$ref": "#/$defs/ruby"
+                },
+                {
+                  "$ref": "#/$defs/small_caps"
+                },
+                {
+                  "$ref": "#/$defs/smart_punctuation"
+                },
+                {
+                  "$ref": "#/$defs/soft_break"
+                },
+                {
+                  "$ref": "#/$defs/span"
+                },
+                {
+                  "$ref": "#/$defs/strike"
+                },
+                {
+                  "$ref": "#/$defs/strong"
+                },
+                {
+                  "$ref": "#/$defs/subscript"
+                },
+                {
+                  "$ref": "#/$defs/superscript"
+                },
+                {
+                  "$ref": "#/$defs/symbol"
+                },
+                {
+                  "$ref": "#/$defs/tag"
+                },
+                {
+                  "$ref": "#/$defs/text"
+                },
+                {
+                  "$ref": "#/$defs/underline"
+                },
+                {
+                  "$ref": "#/$defs/xref"
                 }
               ]
             }
+          },
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
           }
         },
         "fallback": {
@@ -1359,38 +1482,42 @@
           },
           "then": {
             "required": [
-              "props",
-              "slots",
-              "source"
+              "slots"
             ],
             "properties": {
               "version": {
                 "const": "1"
               },
-              "props": {
+              "slots": {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
-                  "titles"
+                  "tabs"
                 ],
                 "properties": {
-                  "titles": {
+                  "tabs": {
                     "type": "array",
                     "minItems": 1,
                     "items": {
-                      "type": "string",
-                      "minLength": 1
+                      "allOf": [
+                        {
+                          "$ref": "#/$defs/block_extension"
+                        },
+                        {
+                          "properties": {
+                            "name": {
+                              "const": "carve.tab"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ],
+                          "type": "object"
+                        }
+                      ]
                     }
                   }
                 }
-              },
-              "slots": {
-                "type": "object",
-                "minProperties": 1,
-                "patternProperties": {
-                  "^tab_(0|[1-9][0-9]*)$": {}
-                },
-                "additionalProperties": false
               },
               "source": {
                 "properties": {
@@ -1416,6 +1543,243 @@
                   "body"
                 ],
                 "type": "object"
+              },
+              "children": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "props": {
+                "type": "object",
+                "maxProperties": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "carve.tab"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "required": [
+              "slots"
+            ],
+            "properties": {
+              "version": {
+                "const": "1"
+              },
+              "children": {
+                "maxItems": 0,
+                "type": "array"
+              },
+              "slots": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "body"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/abbreviation"
+                        },
+                        {
+                          "$ref": "#/$defs/autolink"
+                        },
+                        {
+                          "$ref": "#/$defs/caption_number"
+                        },
+                        {
+                          "$ref": "#/$defs/citation_group"
+                        },
+                        {
+                          "$ref": "#/$defs/code"
+                        },
+                        {
+                          "$ref": "#/$defs/comment"
+                        },
+                        {
+                          "$ref": "#/$defs/critic_comment"
+                        },
+                        {
+                          "$ref": "#/$defs/delete"
+                        },
+                        {
+                          "$ref": "#/$defs/emphasis"
+                        },
+                        {
+                          "$ref": "#/$defs/footnote_ref"
+                        },
+                        {
+                          "$ref": "#/$defs/hard_break"
+                        },
+                        {
+                          "$ref": "#/$defs/highlight"
+                        },
+                        {
+                          "$ref": "#/$defs/image"
+                        },
+                        {
+                          "$ref": "#/$defs/inline_extension"
+                        },
+                        {
+                          "$ref": "#/$defs/inline_footnote"
+                        },
+                        {
+                          "$ref": "#/$defs/insert"
+                        },
+                        {
+                          "$ref": "#/$defs/link"
+                        },
+                        {
+                          "$ref": "#/$defs/literal_inline"
+                        },
+                        {
+                          "$ref": "#/$defs/math"
+                        },
+                        {
+                          "$ref": "#/$defs/mention"
+                        },
+                        {
+                          "$ref": "#/$defs/non_breaking_space"
+                        },
+                        {
+                          "$ref": "#/$defs/raw_inline"
+                        },
+                        {
+                          "$ref": "#/$defs/ruby"
+                        },
+                        {
+                          "$ref": "#/$defs/small_caps"
+                        },
+                        {
+                          "$ref": "#/$defs/smart_punctuation"
+                        },
+                        {
+                          "$ref": "#/$defs/soft_break"
+                        },
+                        {
+                          "$ref": "#/$defs/span"
+                        },
+                        {
+                          "$ref": "#/$defs/strike"
+                        },
+                        {
+                          "$ref": "#/$defs/strong"
+                        },
+                        {
+                          "$ref": "#/$defs/subscript"
+                        },
+                        {
+                          "$ref": "#/$defs/superscript"
+                        },
+                        {
+                          "$ref": "#/$defs/symbol"
+                        },
+                        {
+                          "$ref": "#/$defs/tag"
+                        },
+                        {
+                          "$ref": "#/$defs/text"
+                        },
+                        {
+                          "$ref": "#/$defs/underline"
+                        },
+                        {
+                          "$ref": "#/$defs/xref"
+                        }
+                      ]
+                    }
+                  },
+                  "body": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/admonition"
+                        },
+                        {
+                          "$ref": "#/$defs/block_extension"
+                        },
+                        {
+                          "$ref": "#/$defs/block_quote"
+                        },
+                        {
+                          "$ref": "#/$defs/code_block"
+                        },
+                        {
+                          "$ref": "#/$defs/comment"
+                        },
+                        {
+                          "$ref": "#/$defs/definition_list"
+                        },
+                        {
+                          "$ref": "#/$defs/directive"
+                        },
+                        {
+                          "$ref": "#/$defs/div"
+                        },
+                        {
+                          "$ref": "#/$defs/figure"
+                        },
+                        {
+                          "$ref": "#/$defs/figure_group"
+                        },
+                        {
+                          "$ref": "#/$defs/heading"
+                        },
+                        {
+                          "$ref": "#/$defs/include"
+                        },
+                        {
+                          "$ref": "#/$defs/line_block"
+                        },
+                        {
+                          "$ref": "#/$defs/list"
+                        },
+                        {
+                          "$ref": "#/$defs/paragraph"
+                        },
+                        {
+                          "$ref": "#/$defs/raw_block"
+                        },
+                        {
+                          "$ref": "#/$defs/section"
+                        },
+                        {
+                          "$ref": "#/$defs/table"
+                        },
+                        {
+                          "$ref": "#/$defs/thematic_break"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "source": {
+                "type": "object",
+                "properties": {
+                  "form": {
+                    "const": "div"
+                  },
+                  "name": {
+                    "const": "tab"
+                  }
+                }
+              },
+              "props": {
+                "type": "object",
+                "maxProperties": 0
               }
             }
           }
@@ -6167,7 +6531,7 @@
           }
         },
         "metadata": {
-          "$ref": "#/definitions/metadata"
+          "$ref": "#/definitions/metadataRoot"
         },
         "dir": {
           "enum": [
@@ -9014,6 +9378,9 @@
                 }
               ]
             }
+          },
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
           }
         },
         "fallback": {
@@ -18663,128 +19030,6 @@
               }
             }
           }
-        },
-        "headers": {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "#/$defs/admonition"
-              },
-              {
-                "$ref": "#/$defs/block_quote"
-              },
-              {
-                "$ref": "#/$defs/code_block"
-              },
-              {
-                "$ref": "#/$defs/comment"
-              },
-              {
-                "$ref": "#/$defs/definition_list"
-              },
-              {
-                "$ref": "#/$defs/directive"
-              },
-              {
-                "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
-              },
-              {
-                "$ref": "#/$defs/figure_group"
-              },
-              {
-                "$ref": "#/$defs/heading"
-              },
-              {
-                "$ref": "#/$defs/include"
-              },
-              {
-                "$ref": "#/$defs/line_block"
-              },
-              {
-                "$ref": "#/$defs/list"
-              },
-              {
-                "$ref": "#/$defs/paragraph"
-              },
-              {
-                "$ref": "#/$defs/raw_block"
-              },
-              {
-                "$ref": "#/$defs/section"
-              },
-              {
-                "$ref": "#/$defs/table"
-              },
-              {
-                "$ref": "#/$defs/thematic_break"
-              }
-            ]
-          }
-        },
-        "footers": {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "#/$defs/admonition"
-              },
-              {
-                "$ref": "#/$defs/block_quote"
-              },
-              {
-                "$ref": "#/$defs/code_block"
-              },
-              {
-                "$ref": "#/$defs/comment"
-              },
-              {
-                "$ref": "#/$defs/definition_list"
-              },
-              {
-                "$ref": "#/$defs/directive"
-              },
-              {
-                "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
-              },
-              {
-                "$ref": "#/$defs/figure_group"
-              },
-              {
-                "$ref": "#/$defs/heading"
-              },
-              {
-                "$ref": "#/$defs/include"
-              },
-              {
-                "$ref": "#/$defs/line_block"
-              },
-              {
-                "$ref": "#/$defs/list"
-              },
-              {
-                "$ref": "#/$defs/paragraph"
-              },
-              {
-                "$ref": "#/$defs/raw_block"
-              },
-              {
-                "$ref": "#/$defs/section"
-              },
-              {
-                "$ref": "#/$defs/table"
-              },
-              {
-                "$ref": "#/$defs/thematic_break"
-              }
-            ]
-          }
         }
       }
     },
@@ -18850,6 +19095,670 @@
           ]
         }
       }
+    },
+    "metadataRoot": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/abbreviation"
+              },
+              {
+                "$ref": "#/$defs/autolink"
+              },
+              {
+                "$ref": "#/$defs/caption_number"
+              },
+              {
+                "$ref": "#/$defs/citation_group"
+              },
+              {
+                "$ref": "#/$defs/code"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/critic_comment"
+              },
+              {
+                "$ref": "#/$defs/delete"
+              },
+              {
+                "$ref": "#/$defs/emphasis"
+              },
+              {
+                "$ref": "#/$defs/footnote_ref"
+              },
+              {
+                "$ref": "#/$defs/hard_break"
+              },
+              {
+                "$ref": "#/$defs/highlight"
+              },
+              {
+                "$ref": "#/$defs/image"
+              },
+              {
+                "$ref": "#/$defs/inline_extension"
+              },
+              {
+                "$ref": "#/$defs/inline_footnote"
+              },
+              {
+                "$ref": "#/$defs/insert"
+              },
+              {
+                "$ref": "#/$defs/link"
+              },
+              {
+                "$ref": "#/$defs/literal_inline"
+              },
+              {
+                "$ref": "#/$defs/math"
+              },
+              {
+                "$ref": "#/$defs/mention"
+              },
+              {
+                "$ref": "#/$defs/non_breaking_space"
+              },
+              {
+                "$ref": "#/$defs/raw_inline"
+              },
+              {
+                "$ref": "#/$defs/ruby"
+              },
+              {
+                "$ref": "#/$defs/small_caps"
+              },
+              {
+                "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/soft_break"
+              },
+              {
+                "$ref": "#/$defs/span"
+              },
+              {
+                "$ref": "#/$defs/strike"
+              },
+              {
+                "$ref": "#/$defs/strong"
+              },
+              {
+                "$ref": "#/$defs/subscript"
+              },
+              {
+                "$ref": "#/$defs/superscript"
+              },
+              {
+                "$ref": "#/$defs/symbol"
+              },
+              {
+                "$ref": "#/$defs/tag"
+              },
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "$ref": "#/$defs/underline"
+              },
+              {
+                "$ref": "#/$defs/xref"
+              }
+            ]
+          }
+        },
+        "subtitle": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/abbreviation"
+              },
+              {
+                "$ref": "#/$defs/autolink"
+              },
+              {
+                "$ref": "#/$defs/caption_number"
+              },
+              {
+                "$ref": "#/$defs/citation_group"
+              },
+              {
+                "$ref": "#/$defs/code"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/critic_comment"
+              },
+              {
+                "$ref": "#/$defs/delete"
+              },
+              {
+                "$ref": "#/$defs/emphasis"
+              },
+              {
+                "$ref": "#/$defs/footnote_ref"
+              },
+              {
+                "$ref": "#/$defs/hard_break"
+              },
+              {
+                "$ref": "#/$defs/highlight"
+              },
+              {
+                "$ref": "#/$defs/image"
+              },
+              {
+                "$ref": "#/$defs/inline_extension"
+              },
+              {
+                "$ref": "#/$defs/inline_footnote"
+              },
+              {
+                "$ref": "#/$defs/insert"
+              },
+              {
+                "$ref": "#/$defs/link"
+              },
+              {
+                "$ref": "#/$defs/literal_inline"
+              },
+              {
+                "$ref": "#/$defs/math"
+              },
+              {
+                "$ref": "#/$defs/mention"
+              },
+              {
+                "$ref": "#/$defs/non_breaking_space"
+              },
+              {
+                "$ref": "#/$defs/raw_inline"
+              },
+              {
+                "$ref": "#/$defs/ruby"
+              },
+              {
+                "$ref": "#/$defs/small_caps"
+              },
+              {
+                "$ref": "#/$defs/smart_punctuation"
+              },
+              {
+                "$ref": "#/$defs/soft_break"
+              },
+              {
+                "$ref": "#/$defs/span"
+              },
+              {
+                "$ref": "#/$defs/strike"
+              },
+              {
+                "$ref": "#/$defs/strong"
+              },
+              {
+                "$ref": "#/$defs/subscript"
+              },
+              {
+                "$ref": "#/$defs/superscript"
+              },
+              {
+                "$ref": "#/$defs/symbol"
+              },
+              {
+                "$ref": "#/$defs/tag"
+              },
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "$ref": "#/$defs/underline"
+              },
+              {
+                "$ref": "#/$defs/xref"
+              }
+            ]
+          }
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "date": {
+          "type": "string"
+        },
+        "bibliography": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/abbreviation"
+                  },
+                  {
+                    "$ref": "#/$defs/autolink"
+                  },
+                  {
+                    "$ref": "#/$defs/caption_number"
+                  },
+                  {
+                    "$ref": "#/$defs/citation_group"
+                  },
+                  {
+                    "$ref": "#/$defs/code"
+                  },
+                  {
+                    "$ref": "#/$defs/comment"
+                  },
+                  {
+                    "$ref": "#/$defs/critic_comment"
+                  },
+                  {
+                    "$ref": "#/$defs/delete"
+                  },
+                  {
+                    "$ref": "#/$defs/emphasis"
+                  },
+                  {
+                    "$ref": "#/$defs/footnote_ref"
+                  },
+                  {
+                    "$ref": "#/$defs/hard_break"
+                  },
+                  {
+                    "$ref": "#/$defs/highlight"
+                  },
+                  {
+                    "$ref": "#/$defs/image"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_extension"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_footnote"
+                  },
+                  {
+                    "$ref": "#/$defs/insert"
+                  },
+                  {
+                    "$ref": "#/$defs/link"
+                  },
+                  {
+                    "$ref": "#/$defs/literal_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/math"
+                  },
+                  {
+                    "$ref": "#/$defs/mention"
+                  },
+                  {
+                    "$ref": "#/$defs/non_breaking_space"
+                  },
+                  {
+                    "$ref": "#/$defs/raw_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/ruby"
+                  },
+                  {
+                    "$ref": "#/$defs/small_caps"
+                  },
+                  {
+                    "$ref": "#/$defs/smart_punctuation"
+                  },
+                  {
+                    "$ref": "#/$defs/soft_break"
+                  },
+                  {
+                    "$ref": "#/$defs/span"
+                  },
+                  {
+                    "$ref": "#/$defs/strike"
+                  },
+                  {
+                    "$ref": "#/$defs/strong"
+                  },
+                  {
+                    "$ref": "#/$defs/subscript"
+                  },
+                  {
+                    "$ref": "#/$defs/superscript"
+                  },
+                  {
+                    "$ref": "#/$defs/symbol"
+                  },
+                  {
+                    "$ref": "#/$defs/tag"
+                  },
+                  {
+                    "$ref": "#/$defs/text"
+                  },
+                  {
+                    "$ref": "#/$defs/underline"
+                  },
+                  {
+                    "$ref": "#/$defs/xref"
+                  }
+                ]
+              }
+            },
+            "containerTitle": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/abbreviation"
+                  },
+                  {
+                    "$ref": "#/$defs/autolink"
+                  },
+                  {
+                    "$ref": "#/$defs/caption_number"
+                  },
+                  {
+                    "$ref": "#/$defs/citation_group"
+                  },
+                  {
+                    "$ref": "#/$defs/code"
+                  },
+                  {
+                    "$ref": "#/$defs/comment"
+                  },
+                  {
+                    "$ref": "#/$defs/critic_comment"
+                  },
+                  {
+                    "$ref": "#/$defs/delete"
+                  },
+                  {
+                    "$ref": "#/$defs/emphasis"
+                  },
+                  {
+                    "$ref": "#/$defs/footnote_ref"
+                  },
+                  {
+                    "$ref": "#/$defs/hard_break"
+                  },
+                  {
+                    "$ref": "#/$defs/highlight"
+                  },
+                  {
+                    "$ref": "#/$defs/image"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_extension"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_footnote"
+                  },
+                  {
+                    "$ref": "#/$defs/insert"
+                  },
+                  {
+                    "$ref": "#/$defs/link"
+                  },
+                  {
+                    "$ref": "#/$defs/literal_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/math"
+                  },
+                  {
+                    "$ref": "#/$defs/mention"
+                  },
+                  {
+                    "$ref": "#/$defs/non_breaking_space"
+                  },
+                  {
+                    "$ref": "#/$defs/raw_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/ruby"
+                  },
+                  {
+                    "$ref": "#/$defs/small_caps"
+                  },
+                  {
+                    "$ref": "#/$defs/smart_punctuation"
+                  },
+                  {
+                    "$ref": "#/$defs/soft_break"
+                  },
+                  {
+                    "$ref": "#/$defs/span"
+                  },
+                  {
+                    "$ref": "#/$defs/strike"
+                  },
+                  {
+                    "$ref": "#/$defs/strong"
+                  },
+                  {
+                    "$ref": "#/$defs/subscript"
+                  },
+                  {
+                    "$ref": "#/$defs/superscript"
+                  },
+                  {
+                    "$ref": "#/$defs/symbol"
+                  },
+                  {
+                    "$ref": "#/$defs/tag"
+                  },
+                  {
+                    "$ref": "#/$defs/text"
+                  },
+                  {
+                    "$ref": "#/$defs/underline"
+                  },
+                  {
+                    "$ref": "#/$defs/xref"
+                  }
+                ]
+              }
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "issued": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "placement",
+              "children"
+            ],
+            "properties": {
+              "placement": {
+                "enum": [
+                  "default",
+                  "first",
+                  "even"
+                ]
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/admonition"
+                    },
+                    {
+                      "$ref": "#/$defs/block_extension"
+                    },
+                    {
+                      "$ref": "#/$defs/block_quote"
+                    },
+                    {
+                      "$ref": "#/$defs/code_block"
+                    },
+                    {
+                      "$ref": "#/$defs/comment"
+                    },
+                    {
+                      "$ref": "#/$defs/definition_list"
+                    },
+                    {
+                      "$ref": "#/$defs/directive"
+                    },
+                    {
+                      "$ref": "#/$defs/div"
+                    },
+                    {
+                      "$ref": "#/$defs/figure"
+                    },
+                    {
+                      "$ref": "#/$defs/figure_group"
+                    },
+                    {
+                      "$ref": "#/$defs/heading"
+                    },
+                    {
+                      "$ref": "#/$defs/include"
+                    },
+                    {
+                      "$ref": "#/$defs/line_block"
+                    },
+                    {
+                      "$ref": "#/$defs/list"
+                    },
+                    {
+                      "$ref": "#/$defs/paragraph"
+                    },
+                    {
+                      "$ref": "#/$defs/raw_block"
+                    },
+                    {
+                      "$ref": "#/$defs/section"
+                    },
+                    {
+                      "$ref": "#/$defs/table"
+                    },
+                    {
+                      "$ref": "#/$defs/thematic_break"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "footers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "placement",
+              "children"
+            ],
+            "properties": {
+              "placement": {
+                "enum": [
+                  "default",
+                  "first",
+                  "even"
+                ]
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/$defs/admonition"
+                    },
+                    {
+                      "$ref": "#/$defs/block_extension"
+                    },
+                    {
+                      "$ref": "#/$defs/block_quote"
+                    },
+                    {
+                      "$ref": "#/$defs/code_block"
+                    },
+                    {
+                      "$ref": "#/$defs/comment"
+                    },
+                    {
+                      "$ref": "#/$defs/definition_list"
+                    },
+                    {
+                      "$ref": "#/$defs/directive"
+                    },
+                    {
+                      "$ref": "#/$defs/div"
+                    },
+                    {
+                      "$ref": "#/$defs/figure"
+                    },
+                    {
+                      "$ref": "#/$defs/figure_group"
+                    },
+                    {
+                      "$ref": "#/$defs/heading"
+                    },
+                    {
+                      "$ref": "#/$defs/include"
+                    },
+                    {
+                      "$ref": "#/$defs/line_block"
+                    },
+                    {
+                      "$ref": "#/$defs/list"
+                    },
+                    {
+                      "$ref": "#/$defs/paragraph"
+                    },
+                    {
+                      "$ref": "#/$defs/raw_block"
+                    },
+                    {
+                      "$ref": "#/$defs/section"
+                    },
+                    {
+                      "$ref": "#/$defs/table"
+                    },
+                    {
+                      "$ref": "#/$defs/thematic_break"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

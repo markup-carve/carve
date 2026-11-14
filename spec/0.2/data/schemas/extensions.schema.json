@@ -19,7 +19,6 @@
         "required": [
           "name",
           "version",
-          "matcher",
           "props",
           "slots",
           "clauses"
@@ -59,20 +58,33 @@
           },
           "slots": {
             "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "pattern",
-              "role"
-            ],
-            "properties": {
-              "pattern": {
-                "type": "string"
-              },
-              "role": {
-                "enum": [
-                  "block",
-                  "inline"
-                ]
+            "propertyNames": {
+              "pattern": "^[a-z][a-z0-9_]*$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "block",
+                    "inline",
+                    "block_extension"
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "optional": {
+                  "type": "boolean"
+                },
+                "minItems": {
+                  "type": "integer",
+                  "minimum": 0
+                }
               }
             }
           },
@@ -84,8 +96,43 @@
               "type": "string",
               "pattern": "^C2-[ABHILWXW]-[0-9]{3}$"
             }
+          },
+          "parent": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "slot"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "slot": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$"
+              }
+            }
           }
-        }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "matcher": {}
+            },
+            "required": [
+              "matcher"
+            ]
+          },
+          {
+            "properties": {
+              "parent": {}
+            },
+            "required": [
+              "parent"
+            ]
+          }
+        ]
       }
     }
   }

@@ -46,7 +46,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-019** `props` is a JSON object whose keys and value types are defined by the extension's registered schema.
 
-**C2-X-020** `slots` is an object of named child lists; each list has the node role of the extension and is visited in key order under C2-A-025.
+**C2-X-020** `slots` is an object of named child lists. Each slot name and its content kind are fixed by the extension's declaration in `data/extensions.json`. A slot name is a lowercase identifier and has no number suffix that encodes position. Repeated children form an ordered list in one slot. A walker visits declared slots in declaration order under C2-A-025.
 
 **C2-X-021** `payload` is an optional list of alternatives with a nonempty format and a non-null JSON value under C2-A-122.
 
@@ -88,30 +88,30 @@ This document defines the extension interface for Carve 0.2.0.
 
 ## Standard extension: tabs
 
-**C2-X-039** The core provides the optional `carve.tabs` extension at version `1`, with a div matcher for the source name `tabs`.
+**C2-X-039** The core provides optional `carve.tabs` and `carve.tab` extensions at version `1`. The `tabs` div matcher produces `carve.tabs`; the nested `tab` div produces `carve.tab` only inside its `tabs` slot. A `tab` div elsewhere stays a core div.
 
-**C2-X-040** The `tabs` matcher claims a div only when each body block is a `tab` div with a nonempty quoted title.
+**C2-X-040** The `tabs` matcher claims a div only when its body has one or more `tab` divs and no other blocks, and each `tab` div has a nonempty quoted title.
 
-**C2-X-041** The transform writes `props.titles` as the ordered title strings and writes each tab body's blocks in `slots.tab_0`, `slots.tab_1` and successive numbered slots.
+**C2-X-041** `carve.tabs` has one slot, `tabs`, whose ordered items are `block_extension` nodes named `carve.tab` and nothing else. Each `carve.tab` has an optional `title` slot of inline nodes and a `body` slot of blocks. The transform puts the quoted title in `title` as inline content and the div body in `body`.
 
-**C2-X-042** The transform writes a fallback sequence with a paragraph containing each title in `strong`, followed by that tab's body blocks.
+**C2-X-042** The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order.
 
-**C2-X-043** The tabs renderer writes one radio input, one linked label and one panel per tab in order, with the first input checked.
+**C2-X-043** The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked.
 
-**C2-X-044** The tabs renderer escapes each title for text and attribute contexts and renders each panel from its matching slot.
+**C2-X-044** The tabs renderer renders each label from the tab's `title` slot and each panel from its `body` slot. It escapes text and attributes through the host renderer.
 
-**C2-X-045** The tabs transform keeps the nested `tabs` and `tab` div spelling in `source.body` so a Pandoc bridge can also carry the structure as nested Divs with classes.
+**C2-X-045** The tabs transform keeps the nested `tab` div spelling in the outer `source.body`. A Pandoc bridge carries this structure as nested Divs with the classes `tabs` and `tab`.
 
-**C2-X-046** A `carve.tabs` reader refuses a title count that differs from the number of consecutive slots starting at `tab_0`.
+**C2-X-046** A reader refuses a `carve.tab` outside `carve.tabs.slots.tabs`, an item of that slot that is not `carve.tab`, or a tab without its `body` slot.
 
-**C2-X-047** The tabs renderer groups the controls and names each panel with its title; without a stylesheet every panel stays visible.
+**C2-X-047** The tabs renderer groups the controls and names each panel with the plain text of its title, or `Tab` and its position when the title is absent. Without a stylesheet every panel stays visible.
 
 **C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.
 
 Input:
 
 ```carve
-::: tabs
+:::: tabs
 ::: tab "Install"
 Run setup.
 :::
@@ -119,7 +119,7 @@ Run setup.
 ::: tab "Use"
 Open the app.
 :::
-:::
+::::
 ```
 
 Tree:
@@ -128,17 +128,47 @@ Tree:
 {
   "type": "document",
   "astVersion": "2.0",
-  "extensions": [{ "name": "carve.tabs", "version": "1", "required": false }],
+  "extensions": [
+    { "name": "carve.tab", "version": "1", "required": false },
+    { "name": "carve.tabs", "version": "1", "required": false }
+  ],
   "children": [{
     "type": "block_extension",
     "name": "carve.tabs",
     "version": "1",
     "children": [],
-    "props": { "titles": ["Install", "Use"] },
-    "slots": {
-      "tab_0": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Run setup." }] }],
-      "tab_1": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Open the app." }] }]
-    },
+    "slots": { "tabs": [
+      {
+        "type": "block_extension",
+        "name": "carve.tab",
+        "version": "1",
+        "children": [],
+        "slots": {
+          "title": [{ "type": "text", "value": "Install" }],
+          "body": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Run setup." }] }]
+        },
+        "fallback": [
+          { "type": "paragraph", "children": [{ "type": "strong", "children": [{ "type": "text", "value": "Install" }] }] },
+          { "type": "paragraph", "children": [{ "type": "text", "value": "Run setup." }] }
+        ],
+        "source": { "form": "div", "name": "tab", "title": "Install", "body": "Run setup.\n" }
+      },
+      {
+        "type": "block_extension",
+        "name": "carve.tab",
+        "version": "1",
+        "children": [],
+        "slots": {
+          "title": [{ "type": "text", "value": "Use" }],
+          "body": [{ "type": "paragraph", "children": [{ "type": "text", "value": "Open the app." }] }]
+        },
+        "fallback": [
+          { "type": "paragraph", "children": [{ "type": "strong", "children": [{ "type": "text", "value": "Use" }] }] },
+          { "type": "paragraph", "children": [{ "type": "text", "value": "Open the app." }] }
+        ],
+        "source": { "form": "div", "name": "tab", "title": "Use", "body": "Open the app.\n" }
+      }
+    ] },
     "fallback": [
       { "type": "paragraph", "children": [{ "type": "strong", "children": [{ "type": "text", "value": "Install" }] }] },
       { "type": "paragraph", "children": [{ "type": "text", "value": "Run setup." }] },
@@ -179,6 +209,47 @@ Open the app.
 ## Writing consistency
 
 **C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`.
+
+## Carrying Carve facts through a tree that has no slot for them
+
+This section is non-normative. Bridges can use these marker attributes when another tree has no native slot for a Carve fact. The value forms below are a recommended convention. JSON means a JSON-encoded value; `true` means a presence marker. A bridge that drops a marker loses the listed fact and nothing else.
+
+| Marker | Carve tree field | Value form |
+| --- | --- | --- |
+| `carve-columns` | `table.columns` | JSON array of column nodes |
+| `carve-head-rows` | `table_body.headRows` | decimal integer, including `0` |
+| `carve-comment` | `comment.form`, `comment.value` | JSON object |
+| `carve-critic-comment` | `critic_comment.value` | string |
+| `carve-tree` | definition nodes in `document.children` | JSON array of nodes |
+| `carve-frontmatter` | `frontmatter.format`, `frontmatter.value` | JSON object |
+| `carve-title` | a container's `title` | JSON array of inline nodes |
+| `carve-group-label` | `groupLabel` | string |
+| `carve-generated-id` | `heading.generatedId` | string |
+| `carve-literal` | `literal_inline.value` | string |
+| `carve-span` | `table_cell.span` | string span mark |
+| `carve-autolink` | `autolink` identity and fields | JSON autolink node |
+| `carve-block-image` | `paragraph.role: "image"` | `true` |
+| `carve-block-math` | `paragraph.role: "math"` | `true` |
+| `carve-xref` | `xref` identity | `true` |
+| `carve-key` | `xref.key` or a keyed reference's `key` | string |
+| `carve-form` | `xref.display` or a reference's `refForm` | string |
+| `carve-block-quote` | `block_quote.attrs` | JSON object |
+| `carve-list` | `list.marker.char` | one character |
+| `carve-admonition` | `admonition.kind` | string |
+| `carve-directive` | `directive.kind` | string |
+| `carve-figure-group` | `figure_group` identity | `true` |
+| `carve-figure-kind` | `figure.kind` | string |
+| `carve-paragraph` | `paragraph.attrs`, `paragraph.role` | JSON object of present fields |
+| `carve-footnote-ref` | `footnote_ref.key`, `footnote_ref.namespace` | JSON object |
+| `carve-inline-attrs` | inline node `attrs` | JSON object |
+| `carve-insert` | `insert` identity | `true` |
+| `carve-delete` | `delete` identity | `true` |
+| `carve-mention` | `mention.target`, `mention.kind`, `mention.label` | JSON object of present fields |
+| `carve-tag` | `tag.name` | string |
+| `carve-symbol` | `symbol.name` | string |
+| `carve-abbreviation` | `abbreviation.key`, `abbreviation.namespace`, `abbreviation.expansion` | JSON object of present fields |
+| `carve-smart` | `smart_punctuation.kind`, `smart_punctuation.source`, `smart_punctuation.glyph` | JSON object of present fields |
+| `carve-task` | `list_item.task.mark` | one character |
 
 ## Counts
 

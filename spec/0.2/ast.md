@@ -89,19 +89,19 @@ Conventions:
 
 **C2-A-023** `value` is the literal payload of a node that holds text: `text`, `code`, `code_block`, `math`, `raw_block`, `raw_inline`, `literal_inline`, `comment`, `critic_comment` and `frontmatter`.
 
-**C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030. Each slot has the role and walk order in `spec/0.2/data/node-slots.json`.
+**C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030. Each slot has its content kind and walk order in `spec/0.2/data/node-slots.json` and, for extensions, `data/extensions.json`.
 
-**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including nodes in typed `metadata`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
+**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including nodes in typed `metadata`. It visits an extension's named slots in `data/extensions.json` order. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
 
-**C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and names every node-bearing child slot and its walk order.
+**C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and `data/extensions.json`. It names every node-bearing child slot and its walk order.
 
 **C2-A-027** Every typed node may carry the common fields `attrs`, `data`, `pos`, `segments`, `metadata`, `dir` and `lang`, as far as its schema definition allows.
 
 **C2-A-028** Nodes are closed: a field the schema does not name on a node type is an error (C2-A-169). Unknown fields inside `task`, `marker`, a payload alternative or a manifest entry are refused as well.
 
-**C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it, except the typed root header and footer block lists of C2-A-197.
+**C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it.
 
-**C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` lists of inline nodes, `authors` as a list of strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. A walker visits its inline slots. Extension `props` is opaque JSON, and a reader refuses a node inside `metadata` outside a declared slot or inside `props`. This replaces the earlier draft rule that walked arbitrary objects.
+**C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` lists of inline nodes, `authors` as a list of strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. Root metadata also admits `headers` and `footers`. Each is a list of closed objects with `placement` set to `default`, `first` or `even`, and a `children` slot of blocks. A walker visits every declared metadata slot. Extension `props` is opaque JSON, and a reader refuses a node inside `metadata` outside a declared slot or inside `props`.
 
 **C2-A-031** `dir` is `ltr`, `rtl` or `auto`. `dir` and `lang` are inherited from the nearest ancestor that carries them.
 
@@ -722,7 +722,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-188** A valid tree passes the schema and the reader checks for nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, declared `data` keys, envelope version agreement and extension fallback depth. A schema pass alone does not establish validity.
 
-**C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object, except the root style header and footer blocks of C2-A-197. The core walker ignores that data.
+**C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 
 ## Standard data namespaces
 
@@ -730,9 +730,9 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-191** Parsing Carve source produces none of these namespaces.
 
-**C2-A-192** The core renderer ignores all three namespaces.
+**C2-A-192** The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers` and `footers` and reports no notice, because they are page furniture.
 
-**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content.
+**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers` or `footers` and reports each under C2-W-011.
 
 **C2-A-194** Equality compares all three data values under C2-A-161.
 
@@ -744,14 +744,14 @@ These clauses were added after other documents began to cite this one. They stan
 {"type":"paragraph","children":[{"type":"text","value":"Hello"}],"data":{"carve.source":{"format":"docx","locator":{"part":"word/document.xml","path":"/document/body/p[1]"},"importer":{"name":"pandoc-carve","version":"2.0"}}}}
 ```
 
-**C2-A-197** `carve.style` may stand on any node with a named style and direct alignment, indentation, spacing before, spacing after, page break before, keep with next, language or direction; on the root it may also hold named styles, page size, margins, and header and footer core block lists.
+**C2-A-197** `carve.style` may stand on any node with a named style and direct alignment, indentation, spacing before, spacing after, page break before, keep with next, language or direction; on the root it may also hold named styles, page size and margins. It holds scalar facts and named styles. It holds no nodes.
 
 **C2-A-198** Style lengths are non-negative points, alignment is `start`, `center`, `end` or `justify`, and direction is `ltr` or `rtl` where no common `dir` field already holds it.
 
 **C2-A-199** An importer stores only style facts it can read and a target writer may ignore facts it cannot express.
 
 ```json
-{"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}},"headers":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}],"footers":[]}}}
+{"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}}}},"metadata":{"headers":[{"placement":"default","children":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}]}],"footers":[]}}
 ```
 
 **C2-A-200** Font families, font sizes, colors, borders, floats, columns, section breaks and arbitrary CSS remain outside `carve.style` because no small shared round-trip vocabulary covers them.
@@ -770,13 +770,13 @@ These clauses were added after other documents began to cite this one. They stan
 {"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
 ```
 
-**C2-A-206** The three namespace schemas validate only their own values, and the tree reader also checks declaration, placement, sidecar references and the core block lists.
+**C2-A-206** The three namespace schemas validate only their own values, and the tree reader also checks declaration, namespace placement, sidecar references and root metadata header and footer block lists.
 
 **C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count Unicode code points.
 
 **C2-A-208** Source format, locator parts, importer name and version, style names and language, and annotation ids are nonempty strings; style page break and keep flags are booleans.
 
-**C2-A-209** Named styles, page, headers and footers occur only in root `carve.style`, and direct language or direction occurs only when the node has no corresponding common field.
+**C2-A-209** Named styles and page occur only in root `carve.style`. Headers and footers occur only in root `metadata`. Direct language or direction occurs only when the node has no corresponding common field.
 
 **Exception C2-A-210** A qualified extension node may carry the canonical source form of C2-X-024 in the tree, even though it changes neither rendering nor resolution; a bare-tree writer needs it to reproduce the claimed source form.
 
