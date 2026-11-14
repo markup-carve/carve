@@ -6,7 +6,7 @@
       "set_when_closes": "paragraph",
       "condition": "paragraph_is_one_block_image_line",
       "shape": "block_image",
-      "tree_field": "paragraph.blockImage",
+      "tree_field": "paragraph.role=image",
       "clauses": ["C2-B-157", "C2-B-191", "C2-B-197", "C2-A-136"]
     },
     {
@@ -29,7 +29,7 @@
       "set_when_closes": "paragraph",
       "condition": "paragraph_is_one_display_math_line",
       "shape": "display_math",
-      "tree_field": "paragraph.blockMath",
+      "tree_field": "paragraph.role=math",
       "clauses": ["C2-B-158", "C2-B-191", "C2-B-198", "C2-A-184"]
     },
     {

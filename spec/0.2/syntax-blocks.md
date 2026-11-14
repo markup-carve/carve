@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or left of every open list, where it continues the outermost one as it does with no paragraph open (C2-B-054), or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. So below `  - a` the line `- b` is a second item and not text. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet, the bare dot, or an ordered marker whose value is 1 in any spelling, such as `1`, `01`, `a`, `A`, `i` and `I`: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost list when its marker matches under C2-B-049; otherwise it closes the open lists and opens a new one, whatever its value. A marker indented past an item's, description's or footnote body's marker opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -953,10 +953,10 @@ Example 42 (unverified)
 
 ```html
 <ul class="task-list">
-  <li class="task"><input type="checkbox" disabled aria-label="a"> a</li>
-  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="b"> b</li>
-  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="c"> c</li>
-  <li data-task-state="_" class="task"><input type="checkbox" disabled aria-label="d"> d</li>
+  <li class="task" style="list-style: none"><input type="checkbox" disabled aria-label="a"> a</li>
+  <li data-task-state="x" class="task" style="list-style: none"><input type="checkbox" checked disabled aria-label="b"> b</li>
+  <li data-task-state="x" class="task" style="list-style: none"><input type="checkbox" checked disabled aria-label="c"> c</li>
+  <li data-task-state="_" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="d"> d</li>
 </ul>
 ```
 
@@ -1005,7 +1005,7 @@ Example 45 (unverified)
 
 ```html
 <ul class="task-list">
-  <li class="task"><input type="checkbox" disabled aria-label="a"> a</li>
+  <li class="task" style="list-style: none"><input type="checkbox" disabled aria-label="a"> a</li>
   <li>b</li>
 </ul>
 ```

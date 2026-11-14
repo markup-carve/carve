@@ -263,7 +263,7 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the paragraphs and headings that are direct children of the item, in order, and is empty when there are none. The input carries `checked` before `disabled` when the mark is `x`. The item carries the base class `task`, so that a stylesheet can take the bullet from a boxed item with one rule, `li.task { list-style: none }`, in a tight and in a loose list. A list with at least one task item carries the base class `task-list`; its other items are plain `<li>` elements.
+**C2-H-032** This replaces the earlier draft dependence on a stylesheet rule. A task item carries the base class `task` and `style="list-style: none"`, so its bullet is never shown. An authored `style` follows the declaration after `; `. It starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text of its direct paragraph and heading children. A list with a task item carries class `task-list`; its other items are plain `<li>` elements.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -300,15 +300,15 @@ Example 5 (unverified)
   <li>b</li>
 </ol>
 <ul class="task-list">
-  <li class="task"><input type="checkbox" disabled aria-label="open"> open</li>
-  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="done"> done</li>
-  <li data-task-state="-" class="task"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
-  <li data-task-state="_" class="task"><input type="checkbox" disabled aria-label="kept"> kept</li>
-  <li data-task-state="/" class="task"><input type="checkbox" disabled aria-label="half"> half</li>
-  <li data-task-state="!" class="task"><input type="checkbox" disabled aria-label="urgent"> urgent</li>
-  <li data-task-state="&gt;" class="task"><input type="checkbox" disabled aria-label="moved"> moved</li>
-  <li data-task-state="?" class="task"><input type="checkbox" disabled aria-label="unsure"> unsure</li>
-  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="Done"> Done</li>
+  <li class="task" style="list-style: none"><input type="checkbox" disabled aria-label="open"> open</li>
+  <li data-task-state="x" class="task" style="list-style: none"><input type="checkbox" checked disabled aria-label="done"> done</li>
+  <li data-task-state="-" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
+  <li data-task-state="_" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="kept"> kept</li>
+  <li data-task-state="/" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="half"> half</li>
+  <li data-task-state="!" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="urgent"> urgent</li>
+  <li data-task-state="&gt;" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="moved"> moved</li>
+  <li data-task-state="?" class="task" style="list-style: none"><input type="checkbox" disabled aria-label="unsure"> unsure</li>
+  <li data-task-state="x" class="task" style="list-style: none"><input type="checkbox" checked disabled aria-label="Done"> Done</li>
 </ul>
 ```
 
@@ -617,7 +617,7 @@ a `<i>y</i>`{=html} b
 
 **C2-H-055** A table is `<table>` with `<thead>`, `<tbody>` and `<tfoot>` for its groups. Each group tag stands on its own line and each row is one line: `<tr>`, its cells, `</tr>`. An empty group is not written.
 
-**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. A header cell in the head carries `scope="col"`, and every header cell outside the head carries `scope="row"`.
+**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. Explicit `table_cell.scope` writes `scope` with its value; otherwise a head header uses `scope="col"` and another header uses `scope="row"`. `headerIds` writes a space-separated `headers` attribute in its listed order, and each id names a header cell.
 
 **C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. Vertical alignment adds `vertical-align: VALUE;` after it, one space apart. A cell with no alignment carries no `style`. An authored `style` keeps its value and takes the declarations after it.
 
@@ -916,7 +916,7 @@ b {% mid %} c
 
 **C2-H-076** The names `samp`, `var`, `cite` and `dfn` are not core. Without their extension, `[x]{samp}` is a span with the attribute `samp=""`. An inline extension with no renderer is `<span class="ext-NAME">` around its content. The core never turns an extension name into an element name. In 0.2.0 an extension gives core nodes and `inline_extension` nodes. `block_extension` is not part of 0.2.0. An unknown optional extension renders through its fallback and is reported with the code `extension-fallback-rendered`.
 
-**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198) and is the mark `blockMath` (C2-A-184), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
+**C2-H-077** A math block is a paragraph that holds nothing but one display math span. The fact is set when the paragraph closes (C2-B-158, C2-B-198) and is the mark `role: "math"` (C2-A-184), as for a block image. It is written as `<p>` around the display form of C2-H-072, and it takes a caption (C2-H-062).
 
 **C2-H-078** A smart-punctuation node is written as its glyph. With `smartTypography` off it is written as its `source` (C2-A-098).
 
@@ -943,7 +943,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written. The destination of an email autolink is `mailto:` followed by the address, and its content is the address.
 
-**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has one. `alt` is always written, also when it is empty. A supplied image with no `src` is written with `src=""`, and one with no `alt` with `alt=""`.
+**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has a tooltip. `alt` is always written, empty for a decorative image. A supplied image without `src` writes `src=""`. A `longDescription` writes its block content immediately after the image as visible HTML; this uses the same block renderer and needs no generated id or reference.
 
 **C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-111).
 
@@ -953,7 +953,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **Exception C2-H-084** An image reference never resolves against the headings (C2-I-083).
 
-**C2-H-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: `[`, the rendered children, `]`, then `[key]` for the form `full` or `[]` for the form `collapsed`. For an image the output is `![`, the `alt` as text, `]` and the same label part. No source form is rebuilt for the children, and nothing is parsed again.
+**C2-H-085** An unresolved reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: "full"` or `[]` for `refForm: "collapsed"`. An image adds `!` and uses its `alt` as text. No source form is rebuilt for the children. A footnote reference or inline footnote among them keeps its ordinary meaning.
 
 **C2-H-086** An unresolved footnote reference renders as the text `[^key]`, and an unresolved cross-reference as the text `</#key>`. A footnote reference or an inline footnote inside an unresolved reference is an ordinary one: it takes its number and makes its note.
 
@@ -1075,7 +1075,7 @@ After.
 
 **C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-097).
 
-**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `form` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
+**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
 
 **C2-H-097** The generated text is plain text: no abbreviation, mention or typography rule is applied to it (C2-I-100).
 
@@ -1387,6 +1387,10 @@ One point is open.
 
 1. **The gate for this document.** The plan asks for one and states none. A candidate: every example of this document and of the Syntax chapters passes in phase 4, and no rendered byte depends on a sidecar.
 
+## Later clauses
+
+**C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list of `data/url-policy.json` as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
+
 ## Counts
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
@@ -1410,6 +1414,7 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **172** | **7** | **25** | **7** |
+| Later clauses | 1 | 0 | 0 | 0 |
+| **Total** | **173** | **7** | **25** | **7** |
 
-The document has 172 clauses, 7 of them marked with the word "Exception", and 32 examples, 25 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 173 clauses, 7 of them marked with the word "Exception", and 32 examples, 25 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

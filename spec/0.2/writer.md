@@ -35,7 +35,7 @@ Conventions:
 
 ## What the writer cannot spell
 
-**C2-W-011** A tree can hold a shape that no Carve source gives (C2-A-175). The writer writes what the table of C2-A-175 names and reports each dropped node or field in the diagnostics record (C2-W-103), with the code `structure-unspellable` for a node or a wrapper and `field-unspellable` for a field, which the entry names.
+**C2-W-011** A Carve writer reports every supplied node or field that source cannot spell with `structure-unspellable` or `field-unspellable`, naming its JSON path (C2-A-175). This includes `scope`, `headerIds`, `longDescription`, `decorative`, and `xref.display`; a parse of Carve source produces none of them.
 
 **C2-W-117** The table of C2-A-175 is not the whole list. For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. No such loss is silent. Among these are: a frontmatter value that holds a line of three hyphens, and a frontmatter format that does not have the shape of a format name (C2-B-164); `spacing: "loose"` on a list of one item; a caption with more than one block; a class that holds a space, a tab or a line break; a definition key that holds a closing bracket with no backslash before it, or that folds to nothing; a line comment whose value holds a line break; a paragraph, a list or a description list with no children; `figure.kind` and `directive.tocTarget`; an `autolink` whose `text` differs from its target; an `abbreviation` with no definition of its key in the document; a mention with a `label` or a kind other than `user`; and `metadata`.
 
@@ -47,13 +47,13 @@ Conventions:
 
 **C2-W-014** The loss of such a bare wrapper is the only structural difference the gates forgive for a supplied tree. A wrapper that carries attributes, a label, a destination, a level or a kind is not bare.
 
-**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line (C2-A-137). `blockImage` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
+**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line (C2-A-137). `role: "image"` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
 
 **C2-W-016** A line after the first of a code span, a raw span, a literal-text span, a math span, a braced comment or an editorial comment is a line of its leaf. Where that line would open a block (C2-B-014 to C2-B-019), no spelling keeps the value, and the writer refuses it with `field-unspellable`. A lone CR as the last character of a line is refused the same way: the writer ends every line with LF, and a CR directly before an LF is part of the line ending and no content (C2-B-010), so `a` and a CR at the end of the input has no canonical spelling.
 
 **C2-W-112** Two code spans with nothing between them have no spelling: written together, the two runs read as one span. A parse never gives that pair. For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first.
 
-**C2-W-115** A math block is written as its display math span alone on its line, with an attached attribute block glued to the span (C2-B-198). The mark `blockMath` is a fact of the tree (C2-A-184), and the written line gives it back when it is parsed.
+**C2-W-115** A math block is written as its display math span alone on its line, with an attached attribute block glued to the span (C2-B-198). The mark `role: "math"` is a fact of the tree (C2-A-184), and the written line gives it back when it is parsed.
 
 ## Layout
 
@@ -151,7 +151,7 @@ Conventions:
 
 **C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
-**C2-W-058** An include directive is written with one space inside each brace pair and one space between its parts: the path, then the section, then the options. A path is written bare where the bare form holds it, and in double quotes where it holds a space or a character at which a bare path ends, such as `#`, `@`, `}` or a quote; inside the quotes a double quote and a backslash are written with a backslash before them. A path that holds a line break has no spelling and is reported (C2-W-117). The options are written in the order in which the directive grammar of 0.1 names them (CARVE-P6-001): `@lines`, `@region`, `@rows`, `@cols`, `@shift`, `@code`. An option with another key follows these, in the order of the node. The `options` list of a parsed node is in this order (C2-A-181). An option value is written as the tree holds it; a `cols` value that kept its quotes (C2-A-181) gets no second pair.
+**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117).
 
 **C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment, and `{%%}` when its value is empty. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075), and when the block before it is a table, because the comment would become a child of the table (C2-A-086); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line (C2-A-082); a heading before it needs none and gets none, which is an exception to the blank line of C2-W-017, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
 
@@ -749,7 +749,7 @@ Fates: *ported* (the rule holds, restated in 0.2 terms), *simplified* (one of th
 | CARVE-P11-036 | three blank lines at a hard list boundary | ported | C2-W-028 |
 | CARVE-P11-037 | an unspellable block between two lists | ported | C2-W-029 |
 | CARVE-P11-038 | Markdown heading links | out of scope | none |
-| CARVE-P11-039 | `blockImage` is not content | ported | C2-W-015 |
+| CARVE-P11-039 | `role: "image"` is not content | ported | C2-W-015 |
 | CARVE-P11-040 | an empty description body | removed: 0.2 has no sentinel, and an empty supplied body is unspellable | C2-W-057 |
 | CARVE-P11-041 | the task marker | simplified | C2-W-046 |
 | CARVE-P11-042 | a block that opens a tight item, after a continuation marker | removed: 0.2 has no list continuation marker; the marker-line rule is C2-W-027 | none |

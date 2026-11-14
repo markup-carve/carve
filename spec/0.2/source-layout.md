@@ -1,10 +1,10 @@
 # Carve 0.2: the source-layout sidecar
 
-Status: first draft on `next2`. Nothing in this document is implemented yet.
+Status: draft on `next2`. The reference engine implements an earlier layout shape.
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 
-The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). Six facts are new here: they were tree fields in that draft and moved out of the tree.
+The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Six facts are new here: they were tree fields in that draft and moved out of the tree.
 
 Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nnn`. `C2-A-nnn`, `C2-B-nnn` and `C2-I-nnn` name clauses of the AST document and of the block and inline chapters.
 
@@ -93,7 +93,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-021** The joining character that a continuation row leaves in the cell's text, a space, or a line feed inside a node whose value is its source (C2-A-094, C2-B-184), is the character before `offset`. An `offset` of 0 marks the start of the node the wrap names, which need not have a `value`; no joining character is located then. A fragment that joins an empty cell has `offset` 0.
 
-**C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `form` (C2-A-105).
+**C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `refForm` (C2-A-105).
 
 **C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells, apart from `headRows`, which only a `header-rows` attribute declares (C2-A-088).
 
@@ -147,6 +147,8 @@ These facts are ported from the draft. Columns in them are the zero-based column
 **C2-L-028** `continuationStyle` has no value for a list continuation marker and `attachment` has none for a block attached by one, since 0.2 has no such marker. No fact records a leading or a trailing pipe, since a row always starts and ends with a pipe (C2-B-166).
 
 **C2-L-029** A fact that the schema declares and this document does not define is a defect.
+
+**C2-L-055** An include entry may carry `optionSpelling`, a closed object keyed by the option names of `data/include-options.json`; each value is the exact quoted or bare source spelling of that option value. The tree keeps the decoded typed value (C2-A-181), and the formatter uses this fact only when it decodes to the same value.
 
 ## Defaults
 
@@ -214,15 +216,9 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-054** A `figure_group` and a delimited table have no `openerRaw` and no `closerRaw`. A parse gives every `caption` the `attachment` `preceding`; `none` occurs only in a supplied record. A comment whose line lacks the mark of its quote has no `markerColumn`. `lineEndings` reports what the source holds, a lone CR included, although a lone CR ends no line (C2-B-010).
 
-## Schema changes owed
+## Schema
 
-`resources/ast-source-layout-schema.json` is not edited in this pull request. To match this document:
-
-1. `version`: `const` 2.
-2. `nodeLayout` gains `bare`, `fenced` and `hardBreakOpener` (boolean), `continuationLines` (integer, minimum 0), `rawRef` (string), `sourceFormat` (enum `pipe`, `csv`, `tsv`) and `wraps` (list of objects with required `line`, `path` and `offset` and optional `row`).
-3. `continuationStyle`: remove `explicit` from the enum.
-4. `attachment`: remove `continuation` and `detached` from the enum.
-5. `nodeLayout` loses `leadingPipe` and `trailingPipe`.
+[`data/layout-schema.json`](data/layout-schema.json) defines the closed version 2 layout record.
 
 ## Open
 
