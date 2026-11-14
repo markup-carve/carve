@@ -388,9 +388,9 @@ Carve uses:
 ```carve
 /italic/
 *bold*
-_underline_
-~strikethrough~
-=highlight=
+{_underline_}
+{~strikethrough~}
+{=highlight=}
 {^super^}
 {,sub,}
 ```
@@ -726,7 +726,7 @@ character. It collects the definition table, then resolves the reference.
 ```carve
 # Intro
 
----
+***
 ```
 
 This is unambiguous:

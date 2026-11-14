@@ -404,7 +404,6 @@ fence's content column remains payload:
 
 ```carve
 - item
-+
 
 Meant for the item.
 ```
@@ -447,7 +446,7 @@ not aligned by their delimiter (markup-carve/carve#3439).
 
 ```carve
 10. c
-   - d
+- d
 ```
 
 This renders an ordered list and then a separate bullet list, not a nested list.
@@ -464,7 +463,7 @@ list, and it fails the same way:
 ```carve
 10. c
 
-   - d
+- d
 ```
 
 This renders an ordered list and then a separate bullet list. The finding sits
@@ -482,8 +481,8 @@ way to write one by accident:
 
 ```carve
 - Rechnung
- - Entwurf
- - Final
+- Entwurf
+- Final
 - Mahnung
 ```
 
@@ -524,8 +523,10 @@ container and becomes a paragraph (markup-carve/carve#3455).
 
 ```carve
 - a
+
   :: term
- : detail
+
+: detail
 ```
 
 The `: detail` line starts one column below the definition list. Indent it to
@@ -604,7 +605,7 @@ names `***`:
 ```carve
 a
 
----
+***
 
 b
 ```
@@ -918,7 +919,7 @@ Text %% carve-lint-disable-next-line empty-link-destination
 
 %% carve-lint-disable markdown-italic-underline
 
-This _word_ is intentional.
+This {_word_} is intentional.
 
 %% carve-lint-enable markdown-italic-underline
 ```

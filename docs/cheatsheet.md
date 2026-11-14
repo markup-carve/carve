@@ -399,7 +399,7 @@ foo {% hidden %} baz          (ends at its closer, so prose can resume)
 block comment
 %%%
 
-{+inserted+}  {-deleted-}  {~old~>new~}  {#a comment#}
+{+inserted+}  {-deleted-}  {-old-}{+new+}  {#a comment#}
 ```
 
 The last line is CriticMarkup: insert, delete, substitute, comment. Its comment

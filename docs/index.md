@@ -34,7 +34,7 @@ description: Carve syntax, installation, specification, and reference implementa
 ```carve
 # Release notes
 
-This has /italic/, *bold*, _underline_, ~strikethrough~, and =highlight=.
+This has /italic/, *bold*, {_underline_}, {~strikethrough~}, and {=highlight=}.
 
 - [x] Publish the release
 - [ ] Update the package

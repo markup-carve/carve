@@ -139,10 +139,10 @@ __also bold__
 ```carve [Carve]
 /italic text/
 *bold text*
-/*bold and italic*/
-_underline_
+*/bold and italic/*
+{_underline_}
 *also bold*
-~strikethrough~
+{~strikethrough~}
 ```
 
 :::

@@ -164,8 +164,9 @@ if (x < 5)                     # Literal <
 ```carve
 * List item                    # List
 *bold text*                    # Bold
-*[HTML]: HyperText...          # Abbreviation
 5 * 3 = 15                     # Literal (spaces around)
+
+*[HTML]: HyperText...          # Abbreviation
 ```
 
 **Edge case - bold at line start:**
@@ -254,6 +255,7 @@ Version #v2                    # Tag
 # → Abbreviation (line start, ]: pattern)
 
 See *[the docs](url) for more* info
+
 # → Bold span containing a link
 ```
 
@@ -422,7 +424,6 @@ Inline `*not bold*` and `/not/italic/` are literal.
 ^ This is a caption
 
 ![Photo](img.jpg)
-
 ^ This is also a caption (blank line OK)
 
 ![Photo](img.jpg)
@@ -439,6 +440,7 @@ Some other text
 ```carve
 - item
 +                              # List-continuation marker (lone +): attaches
+
 > note                         #   the following block at its column to `item`
 
 | Cell |
@@ -547,6 +549,7 @@ marker below that column closes the body:
 :: term
 : first line
   - a list in the description
+
 - a list after the definition list
 ```
 
