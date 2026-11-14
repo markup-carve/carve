@@ -251,6 +251,8 @@ Written:
 
 **C2-W-087** Both gates hold with and without a sidecar. `fmt` reads the sidecar of its own parse, so C2-W-003 is tested on that path.
 
+**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", and a reference is written from its key and not from `rawRef` (C2-W-084). So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
+
 ## Escaping
 
 **C2-W-088** The escapes of a text are found by one procedure. The text is written bare and parsed in its context. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A backslash this procedure does not place is a defect, and so is a missing one; C2-W-125 names the few it adds.
@@ -319,7 +321,7 @@ A line.
 
 ## `carve fmt`
 
-**C2-W-100** `carve fmt` writes the canonical form of each file. With `--check` it changes nothing, prints `path:line` for the first changed line of each file with the old and the new line, and exits with status 1 when a file would change and 0 when none would. With `--diff` it prints a unified diff under the same exit codes. The path of standard input is `<stdin>`.
+**C2-W-100** `carve fmt` writes the canonical form of each file, and with `--normalize` the normalized one (C2-W-127). With `--check` it changes nothing, prints `path:line` for the first changed line of each file with the old and the new line, and exits with status 1 when a file would change and 0 when none would. With `--diff` it prints a unified diff under the same exit codes. The path of standard input is `<stdin>`.
 
 **C2-W-101** A command line fails with status 2 for an unknown option or a bad option value, for an input file that is missing or unreadable, and for AST JSON that is not valid. The first line on stderr starts with `carve[CATEGORY]:`, where CATEGORY is `usage`, `input-unreadable` or `ast-json-invalid`.
 
@@ -798,10 +800,10 @@ One point is open.
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 15 | 1 | 0 | 0 |
-| The sidecar | 5 | 0 | 0 | 0 |
+| The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **124** | **4** | **5** | **2** |
+| **Total** | **125** | **4** | **5** | **2** |
 
-The document has 124 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 125 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

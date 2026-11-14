@@ -1238,7 +1238,7 @@ in
 
 ## Options
 
-**C2-H-121** Fourteen of the 19 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
+**C2-H-121** Fourteen of the 20 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram or an equation without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
@@ -1332,7 +1332,7 @@ See [docs](https://x.org) and *bold*.
 
 ## The option list
 
-**C2-H-137** These are the 19 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+**C2-H-137** These are the 20 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
 
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
@@ -1353,6 +1353,7 @@ See [docs](https://x.org) and *bold*.
 | `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
 | `strictLosses` | render | boolean | off | C2-H-130 |
 | `alignTables` | format | boolean | off | C2-W-068 |
+| `normalize` | format | boolean | off | C2-W-127 |
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 

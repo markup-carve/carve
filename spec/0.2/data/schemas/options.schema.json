@@ -53,8 +53,8 @@
           "default_from": { "type": "string", "description": "The data file of this directory that holds the default of each entry." }
         }
       },
-      "minItems": 19,
-      "maxItems": 19
+      "minItems": 20,
+      "maxItems": 20
     }
   }
 }

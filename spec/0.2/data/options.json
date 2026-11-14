@@ -71,6 +71,14 @@
       "clauses": ["C2-H-122", "C2-H-137"]
     },
     {
+      "name": "normalize",
+      "kind": "format",
+      "read_by": "format",
+      "type": "boolean",
+      "default": false,
+      "clauses": ["C2-H-137", "C2-W-127"]
+    },
+    {
       "name": "platforms",
       "kind": "lint",
       "read_by": "lint",
