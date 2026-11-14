@@ -35,12 +35,21 @@
               "version": {
                 "type": "string",
                 "minLength": 1
+              },
+              "slots": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*$"
+                },
+                "uniqueItems": true
               }
             },
             "required": [
               "name",
               "required",
-              "version"
+              "version",
+              "slots"
             ],
             "additionalProperties": false
           }
@@ -6345,12 +6354,21 @@
               "version": {
                 "type": "string",
                 "minLength": 1
+              },
+              "slots": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]*$"
+                },
+                "uniqueItems": true
               }
             },
             "required": [
               "name",
               "required",
-              "version"
+              "version",
+              "slots"
             ],
             "additionalProperties": false
           }
@@ -8852,11 +8870,11 @@
       "dependentRequired": {
         "key": [
           "namespace",
-          "refForm"
+          "form"
         ],
         "namespace": [
           "key",
-          "refForm"
+          "form"
         ],
         "refForm": [
           "key",
@@ -11069,11 +11087,11 @@
       "dependentRequired": {
         "key": [
           "namespace",
-          "refForm"
+          "form"
         ],
         "namespace": [
           "key",
-          "refForm"
+          "form"
         ],
         "refForm": [
           "key",
@@ -19755,9 +19773,388 @@
               }
             }
           }
+        },
+        "abstract": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/admonition"
+              },
+              {
+                "$ref": "#/$defs/block_extension"
+              },
+              {
+                "$ref": "#/$defs/block_quote"
+              },
+              {
+                "$ref": "#/$defs/code_block"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/definition_list"
+              },
+              {
+                "$ref": "#/$defs/directive"
+              },
+              {
+                "$ref": "#/$defs/div"
+              },
+              {
+                "$ref": "#/$defs/figure"
+              },
+              {
+                "$ref": "#/$defs/figure_group"
+              },
+              {
+                "$ref": "#/$defs/heading"
+              },
+              {
+                "$ref": "#/$defs/include"
+              },
+              {
+                "$ref": "#/$defs/line_block"
+              },
+              {
+                "$ref": "#/$defs/list"
+              },
+              {
+                "$ref": "#/$defs/paragraph"
+              },
+              {
+                "$ref": "#/$defs/raw_block"
+              },
+              {
+                "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/table"
+              },
+              {
+                "$ref": "#/$defs/thematic_break"
+              }
+            ]
+          }
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fields": {
+          "type": "object",
+          "propertyNames": {
+            "minLength": 1
+          },
+          "maxProperties": 256,
+          "additionalProperties": {
+            "$ref": "#/definitions/metadataValue"
+          }
         }
       },
       "additionalProperties": false
+    },
+    "metadataValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "boolean"
+            },
+            "value": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "number"
+            },
+            "value": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "inlines"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/abbreviation"
+                  },
+                  {
+                    "$ref": "#/$defs/autolink"
+                  },
+                  {
+                    "$ref": "#/$defs/caption_number"
+                  },
+                  {
+                    "$ref": "#/$defs/citation_group"
+                  },
+                  {
+                    "$ref": "#/$defs/code"
+                  },
+                  {
+                    "$ref": "#/$defs/comment"
+                  },
+                  {
+                    "$ref": "#/$defs/critic_comment"
+                  },
+                  {
+                    "$ref": "#/$defs/delete"
+                  },
+                  {
+                    "$ref": "#/$defs/emphasis"
+                  },
+                  {
+                    "$ref": "#/$defs/footnote_ref"
+                  },
+                  {
+                    "$ref": "#/$defs/hard_break"
+                  },
+                  {
+                    "$ref": "#/$defs/highlight"
+                  },
+                  {
+                    "$ref": "#/$defs/image"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_extension"
+                  },
+                  {
+                    "$ref": "#/$defs/inline_footnote"
+                  },
+                  {
+                    "$ref": "#/$defs/insert"
+                  },
+                  {
+                    "$ref": "#/$defs/link"
+                  },
+                  {
+                    "$ref": "#/$defs/literal_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/math"
+                  },
+                  {
+                    "$ref": "#/$defs/mention"
+                  },
+                  {
+                    "$ref": "#/$defs/non_breaking_space"
+                  },
+                  {
+                    "$ref": "#/$defs/raw_inline"
+                  },
+                  {
+                    "$ref": "#/$defs/ruby"
+                  },
+                  {
+                    "$ref": "#/$defs/small_caps"
+                  },
+                  {
+                    "$ref": "#/$defs/smart_punctuation"
+                  },
+                  {
+                    "$ref": "#/$defs/soft_break"
+                  },
+                  {
+                    "$ref": "#/$defs/span"
+                  },
+                  {
+                    "$ref": "#/$defs/strike"
+                  },
+                  {
+                    "$ref": "#/$defs/strong"
+                  },
+                  {
+                    "$ref": "#/$defs/subscript"
+                  },
+                  {
+                    "$ref": "#/$defs/superscript"
+                  },
+                  {
+                    "$ref": "#/$defs/symbol"
+                  },
+                  {
+                    "$ref": "#/$defs/tag"
+                  },
+                  {
+                    "$ref": "#/$defs/text"
+                  },
+                  {
+                    "$ref": "#/$defs/underline"
+                  },
+                  {
+                    "$ref": "#/$defs/xref"
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "blocks"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/admonition"
+                  },
+                  {
+                    "$ref": "#/$defs/block_extension"
+                  },
+                  {
+                    "$ref": "#/$defs/block_quote"
+                  },
+                  {
+                    "$ref": "#/$defs/code_block"
+                  },
+                  {
+                    "$ref": "#/$defs/comment"
+                  },
+                  {
+                    "$ref": "#/$defs/definition_list"
+                  },
+                  {
+                    "$ref": "#/$defs/directive"
+                  },
+                  {
+                    "$ref": "#/$defs/div"
+                  },
+                  {
+                    "$ref": "#/$defs/figure"
+                  },
+                  {
+                    "$ref": "#/$defs/figure_group"
+                  },
+                  {
+                    "$ref": "#/$defs/heading"
+                  },
+                  {
+                    "$ref": "#/$defs/include"
+                  },
+                  {
+                    "$ref": "#/$defs/line_block"
+                  },
+                  {
+                    "$ref": "#/$defs/list"
+                  },
+                  {
+                    "$ref": "#/$defs/paragraph"
+                  },
+                  {
+                    "$ref": "#/$defs/raw_block"
+                  },
+                  {
+                    "$ref": "#/$defs/section"
+                  },
+                  {
+                    "$ref": "#/$defs/table"
+                  },
+                  {
+                    "$ref": "#/$defs/thematic_break"
+                  }
+                ]
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "list"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/metadataValue"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "kind",
+            "value"
+          ],
+          "properties": {
+            "kind": {
+              "const": "map"
+            },
+            "value": {
+              "type": "object",
+              "propertyNames": {
+                "minLength": 1
+              },
+              "maxProperties": 256,
+              "additionalProperties": {
+                "$ref": "#/definitions/metadataValue"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     }
   }
 }

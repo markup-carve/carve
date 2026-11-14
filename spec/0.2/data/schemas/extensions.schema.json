@@ -21,7 +21,8 @@
           "version",
           "props",
           "slots",
-          "clauses"
+          "clauses",
+          "slotOrder"
         ],
         "properties": {
           "name": {
@@ -112,6 +113,14 @@
                 "type": "string",
                 "pattern": "^[a-z][a-z0-9_]*$"
               }
+            }
+          },
+          "slotOrder": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9_]*$"
             }
           }
         },

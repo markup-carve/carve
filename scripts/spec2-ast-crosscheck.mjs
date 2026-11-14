@@ -140,7 +140,12 @@ const findings = []
 for (let i = 0; i < count; i++) {
   const source = pick(seeds)
   const mutant = (rand() < 0.1 ? enumSwap(source) : null) ?? mutate(source, nodes)
-  const valid = validate(mutant)
+  let valid = false
+  try { valid = validate(mutant) }
+  catch (error) {
+    if (!(error instanceof RangeError) || !String(error).includes('Maximum call stack size')) throw error
+    // A 300-level mutant exceeds the tree depth bound before schema validation.
+  }
   let accepted = false, reason = ''
   try { decodeTree(JSON.stringify(mutant)); accepted = true } catch (error) { reason = String(error) }
   if (valid === accepted) { agreed++; continue }

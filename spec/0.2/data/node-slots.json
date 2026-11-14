@@ -1,5 +1,5 @@
 {
-  "description": "C2-A-024 to C2-A-026. Child slots in structural walk order, generated from ast-schema.json and extensions.json.",
+  "description": "C2-A-024 to C2-A-026 and C2-A-212. Child slots in structural walk order, generated from ast-schema.json and extensions.json.",
   "nodes": {
     "abbreviation": [
       "metadata.title",
@@ -163,7 +163,9 @@
       "metadata.bibliography.title",
       "metadata.bibliography.containerTitle",
       "metadata.headers.*.children",
-      "metadata.footers.*.children"
+      "metadata.footers.*.children",
+      "metadata.abstract",
+      "metadata.fields.*"
     ],
     "emphasis": [
       "children",
@@ -511,9 +513,33 @@
       "metadata.bibliography.containerTitle"
     ]
   },
+  "recursive": {
+    "metadataValue": {
+      "ref": "#/definitions/metadataValue",
+      "nodeSlots": {
+        "inlines": "value",
+        "blocks": "value"
+      },
+      "valueSlots": {
+        "list": "value[]",
+        "map": "value.*"
+      },
+      "order": [
+        "inlines",
+        "blocks",
+        "list",
+        "map"
+      ],
+      "mapEntryOrder": "unicode_code_point"
+    }
+  },
   "extensions": {
     "carve.tab": {
       "version": "1",
+      "slotOrder": [
+        "title",
+        "body"
+      ],
       "slots": {
         "title": {
           "kind": "inline",
@@ -526,6 +552,9 @@
     },
     "carve.tabs": {
       "version": "1",
+      "slotOrder": [
+        "tabs"
+      ],
       "slots": {
         "tabs": {
           "kind": "block_extension",

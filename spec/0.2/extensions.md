@@ -8,7 +8,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-001** An extension is a versioned behavior identified by a qualified name under C2-A-123.
 
-**C2-X-002** A producer declares each qualified extension it uses on the root or envelope with a name, a version and a required or optional flag.
+**C2-X-002** A producer declares each qualified extension it uses on the root or envelope with a name, a version, a required or optional flag and an ordered `slots` list of distinct names.
 
 **C2-X-003** A reader refuses a required extension whose name or version it does not implement.
 
@@ -46,7 +46,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-019** `props` is a JSON object whose keys and value types are defined by the extension's registered schema.
 
-**C2-X-020** `slots` is an object of named child lists. Each slot name and its content kind are fixed by the extension's declaration in `data/extensions.json`. A slot name is a lowercase identifier and has no number suffix that encodes position. Repeated children form an ordered list in one slot. A walker visits declared slots in declaration order under C2-A-025.
+**C2-X-020** `slots` is an object of named child lists. The registered extension schema fixes each slot's content kind. The root or envelope declaration names the slots in order, including slots absent from a node. A slot name is a lowercase identifier and has no number suffix that encodes position. Repeated children form an ordered list in one slot. A walker visits slots in declaration order without a registry. A validator refuses a slot the declaration does not name.
 
 **C2-X-021** `payload` is an optional list of alternatives with a nonempty format and a non-null JSON value under C2-A-122.
 
@@ -66,17 +66,17 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-029** A transform gives the same node for the same claimed core node, extension version and configuration.
 
-**C2-X-030** A reader refuses a tree with more than 32 nested extension nodes on a fallback path or more than 8 MiB of decoded payload on one extension node under C2-A-132.
+**C2-X-030** A reader refuses more than 32 nested unqualified inline extension nodes along `children` used as fallback under C2-A-124, or more than 8 MiB of decoded payload on one extension node under C2-A-132.
 
-**C2-X-031** A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and an extension nesting depth greater than 32 through slots or children.
+**C2-X-031** A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and a qualified extension nesting depth greater than 32 through slots or children.
 
 ## Resolution, rendering and equality
 
 **C2-X-032** Resolution visits `children`, named slots and fallback, and does not execute or inspect props, payload or source text.
 
-**C2-X-033** A host registers a renderer by qualified name and version, and the renderer receives the node, resolved child lists, fallback, rendering profile and URL policy.
+**C2-X-033** A host registers a renderer by qualified name and version. The renderer receives the node, resolved child lists, fallback, rendering profile, URL policy and host helpers for escaped text, attributes, child lists and generated ids.
 
-**C2-X-034** A renderer returns HTML through the host's normal escaping and URL policy.
+**C2-X-034** An extension renderer is trusted host code. It returns an HTML string, which the host writes unchanged. The renderer uses the host helpers of C2-X-033 to apply escaping, the URL policy and the profile to its output. A host that renders untrusted documents registers only renderers it trusts. A structured output interface is left to a later version.
 
 **C2-X-035** With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`.
 
@@ -84,7 +84,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-037** Equality compares an extension node's name, version, props, children, slots, fallback, payload, resource ids and source record under C2-A-161.
 
-**C2-X-038** A reader validates extension props and slot names against its registered extension schema when it knows the extension.
+**C2-X-038** A reader validates extension props and slot content kinds against its registered extension schema when it knows the extension. It validates slot names against the tree declaration even without a registry.
 
 ## Standard extension: tabs
 
@@ -92,7 +92,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-040** The `tabs` matcher claims a div only when its body has one or more `tab` divs and no other blocks, and each `tab` div has a nonempty quoted title.
 
-**C2-X-041** `carve.tabs` has one slot, `tabs`, whose ordered items are `block_extension` nodes named `carve.tab` and nothing else. Each `carve.tab` has an optional `title` slot of inline nodes and a `body` slot of blocks. The transform puts the quoted title in `title` as inline content and the div body in `body`.
+**C2-X-041** `carve.tabs` has one slot, `tabs`, whose ordered items are `block_extension` nodes named `carve.tab` and nothing else. Each `carve.tab` has an optional `title` slot of inline nodes and a `body` slot of blocks. The transform puts the quoted title in `title` as inline content and the div body in `body`. Their declarations list `slots` as [`tabs`] and [`title`, `body`], respectively.
 
 **C2-X-042** The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order.
 
@@ -129,8 +129,8 @@ Tree:
   "type": "document",
   "astVersion": "2.0",
   "extensions": [
-    { "name": "carve.tab", "version": "1", "required": false },
-    { "name": "carve.tabs", "version": "1", "required": false }
+    { "name": "carve.tab", "version": "1", "required": false, "slots": ["title", "body"] },
+    { "name": "carve.tabs", "version": "1", "required": false, "slots": ["tabs"] }
   ],
   "children": [{
     "type": "block_extension",
@@ -250,6 +250,9 @@ This section is non-normative. Bridges can use these marker attributes when anot
 | `carve-abbreviation` | `abbreviation.key`, `abbreviation.namespace`, `abbreviation.expansion` | JSON object of present fields |
 | `carve-smart` | `smart_punctuation.kind`, `smart_punctuation.source`, `smart_punctuation.glyph` | JSON object of present fields |
 | `carve-task` | `list_item.task.mark` | one character |
+
+A Pandoc `Example` list round trip can use `carve-example=1` and `carve-example-delimiter=TwoParens` as list attributes to retain its document-wide counter style.
+A Pandoc bridge can carry a quoted span as matching opening and closing `smart_punctuation` nodes and pair them on export.
 
 ## Counts
 

@@ -62,7 +62,7 @@ Conventions:
 ```json
 {
   "astVersion": "2.0",
-  "extensions": [{ "name": "org.example.notes", "version": "1", "required": false }],
+  "extensions": [{ "name": "org.example.notes", "version": "1", "required": false, "slots": [] }],
   "document": { "type": "document", "astVersion": "2.0", "children": [] }
 }
 ```
@@ -73,7 +73,7 @@ Conventions:
 
 **C2-A-016** A minor version adds only three things: optional declared extensions, extension nodes with a fallback, and namespaced `data`. It adds no core field and no core node type.
 
-**C2-A-017** An extension declaration has a qualified `name`, a boolean `required` and a nonempty `version`. A reader matches the version as an exact string under C2-X-003. This replaces the earlier optional declaration version.
+**C2-A-017** An extension declaration has a qualified `name`, a boolean `required`, a nonempty `version` and `slots`, an ordered list of distinct slot names. A reader matches the version as an exact string under C2-X-003. If both the root and envelope declare one name, their version, required flag and ordered slots agree.
 
 **C2-A-018** A reader refuses a higher major version, an unknown required extension, an unknown core field, an unknown core node type and an extension node without a valid fallback.
 
@@ -89,9 +89,9 @@ Conventions:
 
 **C2-A-023** `value` is the literal payload of a node that holds text: `text`, `code`, `code_block`, `math`, `raw_block`, `raw_inline`, `literal_inline`, `comment`, `critic_comment` and `frontmatter`.
 
-**C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030. Each slot has its content kind and walk order in `spec/0.2/data/node-slots.json` and, for extensions, `data/extensions.json`.
+**C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030 and C2-A-212. Each slot has its content kind and walk order in `spec/0.2/data/node-slots.json` and, for extensions, the tree declaration.
 
-**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including nodes in typed `metadata`. It visits an extension's named slots in `data/extensions.json` order. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
+**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including typed metadata. It visits extension slots in the order of the root or envelope declaration, without a registry. It visits recursive metadata value slots as described by `data/node-slots.json`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
 
 **C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and `data/extensions.json`. It names every node-bearing child slot and its walk order.
 
@@ -101,7 +101,7 @@ Conventions:
 
 **C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it.
 
-**C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` lists of inline nodes, `authors` as a list of strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. Root metadata also admits `headers` and `footers`. Each is a list of closed objects with `placement` set to `default`, `first` or `even`, and a `children` slot of blocks. A walker visits every declared metadata slot. Extension `props` is opaque JSON, and a reader refuses a node inside `metadata` outside a declared slot or inside `props`.
+**C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` inline lists, `authors` as strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. Root metadata also admits `abstract` as blocks, `keywords` as strings, `fields` as named metadata values, and `headers` and `footers`. Each header or footer is a closed object with `placement` set to `default`, `first` or `even` and a `children` slot of blocks. A walker visits every declared metadata slot. Extension `props` is opaque JSON. A reader refuses a node inside `metadata` outside a declared slot or inside `props`.
 
 **C2-A-031** `dir` is `ltr`, `rtl` or `auto`. `dir` and `lang` are inherited from the nearest ancestor that carries them.
 
@@ -503,7 +503,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-125** A `block_extension` has a qualified name and a mandatory fallback. A 0.2.0 transform may produce one from a core div or code block under C2-X-008 to C2-X-011. This replaces the earlier phase 6 deferral and the prohibition on produced block extensions.
 
-**C2-A-126** A fallback is core content of the node's own role, block or inline, and validates as such.
+**C2-A-126** A qualified extension fallback is core content of the node's own role, block or inline. It contains no extension node and validates as core content.
 
 **C2-A-127** An unknown optional extension renders through its fallback and is reported as a loss. An unknown required extension is refused.
 
@@ -523,7 +523,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-131** `document.resources` is a manifest of closed entries with `id`, `mediaType`, `digest` in `sha256:` plus 64 lowercase hex digits, and optional `href` and `size`. `size` is a non-negative integer of bytes. A missing or duplicate referenced id is refused; unknown entry fields are refused rather than kept. This closes the earlier draft open entry shape.
 
-**C2-A-132** A reader bounds a decoded extension payload to 8 MiB per node, metadata nesting to 64 levels, resource references to 4096 per tree and fallback nesting to 32 extension nodes, and refuses an excess.
+**C2-A-132** A reader bounds a decoded extension payload to 8 MiB per node, metadata value nesting to 64 levels, resource references to 4096 per tree and fallback nesting to 32 unqualified inline extension nodes, and refuses an excess.
 
 ## Resolution results
 
@@ -720,7 +720,7 @@ These clauses were added after other documents began to cite this one. They stan
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks for nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, declared `data` keys, envelope version agreement and extension fallback depth. A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 
@@ -730,9 +730,9 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-191** Parsing Carve source produces none of these namespaces.
 
-**C2-A-192** The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers` and `footers` and reports no notice, because they are page furniture.
+**C2-A-192** The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers`, `footers`, `abstract`, `keywords` or `fields` and reports no notice.
 
-**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers` or `footers` and reports each under C2-W-011.
+**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011. It handles `fields` under the frontmatter rule of C2-W-011.
 
 **C2-A-194** Equality compares all three data values under C2-A-161.
 
@@ -751,7 +751,7 @@ These clauses were added after other documents began to cite this one. They stan
 **C2-A-199** An importer stores only style facts it can read and a target writer may ignore facts it cannot express.
 
 ```json
-{"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}}}},"metadata":{"headers":[{"placement":"default","children":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}]}],"footers":[]}}
+{"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false,"slots":[]}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}}}},"metadata":{"headers":[{"placement":"default","children":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}]}],"footers":[]}}
 ```
 
 **C2-A-200** Font families, font sizes, colors, borders, floats, columns, section breaks and arbitrary CSS remain outside `carve.style` because no small shared round-trip vocabulary covers them.
@@ -760,7 +760,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-202** `carve.annotation` may stand on any node and holds a list of ids of entries in the annotation-range sidecar.
 
-**C2-A-203** Every annotation id in that list identifies one sidecar range whose start or end path is that node or a descendant.
+**C2-A-203** A tree-only reader checks the shape of each `carve.annotation` value and refuses duplicate ids in a value or across the tree. With the annotation-range sidecar, a reader also checks that each id identifies one range whose start or end path is that node or a descendant.
 
 **C2-A-204** A block-boundary anchor uses the containing block's path and offset zero for its start or the block's annotation-text length for its end; a boundary between two blocks uses the end of the preceding block, or the start of the following block when there is no preceding block.
 
@@ -770,7 +770,7 @@ These clauses were added after other documents began to cite this one. They stan
 {"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
 ```
 
-**C2-A-206** The three namespace schemas validate only their own values, and the tree reader also checks declaration, namespace placement, sidecar references and root metadata header and footer block lists.
+**C2-A-206** The three namespace schemas validate only their own values. A tree-only reader checks declaration, namespace placement, duplicate annotation ids and root metadata child slots. A reader given the tree and annotation-range sidecar also checks every annotation id against a range.
 
 **C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count Unicode code points.
 
@@ -782,13 +782,15 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-211** The only block boundary in an empty document uses the root path with offset zero.
 
+**C2-A-212** A metadata value is an object with exactly `kind` and `value`. `kind` is `string`, `boolean`, `number`, `inlines`, `blocks`, `list` or `map`. The value has that type. `inlines` and `blocks` are child lists; `list` holds ordered metadata values; `map` holds named metadata values. A walker reaches child lists at every depth. It visits root `fields` and nested `map` entries in Unicode code point name order, and `list` entries in array order. Resolution, the URL policy and rendering profiles apply to their nodes. A reader refuses more than 64 nested metadata values or more than 256 named entries across root `metadata.fields` and nested metadata maps in one document (data/limits.json).
+
 ## Counts
 
 | Section | Clauses |
 | --- | ---: |
-| Existing AST contract | 187 |
-| Standard data namespaces and extension source exception | 22 |
-| **Total** | **209** |
+| Existing AST contract | 189 |
+| Later clauses and standard data namespaces | 23 |
+| **Total** | **212** |
 
 ## Schema changes owed
 
