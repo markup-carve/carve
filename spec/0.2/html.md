@@ -263,7 +263,7 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the paragraphs and headings that are direct children of the item, in order, and is empty when there are none. The input carries `checked` before `disabled` when the mark is `x`. The list of task items carries the base class `task-list`.
+**C2-H-032** A task item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, where TEXT is the plain text of the paragraphs and headings that are direct children of the item, in order, and is empty when there are none. The input carries `checked` before `disabled` when the mark is `x`. The item carries the base class `task`, so that a stylesheet can take the bullet from a boxed item with one rule, `li.task { list-style: none }`, in a tight and in a loose list. A list with at least one task item carries the base class `task-list`; its other items are plain `<li>` elements.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -275,7 +275,7 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 
 **C2-H-037** The bullet character adds nothing to the default output. Under `roundtrip` it is carried by `data-marker` (C2-H-112).
 
-Example 5 (generated)
+Example 5 (unverified)
 
 ::: compare
 
@@ -300,15 +300,15 @@ Example 5 (generated)
   <li>b</li>
 </ol>
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="open"> open</li>
-  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="done"> done</li>
-  <li data-task-state="-"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
-  <li data-task-state="_"><input type="checkbox" disabled aria-label="kept"> kept</li>
-  <li data-task-state="/"><input type="checkbox" disabled aria-label="half"> half</li>
-  <li data-task-state="!"><input type="checkbox" disabled aria-label="urgent"> urgent</li>
-  <li data-task-state="&gt;"><input type="checkbox" disabled aria-label="moved"> moved</li>
-  <li data-task-state="?"><input type="checkbox" disabled aria-label="unsure"> unsure</li>
-  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="Done"> Done</li>
+  <li class="task"><input type="checkbox" disabled aria-label="open"> open</li>
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="done"> done</li>
+  <li data-task-state="-" class="task"><input type="checkbox" disabled aria-label="dropped"> dropped</li>
+  <li data-task-state="_" class="task"><input type="checkbox" disabled aria-label="kept"> kept</li>
+  <li data-task-state="/" class="task"><input type="checkbox" disabled aria-label="half"> half</li>
+  <li data-task-state="!" class="task"><input type="checkbox" disabled aria-label="urgent"> urgent</li>
+  <li data-task-state="&gt;" class="task"><input type="checkbox" disabled aria-label="moved"> moved</li>
+  <li data-task-state="?" class="task"><input type="checkbox" disabled aria-label="unsure"> unsure</li>
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="Done"> Done</li>
 </ul>
 ```
 
@@ -1393,7 +1393,7 @@ One point is open.
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 1 | 1 |
 | Paragraphs, headings and sections | 17 | 1 | 3 | 0 |
-| Lists | 9 | 0 | 2 | 2 |
+| Lists | 9 | 0 | 1 | 3 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
@@ -1409,6 +1409,6 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| **Total** | **172** | **7** | **26** | **6** |
+| **Total** | **172** | **7** | **25** | **7** |
 
-The document has 172 clauses, 7 of them marked with the word "Exception", and 32 examples, 26 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 172 clauses, 7 of them marked with the word "Exception", and 32 examples, 25 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

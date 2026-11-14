@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet, the bare dot, or an ordered marker whose value is 1 in any spelling, such as `1`, `01`, `a`, `A`, `i` and `I`: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or left of every open list, where it continues the outermost one as it does with no paragraph open (C2-B-054), or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. So below `  - a` the line `- b` is a second item and not text. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet, the bare dot, or an ordered marker whose value is 1 in any spelling, such as `1`, `01`, `a`, `A`, `i` and `I`: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -433,7 +433,7 @@ Example 16 (generated)
 
 **C2-B-029** The content of a fence is stripped by at most the indent of its opener.
 
-**C2-B-030** Right-aligned ordered markers are not supported: a marker left of the list's column, directly after item text, is a lazy line, and `ordered-marker-right-aligned` reports it.
+**C2-B-030** A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list. `uneven-list-indent` reports the uneven columns, and the formatter writes all markers at one column.
 
 Example 17 (unverified)
 
@@ -491,8 +491,8 @@ Example 19 (unverified)
 
 ```html
 <ol start="9">
-  <li>a
-10. b</li>
+  <li>a</li>
+  <li>b</li>
 </ol>
 ```
 
@@ -711,7 +711,7 @@ Example 29 (generated)
 
 **C2-B-039** In an alphabetic list every single letter is a sibling, `i` included.
 
-**Exception C2-B-040** A marker of one uppercase letter and a dot needs two spaces before its content, so that an initial at the start of a paragraph, as in `A. Smith`, stays text. Every other marker needs one.
+**Exception C2-B-040** An uppercase marker with a dot, a letter or a roman numeral, needs two spaces before its content, so that an initial or an abbreviation at the start of a paragraph stays text: `A. Smith`, `II. Background` and `MD. Jones` are paragraphs. Every other marker needs one: a lowercase marker, digits, the bare dot, and an uppercase marker with `)`.
 
 **C2-B-041** The list starts at the value of its first marker.
 
@@ -940,7 +940,7 @@ mmmmmmmmmm) a
 
 Task items and plain items do not share a list (C2-B-049).
 
-Example 42 (generated)
+Example 42 (unverified)
 
 ::: compare
 
@@ -953,10 +953,10 @@ Example 42 (generated)
 
 ```html
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="a"> a</li>
-  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="b"> b</li>
-  <li data-task-state="x"><input type="checkbox" checked disabled aria-label="c"> c</li>
-  <li data-task-state="_"><input type="checkbox" disabled aria-label="d"> d</li>
+  <li class="task"><input type="checkbox" disabled aria-label="a"> a</li>
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="b"> b</li>
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label="c"> c</li>
+  <li data-task-state="_" class="task"><input type="checkbox" disabled aria-label="d"> d</li>
 </ul>
 ```
 
@@ -994,7 +994,7 @@ Example 44 (generated)
 
 :::
 
-Example 45 (generated)
+Example 45 (unverified)
 
 ::: compare
 
@@ -1005,9 +1005,7 @@ Example 45 (generated)
 
 ```html
 <ul class="task-list">
-  <li><input type="checkbox" disabled aria-label="a"> a</li>
-</ul>
-<ul>
+  <li class="task"><input type="checkbox" disabled aria-label="a"> a</li>
   <li>b</li>
 </ul>
 ```
@@ -1016,7 +1014,7 @@ Example 45 (generated)
 
 ## Siblings, adjacency and the three-blank-line boundary
 
-**C2-B-049** A list marker at an open list's column is a sibling when it matches the list in bullet character, or in ordered style and delimiter, and in being a task item or not.
+**C2-B-049** A list marker at an open list's column is a sibling when it matches the list in bullet character, or in ordered style and delimiter. A task box is a fact of its item and not of the list: items with and without a box are siblings in one list. In 0.1 a boxed item and a plain item never shared a list.
 
 **C2-B-050** A list marker at an open list's column that does not match closes that list and opens a new one.
 
@@ -5159,7 +5157,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
-| Task items | 3 | 0 | 4 | 0 |
+| Task items | 3 | 0 | 2 | 2 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
@@ -5178,7 +5176,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 31 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **221** | **15** | **172** | **59** |
+| **Total** | **221** | **15** | **170** | **61** |
 
 The chapter has 221 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
