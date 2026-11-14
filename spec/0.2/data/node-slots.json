@@ -1,0 +1,512 @@
+{
+  "description": "C2-A-024 to C2-A-026. Child slots in structural walk order, generated from ast-schema.json.",
+  "nodes": {
+    "abbreviation": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "abbreviation_def": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "admonition": [
+      "children",
+      "title",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "autolink": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "block_extension": [
+      "children",
+      "fallback",
+      "slots.*",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "block_quote": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "caption": [
+      "children",
+      "short",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "caption_number": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "cell_paragraph": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "citation": [
+      "prefix",
+      "locator.children",
+      "suffix",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "citation_definition": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "citation_group": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "code": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "code_block": [
+      "title",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "comment": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "critic_comment": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "definition_description": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "definition_list": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "definition_term": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "delete": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "directive": [
+      "children",
+      "title",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "div": [
+      "children",
+      "title",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "document": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "emphasis": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "figure": [
+      "children",
+      "caption",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "figure_group": [
+      "children",
+      "caption",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "footnote": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "footnote_ref": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "frontmatter": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "hard_break": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "heading": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "highlight": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "image": [
+      "longDescription",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "include": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "inline_extension": [
+      "children",
+      "fallback",
+      "slots.*",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "inline_footnote": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "insert": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "line": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "line_block": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "link": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "link_reference_definition": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "list": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "list_item": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "literal_inline": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "math": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "mention": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "non_breaking_space": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "paragraph": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "raw_block": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "raw_inline": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "ruby": [
+      "pairs",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "ruby_pair": [
+      "base",
+      "annotation",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "section": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "small_caps": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "smart_punctuation": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "soft_break": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "span": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "strike": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "strong": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "subscript": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "superscript": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "symbol": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table": [
+      "children",
+      "caption",
+      "columns",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_body": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_cell": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_column": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_foot": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_head": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "table_row": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "tag": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "text": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "thematic_break": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "underline": [
+      "children",
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ],
+    "xref": [
+      "metadata.title",
+      "metadata.subtitle",
+      "metadata.bibliography.title",
+      "metadata.bibliography.containerTitle"
+    ]
+  }
+}

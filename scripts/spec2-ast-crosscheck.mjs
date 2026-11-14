@@ -21,6 +21,7 @@ const local = Object.fromEntries(Object.entries(schema.$defs).map(([type, defini
   }
   if (type === 'citation_group') { delete shallow.if; delete shallow.then }
   shallow.$defs = schema.$defs
+  shallow.definitions = schema.definitions
   return [type, localAjv.compile(shallow)]
 }))
 function localError(value) {
@@ -124,16 +125,16 @@ function enumSwap(source) {
 }
 const rare = { type: 'document', astVersion: '2.0', children: [
   { type: 'paragraph', children: [
-    { type: 'ruby', pairs: [{ type: 'rubyPair', base: [{ type: 'text', value: 'a' }], annotation: [] }] },
+    { type: 'ruby', pairs: [{ type: 'ruby_pair', base: [{ type: 'text', value: 'a' }], annotation: [] }] },
     { type: 'inline_extension', name: 'kbd', children: [{ type: 'text', value: 'a' }], fallback: [{ type: 'text', value: 'a' }], payload: [{ format: 'text/plain', value: 'a' }] },
-    { type: 'citation_group', raw: '[@a]', children: [{ type: 'citation', key: 'a', namespace: 'citation', suppressAuthor: false }] },
+    { type: 'citation_group', raw: '[@a]', children: [{ type: 'citation', key: 'a', namespace: 'citation', mode: 'normal' }] },
   ] },
   { type: 'block_extension', name: 'org.example.x', children: [], fallback: [], payload: [{ format: 'text/plain', value: 'a' }] },
   { type: 'table', columns: [{ type: 'table_column' }], children: [{ type: 'table_body', children: [{ type: 'table_row', children: [{ type: 'table_cell', header: false, children: [{ type: 'cell_paragraph', children: [] }] }] }] }] },
 ] }
 const seeds = seedTrees.concat(Array.from({length: seedTrees.length}, () => rare))
 const nodes = seeds.flatMap(x => containers(x).filter(v => !Array.isArray(v) && typeof v.type === 'string'))
-const count = Math.max(100000, Number(process.env.AST_FUZZ_COUNT ?? 100000))
+const count = Number(process.env.AST_FUZZ_COUNT ?? 100000)
 let agreed = 0, schemaOnly = 0, engineOnly = 0
 const findings = []
 for (let i = 0; i < count; i++) {

@@ -149,6 +149,39 @@ else {
     if (definition.properties?.type?.const !== type) fail(`ast-schema.json: ${type} must define type const ${type}`)
   }
   counts.push(`ast-schema.json node definitions: ${definitions.size}`)
+
+  const resultsPath = join(dataDir, 'ast-results.json')
+  if (!existsSync(resultsPath)) fail('ast-results.json: data file is missing')
+  else {
+    const results = JSON.parse(readFileSync(resultsPath, 'utf8'))
+    const listed = new Set()
+    for (const type of definitions) if (!(type in (results.nodes ?? {}))) fail(`ast-results.json: missing node ${type}`)
+    for (const [type, entries] of Object.entries(results.nodes ?? {})) {
+      if (!definitions.has(type)) fail(`ast-results.json: unknown node ${type}`)
+      for (const entry of entries) {
+        const key = `${type}.${entry.field}`
+        if (listed.has(key)) fail(`ast-results.json: duplicate ${key}`)
+        listed.add(key)
+        const field = schema.$defs[type]?.properties?.[entry.field]
+        if (!field) fail(`ast-results.json: unknown field ${key}`)
+        else if (field.$comment !== `resolution result${entry.when ? ` when ${entry.when}` : ''}`) fail(`ast-results.json: schema marker differs for ${key}`)
+      }
+    }
+    for (const [type, definition] of Object.entries(schema.$defs)) {
+      for (const [field, shape] of Object.entries(definition.properties ?? {})) {
+        if (shape.$comment?.startsWith('resolution result') && !listed.has(`${type}.${field}`)) fail(`ast-results.json: missing ${type}.${field}`)
+      }
+    }
+    counts.push(`ast-results.json result fields: ${listed.size}`)
+  }
+
+  const layoutPath = join(dataDir, 'layout-schema.json')
+  if (!existsSync(layoutPath)) fail('layout-schema.json: data file is missing')
+  else try { ajv.compile(JSON.parse(readFileSync(layoutPath, 'utf8'))) } catch (error) { fail(`layout-schema.json: invalid JSON Schema: ${error.message}`) }
+  const slotsPath = join(dataDir, 'node-slots.json')
+  if (!existsSync(slotsPath)) fail('node-slots.json: data file is missing')
+  else try { execFileSync('node', [join(root, 'scripts/spec2-node-slots.mjs'), '--check'], { cwd: root, stdio: 'pipe' }) }
+  catch { fail('node-slots.json: does not match slots generated from ast-schema.json') }
 }
 
 // Names that one file takes from another.
