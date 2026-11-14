@@ -1,4 +1,4 @@
-# Bericht
+= Bericht
 
 Einleitung mit Umlauten: Fußzeile, Prüfstand.
 
@@ -10,3 +10,4 @@ $x = 1;
 ## Nächster Abschnitt
 
 Text danach.
+```

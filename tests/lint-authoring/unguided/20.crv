@@ -1,9 +1,8 @@
-# On-call handoff
+= On-call handoff
 
-| Alert | Owner | Next check |
-| --- | --- | --- |
-| [Alert 1] | [Owner] | [Time][^utc] |
-| [Alert 2] | [Owner] | [Time][^utc] |
+|= Alert |= Owner |= Next check |
+| [Alert 1] | [Owner] | [Time]\[^utc] |
+| [Alert 2] | [Owner] | [Time]\[^utc] |
 
 Table: Open alerts
 

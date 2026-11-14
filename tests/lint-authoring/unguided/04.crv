@@ -1,4 +1,4 @@
-# Rotate a service token
+= Rotate a service token
 
 1. Create a new service token.
 2. Update the service to use the new token.
