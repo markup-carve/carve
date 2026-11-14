@@ -4419,7 +4419,7 @@ title: x
 
 **C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above.
 
-**C2-B-173** A failed span is an empty cell.
+**C2-B-173** A failed span is an empty cell. The empty cell that a failed span mark leaves is a header cell when every other cell of its row is one, so `|=|^|` is a head row of two header cells; in any other row it is a body cell.
 
 **Exception C2-B-174** A row span does not cross the head boundary.
 
