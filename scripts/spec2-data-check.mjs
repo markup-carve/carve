@@ -126,6 +126,31 @@ for (const [file, lists] of Object.entries(FILES)) {
   }
 }
 
+// The AST schema is the 0.2 tree contract. Its definitions are exactly the
+// node rows in ast.md; the envelope is a second top-level shape.
+const astSchemaPath = join(dataDir, 'ast-schema.json')
+if (!existsSync(astSchemaPath)) fail('ast-schema.json: data file is missing')
+else {
+  const schemaText = readFileSync(astSchemaPath, 'utf8')
+  const schema = JSON.parse(schemaText)
+  try { ajv.compile(schema) } catch (error) { fail(`ast-schema.json: invalid JSON Schema: ${error.message}`) }
+  collectClauses(schema, 'ast-schema.json')
+  for (const match of schemaText.matchAll(/C2-[ABHILW]-\d{3}/g)) {
+    cited.add(match[0])
+    if (!defined.has(match[0])) fail(`ast-schema.json: cites ${match[0]}, which no document defines`)
+  }
+  const astText = readDocument('ast', DOCUMENTS.ast).text
+  const table = astText.match(/\| Type \| Occurs in \| `children` \| Fields \|[\s\S]*?(?=\n\*\*C2-A-051\*\*)/)?.[0] ?? ''
+  const rows = new Set([...table.matchAll(/^\| `([^`]+)` \|/gm)].map(match => match[1]))
+  const definitions = new Set(Object.keys(schema.$defs ?? {}))
+  for (const type of rows) if (!definitions.has(type)) fail(`ast-schema.json: missing node definition ${type}`)
+  for (const type of definitions) if (!rows.has(type)) fail(`ast-schema.json: definition ${type} has no node-table row`)
+  for (const [type, definition] of Object.entries(schema.$defs ?? {})) {
+    if (definition.properties?.type?.const !== type) fail(`ast-schema.json: ${type} must define type const ${type}`)
+  }
+  counts.push(`ast-schema.json node definitions: ${definitions.size}`)
+}
+
 // Names that one file takes from another.
 const names = (file, list, key = 'name') => new Set((data[file]?.[list] ?? []).map(row => row[key]))
 const shapes = names('line-shapes', 'shapes')
