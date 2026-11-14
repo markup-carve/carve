@@ -1,0 +1,145 @@
+{
+  "$schema": "ast-results-v1",
+  "description": "C2-A-133 and C2-A-161 to C2-A-162. Fields omitted from semantic equality when they are resolution results.",
+  "nodes": {
+    "abbreviation": [
+      {
+        "field": "expansion"
+      }
+    ],
+    "abbreviation_def": [],
+    "admonition": [],
+    "autolink": [],
+    "block_extension": [],
+    "block_quote": [],
+    "caption": [],
+    "caption_number": [
+      {
+        "field": "n"
+      }
+    ],
+    "cell_paragraph": [],
+    "citation": [
+      {
+        "field": "number"
+      },
+      {
+        "field": "useIndex"
+      }
+    ],
+    "citation_definition": [],
+    "citation_group": [],
+    "code": [],
+    "code_block": [],
+    "comment": [],
+    "critic_comment": [],
+    "definition_description": [],
+    "definition_list": [],
+    "definition_term": [],
+    "delete": [],
+    "directive": [],
+    "div": [],
+    "document": [
+      {
+        "field": "stages"
+      }
+    ],
+    "emphasis": [],
+    "figure": [],
+    "figure_group": [],
+    "footnote": [],
+    "footnote_ref": [
+      {
+        "field": "number"
+      }
+    ],
+    "frontmatter": [],
+    "hard_break": [],
+    "heading": [
+      {
+        "field": "generatedId"
+      }
+    ],
+    "highlight": [],
+    "image": [
+      {
+        "field": "src",
+        "when": "reference use"
+      }
+    ],
+    "include": [],
+    "inline_extension": [],
+    "inline_footnote": [
+      {
+        "field": "number"
+      }
+    ],
+    "insert": [],
+    "line": [],
+    "line_block": [],
+    "link": [
+      {
+        "field": "href",
+        "when": "reference use"
+      }
+    ],
+    "link_reference_definition": [],
+    "list": [],
+    "list_item": [],
+    "literal_inline": [],
+    "math": [
+      {
+        "field": "number"
+      },
+      {
+        "field": "numberPrefix"
+      }
+    ],
+    "mention": [],
+    "non_breaking_space": [],
+    "paragraph": [],
+    "raw_block": [],
+    "raw_inline": [],
+    "ruby": [],
+    "ruby_pair": [],
+    "section": [],
+    "small_caps": [],
+    "smart_punctuation": [],
+    "soft_break": [],
+    "span": [],
+    "strike": [],
+    "strong": [],
+    "subscript": [],
+    "superscript": [],
+    "symbol": [],
+    "table": [],
+    "table_body": [],
+    "table_cell": [
+      {
+        "field": "colspan",
+        "when": "derived from authored span mark"
+      },
+      {
+        "field": "rowspan",
+        "when": "derived from authored span mark"
+      }
+    ],
+    "table_column": [
+      {
+        "field": "resolvedAlign"
+      }
+    ],
+    "table_foot": [],
+    "table_head": [],
+    "table_row": [],
+    "tag": [],
+    "text": [],
+    "thematic_break": [],
+    "underline": [],
+    "xref": [
+      {
+        "field": "href"
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 # Carve 0.2: the AST, contract 2.0
 
-Status: first draft on `next2`. Nothing in this document is implemented yet.
+Status: draft on `next2`. The reference engine implements an earlier 2.0 shape.
 
 This document defines the tree a Carve 0.2 parser returns and its JSON form, which one implementation writes and another reads. It is ported from the contract 2.0 draft on the `next-ast2` branch (PART 12 of the 0.1 grammar, clauses CARVE-P12-nnn) and brought in line with the 0.2 syntax. Spelling that the draft kept in the tree lives in the source-layout sidecar, which has its own document (`source-layout.md`).
 
@@ -8,14 +8,14 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-A-nnn`. The prefix is new in 0.2. No 0.1 clause id is reused.
 - `C2-B-nnn` and `C2-I-nnn` name clauses of the block and inline chapters, `C2-L-nnn` clauses of the source-layout document.
-- The machine-readable form of this contract is `resources/ast-schema.json`. Where the schema on `next2` and this document disagree, the section "Schema changes owed" lists the edit.
+- The machine-readable form of this contract is `spec/0.2/data/ast-schema.json`. The schema and this document define the same 2.0 contract.
 - JSON examples are complete, valid JSON. They leave out `pos` unless the example is about positions.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause.
 - A *producer* writes a tree, a *reader* ingests one, a *writer* turns a tree into Carve source or another format.
 - A *container* is a node that holds blocks: a quote, a list item, a description, a footnote, a div and its named kinds. A list, a description list and a table are not containers; they hold only their own member nodes.
 - A *definition* is one of the four top-level definition nodes: a link, footnote, abbreviation or citation definition. The node type `definition_list` is the type of what the prose calls a description list.
 - A *comment* is a `comment` node of any of its three forms. An *editorial comment* is a `critic_comment`.
-- The *reference form* is the field `form` of a link or image written as a reference. The *display form* is the field `form` of an `xref`. The two fields share a name and the value `full`, and nothing else.
+- The *reference form* is the field `refForm` of a link or image written as a reference. The *display form* is the field `display` of an `xref`. The fields have separate names and meanings.
 - Where a rule differs from the contract 2.0 draft on `next-ast2`, the section "Migration" says what a draft tree held. The clauses state the rule alone.
 
 ## Tree and sidecars
@@ -36,11 +36,11 @@ Conventions:
 
 ## Root, envelope and versions
 
-**C2-A-008** The root is a node of type `document`. It carries block `children` and `astVersion`, which is `"2.0"`.
+**C2-A-008** The root is a `document` node with block `children` and `astVersion` in the form `2.MINOR`, where MINOR is a non-negative decimal integer without a leading zero; a 2.0 producer writes `"2.0"`.
 
 **C2-A-009** The root may carry `srcByteLength`, `extensions`, `stages`, `resources` and the common node fields (C2-A-027). No other root field is allowed.
 
-**C2-A-010** `srcByteLength` is the number of source bytes read. Zero means an empty source, and an absent field means the source was not measured. A reader ignores a value that is present but wrong.
+**C2-A-010** `srcByteLength` is the measured number of source bytes, with zero for empty source and absence for unmeasured source. A reader with the source refuses a mismatched value; a reader without the source keeps it as supplied.
 
 **C2-A-011** Document content does not hang off the root: frontmatter and definitions are nodes in `children`.
 
@@ -57,7 +57,7 @@ Conventions:
 
 **C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-169).
 
-**C2-A-013** The envelope wraps the tree and does not change it: the `document` inside keeps its own `astVersion`, and every clause here applies to it.
+**C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
 
 ```json
 {
@@ -77,7 +77,7 @@ Conventions:
 
 **C2-A-018** A reader refuses a higher major version, an unknown required extension, an unknown core field, an unknown core node type and an extension node without a valid fallback.
 
-**C2-A-019** A reader accepts a higher minor version when every addition is one that C2-A-016 allows.
+**C2-A-019** A reader accepts every minor version of major 2 that it can read under the additions allowed by C2-A-016.
 
 **C2-A-020** No reader has a degrade-and-report path for an unknown core node type, format bridges included: under C2-A-016 such a type can only come from a broken tree or from another major version.
 
@@ -89,19 +89,19 @@ Conventions:
 
 **C2-A-023** `value` is the literal payload of a node that holds text: `text`, `code`, `code_block`, `math`, `raw_block`, `raw_inline`, `literal_inline`, `comment`, `critic_comment` and `frontmatter`.
 
-**C2-A-024** Content with a different role sits in a named secondary slot: `caption` on a table, a figure and a figure group, `short` on a caption, `prefix`, `locator` and `suffix` on a citation, `pairs` on ruby with `base` and `annotation` on each pair, `title` on a code block, an admonition and a directive, `fallback` on an extension node, and each entry of an extension node's `slots`.
+**C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030. Each slot has the role and walk order in `spec/0.2/data/node-slots.json`.
 
-**C2-A-025** A walker visits `children` first and then the secondary slots in the order of C2-A-024. It does not treat a string `value`, a `source`, a URL, opaque `data` or an extension `payload` as a child. Resolution is the exception: it numbers and resolves in document order, which visits `title`, then `children`, then `caption` (C2-L-011), so a footnote in the title of an admonition takes its number before one in the body.
+**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including nodes in typed `metadata`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
 
-**C2-A-026** The slot table `resources/node-roles.json` is generated from the schema and names every slot that holds nodes, so a walker needs no knowledge of single node types.
+**C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and names every node-bearing child slot and its walk order.
 
 **C2-A-027** Every typed node may carry the common fields `attrs`, `data`, `pos`, `segments`, `metadata`, `dir` and `lang`, as far as its schema definition allows.
 
-**C2-A-028** Nodes are closed: a field the schema does not name on a node type is an error (C2-A-169).
+**C2-A-028** Nodes are closed: a field the schema does not name on a node type is an error (C2-A-169). Unknown fields inside `task`, `marker`, a payload alternative or a manifest entry are refused as well.
 
-**C2-A-029** `data` is the one must-ignore zone. Its keys are qualified extension names declared on the root or the envelope, and a reader keeps unknown optional `data` without interpreting it.
+**C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it.
 
-**C2-A-030** `metadata` values are scalars, nested arrays and objects, or lists of block nodes. A walker recurses into `metadata` and into extension `props` and visits the block nodes it finds there.
+**C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` lists of inline nodes, `authors` as a list of strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. A walker visits its inline slots. Extension `props` is opaque JSON, and a reader refuses a node inside `metadata` outside a declared slot or inside `props`. This replaces the earlier draft rule that walked arbitrary objects.
 
 **C2-A-031** `dir` is `ltr`, `rtl` or `auto`. `dir` and `lang` are inherited from the nearest ancestor that carries them.
 
@@ -172,16 +172,16 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `block_quote` | block | blocks | none |
 | `caption` | `caption` slot | blocks | `short`? |
 | `caption_number` | inline | none | `n`? |
-| `cell_paragraph` | `table_cell` | inlines | `blockImage`? |
-| `citation` | `citation_group` | none | `key`, `prefix`?, `locator`?, `locatorLabel`?, `locatorValue`?, `suffix`?, `suppressAuthor`, `mode`?, `number`?, `useIndex`?, `namespace` |
-| `citation_definition` | top level | inlines | `key`, `namespace` |
-| `citation_group` | inline | `citation` | `raw`, `mode`? |
+| `cell_paragraph` | `table_cell` | inlines | none |
+| `citation` | `citation_group` | none | `key`, `prefix`?, `locator`?, `suffix`?, `mode`?, `number`?, `useIndex`?, `namespace` |
+| `citation_definition` | top level | inlines | `key`, `namespace`, `metadata`? |
+| `citation_group` | inline | `citation` | `raw` |
 | `code` | inline | none | `value` |
 | `code_block` | block | none | `value`, `syntax`?, `title`?, `groupLabel`? |
 | `comment` | block, inline | none | `form`, `value` |
 | `critic_comment` | inline | none | `value` |
 | `definition_description` | `definition_list` | blocks | none |
-| `definition_list` | block | `definition_term`, `definition_description` | none |
+| `definition_list` | block | `definition_term`, `definition_description`, `comment` | none |
 | `definition_term` | `definition_list` | inlines | none |
 | `delete` | inline | inlines | none |
 | `directive` | block | blocks | `kind`, `title`?, `groupLabel`?, `tocTarget`? |
@@ -196,26 +196,26 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `hard_break` | inline | none | none |
 | `heading` | block | inlines | `level`, `generatedId`? |
 | `highlight` | inline | inlines | none |
-| `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `form`? |
+| `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
 | `include` | block | none | `path`, `section`?, `options`? |
 | `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`? |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
 | `line` | `line_block` | inlines | none |
 | `line_block` | block | `line` | none |
-| `link` | inline | inlines | `href`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `form`? |
-| `link_reference_definition` | top level | none | `href`, `title`?, `key`, `namespace` |
+| `link` | inline | inlines | `href`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `refForm`? |
+| `link_reference_definition` | top level | none | `href`, `tooltip`?, `key`, `namespace` |
 | `list` | block | `list_item` | `marker`, `spacing` |
 | `list_item` | `list` | blocks | `task`? |
 | `literal_inline` | inline | none | `value` |
 | `math` | inline | none | `display`, `number`?, `value`, `numberPrefix`? |
 | `mention` | inline | none | `target`, `kind`, `label`? |
 | `non_breaking_space` | inline | none | none |
-| `paragraph` | block | inlines | `blockImage`?, `blockMath`? |
+| `paragraph` | block | inlines | `role`? |
 | `raw_block` | block | none | `format`, `value` |
 | `raw_inline` | inline | none | `format`, `value` |
 | `ruby` | inline | none | `pairs` |
-| `rubyPair` | `ruby.pairs` | none | `base`, `annotation` |
+| `ruby_pair` | `ruby.pairs` | none | `base`, `annotation` |
 | `section` | block | blocks | `level`? |
 | `small_caps` | inline | inlines | none |
 | `smart_punctuation` | inline | none | `kind`, `glyph`?, `source` |
@@ -228,7 +228,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `symbol` | inline | none | `name` |
 | `table` | block | table groups, `comment` | `columns`, `caption`? |
 | `table_body` | `table` | `table_row`, `comment` | `headRows`?, `rowHeadColumns`? |
-| `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`? |
+| `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`?, `scope`?, `headerIds`? |
 | `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`?, `authored`? |
 | `table_foot` | `table` | `table_row`, `comment` | none |
 | `table_head` | `table` | `table_row`, `comment` | none |
@@ -237,9 +237,9 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `text` | inline | none | `value` |
 | `thematic_break` | block | none | none |
 | `underline` | inline | inlines | none |
-| `xref` | inline | none | `href`?, `key`, `namespace`, `form`? |
+| `xref` | inline | none | `href`?, `key`, `namespace`, `display`? |
 
-**C2-A-051** A list of blocks admits only content blocks. A type that exists only inside its container (`list_item`, `definition_term`, `definition_description`, `line`, the table groups, `table_row`, `table_cell`, `cell_paragraph`, `caption`, `citation`, `rubyPair`, `table_column`) is refused anywhere else.
+**C2-A-051** A list of blocks admits only content blocks. A type that exists only inside its container (`list_item`, `definition_term`, `definition_description`, `line`, the table groups, `table_row`, `table_cell`, `cell_paragraph`, `caption`, `citation`, `ruby_pair`, `table_column`) is refused anywhere else.
 
 **C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-081). Each stands at its place in source order among the other blocks; no definition is moved or collected. A reader refuses one inside a container.
 
@@ -257,13 +257,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-057** A marker that carries fields of both kinds is invalid.
 
-**C2-A-058** `marker.start` is the value of the first marker and is omitted when it is 1. A reader that meets `start: 1` drops it.
+**C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it.
 
 **C2-A-059** `list.spacing` is `tight` or `loose` and is set when the list closes (C2-B-062). No list attribute overrides it.
 
-**C2-A-060** A task item carries `task`, an object with `mark` and `status`. `mark` is one of the eight characters space, `x`, `_`, `-`, `/`, `!`, `>` and `?`. An authored `X` is recorded as `x`. `_` is kept as its own value, because it renders differently from the space.
+**C2-A-060** A task item carries `task`, a closed object with only `mark`. `mark` is one of the eight characters space, `x`, `_`, `-`, `/`, `!`, `>` and `?`; a parsed `X` becomes `x`.
 
-**C2-A-061** `status` follows from `mark`: space and `_` are `todo`, `x` is `done`, `-` is `canceled`, `/` is `in-progress`, `!` is `blocked`, `>` is `partial` and `?` is `other`. A node whose pair disagrees is invalid.
+**C2-A-061** A consumer derives task status from `mark` using `data/task-states.json`; `status` is never stored in the 2.0 tree. This replaces the earlier draft pair of `mark` and `status`.
 
 ```json
 {
@@ -281,7 +281,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Description lists
 
-**C2-A-062** A `definition_list` carries `children`: its `definition_term` and `definition_description` nodes in document order. A term holds inlines and a description holds blocks.
+**C2-A-062** A `definition_list` holds `definition_term`, `definition_description` and source `comment` nodes in document order. A term holds inlines and a description holds blocks.
 
 **C2-A-063** The grouping of terms and descriptions is not published. A run of terms belongs to the descriptions that follow it.
 
@@ -320,7 +320,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-070** A `heading` carries `level` and inline `children`, which hold a `soft_break` or a `hard_break` where the heading continues on a further line (C2-B-154). The marker character is not recorded in the tree, and the formatter writes `=`.
 
-**C2-A-071** `heading.level` is a positive integer. Carve source gives 1 to 6, an imported tree may hold more, and a renderer writes a level its target lacks in that target's own way, without changing the tree (C2-H-021).
+**C2-A-071** `heading.level` is an integer of at least 1, and a reader refuses a smaller value. Carve source gives 1 to 6, and an imported tree may hold more (C2-H-021).
 
 **C2-A-072** A `thematic_break` has no fields of its own: 0.2 has one spelling, the star run.
 
@@ -336,7 +336,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-081), so no definition is moved out of a container and no position rule covers that case.
 
-**C2-A-077** A `link_reference_definition` carries `key`, which is the folded label (C2-A-104), `namespace: "link"`, `href` and an optional `title`. A parsed tree never holds one with an empty `href`, because a label and a colon with no destination is text (C2-B-083). A tree that was not parsed from source may hold one; it is unspellable, and a Carve writer reports it.
+**C2-A-077** A `link_reference_definition` carries a folded `key` (C2-A-104), `namespace: "link"`, `href` and optional `tooltip`. The earlier draft called that string `title`. A parsed tree never holds an empty `href`; a supplied one is unspellable and the Carve writer reports it.
 
 **C2-A-078** A `footnote` carries `key`, `namespace: "footnote"` and block `children`.
 
@@ -375,15 +375,15 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
-**C2-A-089** A table carries `columns`, a list of `table_column` nodes up to its widest row, empty for an empty table. A column holds the authored `align`, `valign` and `width`, and `resolvedAlign` as a resolution result. The table attributes `aligns` and `widths` set `align` and `width` (C2-B-211, C2-B-212), and `resolvedAlign` follows C2-B-213. `resolvedAlign` of a column is the alignment mark of the last head cell of that column (C2-B-182), or else the value `aligns` gives it. A cell renders with its own mark, or else with the resolved alignment of its column; a mark on a body cell aligns that cell only.
+**C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign`, `width` and `authored` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
 
 **C2-A-090** `table_column.authored` is `true` on a column the source spelled, which is one that `aligns` or `widths` gives a value, and absent on one the producer inferred. It is a tree fact and takes part in equality.
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks.
 
-**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it. The cell that held a span mark stays in its row with `span` and no content, and the covering cell carries the count. The mark cell has no position. `valign` is a CSS keyword of ASCII letters and hyphens, such as `top`, `middle`, `bottom` and `baseline`. No source spells it, so only a supplied tree holds one, and the renderer writes no declaration for a value of another shape (C2-H-057).
+**C2-A-092** A cell carries `header` and may carry authored `span`, resolved `colspan` and `rowspan`, `align`, `valign`, `scope` and `headerIds`. Each present count is an integer of at least 1, and a reader refuses a smaller value. `valign` is one of `top`, `middle`, `bottom` and `baseline`, and a reader refuses another value. `scope` is one of `row`, `col`, `rowgroup` and `colgroup`; `headerIds` is an ordered list of `attrs.id` values of header cells, and a reader refuses a missing or nonheader target. A parse of Carve source produces neither accessibility field. A failed span mark leaves an ordinary cell; a valid mark cell stays empty and unpositioned while the covering cell carries the count (C2-B-173).
 
-**C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
+**C2-A-093** A supplied count that contradicts an authored `span` mark is refused; a parser derives counts from marks according to C2-B-173. The mark decides the effective span, and counts without a mark describe an imported span. Column `align` is authored and `resolvedAlign` is derived under C2-A-089 and C2-B-213.
 
 **C2-A-094** A continuation row leaves no node and no field. Its fragments join the cell above with one space before the cell's inline content is read (C2-B-184), and that space is ordinary text; inside a node whose value is its source the join is a line feed (C2-B-184). Where the row broke is spelling and is in the sidecar.
 
@@ -439,7 +439,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-101** A `mention` carries `kind`, `target` and an optional visible `label`. Parsing `@name` gives the `kind` `user`, the name as `target` and no `label`; another kind and a label come from an extension or a supplied tree. A `tag` and a `symbol` carry `name`.
 
-**C2-A-102** A `math` node carries `value` and `display`. A display equation may carry `number` together with `numberPrefix`.
+**C2-A-102** A `math` node carries `value` and `display`. A display equation may carry result `number` only together with `numberPrefix`, and a reader refuses either field alone.
 
 ### References
 
@@ -447,13 +447,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-104** `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-079). Uses and definitions fold the same way, so two keys match when they are equal strings.
 
-**C2-A-105** A link or image written as a reference carries the reference form in `form`: `full` for `[text][label]` and `collapsed` for `[text][]`. `form` is present exactly when `key` is. No tree field holds the reference as typed: the verbatim text is in the sidecar.
+**C2-A-105** A reference `link` or `image` carries `refForm`, `full` or `collapsed`, exactly when it carries `key`. The earlier draft called this field `form`; the new name separates reference spelling from cross-reference display. The verbatim text is in the sidecar.
 
 **C2-A-106** The tree is pre-resolve. A resolution result is added beside the authored construct and never replaces it.
 
 **C2-A-107** On a reference use an absent `href` or `src` means unresolved, and the empty string means a destination that is empty. There is no `resolved` field.
 
-**C2-A-108** An unresolved reference is still a `link` or an `image` node, never text. It keeps its `children` (or its `alt`), its `key`, its `form` and its `attrs`. How it renders is the HTML document's rule: the brackets and the label are literal text, and the children render as they would anywhere else. A footnote reference or an inline footnote among the children is an ordinary one.
+**C2-A-108** An unresolved reference remains a `link` or `image` with its `children` or `alt`, `key`, `refForm` and `attrs`; it never becomes text. HTML renders its brackets and label as literal text.
 
 **C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
 
@@ -464,7 +464,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
   "type": "link",
   "key": "getting started",
   "namespace": "link",
-  "form": "collapsed",
+  "refForm": "collapsed",
   "children": [{ "type": "text", "value": "getting started" }]
 }
 ```
@@ -477,9 +477,9 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-114** A link or image may carry `targetKind` (`url`, `wiki`, `doc` or `xref`) for a target that is not a URL.
 
-**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip` and `resourceId`. An absent `alt` means none was given. `tooltip` is the title of the link tail, on a `link` as on an `image`; a definition names the same text `title` (C2-A-077). A resolved reference keeps no `tooltip` of its own: the renderer takes the title from the definition.
+**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip`, `resourceId` and `longDescription`, a list of blocks. `decorative: true` requires `alt` to be absent, and an absent `alt` requires `decorative: true`; a reader refuses either contradictory pair. A parse of Carve source produces no `longDescription` or `decorative` field. A resolved reference takes its tooltip from its definition.
 
-**C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link. Core source gives no `form` (C2-I-096): an extension or a supplied tree sets it, and a Carve writer reports `field-unspellable` for it. The parser gives an `xref` the namespace `heading`; a supplied tree may hold any namespace of C2-A-103.
+**C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The earlier draft called `display` `form`, which confused it with reference spelling. A Carve writer reports `display` as unspellable (C2-I-096).
 
 **C2-A-117** A `footnote_ref` carries `key` and `namespace: "footnote"`, and `number` once resolved. An `abbreviation` carries `key` and `namespace: "abbr"`, and may carry `expansion`.
 
@@ -489,15 +489,15 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-119** `citation_group.raw` is the bracket text as written. It stays in the tree, because it is what renders when a key has no entry. Core has no citation spelling (C2-I-101): where no extension handles citations, HTML writes `raw` as text and a `citation_definition` writes nothing, and a Carve writer writes `raw` and reports `structure-unspellable` for a `citation_definition`.
 
-**C2-A-120** Each `citation` may carry its own `mode`. A group `mode` is shorthand, and a group that has `mode` while one of its items lacks it is refused.
+**C2-A-120** A citation item has optional `mode` from the closed set `normal`, `author-in-text` and `suppress-author`, matching the three Pandoc citation modes; absence means `normal`. A group has no mode, and a reader refuses `citation_group.mode` or `citation.suppressAuthor`. A locator is one object with optional string `label` and required inline `children`; the earlier `locatorLabel` and `locatorValue` fields are refused.
 
-**C2-A-121** A `citation_definition` carries `key`, `namespace: "citation"`, inline `children` and its metadata as `attrs`. It follows the top-level rule like the other definitions (C2-A-052).
+**C2-A-121** A `citation_definition` carries `key`, `namespace: "citation"`, inline `children` and optional typed `metadata.bibliography`, not bibliographic attributes. Bibliography may hold `title` and `containerTitle` as inline lists, `authors` as a list of strings, and `issued`, `doi` and `url` as strings; other keys are refused. This replaces the earlier draft use of `attrs` for bibliography facts.
 
 ## Extension nodes, foreign data and resources
 
-**C2-A-122** `block_extension` and `inline_extension` have one shape: `name`, optional `version`, typed `props`, `children`, optional named `slots`, a `fallback`, and `payload`, a list of alternatives with `format` and `value`. An alternative holds `format`, a non-empty string, and `value`, and nothing else; a `null` value is refused. For the size bound of C2-A-132 a string value counts its UTF-8 bytes and any other value the UTF-8 bytes of its JSON.
+**C2-A-122** `block_extension` and `inline_extension` carry `name`, optional `version`, opaque JSON `props`, `children`, optional named `slots`, optional `fallback`, and optional `payload`. Each payload alternative has exactly nonempty string `format` and non-null JSON `value`; unknown fields are refused. The 8 MiB limit of C2-A-132 counts a string value in UTF-8 bytes and another value in UTF-8 JSON bytes.
 
-**C2-A-123** A name with a dot, such as `org.example.diagram`, names a registered extension. It is declared in the root `extensions` list, and its node carries a `fallback`.
+**C2-A-123** A qualified name has the grammar `namespace.name`, with each segment matching `[A-Za-z][A-Za-z0-9_-]*` and one or more dot-separated namespace segments. A qualified extension node is declared by the full name on the root or envelope and carries a same-role fallback, whether it is inline or block. This closes the earlier draft dot-only test.
 
 **C2-A-124** A name without a dot is the name of an inline extension written in Carve source. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback.
 
@@ -521,19 +521,19 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-130** The contract promises semantic interchange. It does not promise an editable round trip for a foreign format, and it does not promise that source spelling survives in the tree.
 
-**C2-A-131** `document.resources` is a manifest. Each entry has an `id`, a `mediaType` and a `digest` of the form `sha256:` plus 64 lowercase hex digits, and may have `href` and `size`. `image.resourceId` and extension `resourceIds` name entries by id. A missing or duplicate id is refused. A manifest entry may hold further fields; a reader keeps them and does not test them.
+**C2-A-131** `document.resources` is a manifest of closed entries with `id`, `mediaType`, `digest` in `sha256:` plus 64 lowercase hex digits, and optional `href` and `size`. `size` is a non-negative integer of bytes. A missing or duplicate referenced id is refused; unknown entry fields are refused rather than kept. This closes the earlier draft open entry shape.
 
 **C2-A-132** A reader bounds a decoded extension payload to 8 MiB per node, metadata nesting to 64 levels, resource references to 4096 per tree and fallback nesting to 32 extension nodes, and refuses an excess.
 
 ## Resolution results
 
-**C2-A-133** Results that a consumer could only get by repeating the resolution are published in the tree, beside the authored construct: footnote numbers, caption numbers, generated heading ids, resolved destinations, resolved column alignment and resolved span counts.
+**C2-A-133** Resolution results remain in the tree beside authored fields. `spec/0.2/data/ast-results.json` is the complete per-type list of result fields, including generated ids, resolved destinations, numbers, alignment, derived span counts and root `stages`.
 
 **C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`. The `headingIds` option is `off`, `keep-case`, `lower` or `ascii`, and `keep-case` is the default; with `off` no `generatedId` is produced, and an authored id stays.
 
 **C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
-**C2-A-136** A block image has one form: a `paragraph` that holds nothing but one `image`, and the comments of comment-only lines below it (C2-B-137), and carries `blockImage: true`. A parser sets the mark when the paragraph closes (C2-B-157, C2-B-191), so in a parsed tree a paragraph has it exactly when it closed as one block image line (C2-B-197). A paragraph whose only image runs over two lines, as a wrapped reference label does, is an ordinary paragraph. The mark is a fact of the tree, not a resolution result, and takes part in equality. An `image` never stands in a list of blocks. A tree that was not parsed from source can hold such a paragraph without the mark; it is then an ordinary paragraph, and a reader does not set the mark.
+**C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The earlier draft used `blockImage: true`; `role` is a tree fact used by equality.
 
 **C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
 
@@ -545,9 +545,9 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-140** `pos` has six required integers: `startLine`, `endLine`, `startColumn`, `endColumn`, `startOffset` and `endOffset`.
 
-**C2-A-141** Lines and columns count from 1, and columns count code points. Offsets count UTF-8 bytes of the original source from 0, with a byte-order mark and every CR counted as they stand. Ends are exclusive, and every offset falls on a code point boundary.
+**C2-A-141** Lines and columns start at 1, offsets start at 0, and a reader refuses a smaller value. Columns count Unicode code points, offsets count original UTF-8 bytes, and ends are exclusive.
 
-**C2-A-142** `pos.file`, when present, is the id of the included input the coordinates are measured in. Absent means the top-level input. Positions in different files are never compared.
+**C2-A-142** `pos.file`, when present, is a string id of the included input whose coordinates are measured. Absence means the top-level input; positions in different files are never compared.
 
 ```json
 {
@@ -595,15 +595,15 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-158** In a tree a parser built from source, only these node types may omit `pos`: `table_column` and `caption_number`, which have no source text; a `table_row`, a `table_cell`, a `cell_paragraph` and the inline nodes of a cell that a continuation row joined; the cells of a delimited table; and a `text` node merged from pieces that are not adjacent in the source. The final list is open (Open, point 1).
 
-**C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `rubyPair`, `small_caps` and `block_extension` have no source spelling and are never positioned by a parser.
+**C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair`, `small_caps` and `block_extension` have no source spelling and are never positioned by a parser.
 
 **C2-A-160** A node that a producer has not placed yet is a defect, not a case of C2-A-158.
 
 ## Equality
 
-**C2-A-161** Two trees are equal when they agree in node types, in every field this document names, in the order of every node list, in `attrs`, in `metadata` and in `data`, after text coalescing (C2-A-040) and the normalization of C2-A-058.
+**C2-A-161** Two trees are equal when their node types, fields, node-list order, `attrs`, typed `metadata` and opaque `data` agree after text coalescing (C2-A-040), except the fields listed in `spec/0.2/data/ast-results.json` and source geometry in C2-A-162.
 
-**C2-A-162** Not compared: `pos`, `segments`, `srcByteLength`, and the resolution results of C2-A-133, a generated heading id included. Each has its own check. `paragraph.blockImage` is compared (C2-A-136).
+**C2-A-162** Equality skips `pos`, `segments`, `srcByteLength`, and exactly the resolution fields listed in `spec/0.2/data/ast-results.json`; a span count is skipped only when derived from an authored mark. `paragraph.role` is compared (C2-A-136).
 
 **C2-A-163** Equality compares the tree only. Sidecars and the diagnostics record are not part of it, so a formatter may normalize any spelling the sidecar holds without changing the document.
 
@@ -621,7 +621,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-169** A reader refuses a field the schema does not name, at any node, and neither drops it nor passes it on.
 
-**C2-A-170** A reader refuses a payload that does not validate against `resources/ast-schema.json`, at decode and not in a later step.
+**C2-A-170** A reader validates a tree against `spec/0.2/data/ast-schema.json` at decode and refuses a failure. The files under `resources/` describe the 0.1 contract.
 
 **C2-A-171** A reader accepts every tree its own parser can produce at the nesting cap (C2-B-190) and refuses deeper input. It derives its bound from the cap by the worst cost per level of its own encoding.
 
@@ -640,6 +640,10 @@ The invariants below are written so that a test can check each one on any tree a
 | Shape | Carve writer | HTML |
 | --- | --- | --- |
 | `caption.short` | omits the field | renders the full caption once |
+| `table_cell.scope` and `headerIds` | reports each field | writes `scope` and `headers` attributes |
+| `image.longDescription` | reports the field | renders its blocks after the image |
+| `image.decorative` | reports the field | writes empty `alt` |
+| `xref.display` | reports the field | uses the default core text |
 | a `table` inside a `figure` | writes the table with its own caption | `figure` around the table |
 | blocks in `table_cell.children` | reports the loss | renders the blocks in the cell |
 | `small_caps` | writes the children | `span` with class `smallcaps` |
@@ -651,9 +655,9 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-176** Trees of other contract versions are upgraded by a migration function, not by the reader: a 2.0 reader refuses a tree that holds `escaped_text`, `critic_substitution` or `cell_wrap` (C2-A-018).
 
-**C2-A-177** The version string stays `"2.0"`. The `next-ast2` draft never shipped, so its trees have no version of their own: the migration function recognizes a draft tree by those three node types and by the draft fields of the table below.
+**C2-A-177** A 2.0 producer writes `"2.0"`. The `next-ast2` draft never shipped. A migration function recognizes its tree or an earlier 0.2 draft tree by the retired node types and fields in the table below.
 
-**C2-A-178** For a tree written by the `next-ast2` draft the migration function does this:
+**C2-A-178** For a tree written by `next-ast2` or an earlier 0.2 draft the migration function applies the matching rows:
 
 | Draft shape | Becomes |
 | --- | --- |
@@ -661,16 +665,26 @@ The invariants below are written so that a test can check each one on any tree a
 | `escaped_text` | `text` with the same `value`, then coalesced with its neighbors |
 | `cell_wrap` | a `text` node holding one space, then coalesced |
 | `cellWraps` on `code`, `math` and `raw_inline` | dropped |
-| `rawRef` | dropped; `form` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded |
+| `rawRef` | dropped; `refForm` is `collapsed` when it ends in `[]` and `full` otherwise; `key` is folded |
 | `key` on definitions and footnote references | folded |
 | `attrs.order` and the `keyValues` object | `keyValues` becomes a list of pairs, in the order `attrs.order` gives or else in member order; `order` is dropped; a key named `id` or `class` folds in |
-| an `image` in a list of blocks | a `paragraph` with `blockImage: true` that holds the image |
+| an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image |
 | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped |
 | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated |
 | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one |
 | `definition_list.spacing` | dropped |
-| `blockImagePromotion` in `stages` | dropped; `blockImage` stays as the tree has it |
-| the task status `cancelled`, in a draft tree or a 1.2 tree | `canceled` |
+| `blockImagePromotion` in `stages` | dropped; `role: "image"` stays as the tree has it |
+| the task status `cancelled`, in a draft tree or a 1.2 tree | removed; status derives from the mark |
+| `link.form` and `image.form` | `refForm`; the name identifies reference spelling rather than xref display. |
+| `xref.form` | `display`; the name identifies generated display text rather than reference spelling. |
+| `link_reference_definition.title` | `tooltip`; all link target strings use one name, while visible titles stay inline lists. |
+| `paragraph.blockImage` and `paragraph.blockMath` | `role: "image"` and `role: "math"`; one field makes the two exclusive. |
+| `rubyPair` | `ruby_pair`; the type follows snake_case and carries common node fields. |
+| `citation.suppressAuthor` | `citation.mode: "suppress-author"`; one field determines the mode. |
+| `citation_group.mode` | removed; every item carries its own mode. |
+| `citation.locatorLabel` and `citation.locatorValue` | `locator` object with label and inline children; its parts cannot disagree. |
+| `task.status` | removed; the state derives from `task.mark`. |
+| `include.options` string pairs | decoded typed option object; source quoting moves to layout. |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
 | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class |
@@ -683,15 +697,15 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An include directive (C2-B-156) is a block node of type `include`. It carries `path`, the path as written without its quotes; an optional `section`; and an optional `options` list of pairs, each a list of two strings, the option name and its value. The pairs stand in the fixed list order of the include directive grammar of 0.1, not sorted by name and not in the written order (C2-W-058). That order is `lines`, `region`, `rows`, `cols`, `shift`, `code`, the `rank` of `data/include-options.json`. The path has its escapes read (C2-B-202), and `section` is the name without `#`. An option name is the key without `@`. A value is the value as written, without its quotes and with its escapes read, except a `cols` list of names, which keeps its quotes and its backslashes. `code` with no value, and an option of C2-B-206 written with no value, have the empty string as value. A repeated `rows` or `cols` (C2-B-206) keeps the first one. It has no `children` and no `value`. Expanding it is the application's job, and what an unexpanded one renders is the HTML document's.
+**C2-A-181** An `include` has `path`, optional `section`, and optional decoded `options` object. `lines` and `rows` are range strings, `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer or `"auto"`, and `code` is a syntax string or `true` when no value was written. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`; a repeated `rows` or `cols` keeps the first value (C2-B-206). The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
 
 **C2-A-182** An `include` node has a position like any other block: it spans the directive from its opening braces to its closing braces.
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
 
-**C2-A-184** A math block is a `paragraph` that holds nothing but one display `math` node, and the comments of comment-only lines below it (C2-B-137), and carries `blockMath: true`. A parser sets the mark when the paragraph closes as one display math line (C2-B-158, C2-B-198); a paragraph whose only math span closes on a later line is an ordinary paragraph. Like `blockImage`, the mark is a fact of the tree and takes part in equality. A captioned math block is that paragraph inside a `figure`.
+**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph inside a `figure`. The earlier draft used `blockMath: true`.
 
-**C2-A-185** Five facts are set when a block closes: the block-image mark, the math-block mark, the attachment of a caption, the spacing of a list and the footer rows of a table (C2-B-191). All five are in the tree and take part in equality.
+**C2-A-185** Five facts are set when a block closes: paragraph `role` for image or math, caption attachment, list spacing and table footer rows (C2-B-191). Each is a tree fact used by equality.
 
 **C2-A-187** The bracket label of a div, an admonition, a directive and a code block is the string `groupLabel`, the text between the brackets as written, with no inline parsing: in `::: tip [Tab *x*]` it is `Tab *x*`. In 0.1 the label was inline content.
 
@@ -702,13 +716,17 @@ These clauses were added after other documents began to cite this one. They stan
   "type": "include",
   "path": "parts/intro.crv",
   "section": "setup",
-  "options": [["lines", "1-5"]]
+  "options": {"lines": "1-5"}
 }
 ```
 
+**C2-A-188** A valid tree passes the schema and the reader checks for nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, declared `data` keys, envelope version agreement and extension fallback depth. A schema pass alone does not establish validity.
+
+**C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object; only declared child slots hold nodes.
+
 ## Schema changes owed
 
-The Carve 0.2 tree and interchange envelope are defined by [`data/ast-schema.json`](data/ast-schema.json), checked with the other 0.2 data files. `resources/ast-schema.json` remains the 0.1 schema; the later rulings in this chapter are included in the 0.2 file.
+The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast-schema.json). The `resources/` schema describes 0.1.
 
 ## Open
 
