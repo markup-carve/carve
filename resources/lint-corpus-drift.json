@@ -1263,48 +1263,6 @@
       }
     },
     {
-      "file": "tests/corpus/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-2.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            4,
-            5
-          ]
-        ]
-      }
-    },
-    {
-      "file": "tests/corpus/1063-a-block-shaped-line-inside-a-comment-run-keeps-the-item-tight-3.crv",
-      "reason": "carve-rs lints the interior lines of a multi-line comment run as blocks.",
-      "issue": "https://github.com/markup-carve/carve-rs/issues/4260",
-      "diagnostics": {
-        "js": [],
-        "php": [],
-        "rust": [
-          [
-            "list-item-block-overindented",
-            4,
-            6
-          ],
-          [
-            "setext-heading-underline",
-            4,
-            6
-          ],
-          [
-            "thematic-break-spelling",
-            4,
-            6
-          ]
-        ]
-      }
-    },
-    {
       "file": "tests/corpus/733-consecutive-continuation-markers-in-a-div-hosted-quote.crv",
       "reason": "carve-rs misses refused + findings in a div (first of two own-line markers; - + before a div closer).",
       "issue": "https://github.com/markup-carve/carve-rs/issues/4261",
