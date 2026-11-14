@@ -49,7 +49,7 @@ Conventions:
 
 **C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line (C2-A-137). `blockImage` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
 
-**C2-W-016** A line after the first of a code span, a raw span, a literal-text span or a math span is a line of its leaf. Where that line would open a block (C2-B-014 to C2-B-019), no spelling keeps the value, and the writer refuses it with `field-unspellable`.
+**C2-W-016** A line after the first of a code span, a raw span, a literal-text span or a math span is a line of its leaf. Where that line would open a block (C2-B-014 to C2-B-019), no spelling keeps the value, and the writer refuses it with `field-unspellable`. A lone CR as the last character of a line is refused the same way: the writer ends every line with LF, and a CR directly before an LF is part of the line ending and no content (C2-B-010), so `a` and a CR at the end of the input has no canonical spelling.
 
 **C2-W-112** Two code spans with nothing between them have no spelling: written together, the two runs read as one span. A parse never gives that pair. For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first.
 
