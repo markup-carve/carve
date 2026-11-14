@@ -87,6 +87,8 @@ Conventions:
 
 **C2-W-030** A loose list is written with one blank line between all of its items. A tight list is written with none, also when an item holds several blocks: the blank line then stands inside the item, before its later block. This is requirement W5.
 
+**C2-W-126** A nested ordered list whose first marker has another value than 1, and that follows a paragraph of its item, is written after one blank line: directly below the paragraph its marker line would be a lazy line (C2-B-015). The blank line stands inside the item and does not make the list loose (C2-W-030). A nested list that starts at 1, and a nested bullet list, stand directly below the paragraph.
+
 **C2-W-031** A quote written with `>` lines carries `> ` on every line of its content and a bare `>` on a blank line inside it.
 
 **C2-W-032** A div, an admonition or a hard-break block with an empty body is written with one blank line between opener and closer. An empty line block is written with its closer directly below its opener, because a blank line in it is a `line` (C2-A-069).
@@ -792,7 +794,7 @@ One point is open.
 |---|---|---|---|---|
 | The writer and its two gates | 10 | 0 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 21 | 3 | 0 | 0 |
+| Layout | 22 | 3 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 15 | 1 | 0 | 0 |
@@ -800,6 +802,6 @@ One point is open.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **123** | **4** | **5** | **2** |
+| **Total** | **124** | **4** | **5** | **2** |
 
-The document has 123 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 124 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
