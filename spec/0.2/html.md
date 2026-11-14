@@ -388,7 +388,7 @@ Example 8 (unverified)
 
 **C2-H-039** A term holds inline content and never a `<p>`.
 
-**C2-H-040** A description with one block writes a paragraph bare. A description with several blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the blocks of the description. A description list has no `spacing` field.
+**C2-H-040** A description with one visible block writes a paragraph bare. A description with several visible blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the visible blocks of the description, as C2-H-006 does for a quote: a comment and a definition are not counted. A description list has no `spacing` field.
 
 Example 9 (generated)
 
@@ -856,7 +856,7 @@ See[^a].
 
 ## Comments, frontmatter and definitions
 
-**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A comment-only line inside a paragraph or another leaf takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The tree keeps both breaks.
+**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A comment-only line inside a paragraph or another leaf, which is a line that holds nothing but comments of any form and spaces, takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The tree keeps both breaks.
 
 **C2-H-070** Frontmatter renders nothing.
 

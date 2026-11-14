@@ -573,7 +573,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-147** A comment that came from a comment-only line satisfies C2-A-144 and C2-A-145 in the node list C2-A-075 puts it in: the open leaf, or else the innermost open container.
 
-**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is inside the span of a container and outside the span of a leaf. A block that took attribute lines (C2-B-091) starts at the first of them.
+**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them.
 
 **Exception C2-A-149** A table cell does not start at its opening markup, against C2-A-148: it spans the text between its pipes.
 
