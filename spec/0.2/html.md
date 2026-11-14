@@ -943,7 +943,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-079** A link is `<a href="URL">` around its content, with `title` when it has one. An autolink is a link whose content is its body as written. The destination of an email autolink is `mailto:` followed by the address, and its content is the address.
 
-**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has a tooltip. `alt` is always written, empty for a decorative image. A supplied image without `src` writes `src=""`. A `longDescription` writes its block content immediately after the image as visible HTML; this uses the same block renderer and needs no generated id or reference.
+**C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has a tooltip. `alt` is always written, empty for a decorative image. A supplied image without `src` writes `src=""`. A `longDescription` writes its blocks as visible HTML after the block that contains the image. This keeps block elements outside a paragraph and needs no generated id or reference.
 
 **C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-111).
 
