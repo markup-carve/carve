@@ -8852,13 +8852,13 @@
       "dependentRequired": {
         "key": [
           "namespace",
-          "form"
+          "refForm"
         ],
         "namespace": [
           "key",
-          "form"
+          "refForm"
         ],
-        "form": [
+        "refForm": [
           "key",
           "namespace"
         ]
@@ -8924,8 +8924,7 @@
           "type": "object",
           "properties": {
             "lines": {
-              "type": "string",
-              "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+              "type": "string"
             },
             "region": {
               "type": "string",
@@ -9253,7 +9252,7 @@
         },
         "name": {
           "type": "string",
-          "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)*$"
+          "pattern": "^(?:[A-Za-z_][A-Za-z0-9_-]*|[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+)$"
         },
         "version": {
           "type": "string",
@@ -11070,13 +11069,13 @@
       "dependentRequired": {
         "key": [
           "namespace",
-          "form"
+          "refForm"
         ],
         "namespace": [
           "key",
-          "form"
+          "refForm"
         ],
-        "form": [
+        "refForm": [
           "key",
           "namespace"
         ]

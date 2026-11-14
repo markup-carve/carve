@@ -336,7 +336,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-081), so no definition is moved out of a container and no position rule covers that case.
 
-**C2-A-077** A `link_reference_definition` carries a folded `key` (C2-A-104), `namespace: "link"`, `href` and optional `tooltip`. The earlier draft called that string `title`. A parsed tree never holds an empty `href`; a supplied one is unspellable and the Carve writer reports it.
+**C2-A-077** A `link_reference_definition` carries a folded `key` (C2-A-104), `namespace: "link"`, `href` and optional `tooltip`. A parsed tree never holds an empty `href`; a supplied one is unspellable and the Carve writer reports it.
 
 **C2-A-078** A `footnote` carries `key`, `namespace: "footnote"` and block `children`.
 
@@ -447,7 +447,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-104** `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-079). Uses and definitions fold the same way, so two keys match when they are equal strings.
 
-**C2-A-105** A reference `link` or `image` carries `refForm`, `full` or `collapsed`, exactly when it carries `key`. The earlier draft called this field `form`; the new name separates reference spelling from cross-reference display. The verbatim text is in the sidecar.
+**C2-A-105** A reference `link` or `image` carries `refForm`, `full` or `collapsed`, exactly when it carries `key`. This field records reference spelling separately from cross-reference display. The verbatim text is in the sidecar.
 
 **C2-A-106** The tree is pre-resolve. A resolution result is added beside the authored construct and never replaces it.
 
@@ -479,7 +479,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip`, `resourceId` and `longDescription`, a list of blocks. `decorative: true` requires `alt` to be absent, and an absent `alt` requires `decorative: true`; a reader refuses either contradictory pair. A parse of Carve source produces no `longDescription` or `decorative` field. A resolved reference takes its tooltip from its definition.
 
-**C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The earlier draft called `display` `form`, which confused it with reference spelling. A Carve writer reports `display` as unspellable (C2-I-096).
+**C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The `display` field records cross-reference display separately from reference spelling. A Carve writer reports `display` as unspellable (C2-I-096).
 
 **C2-A-117** A `footnote_ref` carries `key` and `namespace: "footnote"`, and `number` once resolved. An `abbreviation` carries `key` and `namespace: "abbr"`, and may carry `expansion`.
 
@@ -489,7 +489,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-119** `citation_group.raw` is the bracket text as written. It stays in the tree, because it is what renders when a key has no entry. Core has no citation spelling (C2-I-101): where no extension handles citations, HTML writes `raw` as text and a `citation_definition` writes nothing, and a Carve writer writes `raw` and reports `structure-unspellable` for a `citation_definition`.
 
-**C2-A-120** A citation item has optional `mode` from the closed set `normal`, `author-in-text` and `suppress-author`, matching the three Pandoc citation modes; absence means `normal`. A group has no mode, and a reader refuses `citation_group.mode` or `citation.suppressAuthor`. A locator is one object with optional string `label` and required inline `children`; the earlier `locatorLabel` and `locatorValue` fields are refused.
+**C2-A-120** A citation item has optional `mode` from the closed set `normal`, `author-in-text` and `suppress-author`, matching the three Pandoc citation modes; absence means `normal`. A group has no mode, and an item has no separate author-suppression flag. A locator is one object with optional string `label` and required inline `children`; the earlier `locatorLabel` and `locatorValue` fields are refused.
 
 **C2-A-121** A `citation_definition` carries `key`, `namespace: "citation"`, inline `children` and optional typed `metadata.bibliography`, not bibliographic attributes. Bibliography may hold `title` and `containerTitle` as inline lists, `authors` as a list of strings, and `issued`, `doi` and `url` as strings; other keys are refused. This replaces the earlier draft use of `attrs` for bibliography facts.
 
@@ -533,7 +533,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
-**C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The earlier draft used `blockImage: true`; `role` is a tree fact used by equality.
+**C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The `role` is a tree fact used by equality.
 
 **C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
 
@@ -673,17 +673,17 @@ The invariants below are written so that a test can check each one on any tree a
 | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated |
 | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one |
 | `definition_list.spacing` | dropped |
-| `blockImagePromotion` in `stages` | dropped; `role: "image"` stays as the tree has it |
+| the former image promotion stage | dropped; `role: "image"` stays as the tree has it |
 | the task status `cancelled`, in a draft tree or a 1.2 tree | removed; status derives from the mark |
-| `link.form` and `image.form` | `refForm`; the name identifies reference spelling rather than xref display. |
-| `xref.form` | `display`; the name identifies generated display text rather than reference spelling. |
-| `link_reference_definition.title` | `tooltip`; all link target strings use one name, while visible titles stay inline lists. |
-| `paragraph.blockImage` and `paragraph.blockMath` | `role: "image"` and `role: "math"`; one field makes the two exclusive. |
-| `rubyPair` | `ruby_pair`; the type follows snake_case and carries common node fields. |
-| `citation.suppressAuthor` | `citation.mode: "suppress-author"`; one field determines the mode. |
+| the former reference spelling field on links and images | `refForm`; the name identifies reference spelling rather than xref display. |
+| the former cross-reference display field | `display`; the name identifies generated display text rather than reference spelling. |
+| the former string tooltip field on link reference definitions | `tooltip`; all link target strings use one name, while visible titles stay inline lists. |
+| the former image and math promotion flags on paragraphs | `role: "image"` and `role: "math"`; one field makes the two exclusive. |
+| the former camel-case ruby pair node type | `ruby_pair`; the type follows snake_case and carries common node fields. |
+| the former citation author-suppression flag | `citation.mode: "suppress-author"`; one field determines the mode. |
 | `citation_group.mode` | removed; every item carries its own mode. |
 | `citation.locatorLabel` and `citation.locatorValue` | `locator` object with label and inline children; its parts cannot disagree. |
-| `task.status` | removed; the state derives from `task.mark`. |
+| the former stored task state | removed; the state derives from `task.mark`. |
 | `include.options` string pairs | decoded typed option object; source quoting moves to layout. |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
@@ -697,13 +697,13 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An `include` has `path`, optional `section`, and optional decoded `options` object. `lines` and `rows` are range strings, `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer or `"auto"`, and `code` is a syntax string or `true` when no value was written. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`; a repeated `rows` or `cols` keeps the first value (C2-B-206). The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
+**C2-A-181** An `include` has `path`, optional `section`, and optional decoded `options` object. `lines` and `rows` are range strings; an out-of-shape `lines` value remains a decoded string for expansion to report (C2-B-206). `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer or `"auto"`, and `code` is a syntax string or `true` when no value was written. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`; a repeated `rows` or `cols` keeps the first value (C2-B-206). The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
 
 **C2-A-182** An `include` node has a position like any other block: it spans the directive from its opening braces to its closing braces.
 
 **C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
 
-**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph inside a `figure`. The earlier draft used `blockMath: true`.
+**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph inside a `figure`.
 
 **C2-A-185** Five facts are set when a block closes: paragraph `role` for image or math, caption attachment, list spacing and table footer rows (C2-B-191). Each is a tree fact used by equality.
 

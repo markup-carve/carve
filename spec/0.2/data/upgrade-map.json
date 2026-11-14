@@ -1082,7 +1082,7 @@
     {
       "id": "T-013",
       "kind": "drop",
-      "from": "`blockImagePromotion` in `stages`",
+      "from": "the former image promotion stage",
       "to": "dropped; `role: \"image\"` stays as the tree has it",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1098,7 +1098,7 @@
     {
       "id": "T-015",
       "kind": "rename",
-      "from": "`link.form` and `image.form`",
+      "from": "the former reference spelling field on links and images",
       "to": "`refForm`; the name identifies reference spelling rather than xref display.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1106,7 +1106,7 @@
     {
       "id": "T-016",
       "kind": "rename",
-      "from": "`xref.form`",
+      "from": "the former cross-reference display field",
       "to": "`display`; the name identifies generated display text rather than reference spelling.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1114,7 +1114,7 @@
     {
       "id": "T-017",
       "kind": "rename",
-      "from": "`link_reference_definition.title`",
+      "from": "the former string tooltip field on link reference definitions",
       "to": "`tooltip`; all link target strings use one name, while visible titles stay inline lists.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1122,7 +1122,7 @@
     {
       "id": "T-018",
       "kind": "merge",
-      "from": "`paragraph.blockImage` and `paragraph.blockMath`",
+      "from": "the former image and math promotion flags on paragraphs",
       "to": "`role: \"image\"` and `role: \"math\"`; one field makes the two exclusive.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1130,7 +1130,7 @@
     {
       "id": "T-019",
       "kind": "rename",
-      "from": "`rubyPair`",
+      "from": "the former camel-case ruby pair node type",
       "to": "`ruby_pair`; the type follows snake_case and carries common node fields.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1138,7 +1138,7 @@
     {
       "id": "T-020",
       "kind": "rename",
-      "from": "`citation.suppressAuthor`",
+      "from": "the former citation author-suppression flag",
       "to": "`citation.mode: \"suppress-author\"`; one field determines the mode.",
       "migrationRule": "C2-A-178",
       "silent": false
@@ -1162,7 +1162,7 @@
     {
       "id": "T-023",
       "kind": "drop",
-      "from": "`task.status`",
+      "from": "the former stored task state",
       "to": "removed; the state derives from `task.mark`.",
       "migrationRule": "C2-A-178",
       "silent": false

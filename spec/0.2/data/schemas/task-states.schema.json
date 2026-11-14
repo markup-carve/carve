@@ -48,7 +48,7 @@
           "mark": { "type": "string", "minLength": 1, "maxLength": 1, "description": "The value of `task.mark` in the tree." },
           "status": {
             "enum": ["todo", "done", "canceled", "in-progress", "blocked", "partial", "other"],
-            "description": "The value of `task.status` in the tree."
+            "description": "The task state derived from `task.mark`; it is not stored in the tree."
           },
           "state_attribute": {
             "type": ["string", "null"],
