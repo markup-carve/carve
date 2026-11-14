@@ -10,7 +10,7 @@ A line in the description below the item's column ends the fence, and the column
 
 ```carve
 :: t
-: - ~~~
+: - ```
   x
 tail
 ```
@@ -36,7 +36,7 @@ tail</p>
 
 ```carve
 :: t
-: - - ~~~
+: - - ```
   x
 tail
 ```
@@ -66,7 +66,7 @@ tail</p>
 
 ```carve
 - :: t
-  : - ~~~
+  : - ```
     x
 tail
 ```
@@ -98,7 +98,7 @@ Without a line in the description the column-0 line stays outside: the fence is 
 
 ```carve
 :: t
-: - ~~~
+: - ```
 tail
 ```
 

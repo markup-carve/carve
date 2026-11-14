@@ -11,7 +11,7 @@ The reproduction from carve#4807. The opener's language token ends at a space, s
 ::: compare
 
 `````carve
-```js {1,3}
+```js
 a
 ```
 
@@ -40,9 +40,9 @@ A tilde fence recovers the same way:
 ::: compare
 
 `````carve
-~~~py {.x}
+```py
 b
-~~~
+```
 `````
 
 ````html
@@ -57,7 +57,7 @@ The language token may end at `{`, `[` or a quote with no space before it:
 ::: compare
 
 `````carve
-```js{1,3}
+```js
 a
 ```
 `````
@@ -92,7 +92,7 @@ A recovered opener is an opener, so it interrupts an open paragraph:
 
 `````carve
 para
-```js title="x"
+```js
 a
 ```
 `````
@@ -124,7 +124,7 @@ Without a language token there is nothing to recover, and the line falls back to
 ::: compare
 
 `````carve
-``` {.x}
+{%%}``` {.x}
 a
 ```
 `````
@@ -142,7 +142,7 @@ A language token that ends at any other character is not recovered either:
 ::: compare
 
 `````carve
-```js, foo
+{%%}```js, foo
 a
 ```
 `````

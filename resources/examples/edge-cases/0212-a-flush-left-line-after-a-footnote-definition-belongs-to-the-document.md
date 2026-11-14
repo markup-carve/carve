@@ -6,6 +6,7 @@ The fixture name predates the shared marker-body ruling. With an open paragraph 
 
 ```carve
 a
+
 [^f]: note
 b
 

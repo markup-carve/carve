@@ -55,7 +55,7 @@ one stripped it. Below the content column is below the content column.
 
 ````carve
 - ```
- x
+x
  ```
 ````
 
@@ -121,11 +121,11 @@ block the same way:
 
 ::::: compare
 
-```carve
-- ~~~
+````carve
+- ```
 x
-~~~
 ```
+````
 
 ```html
 <ul>
@@ -149,7 +149,7 @@ mechanisms to pass, and only the fence-shaped rule passes both:
 ````carve
 - ```
   x
- y
+y
   ```
 ````
 
@@ -178,7 +178,7 @@ after the document paragraph `y`.
 - a
   ```
   b
- y
+y
   ```
 ````
 

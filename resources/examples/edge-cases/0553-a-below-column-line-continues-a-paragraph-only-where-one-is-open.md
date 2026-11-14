@@ -19,6 +19,7 @@ rather than new content of an item whose content column it never reaches.
 ````carve
 - a
   - b
+
     # N
 lazy
 ````
@@ -40,6 +41,7 @@ lazy
 - a
   - b
     - c
+
       # N
 lazy
 ````
@@ -72,7 +74,7 @@ block kind closed it.
 ````carve
 - a
   - b
-    ---
+    ***
 lazy
 ````
 
@@ -174,6 +176,7 @@ whose own last block is a heading holds no paragraph either.
 ````carve
 - a
   - b
+
     > # H
 lazy
 ````
@@ -222,6 +225,7 @@ lazy</li>
 ````carve
 - a
   - b
+
     > q
 lazy
 ````
@@ -272,6 +276,7 @@ continues it.
 ````carve
 - a
   - b
+
     # N
 
 lazy
@@ -293,6 +298,7 @@ lazy
 ````carve
 - a
   - b
+
     # N
   lazy
 ````
@@ -591,6 +597,7 @@ x
 ````carve
 :: t
 : - a
+
     # H
 tail
 ````
@@ -612,6 +619,7 @@ tail
 ````carve
 :: t
 : - a
+
      # H
 tail
 ````
@@ -633,6 +641,7 @@ tail
 ````carve
 :: t
 : - a
+
       # H
 tail
 ````

@@ -8,7 +8,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
+  - {%%}
 - x
 `````
 
@@ -29,7 +29,6 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - a
-+
 - b
 `````
 
@@ -47,7 +46,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 `````carve
 - foo
   - [ ] task
-  +
+
   1. x
 `````
 
@@ -71,7 +70,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 `````carve
 - foo
   - b
-  +
+
     - x
 `````
 
@@ -95,7 +94,8 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
+  - {%%}
+
 > b
 `````
 
@@ -116,8 +116,9 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
- x
+  - {%%}
+
+x
 `````
 
 ```html
@@ -137,7 +138,8 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
+  - {%%}
+
 > b
 `````
 
@@ -158,8 +160,9 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
- > b
+  - {%%}
+
+> b
 `````
 
 ```html
@@ -201,8 +204,7 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
-    > b
+  - > b
 `````
 
 ```html
@@ -309,7 +311,8 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  1. +
+  1. {%%}
+
 > b
 `````
 
@@ -330,8 +333,9 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  1. +
- > b
+  1. {%%}
+
+> b
 `````
 
 ```html
@@ -394,7 +398,8 @@ other (carve#4409). A list marker at that column never attaches under a list ite
 
 `````carve
 - foo
-  - +
+  - {%%}
+
 ```
 x
 ```
@@ -418,10 +423,11 @@ x
 
 `````carve
 - foo
-  - +
- ```
- x
- ```
+  - {%%}
+
+```
+x
+```
 `````
 
 ```html
@@ -467,8 +473,7 @@ x
 
 `````carve
 - foo
-  - +
-    ```
+  - ```
     x
     ```
 `````
@@ -590,7 +595,8 @@ x
 
 `````carve
 - foo
-  1. +
+  1. {%%}
+
 ```
 x
 ```
@@ -614,10 +620,11 @@ x
 
 `````carve
 - foo
-  1. +
- ```
- x
- ```
+  1. {%%}
+
+```
+x
+```
 `````
 
 ```html
@@ -687,7 +694,7 @@ x
 
 `````carve
 - foo
-  - +
+  - {%%}
   - x
 `````
 
@@ -708,8 +715,7 @@ x
 
 `````carve
 - foo
-  - +
-  + x
+  - + x
 `````
 
 ```html
@@ -728,7 +734,7 @@ x
 
 `````carve
 - foo
-  - +
+  - {%%}
   * x
 `````
 
@@ -751,7 +757,7 @@ x
 
 `````carve
 - foo
-  - +
+  - {%%}
   1. x
 `````
 
@@ -774,7 +780,10 @@ x
 
 `````carve
 - foo
-  - +
+  - {%%}
+
+
+
   - [ ] x
 `````
 
@@ -797,8 +806,7 @@ x
 
 `````carve
 - foo
-  - +
-    - x
+  - - x
 `````
 
 ```html
@@ -823,7 +831,7 @@ x
 `````carve
 - a
 
-+
+
 - s
 `````
 
@@ -840,7 +848,6 @@ x
 
 `````carve
 - ```
-+
 - s
 `````
 

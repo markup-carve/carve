@@ -6,7 +6,6 @@ Under §17 L3, a later `+` with no following block is a letter (markup-carve/car
 
 ````carve
 > q
-+
 
 para
 ````
@@ -22,7 +21,6 @@ para
 
 ````carve
 > q
-+
 ````
 
 ```html
@@ -35,7 +33,6 @@ para
 
 ````carve
 - a
-+
 
 para
 ````
@@ -55,7 +52,6 @@ para
 x[^a]
 
 [^a]: note
-+
 
 para
 ````

@@ -10,9 +10,10 @@ open, and a footnote body takes a lazy line like every container (markup-carve/c
 
 ```carve
 - a
-  [^f]: t
 
-    more
+[^f]: t
+
+  more
 tail
 
 x[^f]

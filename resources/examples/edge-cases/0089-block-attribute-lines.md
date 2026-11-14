@@ -7,7 +7,6 @@ element and floats forward across intervening blank lines (§15 — reach).
 
 ```carve
 {#id}
-
 Text
 ```
 
@@ -46,8 +45,7 @@ on the opening line (§15 — multi-line block).
 ::: compare
 
 ```carve
-{#id
- .foo}
+{#id .foo}
 Text
 ```
 
@@ -117,8 +115,8 @@ Para
 
 ```carve
 Para
-{.class}
 
+{.class}
 Next
 ```
 

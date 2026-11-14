@@ -30,8 +30,7 @@ A paragraph under `> +` is the quote's paragraph, not a fold into `+`.
 ::: compare
 
 ```carve
-> +
-flush
+> flush
 ```
 
 ```html
@@ -45,7 +44,7 @@ At the end of the input the `+` is the quote's text.
 ::: compare
 
 ```carve
-> +
+>
 ```
 
 ```html
@@ -62,7 +61,7 @@ top-level paragraph.
 ::: compare
 
 ```carve
-> +
+>
 
 after
 ```
@@ -82,7 +81,8 @@ the `+` stays the inner quote's text and the fence stands outside (carve#4409).
 ::: compare
 
 ````carve
-> > +
+> >
+
 ```
 x
 ```

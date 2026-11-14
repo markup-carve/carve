@@ -8,7 +8,7 @@ different table structures.
 ::: compare
 
 ```carve
-| ~x~ |
+| {~x~} |
 | a | b |
 ```
 

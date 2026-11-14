@@ -14,7 +14,7 @@ ruled only on the four slots spelled with a bare `space`.
 ::: compare
 
 ````carve
-```  php
+{%%}```  php
 x = 1
 ```
 ````

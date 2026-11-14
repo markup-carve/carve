@@ -6,7 +6,8 @@ A definition below every open content column ends the open items and registers (
 
 ```carve
 - - a
- [^f]: x
+
+[^f]: x
 ```
 
 ```html

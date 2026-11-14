@@ -161,11 +161,11 @@
 ````carve
 - outer
   - head
-     ~~~
+     ```
      a
- ~~~
+```
 
-    tail
+   tail
 ````
 
 ```html
@@ -223,9 +223,9 @@
   - head
      ```
      a
- ```
+```
 
-  tail
+ tail
 ````
 
 ```html

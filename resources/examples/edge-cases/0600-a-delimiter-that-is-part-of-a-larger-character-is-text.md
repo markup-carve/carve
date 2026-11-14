@@ -56,7 +56,7 @@ later frame of the same kind that still forms.
 ::: compare
 
 ```carve
-_︎x _y_
+_︎x {_y_}
 ```
 
 ```html
@@ -68,7 +68,7 @@ _︎x _y_
 ::: compare
 
 ```carve
-~a~‍b~
+{~a~‍b~}
 ```
 
 ```html
@@ -176,7 +176,7 @@ _︎x _y_
 ::: compare
 
 ```carve
-{~́a~>b~} {~c~>d~}
+{~́a~>b~} {-c-}{+d+}
 ```
 
 ```html

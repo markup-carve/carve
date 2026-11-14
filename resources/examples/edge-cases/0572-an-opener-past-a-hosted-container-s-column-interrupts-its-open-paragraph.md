@@ -8,6 +8,7 @@ open paragraph as it does in an item (`CARVE-P9-083`, `CARVE-P0-024`).
 ````carve
 - ::: box
   text
+
    # h
   :::
 ````

@@ -6,7 +6,7 @@ The content column of a list item includes the marker's own leading indentation 
 
 ```carve
     1. y
-  | x |
+| x |
 ```
 
 ```html

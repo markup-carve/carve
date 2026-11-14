@@ -7,7 +7,7 @@ After the optional space, `frontmatter_open` takes only `frontmatter_format = (l
 ```carve
 --- <
 k: v
----
+***
 p
 ```
 
@@ -25,7 +25,7 @@ k: v</p>
 ```carve
 --- yaml x
 k: v
----
+***
 p
 ```
 
@@ -43,7 +43,7 @@ k: v</p>
 ```carve
 --- é
 k: v
----
+***
 ```
 
 ```html

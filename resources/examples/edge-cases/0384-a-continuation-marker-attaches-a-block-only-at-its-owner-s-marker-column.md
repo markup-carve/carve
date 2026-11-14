@@ -5,7 +5,8 @@ A `+` at an open marker column attaches one block starting at that column. A blo
 :::: compare
 
 ```carve
-* * +
+* * {%%}
+
 x
 ```
 
@@ -27,8 +28,7 @@ Column 2 is the inner item's marker column, so the inner item takes the paragrap
 :::: compare
 
 ```carve
-* * +
-  x
+* * x
 ```
 
 ```html
@@ -48,8 +48,9 @@ Column 1 is no marker column: the `+` is refused and the line folds into it.
 :::: compare
 
 ```carve
-* * +
- x
+* * {%%}
+
+x
 ```
 
 ```html
@@ -71,8 +72,7 @@ column is refused, so the line folds into the `+` (carve#4409).
 :::: compare
 
 ```carve
-- +
-x
+- x
 ```
 
 ```html
@@ -86,8 +86,7 @@ x
 :::: compare
 
 ```carve
-- +
-  x
+- x
 ```
 
 ```html
@@ -106,8 +105,8 @@ attaches `c` to that item (markup-carve/carve#3421).
 ```carve
 - a
   - b
-  +
-  c
+
+    c
 ```
 
 ```html
@@ -133,7 +132,7 @@ and leaves the outer item as the line's owner (carve#5637).
 ```carve
 - x
   - L
-+
+
   p
 ```
 

@@ -12,7 +12,8 @@ A line below a container's column folds only into an open paragraph (PART 0 S4).
 ::: d
 - d
   - e
-    - +
+    - {%%}
+
   :::
 after
 ````

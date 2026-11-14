@@ -6,7 +6,8 @@ A footnote body is a container like any other, and §16 collects a definition ou
 
 ```carve
 [^a]: note
-  [r]: /u
+
+[r]: /u
 
 see[^a] and [t][r]
 ```

@@ -49,8 +49,8 @@ The combined token, on one line and across a soft break.
 ::: compare
 
 ```carve
-/*a %%c
-b*/ y
+*/a %%c
+b/* y
 ```
 
 ```html

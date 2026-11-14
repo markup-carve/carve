@@ -76,9 +76,9 @@ A wider marker moves the column with it: `1. ` puts it at column 9.
 `````carve
 x[^n]
 
-[^n]: 1. ~~~
+[^n]: 1. ```
          a
-         ~~~
+         ```
 `````
 
 ```html
@@ -107,10 +107,10 @@ A quoted note measures the same column behind its quote prefix.
 
 `````carve
 > x[^n]
->
-> [^n]: - - ```
->           a
->           ```
+
+[^n]: - - ```
+          a
+          ```
 `````
 
 ```html

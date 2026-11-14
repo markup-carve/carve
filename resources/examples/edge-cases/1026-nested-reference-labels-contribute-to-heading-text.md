@@ -9,7 +9,7 @@ PART 2 CARVE-P2-004 derives a heading id from the text that each inline carries,
 ::: compare
 
 ```carve
-# a [[x][]][]
+# a [\[x][]][]
 ```
 
 ```html

@@ -53,6 +53,7 @@ under the marker.
 - a
 
   more
+
 - b
 ```
 
@@ -79,6 +80,7 @@ What it does *not* do is fold into the heading: a heading ends at the newline
 ```carve
 - a
   - b
+
     # N
 lazy
 ```
@@ -160,6 +162,7 @@ belongs to the item only if it reaches that column.
 
 ```carve
 -   item
+
     # Wide
 ```
 
@@ -181,7 +184,8 @@ from the marker rather than assumed.
 
 ```carve
 -   item
-  # H
+
+# H
 ```
 
 ```html

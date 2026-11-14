@@ -84,7 +84,8 @@ does open a paragraph, so the same below-column line lazily continues it.
 
 ```carve
 -{#k} text
- # h
+
+# h
 ```
 
 ```html

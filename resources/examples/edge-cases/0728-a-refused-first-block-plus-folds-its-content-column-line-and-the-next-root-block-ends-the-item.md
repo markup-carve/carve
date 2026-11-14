@@ -25,8 +25,8 @@ next root block begins after the item.
 ::: compare
 
 ```carve
-- +
-  x
+- x
+
 # h
 ```
 
@@ -44,9 +44,8 @@ next root block begins after the item.
 ::: compare
 
 ```carve
-- +
-  x
----
+- x
+***
 ```
 
 ```html

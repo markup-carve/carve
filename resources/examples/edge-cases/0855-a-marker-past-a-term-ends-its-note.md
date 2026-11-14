@@ -10,6 +10,7 @@ A list marker that misses a term's footnote body ends the note and reads as it w
 
 ```carve
 [^n]: :: t
+
 - x
 
 [^n]
@@ -39,6 +40,7 @@ A list marker that misses a term's footnote body ends the note and reads as it w
 
 ```carve
 [^n]: :: t
+
 more
 - x
 

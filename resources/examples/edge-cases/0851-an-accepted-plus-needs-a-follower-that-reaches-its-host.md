@@ -43,7 +43,8 @@ PART 9 §17 L3, CARVE-P9-067 (carve#4396). A line of nothing but quote markers h
 
 ````carve
 :: t
-: > 1. +
+: > 1. {%%}
+
 >   x
 ````
 

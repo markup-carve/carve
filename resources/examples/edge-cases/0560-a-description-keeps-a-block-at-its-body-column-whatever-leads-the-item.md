@@ -98,6 +98,7 @@ the line (`CARVE-P0-024`).
 
 ````carve
 - intro
+
   :: term
   : definition
 
@@ -125,6 +126,7 @@ after
 
 ````carve
 - intro
+
   > ```
   > code
   > ```

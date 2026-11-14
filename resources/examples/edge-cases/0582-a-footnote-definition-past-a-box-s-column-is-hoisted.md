@@ -8,8 +8,9 @@ CARVE-P9-083).
 
 ````carve
 - ::: box
-    [^n]: note
   :::
+
+[^n]: note
 
 ref[^n]
 ````

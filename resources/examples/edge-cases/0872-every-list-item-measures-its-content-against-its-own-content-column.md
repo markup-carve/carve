@@ -59,7 +59,8 @@ PART 0 S4, PART 9 §11 N1 (carve#4369). A list marker of another kind at column 
 `````carve
 - y
 1. c
-   [r]: /u
+
+[r]: /u
 
 [x][r]
 `````

@@ -10,8 +10,7 @@ A first-block `+` tests its next visible line at the marker column (CARVE-P9-067
 
 ```carve
 - a
-  * +
-    %% c
+  * %% c
 after
 ```
 
@@ -48,8 +47,9 @@ after
 
 ```carve
 - a
-  * +
-    [r]: /u
+  * {%%}
+
+[r]: /u
 after
 ```
 

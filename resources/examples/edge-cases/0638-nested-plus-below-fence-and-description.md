@@ -66,12 +66,13 @@ The nested description keeps the attached fence
 `````carve
 :: t
 :  d
+
    :: term
    :  detail
-   +
-   ```
-   code
-   ```
+
+      ```
+      code
+      ```
 `````
 
 `````html

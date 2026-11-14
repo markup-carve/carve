@@ -12,7 +12,8 @@ One column in, below an item.
 
 ````carve
 - n
- *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -32,7 +33,8 @@ A wider content column leaves more columns between.
 
 ````carve
 10. n
-   *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -52,7 +54,8 @@ A nested list closes with its parent.
 
 ````carve
 - - n
- *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -77,7 +80,8 @@ A description ends the same way.
 ````carve
 :: t
 : n
- *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -99,7 +103,8 @@ A wider description body leaves more columns between.
 ````carve
 :: t
 :  n
-  *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -120,7 +125,8 @@ A note ends the same way.
 
 ````carve
 [^f]: n
- *[A]: b
+
+*[A]: b
 
 A[^f]
 ````
@@ -145,7 +151,8 @@ At a wide content column the line reaches the item and stays its text.
 
 ````carve
 10. n
-    *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -165,7 +172,8 @@ A line that reaches an outer item stays text in the inner one.
 
 ````carve
 - - n
-  *[A]: b
+
+*[A]: b
 
 A
 ````
@@ -189,7 +197,8 @@ A line at a note's body column stays its text.
 
 ````carve
 [^f]: n
-  *[A]: b
+
+*[A]: b
 
 A[^f]
 ````

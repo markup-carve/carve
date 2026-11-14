@@ -14,7 +14,7 @@ with no top-level arrow is a forced strikethrough
 
 {~a `x~>y` b~}
 
-{~/old/~>/new/~}
+{-/old/-}{+/new/+}
 
 {~a\~>b~}
 ```
@@ -33,11 +33,11 @@ Math, an inline literal and an editorial comment are skipped the same way.
 ::: compare
 
 ```carve
-{~$`a~>b`~>c~}
+{-$`a~>b`-}{+c+}
 
-{~!`a~>b`~>c~}
+{-!`a~>b`-}{+c+}
 
-{~a{# ~> #}b~>c~}
+{-a{# ~> #}b-}{+c+}
 ```
 
 ```html

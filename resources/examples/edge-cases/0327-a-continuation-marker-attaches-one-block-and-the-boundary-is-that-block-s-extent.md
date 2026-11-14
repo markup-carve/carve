@@ -12,8 +12,9 @@ So a marker takes the paragraph and leaves the quote below it outside the item:
 
 ```carve
 - a
-+
-para
+
+  para
+
 > q
 ```
 
@@ -36,10 +37,10 @@ expressiveness:
 
 ```carve
 - a
-+
-para
-+
-> q
+
+  para
+
+  > q
 ```
 
 ```html
@@ -60,9 +61,10 @@ line, and the quote below it is still outside:
 
 ```carve
 - a
-+
-p1
-p2
+
+  p1
+  p2
+
 > q
 ```
 
@@ -85,9 +87,9 @@ clause is what carries them in:
 
 ```carve
 - a
-+
-> x
-> y
+
+  > x
+  > y
 - next
 ```
 
@@ -110,7 +112,6 @@ paragraph. The following item is a sibling:
 
 ```carve
 - a
-+
 - x
 - y
 ```
@@ -131,8 +132,8 @@ one block that follows, and a second block needs its own marker:
 ::: compare
 
 ```carve
-- +
-para
+- para
+
 > q
 ```
 
@@ -148,10 +149,9 @@ para
 ::: compare
 
 ```carve
-- +
-para
-+
-> q
+- para
+
+  > q
 ```
 
 ```html
@@ -171,8 +171,9 @@ attaches the paragraph and leaves the heading outside the quote:
 
 ```carve
 > quoted
-+
-para
+>
+> para
+
 # H
 ```
 
@@ -194,10 +195,10 @@ And a second marker brings it in, exactly as in the list form:
 
 ```carve
 > quoted
-+
-para
-+
-# H
+>
+> para
+>
+> # H
 ```
 
 ```html

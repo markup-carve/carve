@@ -13,8 +13,9 @@ attach it.
 
 ```carve
 - a
-+
-para
+
+  para
+
 > q
 ```
 
@@ -37,8 +38,9 @@ the one-block narrowing every other container applies.
 
 ```carve
 [^n]: a
-+
-para
+
+      para
+
 > q
 
 see[^n]
@@ -68,8 +70,9 @@ the same reason.
 ```carve
 :: t
 :  a
-+
-para
+
+   para
+
 > q
 ```
 
@@ -94,8 +97,8 @@ a no-op.
 
 ```carve
 > a
-+
-> q
+>
+> > q
 ```
 
 ```html

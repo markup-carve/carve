@@ -30,7 +30,9 @@ and renders as text.
 
 ```carve
 - a
+
   > - x
+
   - m
 ```
 
@@ -59,6 +61,7 @@ written on is not a parameter of this rule.
 
 ```carve
 - > - x
+
   - m
 ```
 
@@ -87,8 +90,10 @@ it, and the marker folds too.
 
 ```carve
 - a
+
   > - x
   p
+
   - m
 ```
 
@@ -118,7 +123,9 @@ the marker out of the fold would have had to move this document as well.
 
 ```carve
 - a
+
   > q
+
   - m
 ```
 
@@ -196,6 +203,7 @@ the marker at the content column opens a sublist.
 
 ```carve
 - a
+
   # h
   - m
 ```

@@ -15,6 +15,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
   ```js
   c
@@ -37,10 +38,11 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
- ```js
- c
- ```
+```js
+c
+```
 ````
 
 ````html
@@ -59,6 +61,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
    ```js
    c
@@ -81,6 +84,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
     ```js
     c
@@ -103,6 +107,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
         ```js
         c
@@ -125,7 +130,9 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
+
    # h
 ````
 
@@ -144,8 +151,9 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
-   ---
+   ***
 ````
 
 ````html
@@ -163,6 +171,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
    |= c |
    | 1 |
@@ -190,6 +199,7 @@ gone (carve#2607).
 
 ````carve
 - a
+
   > q
    ```=latex
    \r

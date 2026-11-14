@@ -9,7 +9,7 @@ markup-carve/carve#1352, which is what makes them worth writing down beside it.
 ::: compare
 
 ```carve
-[t][r
+\[t][r
 x]
 
 [r x]: /u

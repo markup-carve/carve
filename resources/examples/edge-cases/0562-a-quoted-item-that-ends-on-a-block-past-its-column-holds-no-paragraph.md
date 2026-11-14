@@ -11,6 +11,7 @@ fence under the item's paragraph, so the tilde lines below it are its content.
 ````carve
 > - b
 >   - c
+>
 >       # h
 tail
 ````

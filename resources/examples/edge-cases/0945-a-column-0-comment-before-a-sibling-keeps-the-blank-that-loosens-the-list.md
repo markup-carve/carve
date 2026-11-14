@@ -13,6 +13,7 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank inside an item, followed o
 
   %% y
 %% z
+
 - c
 ````
 
@@ -70,6 +71,7 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank inside an item, followed o
 >
 >   %% y
 > %% z
+>
 > - c
 ````
 

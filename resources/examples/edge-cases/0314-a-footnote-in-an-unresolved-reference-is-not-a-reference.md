@@ -15,7 +15,7 @@ element carries.
 ::: compare
 
 ```carve
-a [t[^1]][nope] b
+a [t\[^1]][nope] b
 
 [^1]: n
 ```
@@ -29,7 +29,7 @@ a [t[^1]][nope] b
 ::: compare
 
 ```carve
-a [t[^1]][nope] b [^1] c
+a [t\[^1]][nope] b [^1] c
 
 [^1]: n
 ```
@@ -51,7 +51,7 @@ a [t[^1]][nope] b [^1] c
 ::: compare
 
 ```carve
-a [t^[n]][nope] b
+a [t\^[n]][nope] b
 ```
 
 ```html

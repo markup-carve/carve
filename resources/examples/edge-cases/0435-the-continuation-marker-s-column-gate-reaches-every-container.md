@@ -97,8 +97,8 @@ more<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a>
 
 ```carve
 [^a]: intro
-+
-  more
+
+      more
 
 see[^a]
 ```
@@ -125,8 +125,8 @@ two above mean something: the same note, the same paragraph, one column over.
 
 ```carve
 [^a]: intro
-+
-more
+
+      more
 
 see[^a]
 ```
@@ -197,8 +197,8 @@ At column 0 the description takes it, as a second block of the `dd`.
 ```carve
 :: term
 :  intro
-+
-more
+
+   more
 ```
 
 ```html
@@ -255,7 +255,6 @@ else; the blank-line control and the comment control agree with each other.
 ```carve
 > intro
 >
-+
   more
 ```
 
@@ -274,8 +273,8 @@ into a quote without a `>` in front of it.
 ```carve
 > intro
 >
-+
-more
+>
+> more
 ```
 
 ```html
@@ -295,7 +294,7 @@ its own column, exactly as the comment spelling leaves it.
 
 ```carve
 - intro
-+
+
   more
 ```
 
@@ -316,6 +315,7 @@ marker column, so the quoted paragraph folds it in (markup-carve/carve#3421).
 
 ```carve
 - x
+
   > q
  +
 ```
@@ -337,6 +337,7 @@ A word at the same column follows the same ordinary text path.
 
 ```carve
 - x
+
   > q
  ZZZ
 ```
@@ -359,8 +360,8 @@ marker adds nothing (markup-carve/carve#3421).
 
 ```carve
 - x
+
   > q
-  +
 ```
 
 ```html
@@ -380,8 +381,8 @@ no flush-left block follows it.
 
 ```carve
 - x
+
   > q
-+
 ```
 
 ```html
@@ -400,6 +401,7 @@ Past the quote's marker the `+` is quoted content, and text again.
 
 ```carve
 - x
+
   > q
    +
 ```

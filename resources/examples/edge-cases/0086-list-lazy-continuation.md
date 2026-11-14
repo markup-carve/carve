@@ -22,6 +22,7 @@ lazy</li>
 
 ```carve
 - a
+
 # H
 ```
 
@@ -91,7 +92,7 @@ d</li>
 - a
   - b
 
- c
+c
 ```
 
 ```html
@@ -113,6 +114,7 @@ Lazy continuation only ever extends an **open paragraph**. After a block inside 
 
 ```carve
 - item
+
   > q
 tail
 ```

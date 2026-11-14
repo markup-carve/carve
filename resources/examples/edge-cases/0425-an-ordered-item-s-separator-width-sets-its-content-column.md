@@ -36,7 +36,7 @@ reaches it and the block after the blank is the document's own.
 ```carve
 1.  first
 
-   second
+second
 ```
 
 ```html
@@ -76,7 +76,7 @@ one: each spelling carries its own.
 ```carve
 1.   first
 
-   second
+second
 ```
 
 ```html
@@ -177,7 +177,7 @@ continuation one column short of each reaches neither.
 ```carve
 11.  first
 
-    second
+second
 ```
 
 ```html
@@ -212,7 +212,7 @@ continuation one column short of each reaches neither.
 ```carve
 111.  first
 
-     second
+second
 ```
 
 ```html
@@ -250,7 +250,7 @@ iii.  first
 ```carve
 iii.  first
 
-     second
+second
 ```
 
 ```html

@@ -27,7 +27,6 @@ tail
 
 ````carve
 - - ::: d
-  +
 tail
 ````
 

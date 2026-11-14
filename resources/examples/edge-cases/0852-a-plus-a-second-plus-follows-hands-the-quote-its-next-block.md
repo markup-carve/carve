@@ -10,9 +10,8 @@ PART 9 §17 L3, CARVE-P9-067 and carve#4438. Successive markers read the same in
 
 ````carve
 > q
-+
-+
-tail
+>
+> tail
 ````
 
 ```html
@@ -48,8 +47,6 @@ tail
 
 ````carve
 > q
-+
-+
 ````
 
 ```html

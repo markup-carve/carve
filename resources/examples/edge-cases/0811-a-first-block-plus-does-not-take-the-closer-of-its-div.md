@@ -11,7 +11,8 @@ A div's closer belongs to the div and is never a block of its body, so a first-b
 ````carve
 ::: d
 - d
-  - +
+  - {%%}
+
 :::
 after
 ````
@@ -65,7 +66,8 @@ after
 
 ````carve
 ::: d
-- +
+- {%%}
+
 :::
 after
 ````

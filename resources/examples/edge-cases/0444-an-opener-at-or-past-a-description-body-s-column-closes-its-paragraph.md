@@ -20,8 +20,9 @@ second one.
 ```carve
 :: term
 :  definition
-    [r]: /url
 tail
+
+[r]: /url
 ```
 
 ```html
@@ -43,8 +44,9 @@ indentation rather than the rule.
 ```carve
 :: term
 :  definition
-   [r]: /url
 tail
+
+[r]: /url
 ```
 
 ```html
@@ -66,6 +68,7 @@ here too.
 ```carve
 :: term
 :  definition
+
     # H
 tail
 ```
@@ -90,6 +93,7 @@ The heading at the column, the control the row above must equal.
 ```carve
 :: term
 :  definition
+
    # H
 tail
 ```
@@ -264,6 +268,7 @@ opener.
 ```carve
 :: term
 :  definition
+
     > q
 tail
 ```
@@ -290,6 +295,7 @@ at 6.
 ```carve
 :: term
 :    definition
+
       # H
 tail
 ```
@@ -350,8 +356,9 @@ paragraph that band folds into.
 ```carve
 :: term
 :  definition
+
     # H
- [r]: /url
+[r]: /url
 ```
 
 ```html
@@ -374,8 +381,9 @@ equal.
 ```carve
 :: term
 :  definition
+
    # H
- [r]: /url
+[r]: /url
 ```
 
 ```html

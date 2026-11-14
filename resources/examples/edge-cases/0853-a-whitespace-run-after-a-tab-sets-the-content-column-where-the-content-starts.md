@@ -29,7 +29,7 @@ CARVE-P2-010 and PART 9 §24 C3 (carve#4610). The content column of a tab-led it
 ````carve
 -    e
 
-    f
+f
 ````
 
 ```html
@@ -62,6 +62,7 @@ CARVE-P2-010 and PART 9 §24 C3 (carve#4610). The content column of a tab-led it
 
 ````carve
 -   e
+
     > q
 ````
 

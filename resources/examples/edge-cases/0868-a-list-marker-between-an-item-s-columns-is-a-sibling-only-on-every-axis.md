@@ -12,7 +12,10 @@ A marker that differs from the open list only in plain or task opens a new list.
 
 `````carve
 - a
- - [ ] b
+
+
+
+- [ ] b
 `````
 
 ```html
@@ -30,7 +33,10 @@ A marker that differs from the open list only in plain or task opens a new list.
 
 `````carve
 - [ ] a
- - b
+
+
+
+- b
 `````
 
 ```html
@@ -50,7 +56,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 
 `````carve
 1. a
- a.  b
+a.  b
 `````
 
 ```html
@@ -68,7 +74,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 
 `````carve
 1. a
- i.  b
+i.  b
 `````
 
 ```html
@@ -86,7 +92,7 @@ A different ordered type opens a new list too: decimal, alphabetic and roman are
 
 `````carve
 a.  a
- 1. b
+1. b
 `````
 
 ```html
@@ -131,7 +137,7 @@ A marker that matches on every axis is still a sibling.
 
 `````carve
 - [ ] a
- - [x] b
+- [x] b
 `````
 
 ```html
@@ -149,6 +155,9 @@ At the list's marker column every such marker opens a new list.
 
 `````carve
 - a
+
+
+
 - [ ] b
 `````
 

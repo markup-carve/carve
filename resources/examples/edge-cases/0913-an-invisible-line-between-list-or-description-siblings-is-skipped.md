@@ -10,8 +10,9 @@ PART 9 §10 CARVE-P9-013 (carve#4716). Every invisible line is skipped between t
 
 `````carve
 - a
-[r]: /u
 - b [x][r]
+
+[r]: /u
 `````
 
 ```html
@@ -29,8 +30,9 @@ A document-level abbreviation definition between two items is skipped the same w
 
 `````carve
 - a
-*[A]: x
 - b A
+
+*[A]: x
 `````
 
 ```html
@@ -68,9 +70,10 @@ A link definition between two entries, inside a quote, leaves that description l
 `````carve
 > :: t
 > : x
-> [r]: /u
 > :: u
 > : v [y][r]
+
+[r]: /u
 `````
 
 ```html

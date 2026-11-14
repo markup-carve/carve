@@ -9,7 +9,7 @@ A thematic break:
 ```carve
 a
 
---- 
+***
 
 b
 ```
@@ -112,8 +112,8 @@ And the continuation marker, which §17 L3 spells "a line whose only content is 
 
 ```carve
 - a
-+ 
-b
+
+  b
 
 x
 ```

@@ -6,6 +6,7 @@ PART 0 S4 asks whether the innermost quoted leaf accepts lazy text. A definition
 
 ```carve
 > > :: term
+
 tail
 ```
 

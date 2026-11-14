@@ -11,6 +11,7 @@ A `: ` line at the outer item's content column reaches the outer item but not th
 ```carve
 - - a
   : b
+
     > q
 ```
 
@@ -34,6 +35,7 @@ A `: ` line at the outer item's content column reaches the outer item but not th
 ```carve
 * 1. a
   : b
+
      > q
 ```
 
@@ -58,6 +60,7 @@ A `: ` line at the outer item's content column reaches the outer item but not th
 - - a
   : b
   : c
+
     # h
 ```
 

@@ -9,12 +9,12 @@ PART 3 CARVE-P3-004. A reference label that crosses a line and fails to pair or 
 ::: compare
 
 ```carve
-[*x*
+\[\*x\*
 y][]
 
 [*x* y]: /u
 
-[*z*
+[\*z\*
 w][missing]
 ```
 

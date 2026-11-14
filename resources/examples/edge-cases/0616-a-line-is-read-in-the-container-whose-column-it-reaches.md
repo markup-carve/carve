@@ -9,6 +9,7 @@ A marker at the item column opens a list (PART 0 S2).
 ````carve
 - :: t
   : para
+
   - li
 ````
 
@@ -87,7 +88,8 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 ````carve
 :: t
 : - para
-    [^p]: n
+
+[^p]: n
 x
 ````
 
@@ -134,7 +136,9 @@ An opener past the note body and below the item opens in the note (CARVE-P0-024)
 
 ````carve
 [r][] [^p] [^c]
+
 [^c]: - para
+
    # H
 ````
 
@@ -187,7 +191,8 @@ A lazy quoted continuation keeps its existing claim (CARVE-P0-005).
 ````carve
 - > a
   b
- [r]: /u
+
+[r]: /u
 ````
 
 ```html
@@ -250,8 +255,9 @@ A lazy line keeps the quoted paragraph open for the next line (CARVE-P0-015).
 ````carve
 - > a
   > b
- [r]: /u
 x
+
+[r]: /u
 ````
 
 ```html
@@ -271,8 +277,10 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 
 ````carve
 - > para
-  > [^f]: n
-  >   - sub
+
+[^f]: n
+
+  - sub
 tail[^f]
 ````
 

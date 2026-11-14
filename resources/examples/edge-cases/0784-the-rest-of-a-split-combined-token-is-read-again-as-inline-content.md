@@ -5,7 +5,7 @@ A combined opener that cannot open is two bare candidates, and everything after 
 ::: compare
 
 ```carve
-x */*~/**b a*/~
+x */*{~*/*b a/*~}
 ```
 
 ```html
@@ -29,7 +29,7 @@ x a/*b~/*/*/*/
 ::: compare
 
 ```carve
-- x */*~/**b a*/~
+- x */*{~*/*b a/*~}
 ```
 
 ```html

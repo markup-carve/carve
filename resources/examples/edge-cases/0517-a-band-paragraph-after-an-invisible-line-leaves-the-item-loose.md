@@ -13,7 +13,7 @@ the last row's below-column marker starts a separate list.
 - t
 
   %% c
- z
+z
 ````
 
 ````html
@@ -31,7 +31,7 @@ the last row's below-column marker starts a separate list.
 10. t
 
     %% c
-   z
+z
 ````
 
 ````html
@@ -70,7 +70,7 @@ the last row's below-column marker starts a separate list.
   %%%
   c
   %%%
- z
+z
 ````
 
 ````html
@@ -88,7 +88,8 @@ the last row's below-column marker starts a separate list.
 - t
 
   %% c
- - b
+
+- b
 - s
 ````
 

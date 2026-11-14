@@ -9,7 +9,8 @@ before
 
 %%% html
 secret
-%%% end
+end
+%%%
 
 after
 ```

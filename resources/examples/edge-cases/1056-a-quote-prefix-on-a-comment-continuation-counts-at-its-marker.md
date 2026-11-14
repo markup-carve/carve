@@ -10,6 +10,7 @@ A continuation of an item's comment run that carries a quote prefix at the openi
 
 ```carve
 - {% a
+
   >  b %}
 ```
 

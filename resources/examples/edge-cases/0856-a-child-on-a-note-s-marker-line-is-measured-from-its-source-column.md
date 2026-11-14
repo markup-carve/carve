@@ -12,6 +12,7 @@ The content column is the visual column where the body starts (CARVE-P9-083, car
 [^f]
 
 [^f]: - a
+
     # H
 ````
 
@@ -66,6 +67,7 @@ The content column is the visual column where the body starts (CARVE-P9-083, car
 [^f]
 
 [^f]: - - a
+
         # H
 ````
 

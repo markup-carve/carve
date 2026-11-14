@@ -14,7 +14,9 @@ PART 0 S4 (carve#4738). A marker left of the `dd` content column is no sibling o
 ```carve
 :: t
 : :: t
+
   - x
+
 - y
 ```
 
@@ -42,7 +44,9 @@ PART 0 S4 (carve#4738). A marker left of the `dd` content column is no sibling o
 ```carve
 :: t
 : :: t
+
   - x
+
 * y
 ```
 
@@ -71,6 +75,7 @@ PART 0 S4 (carve#4738). A marker left of the `dd` content column is no sibling o
 :: t
 : # h
   - x
+
 1. y
 ```
 

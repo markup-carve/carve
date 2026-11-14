@@ -10,7 +10,8 @@ A list item on a description's or note's marker line is a marker body like any o
 
 ```carve
 :: t
-: - +
+: - {%%}
+
 p
 ```
 
@@ -33,8 +34,7 @@ The note reads the same way.
 ::: compare
 
 ```carve
-[^n]: - +
-p
+[^n]: - p
 
 r[^n]
 ```

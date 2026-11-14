@@ -80,7 +80,8 @@ PART 9 §21a, CARVE-P9-013, §24 C3 and PART 0 S3 (carve#4890, carve#4799). A pa
 ::::: compare
 
 ````carve
-- +
+- {%%}
+
 {% c %}
 - b
 ````

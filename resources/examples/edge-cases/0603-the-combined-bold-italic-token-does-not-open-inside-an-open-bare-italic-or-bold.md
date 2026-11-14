@@ -38,7 +38,7 @@ With no italic or bold open, the token forms as usual:
 ::: compare
 
 ```carve
-/*x*/ and /b/
+*/x/* and /b/
 ```
 
 ```html

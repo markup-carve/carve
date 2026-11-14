@@ -29,9 +29,10 @@ A lone `+` at the marker column of an open list item reaches that item, and the 
 :::: compare
 
 ```carve
-- - - +
-  +
-  x
+- - - {%%}
+
+
+    x
 ```
 
 ```html

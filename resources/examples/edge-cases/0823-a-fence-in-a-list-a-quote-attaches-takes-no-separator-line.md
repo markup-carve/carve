@@ -10,8 +10,8 @@ A quote's `+` separates the block it attaches from what follows, but a fence the
 
 ````carve
 > t
-+
-- ```
+>
+> - ```
 ````
 
 ````html
@@ -33,8 +33,8 @@ the next quote line then leaves the item and the fence is still empty,
 
 ````carve
 > t
-+
-- ```
+>
+> - ```
 > b
 ````
 
@@ -58,9 +58,9 @@ it may open on a later line of the list,
 
 ````carve
 > t
-+
-- x
-  ```
+>
+> - x
+>   ```
 > b
 ````
 
@@ -84,9 +84,9 @@ or stand behind a description marker.
 
 ````carve
 > t
-+
-:: t
-: ```
+>
+> :: t
+> : ```
 ````
 
 ````html
@@ -109,10 +109,10 @@ A closed fence is not affected.
 
 ````carve
 > t
-+
-- ```
-  c
-  ```
+>
+> - ```
+>   c
+>   ```
 > b
 ````
 

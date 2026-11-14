@@ -29,7 +29,8 @@ The fenced comment spelling reads the same.
 ::: compare
 
 ```carve
-- +
+- {%%}
+
 %%%
 c
 %%%

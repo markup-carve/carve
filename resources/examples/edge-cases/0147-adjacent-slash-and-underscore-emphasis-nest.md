@@ -5,7 +5,7 @@
 ::: compare
 
 ```carve
-/_x_/ and _/x/_
+/{_x_}/ and {_/x/_}
 ```
 
 ```html

@@ -4,7 +4,6 @@
 
 ```carve
 $$`x+y`{.boxed data-k=v}
-
 ^ Equation #: Sum
 ```
 

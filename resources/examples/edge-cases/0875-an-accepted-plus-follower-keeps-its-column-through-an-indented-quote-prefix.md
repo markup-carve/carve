@@ -9,8 +9,7 @@ CARVE-P9-067 (carve#4630). The line after an accepted `+` reaches the host's mar
 :::::: compare
 
 `````carve
-> - - +
-  > x
+> - - x
 `````
 
 ```html
@@ -30,8 +29,7 @@ CARVE-P9-067 (carve#4630). The line after an accepted `+` reaches the host's mar
 :::::: compare
 
 `````carve
-> - - - +
-  >   x
+> - - - x
 `````
 
 ```html

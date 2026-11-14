@@ -10,8 +10,9 @@ definition would be collected and would leave no trace:
 ```carve
 :: t
 :  d
-   *[A]: a
    tail
+
+*[A]: a
 
 A
 ```

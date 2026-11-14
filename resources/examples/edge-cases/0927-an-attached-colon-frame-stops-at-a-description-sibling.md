@@ -55,8 +55,8 @@ A colon frame attached to a description body ends at its next sibling, even when
 ```carve
 :: t
 : a
-+
-:::
+
+  :::
 : b
 :::
 ```

@@ -37,7 +37,7 @@ With real content, the full bold-italic collapse still applies.
 ::: compare
 
 ```carve
-/*x*/
+*/x/*
 ```
 
 ```html

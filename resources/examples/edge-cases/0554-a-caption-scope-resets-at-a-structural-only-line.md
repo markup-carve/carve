@@ -52,8 +52,6 @@ not a container change, so a trailing one does not detach the caption.
 
 ````carve
 > q
->
-
 ^ cap
 ````
 

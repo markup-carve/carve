@@ -10,6 +10,7 @@ A quote's `+` takes one space after the marker. With more padding it is the quot
 
 ```carve
 - >  +
+
 # H
 ```
 
@@ -32,6 +33,7 @@ A prefixed line is a new quote at its own column, not a line of the item's.
 
 ```carve
 - >  +
+
 > q
 ```
 

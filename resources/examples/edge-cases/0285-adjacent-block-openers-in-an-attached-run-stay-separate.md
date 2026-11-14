@@ -8,10 +8,10 @@ canonical writer keeps the continuation marker on both attached quotes.
 
 ```carve
 - x
-+
-> q
-+
-> q
+
+  > q
+
+  > q
 ```
 
 ```html
@@ -32,12 +32,12 @@ header row becomes part of the first table's body.
 
 ```carve
 - x
-+
-|= a |
-| b |
-+
-|= a |
-| b |
+
+  |= a |
+  | b |
+
+  |= a |
+  | b |
 ```
 
 ```html

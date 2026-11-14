@@ -10,7 +10,9 @@ definition body and a list item all answer alike.
 
 ```carve
 [^n]: intro
+
   > quote
+
   # heading
 
 see[^n]
@@ -38,7 +40,9 @@ see[^n]
 ```carve
 :: term
 :  intro
+
    > quote
+
    # heading
 ```
 
@@ -59,7 +63,9 @@ see[^n]
 
 ```carve
 - intro
+
   > quote
+
   # heading
 ```
 
@@ -82,6 +88,7 @@ extra indentation is not content either.
 
 ```carve
 [^n]: intro
+
   > quote
     ordinary line
 
@@ -112,7 +119,9 @@ block the one before it started.
 
 ```carve
 [^n]: intro
+
   > quote
+
   # heading
   - item
 
@@ -147,6 +156,7 @@ and folds into it as text.
 
 ```carve
 intro
+
    # heading
 ```
 

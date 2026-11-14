@@ -4,6 +4,7 @@
 
 ```carve
 [x][m]
+
 *[m]: y
 ```
 
@@ -17,6 +18,7 @@
 
 ```carve
 ![x][m]
+
 *[m]: y
 ```
 
@@ -30,6 +32,7 @@
 
 ```carve
 see [m] here
+
 *[m]: y
 ```
 
@@ -42,7 +45,7 @@ see [m] here
 :::: compare
 
 ```carve
-|\|	
+|\| |	
 ```
 
 ```html

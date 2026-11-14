@@ -115,7 +115,7 @@ outside, and the refused `+` folds it in.
 
 ```carve
 - %% c
- flush
+flush
 ```
 
 ```html
@@ -130,8 +130,9 @@ outside, and the refused `+` folds it in.
 ::: compare
 
 ```carve
-- +
- flush
+- {%%}
+
+flush
 ```
 
 ```html

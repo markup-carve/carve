@@ -10,9 +10,9 @@ A refused wrapped run below an item paragraph stays text before the fence
 - a
 {.c
 }
-~~~
+```
 y
-~~~
+```
 `````
 
 `````html
@@ -55,12 +55,11 @@ Below a refused `+` under a stacked lead
 
 `````carve
 - - ```
-  +
 {.c
 }
-~~~
+```
 y
-~~~
+```
 `````
 
 `````html

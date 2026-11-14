@@ -12,8 +12,10 @@ CARVE-P9-067: a `+` attaches only at its innermost owner's marker column. A refu
 :::: compare
 
 ````carve
-- - +
+- - {%%}
+
 :: l
+
   x
 ````
 
@@ -37,8 +39,9 @@ CARVE-P9-067: a `+` attaches only at its innermost owner's marker column. A refu
 
 ````carve
 - a
-  - +
- ```
+  - {%%}
+
+```
 x
 ```
 ````
@@ -60,7 +63,8 @@ x
 :::: compare
 
 ````carve
-- - +
+- - {%%}
+
 ```
 +
 z
@@ -88,7 +92,8 @@ q
 :::: compare
 
 ````carve
-- - +
+- - {%%}
+
 ```
 +
 z
@@ -113,8 +118,8 @@ z
 
 ````carve
   - a
-  +
-  p
+
+    p
 ````
 
 ```html

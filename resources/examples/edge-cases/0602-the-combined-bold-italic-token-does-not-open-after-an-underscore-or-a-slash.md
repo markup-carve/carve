@@ -46,7 +46,7 @@ token (PART 9 §9), so the token still forms inside an underline:
 ::: compare
 
 ```carve
-_/*x*/_
+{_*/x/*_}
 ```
 
 ```html

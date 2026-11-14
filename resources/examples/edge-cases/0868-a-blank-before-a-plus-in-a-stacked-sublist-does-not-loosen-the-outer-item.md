@@ -12,8 +12,8 @@ PART 9 §17 L1 and L3 (carve#322, carve#4398). A blank inside a sublist does not
 - a
   - - x
 
-    +
-    y
+
+      y
 `````
 
 ```html

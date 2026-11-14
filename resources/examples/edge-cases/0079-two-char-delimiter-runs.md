@@ -8,7 +8,7 @@ mark.
 ::: compare
 
 ```carve
-==x== ~~y~~ =z= ~w~
+==x== ~~y~~ {=z=} {~w~}
 ```
 
 ```html

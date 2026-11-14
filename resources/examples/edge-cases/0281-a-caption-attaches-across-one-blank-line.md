@@ -64,7 +64,6 @@ byte the same output as the row above.
 ```carve
 |= Fruit |= Price |
 | Apple  | $1     |
-
 ^ Fruit prices
 ```
 
@@ -122,7 +121,6 @@ optional for the blank to be consumed by.
 def greet():
     return 1
 ```
-
 ^ Listing: a greeting
 ````
 
@@ -171,7 +169,6 @@ structural does.
 
 ```carve
 ![Apollo 11](apollo.jpg)
-
 ^ Figure 1: First moon landing
 ```
 
@@ -216,7 +213,6 @@ this row is the pin.
 
 ```carve
 $$`E = mc^2`
-
 ^ Equation: mass-energy
 ```
 

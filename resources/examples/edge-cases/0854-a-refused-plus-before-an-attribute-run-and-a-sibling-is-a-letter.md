@@ -29,7 +29,8 @@ The sibling test reads the block the run leads (CARVE-P9-067, carve#4447), so ne
 ::: compare
 
 ```carve
-- +
+- {%%}
+
 {x}
 - c
 ```

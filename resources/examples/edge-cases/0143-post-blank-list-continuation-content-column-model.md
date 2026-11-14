@@ -9,7 +9,7 @@ Below the content column, after a blank line, the block opener ends the item and
 ```carve
 - one
 
- > q
+> q
 ```
 
 ```html
@@ -67,7 +67,8 @@ With no blank line, a line below the content column lazily continues the open it
 
 ```carve
 - one
- > q
+
+> q
 ```
 
 ```html

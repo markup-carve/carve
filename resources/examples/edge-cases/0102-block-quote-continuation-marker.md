@@ -6,8 +6,8 @@ The continuation marker also works in block quotes (PART 9 §17): a lone `+` at 
 
 ```carve
 > quoted
-+
-- item
+>
+> - item
 ```
 
 ```html

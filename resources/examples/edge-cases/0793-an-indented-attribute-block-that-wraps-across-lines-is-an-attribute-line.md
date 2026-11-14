@@ -6,6 +6,7 @@ Indentation in front of an attribute block does not prevent it from opening (PAR
 
 ```carve
 a
+
  {.c}
 para
 ```
@@ -39,8 +40,8 @@ para</p>
 
 ```carve
 a
-{.c
- }
+
+{.c }
 para
 ```
 

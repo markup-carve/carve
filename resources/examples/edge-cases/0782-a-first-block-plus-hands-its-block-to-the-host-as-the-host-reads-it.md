@@ -108,8 +108,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 ::: compare
 
 ````carve
-- +
-  ```
+- ```
   x
 ````
 
@@ -128,8 +127,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 
 ````carve
 - foo
-  - +
-    ```
+  - ```
     x
     ``
 ````
@@ -155,7 +153,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 `````carve
 - a
   - ```
- +
++
 ````
 `````
 
@@ -204,8 +202,7 @@ see[^a]
 ::: compare
 
 ````carve
-- +
-  ```
+- ```
   x
   ```
   para
@@ -226,8 +223,7 @@ see[^a]
 ::: compare
 
 ````carve
-- +
-  ```
+- ```
   x
 - b
 ````
@@ -324,10 +320,10 @@ see[^a]
 ````carve
 - a
   - b
-  +
-  ```
-    code
-  ```
+
+    ```
+      code
+    ```
 ````
 
 ```html
@@ -351,10 +347,10 @@ see[^a]
 - a
   - b
     - c
-    +
-    ```
-      code
-    ```
+
+      ```
+        code
+      ```
 ````
 
 ```html
@@ -381,10 +377,10 @@ see[^a]
 ````carve
 > - a
 >   - b
->   +
->   ```
->     code
->   ```
+>
+>     ```
+>       code
+>     ```
 ````
 
 ```html

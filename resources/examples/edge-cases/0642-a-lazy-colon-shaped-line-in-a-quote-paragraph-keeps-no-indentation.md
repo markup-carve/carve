@@ -24,6 +24,7 @@ The same lazy line after a marker-line term ends at the quote's column
 
 `````carve
 > - :: t
+>
 > :  d
    :  b
 `````

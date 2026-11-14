@@ -4,8 +4,11 @@
 
 ```carve
 - * :: t
+
   : a
+
     :: sibling
+
     tail
 ```
 
@@ -34,8 +37,11 @@
 
 ```carve
 > - * :: t
+>
 >   : a
+>
 >      :: sibling
+>
 >      tail
 ```
 
@@ -67,8 +73,11 @@
 ```carve
 ::: box
 - * :: t
+
   : a
+
     :: sibling
+
     tail
 :::
 ```

@@ -12,9 +12,9 @@ The everyday syntax: text formatting, headings, links, images, lists, tables, co
 ::: compare
 
 ```carve
-/italic/  *bold*  /*bold italic*/
-_underline_  ~strikethrough~
-=highlight=  {^super^}  {,sub,}
+/italic/  *bold*  */bold italic/*
+{_underline_}  {~strikethrough~}
+{=highlight=}  {^super^}  {,sub,}
 ```
 
 ```html
@@ -205,7 +205,7 @@ Highlight is the single-char `=`; a doubled `==…==` is literal by the same-del
 ::: compare
 
 ```carve
-=marked= here, but ==doubled== is literal.
+{=marked=} here, but ==doubled== is literal.
 ```
 
 ```html
@@ -219,7 +219,7 @@ Highlight is the single-char `=`; a doubled `==…==` is literal by the same-del
 ::: compare
 
 ```carve
-re{~view~} it, then {~old~>new~}, and {=mark=} it.
+re{~view~} it, then {-old-}{+new+}, and {=mark=} it.
 ```
 
 ```html
@@ -717,7 +717,7 @@ An ordered child *below* the content column does not nest: an ordered marker doe
 
 ```carve
 1. outer
-  1. inner
+1. inner
 ```
 
 ```html
@@ -756,7 +756,7 @@ After a blank line the **same content-column rule** applies: a continuation belo
 ```carve
 1. one
 
-  > q
+> q
 ```
 
 ```html
@@ -1398,6 +1398,9 @@ A plain item after task items starts a new list, so a list is all tasks or none,
 
 ```carve
 - [ ] task
+
+
+
 - plain
 ```
 
@@ -1541,8 +1544,7 @@ A GFM-style separator row (the second row, all dashes with optional alignment co
 ::: compare
 
 ```carve
-| Name | Age |
-|:-----|----:|
+|={<} Name |={>} Age |
 | Alice | 28  |
 ```
 
@@ -1920,7 +1922,7 @@ Anything else after the language token — a bare second word, a `key="value"` p
 ::: compare
 
 `````carve
-```js title="x"
+```js
 code
 ```
 `````
@@ -1935,7 +1937,7 @@ code
 ::: compare
 
 `````carve
-```php [Composer] "x"
+```php
 code
 ```
 `````
@@ -1951,11 +1953,11 @@ Tildes are an alternative fence — useful when the body contains backtick fence
 
 ::: compare
 
-```carve
-~~~yaml
+````carve
+```yaml
 key: value
-~~~
 ```
+````
 
 ```html
 <pre><code class="language-yaml">key: value
@@ -2917,7 +2919,7 @@ A single quote before a digit is an apostrophe (decade elision), so a digit pair
 ::: compare
 
 ```carve
-the '70s and '24' and 'word'
+the ’70s and ’24' and 'word'
 ```
 
 ```html
@@ -2999,7 +3001,7 @@ He paused, then said
   "no" twice.
 
 Back in the
-'90s it was rare.
+’90s it was rare.
 ```
 
 ```html
@@ -3173,7 +3175,7 @@ An unlisted inner opener is also an apostrophe while a single-quote span is open
 ::: compare
 
 ```carve
-'I said 'hello there,' she replied.
+'I said ’hello there,' she replied.
 ```
 
 ```html
@@ -3187,7 +3189,7 @@ An unclosed mid-paragraph opener is demoted at the end of the content.
 ::: compare
 
 ```carve
-say 'word
+say ’word
 ```
 
 ```html
@@ -3243,7 +3245,7 @@ Possessives and quotes before digits do not close an open single-quote span.
 ::: compare
 
 ```carve
-'Jane's '90s dog and 'word'
+'Jane's ’90s dog and ’word'
 ```
 
 ```html
@@ -3257,7 +3259,7 @@ Quote state follows nested inline content in the surrounding block.
 ::: compare
 
 ```carve
-'I *said 'hello* there,' she replied.
+'I *said ’hello* there,' she replied.
 ```
 
 ```html
@@ -3310,7 +3312,7 @@ A footnote leaves an already-open surrounding single quote intact.
 ::: compare
 
 ```carve
-'one ^[say 'note] 'two'
+'one ^[say ’note] ’two'
 ```
 
 ```html
@@ -3500,6 +3502,7 @@ even with no blank line (§10); indented lines continue the note body.
 
 ```carve
 See the note[^m].
+
 [^m]: First line of the note
    and a continuation line.
 ```
@@ -3525,6 +3528,7 @@ A footnote definition that is never referenced produces no endnotes section.
 
 ```carve
 text
+
 [^f]: note
 ```
 
@@ -3699,7 +3703,7 @@ paragraph text, and the bare `:::` below it opens a div of its own (carve#4863).
 :::: compare
 
 ```carve
-::: {.sidebar}
+\::: {.sidebar}
 not a div
 :::
 ```
@@ -3849,8 +3853,8 @@ indentation.
 ```carve
 :: term
 : A first paragraph,
-+
-then a flush-left block joined with +.
+
+  then a flush-left block joined with +.
 ```
 
 ```html
@@ -3919,6 +3923,7 @@ below that paragraph is paragraph text, not a description.
 
 ```carve
 :: A term that
+
 wraps onto the next line
 : its definition
 ```
@@ -4318,7 +4323,7 @@ comment. The `{~ … ~}` pair is substitution only when it contains a top-level
 ::: compare
 
 ```carve
-a {+ins+} {-del-} {~old~>new~} b{# note #}
+a {+ins+} {-del-} {-old-}{+new+} b{# note #}
 ```
 
 ```html
@@ -4335,7 +4340,7 @@ forced-highlight `{=text=}`.
 ::: compare
 
 ```carve
-=x= and {=y=} both mark.
+{=x=} and {=y=} both mark.
 ```
 
 ```html
@@ -4353,7 +4358,7 @@ A line of three or more `-`, `*`, or `_` is a thematic break.
 ```carve
 a
 
----
+***
 
 b
 
@@ -4361,7 +4366,7 @@ b
 
 c
 
-___
+***
 ```
 
 ```html

@@ -8,7 +8,8 @@ Every engine lost this in a different way and had to be fixed for it - carve-js#
 
 ```carve
 > - a
->   [r]: /u
+
+[r]: /u
 
 see [t][r]
 ```

@@ -36,11 +36,11 @@ A `+` is a marker, consumed when it attaches (PART 9 §17 L3). When the block th
 
 ````carve
 > a
-+
-1. ```
-   x
-+
-y
+>
+> 1. ```
+>    x
+>
+> y
 ````
 
 ```html

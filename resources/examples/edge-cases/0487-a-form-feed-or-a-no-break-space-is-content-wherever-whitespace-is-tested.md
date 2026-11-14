@@ -153,9 +153,9 @@ A typed frontmatter opener may end in whitespace, not in a form feed.
 ::: compare
 
 ```carve
----yaml
+-\--yaml
 a: 1
----
+***
 
 t
 ```
@@ -213,7 +213,7 @@ A form feed after the combined `/*` opener does not refuse it either.
 ::: compare
 
 ```carve
-/*x*/ y
+*/x/* y
 ```
 
 ```html

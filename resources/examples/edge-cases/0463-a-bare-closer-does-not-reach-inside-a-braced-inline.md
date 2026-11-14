@@ -23,7 +23,7 @@ the braced family is opaque, the editorial forms as well as the forced spans.
 ::: compare
 
 ```carve
-~a{+b~+} c~
+{~a{+b\~+} c~}
 ```
 
 ```html
@@ -37,7 +37,7 @@ The rule is the same for every bare delimiter.
 ::: compare
 
 ```carve
-*a {_b* c_} d*
+*a {_b\* c_} d*
 ```
 
 ```html

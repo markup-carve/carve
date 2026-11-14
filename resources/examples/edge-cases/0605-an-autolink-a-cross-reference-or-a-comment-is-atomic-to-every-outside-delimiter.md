@@ -25,7 +25,7 @@ autolink (CARVE-P3-001), so each label below closes at its last `]`.
 ::: compare
 
 ```carve
-{~a <https://x~>y~>z b~}
+{-a <https://x~>y-}{+z b+}
 ```
 
 ```html
@@ -49,7 +49,7 @@ autolink (CARVE-P3-001), so each label below closes at its last `]`.
 ::: compare
 
 ```carve
-{~a <me@x.org~>y> b~}
+{-a <me@x.org-}{+y> b+}
 ```
 
 ```html

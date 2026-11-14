@@ -132,7 +132,7 @@ An invalid opener above changes nothing: it is text and leaves no state
 ::::: compare
 
 ````carve
-::: {.x}
+\::: {.x}
 not a div
 :::
 ````

@@ -9,7 +9,8 @@ CARVE-P9-042, CARVE-P9-013 and PART 9 §17 L3 (carve#4799) applies when the brac
 :::::: compare
 
 `````carve
-- +
+- {%%}
+
 {% c %}
 
 # H

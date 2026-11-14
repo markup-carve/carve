@@ -10,7 +10,7 @@ keeps one space more on each list than the one before it (PART 11 §1;
 ```carve
 1. a
 
- 1. b
+1. b
 ```
 
 ```html
@@ -30,9 +30,9 @@ put it back in the second list's column.
 ```carve
 1. a
 
- 1. b
+1. b
 
-  1. c
+1. c
 ```
 
 ```html

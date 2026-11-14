@@ -10,6 +10,7 @@ PART 0 S4 and the block-quote row (carve#5044). A quote interrupts the item's pa
 
 ```carve
 > - a
+>
 > > c
 - tail
 ```
@@ -32,6 +33,7 @@ An ordered item and an ordered tail read the same,
 
 ```carve
 > 1. a
+>
 > > c
 1. tail
 ```
@@ -76,6 +78,7 @@ A tail that keeps the outer quote's marker folds into the deepest quote too.
 
 ```carve
 > > - a
+> >
 > > > c
 > - tail
 ```

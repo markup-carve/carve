@@ -40,8 +40,8 @@ only the class moves:
 
 ```carve
 - a
-+
-> q
+
+  > q
 ```
 
 ```html

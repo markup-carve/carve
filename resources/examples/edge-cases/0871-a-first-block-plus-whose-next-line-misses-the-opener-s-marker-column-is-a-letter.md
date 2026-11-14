@@ -9,7 +9,8 @@ PART 9 §17 L3 and CARVE-P9-067 (carve#4409, carve#4396; carve#4400, carve#4332,
 :::::: compare
 
 `````carve
-- - +
+- - {%%}
+
 ```
   - y
 
@@ -38,7 +39,8 @@ w
 :: s
 : a
 
-  * +
+  * {%%}
+
 > q
 `````
 

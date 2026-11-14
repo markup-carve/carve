@@ -36,7 +36,7 @@ rather than losing a line.
 ```carve
 ::: |
 a
-%% secret
+{% secret %}
 c
 :::
 ```
@@ -93,7 +93,7 @@ is what the section below refuses.
 ```carve
 ::: |
 a
-%% c
+{% c %}
 :::
 ```
 

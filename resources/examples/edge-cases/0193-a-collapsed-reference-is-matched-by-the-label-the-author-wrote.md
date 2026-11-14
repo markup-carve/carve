@@ -25,7 +25,7 @@ The inverse: a decorated label does not reach a plain definition, because `[bold
 ```carve
 [bold]: /x
 
-see [*bold*][]
+see [\*bold\*][]
 ```
 
 ```html

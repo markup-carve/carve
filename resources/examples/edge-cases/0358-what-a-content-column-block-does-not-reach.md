@@ -28,9 +28,10 @@ paragraph, which it was before:
 
 ```carve
 - a
-  [^f]: t
-    more
-  b
+
+[^f]: t
+  more
+b
 
 x[^f]
 ```

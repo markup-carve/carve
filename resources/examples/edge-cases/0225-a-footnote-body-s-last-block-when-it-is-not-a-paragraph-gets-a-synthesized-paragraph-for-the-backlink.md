@@ -44,6 +44,7 @@ paragraph is a sibling of the `<blockquote>`, not a child of it:
 
 ```carve
 [^a]: note
+
   > quoted
 
 see[^a]
@@ -72,8 +73,7 @@ A table:
 ```carve
 [^a]: note
 
-  | a |
-  | - |
+  |= a |
   | b |
 
 see[^a]

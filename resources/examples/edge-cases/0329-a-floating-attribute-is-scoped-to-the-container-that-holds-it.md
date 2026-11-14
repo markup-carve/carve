@@ -148,7 +148,6 @@ container the attribute attaches exactly as it always has — in a quote:
 
 ```carve
 > {.k}
->
 > tail
 ```
 
@@ -164,6 +163,7 @@ in a list item:
 
 ```carve
 - a
+
   {.k}
   # H
 ```
@@ -185,6 +185,7 @@ in a definition body:
 ```carve
 :: t
 :  d
+
    {.k}
    # H
 ```
@@ -208,7 +209,6 @@ nothing:
 
 ```carve
 {.k}
-
 tail
 ```
 

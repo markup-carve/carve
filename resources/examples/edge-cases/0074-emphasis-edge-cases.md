@@ -33,7 +33,7 @@ Different-kind delimiters sit adjacent without interfering.
 ::: compare
 
 ```carve
-~old~ =new=
+{~old~} {=new=}
 ```
 
 ```html

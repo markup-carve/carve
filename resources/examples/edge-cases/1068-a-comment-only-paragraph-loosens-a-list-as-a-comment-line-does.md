@@ -52,6 +52,7 @@ A paragraph holding only braced comments has the ownership effect of a `%%` line
   - x
 
     {% a z %}
+
 - s
 ```
 

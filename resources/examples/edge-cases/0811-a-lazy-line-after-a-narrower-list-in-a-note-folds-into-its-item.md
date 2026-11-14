@@ -9,7 +9,7 @@ A note body list after a list with a wider content column is a new list (§10 I2
 :::: compare
 
 ```carve
-[^a]: 1. +
+[^a]: 1. {%%}
   - y
 tail
 

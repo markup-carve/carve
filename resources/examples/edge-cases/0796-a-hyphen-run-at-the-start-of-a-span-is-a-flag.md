@@ -8,7 +8,7 @@ stays literal under CARVE-P3-021, whatever the span's opener is
 ::: compare
 
 ```carve
-a *--x* b, a /--x/ b, a _---x_ b and a */--x/* b
+a *-\-x* b, a /-\-x/ b, a {_-\--x_} b and a */-\-x/* b
 ```
 
 ```html
@@ -22,7 +22,7 @@ A braced span's content starts after its `{X` opener.
 ::: compare
 
 ```carve
-a {*--x*} b and a {=---x=} b
+a {*-\-x*} b and a {=-\--x=} b
 ```
 
 ```html

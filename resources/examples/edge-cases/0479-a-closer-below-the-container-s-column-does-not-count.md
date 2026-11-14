@@ -11,7 +11,7 @@ level, where it opens an empty code block of its own (markup-carve/carve#2145).
 - a
   ```
   b
- y
+y
 ```
 ````
 
@@ -34,7 +34,7 @@ level, where it opens an empty code block of its own (markup-carve/carve#2145).
 - a
   ```
   b
- y
+y
  ```
 ````
 
@@ -62,7 +62,7 @@ below the content column*.
 - a
   ```
   b
- y
+y
    ```
 ````
 

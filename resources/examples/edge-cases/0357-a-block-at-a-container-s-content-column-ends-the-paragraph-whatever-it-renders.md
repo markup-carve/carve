@@ -78,8 +78,9 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 
 ```carve
 - a
-  [^f]: t
-    more
+
+[^f]: t
+  more
 tail
 
 x[^f]
@@ -112,7 +113,8 @@ differently:
 
 ```carve
 - a
-  [^f]: t
+
+[^f]: t
 tail
 
 x[^f]
@@ -145,9 +147,10 @@ indentation, and it is unanimous:
 
 ```carve
 - a
-  [r]: /u
     "T"
 tail
+
+[r]: /u
 
 [r][]
 ```

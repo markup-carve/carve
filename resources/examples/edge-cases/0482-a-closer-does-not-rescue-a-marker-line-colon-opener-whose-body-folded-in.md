@@ -13,7 +13,7 @@ title of the reading it used to pin (markup-carve/carve#2147).
 
 ````carve
 - :::
- y
+y
   :::
 ````
 
@@ -37,7 +37,7 @@ title of the reading it used to pin (markup-carve/carve#2147).
 
 ````carve
 - ::: note
- y
+y
   :::
 ````
 
@@ -65,7 +65,7 @@ which takes it as text, and the run opens its div in the outer item.
 
 ````carve
 1. ::: d
- y
+y
    :::
 ````
 
@@ -89,7 +89,7 @@ which takes it as text, and the run opens its div in the outer item.
 
 ````carve
 - ::: d
- y
+y
  z
   :::
 ````
@@ -115,7 +115,7 @@ z</p>
 
 ````carve
 - ::: d
- y
+y
 
   :::
 ````
@@ -215,7 +215,7 @@ y</p>
 ````carve
 - a
   ::: d
- y
+y
   :::
 ````
 

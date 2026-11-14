@@ -18,7 +18,7 @@ a @ b
 :::: compare
 
 ```carve
-/*a // b*/
+*/a // b/*
 ```
 
 ```html

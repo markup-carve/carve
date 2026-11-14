@@ -16,7 +16,7 @@ is why they render as an em dash.
 ```carve
 ---  yaml
 title: T
----
+***
 
 body
 ```

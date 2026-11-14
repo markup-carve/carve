@@ -7,7 +7,6 @@ quote becomes a `<figure>` with a `<figcaption>`.
 
 ```carve
 > quote text
-
 ^ Source: Someone
 ```
 

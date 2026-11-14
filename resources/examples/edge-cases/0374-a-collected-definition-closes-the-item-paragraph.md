@@ -9,9 +9,10 @@ comment. Here column 1 is below the bullet's content column 2.
 
 ```carve
 - a
-  [r]: /u
  more
 tail
+
+[r]: /u
 ```
 
 ```html
@@ -31,9 +32,10 @@ has the same boundary rather than the three-column boundary of `1. `.
 
 ```carve
 . a
-  [r]: /u
  more
 tail
+
+[r]: /u
 ```
 
 ```html
@@ -54,8 +56,9 @@ it reopens the paragraph and the flush-left line folds into it.
 
 ```carve
 1. a
-   [^f]: note
-    more
+
+[^f]: note
+ more
 tail
 ```
 
@@ -75,8 +78,9 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 
 ```carve
 - a
-  [^f]: note
-    more
+
+[^f]: note
+  more
 tail
 
 see[^f]

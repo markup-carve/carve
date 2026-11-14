@@ -12,7 +12,7 @@ The run converts under CARVE-P3-021, whatever the span's closer is
 ::: compare
 
 ```carve
-*a --* b, /a --/ b, _a ---_ b, ~a --~ b and */a --/* b
+*a --* b, /a --/ b, {_a ---_} b, {~a --~} b and */a --/* b
 ```
 
 ```html
@@ -46,7 +46,7 @@ does a run at the start of a span.
 ::: compare
 
 ```carve
-(a --) b, *a --x* b and *--x* b
+(a -\-) b, *a -\-x* b and *-\-x* b
 ```
 
 ```html

@@ -11,8 +11,10 @@ The quote line is two spaces and a tab. Each description strips its own columns 
 ```carve
 :: t
 : a
+
   :: t
   : a
+
   	> b
 ```
 

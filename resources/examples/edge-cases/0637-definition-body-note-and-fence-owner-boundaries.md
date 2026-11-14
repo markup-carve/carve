@@ -58,8 +58,10 @@ An invisible footnote keeps a marker at its body column
 
 `````carve
 . d
-   [^n]: e
-     - a
+
+[^n]: e
+
+  - a
 `````
 
 `````html
@@ -76,8 +78,9 @@ A marker below the invisible footnote body is text of the note's open paragraph,
 
 `````carve
 . d
-   [^n]: e
     - a
+
+[^n]: e
 `````
 
 `````html

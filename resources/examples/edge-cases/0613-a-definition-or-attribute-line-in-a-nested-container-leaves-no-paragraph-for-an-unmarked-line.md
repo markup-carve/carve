@@ -17,8 +17,9 @@ list instead of folding into the outer item:
 ````carve
 - a
   - para
-    [r]: /u
 x
+
+[r]: /u
 ````
 
 ```html
@@ -63,8 +64,9 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 ````carve
 - a[^f]
   - para
-    [^f]: n
-      more
+
+[^f]: n
+  more
 x
 ````
 
@@ -97,7 +99,8 @@ leaves the quote:
 
 ````carve
 > - para
->   [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -116,7 +119,8 @@ The same holds in a nested quote:
 
 ````carve
 > > - para
-> >   [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -138,7 +142,8 @@ ordered item too:
 
 ````carve
 > 1. para
->    [^f]: n
+
+[^f]: n
 ```
 code
 ````
@@ -161,7 +166,8 @@ In a quoted definition body:
 ````carve
 > :: t
 > : d
->   [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -183,7 +189,8 @@ the quote is reached only by its marker:
 ````carve
 > - a
 >   - para
->     [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -206,7 +213,9 @@ A list marker leaves the quote too, and opens a list:
 
 ````carve
 > - para
->   [^f]: n
+
+[^f]: n
+
 - tail
 ````
 
@@ -249,8 +258,9 @@ With the quote inside an item, the definition is erased with its `>`
 
 ````carve
 - > - para
-  >   [r]: /u
 tail
+
+[r]: /u
 ````
 
 ```html
@@ -297,7 +307,8 @@ A footnote definition under a quoted paragraph:
 
 ````carve
 - > para
-  > [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -317,8 +328,9 @@ item's next paragraph:
 
 ````carve
 - > - para
-  >   [^f]: n
-  tail
+
+[^f]: n
+tail
 ````
 
 ```html
@@ -340,8 +352,9 @@ An abbreviation definition inside a quote is erased with its `>` like a link def
 
 ````carve
 > - para
->   *[A]: b
 tail
+
+*[A]: b
 ````
 
 ```html

@@ -6,6 +6,7 @@ An abbreviation definition is an invisible construct (§10): on the line directl
 
 ```carve
 The HTML spec is long.
+
 *[HTML]: HyperText Markup Language
 ```
 

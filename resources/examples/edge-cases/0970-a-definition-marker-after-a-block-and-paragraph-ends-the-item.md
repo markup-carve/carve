@@ -10,7 +10,9 @@ PART 0 S4 (definition-body `markers`). A later block ends a term-only definition
 
 ```carve
 - a
+
   :: t
+
   # H
   w
 : z

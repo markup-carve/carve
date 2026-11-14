@@ -160,6 +160,7 @@ A comment fence keeps its body and closer, and the term goes on after it.
 ```carve
 :: a
 : b
+
   :: c
     %%%
     hidden
@@ -191,7 +192,8 @@ stays unresolved.
 [t][r]
 
 :: c
-  [r]: /u
+
+[r]: /u
 ```
 
 ```html
@@ -209,7 +211,8 @@ stays unresolved.
 [t][r]
 
 > :: c
->   [r]: /u
+
+[r]: /u
 ```
 
 ```html
@@ -254,8 +257,10 @@ stays unresolved.
 
 :: a
 : b
+
   :: c
-    [r]: /u
+
+[r]: /u
 ```
 
 ```html
@@ -281,7 +286,8 @@ A footnote definition past the column is term text as well.
 x[^n]
 
 :: c
-  [^n]: y
+
+[^n]: y
 ```
 
 ```html
@@ -307,7 +313,8 @@ x[^n]
 x[^n]
 
 > :: c
->   [^n]: y
+
+[^n]: y
 ```
 
 ```html
@@ -368,8 +375,10 @@ x[^n]
 
 :: a
 : b
+
   :: c
-    [^n]: y
+
+[^n]: y
 ```
 
 ```html
@@ -448,8 +457,10 @@ At the container's column a definition ends the term and registers.
 
 :: a
 : b
+
   :: c
-  [r]: /u
+
+[r]: /u
 ```
 
 ```html
@@ -512,7 +523,7 @@ the definition after the fence registers past the description's column.
   %%%
   :: fake
     %%%
-    [r]: /u
+[r]: /u
 ```
 
 ```html
@@ -534,12 +545,13 @@ A blank line inside a folded comment fence does not end the term.
 
 :: a
 : b
+
   :: c
     %%%
 
     hidden
     %%%
-    [r]: /u
+[r]: /u
 ```
 
 ```html
@@ -563,6 +575,7 @@ A term on a list marker line is measured against the item's content column.
 
 ```carve
 - :: c
+
     # H
 ```
 
@@ -619,9 +632,12 @@ A `>` past the column is term text, so the term stays open under it.
 
 :: a
 : b
+
   :: c
+
     > text
-    [r]: /u
+
+[r]: /u
 ```
 
 ```html

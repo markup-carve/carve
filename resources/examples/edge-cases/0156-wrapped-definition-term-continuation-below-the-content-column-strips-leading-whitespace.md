@@ -8,8 +8,10 @@ At column 1, one below the content column 2:
 
 ```carve
 - one
+
   :: term
- wrapped
+
+wrapped
 ```
 
 ```html
@@ -31,7 +33,9 @@ At column 0, flush left, the same document:
 
 ```carve
 - one
+
   :: term
+
 wrapped
 ```
 

@@ -110,7 +110,8 @@ see[^a]
 ::: compare
 
 ```carve
-- - +
+- - {%%}
+
 para
 ```
 

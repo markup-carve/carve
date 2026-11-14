@@ -18,7 +18,7 @@ An admonition opener:
 :::: compare
 
 ```carve
-:::	note
+\:::	note
 x
 :::
 ```
@@ -41,7 +41,7 @@ first.
 :::: compare
 
 ```carve
-::: 	note
+\::: 	note
 x
 :::
 ```
@@ -59,7 +59,7 @@ x</p>
 :::: compare
 
 ```carve
-:::	 note
+\:::	 note
 x
 :::
 ```
@@ -81,7 +81,7 @@ role: when the slot IS written, it answers the same way.
 :::: compare
 
 ```carve
-:::	[First]
+\:::	[First]
 x
 :::
 ```
@@ -99,7 +99,7 @@ x</p>
 :::: compare
 
 ```carve
-::: 	[First]
+\::: 	[First]
 x
 :::
 ```
@@ -119,7 +119,7 @@ A line block:
 :::: compare
 
 ```carve
-:::	|
+\:::	|
 x
 :::
 ```
@@ -137,7 +137,7 @@ x</p>
 :::: compare
 
 ```carve
-::: 	|
+\::: 	|
 x
 :::
 ```
@@ -160,7 +160,7 @@ recognized form would have produced a `div.hardbreaks` wrapper instead.
 :::: compare
 
 ```carve
-:::	\
+\:::	\
 x
 :::
 ```
@@ -178,7 +178,7 @@ x</p>
 :::: compare
 
 ```carve
-::: 	\
+\::: 	\
 x
 :::
 ```

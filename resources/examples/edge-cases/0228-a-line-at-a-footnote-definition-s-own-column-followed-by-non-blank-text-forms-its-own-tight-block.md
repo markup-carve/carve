@@ -6,8 +6,9 @@ The fixture name records the earlier reading. The footnote definition is invisib
 
 ```carve
 - a
-  [^f]: x
-  more
+
+[^f]: x
+more
 
 see[^f]
 ```

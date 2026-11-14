@@ -12,7 +12,7 @@ A spaced run under a same-bullet item is a break, and the list ends.
 
 ```carve
 - x
-- - -
+***
 ```
 
 ```html
@@ -30,7 +30,7 @@ Under another bullet it opens no sibling list.
 
 ```carve
 - x
-* * *
+***
 ```
 
 ```html
@@ -48,7 +48,7 @@ A longer run is the same break.
 
 ```carve
 - x
-* * * *
+***
 ```
 
 ```html
@@ -67,7 +67,7 @@ A blank line changes nothing.
 ```carve
 - x
 
-- - -
+***
 ```
 
 ```html
@@ -85,7 +85,7 @@ Inside an item the break belongs to the item.
 
 ```carve
 - - x
-  - - -
+  ***
 ```
 
 ```html
@@ -109,7 +109,7 @@ Below a description note it ends the description, as `***` does.
 :: t
 : ::: note
   para
-* * *
+***
 ```
 
 ```html

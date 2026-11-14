@@ -51,12 +51,12 @@ verbatim code text moved a block from the end of the document to the beginning.
 
 ````carve
 [^f]: n
-+
-```
-a
-[^z]: zz
-b
-```
+
+      ```
+      a
+      [^z]: zz
+      b
+      ```
 
 see[^f]
 ````

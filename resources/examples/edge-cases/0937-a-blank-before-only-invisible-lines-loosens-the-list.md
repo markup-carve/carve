@@ -13,6 +13,7 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank line followed only by comm
   : payload
 
     %% c
+
 - sub
 ````
 
@@ -37,6 +38,7 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank line followed only by comm
   - b
 
     %% c
+
 - sub
 ````
 
@@ -59,8 +61,10 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank line followed only by comm
 - :: term
   : payload
 
-    [r]: /u
+
 - sub
+
+[r]: /u
 ````
 
 ```html
@@ -86,6 +90,7 @@ PART 9 §17 L1c with CARVE-P9-013 property 3. A blank line followed only by comm
     %%%
     c
     %%%
+
 - sub
 ````
 

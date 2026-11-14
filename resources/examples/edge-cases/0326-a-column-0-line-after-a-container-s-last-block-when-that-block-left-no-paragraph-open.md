@@ -84,7 +84,7 @@ A thematic break holds nothing at all:
 ::: compare
 
 ```carve
-- ---
+- ***
 tail
 ```
 
@@ -393,6 +393,7 @@ item's content column is the same last block, and leaves the same nothing open:
 
 ```carve
 - a
+
   - # H
 tail
 ```
@@ -538,6 +539,7 @@ paragraph it introduces:
 
 ```carve
 - a
+
   {.x}
   more
 ```

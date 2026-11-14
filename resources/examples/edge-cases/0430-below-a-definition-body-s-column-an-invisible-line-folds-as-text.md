@@ -16,8 +16,9 @@ it, text on the page and a definition in the tables, is not on offer.
 ```carve
 :: t
 :  d
-  [r]: /u
 tail
+
+[r]: /u
 
 See [text][r].
 ```
@@ -41,7 +42,8 @@ unresolved reference below it.
 ```carve
 :: t
 :  d
-  [^f]: n
+
+[^f]: n
 tail
 
 See[^f]
@@ -98,8 +100,9 @@ ends the description and stands in the document (carve#4412).
 ```carve
 :: t
 :  d
-  *[A]: a
 tail
+
+*[A]: a
 ```
 
 ```html
@@ -143,8 +146,9 @@ One column below the content column reads the same as two.
 ```carve
 :: t
 :  d
- [r]: /u
 tail
+
+[r]: /u
 ```
 
 ```html

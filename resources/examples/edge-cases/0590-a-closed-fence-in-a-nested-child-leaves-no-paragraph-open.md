@@ -10,7 +10,7 @@ A closed child code block leaves no paragraph open. An unclosed fence at the enc
       ```
       x
       ```
-  ~~~
+  ```
 after
 ````
 
@@ -39,7 +39,7 @@ after
 >       ```
 >       x
 >       ```
->   ~~~
+>   ```
 after
 ````
 
@@ -66,8 +66,9 @@ after
 
 ````carve
 - a
+
     - # h
-  ~~~
+  ```
 after
 ````
 
@@ -93,7 +94,7 @@ after
 - a
     - child
       text
-  ~~~
+  ```
 after
 ````
 

@@ -6,8 +6,9 @@ A link definition or attribute line past a box's content column opens on its aut
 
 ````carve
 - ::: box
-    [r]: /u
   :::
+
+[r]: /u
 
 see [x][r]
 ````
@@ -52,8 +53,9 @@ The same definition at the box's own column already opens there.
 
 ````carve
 - ::: box
-  [r]: /u
   :::
+
+[r]: /u
 
 see [x][r]
 ````

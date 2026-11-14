@@ -10,9 +10,10 @@ A fence keeps the blank line at the end of its content wherever it ends (carve#4
 
 ````carve
 :: t
-: . ```
+: . ````
      ```
 
+    ````
 ````
 
 ````html

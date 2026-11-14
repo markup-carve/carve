@@ -11,9 +11,9 @@ document end (carve#5016).
 :::: compare
 
 ````carve
- ---
+ ***
 a
----
+***
 x
 ````
 

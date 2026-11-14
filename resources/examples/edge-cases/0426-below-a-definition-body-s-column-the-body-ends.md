@@ -14,6 +14,7 @@ Column 0 is not a special case of the first band, it is the ordinary case: the
 ```carve
 :: term
 :  definition
+
 > quote
 ```
 
@@ -100,6 +101,7 @@ opener keeps its authored column as the block's base. Both nest.
 ```carve
 :: term
 :  definition
+
    > quote
 ```
 
@@ -120,6 +122,7 @@ opener keeps its authored column as the block's base. Both nest.
 ```carve
 :: term
 :  definition
+
     > quote
 ```
 

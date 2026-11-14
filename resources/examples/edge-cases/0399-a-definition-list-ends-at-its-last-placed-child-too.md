@@ -48,8 +48,9 @@ list ends where its description ends, and the offsets after that belong to the
 ```carve
 :: t
 :  a
-   [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ```

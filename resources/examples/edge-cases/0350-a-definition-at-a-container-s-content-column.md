@@ -11,8 +11,9 @@ so it registers.
 
 ```carve
 - a
-  [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ```
@@ -35,7 +36,8 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 
 ```carve
 - a
-  [^f]: t
+
+[^f]: t
 tail
 
 x[^f]
@@ -69,8 +71,9 @@ a single space and answer differently:
 
 ```carve
 - a
- [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ```
@@ -91,8 +94,9 @@ An abbreviation definition reads the same way at that column (carve#4865), so th
 
 ```carve
 - a
-  *[A]: x
 tail
+
+*[A]: x
 ```
 
 ```html
@@ -112,8 +116,9 @@ doing the work rather than two container-specific rules:
 ```carve
 :: t
 :  a
-   [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ```
@@ -163,7 +168,8 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 ```carve
 :: t
 :  a
-   [^f]: t
+
+[^f]: t
 tail
 
 x[^f]

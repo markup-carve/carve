@@ -7,8 +7,7 @@ A note body is a container: it holds blocks, not just inline content, and each r
 ```carve
 [^a]: intro
 
-  | a |
-  | - |
+  |= a |
   | b |
 
   closing line.

@@ -10,11 +10,11 @@ A `+` changes where a block is written, not how it is read (CARVE-P9-067). A bla
 
 ```carve
 - a
-+
-:: term
-: d
 
-  x
+  :: term
+  : d
+
+    x
 ```
 
 ```html
@@ -37,12 +37,12 @@ A `+` changes where a block is written, not how it is read (CARVE-P9-067). A bla
 
 ```carve
 - a
-+
-:: t
-: d
-: e
 
-  x
+  :: t
+  : d
+  : e
+
+    x
 - b
 ```
 
@@ -69,11 +69,11 @@ A `+` changes where a block is written, not how it is read (CARVE-P9-067). A bla
 ```carve
 - a
   - b
-  +
-  :: t
-  : d
 
-    x
+    :: t
+    : d
+
+      x
 ```
 
 ```html

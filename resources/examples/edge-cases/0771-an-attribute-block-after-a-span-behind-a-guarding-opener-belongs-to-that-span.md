@@ -17,7 +17,7 @@ A `_` or `/` that opens a span that closes is not the character before the next 
 ::: compare
 
 ```carve
-_*a*{title="_"} b_
+{_*a*{title="_"} b_}
 ```
 
 ```html

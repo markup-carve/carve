@@ -9,7 +9,7 @@ page: edge-inline
 ::: compare
 
 ```carve
-=a != b=
+{=a != b=}
 ```
 
 ```html
@@ -33,7 +33,7 @@ page: edge-inline
 ::: compare
 
 ```carve
-=a != b= and =c=
+{=a != b=} and {=c=}
 ```
 
 ```html
@@ -45,7 +45,7 @@ page: edge-inline
 ::: compare
 
 ```carve
-=a !== b=
+{=a !==} b=
 ```
 
 ```html

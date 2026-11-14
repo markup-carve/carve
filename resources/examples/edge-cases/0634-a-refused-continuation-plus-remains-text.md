@@ -29,7 +29,6 @@ tail
 ````carve
 - a
   - b
-  +
 ````
 
 ```html
@@ -49,7 +48,7 @@ tail
 ````carve
 - a
 
-+
+
 - s
 ````
 
@@ -66,7 +65,6 @@ tail
 
 ````carve
 - ```
-+
 - s
 ````
 
@@ -109,7 +107,6 @@ tail
 ````carve
 - a
   - ```
-  +
 ````
 
 ```html
@@ -195,8 +192,8 @@ tail
 ````carve
 - foo
   - [ ] task
-  +
-  > q
+
+        > q
 ````
 
 ```html
@@ -219,6 +216,9 @@ tail
 - foo
   - [ ] task
     +
+
+
+
   - x
 ````
 
@@ -284,7 +284,6 @@ tail
 `````carve
 - a
   - b
-  +
   - c
 `````
 
@@ -306,10 +305,10 @@ tail
 `````carve
 - foo
   - [ ] task
-  +
-  ```sh
-  npm test
-  ```
+
+        ```sh
+        npm test
+        ```
   - [ ] more
 `````
 
@@ -423,7 +422,6 @@ left
 `````carve
 - a
   - b
-  +
 `````
 
 ```html
@@ -488,7 +486,7 @@ left
 ::::::: compare
 
 `````carve
-- +
+- {%%}
 `````
 
 ```html
@@ -502,7 +500,7 @@ left
 ::::::: compare
 
 `````carve
-- +
+- {%%}
 
 para
 `````
@@ -519,7 +517,7 @@ para
 ::::::: compare
 
 `````carve
-- +
+- {%%}
 - b
 `````
 
@@ -535,7 +533,7 @@ para
 ::::::: compare
 
 `````carve
-1. +
+1. {%%}
 `````
 
 ```html
@@ -564,7 +562,7 @@ para
 
 `````carve
 - foo
-  - +
+  - {%%}
   - b
 `````
 
@@ -584,8 +582,7 @@ para
 ::::::: compare
 
 `````carve
-> +
-flush
+> flush
 `````
 
 ```html
@@ -597,7 +594,8 @@ flush
 ::::::: compare
 
 `````carve
-> > +
+> >
+
 flush
 `````
 
@@ -616,7 +614,8 @@ flush
 
 `````carve
 - a
-  - - +
+  - - {%%}
+
   > b
 `````
 
@@ -641,7 +640,8 @@ flush
 
 `````carve
 - a
-  - - +
+  - - {%%}
+
 > b
 `````
 
@@ -690,8 +690,7 @@ flush
 ::::::: compare
 
 `````carve
-> > +
-> b
+> > b
 `````
 
 ```html

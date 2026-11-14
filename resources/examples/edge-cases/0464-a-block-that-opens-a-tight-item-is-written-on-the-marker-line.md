@@ -7,8 +7,8 @@ puts the continuation marker below it (PART 11 §7e).
 
 ```carve
 - > p
-+
-> z
+
+  > z
 ```
 
 ```html
@@ -51,9 +51,9 @@ A table below a table stays inside the item in a quote host too.
 ```carve
 > - | a |
 >   | b |
-> +
-> | c |
-> | d |
+>
+>   | c |
+>   | d |
 ```
 
 ```html

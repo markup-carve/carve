@@ -48,7 +48,7 @@ What stands before the opener does not reach the quote.
 ```carve
 a.*"x"* b
 
-a,_"x"_ b
+a,{_"x"_} b
 ```
 
 ```html

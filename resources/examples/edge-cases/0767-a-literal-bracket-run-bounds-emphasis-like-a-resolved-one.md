@@ -17,7 +17,7 @@ A span opened outside a bracket run is not reachable inside it, whether the run 
 ::: compare
 
 ```carve
-_[_g_] x_ and /[/g/] x/
+{_[{_g_}] x_} and /[/g/] x/
 ```
 
 ```html

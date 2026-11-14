@@ -12,6 +12,7 @@ CARVE-P9-083 and carve#4497: the item does not rebase it, so the div reads as it
 - :::
   :: t
   : a
+
     > q
   :::
 ````
@@ -41,7 +42,7 @@ CARVE-P9-083 and carve#4497: the item does not rebase it, so the div reads as it
   :: t
   : a
 
-    ~~~
+    ```
     x
   :::
 ````

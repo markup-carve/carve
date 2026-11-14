@@ -5,8 +5,7 @@ A `+` after quote prefixes is a marker only when every `>` is followed by one sp
 ::::::: compare
 
 `````carve
-> +
-q
+> q
 `````
 
 ```html
@@ -18,7 +17,8 @@ q
 ::::::: compare
 
 `````carve
-> > +
+> >
+
 q
 `````
 
@@ -128,8 +128,8 @@ para</p></blockquote>
 
 `````carve
 > - a
-> +
-> > r
+>
+>   > r
 `````
 
 ```html
@@ -170,6 +170,7 @@ para</p></blockquote>
 `````carve
 > a
 > +
+>
 > > q
 `````
 
@@ -190,8 +191,8 @@ A description or a note inside the quote takes the marker at its own marker colu
 `````carve
 > :: t
 > : a
-> +
-> > q
+>
+>   > q
 `````
 
 ```html

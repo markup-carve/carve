@@ -29,7 +29,7 @@ A forced span's closer is paired before bare resolution, so a combined `/*` toke
 ::: compare
 
 ```carve
-{_x /*a {_b_} c*/ y_}
+{_x */a {_b_} c/* y_}
 ```
 
 ```html

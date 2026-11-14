@@ -5,8 +5,9 @@
 ```carve
 - see[^n]
 
-  [^n]: a
-    # h
+[^n]: a
+
+  # h
 ```
 
 ```html

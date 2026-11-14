@@ -6,6 +6,7 @@ A definition term takes no lazy line (carve#4861). An unprefixed list marker, se
 
 ```carve
 > - :: t
+
  - x
 ```
 
@@ -30,6 +31,7 @@ A definition term takes no lazy line (carve#4861). An unprefixed list marker, se
 
 ```carve
 > :: t
+
  : d
 ```
 
@@ -48,6 +50,7 @@ A definition term takes no lazy line (carve#4861). An unprefixed list marker, se
 
 ```carve
 > > :: t
+
  : d
 ```
 

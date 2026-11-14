@@ -15,6 +15,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
       :::
       a
+
 - second
 `````
 
@@ -38,6 +39,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
       ::: note
       a
+
 - second
 `````
 
@@ -61,7 +63,8 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
       :::
       a
- - second
+
+- second
 `````
 
 `````html
@@ -84,7 +87,8 @@ markers to the host. The final cases cover those boundaries and a code fence.
 
       ::: note
       a
- - second
+
+- second
 `````
 
 `````html
@@ -374,7 +378,7 @@ markers to the host. The final cases cover those boundaries and a code fence.
       :::
       a
 
- - second
+- second
 `````
 
 `````html

@@ -11,6 +11,7 @@ The unmatched comment opener is literal text, so the later brace line opens a bl
 ```carve
 {%%%:fr}
 y
+
 {.x}
 z
 ```

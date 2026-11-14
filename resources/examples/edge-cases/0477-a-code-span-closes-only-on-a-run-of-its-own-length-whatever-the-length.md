@@ -84,7 +84,7 @@ decides whether a caption line below finds its image.
 ::::: compare
 
 `````carve
-{~a ````~>```` b~>c~} d
+{-a ````~>```` b-}{+c+} d
 `````
 
 ```html
@@ -96,7 +96,7 @@ decides whether a caption line below finds its image.
 ::::: compare
 
 `````carve
-{~a ````~}```` b~>c~} d
+{-a ````~}```` b-}{+c+} d
 `````
 
 ```html

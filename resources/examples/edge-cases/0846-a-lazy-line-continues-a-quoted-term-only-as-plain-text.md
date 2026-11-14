@@ -10,6 +10,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > - :: t
+
  - x
 ``````
 
@@ -34,6 +35,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > - :: t
+
  1. x
 ``````
 
@@ -58,6 +60,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > - :: t
+
   - x
 ``````
 
@@ -82,6 +85,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > 1. :: t
+
  - x
 ``````
 
@@ -130,6 +134,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > > - :: t
+
  - x
 ``````
 
@@ -156,6 +161,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > - - :: t
+
  - x
 ``````
 
@@ -184,6 +190,7 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 
 ``````carve
 > :: t
+
  - x
 ``````
 
@@ -269,6 +276,7 @@ r[^n]
 
 ``````carve
 > :: t
+
  : d
 ``````
 
@@ -287,6 +295,7 @@ r[^n]
 
 ``````carve
 > > :: t
+
  : d
 ``````
 
@@ -307,6 +316,7 @@ r[^n]
 
 ``````carve
 > > :: t
+
   : d
 ``````
 
@@ -327,6 +337,7 @@ r[^n]
 
 ``````carve
 > :: t
+
  plain
 ``````
 
@@ -345,6 +356,7 @@ r[^n]
 
 ``````carve
 > > :: t
+
  plain
 ``````
 

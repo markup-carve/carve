@@ -89,9 +89,9 @@ rather than about a paragraph.
 ::: compare
 
 ```carve
-> ~~~
+> ```
 > git bisect run ./check
-> ~~~
+> ```
 ^ The release runbook
 ```
 

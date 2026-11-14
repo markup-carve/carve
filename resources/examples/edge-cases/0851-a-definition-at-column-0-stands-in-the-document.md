@@ -10,6 +10,7 @@ An abbreviation definition at column 0 below an item ends the item and defines (
 
 ````carve
 - n
+
 *[A]: b
 
 A
@@ -30,6 +31,7 @@ A quote inside the item ends with it.
 
 ````carve
 - > n
+
 *[A]: b
 
 A
@@ -53,6 +55,7 @@ A description ends the same way.
 ````carve
 :: t
 : n
+
 *[A]: b
 
 A
@@ -74,6 +77,7 @@ A nested quote ends the same way.
 
 ````carve
 > > n
+
 *[A]: b
 
 A
@@ -94,6 +98,7 @@ A document-level quote keeps its output.
 
 ````carve
 > n
+
 *[A]: b
 
 A
@@ -112,6 +117,7 @@ A reference definition below an item resolves.
 
 ````carve
 - n
+
 [r]: /u
 
 [x][r]
@@ -132,7 +138,8 @@ A line that reaches the item registers there, with document scope (carve#4865).
 
 ````carve
 - n
-  *[A]: b
+
+*[A]: b
 
 A
 ````

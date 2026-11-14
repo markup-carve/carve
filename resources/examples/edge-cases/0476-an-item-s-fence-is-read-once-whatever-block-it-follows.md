@@ -15,7 +15,7 @@ item the same documents open the same block.
   ^ cap
   ```
   b
- y
+y
   ```
 ````
 
@@ -42,7 +42,7 @@ item the same documents open the same block.
 - > q
   ```
   b
- y
+y
   ```
 ````
 

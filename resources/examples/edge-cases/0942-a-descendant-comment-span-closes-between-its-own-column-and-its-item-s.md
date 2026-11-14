@@ -31,9 +31,9 @@ A closer written at the item's column but below a note's or a sublist's column s
 ```carve
 - a
 
-  [^n]: %%%
+[^n]: %%%
 %%%
-    c
+  c
 ```
 
 ```html

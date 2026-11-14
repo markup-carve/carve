@@ -10,11 +10,11 @@ A table's rows stay its rows at any indent, so the attached block ends where the
 
 ```carve
 - a
-+
-|x|
- |y|
-+
-H
+
+  |x|
+   |y|
+
+  H
 ```
 
 ```html

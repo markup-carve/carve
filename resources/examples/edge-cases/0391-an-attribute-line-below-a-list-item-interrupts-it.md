@@ -16,8 +16,8 @@ column already interrupted (markup-carve/carve-rs#1167).
 
 ```carve
 - b
-{.x}
 
+{.x}
 > q
 ```
 

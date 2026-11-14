@@ -34,6 +34,7 @@ A blank line followed by a block indented to the sub-list's content column is ab
 - - A
 
     second
+
   - B
 ```
 

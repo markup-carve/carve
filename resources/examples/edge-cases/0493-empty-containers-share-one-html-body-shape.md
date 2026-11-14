@@ -44,7 +44,7 @@ an empty verse paragraph, so the body is visible rather than empty.
 :::
 
 ::: |
-%% hidden
+{% hidden %}
 :::
 
 ::: \

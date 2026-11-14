@@ -7,7 +7,7 @@ An abbreviation definition in an item body is a definition (PART 12 §7, carve#4
 ```carve
 - a
 
-  *[A]: a
+*[A]: a
 ```
 
 ```html
@@ -48,9 +48,11 @@ A sibling item reads the same way:
 ```carve
 - a
 
-  *[A]: a
   - b
+
 - c
+
+*[A]: a
 ```
 
 ```html
@@ -73,7 +75,7 @@ A link reference definition inside the item reads the same way.
 ```carve
 - a
 
-  [r]: /u
+[r]: /u
 
 See [x][r].
 ```

@@ -124,7 +124,7 @@ B) two
 :::: compare
 
 ```carve
-a. one
+a\. one
 b. two
 ```
 
@@ -168,7 +168,7 @@ An abbreviation is text:
 :::: compare
 
 ```carve
-e. g. foo
+e\. g. foo
 ```
 
 ```html

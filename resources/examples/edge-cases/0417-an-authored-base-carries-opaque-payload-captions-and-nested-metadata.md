@@ -7,15 +7,15 @@ container ownership.
 
 ::: compare
 
-```carve
+`````carve
 [^n]: intro
 
-   ~~~~
+   ````
     ```
-   ~~~~
+   ````
 
 see[^n]
-```
+`````
 
 ```html
 <p>see<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
@@ -99,9 +99,10 @@ see[^n]
 ```carve
 [^outer]: intro
 
-     [^inner]: note
 
      see[^inner]
+
+[^inner]: note
 
 see[^outer]
 ```

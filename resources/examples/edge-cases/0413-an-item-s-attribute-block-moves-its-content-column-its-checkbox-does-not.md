@@ -88,6 +88,7 @@ metadata, so the bare bullet still puts the content at column 2.
 
 ```carve
 -{#k} a
+
   # h
 ```
 
@@ -109,6 +110,7 @@ while `10.` puts it at column 4.
 
 ```carve
 1.{#k} a
+
    # h
 ```
 
@@ -156,8 +158,10 @@ column. Renaming a class cannot move either heading.
 
 ```carve
 -{.x} a
+
   # one
 -{.averylongclass} b
+
   # two
 ```
 
@@ -182,6 +186,7 @@ structural and canonical output moves it to column 2.
 
 ```carve
 -{.x1} a
+
        # h
 ```
 

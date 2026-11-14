@@ -175,7 +175,7 @@ which leaves the outer opener literal.
 ::: compare
 
 ```carve
-{~a {*x ~>y~} z*}
+{~a {*x {~>y~}} z*}
 ```
 
 ```html
@@ -190,9 +190,9 @@ active kinds, so a braced child of either nests inside it.
 ::: compare
 
 ```carve
-/*a {*b*} c*/ x
+*/a {*b*} c/* x
 
-/*a {/b/} c*/ x
+*/a {/b/} c/* x
 ```
 
 ```html

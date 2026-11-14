@@ -15,7 +15,8 @@ inside the item any more than it is inside the quote (carve#1384).
 
 ```carve
 > - x
-  [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -39,7 +40,8 @@ definition in that outer item, so it registers under the authored-base rule.
 
 ```carve
 - > - x
-    [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -68,7 +70,8 @@ parameter.
 
 ```carve
 > x
-  [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -87,7 +90,8 @@ it to the item whose content column it sits at. The marker is the parameter.
 
 ```carve
 > - x
->   [r]: /url
+
+[r]: /url
 
 See [r][].
 ```

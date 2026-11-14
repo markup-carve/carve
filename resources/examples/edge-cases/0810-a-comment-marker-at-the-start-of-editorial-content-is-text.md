@@ -33,7 +33,7 @@ Insert, delete and substitution content is inline text, and a `%%` there starts 
 ::: compare
 
 ```carve
-{~%% b~>x~}
+{-%% b-}{+x+}
 ```
 
 ```html

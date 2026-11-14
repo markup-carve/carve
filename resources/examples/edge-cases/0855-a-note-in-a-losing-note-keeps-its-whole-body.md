@@ -11,9 +11,9 @@ A losing duplicate note renders nothing, and the definitions in its body still r
 ```carve
 [^f]: r
 [^f]: u
-  [^g]: mid
+[^g]: mid
 
-    TAIL
+  TAIL
 
 [^f] [^g]
 ```

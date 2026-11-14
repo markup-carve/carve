@@ -41,6 +41,7 @@ stays tight (PART 9 §17 L1):
 
 ```carve
 - a
+
   {.x}
   - b
 ```
@@ -65,6 +66,7 @@ same position with the same spacing:
 
 ```carve
 - a
+
   {.x}
   para
 ```
@@ -87,6 +89,7 @@ top-level pair `{.x}` before a list is already pinned by `13-attributes-5`:
 
 ```carve
 para
+
 {.x}
 - b
 ```

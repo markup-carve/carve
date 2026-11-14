@@ -12,7 +12,7 @@ marker column belongs outside the list (PART 0 S2).
       ```
       code
       ```
-  after
+after
 ````
 
 ```html
@@ -35,10 +35,10 @@ marker column belongs outside the list (PART 0 S2).
     - :: term
       : definition
     
-        ~~~
+        ```
         code
-        ~~~
-    after
+        ```
+after
 ````
 
 ```html

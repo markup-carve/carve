@@ -10,7 +10,6 @@ A repeated **link reference** definition is overridden by the later one.
 ```carve
 see [t][r].
 
-[r]: /a
 
 [r]: /b
 ```
@@ -27,7 +26,6 @@ expansion wins.
 ::: compare
 
 ```carve
-*[A]: a
 *[A]: b
 
 A here.

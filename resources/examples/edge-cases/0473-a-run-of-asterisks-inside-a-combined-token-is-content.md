@@ -21,7 +21,7 @@ where there is nothing left for content, and it stays an emphasized `**`
 ::: compare
 
 ```carve
-/****/
+*/**/*
 ```
 
 ```html

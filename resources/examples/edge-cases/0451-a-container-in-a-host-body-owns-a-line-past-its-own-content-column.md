@@ -22,8 +22,9 @@ CARVE-P0-011, CARVE-P9-083).
 ```carve
 - a
   ::: note
-   [r]: /url
   :::
+
+[r]: /url
 
 [r][]
 ```
@@ -50,8 +51,9 @@ resolves.
 :: t
 :  a
    ::: note
-    [r]: /url
    :::
+
+[r]: /url
 
 [r][]
 ```
@@ -83,8 +85,10 @@ spelling too once that is settled.
 see[^f]
 
 [^f]: a
+
     > q
-     [r]: /url
+
+[r]: /url
 
 [r][]
 ```
@@ -114,8 +118,9 @@ quote's column 0, so the line past it has no authored base, as at top level.
 ```carve
 > a
 > ::: note
->  [r]: /url
 > :::
+
+[r]: /url
 
 [r][]
 ```
@@ -138,8 +143,10 @@ A QUOTE INSIDE THE LIST ITEM also consumes the definition past its content colum
 
 ```carve
 - a
+
   > q
-   [r]: /url
+
+[r]: /url
 
 [r][]
 ```
@@ -162,8 +169,10 @@ A quote under a DEFINITION BODY consumes the definition the same way.
 ```carve
 :: t
 :  a
+
    > q
-    [r]: /url
+
+[r]: /url
 
 [r][]
 ```
@@ -245,8 +254,9 @@ open one. Without this row the others read as "any host at any indent".
 ```carve
 > a
   ::: note
-   [r]: /url
   :::
+
+[r]: /url
 
 [r][]
 ```

@@ -63,7 +63,7 @@ The bare `:::` under the document paragraph that follows then opens a div
 ````carve
 - ::: box
   ```
- x
+x
   y
   :::
 after

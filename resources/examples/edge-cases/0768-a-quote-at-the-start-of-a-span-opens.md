@@ -5,7 +5,7 @@ The start of an inline span's content is start-of-content for quote direction, f
 ::: compare
 
 ```carve
-x.="q"=
+x.{="q"=}
 ```
 
 ```html

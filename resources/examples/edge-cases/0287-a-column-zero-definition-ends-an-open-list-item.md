@@ -13,10 +13,11 @@ is accepted independently of column and does not itself close the item.
 ```carve
 1. x
 [t](u)
-_u_
-[r]: /u
+{_u_}
 [t][r]
 \#
+
+[r]: /u
 ```
 
 ```html
@@ -35,6 +36,7 @@ _u_
 
 ```carve
 - a
+
 [^f]: note
 after[^f]
 ```
@@ -51,7 +53,8 @@ after[^f]
 
 ```carve
 1. x
- [r]: /u
+
+[r]: /u
 ```
 
 ```html
@@ -66,8 +69,9 @@ after[^f]
 
 ```carve
 1. x
-   [r]: /u
    [t][r]
+
+[r]: /u
 ```
 
 ```html

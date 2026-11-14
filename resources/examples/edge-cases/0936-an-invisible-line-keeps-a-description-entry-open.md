@@ -11,9 +11,10 @@ PART 9 §10 I5 (CARVE-P9-013 property 3, carve#4862). A `%%` line, a matched `%%
 ````carve
 :: t
 :  d
-*[A]: x
 :  > a
    > b
+
+*[A]: x
 ````
 
 ```html

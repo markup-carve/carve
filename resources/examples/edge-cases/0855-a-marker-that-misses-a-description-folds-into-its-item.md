@@ -14,6 +14,7 @@ A marker at column 0 reaches no frame of the description (PART 0 S2), so it is a
 ```carve
 :: t
 : - a
+
 - b
 ```
 
@@ -38,6 +39,7 @@ A marker at column 0 reaches no frame of the description (PART 0 S2), so it is a
 ```carve
 :: t
 : 1. a
+
 2. b
 ```
 

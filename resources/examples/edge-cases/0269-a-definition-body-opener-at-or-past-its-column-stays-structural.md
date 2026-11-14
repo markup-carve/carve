@@ -16,6 +16,7 @@ never a quote", which is not what it says.
 ```carve
 :: t
 :  body
+
     > q
 ```
 
@@ -39,6 +40,7 @@ body's own block content and the quote opens.
 ```carve
 :: t
 :  body
+
    > q
 ```
 
@@ -62,6 +64,7 @@ body ends and the quote is a sibling of the list.
 ```carve
 :: t
 :  body
+
 > q
 ```
 

@@ -19,7 +19,8 @@ Column 2, the outer item's content column.
 
 ```carve
 - - x
-  [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -44,7 +45,8 @@ text before the rule was stated.
 
 ```carve
 - - x
-   [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -68,7 +70,8 @@ Column 4, the inner item's content column.
 
 ```carve
 - - x
-    [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -93,7 +96,8 @@ is parsed, so a definition past a column registers exactly as one at it does.
 
 ```carve
 - - x
-     [r]: /url
+
+[r]: /url
 
 See [r][].
 ```

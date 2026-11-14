@@ -17,6 +17,7 @@ A paragraph after the blank: the item is loose, and every item of the list wraps
 - x
 
   y
+
 - z
 ```
 
@@ -44,6 +45,7 @@ loose too, and the lead is wrapped. The div's own blank line is the div's.
 
   b
   :::
+
 - z
 ```
 
@@ -70,6 +72,7 @@ specifically:
 - x
 
   > q
+
 - z
 ```
 

@@ -6,7 +6,8 @@ Three spaces is a continuation, so the line belongs to the note. Because a recog
 
 ```carve
 [^a]: note
-   [r]: /u
+
+[r]: /u
 
 see[^a] and [t][r]
 ```

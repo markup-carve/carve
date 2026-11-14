@@ -9,8 +9,8 @@ A description with content takes the list after a separate `+`
 `````carve
 :: t
 : a
-+
-- b
+
+  - b
 `````
 
 `````html
@@ -33,8 +33,8 @@ A footnote with content takes the list after a separate `+`
 
 `````carve
 [^a]: x
-+
-- b
+
+      - b
 
 see[^a]
 `````

@@ -6,6 +6,7 @@ A term is one line (carve#4861), so an unmarked plain line after it ends the quo
 
 ```carve
 > :: t
+
 tail
 ```
 
@@ -24,6 +25,7 @@ tail
 
 ```carve
 > - :: t
+
 tail
 ```
 
@@ -46,6 +48,7 @@ tail
 
 ```carve
 - > :: term
+
 tail
 ```
 

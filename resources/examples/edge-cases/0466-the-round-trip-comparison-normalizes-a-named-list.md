@@ -23,7 +23,7 @@ an emphasis and a single strong are different documents.
 ::: compare
 
 ```carve
-/*x*/
+*/x/*
 ```
 
 ```html

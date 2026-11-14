@@ -7,8 +7,7 @@ The body's minimum column is fixed by §16's `space, space`, not read off the fi
 ```carve
 [^a]: intro
 
-   | a |
-   | - |
+   |= a |
    | b |
 
 see[^a]

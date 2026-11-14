@@ -41,6 +41,7 @@ Between two items of a loose list.
 
   %% y
   %% z
+
 - c
 ```
 

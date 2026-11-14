@@ -8,7 +8,7 @@ Spaced `*` markers are a break.
 ::: compare
 
 ```carve
-* * *
+***
 ```
 
 ```html
@@ -64,7 +64,7 @@ Spaced `-` markers are a break too.
 ::: compare
 
 ```carve
-- - -
+***
 ```
 
 ```html

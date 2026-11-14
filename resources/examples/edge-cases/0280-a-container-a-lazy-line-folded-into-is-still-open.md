@@ -72,6 +72,7 @@ line after the fold reaches the same quote rather than a second one:
 
 ```carve
 - x
+
   > a
 d
   > b

@@ -8,10 +8,10 @@ Carve's bullet markers are `-` and `*` only. Unlike Markdown and Djot, `+` is **
 
 ````carve
 - Build the image
-+
-```sh
-docker build -t app .
-```
+
+  ```sh
+  docker build -t app .
+  ```
 - Push it
 ````
 
@@ -33,8 +33,8 @@ A quote or table attaches the same way.
 
 ```carve
 - item
-+
-> note
+
+  > note
 - next
 ```
 
@@ -61,8 +61,8 @@ The continuation marker and the compact blank-line form (above) produce **identi
 
 ```carve
 - One
-+
-> Quote
+
+  > Quote
 ```
 
 Both render:
@@ -135,8 +135,8 @@ flush left, and the item holds it without a blank line.
 
 ```carve
 - a
-+
-c
+
+  c
 ```
 
 ```html

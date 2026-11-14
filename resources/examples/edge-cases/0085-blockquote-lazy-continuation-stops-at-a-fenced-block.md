@@ -8,6 +8,7 @@ Lazy continuation only extends an open paragraph. A non-`>` line that lands insi
 > ```
 > a
 b
+
 > c
 ````
 
@@ -50,6 +51,7 @@ a fresh block quote.
 ````carve
 > ```
 code no marker
+
 > still
 ````
 

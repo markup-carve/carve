@@ -26,7 +26,7 @@ The slot before the info string, tab-first:
 ::: compare
 
 ````carve
-```	js
+{%%}```	js
 x
 ```
 ````
@@ -44,7 +44,7 @@ Both mixed runs answer the same way, for the reason the title slots give:
 ::: compare
 
 ````carve
-``` 	js
+{%%}``` 	js
 x
 ```
 ````
@@ -60,7 +60,7 @@ x</code></p>
 ::: compare
 
 ````carve
-```	 js
+{%%}```	 js
 x
 ```
 ````

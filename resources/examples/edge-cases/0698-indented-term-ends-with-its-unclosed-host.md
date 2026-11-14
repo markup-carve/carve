@@ -8,6 +8,7 @@ A term past the div opener still opens a definition list. The flush-left descrip
 - a
   ::: box
    :: sub
+
 : def
 ```
 

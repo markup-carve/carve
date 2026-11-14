@@ -12,8 +12,8 @@ A lone `+` at a description's marker column reaches it after a blank and attache
 :: t
 : h
 
-+
-pp
+
+  pp
 `````
 
 ```html

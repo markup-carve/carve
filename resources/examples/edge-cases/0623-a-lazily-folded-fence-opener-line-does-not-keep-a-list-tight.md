@@ -36,7 +36,7 @@ Folded fence variant 2
 
 ````carve
 - - text
-  ~~~
+  ```
   x
 
   cap
@@ -70,6 +70,7 @@ Folded fence variant 3
   x
 
   cap
+
 - c
 ````
 

@@ -22,7 +22,7 @@ the SPANS the same document publishes are what moved.
 ```carve
 - a
 
-  [r]: /u
+[r]: /u
 
 see [text][r]
 ```

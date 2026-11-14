@@ -9,7 +9,7 @@ CARVE-P3-021 (carve#4813, carve#4719). An opening `(`, `"` or `'` at the start o
 ::: compare
 
 ```carve
-{%c%}(--force) y
+{%c%}(-\-force) y
 ```
 
 ```html

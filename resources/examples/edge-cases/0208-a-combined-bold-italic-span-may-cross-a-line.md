@@ -5,8 +5,8 @@
 ::: compare
 
 ```carve
-/*multi
-line*/
+*/multi
+line/*
 ```
 
 ```html

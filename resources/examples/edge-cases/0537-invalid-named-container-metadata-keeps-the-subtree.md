@@ -10,7 +10,7 @@ valid syntax.
 
 ````carve
 :::: outer
-::: widget Custom Title
+::: widget
 # Heading
 
 - first
@@ -45,7 +45,7 @@ metadata does not become a visible title or a label.
 Body one.
 :::
 
-::: widget [Unclosed
+::: widget
 Body two.
 :::
 ````

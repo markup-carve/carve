@@ -8,6 +8,7 @@ A description opener below a list item's content column cannot bind to a term in
 - a
   ::: box
   :: sub
+
 : def
 ```
 

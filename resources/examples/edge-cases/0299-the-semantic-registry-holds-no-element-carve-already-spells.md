@@ -10,7 +10,7 @@ beside them writes neither - it drops the wrapper, which is what it is for.
 ::: compare
 
 ```carve
-`x` !`x` =x=
+`x` !`x` {=x=}
 ```
 
 ```html

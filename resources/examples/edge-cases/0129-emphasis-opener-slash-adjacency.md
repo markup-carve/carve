@@ -52,7 +52,7 @@ after a `/`, so a preceding slash does not suppress them.
 ::: compare
 
 ```carve
-a/~y~ a/=y=
+a/{~y~} a/{=y=}
 ```
 
 ```html

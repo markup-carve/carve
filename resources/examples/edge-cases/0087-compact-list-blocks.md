@@ -8,6 +8,7 @@ The section title names the reading carve#5015 withdrew (PART 9 §17 L2). A blan
 - item
 
   > note
+
 - next
 ```
 
@@ -30,6 +31,7 @@ A **sub-list** is one of those blocks: the blank stands between the item's lead 
 - fruit
 
   - apples
+
 - vegetables
 ```
 
@@ -54,6 +56,7 @@ A genuine second prose paragraph still makes the list loose (and so does a blank
 - item
 
   second para
+
 - next
 ```
 
@@ -93,7 +96,7 @@ The same for a definition, which is collected and renders nothing where it stood
 ```carve
 - a
 
-  [r]: /u
+[r]: /u
 ```
 
 ```html
@@ -112,6 +115,7 @@ A **sibling item after it** is a different question, and there the list is loose
 - a
 
   %% just a note
+
 - b
 ```
 

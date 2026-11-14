@@ -74,7 +74,7 @@ So does a thematic break:
 ::: compare
 
 ```carve
-> > ---
+> > ***
 tail
 ```
 
@@ -142,6 +142,7 @@ question is about the LAST block, and the last block is the inner quote:
 
 ```carve
 > a
+>
 > > # H
 tail
 ```

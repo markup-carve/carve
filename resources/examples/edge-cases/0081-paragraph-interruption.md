@@ -18,6 +18,7 @@ A heading marker after a prose line interrupts.
 
 ```carve
 text
+
 # H
 ```
 
@@ -56,7 +57,7 @@ em-dash any more).
 
 ```carve
 text
----
+***
 more
 ```
 
@@ -74,6 +75,7 @@ A block quote marker followed by a space interrupts.
 
 ```carve
 text
+
 > q
 ```
 
@@ -322,6 +324,7 @@ and a reference definition is collected, leaving only the paragraph.
 
 ```carve
 a[r]
+
 [r]: http://x
 ```
 

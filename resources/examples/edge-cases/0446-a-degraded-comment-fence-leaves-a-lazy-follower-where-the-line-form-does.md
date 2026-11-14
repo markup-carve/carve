@@ -25,7 +25,7 @@ paragraph.
 ```carve
 - x
   %%%
- y
+y
 ```
 
 ```html
@@ -108,7 +108,7 @@ a document paragraph.
 ```carve
 1. x
    %%%
-  y
+y
 ```
 
 ```html
@@ -127,7 +127,7 @@ A padded marker hands out at 4.
 ```carve
 -   x
     %%%
-   y
+y
 ```
 
 ```html
@@ -147,7 +147,7 @@ a document paragraph.
 ```carve
 - x
     %%%
- y
+y
 ```
 
 ```html
@@ -170,7 +170,7 @@ nothing, so the below-column follower opens a document paragraph
 - x
   %%%
   %%%
- y
+y
 ```
 
 ```html

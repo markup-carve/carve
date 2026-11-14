@@ -10,8 +10,8 @@ PART 9 §4 and CARVE-P9-013 (carve#4639). A line an accepted `+` reads inside it
 
 `````carve
 > q
-+
-^ c
+>
+> ^ c
 `````
 
 `````html

@@ -5,9 +5,8 @@ PART 0 S4 (carve#4545). The section name predates the superseding ruling and is 
 :::: compare
 
 ```carve
-- +
-  b
- * w1
+- b
+* w1
 ```
 
 ```html
@@ -24,9 +23,8 @@ PART 0 S4 (carve#4545). The section name predates the superseding ruling and is 
 :::: compare
 
 ```carve
-1. +
-+ w1
- - w2
+1. + w1
+- w2
 ```
 
 ```html

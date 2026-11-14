@@ -10,6 +10,7 @@ PART 0 S4 (carve#4678). A lazy line below the authored content column keeps no i
 
 ````carve
 [^f]: :: t
+
     - ::: |
       a
      b

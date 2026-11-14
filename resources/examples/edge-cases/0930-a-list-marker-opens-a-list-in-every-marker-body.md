@@ -34,6 +34,7 @@ PART 0 S3 and S4, PART 9 §10 I2 and §24 C3 (markup-carve/carve#4860). In a lis
 
 ```carve
 [^a]: n
+
   - x
 
 q[^a]
@@ -91,6 +92,7 @@ r[^q]
 
 ```carve
 [^a]: n
+
 - x
 
 q[^a]
@@ -118,6 +120,7 @@ q[^a]
 ```carve
 :: t
 : d
+
 - x
 ```
 
@@ -151,6 +154,7 @@ q[^a]
 
 ```carve
 - > p
+
   - x
 ```
 
@@ -201,6 +205,7 @@ q[^a]
 ```carve
 > > :: t
 > > : d
+
 - x
 ```
 

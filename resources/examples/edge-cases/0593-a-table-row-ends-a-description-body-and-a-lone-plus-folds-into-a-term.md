@@ -33,6 +33,7 @@ A term holds no blocks, so a lone `+` under it attaches nothing. It is a plain l
 
 ```carve
 :: term
+
 +
 : d
 ```
@@ -54,6 +55,7 @@ The same after a line that ended the term:
 
 ```carve
 :: A term that
+
    wraps
 +
 : d

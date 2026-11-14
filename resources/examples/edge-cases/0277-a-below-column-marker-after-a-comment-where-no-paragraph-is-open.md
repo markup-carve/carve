@@ -11,7 +11,7 @@ a separate list.
   %%%
   x
   %%%
- - s
+- s
 ```
 
 ```html
@@ -32,7 +32,7 @@ Ordered markers follow the same column rule:
   %%%
   x
   %%%
- 1. o
+1. o
 ```
 
 ```html
@@ -55,7 +55,7 @@ A heading-shaped line below the content column is also paragraph text:
   %%%
   x
   %%%
- # h
+# h
 ```
 
 ```html
@@ -79,7 +79,7 @@ document inverts its answer.
 ```carve
 - a
   b
- - s
+- s
 ```
 
 ```html
@@ -100,8 +100,9 @@ answer purely on whether a paragraph is open:
 
 ```carve
 - a
+
   > q
- - s
+- s
 ```
 
 ```html

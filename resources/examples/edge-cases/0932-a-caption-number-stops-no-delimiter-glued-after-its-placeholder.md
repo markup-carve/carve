@@ -26,7 +26,7 @@ CARVE-P2-022 (carve#4886). The number is assigned in the resolution pass, so it 
 
 ````carve
 ![i](a.png)
-^ Figure #=b=
+^ Figure #{=b=}
 ````
 
 ```html

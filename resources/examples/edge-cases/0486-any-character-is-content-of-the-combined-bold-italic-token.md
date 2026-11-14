@@ -8,7 +8,7 @@ or a braced comment inside `/*...*/` leaves the combined token whole
 ::: compare
 
 ```carve
-/*a	b*/ y
+*/a	b/* y
 ```
 
 ```html
@@ -22,15 +22,15 @@ Characters no other content rule names.
 ::: compare
 
 ```carve
-/*a<b*/ y
+*/a<b/* y
 
-/*a # b*/ y
+*/a # b/* y
 
-/*a{b}c*/ y
+*/a{b}c/* y
 
-/*a€b*/ y
+*/a€b/* y
 
-/*a b*/ y
+*/a b/* y
 ```
 
 ```html
@@ -48,7 +48,7 @@ An escaped space is a no-break space.
 ::: compare
 
 ```carve
-/*a\ b*/ y
+*/a\ b/* y
 ```
 
 ```html
@@ -62,8 +62,8 @@ A backslash at the end of a line is a hard break.
 ::: compare
 
 ```carve
-/*a\
-b*/ y
+*/a\
+b/* y
 ```
 
 ```html
@@ -78,7 +78,7 @@ A braced comment renders nothing.
 ::: compare
 
 ```carve
-/*a{%c%}b*/ y
+*/a{%c%}b/* y
 ```
 
 ```html
@@ -107,8 +107,8 @@ A `%%` comment runs to the end of its line, and the token closes on the next.
 ::: compare
 
 ```carve
-/*a %%c
-b*/ y
+*/a %%c
+b/* y
 ```
 
 ```html

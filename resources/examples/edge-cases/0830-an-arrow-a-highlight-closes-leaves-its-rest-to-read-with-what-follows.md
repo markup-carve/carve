@@ -9,7 +9,7 @@ An arrow whose `=` closes a highlight is gone (PART 9 §9). Its `>` reads with t
 ::::::: compare
 
 ````carve
-=a<=>=b=
+{=a<=}>=b=
 ````
 
 ````html
@@ -23,7 +23,7 @@ The same for the doubled arrow.
 ::::::: compare
 
 ````carve
-=a ==>=b=
+{=a ==}>=b=
 ````
 
 ````html
@@ -37,7 +37,7 @@ Without a following `=` the rest stays text and a later pair forms.
 ::::::: compare
 
 ````carve
-=a<=> =b=
+{=a<=}> {=b=}
 ````
 
 ````html
@@ -51,7 +51,7 @@ Another delimiter after the rest is unaffected.
 ::::::: compare
 
 ````carve
-=a<=>*b*
+{=a<=}>*b*
 ````
 
 ````html

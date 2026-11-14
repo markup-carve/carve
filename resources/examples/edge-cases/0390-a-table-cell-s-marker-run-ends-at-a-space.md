@@ -10,7 +10,7 @@ lost it to a marker nobody wrote.
 ::: compare
 
 ```carve
-|=hot= is the reading |
+| {=hot=} is the reading |
 ```
 
 ```html

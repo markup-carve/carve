@@ -8,6 +8,7 @@ A heading, table, or rule ends the note paragraph. The following column-zero lin
 see[^n]
 
 [^n]: para
+
    # Heading
 tail
 ```
@@ -66,7 +67,7 @@ tail
 see[^n]
 
 [^n]: para
-  ---
+  ***
 tail
 ```
 

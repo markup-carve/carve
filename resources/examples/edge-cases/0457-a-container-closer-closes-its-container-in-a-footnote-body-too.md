@@ -48,8 +48,9 @@ shows the two hosts now agree.
 :: t
 :  a
    ::: note
-    [r]: /url
    :::
+
+[r]: /url
 
 [r][]
 ```

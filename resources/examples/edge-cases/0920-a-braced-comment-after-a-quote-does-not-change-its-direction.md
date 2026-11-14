@@ -23,7 +23,7 @@ A comment before a space or punctuation reads the same, and a comment before a d
 :::::: compare
 
 `````carve
-"Wait---"{% c %} he said. '{%%}90s
+"Wait---"{% c %} he said. ’{%%}90s
 `````
 
 ```html

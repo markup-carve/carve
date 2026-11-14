@@ -229,7 +229,7 @@ tail
 - %%%
   hidden
   %%%
- tail
+tail
 `````
 
 `````html
@@ -281,7 +281,7 @@ tail
 
 `````carve
 - %% c
- tail
+tail
 `````
 
 `````html

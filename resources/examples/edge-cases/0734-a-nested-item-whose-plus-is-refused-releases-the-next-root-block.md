@@ -5,8 +5,8 @@ A line at the inner item's content column refuses the `+` and folds into it (car
 ::: compare
 
 ```carve
-- - +
-    x
+- - x
+
 > tail
 ```
 
@@ -26,8 +26,8 @@ A line at the inner item's content column refuses the `+` and folds into it (car
 ::: compare
 
 ```carve
-- - +
-    x
+- - x
+
 # tail
 ```
 
@@ -49,9 +49,8 @@ A line at the inner item's content column refuses the `+` and folds into it (car
 ::: compare
 
 ```carve
-- - +
-    x
----
+- - x
+***
 ```
 
 ```html
@@ -70,8 +69,7 @@ A line at the inner item's content column refuses the `+` and folds into it (car
 :::: compare
 
 ```carve
-- - +
-    x
+- - x
 ::: note
 tail
 :::
@@ -95,8 +93,8 @@ tail
 ::: compare
 
 ```carve
-- - +
-    x
+- - x
+
 :: tail
 :  definition
 ```

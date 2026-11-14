@@ -27,7 +27,8 @@ b.  y
 :::: compare
 
 ```carve
-v.  x
+{start=22}
+a.  x
 ii.  y
 ```
 

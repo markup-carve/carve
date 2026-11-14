@@ -69,7 +69,7 @@ is no hard break there to spell.
 ```carve
 ::: |
 a
-%%
+{%  %}
 b
 :::
 ```

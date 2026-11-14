@@ -7,7 +7,7 @@ An explicit reference needs a link definition. A heading with the same name only
 ```carve
 # Plan
 
-See [x][Plan] and [Plan][].
+See \[x][Plan] and [Plan][].
 ```
 
 ```html

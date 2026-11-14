@@ -92,8 +92,7 @@ paragraph `flush`.
 ::: compare
 
 ```carve
-> +
-flush
+> flush
 ```
 
 ```html
@@ -108,7 +107,8 @@ reaches that paragraph by §10 I6's lazy fold.
 ::: compare
 
 ```carve
-> +
+>
+
  flush
 ```
 
@@ -127,7 +127,8 @@ reading one here. It is not, and the row is the control that says so.
 ::: compare
 
 ```carve
-> +
+>
+
   flush
 ```
 

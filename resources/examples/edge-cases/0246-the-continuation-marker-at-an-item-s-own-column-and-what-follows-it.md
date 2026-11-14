@@ -9,7 +9,8 @@ An INDENTED `+` is not consumed as a marker, so it survives as text in the item,
 ```carve
 - a
   +
-  [r]: /u
+
+[r]: /u
 
 see [t][r]
 ```
@@ -51,8 +52,8 @@ A PARAGRAPH attached by a column-0 `+` is the shape the marker most obviously se
 
 ```carve
 - a
-+
-b
+
+  b
 
 x
 ```

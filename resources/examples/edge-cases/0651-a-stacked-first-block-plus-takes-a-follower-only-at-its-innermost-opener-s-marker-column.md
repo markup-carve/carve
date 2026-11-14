@@ -33,8 +33,7 @@ The same follower below a stacked list opener stands at the inner item's marker 
 ::::::: compare
 
 `````carve
-- - +
-  b
+- - b
 `````
 
 `````html

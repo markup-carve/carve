@@ -9,7 +9,7 @@ PART 0 S4 (carve#4162). `x` opens a paragraph in the second-level item after the
 :::::: compare
 
 `````carve
-- - - ~~~
+- - - ```
     x
 tail
 `````

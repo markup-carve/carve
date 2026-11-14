@@ -11,6 +11,7 @@ CARVE-P9-083 (carve#4861). A term is one line, so a line after a term in a descr
 ````carve
 :: t
 : :: t
+
   u
 ````
 
@@ -33,6 +34,7 @@ CARVE-P9-083 (carve#4861). A term is one line, so a line after a term in a descr
 ````carve
 :: t
 : :: t
+
     u
 ````
 

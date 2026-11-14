@@ -37,9 +37,9 @@ The tilde spelling has the same boundary.
 
 ````carve
 :: t
-: - ~~~ x
+: - ``` x
 code
-~~~
+```
 ````
 
 ````html

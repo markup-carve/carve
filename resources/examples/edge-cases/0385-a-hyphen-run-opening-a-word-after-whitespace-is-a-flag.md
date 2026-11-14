@@ -14,7 +14,7 @@ would have broken `a---- b----- c------`, which the corpus already pins.
 ::: compare
 
 ```carve
-git log --oneline and --force-with-lease stay literal.
+git log -\-oneline and -\-force-with-lease stay literal.
 
 But pages 1--10, the Mon--Fri window, a---- b----- and a -- b all convert.
 ```

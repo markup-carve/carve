@@ -11,7 +11,7 @@ An indented reference definition registers, and the link resolves.
 ```carve
  Read [intro][x].
 
- [x]: /intro "T"
+[x]: /intro "T"
 ```
 
 ```html
@@ -27,7 +27,7 @@ An indented footnote definition registers, and the footnote reference resolves.
 ```carve
  Note[^fn].
 
- [^fn]: body.
+[^fn]: body.
 ```
 
 ```html

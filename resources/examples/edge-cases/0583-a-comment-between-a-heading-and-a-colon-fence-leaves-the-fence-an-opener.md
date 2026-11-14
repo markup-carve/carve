@@ -16,7 +16,7 @@ Comments leave block ownership unchanged (CARVE-P0-005). The colon fence after t
 
     %%%
   # h
-    %%%
+  %%%
     :::
 ````
 
@@ -37,8 +37,9 @@ Comments leave block ownership unchanged (CARVE-P0-005). The colon fence after t
 
 ````carve
 - a
+
   # h
-      %%%
+  %%%
       :::
 ````
 

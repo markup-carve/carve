@@ -105,7 +105,7 @@ At a word boundary the combined token forms as before:
 ::: compare
 
 ```carve
-/*a*/ b
+*/a/* b
 ```
 
 ```html

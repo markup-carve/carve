@@ -10,10 +10,10 @@ Only a `+` at the host's marker column reaches the host again. Any other `+` is 
 
 ```carve
 - o
-+
-> q
-  +
-  > r
+
+  > q
+    +
+    > r
 ```
 
 ```html

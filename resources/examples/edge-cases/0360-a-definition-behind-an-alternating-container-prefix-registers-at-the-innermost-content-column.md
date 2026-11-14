@@ -11,7 +11,8 @@ at that column registers exactly as §10 I5 says (markup-carve/carve#1368).
 
 ```carve
 - > - - x
-  >     [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -42,7 +43,8 @@ sorts definitions by kind can pass on the half it gets right.
 
 ```carve
 - > - - x
-  >     [^f]: note
+
+[^f]: note
 
 See [^f].
 ```
@@ -83,6 +85,7 @@ its column - which §24 C3 refuses.
 
 ```carve
 - > - - x
+  >
   >     # h
 ```
 
@@ -114,7 +117,8 @@ here, so a reader that declines the first case answers one document two ways.
 
 ```carve
 > - - x
->     [r]: /url
+
+[r]: /url
 
 See [r][].
 ```

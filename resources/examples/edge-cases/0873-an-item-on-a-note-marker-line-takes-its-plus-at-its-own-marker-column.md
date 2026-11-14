@@ -10,8 +10,8 @@ PART 9 §17 L3 (CARVE-P9-067) and CARVE-P9-083 (carve#4623). An own-line `+` und
 
 `````carve
 [^a]: - i
-      +
-      x
+
+        x
 
 [^a]
 `````

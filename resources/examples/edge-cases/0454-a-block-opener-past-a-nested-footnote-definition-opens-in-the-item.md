@@ -60,8 +60,8 @@ paragraph to the item, which stays tight.
 ```carve
 - body
 
-  [^g]: n
-   prose
+[^g]: n
+ prose
 
 after
 ```

@@ -28,7 +28,9 @@ page: edge-lists
 
 ````carve
 - a
+
   :: t
+
   # H
   x
 : d
@@ -196,6 +198,7 @@ page: edge-lists
 
 ````carve
 - a
+
   # H
 b
 ````
@@ -491,8 +494,7 @@ p
 ::::: compare
 
 ````carve
-- +
-p
+- p
 q
 ````
 
@@ -547,6 +549,7 @@ q</li>
 
 ````carve
 > a
+>
 > # H
 > b
 ````
@@ -581,6 +584,7 @@ q</li>
 
 ````carve
 :: t
+
 : 
 ````
 
@@ -620,8 +624,8 @@ q</li>
 
 ````carve
 - a
-+
-# H
+
+  # H
 ````
 
 ````html

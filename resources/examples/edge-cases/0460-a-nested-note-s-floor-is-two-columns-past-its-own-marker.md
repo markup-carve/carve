@@ -15,8 +15,9 @@ consumed by the outer note, and `[t][r]` resolves there.
 ```carve
 [^f]: outer
 
-   [^g]: mid
-  [r]: /url
+[^g]: mid
+
+[r]: /url
 
 x[^f] [^g] [t][r]
 ```

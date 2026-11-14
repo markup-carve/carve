@@ -9,10 +9,9 @@ The refused opener claims no later line. The following `+` is read by the ordina
 :::::: compare
 
 `````carve
-- +
-{.x
+- {.x
 .y}
-+
+
   zq
 `````
 

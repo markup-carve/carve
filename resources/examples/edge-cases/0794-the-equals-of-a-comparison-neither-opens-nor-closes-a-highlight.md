@@ -5,8 +5,8 @@ The `=` of `<=` and `>=` is part of the comparison (PART 9 §9, carve#4131): a b
 ::: compare
 
 ```carve
-=a <= b=
-=a >= b=
+{=a <= b=}
+{=a >= b=}
 ```
 
 ```html
@@ -31,7 +31,7 @@ The `=` of `<=` and `>=` is part of the comparison (PART 9 §9, carve#4131): a b
 ::: compare
 
 ```carve
-=a <= b= and =c=
+{=a <= b=} and {=c=}
 ```
 
 ```html

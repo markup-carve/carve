@@ -38,8 +38,8 @@ flush-left block to the note, so a second block needs no indentation.
 See the note.[^n]
 
 [^n]: First paragraph of the note.
-+
-A second paragraph, joined with +.
+
+      A second paragraph, joined with +.
 ```
 
 ```html

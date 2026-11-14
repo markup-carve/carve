@@ -14,6 +14,7 @@ CARVE-P9-083 (carve#4739). A `:` line folded into a description paragraph opens 
   : t
       : e
       : f
+
       :: u
 ```
 
@@ -47,6 +48,7 @@ CARVE-P9-083 (carve#4739). A `:` line folded into a description paragraph opens 
   : e
   x
   : f
+
     :: u
 ```
 
@@ -80,6 +82,7 @@ x</dd>
   : - t
     : e
     : f
+
     :: u
 ```
 

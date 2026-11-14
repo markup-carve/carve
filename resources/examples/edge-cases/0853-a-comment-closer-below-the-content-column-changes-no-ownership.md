@@ -32,7 +32,7 @@ CARVE-P0-005 and PART 9 §10 I5 (carve#4086). A matched `%%%` span is one extent
   %%%
   hidden
   %%%
- x
+x
 ````
 
 ```html

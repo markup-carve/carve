@@ -9,7 +9,7 @@ A bracket run that stays literal is a region like a span, so a hyphen run at the
 ::: compare
 
 ```carve
-a [--x] y and a [---x] y
+a [-\-x] y and a [-\--x] y
 ```
 
 ```html
@@ -23,7 +23,7 @@ A parenthesis opens no region, but an opening `(` after whitespace counts as whi
 ::: compare
 
 ```carve
-a (--x) y
+a (-\-x) y
 ```
 
 ```html

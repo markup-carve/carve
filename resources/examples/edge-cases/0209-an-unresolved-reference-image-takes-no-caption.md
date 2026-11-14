@@ -40,6 +40,7 @@ reference resolves or not:
 ```carve
 ![a][r]
 ^ cap
+
 ^ cap
 
 [r]: u

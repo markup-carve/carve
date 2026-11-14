@@ -38,9 +38,9 @@ the same.
 
 ````carve
 ::: note
-~~~
+```
 :::
-~~~
+```
 body
 :::
 after

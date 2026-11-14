@@ -6,7 +6,8 @@ At an item's content column, on a continuation line, the line is a definition li
 
 ```carve
 - a
-  *[HTML]: Hyper Text
+
+*[HTML]: Hyper Text
 
 The HTML spec.
 ```
@@ -26,7 +27,8 @@ A reference definition at that same column reads the same way.
 
 ```carve
 - a
-  [r]: /u
+
+[r]: /u
 
 see [t][r]
 ```

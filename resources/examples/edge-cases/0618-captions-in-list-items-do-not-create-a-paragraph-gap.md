@@ -34,7 +34,6 @@ One blank before a table caption
 
 ```carve
 - | a |
-
   ^ cap
 - c
 ```
@@ -64,6 +63,7 @@ Two blanks detach a table caption
 
 
   ^ cap
+
 - c
 ```
 
@@ -89,7 +89,6 @@ One blank before an image caption
 
 ```carve
 - ![a](b.png)
-
   ^ cap
 - c
 ```
@@ -114,7 +113,6 @@ One blank before a quote caption
 
 ```carve
 - > q
-
   ^ cap
 - c
 ```
@@ -141,7 +139,6 @@ One blank before a code listing caption
 - ```
   x
   ```
-
   ^ cap
 - c
 ````
@@ -167,7 +164,6 @@ One blank before an equation caption
 
 ```carve
 - $$`x`
-
   ^ cap
 - c
 ```
@@ -194,7 +190,6 @@ One blank before a figure group caption
 - ::: figure
   ![a](b.png)
   :::
-
   ^ cap
 - c
 ```
@@ -224,6 +219,7 @@ Two blanks detach a figure group caption
 
 
   ^ cap
+
 - c
 ```
 
@@ -247,8 +243,8 @@ A quote after item prose still takes its caption
 
 ```carve
 - text
-  > q
 
+  > q
   ^ cap
 - c
 ```
@@ -275,6 +271,7 @@ A caption after plain text is a second paragraph
 - text
 
   ^ cap
+
 - c
 ```
 
@@ -295,8 +292,8 @@ An earlier caret paragraph does not loosen an attached quote
 
 ```carve
 - ^ cap
-  > q
 
+  > q
   ^ cap
 - c
 ```
@@ -350,8 +347,8 @@ A multi-line attached caption keeps the list tight
 
 ```carve
 - ^ cap
-  > q
 
+  > q
   ^ cap
   more
 - c
@@ -379,7 +376,6 @@ An attached quote caption in a sublist keeps both lists tight
 ```carve
 - a
   - > q
-
     ^ cap
 - c
 ```
@@ -435,8 +431,8 @@ One blank before a quote caption after a nested list
 
 ```carve
 - - text
-  > q
 
+  > q
   ^ cap
 - c
 ```
@@ -467,7 +463,6 @@ One blank before a figure group caption after a nested list
   ::: figure
   ![a](b.png)
   :::
-
   ^ cap
 - c
 ```
@@ -496,8 +491,8 @@ Item prose and a nested list before a quote caption
 ```carve
 - x
   - text
-  > q
 
+  > q
   ^ cap
 - c
 ```
@@ -526,7 +521,6 @@ One blank before a table caption after a nested list
 ```carve
 - - text
   | a |
-
   ^ cap
 - c
 ```
@@ -556,8 +550,8 @@ An ordered item holds a nested list before a quote caption
 
 ```carve
 1. - text
-   > q
 
+   > q
    ^ cap
 2. c
 ```
@@ -585,8 +579,8 @@ A quoted list holds a nested list before a quote caption
 
 ```carve
 > - - text
->   > q
 >
+>   > q
 >   ^ cap
 > - c
 ```
@@ -618,8 +612,8 @@ A blank opens a quote before its caption
 - text
 
   > q
-
   ^ cap
+
 - c
 ```
 
@@ -647,8 +641,8 @@ A blank opens a figure group before its caption
   ::: figure
   ![a](b.png)
   :::
-
   ^ cap
+
 - c
 ```
 
@@ -674,8 +668,8 @@ A blank opens a table before its caption
 - text
 
   | a |
-
   ^ cap
+
 - c
 ```
 
@@ -726,8 +720,8 @@ A blank between sibling items still loosens the list
 
 ```carve
 - - text
-  > q
 
+  > q
   ^ cap
 
 - c
@@ -756,11 +750,12 @@ A second paragraph after the caption still loosens the list
 
 ```carve
 - - text
-  > q
 
+  > q
   ^ cap
 
   Body.
+
 - c
 ```
 
@@ -793,6 +788,7 @@ A caption line with no host above it is a paragraph and loosens the list
   |b
 
   ^ cap
+
 - c
 ```
 
@@ -824,6 +820,7 @@ A folded equation block leaves the caption line without a host and loosens the l
   $$
 
   ^ cap
+
 - c
 ```
 
@@ -853,6 +850,7 @@ A folded image leaves the caption line without a host and loosens the list
   ![i](x.png)
 
   ^ cap
+
 - c
 ```
 
@@ -879,8 +877,8 @@ An image paragraph after a nested list loosens the list with a caption gap
 - - text
 
   ![i](x.png)
-
   ^ cap
+
 - c
 ```
 
@@ -910,6 +908,7 @@ An image paragraph after a nested list loosens the list without a caption gap
 
   ![i](x.png)
   ^ cap
+
 - c
 ```
 
@@ -936,8 +935,8 @@ A repeated caption line after an attached caption is a paragraph and leaves the 
 
 ```carve
 - ![]()
-
   ^ cap
+
   ^ cap
 ```
 

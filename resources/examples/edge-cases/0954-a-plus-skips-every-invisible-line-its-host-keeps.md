@@ -83,8 +83,7 @@ The first visible line still decides. At the content column it is refused, as `-
 ::: compare
 
 ````carve
-- +
-  %%%
+- %%%
   c
   %%%
   text

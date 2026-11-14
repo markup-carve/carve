@@ -33,7 +33,7 @@ A `%%` comment after the `~>` of a substitution takes every character to the fir
 :::: compare
 
 ```carve
-{~a~>b `%%` c~} d
+{-a-}{+b `%%` c+} d
 ```
 
 ```html

@@ -12,6 +12,7 @@ The brace opener is literal. The following note definition is read normally outs
 :: t
 : {.x
 }
+
 [^m]: n
 z
 ```

@@ -8,8 +8,10 @@ One column in, the line ends the item.
 
 ```carve
 - one
+
   :: term
- :  def
+
+:  def
 ```
 
 ```html
@@ -31,7 +33,9 @@ At column 0, the item ends and the separator begins a document paragraph.
 
 ```carve
 - one
+
   :: term
+
 :  def
 ```
 

@@ -26,6 +26,7 @@ An attribute block:
 
   {.x}
   - b
+
 - c
 ```
 
@@ -52,6 +53,7 @@ the gap-filler is not the question:
 
   %% note
   - b
+
 - c
 ```
 
@@ -75,9 +77,11 @@ A reference definition:
 ```carve
 - a
 
-  [r]: /u
   - b
+
 - c
+
+[r]: /u
 ```
 
 ```html
@@ -102,6 +106,7 @@ Nor is the block only a nested list. A quote in the same position:
 
   {.x}
   > q
+
 - c
 ```
 

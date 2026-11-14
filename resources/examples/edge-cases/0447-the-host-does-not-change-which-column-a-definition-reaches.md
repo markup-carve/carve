@@ -22,7 +22,8 @@ inside it at column 5. Column 3 first - the body's own content column.
 ```carve
 :: t
 :  - a
-   [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -49,7 +50,8 @@ under a body while the identical shape under an item registered.
 ```carve
 :: t
 :  - a
-    [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -75,7 +77,8 @@ Column 5, the item's own content column.
 ```carve
 :: t
 :  - a
-     [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -102,7 +105,8 @@ puts the same middle column at 3, and a three-space separator at 5.
 ```carve
 :: t
 : - a
-   [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -126,7 +130,8 @@ See [r][].
 ```carve
 :: t
 :   - a
-     [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -154,7 +159,8 @@ description body answers the middle column the same way.
 :: t
 :  :: u
    : d
-    [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -183,7 +189,8 @@ column 4, and the definition at column 3 is the note's.
 [^f]: b
 
   - a
-   [r]: /url
+
+[r]: /url
 
 See [r][] and [^f].
 ```
@@ -215,7 +222,8 @@ The same note holding a description body.
 
   :: t
   : d
-   [r]: /url
+
+[r]: /url
 
 See [r][] and [^f].
 ```
@@ -247,9 +255,11 @@ reaches the ITEM, so the body ends above it and the item's paragraph closes
 
 ```carve
 - x
+
   :: t
   : d
-   [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -277,8 +287,11 @@ it. A definition renders nothing where it is written, so the item holds only
 
 ```carve
 - x
-  [^g]: b
-   [r]: /url
+
+
+[r]: /url
+
+[^g]: b
 
 See [r][] and [^g].
 ```
@@ -307,8 +320,11 @@ answers the same way.
 
 ```carve
 - x
-  [^g]: b
-   [^n]: note text
+
+
+[^n]: note text
+
+[^g]: b
 
 See [^n] and [^g].
 ```
@@ -338,7 +354,8 @@ See [^n] and [^g].
 ```carve
 :: t
 :  - a
-    [^n]: note text
+
+[^n]: note text
 
 See [^n].
 ```
@@ -401,8 +418,10 @@ See [r][] and [^g].
 ```carve
 [^f]: b
 
-  [^g]: c
-   [^n]: note text
+
+[^n]: note text
+
+[^g]: c
 
 See [^n] and [^f] and [^g].
 ```
@@ -461,7 +480,8 @@ And the abbreviation control. An abbreviation definition registers in the same s
 ```carve
 :: t
 :  - a
-    *[HTML]: HyperText
+
+*[HTML]: HyperText
 
 HTML here.
 ```
@@ -489,7 +509,8 @@ lazy paragraph text of the body it fell below (§24 C3).
 ```carve
 :: t
 : d
- [r]: /url
+
+[r]: /url
 
 See [r][].
 ```
@@ -538,6 +559,7 @@ open, and the flush-left line lazily continues THE QUOTE.
 ```carve
 :: t
 :  d
+
     > q
 tail
 ```
@@ -565,8 +587,9 @@ appeared.
 ```carve
 :: t
 :  - a
-     [r]: /url
      more
+
+[r]: /url
 
 See [r][].
 ```
@@ -627,10 +650,10 @@ being measured is the fence itself.
 
 ````carve
 - a
-+
-```
- [r]: /url
-```
+
+  ```
+   [r]: /url
+  ```
 
 See [r][].
 ````
@@ -686,10 +709,10 @@ block's.
 
 ```carve
 - a
-+
-[r]: /a
+
+  more
+
 [r]: /b
-more
 
 See [r][].
 ```

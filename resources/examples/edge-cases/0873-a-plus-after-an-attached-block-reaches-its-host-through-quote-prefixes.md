@@ -36,11 +36,11 @@ CARVE-P9-067 (carve#4629). A second own-line `+` after the block a `+` attached 
 
 `````carve
 > - a
-> +
-> # h
 >
-> +
-> # h
+>   # h
+>
+>
+>   # h
 `````
 
 ```html

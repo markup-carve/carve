@@ -61,7 +61,7 @@ b][missing]</p>
 ::: compare
 
 ```carve
-[a\
+[a\\
 b][missing]
 ```
 

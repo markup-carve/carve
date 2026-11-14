@@ -6,7 +6,8 @@ The fixture name predates the shared marker-body ruling. The one-space line miss
 
 ```carve
 [^a]: note
- [r]: /u
+
+[r]: /u
 
 see[^a] and [t][r]
 ```

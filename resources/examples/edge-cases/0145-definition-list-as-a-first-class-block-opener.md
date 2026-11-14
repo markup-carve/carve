@@ -8,6 +8,7 @@ At the content column, the definition list nests inside the item.
 
 ```carve
 - one
+
   :: term
   :  def
 ```
@@ -31,6 +32,7 @@ At column 0 (below the content column), it interrupts: the list ends and the def
 
 ```carve
 - one
+
 :: term
 :  def
 ```

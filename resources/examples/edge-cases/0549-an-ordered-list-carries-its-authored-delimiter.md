@@ -40,8 +40,9 @@ derives the attribute from its own marker.
 ::: compare
 
 ```carve
-c) gamma
-d) delta
+{start=3}
+a) gamma
+b) delta
 ```
 
 ```html

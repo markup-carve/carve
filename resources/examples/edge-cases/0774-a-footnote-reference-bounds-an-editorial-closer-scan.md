@@ -29,7 +29,7 @@ A `[^` run is a footnote reference before bracket scanning, so the scan for an i
 ::: compare
 
 ```carve
-{~a~>[^[g]~}] b~}
+{-a-}{+[^[g]+}] b~}
 ```
 
 ```html

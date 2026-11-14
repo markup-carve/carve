@@ -32,7 +32,7 @@ literal pipe and not an orphaned backslash:
 ::: compare
 
 ```carve
-| a b \|
+| a b \| |
 ```
 
 ```html

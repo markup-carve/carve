@@ -31,8 +31,8 @@ A `|`-delimited table row is a block opener under the same content-column rule: 
 
 ```carve
 - one
- |= H |
- | x |
+|= H |
+| x |
 ```
 
 ```html

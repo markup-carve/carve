@@ -11,6 +11,7 @@ The closer does not pass the opening brace column. The opener is literal and the
 ```carve
 {.x
 .y}
+
 # H
 ```
 

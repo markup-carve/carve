@@ -57,7 +57,7 @@ x{+"q"+}
 ::: compare
 
 ```carve
-2{+--x+}
+2{+-\-x+}
 ```
 
 ```html
@@ -108,8 +108,8 @@ later arrow still splits the substitution.
 ::: compare
 
 ```carve
-{~a %% b~>c
-~>d~}
+{-a %% b~>c
+-}{+d+}
 ```
 
 ```html

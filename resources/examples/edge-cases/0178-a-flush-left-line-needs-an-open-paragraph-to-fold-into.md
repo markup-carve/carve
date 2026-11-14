@@ -106,7 +106,7 @@ item's - so it opens nothing and folds as text, marker and all.
 
 ```carve
 - - a
- - b
+- b
 ```
 
 ```html
@@ -131,7 +131,8 @@ fold is about reaching no column at all.
 ```carve
 - x
   - a
- # H
+
+# H
 ```
 
 ```html
@@ -160,7 +161,7 @@ folds, exactly as it does one column in.
 ```carve
 -   x
     - a
-  - b
+- b
 ```
 
 ```html

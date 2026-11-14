@@ -5,7 +5,7 @@ A matched `{+ +}` or `{- -}` frame is an E2a boundary, so a `~}` or `~>` inside 
 ::: compare
 
 ```carve
-{~a~>{+b~}+}~}
+{-a-}{+{+b~}+}+}
 ```
 
 ```html
@@ -17,7 +17,7 @@ A matched `{+ +}` or `{- -}` frame is an E2a boundary, so a `~}` or `~>` inside 
 ::: compare
 
 ```carve
-{~a~>{-b~}-}~}
+{-a-}{+{-b~}-}+}
 ```
 
 ```html
@@ -29,7 +29,7 @@ A matched `{+ +}` or `{- -}` frame is an E2a boundary, so a `~}` or `~>` inside 
 ::: compare
 
 ```carve
-{~{+b~>c+}~>a~}
+{-{+b~>c+}-}{+a+}
 ```
 
 ```html

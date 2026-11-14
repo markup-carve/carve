@@ -10,7 +10,8 @@ A note whose first line opens a code fence holds a code block, so a column-0 lin
 
 ````carve
 - a
-  [^f]: ```
+
+[^f]: ```
 c
 ````
 
@@ -27,7 +28,8 @@ c
 
 ```carve
 - a
-  [^f]: ~~~
+
+[^f]: ```
 c
 ```
 

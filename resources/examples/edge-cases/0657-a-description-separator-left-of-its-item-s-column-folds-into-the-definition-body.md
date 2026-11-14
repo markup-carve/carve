@@ -90,6 +90,7 @@ A tight item reads the column-1 line the same way.
 
 ```carve
 - item
+
   :: Term
   :  Def
  :  under

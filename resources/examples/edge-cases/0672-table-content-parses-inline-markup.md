@@ -5,7 +5,7 @@ A leading `=` opens a data cell here. The `=hot=` inside it is a highlight.
 ::: compare
 
 ```carve
-|=hot= |
+| {=hot=} |
 ```
 
 ```html
@@ -21,7 +21,7 @@ A leading `=` opens a data cell here. The `=hot=` inside it is a highlight.
 ::: compare
 
 ```carve
-|=warm= |
+| {=warm=} |
 ```
 
 ```html

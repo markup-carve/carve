@@ -10,6 +10,7 @@ A `+` without the inner quote prefix stays with its owning paragraph. A quoted d
 `````carve
 > > - a
 >   +
+>
 >   - b
 `````
 
@@ -34,6 +35,7 @@ A `+` without the inner quote prefix stays with its owning paragraph. A quoted d
 `````carve
 > > - a
 >   Q
+>
 >   - b
 `````
 
@@ -57,7 +59,8 @@ Q</li>
 
 `````carve
 1. ordered
-  > > quote
+
+> > quote
 +  
 - item
 `````
@@ -79,7 +82,8 @@ Q</li>
 
 `````carve
 1. ordered
-  > > quote
+
+> > quote
 Q  
 - item
 `````

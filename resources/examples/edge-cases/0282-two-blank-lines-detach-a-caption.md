@@ -49,7 +49,6 @@ attachment here is structural.
 ```carve
 |= City |= People |
 | Oslo  | 700k   |
-
 ^ Table: city sizes
 ```
 
@@ -107,7 +106,6 @@ wrapper is what carries the caption.
 ```lua
 local n = 1
 ```
-
 ^ Listing: a local
 ````
 
@@ -155,7 +153,6 @@ one-blank-line form since long before this category existed.
 
 ```carve
 > the cited line
-
 ^ Source: the cited work
 ```
 
@@ -200,7 +197,6 @@ whole rule, so a corpus row is the only thing that can hold either half of it.
 
 ```carve
 ![Ganymede](ganymede.jpg)
-
 ^ Figure: the largest moon
 ```
 
@@ -243,7 +239,6 @@ is a numbered EQUATION (§4); the block must be solely the `$$`-prefixed span.
 
 ```carve
 $$`a + b = c`
-
 ^ Equation: the sum
 ```
 

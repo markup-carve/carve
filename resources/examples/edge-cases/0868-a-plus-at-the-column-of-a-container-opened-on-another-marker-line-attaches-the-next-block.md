@@ -11,8 +11,8 @@ PART 9 §17 L3 and CARVE-P0-024 S3 (carve#4359). A lone `+` at the marker column
 `````carve
 :: t
 : - a
-  +
-  p
+
+    p
 `````
 
 ```html
@@ -34,8 +34,8 @@ PART 9 §17 L3 and CARVE-P0-024 S3 (carve#4359). A lone `+` at the marker column
 
 `````carve
 [^n]: - a
-      +
-      p
+
+        p
 
 r[^n]
 `````

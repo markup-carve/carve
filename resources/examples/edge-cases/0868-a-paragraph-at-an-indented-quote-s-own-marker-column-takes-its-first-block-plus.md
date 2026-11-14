@@ -9,8 +9,7 @@ CARVE-P9-067, PART 9 §17 L4 (carve#4384). A block quote accepts a non-list bloc
 :::::: compare
 
 `````carve
- > +
- x
+ > x
 `````
 
 ```html

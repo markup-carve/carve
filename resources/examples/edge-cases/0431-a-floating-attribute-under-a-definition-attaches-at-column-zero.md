@@ -11,6 +11,7 @@ item or a block quote.
 ```carve
 :: t
 :  d
+
 {.k}
 tail
 ```
@@ -56,6 +57,7 @@ a disagreement.
 
 ```carve
 - d
+
 {.k}
 tail
 ```
@@ -78,6 +80,7 @@ reference below it resolves.
 ```carve
 :: t
 :  d
+
 [r]: /u
 
 See [text][r].

@@ -13,6 +13,7 @@ PART 9 §17 L1 and CARVE-P9-013 (carve#4758) treat a valid wrapped attribute as 
   y}
 
   b
+
 - a
 `````
 
@@ -37,6 +38,7 @@ The same rule applies to an ordered list with a wider content column.
    y}
 
    b
+
 2. a
 `````
 

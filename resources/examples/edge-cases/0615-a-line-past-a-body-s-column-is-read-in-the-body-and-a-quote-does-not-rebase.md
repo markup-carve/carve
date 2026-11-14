@@ -14,8 +14,9 @@ document paragraph (CARVE-P0-011):
 :: t
 : d
   - para
-    [r]: /u
 x
+
+[r]: /u
 
 [r][]
 ````
@@ -43,8 +44,9 @@ An ordered marker folds the same way:
 :: t
 : d
   1. para
-     [r]: /u
 x
+
+[r]: /u
 
 [r][]
 ````
@@ -104,8 +106,9 @@ paragraph:
 :: t
 : d
   - para
-    [r]: /u
   more
+
+[r]: /u
 
 [r][]
 ````
@@ -134,6 +137,7 @@ A heading past the body's column opens on its authored base
 :: t
 : d
   - para
+
     # H
 x
 ````
@@ -189,8 +193,9 @@ An abbreviation definition reads as any definition does (CARVE-P12-026), so `x` 
 :: t
 : d
   - para
-    *[A]: b
 x
+
+*[A]: b
 ````
 
 ```html
@@ -215,8 +220,9 @@ stays open for `tail` (carve#3280):
 
 ````carve
 - > para
-  >  [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ````
@@ -240,7 +246,8 @@ A footnote body takes a lazy line like every container (markup-carve/carve#3885)
 
 ````carve
 - > para
-  >  [^f]: n
+
+[^f]: n
 tail
 ````
 
@@ -279,8 +286,9 @@ Inside an outer quote the inner quote's paragraph still takes `tail`:
 
 ````carve
 > - > para
->   >  [r]: /u
 tail
+
+[r]: /u
 
 [r][]
 ````
@@ -306,8 +314,9 @@ its `>` (carve#5129), so the unmarked `tail` folds into the body:
 ````carve
 > :: t
 > : d
->   [r]: /u
 tail
+
+[r]: /u
 ````
 
 ```html
@@ -350,6 +359,7 @@ So does a heading (CARVE-P0-012):
 ````carve
 > :: t
 > : d
+>
 >   # H
 tail
 ````

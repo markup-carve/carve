@@ -13,11 +13,11 @@ _*x* q
 
 _/x/ q
 
-/_x_ q
+/{_x_} q
 
-_~x~ q
+_{~x~} q
 
-_=x= q
+_{=x=} q
 ```
 
 ```html
@@ -49,11 +49,11 @@ CONTROL. A guard that pairs closes its own span around the inner one, so the spa
 ::: compare
 
 ```carve
-_*x*_ q
+{_*x*_} q
 
-/_x_/ q
+/{_x_}/ q
 
-_*x* y_ q
+{_*x* y_} q
 ```
 
 ```html

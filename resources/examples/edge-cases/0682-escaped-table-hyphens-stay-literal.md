@@ -5,8 +5,7 @@ Escaped hyphens in a data cell do not form a typographic dash.
 ::: compare
 
 ```carve
-|a|b|
-|---|---|
+|= a|= b|
 |\-\-\-|x|
 ```
 

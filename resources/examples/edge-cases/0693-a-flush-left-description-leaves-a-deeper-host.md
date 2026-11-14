@@ -9,6 +9,7 @@ The same boundary applies when the div sits in a nested list item.
   - b
     ::: box
     :: sub
+
 : def
 ```
 

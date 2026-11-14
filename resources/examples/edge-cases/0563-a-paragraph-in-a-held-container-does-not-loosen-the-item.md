@@ -8,6 +8,7 @@ paragraph in the item itself, which makes it loose (carve#2988).
 
 ```carve
 - intro
+
   :: term
   : body
 

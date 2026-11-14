@@ -373,8 +373,7 @@ has nothing to end its run and keeps the marker as content (T11).
 :::: compare
 
 ```carve
-| a | b |
-| --- | ---: |
+|= a |={>} b |
 | 1 | 2 |
 ```
 

@@ -18,7 +18,7 @@ bare `` ``` `` line below it is a valid opener that interrupts that paragraph:
 ::: compare
 
 ````carve
-```	php
+{%%}```	php
 x
 ```
 ````
@@ -59,7 +59,7 @@ starts with the text of those lines:
 ```carve
 ---	yaml
 title: x
----
+***
 
 body
 ```

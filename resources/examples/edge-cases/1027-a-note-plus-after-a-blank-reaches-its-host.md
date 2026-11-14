@@ -11,8 +11,8 @@ A lone `+` at a note's marker column reaches it after a blank and attaches the n
 `````carve
 [^n]: h
 
-+
-pp
+
+      pp
 
 see[^n]
 `````

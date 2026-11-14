@@ -6,10 +6,11 @@ A div reads the line as a block quote and a list item do: it defines, and the us
 
 ```carve
 :::
-*[HTML]: Hyper Text
 
 The HTML spec.
 :::
+
+*[HTML]: Hyper Text
 ```
 
 ```html

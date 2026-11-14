@@ -8,6 +8,7 @@ past it, ends the term and opens (carve#4300).
 
 ```carve
 :: c
+
   # H
 ```
 
@@ -48,6 +49,7 @@ Inside a quote the column is the one after the quote marker.
 
 ```carve
 > :: c
+>
 >   # H
 ```
 
@@ -94,7 +96,9 @@ Inside a description it is the description's column.
 ```carve
 :: a
 : b
+
   :: c
+
     # H
 ```
 
@@ -118,6 +122,7 @@ Inside a description it is the description's column.
 ```carve
 :: a
 : b
+
   :: c
     ::: note
     body
@@ -147,6 +152,7 @@ At the container's content column the opener ends the term and opens.
 
 ```carve
 :: c
+
 # H
 ```
 
@@ -166,7 +172,9 @@ At the container's content column the opener ends the term and opens.
 ```carve
 :: a
 : b
+
   :: c
+
   # H
 ```
 
@@ -192,7 +200,9 @@ A list marker is not term text: §24 C4 lets it open at any column.
 ```carve
 :: a
 : b
+
   :: c
+
     - x
 ```
 

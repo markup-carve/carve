@@ -10,9 +10,9 @@ PART 9 §17 L3 and PART 0 S4 (carve#4208). The paragraph a `+` at the item's mar
 
 `````carve
 - a
-+
-q
- - c
+
+  q
+- c
 `````
 
 ```html
@@ -30,8 +30,9 @@ q
 
 `````carve
 - a
-+
-q
+
+  q
+
   # h
 `````
 

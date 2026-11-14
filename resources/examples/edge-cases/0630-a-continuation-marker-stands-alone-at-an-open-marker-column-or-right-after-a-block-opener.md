@@ -28,8 +28,8 @@ para
 `````carve
 - a
   - b
-+
-para
+
+  para
 `````
 
 ```html
@@ -49,8 +49,8 @@ para
 `````carve
 > - a
 >   - b
-> +
-> para
+>
+>   para
 `````
 
 ```html
@@ -150,8 +150,8 @@ para</p></blockquote>
 `````carve
 - a
   - b
-  +
-  > q
+
+    > q
 `````
 
 ```html
@@ -172,7 +172,6 @@ para</p></blockquote>
 `````carve
 - - - ```
       x
-    +
 tail
 `````
 
@@ -198,7 +197,8 @@ tail
 ::::::: compare
 
 `````carve
-  > +
+  >
+
 q
 `````
 
@@ -243,7 +243,8 @@ The last opener is the nested item, whose marker column is 2, so the line at col
 ::::::: compare
 
 `````carve
-- - +
+- - {%%}
+
 para
 `````
 
@@ -287,8 +288,7 @@ The item opened inside the quote takes the paragraph.
 ::::::: compare
 
 `````carve
-> - +
-> para
+> - para
 `````
 
 ```html
@@ -306,7 +306,8 @@ An ordered outer item reads the same: its nested item owns the `+` and refuses c
 ::::::: compare
 
 `````carve
-1. - +
+1. - {%%}
+
 para
 `````
 
@@ -330,8 +331,8 @@ A later column-0 marker belongs to the outer item, not the nested item.
 `````carve
 - a
   - b
-+
-para
+
+  para
 `````
 
 ```html
@@ -353,7 +354,8 @@ The indented opener's `+` is refused at column 0, and the line folds into it.
 
 `````carve
 - a
-  - +
+  - {%%}
+
 para
 `````
 

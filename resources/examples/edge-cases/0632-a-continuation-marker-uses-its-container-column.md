@@ -7,8 +7,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 `````carve
 - a
   - b
-  +
-  > q
+
+    > q
 `````
 
 ```html
@@ -30,8 +30,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 `````carve
 - a
   - b
-+
-> q
+
+  > q
 `````
 
 ```html
@@ -52,8 +52,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 `````carve
 - a
   - b
-  +
-  para
+
+    para
 `````
 
 ```html
@@ -74,8 +74,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 
 `````carve
 1. a
-+
-> q
+
+   > q
 `````
 
 ```html
@@ -92,8 +92,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 
 `````carve
 - [ ] task
-+
-> q
+
+      > q
 `````
 
 ```html
@@ -112,8 +112,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 x[^a]
 
 [^a]: note
-+
-> q
+
+      > q
 `````
 
 ```html
@@ -137,8 +137,8 @@ x[^a]
 `````carve
 :: term
 : body
-+
-> q
+
+  > q
 `````
 
 ```html
@@ -157,8 +157,8 @@ x[^a]
 
 `````carve
 > q
-+
-| a |
+>
+> | a |
 `````
 
 ```html
@@ -201,8 +201,8 @@ x[^a]
 `````carve
 - a
   - b
-  +
-  > q
+
+    > q
 `````
 
 ```html
@@ -224,7 +224,7 @@ x[^a]
 `````carve
 - a
   - b
-  +
+
     > q
 `````
 
@@ -270,7 +270,6 @@ x[^a]
 
 `````carve
 - a
-+
 - b
 `````
 
@@ -424,7 +423,6 @@ x[^a]
 `````carve
 - a
   - b
-  +
 `````
 
 ```html
@@ -469,8 +467,8 @@ x[^a]
 - x
   - y
     - a
-	+
-	> q
+
+     	> q
 `````
 
 ```html
@@ -497,8 +495,8 @@ x[^a]
 - a
   | h |
   | v |
-+
-> q
+
+  > q
 `````
 
 ```html
@@ -546,8 +544,8 @@ x[^a]
 `````carve
 - a
   - b
-+
-> q
+
+  > q
 `````
 
 ```html
@@ -568,10 +566,10 @@ x[^a]
 `````carve
 - foo
   - [ ] task
-  +
-  ```sh
-  npm test
-  ```
+
+        ```sh
+        npm test
+        ```
   - [ ] more
 `````
 
@@ -617,7 +615,8 @@ x[^a]
 
 `````carve
 - a
-  - +
+  - {%%}
+
 > b
 `````
 
@@ -637,7 +636,8 @@ x[^a]
 ::::::: compare
 
 `````carve
-- - +
+- - {%%}
+
 > q
 `````
 
@@ -697,8 +697,7 @@ x[^a]
 ::::::: compare
 
 `````carve
-> - +
-> q
+> - q
 `````
 
 ```html
@@ -714,7 +713,8 @@ x[^a]
 ::::::: compare
 
 `````carve
-1. - +
+1. - {%%}
+
 > q
 `````
 
@@ -735,8 +735,8 @@ x[^a]
 
 `````carve
  - a
- +
- > q
+
+   > q
 `````
 
 ```html
