@@ -5,7 +5,7 @@ Carve is a lightweight markup language for documents and the web. Its file exten
 ```carve
 # Release notes
 
-This has /italic/, *bold*, _underline_, ~strikethrough~, and =highlight=.
+This has /italic/, *bold*, {_underline_}, {~strikethrough~}, and {=highlight=}.
 
 - [x] Publish the release
 - [ ] Update the package
