@@ -55,7 +55,7 @@ Conventions:
 }
 ```
 
-**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree.
+**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-169).
 
 **C2-A-013** The envelope wraps the tree and does not change it: the `document` inside keeps its own `astVersion`, and every clause here applies to it.
 
@@ -381,7 +381,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks.
 
-**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it. The cell that held a span mark stays in its row with `span` and no content, and the covering cell carries the count. The mark cell has no position.
+**C2-A-092** A cell carries `header` and may carry `span` (`rowspan` or `colspan`, the mark the author wrote), the resolved `colspan` and `rowspan`, `align` and `valign`. An absent count is 1. A span mark that fails (C2-B-173) leaves a cell with no `span`: it is an ordinary cell, empty or holding what a continuation row joined to it. The cell that held a span mark stays in its row with `span` and no content, and the covering cell carries the count. The mark cell has no position. `valign` is a CSS keyword of ASCII letters and hyphens, such as `top`, `middle`, `bottom` and `baseline`. No source spells it, so only a supplied tree holds one, and the renderer writes no declaration for a value of another shape (C2-H-057).
 
 **C2-A-093** A cell with counts and no span marks, as an importer writes it, covers the positions its counts give. Where marks and counts disagree, the marks win.
 
@@ -495,7 +495,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ## Extension nodes, foreign data and resources
 
-**C2-A-122** `block_extension` and `inline_extension` have one shape: `name`, optional `version`, typed `props`, `children`, optional named `slots`, a `fallback`, and `payload`, a list of alternatives with `format` and `value`.
+**C2-A-122** `block_extension` and `inline_extension` have one shape: `name`, optional `version`, typed `props`, `children`, optional named `slots`, a `fallback`, and `payload`, a list of alternatives with `format` and `value`. An alternative holds `format`, a non-empty string, and `value`, and nothing else; a `null` value is refused. For the size bound of C2-A-132 a string value counts its UTF-8 bytes and any other value the UTF-8 bytes of its JSON.
 
 **C2-A-123** A name with a dot, such as `org.example.diagram`, names a registered extension. It is declared in the root `extensions` list, and its node carries a `fallback`.
 
@@ -521,7 +521,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-130** The contract promises semantic interchange. It does not promise an editable round trip for a foreign format, and it does not promise that source spelling survives in the tree.
 
-**C2-A-131** `document.resources` is a manifest. Each entry has an `id`, a `mediaType` and a `digest` of the form `sha256:` plus 64 lowercase hex digits, and may have `href` and `size`. `image.resourceId` and extension `resourceIds` name entries by id. A missing or duplicate id is refused.
+**C2-A-131** `document.resources` is a manifest. Each entry has an `id`, a `mediaType` and a `digest` of the form `sha256:` plus 64 lowercase hex digits, and may have `href` and `size`. `image.resourceId` and extension `resourceIds` name entries by id. A missing or duplicate id is refused. A manifest entry may hold further fields; a reader keeps them and does not test them.
 
 **C2-A-132** A reader bounds a decoded extension payload to 8 MiB per node, metadata nesting to 64 levels, resource references to 4096 per tree and fallback nesting to 32 extension nodes, and refuses an excess.
 
