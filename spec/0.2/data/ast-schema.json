@@ -33,12 +33,14 @@
                 "type": "boolean"
               },
               "version": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               }
             },
             "required": [
               "name",
-              "required"
+              "required",
+              "version"
             ],
             "additionalProperties": false
           }
@@ -105,7 +107,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -267,7 +278,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -615,7 +635,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -774,7 +803,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -959,7 +997,8 @@
           "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$"
         },
         "version": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "props": {
           "type": "object"
@@ -1037,9 +1076,6 @@
             "oneOf": [
               {
                 "$ref": "#/$defs/admonition"
-              },
-              {
-                "$ref": "#/$defs/block_extension"
               },
               {
                 "$ref": "#/$defs/block_quote"
@@ -1159,7 +1195,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -1260,15 +1305,122 @@
         },
         "lang": {
           "type": "string"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "form",
+            "name",
+            "body"
+          ],
+          "properties": {
+            "form": {
+              "enum": [
+                "div",
+                "fence"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "groupLabel": {
+              "type": "string"
+            }
+          }
         }
       },
       "required": [
         "type",
         "children",
         "name",
-        "fallback"
+        "fallback",
+        "version"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "carve.tabs"
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "then": {
+            "required": [
+              "props",
+              "slots",
+              "source"
+            ],
+            "properties": {
+              "version": {
+                "const": "1"
+              },
+              "props": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "titles"
+                ],
+                "properties": {
+                  "titles": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              },
+              "slots": {
+                "type": "object",
+                "minProperties": 1,
+                "patternProperties": {
+                  "^tab_(0|[1-9][0-9]*)$": {}
+                },
+                "additionalProperties": false
+              },
+              "source": {
+                "properties": {
+                  "form": {
+                    "const": "div"
+                  },
+                  "name": {
+                    "const": "tabs"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "groupLabel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "form",
+                  "name",
+                  "body"
+                ],
+                "type": "object"
+              }
+            }
+          }
+        }
+      ]
     },
     "block_quote": {
       "type": "object",
@@ -1377,7 +1529,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -1708,7 +1869,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -1865,7 +2035,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -2131,7 +2310,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -2662,7 +2850,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -2936,7 +3133,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -3103,7 +3309,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -3259,7 +3474,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -3535,7 +3759,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -3697,7 +3930,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -3853,7 +4095,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -4069,7 +4320,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -4237,7 +4497,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -4504,7 +4773,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -4771,7 +5049,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -5123,7 +5410,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -5458,7 +5754,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -5674,12 +5979,14 @@
                 "type": "boolean"
               },
               "version": {
-                "type": "string"
+                "type": "string",
+                "minLength": 1
               }
             },
             "required": [
               "name",
-              "required"
+              "required",
+              "version"
             ],
             "additionalProperties": false
           }
@@ -5761,7 +6068,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleRoot"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -6029,7 +6345,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -6257,7 +6582,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -6476,7 +6810,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -6698,7 +7041,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -6863,7 +7215,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -7022,7 +7383,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -7175,7 +7545,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -7449,7 +7828,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -7717,7 +8105,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -7899,7 +8296,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -8241,7 +8647,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -8477,7 +8892,8 @@
           "pattern": "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)*$"
         },
         "version": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "props": {
           "type": "object"
@@ -8644,9 +9060,6 @@
                 "$ref": "#/$defs/image"
               },
               {
-                "$ref": "#/$defs/inline_extension"
-              },
-              {
                 "$ref": "#/$defs/inline_footnote"
               },
               {
@@ -8779,7 +9192,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -8880,6 +9302,35 @@
         },
         "lang": {
           "type": "string"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "form",
+            "name",
+            "body"
+          ],
+          "properties": {
+            "form": {
+              "enum": [
+                "inline"
+              ]
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "body": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "groupLabel": {
+              "type": "string"
+            }
+          }
         }
       },
       "required": [
@@ -8903,10 +9354,15 @@
       "then": {
         "type": "object",
         "properties": {
-          "fallback": {}
+          "fallback": {},
+          "version": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "required": [
-          "fallback"
+          "fallback",
+          "version"
         ]
       },
       "allOf": [
@@ -8924,10 +9380,15 @@
           },
           "then": {
             "required": [
-              "fallback"
+              "fallback",
+              "version"
             ],
             "properties": {
-              "fallback": {}
+              "fallback": {},
+              "version": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }
@@ -9096,7 +9557,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -9363,7 +9833,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -9630,7 +10109,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -9792,7 +10280,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -10080,7 +10577,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -10261,7 +10767,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -10490,7 +11005,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -10729,7 +11253,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -10884,7 +11417,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -11051,7 +11593,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -11259,7 +11810,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -11412,7 +11972,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -11678,7 +12247,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -11842,7 +12420,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12001,7 +12588,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12160,7 +12756,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12380,7 +12985,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12647,7 +13261,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12827,7 +13450,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -12980,7 +13612,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -13246,7 +13887,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -13513,7 +14163,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -13780,7 +14439,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -14047,7 +14715,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -14314,7 +14991,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -14469,7 +15155,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -14649,7 +15344,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -14823,7 +15527,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15076,7 +15789,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15274,7 +15996,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15438,7 +16169,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15603,7 +16343,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15765,7 +16514,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -15920,7 +16678,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -16075,7 +16842,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -16227,7 +17003,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -16493,7 +17278,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -16661,7 +17455,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -17052,7 +17855,16 @@
         "data": {
           "type": "object",
           "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {}
+            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
+            "^carve\\.source$": {
+              "$ref": "#/definitions/carveSource"
+            },
+            "^carve\\.style$": {
+              "$ref": "#/definitions/carveStyleNode"
+            },
+            "^carve\\.annotation$": {
+              "$ref": "#/definitions/carveAnnotation"
+            }
           },
           "additionalProperties": false
         },
@@ -17659,6 +18471,385 @@
         }
       },
       "additionalProperties": false
+    },
+    "carveSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "locator",
+        "importer"
+      ],
+      "properties": {
+        "format": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "part": {
+              "type": "string",
+              "minLength": 1
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "importer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "version"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "carveStyleRoot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namedStyle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alignment": {
+          "enum": [
+            "start",
+            "center",
+            "end",
+            "justify"
+          ]
+        },
+        "indentPt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spacingBeforePt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spacingAfterPt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pageBreakBefore": {
+          "type": "boolean"
+        },
+        "keepWithNext": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction": {
+          "enum": [
+            "ltr",
+            "rtl"
+          ]
+        },
+        "namedStyles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "namedStyle": {
+                "type": "string",
+                "minLength": 1
+              },
+              "alignment": {
+                "enum": [
+                  "start",
+                  "center",
+                  "end",
+                  "justify"
+                ]
+              },
+              "indentPt": {
+                "type": "number",
+                "minimum": 0
+              },
+              "spacingBeforePt": {
+                "type": "number",
+                "minimum": 0
+              },
+              "spacingAfterPt": {
+                "type": "number",
+                "minimum": 0
+              },
+              "pageBreakBefore": {
+                "type": "boolean"
+              },
+              "keepWithNext": {
+                "type": "boolean"
+              },
+              "language": {
+                "type": "string",
+                "minLength": 1
+              },
+              "direction": {
+                "enum": [
+                  "ltr",
+                  "rtl"
+                ]
+              }
+            }
+          }
+        },
+        "page": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "widthPt",
+            "heightPt",
+            "marginsPt"
+          ],
+          "properties": {
+            "widthPt": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "heightPt": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "marginsPt": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "top",
+                "right",
+                "bottom",
+                "left"
+              ],
+              "properties": {
+                "top": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "right": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "bottom": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "left": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "headers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/admonition"
+              },
+              {
+                "$ref": "#/$defs/block_quote"
+              },
+              {
+                "$ref": "#/$defs/code_block"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/definition_list"
+              },
+              {
+                "$ref": "#/$defs/directive"
+              },
+              {
+                "$ref": "#/$defs/div"
+              },
+              {
+                "$ref": "#/$defs/figure"
+              },
+              {
+                "$ref": "#/$defs/figure_group"
+              },
+              {
+                "$ref": "#/$defs/heading"
+              },
+              {
+                "$ref": "#/$defs/include"
+              },
+              {
+                "$ref": "#/$defs/line_block"
+              },
+              {
+                "$ref": "#/$defs/list"
+              },
+              {
+                "$ref": "#/$defs/paragraph"
+              },
+              {
+                "$ref": "#/$defs/raw_block"
+              },
+              {
+                "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/table"
+              },
+              {
+                "$ref": "#/$defs/thematic_break"
+              }
+            ]
+          }
+        },
+        "footers": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/admonition"
+              },
+              {
+                "$ref": "#/$defs/block_quote"
+              },
+              {
+                "$ref": "#/$defs/code_block"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/definition_list"
+              },
+              {
+                "$ref": "#/$defs/directive"
+              },
+              {
+                "$ref": "#/$defs/div"
+              },
+              {
+                "$ref": "#/$defs/figure"
+              },
+              {
+                "$ref": "#/$defs/figure_group"
+              },
+              {
+                "$ref": "#/$defs/heading"
+              },
+              {
+                "$ref": "#/$defs/include"
+              },
+              {
+                "$ref": "#/$defs/line_block"
+              },
+              {
+                "$ref": "#/$defs/list"
+              },
+              {
+                "$ref": "#/$defs/paragraph"
+              },
+              {
+                "$ref": "#/$defs/raw_block"
+              },
+              {
+                "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/table"
+              },
+              {
+                "$ref": "#/$defs/thematic_break"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "carveAnnotation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ids"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "carveStyleNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "namedStyle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alignment": {
+          "enum": [
+            "start",
+            "center",
+            "end",
+            "justify"
+          ]
+        },
+        "indentPt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spacingBeforePt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "spacingAfterPt": {
+          "type": "number",
+          "minimum": 0
+        },
+        "pageBreakBefore": {
+          "type": "boolean"
+        },
+        "keepWithNext": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "string",
+          "minLength": 1
+        },
+        "direction": {
+          "enum": [
+            "ltr",
+            "rtl"
+          ]
+        }
+      }
     }
   }
 }

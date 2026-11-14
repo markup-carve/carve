@@ -1,0 +1,39 @@
+{
+  "$schema": "schemas/extensions.schema.json",
+  "extensions": [
+    {
+      "name": "carve.tabs",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "tabs"
+      },
+      "props": {
+        "titles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "slots": {
+        "pattern": "^tab_(0|[1-9][0-9]*)$",
+        "role": "block"
+      },
+      "clauses": [
+        "C2-X-039",
+        "C2-X-040",
+        "C2-X-041",
+        "C2-X-042",
+        "C2-X-043",
+        "C2-X-044",
+        "C2-X-045",
+        "C2-X-046",
+        "C2-X-047",
+        "C2-X-048"
+      ]
+    }
+  ]
+}

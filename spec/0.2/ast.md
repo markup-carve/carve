@@ -73,7 +73,7 @@ Conventions:
 
 **C2-A-016** A minor version adds only three things: optional declared extensions, extension nodes with a fallback, and namespaced `data`. It adds no core field and no core node type.
 
-**C2-A-017** An extension declaration has a qualified `name`, a boolean `required` and an optional `version`. An absent `version` means the extension does not version its payload, and a producer does not write a placeholder in its place.
+**C2-A-017** An extension declaration has a qualified `name`, a boolean `required` and a nonempty `version`. A reader matches the version as an exact string under C2-X-003. This replaces the earlier optional declaration version.
 
 **C2-A-018** A reader refuses a higher major version, an unknown required extension, an unknown core field, an unknown core node type and an extension node without a valid fallback.
 
@@ -99,7 +99,7 @@ Conventions:
 
 **C2-A-028** Nodes are closed: a field the schema does not name on a node type is an error (C2-A-169). Unknown fields inside `task`, `marker`, a payload alternative or a manifest entry are refused as well.
 
-**C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it.
+**C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it, except the typed root header and footer block lists of C2-A-197.
 
 **C2-A-030** `metadata` is a closed object with optional `title` and `subtitle` lists of inline nodes, `authors` as a list of strings, `date` as a string, and `bibliography` as the typed object of C2-A-121. A walker visits its inline slots. Extension `props` is opaque JSON, and a reader refuses a node inside `metadata` outside a declared slot or inside `props`. This replaces the earlier draft rule that walked arbitrary objects.
 
@@ -168,7 +168,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `abbreviation_def` | top level | none | `expansion`, `key`, `namespace` |
 | `admonition` | block | blocks | `kind`, `title`?, `groupLabel`? |
 | `autolink` | inline | none | `href`, `text`? |
-| `block_extension` | block | blocks | `name`, `version`?, `props`?, `slots`?, `fallback`, `payload`?, `resourceIds`? |
+| `block_extension` | block | blocks | `name`, `version`, `props`?, `slots`?, `fallback`, `payload`?, `resourceIds`?, `source`? |
 | `block_quote` | block | blocks | none |
 | `caption` | `caption` slot | blocks | `short`? |
 | `caption_number` | inline | none | `n`? |
@@ -198,7 +198,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `highlight` | inline | inlines | none |
 | `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
 | `include` | block | none | `path`, `section`?, `options`? |
-| `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`? |
+| `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`?, `source`? |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
 | `line` | `line_block` | inlines | none |
@@ -495,13 +495,13 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ## Extension nodes, foreign data and resources
 
-**C2-A-122** `block_extension` and `inline_extension` carry `name`, optional `version`, opaque JSON `props`, `children`, optional named `slots`, optional `fallback`, and optional `payload`. Each payload alternative has exactly nonempty string `format` and non-null JSON `value`; unknown fields are refused. The 8 MiB limit of C2-A-132 counts a string value in UTF-8 bytes and another value in UTF-8 JSON bytes.
+**C2-A-122** `block_extension` and `inline_extension` carry `name`, a version for qualified names, opaque JSON `props`, `children`, optional named `slots`, a fallback for qualified names, optional `payload`, and optional `source` under C2-X-024. Each payload alternative has exactly nonempty string `format` and non-null JSON `value`; unknown fields are refused. The 8 MiB limit of C2-A-132 counts a string value in UTF-8 bytes and another value in UTF-8 JSON bytes. This replaces the earlier version and source-field shape.
 
 **C2-A-123** A qualified name has the grammar `namespace.name`, with each segment matching `[A-Za-z][A-Za-z0-9_-]*` and one or more dot-separated namespace segments. A qualified extension node is declared by the full name on the root or envelope and carries a same-role fallback, whether it is inline or block. This closes the earlier draft dot-only test.
 
-**C2-A-124** A name without a dot is the name of an inline extension written in Carve source. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback.
+**C2-A-124** A name without a dot is the name of an inline extension written in Carve source when no declared matcher claims it. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback. A matcher may transform that core node to a qualified extension under C2-X-006.
 
-**C2-A-125** A `block_extension` has no source spelling, so its name is always qualified and it always carries a `fallback`. It is not part of 0.2.0: the extension scope of 0.2.0 is core nodes and `inline_extension`, and no 0.2.0 parser or extension produces a `block_extension`. The definition stands for a later version.
+**C2-A-125** A `block_extension` has a qualified name and a mandatory fallback. A 0.2.0 transform may produce one from a core div or code block under C2-X-008 to C2-X-011. This replaces the earlier phase 6 deferral and the prohibition on produced block extensions.
 
 **C2-A-126** A fallback is core content of the node's own role, block or inline, and validates as such.
 
@@ -595,7 +595,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-158** In a tree a parser built from source, only these node types may omit `pos`: `table_column` and `caption_number`, which have no source text; a `table_row`, a `table_cell`, a `cell_paragraph` and the inline nodes of a cell that a continuation row joined; the cells of a delimited table; and a `text` node merged from pieces that are not adjacent in the source. The final list is open (Open, point 1).
 
-**C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair`, `small_caps` and `block_extension` have no source spelling and are never positioned by a parser.
+**C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair` and `small_caps` have no source spelling and are never positioned by a parser. A block extension transformed from source takes the claimed core node's position.
 
 **C2-A-160** A node that a producer has not placed yet is a defect, not a case of C2-A-158.
 
@@ -722,7 +722,73 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-188** A valid tree passes the schema and the reader checks for nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, declared `data` keys, envelope version agreement and extension fallback depth. A schema pass alone does not establish validity.
 
-**C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object; only declared child slots hold nodes.
+**C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object, except the root style header and footer blocks of C2-A-197. The core walker ignores that data.
+
+## Standard data namespaces
+
+**C2-A-190** `carve.source`, `carve.style` and `carve.annotation` are optional declared data namespaces with the value schemas in `data/`.
+
+**C2-A-191** Parsing Carve source produces none of these namespaces.
+
+**C2-A-192** The core renderer ignores all three namespaces.
+
+**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content.
+
+**C2-A-194** Equality compares all three data values under C2-A-161.
+
+**C2-A-195** `carve.source` may stand on any node and records the foreign format, a locator with a part, element path or id, and the importer name and version.
+
+**C2-A-196** `carve.source` replaces the 1.x provenance sidecar's source-id graph and byte offsets with a local foreign locator; multi-source lineage and byte spans remain in a separate provenance sidecar.
+
+```json
+{"type":"paragraph","children":[{"type":"text","value":"Hello"}],"data":{"carve.source":{"format":"docx","locator":{"part":"word/document.xml","path":"/document/body/p[1]"},"importer":{"name":"pandoc-carve","version":"2.0"}}}}
+```
+
+**C2-A-197** `carve.style` may stand on any node with a named style and direct alignment, indentation, spacing before, spacing after, page break before, keep with next, language or direction; on the root it may also hold named styles, page size, margins, and header and footer core block lists.
+
+**C2-A-198** Style lengths are non-negative points, alignment is `start`, `center`, `end` or `justify`, and direction is `ltr` or `rtl` where no common `dir` field already holds it.
+
+**C2-A-199** An importer stores only style facts it can read and a target writer may ignore facts it cannot express.
+
+```json
+{"type":"document","astVersion":"2.0","children":[],"extensions":[{"name":"carve.style","version":"1","required":false}],"data":{"carve.style":{"namedStyles":{"Body":{"alignment":"start","spacingAfterPt":6}},"page":{"widthPt":595.28,"heightPt":841.89,"marginsPt":{"top":72,"right":72,"bottom":72,"left":72}},"headers":[{"type":"paragraph","children":[{"type":"text","value":"Report"}]}],"footers":[]}}}
+```
+
+**C2-A-200** Font families, font sizes, colors, borders, floats, columns, section breaks and arbitrary CSS remain outside `carve.style` because no small shared round-trip vocabulary covers them.
+
+**C2-A-201** Font emphasis already expressed by inline nodes stays in those nodes and never enters `carve.style`.
+
+**C2-A-202** `carve.annotation` may stand on any node and holds a list of ids of entries in the annotation-range sidecar.
+
+**C2-A-203** Every annotation id in that list identifies one sidecar range whose start or end path is that node or a descendant.
+
+**C2-A-204** A block-boundary anchor uses the containing block's path and offset zero for its start or the block's annotation-text length for its end; a boundary between two blocks uses the end of the preceding block, or the start of the following block when there is no preceding block.
+
+**C2-A-205** A sidecar range keeps its start and end paths and code point offsets through a tree round trip, while rebinding after edits remains outside this contract.
+
+```json
+{"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
+```
+
+**C2-A-206** The three namespace schemas validate only their own values, and the tree reader also checks declaration, placement, sidecar references and the core block lists.
+
+**C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count Unicode code points.
+
+**C2-A-208** Source format, locator parts, importer name and version, style names and language, and annotation ids are nonempty strings; style page break and keep flags are booleans.
+
+**C2-A-209** Named styles, page, headers and footers occur only in root `carve.style`, and direct language or direction occurs only when the node has no corresponding common field.
+
+**Exception C2-A-210** A qualified extension node may carry the canonical source form of C2-X-024 in the tree, even though it changes neither rendering nor resolution; a bare-tree writer needs it to reproduce the claimed source form.
+
+**C2-A-211** The only block boundary in an empty document uses the root path with offset zero.
+
+## Counts
+
+| Section | Clauses |
+| --- | ---: |
+| Existing AST contract | 187 |
+| Standard data namespaces and extension source exception | 22 |
+| **Total** | **209** |
 
 ## Schema changes owed
 
@@ -733,6 +799,5 @@ The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast
 Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
 
 1. **The list of synthesized node types.** C2-A-158 gives the candidates. Not settled: whether the cells of a delimited table can be positioned, and whether table groups always have a position.
-2. **The extension API and extension nodes.** The scope of 0.2.0 is decided: an extension emits core nodes and `inline_extension`, and `block_extension` waits for a later version. How the three stages of the extension API (matcher, transform, renderer) produce those nodes is written in phase 6.
-3. **Block-boundary anchors and edit binding** of the annotation-range sidecar (points F2 and F3 of the tracking ticket) are deferred past 0.2.0. The draft text on `next-ast2` (CARVE-P12-062) already describes both; 0.2.0 does not require them.
+2. **Edit binding** of annotation-range paths after tree edits remains deferred. C2-A-204 defines block-boundary anchors for an unchanged tree.
 4. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.

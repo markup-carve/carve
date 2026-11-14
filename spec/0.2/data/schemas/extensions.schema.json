@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 extensions",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "extensions"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "schemas/extensions.schema.json"
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "version",
+          "matcher",
+          "props",
+          "slots",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "matcher": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "form",
+              "name"
+            ],
+            "properties": {
+              "form": {
+                "enum": [
+                  "inline",
+                  "div",
+                  "fence"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "props": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object"
+            }
+          },
+          "slots": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pattern",
+              "role"
+            ],
+            "properties": {
+              "pattern": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "block",
+                  "inline"
+                ]
+              }
+            }
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILWXW]-[0-9]{3}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

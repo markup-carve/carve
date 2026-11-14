@@ -17,6 +17,7 @@ const DOCUMENTS = {
   'syntax-blocks': 'origin/spec/0.2-syntax-blocks',
   'syntax-inline': 'origin/spec/0.2-syntax-inline',
   ast: 'origin/spec/0.2-ast',
+  extensions: 'origin/spec/0.2-ast',
   'source-layout': 'origin/spec/0.2-ast',
   html: 'origin/spec/0.2-html-writer',
   writer: 'origin/spec/0.2-html-writer',
@@ -30,6 +31,7 @@ const FILES = {
   containers: { containers: ['name', 'name'] },
   'div-names': { names: ['name', 'name'], sigils: ['name', 'sigil'] },
   'escape-contexts': { contexts: ['name', 'name'], no_escape: ['name', 'name'], no_spelling: ['name', 'name'] },
+  extensions: { extensions: ['name', 'name'] },
   'heading-slug': { removed: ['code_point', 'code_point'], reversed: ['glyph', 'glyph'] },
   'include-options': { options: ['name', 'rank'] },
   'inline-atoms': { atoms: ['name', 'name'] },
@@ -71,7 +73,7 @@ const sources = []
 for (const [name, ref] of Object.entries(DOCUMENTS)) {
   const { text, from } = readDocument(name, ref)
   sources.push(`${name}.md from ${from}`)
-  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILW]-\d{3})\*\*/gm)) defined.add(match[1])
+  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILWX]-\d{3})\*\*/gm)) defined.add(match[1])
 }
 
 const data = {}
@@ -135,7 +137,7 @@ else {
   const schema = JSON.parse(schemaText)
   try { ajv.compile(schema) } catch (error) { fail(`ast-schema.json: invalid JSON Schema: ${error.message}`) }
   collectClauses(schema, 'ast-schema.json')
-  for (const match of schemaText.matchAll(/C2-[ABHILW]-\d{3}/g)) {
+  for (const match of schemaText.matchAll(/C2-[ABHILWX]-\d{3}/g)) {
     cited.add(match[0])
     if (!defined.has(match[0])) fail(`ast-schema.json: cites ${match[0]}, which no document defines`)
   }
@@ -185,6 +187,13 @@ else {
 }
 
 // Names that one file takes from another.
+for (const name of ['carve-source', 'carve-style', 'carve-annotation']) {
+  const path = join(dataDir, 'schemas', `${name}.schema.json`)
+  if (!existsSync(path)) fail(`${name}.schema.json: missing`)
+  else try { ajv.compile(JSON.parse(readFileSync(path, 'utf8'))) }
+  catch (error) { fail(`${name}.schema.json: invalid JSON Schema: ${error.message}`) }
+}
+
 const names = (file, list, key = 'name') => new Set((data[file]?.[list] ?? []).map(row => row[key]))
 const shapes = names('line-shapes', 'shapes')
 const refs = names('line-shapes', 'refs')
