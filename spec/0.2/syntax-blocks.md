@@ -230,7 +230,7 @@ Example 8 (unverified)
 
 An *interrupter* is a line that ends an open paragraph without a blank line. There are six.
 
-**C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
+**C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
 **C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet, the bare dot, or an ordered marker whose value is 1 in any spelling, such as `1`, `01`, `a`, `A`, `i` and `I`: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
 
@@ -2522,7 +2522,7 @@ code
 
 ## Fences, divs and comment blocks
 
-**C2-B-108** A run of three or more backticks or tildes opens a code fence, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line, without the spaces and tabs before it, is the first line of the comment's value, as in 0.1.
+**C2-B-108** A run of three or more backticks opens a code fence; a run of tildes opens nothing and is text, where 0.1 and Markdown read it as a second fence character. A code block that holds a backtick fence takes a longer run (C2-B-110). Further, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line, without the spaces and tabs before it, is the first line of the comment's value, as in 0.1.
 
 **C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test.
 
@@ -2767,7 +2767,7 @@ after
 
 **C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text.
 
-The backtick is the canonical fence character, and the tilde is accepted (C2-B-108).
+The backtick is the only fence character of a code block: a tilde run is text (C2-B-108).
 
 Example 124 (generated)
 
@@ -2786,7 +2786,7 @@ code
 
 :::
 
-Example 125 (generated)
+Example 125 (unverified)
 
 ::: compare
 
@@ -2797,8 +2797,9 @@ code
 ```
 
 ```html
-<pre><code>code
-</code></pre>
+<p>~~~
+code
+~~~</p>
 ```
 
 :::
@@ -5166,7 +5167,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 2 | 12 | 11 |
 | Fences, divs and comment blocks | 10 | 0 | 7 | 4 |
-| The fence opener and titles | 6 | 1 | 6 | 0 |
+| The fence opener and titles | 6 | 1 | 5 | 1 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
@@ -5177,7 +5178,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 31 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **221** | **15** | **173** | **58** |
+| **Total** | **221** | **15** | **172** | **59** |
 
 The chapter has 221 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

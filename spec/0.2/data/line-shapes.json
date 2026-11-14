@@ -326,10 +326,10 @@
     },
     {
       "name": "code_fence_closer",
-      "first": ["`", "~"],
+      "first": ["`"],
       "role": "closer",
       "sequence": [
-        { "part": "run", "chars": ["`", "~"], "min": 3, "same": true, "min_from": "opener_length" },
+        { "part": "run", "chars": ["`"], "min": 3, "same": true, "min_from": "opener_length" },
         { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
@@ -338,10 +338,10 @@
     },
     {
       "name": "code_fence_opener",
-      "first": ["`", "~"],
+      "first": ["`"],
       "role": "opener",
       "sequence": [
-        { "part": "run", "chars": ["`", "~"], "min": 3, "same": true },
+        { "part": "run", "chars": ["`"], "min": 3, "same": true },
         { "part": "optional", "sequence": [{ "part": "space", "min": 1, "max": 1 }] },
         {
           "part": "choice",

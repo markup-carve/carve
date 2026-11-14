@@ -102,7 +102,7 @@
     {
       "name": "fence_run",
       "group": "block",
-      "triggers": ["```", "~~~", ":::", "%%%"],
+      "triggers": ["```", ":::", "%%%"],
       "positions": ["line_start"],
       "shapes": [
         "code_fence_closer",

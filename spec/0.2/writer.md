@@ -107,7 +107,7 @@ Conventions:
 
 **C2-W-036** A thematic break is written as `***`.
 
-**C2-W-037** A code block is written with a backtick fence. A tilde fence is rewritten, except where the info string holds a backtick, which only a tilde fence can carry (C2-B-118): that block keeps a tilde fence, the shortest run of at least three tildes that is longer than every tilde run in its body.
+**C2-W-037** A code block is written with a backtick fence, the shortest run of at least three backticks that is longer than every backtick run in its body (C2-B-110). An info string that holds a backtick has no spelling (C2-B-118): a parse never gives one, and for a supplied tree the writer leaves it out and reports `field-unspellable`.
 
 **C2-W-038** The fence of a code block and of a raw block is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
 
@@ -270,7 +270,7 @@ Written:
 - one to six `=` or `#` and a space at the start of a paragraph (C2-B-151, C2-B-152);
 - a caret and a space on a line directly below a block that takes a caption, below an image paragraph, and directly after a line of an open quote when the line does not carry the quote's mark (C2-B-017, C2-B-018, C2-B-146);
 - a pipe at the start of a line that also ends with a pipe (C2-B-166), and a `+` at the start of such a line below a table row (C2-B-175);
-- a fence run: three or more backticks, tildes, colons or percent signs (C2-B-014);
+- a fence run: three or more backticks, colons or percent signs (C2-B-014);
 - a list marker with content, at the start of a paragraph and on every line inside an item, a description or a footnote body (C2-B-015);
 - a description mark or a term mark, at the start of a paragraph and on every line inside a description list (C2-B-016);
 - a definition shape at column 0 (C2-B-081);
@@ -330,11 +330,11 @@ Example 2 (generated)
 Input:
 
 `````carve
-~~~~js
+````js
 a
 ```
 b
-~~~~
+````
 `````
 
 Written:

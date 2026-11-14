@@ -136,7 +136,7 @@ These facts are ported from the draft. Columns in them are the zero-based column
 | `metadataSeparatorRaw` | a definition, a `definition_term` | the separator between the label or term and its body, whitespace included |
 | `attachment` | a `caption` | `preceding` or `none` |
 
-**C2-L-024** `markerRaw` is the exact source text of the marker that opened the node. For a heading it tells `#` from `=`, and for a fence `openerRaw` tells a tilde from a backtick and gives the length.
+**C2-L-024** `markerRaw` is the exact source text of the marker that opened the node. For a heading it tells `#` from `=`, and for a fence `openerRaw` gives the length of the run.
 
 **C2-L-025** `continuationStyle` has one value, chosen in this order: `lazy` when a paragraph line stands left of the content column, else `indent` when a later line reaches the content column, else `marker_line` when all content is on the marker line, else `none`.
 
