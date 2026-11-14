@@ -43,7 +43,6 @@ The atoms, each defined in its own section:
 - an autolink and a cross-reference;
 - a valid attribute block;
 - a braced comment, an editorial comment and a line comment;
-- the braced en dash;
 - a link tail, which is the parenthesized destination and title glued to the closing bracket of a pair;
 - a mention, a tag and a symbol.
 
@@ -1821,7 +1820,7 @@ Smart typography reads the text that the scan left as text and never reads insid
 
 **Exception C2-I-107** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe. The word is the run of ASCII letters behind the quote and ends where they end: a digit or punctuation may follow it, a letter outside ASCII may not.
 
-**Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens.
+**Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens. The word `n` is exempt: `Rock 'n' roll` holds two apostrophes.
 
 **Exception C2-I-109** Single quotes do not nest. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
 
@@ -1837,7 +1836,7 @@ Where the guess is wrong, the author types the curly character.
 
 **Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
 
-**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `(c)` and `(r)` are text. (carried over from 0.1)
+**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1)
 
 Example 94 (generated)
 

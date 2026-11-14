@@ -122,7 +122,7 @@ roses
 
 ## Paragraphs, headings and sections
 
-**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040).
+**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them.
 
 **C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case.
 

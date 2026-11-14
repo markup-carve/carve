@@ -1199,7 +1199,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["Carve has no underline heading: this run of hyphens is text. Write the heading with a leading `#`."],
+      "messages": ["Carve has no underline heading: this run of hyphens is text. Write the heading with a leading `=`."],
       "message_origin": "data_file",
       "change": "new message: a hyphen run under text is text",
       "clauses": ["C2-W-106"]

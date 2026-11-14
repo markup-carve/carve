@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet or an ordered marker with the value 1, which are `1`, `a`, `A`, `i`, `I` and the bare dot: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -717,7 +717,7 @@ Example 29 (generated)
 
 **C2-B-042** The first marker alone fixes the style: digits and the bare dot are one style, decimal, a lone `i` or `I` is roman, any other single letter is alphabetic, and two or more roman letters are roman.
 
-**C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list.
+**C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot whose content starts with another dot and a space is no marker, so `. . . and then silence` is a paragraph.
 
 **C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
 
@@ -1451,7 +1451,7 @@ Example 62 (unverified)
 
 **C2-B-072** A description may start with any block on its marker line.
 
-**C2-B-073** A description with one block has a bare paragraph.
+**C2-B-073** A description with one visible block has a bare paragraph. A comment and a definition are not visible blocks (C2-H-040).
 
 **C2-B-074** A description line with no term above it is text.
 
@@ -1821,7 +1821,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line. The label follows the rules of a footnote reference label (C2-I-087): it may hold spaces, and it holds no unescaped bracket.
 
-**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination without spaces and an optional quoted title, so a label and a colon followed by nothing or only spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
+**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then only spaces. So `[a]: /u 'T'` has a title, in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
 
 **C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
 
@@ -4404,7 +4404,7 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer.
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
 
 **C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment.
 

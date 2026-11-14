@@ -477,7 +477,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-114** A link or image may carry `targetKind` (`url`, `wiki`, `doc` or `xref`) for a target that is not a URL.
 
-**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip` and `resourceId`. An absent `alt` means none was given.
+**C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip` and `resourceId`. An absent `alt` means none was given. `tooltip` is the title of the link tail, on a `link` as on an `image`; a definition names the same text `title` (C2-A-077). A resolved reference keeps no `tooltip` of its own: the renderer takes the title from the definition.
 
 **C2-A-116** A cross-reference is an `xref` with `key`, `namespace` and optional `form` (`number`, `page`, `title` or `full`), the display form: which generated text stands for the target. Resolution adds `href`, and an unresolved one omits it. A producer does not turn an `xref` into a link. Core source gives no `form` (C2-I-096): an extension or a supplied tree sets it, and a Carve writer reports `field-unspellable` for it.
 
