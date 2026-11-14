@@ -31,9 +31,8 @@
       "closer": "#}",
       "clauses": ["C2-I-043", "C2-I-063"]
     },
-    { "rank": 4, "name": "en_dash", "opener": "{--}", "condition": "exact", "clauses": ["C2-I-043", "C2-I-113"] },
     {
-      "rank": 5,
+      "rank": 4,
       "name": "braced_opener",
       "opener": "{",
       "condition": "followed_by_mark",

@@ -119,7 +119,6 @@
       "host": false,
       "clauses": ["C2-I-005", "C2-I-013", "C2-I-037", "C2-I-043", "C2-I-063"]
     },
-    { "name": "en_dash", "opener": "{--}", "result": "en_dash", "clauses": ["C2-I-005", "C2-I-043", "C2-I-113"] },
     {
       "name": "hard_break",
       "opener": "\\",

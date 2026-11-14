@@ -20,7 +20,7 @@ Terms:
 - The *content* is the text of one of these, as the block pass left it. A table row is split into cells first, and each cell has a content of its own. Every rule below works on one content.
 - A *form* is one spelling of a construct, such as the braced form of emphasis. The `form` field of a reference node is written as a code word.
 - A *word character* is a Unicode letter or number (general category L or N).
-- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104, C2-I-106, C2-I-109, C2-I-112), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
+- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104, C2-I-106, C2-I-109), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
 - Two things are *glued* when no character stands between them.
 - An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-005.
 - A *bracket construct* is a form built on a bracket pair: a span, a link, an image, a reference, an inline footnote, an inline extension.
@@ -147,7 +147,7 @@ Example 5 (unverified)
 
 **C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
 
-**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: `a --\ x` holds an en dash, since the run stands before whitespace (C2-I-112), and `*\ a*` holds no strong.
+**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `"a-"\ b` the second quote closes (C2-I-106), and `*\ a*` holds no strong.
 
 **C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
 
@@ -612,7 +612,7 @@ Example 31 (generated)
 
 ## The opening brace
 
-**C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{--}`, the en dash. Five: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
+**C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
 
 **C2-I-044** A brace that starts none of these is text.
 
@@ -639,11 +639,11 @@ Example 33 (generated)
 ::: compare
 
 ```carve
-a {=a}b=} c and {--} and {---} and [s]{=x=}
+a {=a}b=} c and {---} and [s]{=x=}
 ```
 
 ```html
-<p>a <mark>a}b</mark> c and – and <del>-</del> and [s]<mark>x</mark></p>
+<p>a <mark>a}b</mark> c and <del>-</del> and [s]<mark>x</mark></p>
 ```
 
 :::
@@ -797,11 +797,11 @@ Example 42 (generated)
 ::: compare
 
 ```carve
-a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, --flag, 50%, a = b = c
+a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, 50%, a = b = c
 ```
 
 ```html
-<p>a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, --flag, 50%, a = b = c</p>
+<p>a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, 50%, a = b = c</p>
 ```
 
 :::
@@ -1829,11 +1829,7 @@ Smart typography reads the text that the scan left as text and never reads insid
 
 Where the guess is wrong, the author types the curly character.
 
-**C2-I-111** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule.
-
-**Exception C2-I-112** A hyphen run after whitespace, or after an opening parenthesis or quote that itself follows whitespace, and before a character that is not whitespace is a command-line flag and stays as typed. An escaped parenthesis or quote is not such a character. (carried over from 0.1)
-
-**C2-I-113** `{--}` is an en dash. It is the spelling for the position that C2-I-112 keeps literal.
+**C2-I-111** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule. The rule has no exception for the place of the run: `run --verbose` holds an en dash, and a command-line flag in prose is written in a code span or with an escape, `-\-verbose`. In 0.1 a run after whitespace and before a letter stayed as typed, and `{--}` spelled the en dash there; both are gone, and `{--}` is now an opening brace, an en dash and a closing brace.
 
 **C2-I-114** Three dots become an ellipsis. (carried over from 0.1)
 
@@ -1920,11 +1916,11 @@ Example 99 (generated)
 ::: compare
 
 ```carve
-pages 1--10 and a---b and a----b and git log --oneline and x --- y
+pages 1--10 and a---b and a----b and `git log --oneline` and x --- y
 ```
 
 ```html
-<p>pages 1–10 and a—b and a––b and git log --oneline and x — y</p>
+<p>pages 1–10 and a—b and a––b and <code>git log --oneline</code> and x — y</p>
 ```
 
 :::
@@ -1950,11 +1946,11 @@ Example 101 (generated)
 ::: compare
 
 ```carve
-x {--}y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g
+x -- y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g
 ```
 
 ```html
-<p>x –y and wait… really and a → b ← c ↔ d ⇒ e ⇐ f ⇔ g</p>
+<p>x – y and wait… really and a → b ← c ↔ d ⇒ e ⇐ f ⇔ g</p>
 ```
 
 :::
@@ -2106,13 +2102,13 @@ There is no fixed budget for the inline chapter.
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 1 | 0 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
-| Smart typography | 14 | 7 | 9 | 1 |
+| Smart typography | 12 | 6 | 9 | 1 |
 | The depth cap | 1 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **124** | **23** | **76** | **32** |
+| **Total** | **122** | **22** | **76** | **32** |
 
-The chapter has 124 clauses, 23 of them exceptions, and 108 examples. The clause count includes the exceptions.
+The chapter has 122 clauses, 22 of them exceptions, and 108 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
@@ -2121,7 +2117,7 @@ For comparison, counted with the rubric of the inline review (one atomic stateme
 | Carve 0.1 | about 204 | 30 |
 | CommonMark 0.31.2 | about 80 | 6 |
 | Djot | about 50 | 2 |
-| This chapter | 121 | 23 |
+| This chapter | 119 | 22 |
 
 The numbers are not like for like. Several clauses here join two or three atomic statements, as the first draft of the block chapter did, so a strict recount lands higher. Carve also has about 35 inline constructs against 20 in Djot and 11 in CommonMark.
 

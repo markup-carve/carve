@@ -35,8 +35,7 @@
     { "source": "<=>", "replaced": true, "kind": "left_right_double_arrow", "glyph": "⇔", "clauses": ["C2-I-115"] },
     { "source": "==>", "replaced": true, "kind": "rightwards_double_arrow", "glyph": "⇒", "clauses": ["C2-I-115"] },
     { "source": "=>", "replaced": false, "clauses": ["C2-I-115"] },
-    { "source": ">=", "replaced": true, "kind": "greater_than_or_equal", "glyph": "≥", "clauses": ["C2-I-117"] },
-    { "source": "{--}", "replaced": true, "kind": "en_dash", "glyph": "–", "clauses": ["C2-I-113"] }
+    { "source": ">=", "replaced": true, "kind": "greater_than_or_equal", "glyph": "≥", "clauses": ["C2-I-117"] }
   ],
   "quotes": [
     { "kind": "left_double_quote", "source": "\"", "glyph": "“", "clauses": ["C2-I-104"] },
@@ -74,6 +73,6 @@
     "divisible_by_3": "em_dashes",
     "divisible_by_2": "en_dashes",
     "otherwise": "one_em_dash_then_rest_by_same_rule",
-    "clauses": ["C2-I-111", "C2-I-112", "C2-I-116"]
+    "clauses": ["C2-I-111", "C2-I-116"]
   }
 }

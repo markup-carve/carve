@@ -283,13 +283,13 @@ Written:
 
 **C2-W-095** A sigil is tested for forming: `@` and `#` before a name after a boundary (C2-I-090), `:name:`, `:name[`, `<` before a URL, an email address or `/#`, a backtick run, `$` before a backtick run, and the runs that smart typography replaces where the tree holds text and not a smart-punctuation node.
 
-**C2-W-096** An opening brace is tested for forming an attribute block, a braced comment, an editorial comment, `{--}` or a braced opener (C2-I-043).
+**C2-W-096** An opening brace is tested for forming an attribute block, a braced comment, an editorial comment or a braced opener (C2-I-043).
 
 **C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012).
 
 **C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
 
-**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088); a run in the position of a command-line flag stays bare, because it is text as typed (C2-I-112, C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
+**C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
 
 Example 1 (generated)
 
