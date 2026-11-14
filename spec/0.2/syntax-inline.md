@@ -147,7 +147,7 @@ Example 5 (unverified)
 
 **C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
 
-**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1)
+**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: `a --\ x` holds an en dash, since the run stands before whitespace (C2-I-112), and `*\ a*` holds no strong.
 
 **C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
 
