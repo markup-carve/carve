@@ -1861,7 +1861,7 @@ Example 95 (generated)
 ```
 
 ```html
-<p>’tis the season and ‘em’ and rock ‘n’ roll and ‘I told ’em so,’ he said.</p>
+<p>’tis the season and ‘em’ and rock ’n’ roll and ‘I told ’em so,’ he said.</p>
 ```
 
 :::

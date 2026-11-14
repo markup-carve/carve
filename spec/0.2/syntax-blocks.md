@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, tildes, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet or an ordered marker with the value 1, which are `1`, `a`, `A`, `i`, `I` and the bare dot: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column, or indented past the marker of any item, description or footnote body that encloses the paragraph, also when no list is open there yet. A marker that would open a new list this way, and not continue an open one, interrupts only when it is a bullet, the bare dot, or an ordered marker whose value is 1 in any spelling, such as `1`, `01`, `a`, `A`, `i` and `I`: in `- We moved in` followed by `  2024. It was good`, the second line is a lazy line. A nested list that starts at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -1161,7 +1161,7 @@ Example 51 (unverified)
 
 ## Nested lists and the marker line
 
-**C2-B-056** A list marker with content, indented past the marker of an item, a description or a footnote body, opens a nested list there without a blank line.
+**C2-B-056** A list marker with content, indented past the marker of an item, a description or a footnote body, opens a nested list there without a blank line, when it is a bullet or has the value 1 (C2-B-015): below `- a`, the line `  7. b` is a lazy line.
 
 **C2-B-057** An item may start with any block: the block opener stands directly after the marker, on the marker line.
 
