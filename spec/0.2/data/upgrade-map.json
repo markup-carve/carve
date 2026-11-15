@@ -2010,6 +2010,16 @@
       "meaning02": "C2-B-147 and C2-B-197 read the escaped caret as literal paragraph text following the image.",
       "toolEntry": "U-225",
       "silent": true
+    },
+    {
+      "id": "U-226",
+      "kind": "rewrite",
+      "group": "display math line before a caption",
+      "from": "$$`x\n^ p\n",
+      "to": "$$`x`\n^ p\n",
+      "meaning02": "C2-B-147 and C2-B-198 attach the caption after the display math span closes on its line.",
+      "toolEntry": "U-226",
+      "silent": true
     }
   ],
   "tree": [

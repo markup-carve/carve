@@ -478,6 +478,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-223 | Under C2-B-087 and C2-B-076, `[^f]: :: t` then a two-space `: | a |` keeps the table in the note's description body in 0.1. A one-space caret line stays outside the note. **SILENT** | The same 0.2 lines can fold into the term and lose the outside caret paragraph. | Indent the description mark to the note content column, and move the outside caret to column zero; rewrite |
 | U-224 | Under C2-B-108, C2-B-110, and C2-B-114, a percent fence in `> %%%` then `> secret` then an unmarked closer hides the secret and leaves `after` outside the quote in 0.1. **SILENT** | The same 0.2 source can retain `after` in the quote because the fence ends at a different container boundary. | Review the fence boundary; no preserving spelling has been verified for this shape; report |
 | U-225 | Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1. **SILENT** | The same 0.2 source can take the caret as a caption mark. | Escape the caret so the image and caret remain in one paragraph; escape |
+| U-226 | Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1. **SILENT** | The same 0.2 source keeps the caret inside the unclosed math span. | Close the code span on its math line, or remove a trailing invisible comment after a closed span, so the caption attaches; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
