@@ -2070,6 +2070,16 @@
       "meaning02": "C2-I-033 and C2-H-003 retain the escaped double quote inside the quoted ID value.",
       "toolEntry": "U-231",
       "silent": true
+    },
+    {
+      "id": "U-232",
+      "kind": "rewrite",
+      "group": "table row after description body",
+      "from": ":: t\n: para\n | a |\n",
+      "to": ":: t\n: para\n| a |\n",
+      "meaning02": "C2-B-069 and C2-B-076 put the dedented table outside the description, preserving the 0.1 HTML.",
+      "toolEntry": "U-232",
+      "silent": true
     }
   ],
   "tree": [
