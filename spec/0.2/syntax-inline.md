@@ -19,7 +19,7 @@ Terms:
 - *Leaf* and *container* have the meaning of the block chapter. Inline content is read in a paragraph, a heading, a term, a caption, a line of a line block and each cell of a table row.
 - The *content* is the text of one of these, as the block pass left it. A table row is split into cells first, and each cell has a content of its own. Every rule below works on one content.
 - A *form* is one spelling of a construct, such as the braced form of emphasis. The `form` field of a reference node is written as a code word.
-- A *word character* is a Unicode letter or number (general category L or N).
+- A *word character* is a Unicode letter or number (general category L or N, of the version C2-I-127 pins).
 - *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104, C2-I-106, C2-I-109), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
 - Two things are *glued* when no character stands between them.
 - An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-005.
@@ -138,6 +138,24 @@ Example 5 (unverified)
 
 ```html
 <p><strong>a [b</strong> c] d</p>
+```
+
+:::
+
+**C2-I-127** Every general category and every character property that a clause of the 0.2 documents names is that of Unicode 18.0.0, whatever Unicode version the host runtime has. `data/unicode-categories.json` lists the code points of the categories L, M, N and Cf of that version, generated from its `UnicodeData.txt`; a code point that Unicode 18.0.0 leaves unassigned is in none of them. The display width of the writer reads the same version (C2-W-119).
+
+U+3D000 is a letter that Unicode 18.0.0 assigned. The star behind it does not open, so no strong span forms (C2-I-047, C2-I-127).
+
+Example 110 (unverified)
+
+::: compare
+
+```carve
+𽀀*𰨌*
+```
+
+```html
+<p>𽀀*𰨌*</p>
 ```
 
 :::
@@ -2104,7 +2122,7 @@ There is no fixed budget for the inline chapter.
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 9 | 0 | 4 | 1 |
+| Preliminaries | 10 | 0 | 4 | 2 |
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 1 | 4 | 0 |
 | Math spans | 2 | 0 | 2 | 0 |
@@ -2127,9 +2145,9 @@ There is no fixed budget for the inline chapter.
 | The depth cap | 2 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **124** | **22** | **73** | **36** |
+| **Total** | **125** | **22** | **73** | **37** |
 
-The chapter has 124 clauses, 22 of them exceptions, and 109 examples. The clause count includes the exceptions.
+The chapter has 125 clauses, 22 of them exceptions, and 110 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

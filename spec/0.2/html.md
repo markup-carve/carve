@@ -191,7 +191,7 @@ Example 4 (generated)
 
 **C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII, C2-H-146 is applied again, and the result is lowered as with `lower`. The transliteration table, and what it does with a character it cannot map, belong to the host. An id under `ascii` is outside conformance.
 
-**C2-H-148** A result whose first character is a Unicode number (general category N, not only an ASCII digit) gets the prefix `s-`, and an empty result becomes `s`. This is the slug. A duplicate slug then takes its suffix (C2-H-024), so the suffix follows the prefix: two headings `1` give `s-1` and `s-1-2`.
+**C2-H-148** A result whose first character is a Unicode number (general category N, not only an ASCII digit) gets the prefix `s-`, and an empty result becomes `s`. The category is that of the pinned Unicode version (C2-I-127). This is the slug. A duplicate slug then takes its suffix (C2-H-024), so the suffix follows the prefix: two headings `1` give `s-1` and `s-1-2`.
 
 Example 24 (generated)
 

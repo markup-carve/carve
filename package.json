@@ -11,6 +11,7 @@
     "spec:write": "node scripts/spec-source.mjs --write",
     "spec:check": "node scripts/spec-source.mjs --check && node scripts/grammar-character-check.mjs",
     "spec2:data": "node scripts/spec2-data-check.mjs",
+    "spec2:unicode": "node scripts/spec2-unicode.mjs --check",
     "bench:inline": "node scripts/bench-inline-pairing.mjs",
     "spec:rules:write": "node scripts/spec-rule-index.mjs --write",
     "rules:coverage": "node scripts/rule-coverage.mjs",

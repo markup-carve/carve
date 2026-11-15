@@ -51,6 +51,7 @@ const FILES = {
   'url-policy': { probe_removes: ['name', 'name'], dropped_attributes: ['name', 'name'], url_list_attributes: ['name', 'name'], style_patterns: ['text', 'text'], profiles: ['name', 'name'] },
   'task-states': { states: ['char', 'char'] },
   'upgrade-map': { source: ['id', 'id'], tree: ['id', 'id'] },
+  'unicode-categories': { categories: ['name', 'name'] },
 }
 
 const errors = []
@@ -237,6 +238,17 @@ for (const row of data['inline-braces']?.order ?? []) {
 for (const atom of data['inline-scan']?.never_fail ?? []) need(atoms, atom, 'inline-scan.json never_fail', 'row of inline-atoms.json')
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
+
+// The Unicode ranges are generated (scripts/spec2-unicode.mjs --check compares them with the
+// source); here only their order is checked, so the check runs without the network.
+for (const row of data['unicode-categories']?.categories ?? []) {
+  let last = -2
+  for (const range of row.ranges) {
+    const [from, to = from] = range.split('-').map(part => Number.parseInt(part, 16))
+    if (from > to || from <= last + 1) fail(`unicode-categories.json ${row.name}: "${range}" is out of order, overlaps or touches the range before`)
+    last = to
+  }
+}
 
 // The non-normative guide and the machine-readable map must enumerate the same changes.
 const guidePath = join(root, 'spec/0.2/UPGRADING.md')

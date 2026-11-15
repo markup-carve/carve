@@ -8,12 +8,14 @@ on:
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'
+      - 'scripts/spec2-unicode.mjs'
       - '.github/workflows/spec2-data.yml'
   pull_request:
     branches: [next2]
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'
+      - 'scripts/spec2-unicode.mjs'
       - '.github/workflows/spec2-data.yml'
 
 permissions:
@@ -29,3 +31,5 @@ jobs:
         with:
           node-version: 24
       - run: npm run spec2:data
+      # Fetches UnicodeData.txt of the pinned version and regenerates the category ranges.
+      - run: npm run spec2:unicode
