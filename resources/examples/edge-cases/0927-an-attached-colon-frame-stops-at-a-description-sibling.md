@@ -10,8 +10,7 @@ A colon frame attached to a description body ends at its next sibling, even when
 
 ```carve
 :: t
-: +
-:::
+: :::
 : b
 :::
 ```
@@ -33,8 +32,7 @@ A colon frame attached to a description body ends at its next sibling, even when
 
 ```carve
 :: t
-: +
-:::
+: :::
 :: u
 : v
 ```

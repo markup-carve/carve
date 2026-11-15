@@ -56,7 +56,8 @@ A `+` past its term refuses a follower at column zero, and the sibling still ope
 
 `````carve
 :: t
- : +
+: {% %}
+
 l
  : b
 `````

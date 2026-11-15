@@ -10,7 +10,8 @@ A first-block `: +` written past its term refuses a block at column zero and rea
 
 ```carve
 :: t
- : +
+: {% %}
+
 l
 : b
 ```
@@ -30,7 +31,8 @@ l
 
 ```carve
 :: t
- : +
+: {% %}
+
 > q
 : b
 ```
@@ -50,7 +52,8 @@ l
 
 ```carve
 :: t
-  :  +
+: {% %}
+
 l
 : b
 ```
@@ -118,7 +121,8 @@ l
 
 ```carve
 :: t
- : +
+: {% %}
+
 l
 : b
   p

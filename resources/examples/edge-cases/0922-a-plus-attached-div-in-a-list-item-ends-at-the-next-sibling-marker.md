@@ -36,9 +36,8 @@ An admonition with body text under an ordered item reads the same.
 :::::: compare
 
 `````carve
-1. +
-::: note
-x
+1. ::: note
+   x
 2. b
 :::
 `````

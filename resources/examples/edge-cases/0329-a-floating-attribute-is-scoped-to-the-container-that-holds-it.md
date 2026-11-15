@@ -78,7 +78,7 @@ either. The heading stays outside and stays unclassed:
 
 ```carve
 - a
-  {.k}
+
 # H
 ```
 

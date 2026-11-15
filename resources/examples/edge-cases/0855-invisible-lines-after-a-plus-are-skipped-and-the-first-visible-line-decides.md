@@ -105,11 +105,11 @@ text
 ::: compare
 
 ```carve
-- +
-%%%
-c
-%%%
-text
+- {% %}
+  %%%
+  c
+  %%%
+  text
 ```
 
 ```html

@@ -150,11 +150,11 @@ Caption variant 6
 ::: compare
 
 ````carve
-- +
-```
-x
-```
-^ cap
+- {% %}
+  ```
+  x
+  ```
+  ^ cap
 - c
 ````
 

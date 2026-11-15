@@ -2030,11 +2030,11 @@ The **closer is column-exact too**. A closing run indented past the opener is no
 ::: compare
 
 `````carve
-```
+````
 code
   ```
 still code
-```
+````
 `````
 
 `````html
@@ -3899,8 +3899,7 @@ the list form `- +` provides. Write `: \+` for a literal `+`.
 
 ```carve
 :: term
-: +
-> the whole definition is this quote
+: > the whole definition is this quote
 ```
 
 ```html

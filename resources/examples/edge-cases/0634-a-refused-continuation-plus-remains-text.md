@@ -243,7 +243,8 @@ tail
 ````carve
 - foo
   - [ ] task
-  +
+
+  {% %}
   - x
 ````
 

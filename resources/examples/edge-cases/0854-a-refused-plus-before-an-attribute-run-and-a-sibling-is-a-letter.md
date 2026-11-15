@@ -72,7 +72,8 @@ A description reads a `: ` sibling behind the run the same way (CARVE-P9-067).
 
 ```carve
 :: t
-: +
+: {% %}
+
 {x}
 : b
 ```

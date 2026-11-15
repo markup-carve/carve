@@ -109,8 +109,8 @@ para</p></blockquote>
 
 `````carve
 > > q
-> +
-> > r
+> >
+> > > r
 `````
 
 ```html
@@ -148,8 +148,8 @@ para</p></blockquote>
 
 `````carve
 > > - a
-> +
-> para
+> >
+> > para
 `````
 
 ```html

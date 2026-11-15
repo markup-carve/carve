@@ -9,9 +9,8 @@ An unclosed colon body attached by a marker-line `+` keeps a later `+` at the it
 :::::: compare
 
 `````carve
-- +
-::: note
-x
+- ::: note
+  x
 +
 zq
 `````

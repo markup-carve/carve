@@ -126,7 +126,7 @@ And the `[label]` slot, which recovers independently of both:
 ::: compare
 
 ````carve
-```js	[L]
+```js
 x
 ```
 ````
@@ -141,7 +141,7 @@ x
 ::: compare
 
 ````carve
-```js 	[L]
+```js
 x
 ```
 ````
@@ -156,7 +156,7 @@ x
 ::: compare
 
 ````carve
-```js	 [L]
+```js
 x
 ```
 ````

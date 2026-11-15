@@ -9,9 +9,10 @@ A description has no list column: it is measured from its own line, even when it
 ::: compare
 
 ```carve
- :: t
-: +
- h
+:: t
+: {% %}
+
+h
 ```
 
 ```html

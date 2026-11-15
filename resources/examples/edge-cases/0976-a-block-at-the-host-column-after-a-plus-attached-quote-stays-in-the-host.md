@@ -77,8 +77,7 @@ A line without `>` that cannot fold into the quote's paragraph ends the quote (P
 
 ```carve
 :: t
-: +
-> q
+: > q
   ::: w
   :::
 ```

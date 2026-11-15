@@ -278,10 +278,9 @@ tail
 ::::: compare
 
 ````carve
-- +
-::: |
-alpha
-: z
+- ::: |
+  alpha
+  : z
 ````
 
 ````html
@@ -354,10 +353,9 @@ hidden
 ::::: compare
 
 ````carve
-- +
-```
-a
-```
+- ```
+  a
+  ```
 tail
 ````
 
@@ -402,10 +400,9 @@ a
 ::::: compare
 
 ````carve
-- +
-::: note
-inside
-:::
+- ::: note
+  inside
+  :::
 tail
 ````
 

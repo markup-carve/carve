@@ -27,7 +27,7 @@ lazy</p>
 ```carve
 
 
-  [^b]: > q
+[^b]: > q
 lazy
 ```
 

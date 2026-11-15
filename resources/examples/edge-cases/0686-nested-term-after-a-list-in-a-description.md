@@ -8,7 +8,7 @@ A term at the description's content column starts a nested definition list after
 :: term
 : - a
 
- :: sub
+:: sub
 
 : def
 ```

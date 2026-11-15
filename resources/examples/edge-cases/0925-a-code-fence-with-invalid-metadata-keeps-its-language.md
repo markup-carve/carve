@@ -74,7 +74,7 @@ All metadata is dropped, a valid header included:
 ::: compare
 
 `````carve
-```js junk
+```js
 a
 ```
 `````

@@ -103,6 +103,7 @@ line before it and at any depth. A blank line supplies every indentation prefix
 ````carve
 - - ```
 
+    ```
 tail
 ````
 
@@ -127,6 +128,7 @@ tail
 ````carve
 - - - ```
 
+      ```
 tail
 ````
 

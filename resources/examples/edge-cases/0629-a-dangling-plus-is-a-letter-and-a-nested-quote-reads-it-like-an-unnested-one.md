@@ -75,8 +75,8 @@ para
 
 ````carve
 > > q
-> +
-> para
+> >
+> > para
 ````
 
 ```html

@@ -59,8 +59,7 @@ A caption line is no lazy continuation (PART 0 S4). At the host's content column
 
 ```carve
 :: t
-: +
-> q
+: > q
   ^ cap
 ```
 

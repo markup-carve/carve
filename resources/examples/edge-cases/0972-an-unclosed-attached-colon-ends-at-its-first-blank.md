@@ -90,8 +90,7 @@ page: edge-lists
 ::::: compare
 
 ```carve
-- +
-::: |
+- ::: |
 
   ::: x
   :::
@@ -114,8 +113,7 @@ page: edge-lists
 ::::: compare
 
 ```carve
-- +
-::: x
+- ::: x
 
   a
   :::

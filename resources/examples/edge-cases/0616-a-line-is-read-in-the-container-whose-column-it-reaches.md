@@ -112,7 +112,8 @@ A marker below every content column folds into the item (PART 9 §24 C3).
 ````carve
 :: t
 : - para
- - li
+
+- li
 ````
 
 ```html
@@ -372,7 +373,7 @@ A thematic break below a description body's column folds into its paragraph (car
 ````carve
 :: t
 : para
- ---
+***
 ````
 
 ```html

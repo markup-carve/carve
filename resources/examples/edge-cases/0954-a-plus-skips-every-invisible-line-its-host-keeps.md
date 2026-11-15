@@ -11,11 +11,11 @@ A `%%%` span at the item's content column is a line the item keeps, so the `+` s
 ::: compare
 
 ````carve
-- +
+- {% %}
   %%%
   c
   %%%
-text
+  text
 ````
 
 ```html
@@ -31,9 +31,8 @@ An attribute line there labels the attached block:
 ::: compare
 
 ````carve
-- +
-  {x}
-text
+- {x}
+  text
 ````
 
 ```html

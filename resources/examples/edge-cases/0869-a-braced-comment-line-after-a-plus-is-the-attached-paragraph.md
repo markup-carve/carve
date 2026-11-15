@@ -9,9 +9,9 @@ PART 9 §17 L3 and CARVE-P9-042 (carve#4544, carve#4799). The section name preda
 :::::: compare
 
 `````carve
-- +
-{% c %}
-# H
+- {% %}
+
+  # H
 `````
 
 ```html

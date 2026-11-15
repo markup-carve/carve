@@ -118,9 +118,8 @@ after
 
 ````carve
 - d
-  - +
-  :::
-  in
+  - :::
+    in
 after
 ````
 

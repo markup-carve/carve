@@ -33,8 +33,9 @@ The marker is refused, and the line folds into the `+` in the `dd`.
 
 ```carve
 :: t
-:  +
- flush
+: {% %}
+
+flush
 ```
 
 ```html
@@ -73,8 +74,9 @@ down to the container's floor.
 
 ```carve
 :: t
-:  +
-  flush
+: {% %}
+
+flush
 ```
 
 ```html

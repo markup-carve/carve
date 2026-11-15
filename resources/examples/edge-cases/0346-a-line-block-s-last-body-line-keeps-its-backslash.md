@@ -96,7 +96,7 @@ and dropped it under `a \`.
 ```carve
 ::: |
 a \
-%% c
+
 :::
 ```
 

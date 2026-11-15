@@ -178,7 +178,7 @@ open either:
 ````carve
 ::: note
 - para
-  {#x}
+
 ```
 code
 ::::

@@ -86,9 +86,9 @@ Put the marker and a lone `+` on the same line — `- +` — to start an item di
 ::: compare
 
 ````carve
-- +
-| a | b |
-| c | d |
+- {% %}
+  | a | b |
+  | c | d |
 - next
 ````
 

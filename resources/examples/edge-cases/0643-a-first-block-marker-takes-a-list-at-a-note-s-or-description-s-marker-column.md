@@ -36,8 +36,7 @@ A description takes the list
 
 `````carve
 :: t
-: +
-- a list
+: - a list
 `````
 
 `````html

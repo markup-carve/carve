@@ -33,8 +33,7 @@ PART 0 S4 and CARVE-P9-067 (carve#4385). The div holds no paragraph, so the unpr
 
 `````carve
 :: t
-: +
-> :::
+: > :::
   x
 `````
 

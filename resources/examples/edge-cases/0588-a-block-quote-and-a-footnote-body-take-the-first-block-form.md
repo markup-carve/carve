@@ -105,10 +105,9 @@ A fence under `[^a]: +` is the note's body.
 ::: compare
 
 ````carve
-[^a]: +
-```
-x
-```
+[^a]: ```
+  x
+  ```
 
 see[^a]
 ````
