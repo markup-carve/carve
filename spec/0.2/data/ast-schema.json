@@ -11940,8 +11940,7 @@
           "type": "string"
         },
         "numberPrefix": {
-          "type": "string",
-          "$comment": "resolution result"
+          "type": "string"
         },
         "attrs": {
           "type": "object",

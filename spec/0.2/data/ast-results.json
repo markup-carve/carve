@@ -90,9 +90,6 @@
     "math": [
       {
         "field": "number"
-      },
-      {
-        "field": "numberPrefix"
       }
     ],
     "mention": [],
