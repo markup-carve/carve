@@ -430,7 +430,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-179 | A fence after a description mark ends at the description boundary under C2-B-072,C2-B-078,C2-B-109 **SILENT** | :: t ⏎ : &#96;&#96;&#96; ⏎  y | :: t ⏎ : &#96;&#96;&#96; ⏎ y; rewrite |
 | U-180 | An indented description mark below a term is term text under C2-B-067,C2-B-069 **SILENT** | :: t ⏎  : b |  :: t ⏎  : b; rewrite |
 | U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
-| U-182 | A braced inline opener inside a bracket is scanned as inline markup under C2-I-044,C2-I-050 **SILENT** | [{^]^} | [\{^]^}; escape |
+| U-182 | Under C2-I-044 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
 | U-183 | Under C2-B-147 and C2-B-197, `![][]` followed by `^ a` stays paragraph text in 0.1. Two consecutive caret lines make two paragraphs. **SILENT** | The same 0.2 source writes a figure, or keeps both caret lines in one paragraph after escaping the image. | Escape the image opener as `\![][]`. Insert a blank line before the second caret line when present; escape |
 | U-184 | A nested list opener or pending attribute changes item ownership under C2-B-056,C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
 | U-185 | An equals marker alone in a table row starts a header section under C2-B-179,C2-B-182 **SILENT** | \|=\| | \|\=\|; escape |
