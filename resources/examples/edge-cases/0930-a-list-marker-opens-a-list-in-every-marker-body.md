@@ -61,7 +61,9 @@ q[^a]
 ::: compare
 
 ```carve
-- [^q]: note
+[^q]: note
+
+- {% %}
   * child
 
 r[^q]

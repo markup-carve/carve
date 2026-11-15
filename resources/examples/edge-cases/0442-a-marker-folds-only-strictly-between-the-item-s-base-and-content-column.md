@@ -28,8 +28,10 @@ definition is metadata.
 ::: compare
 
 ```carve
+[t]: /t
+
 - lead
-- [t]: /t
+- {% %}
 
 See [t][].
 ```
@@ -71,8 +73,10 @@ Column 2, the content column. The marker nests and its definition registers.
 ::: compare
 
 ```carve
+[t]: /t
+
 - lead
-  - [t]: /t
+  - {% %}
 
 See [t][].
 ```
@@ -96,8 +100,10 @@ edge.
 ::: compare
 
 ```carve
+[t]: /t
+
 -   lead
-- [t]: /t
+- {% %}
 
 See [t][].
 ```
@@ -161,8 +167,10 @@ Column 4, the content column. The marker nests and the definition registers.
 ::: compare
 
 ```carve
+[t]: /t
+
 -   lead
-    - [t]: /t
+    - {% %}
 
 See [t][].
 ```
@@ -187,8 +195,10 @@ metadata.
 ::: compare
 
 ```carve
+[t]: /t
+
 - lead
-1. [t]: /t
+1. {% %}
 
 See [t][].
 ```

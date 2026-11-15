@@ -142,7 +142,9 @@ belongs to the inner item. A comment cannot reopen a definition-only item.
 :::: compare
 
 ```carve
-* * [d]: u
+[d]: u
+
+* * {% %}
     :
 ```
 

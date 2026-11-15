@@ -2653,7 +2653,9 @@ See [it][ref].
 ::: compare
 
 ```carve
-- [ref]: /url
+[ref]: /url
+
+- {% %}
 
 See [it][ref].
 ```

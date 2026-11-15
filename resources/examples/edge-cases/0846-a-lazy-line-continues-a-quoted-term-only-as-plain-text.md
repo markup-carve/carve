@@ -211,9 +211,11 @@ A term is one line (carve#4861). A line that misses the term's quote or footnote
 :::: compare
 
 ``````carve
+[^n]: :: t
+
 r[^n]
 
-- [^n]: :: t
+- {% %}
   - x
 ``````
 

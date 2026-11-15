@@ -44,7 +44,9 @@ PART 9 §4 and CARVE-P9-013 (carve#4639). A line an accepted `+` reads inside it
 :::::: compare
 
 `````carve
-- [r]: /u
+[r]: /u
+
+- {% %}
 
   Body.
 - x

@@ -42,7 +42,7 @@ an interior pipe remains part of the unclosed literal.
 ::: compare
 
 ```carve
-| a !`b | c d |
+| a !`b | c d` |
 ```
 
 ```html

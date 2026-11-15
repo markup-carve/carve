@@ -151,7 +151,9 @@ r[^q]
 ::: compare
 
 ```carve
-- [^q]: note
+[^q]: note
+
+- {% %}
   * child
 
 r[^q]
@@ -181,7 +183,9 @@ r[^q]
 ::: compare
 
 ```carve
-- [^q]: note
+[^q]: note
+
+- {% %}
 
   * child
 

@@ -36,9 +36,11 @@ Definition inside a list item:
 ::: compare
 
 ```carve
+[^a]: note body
+
 See [^a].
 
-- [^a]: note body
+- {% %}
 ```
 
 ```html

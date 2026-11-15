@@ -9,7 +9,7 @@ CARVE-P2-019 rule 3 keeps the final `\|` verbatim in an open code span while its
 ::: compare
 
 ```carve
-|`\| |
+|`\|` |
 ```
 
 ```html
@@ -27,7 +27,7 @@ The same closer stays in the last cell of a wider row.
 ::: compare
 
 ```carve
-| a | ``b\| |
+| a | ``b\|`` |
 ```
 
 ```html

@@ -8,7 +8,7 @@ row's own closing pipe still closes the row, and the run stops there
 ::: compare
 
 ```carve
-| a `b | c d |
+| a `b | c d` |
 ```
 
 ```html
@@ -26,7 +26,7 @@ It is a real row, so the table continues below it:
 ::: compare
 
 ```carve
-| a `b | c d |
+| a `b | c d` |
 | e | f |
 ```
 
@@ -47,7 +47,7 @@ The same under a header row, since nothing here depends on the row's position:
 
 ```carve
 |= h |
-| a `b | c |
+| a `b | c` |
 ```
 
 ```html
@@ -69,7 +69,7 @@ behaves the same:
 ::: compare
 
 ```carve
-| a ``b | c |
+| a ``b | c`` |
 ```
 
 ```html

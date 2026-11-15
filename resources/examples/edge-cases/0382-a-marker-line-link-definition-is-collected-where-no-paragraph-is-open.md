@@ -10,8 +10,10 @@ structurally present and renders empty.
 ::: compare
 
 ```carve
+[d]: u
+
 [f]: t
-* [d]: u
+* {% %}
 
 [go][d]
 ```
