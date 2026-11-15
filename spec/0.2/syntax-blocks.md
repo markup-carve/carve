@@ -4464,7 +4464,7 @@ title: x
 
 **C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
 
-**C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment.
+**C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment. The comment stands in the tree as a comment-only line directly below the row would (C2-A-086).
 
 **C2-B-168** A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
 
@@ -5143,6 +5143,28 @@ nx</td><td>y</td></tr>
 
 :::
 
+A trailing comment after a row attribute and after a bare closing pipe leaves the line a row (C2-B-167). The comments are in the tree and write nothing.
+
+Example 235 (unverified)
+
+::: compare
+
+```carve
+| 1 | 2 |{.r} %% note
+| 3 | 4 | %% n2
+```
+
+```html
+<table>
+  <tbody>
+    <tr class="r"><td>1</td><td>2</td></tr>
+    <tr><td>3</td><td>4</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 ## The fallback rule
 
 A line that is not a valid opener is text (C2-B-011).
@@ -5289,10 +5311,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 34 | 2 | 20 | 5 |
+| Tables | 34 | 2 | 20 | 6 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **15** | **169** | **65** |
+| **Total** | **226** | **15** | **169** | **66** |
 
 The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

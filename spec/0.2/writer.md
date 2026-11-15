@@ -213,6 +213,8 @@ Written:
 | café      | 12.5     | hot  |
 ```
 
+**C2-W-135** A `comment` among the rows of a table, or after its last row, is written as a comment-only line at its place (C2-W-059). The trailing line comment of a row reads to the same tree as that line (C2-A-086), so the writer does not write the trailing form: `| 1 | 2 | %% note` is written as `| 1 | 2 |` and, on the next line, `%% note`.
+
 ## Canonical forms: inline
 
 **C2-W-069** Emphasis is written with `/` and strong with `*`. Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written: `{/usr/local/}`.
@@ -815,12 +817,12 @@ One point is open.
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 27 | 4 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
-| Canonical forms: tables | 10 | 0 | 1 | 0 |
+| Canonical forms: tables | 11 | 0 | 1 | 0 |
 | Canonical forms: inline | 16 | 1 | 0 | 0 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **134** | **7** | **5** | **2** |
+| **Total** | **135** | **7** | **5** | **2** |
 
-The document has 134 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 135 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
