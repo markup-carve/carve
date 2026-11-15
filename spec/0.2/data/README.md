@@ -27,7 +27,7 @@ The files are normative together with the clauses they cite. Every row has a `cl
 | `smart-punctuation.json` | the runs that smart typography replaces |
 | `attribute-block.json` | the grammar of an attribute block |
 | `url-policy.json` | the characters the scheme test removes, the attributes the renderer drops or tests, and the four profiles |
-| `options.json` | the 19 options |
+| `options.json` | the 20 options |
 | `lint-rules.json` | every diagnostic code |
 | `escape-contexts.json` | the cases the writer tests for an escape |
 | `extensions.json` | standard extension names, matchers, props and slots |

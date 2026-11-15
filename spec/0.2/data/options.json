@@ -21,7 +21,7 @@
     {
       "name": "headingIds",
       "kind": "resolution",
-      "read_by": "render",
+      "read_by": "resolve",
       "type": "enum",
       "values": ["off", "keep-case", "lower", "ascii"],
       "default": "keep-case",
