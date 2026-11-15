@@ -2220,6 +2220,16 @@
       "meaning02": "C2-I-087, C2-I-044, and C2-B-091 keep the unresolved footnote attribute literal while the heading receives its authored id from the line above.",
       "toolEntry": "U-246",
       "silent": true
+    },
+    {
+      "id": "U-247",
+      "kind": "rewrite",
+      "group": "table row outside preceding ordered item",
+      "from": "::: note\n10. para\n   | t |\n```\ncode\n::::\n:::\nafter *b*\n",
+      "to": "::: note\n10. para\n| t |\n```\ncode\n::::\n:::\nafter *b*\n",
+      "meaning02": "C2-B-025 and C2-B-026 put the table at the admonition column, outside the ordered item.",
+      "toolEntry": "U-247",
+      "silent": true
     }
   ],
   "tree": [
