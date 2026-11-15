@@ -474,6 +474,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-219 | Under C2-B-109, `:::` followed by `::::` opens a nested div in 0.1. **SILENT** | The longer run closes the shorter div in 0.2. | Review the div structure; no preserving spelling has been verified for this shape; report |
 | U-220 | Under C2-B-095, C2-B-197, and C2-I-039, `{.outer k=one}` before `![a](b){.inner k=two}` writes a block image with classes `outer inner` and key `k=two` in 0.1. **SILENT** | The same 0.2 source loses the outer class. | Write `![a](b){.outer k=one}{.inner k=two}` so the attributes merge in source order; rewrite |
 | U-221 | Under C2-I-068, a link with a quoted title crossing a line break writes a link whose HTML title contains that line break in 0.1. **SILENT** | The current 0.2 parser writes the source as paragraph text. | Review the title; no preserving 0.2 spelling has been verified, and the clause does not decide whether the wrap is valid; report |
+| U-222 | Under C2-B-056 and C2-B-076, `- one` then an indented `::: note` leaves the div outside the item in 0.1. A single-space line after a closed div in a description can likewise stand outside the description. **SILENT** | The same 0.2 lines keep the div or following text inside the preceding container. | Move the div opener or following text to column zero when the complete HTML check passes; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
