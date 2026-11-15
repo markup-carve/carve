@@ -488,6 +488,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-233 | Under C2-I-035 and C2-I-104, `:a:"q"` then `:long-name:'q'` writes `:a:“q”` and `:long-name:‘q’` in 0.1. **SILENT** | The same 0.2 source can write closing quotes at both openings. | Write literal curly opening quotes where the complete HTML check confirms the old result; rewrite |
 | U-234 | Under C2-I-079 and C2-I-085, `[\\^][]` writes a literal backslash and caret in 0.1. **SILENT** | The same 0.2 source drops the backslash while folding the unresolved label. | Add two backslashes to the run when the complete HTML check confirms the old result; rewrite |
 | U-235 | Under C2-B-081 and C2-B-083, `* * [d]: u` then a two-space `:` writes an empty nested item and a colon outside it in 0.1. **SILENT** | The same 0.2 source keeps the definition and colon as item text. | Write an empty comment in the nested item and a blank line before the colon when the complete HTML check passes; rewrite |
+| U-236 | Under C2-B-067, C2-B-069, and C2-B-076, `:: t` then ` :: u` then `: d` then ` : e` writes two terms and two descriptions in 0.1. A quote after a note-hosted description can likewise stand beside the description. **SILENT** | The same 0.2 source folds the indented marks or quote into the preceding description content. | Move the sibling marks or quote to their owning column when the complete HTML check passes; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 

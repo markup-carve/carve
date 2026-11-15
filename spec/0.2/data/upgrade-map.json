@@ -2110,6 +2110,16 @@
       "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text; an empty comment retains the old empty item while the blank line keeps the colon outside it.",
       "toolEntry": "U-235",
       "silent": true
+    },
+    {
+      "id": "U-236",
+      "kind": "rewrite",
+      "group": "compound description sibling columns",
+      "from": ":: t\n :: u\n: d\n : e\n",
+      "to": ":: t\n:: u\n: d\n: e\n",
+      "meaning02": "C2-B-067 and C2-B-069 recognize sibling description marks at their owning column; a note-hosted quote likewise moves to the description sibling column.",
+      "toolEntry": "U-236",
+      "silent": true
     }
   ],
   "tree": [
