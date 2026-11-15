@@ -4,6 +4,7 @@
 
 - **High priority: Missing Content-Security-Policy (CSP) header**
   - The API response does not include a `Content-Security-Policy` header.
+
   - Check the response with:
 
     ```sh
