@@ -78,6 +78,8 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-034** An extension renderer is trusted host code. It returns an HTML string, which the host writes unchanged. The renderer uses the host helpers of C2-X-033 to apply escaping, the URL policy and the profile to its output. A host that renders untrusted documents registers only renderers it trusts. A structured output interface is left to a later version.
 
+**C2-X-050** A host transform or renderer exception does not escape the engine. When a transform throws, the engine retains the claimed core node and reports a diagnostic that names the extension. When a renderer throws or returns a value that is not a string, the engine renders the extension fallback and reports a diagnostic that names the extension. The size of a renderer's HTML string is the host's responsibility.
+
 **C2-X-035** With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`.
 
 **C2-X-036** Every profile restriction and URL policy check applies inside slots and fallback.
@@ -260,7 +262,7 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | --- | ---: |
 | Registration and matching | 14 |
 | Transformation and carriage | 17 |
-| Resolution, rendering and equality | 7 |
+| Resolution, rendering and equality | 8 |
 | Standard extension: tabs | 10 |
 | Writing consistency | 1 |
-| **Total** | **49** |
+| **Total** | **50** |
