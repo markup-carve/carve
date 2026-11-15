@@ -2038,7 +2038,7 @@ Example 111 (unverified)
 
 ## The depth cap
 
-**C2-I-126** A bracket opener at the depth cap is text, and its later closing bracket cannot carry an attribute block onto a span that never formed. The attribute block keeps the reading it has after that text.
+**C2-I-126** A bracket opener at the depth cap is text, and it takes part in no pairing: a later closing bracket pairs with the nearest open bracket that is not such text, or is text when there is none. So no closing bracket carries an attribute block onto a span that never formed; the attribute block keeps the reading it has after that text.
 
 **C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-190: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual. An open bracket counts one while it is open, whether or not its pair later forms a construct: an opening bracket is text when the block depth and the open brackets reach the cap. When delimiters pair, a delimiter opener is text when the block depth, the open delimiter entries and the bracket constructs around it reach the cap, and a bracket construct that would lie past the cap is text with its brackets, its tail or label as typed. For a bracket construct, a link and an image alike, the count is the block depth, the bracket constructs around it and every delimiter entry that is open on the stack where the construct opens, whether or not that entry later pairs: an entry counts as an open bracket does. So behind 197 quote marks, `- *![x](u)` and `- *[x](u)` leave the image and the link as text: the quotes, the list and the item take 199 levels, the unpaired `*` the last one.
 
@@ -2072,6 +2072,22 @@ Example 112 (unverified)
 
 ```html
 <p><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup>*[x](u) ![y](v)</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></p>
+```
+
+:::
+
+The 199 open brackets and the bracket of the extension fill the cap. The next `[` is text and pairs with nothing, so the first `]` closes the extension (C2-I-126).
+
+Example 113 (unverified)
+
+::: compare
+
+```carve
+[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[:n[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+```
+
+```html
+<p>[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[<span class="ext-n">[</span>]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]</p>
 ```
 
 :::
@@ -2174,12 +2190,12 @@ There is no fixed budget for the inline chapter.
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
 | Smart typography | 12 | 6 | 9 | 2 |
-| The depth cap | 2 | 0 | 0 | 2 |
+| The depth cap | 2 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **125** | **22** | **73** | **39** |
+| **Total** | **125** | **22** | **73** | **40** |
 
-The chapter has 125 clauses, 22 of them exceptions, and 112 examples. The clause count includes the exceptions.
+The chapter has 125 clauses, 22 of them exceptions, and 113 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
