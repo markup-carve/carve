@@ -1927,7 +1927,7 @@
       "group": "measured invisible brace comments",
       "from": "{%%}![alt](x.png)\n",
       "to": "![alt](x.png)\n",
-      "meaning02": "C2-I-036 and C2-B-147 let the image open as a block after the invisible brace comment is removed.",
+      "meaning02": "C2-I-036 and C2-B-147 let the image open as a block after an invisible comment before or after it is removed.",
       "toolEntry": "U-216",
       "silent": true
     },
@@ -1999,6 +1999,16 @@
       "to": "> %%%\n> secret\n  %%%\nafter\n",
       "meaning02": "C2-B-108, C2-B-110, and C2-B-114 give the percent fence a different container extent, which can retain after inside the quote.",
       "toolEntry": "U-224",
+      "silent": true
+    },
+    {
+      "id": "U-225",
+      "kind": "escape",
+      "group": "caption caret followed by an empty comment",
+      "from": "![alt](u)\n^ %% hidden\n",
+      "to": "![alt](u)\n\\^ %% hidden\n",
+      "meaning02": "C2-B-147 and C2-B-197 read the escaped caret as literal paragraph text following the image.",
+      "toolEntry": "U-225",
       "silent": true
     }
   ],
