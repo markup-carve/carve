@@ -2100,6 +2100,16 @@
       "meaning02": "C2-I-079 and C2-I-085 fold an unresolved reference label; extra source backslashes retain the 0.1 literal output.",
       "toolEntry": "U-234",
       "silent": true
+    },
+    {
+      "id": "U-235",
+      "kind": "rewrite",
+      "group": "nested item definition boundary",
+      "from": "* * [d]: u\n  :\n",
+      "to": "* * {% %}\n\n  :\n",
+      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text; an empty comment retains the old empty item while the blank line keeps the colon outside it.",
+      "toolEntry": "U-235",
+      "silent": true
     }
   ],
   "tree": [
