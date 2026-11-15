@@ -1760,6 +1760,16 @@
       "meaning02": "C2-B-090, C2-B-095, and C2-B-101 leave the attribute text in the item unless it is removed before the next block.",
       "toolEntry": "U-197",
       "silent": true
+    },
+    {
+      "id": "U-198",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": "{~a~>~}\n",
+      "to": "{~a~>~}\n",
+      "meaning02": "C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or deletion no spelling.",
+      "toolEntry": "U-198",
+      "silent": true
     }
   ],
   "tree": [
