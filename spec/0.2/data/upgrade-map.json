@@ -1940,6 +1940,16 @@
       "meaning02": "C2-B-082 and C2-I-036 keep the footnote resolved with an empty body when an empty brace comment replaces the old sentinel.",
       "toolEntry": "U-218",
       "silent": true
+    },
+    {
+      "id": "U-219",
+      "kind": "report",
+      "group": "longer colon run closes shorter div",
+      "from": ":::\n::::\n",
+      "to": ":::\n::::\n",
+      "meaning02": "C2-B-109 closes the shorter div with the longer bare colon run. The old source opened a nested div, and a preserving spelling has not been verified.",
+      "toolEntry": "U-219",
+      "silent": true
     }
   ],
   "tree": [
