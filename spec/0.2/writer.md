@@ -19,6 +19,8 @@ Conventions:
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
+**Exception C2-W-131** When the writer reports `structure-unspellable` or `field-unspellable` for an input, its nearest spelling may change on another pass. The report must name the lost node or field. The stability gate of C2-W-003 applies when the first pass reports no loss.
+
 **C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
 **C2-W-005** The gates outrank every per-construct clause below. Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree, and another spelling of the same construct is preferred over a different construct. Such a deviation is conformant.
@@ -68,6 +70,8 @@ Conventions:
 **C2-W-021** No line of the output holds only spaces or tabs: such a line is written empty. A line of a code block, a raw block or a comment block is data and is written as it is.
 
 **C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending. The space of a no-break space, which a backslash escapes (C2-I-011), is not such a space and is written also at the end of a line.
+
+**Exception C2-W-132** A space or tab inside an image's `alt` value is verbatim content, including one before a line break. The writer keeps it when removing it would change the value.
 
 **Exception C2-W-023** A line that ends in a line comment keeps the comment's value as it is, because a `%%` comment runs to the end of its line. The value holds no spaces at its end (C2-A-074), so no trailing space is written for it.
 
@@ -800,9 +804,9 @@ One point is open.
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| The writer and its two gates | 10 | 0 | 0 | 0 |
+| The writer and its two gates | 11 | 1 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 26 | 3 | 0 | 0 |
+| Layout | 27 | 4 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
 | Canonical forms: tables | 10 | 0 | 1 | 0 |
 | Canonical forms: inline | 16 | 1 | 0 | 0 |
@@ -810,6 +814,6 @@ One point is open.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **130** | **4** | **5** | **2** |
+| **Total** | **132** | **6** | **5** | **2** |
 
-The document has 130 clauses, 4 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 132 clauses, 6 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
