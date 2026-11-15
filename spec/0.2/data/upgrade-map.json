@@ -1980,6 +1980,16 @@
       "meaning02": "C2-B-056 and C2-B-076 place the div or follower outside its preceding item or description when written at column zero.",
       "toolEntry": "U-222",
       "silent": true
+    },
+    {
+      "id": "U-223",
+      "kind": "rewrite",
+      "group": "note-hosted description body column",
+      "from": "[^f]: :: t\n  : | a |\n ^ cap\n\n[^f]\n",
+      "to": "[^f]: :: t\n      : | a |\n^ cap\n\n[^f]\n",
+      "meaning02": "C2-B-087 and C2-B-076 keep the description body in the note while the dedented caret line remains outside it.",
+      "toolEntry": "U-223",
+      "silent": true
     }
   ],
   "tree": [
