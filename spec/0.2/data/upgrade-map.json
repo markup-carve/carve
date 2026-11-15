@@ -2200,6 +2200,16 @@
       "meaning02": "C2-B-082, C2-B-091, and C2-B-095 attach the attribute to the visible paragraph when it is written after the definition.",
       "toolEntry": "U-244",
       "silent": true
+    },
+    {
+      "id": "U-245",
+      "kind": "rewrite",
+      "group": "quoted list fence retains its blank code line",
+      "from": "> a\n>\n> 1. ```\n>    x\n>\n> y\n",
+      "to": "> a\n>\n> 1. ```\n>    x\n>\n>    ```\n> y\n",
+      "meaning02": "C2-B-108 and C2-B-110 keep the blank code line when the quoted list fence has an explicit closer.",
+      "toolEntry": "U-245",
+      "silent": true
     }
   ],
   "tree": [
