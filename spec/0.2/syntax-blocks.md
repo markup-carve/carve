@@ -2891,6 +2891,47 @@ code
 
 :::
 
+**C2-B-225** A language word, a div name and a raw format name are each the longest run of their characters (refs `language_word`, `div_name` and `raw_format` in `data/line-shapes.json`). A raw format name starts with an ASCII letter and goes on with ASCII letters, digits, `_` and `-`. The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a brace block there is an attribute block (C2-B-105) and any other character starts further words (C2-B-122). So `::: glossary>` opens the directive `glossary`, ```` ```js} ```` opens a code block with the language `js`, and ```` ```=html~ ```` opens a raw block with the format `html`, and `fence-title-syntax` reports `>`, `}` and `~`.
+
+A name ends at the first character outside its set. What is glued behind it is reported and does not stop the block (C2-B-225, C2-B-105).
+
+Example 233 (unverified)
+
+::: compare
+
+`````carve
+::: glossary>
+q
+:::
+
+```js}
+code
+```
+
+```=html~
+<b>x</b>
+```
+
+::: note{.x}
+n
+:::
+`````
+
+```html
+<div class="glossary">
+  <p>q</p>
+</div>
+<pre><code class="language-js">code
+</code></pre>
+<pre><code class="language-html">&lt;b&gt;x&lt;/b&gt;
+</code></pre>
+<aside class="admonition note" aria-label="Note">
+  <p>n</p>
+</aside>
+```
+
+:::
+
 ## Sigil divs
 
 A *sigil div* is a div whose opener names how its body is read: `::: |` is a line block, `::: \` a hard-break block, `::: >` a quote fence (C2-B-196).
@@ -5187,20 +5228,20 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 2 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 6 | 1 | 5 | 1 |
+| The fence opener and titles | 7 | 1 | 5 | 2 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 5 |
 | One-line constructs | 11 | 0 | 9 | 1 |
-| Thematic break | 2 | 0 | 3 | 2 |
+| Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 33 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **224** | **15** | **169** | **63** |
+| **Total** | **225** | **15** | **169** | **64** |
 
-The chapter has 224 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 225 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

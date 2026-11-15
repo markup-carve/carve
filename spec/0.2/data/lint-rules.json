@@ -725,7 +725,7 @@
       ],
       "message_origin": "data_file",
       "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
-      "clauses": ["C2-B-117", "C2-B-122"]
+      "clauses": ["C2-B-117", "C2-B-122", "C2-B-225"]
     },
     {
       "id": "field-unspellable",

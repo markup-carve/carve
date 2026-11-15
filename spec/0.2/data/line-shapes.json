@@ -454,7 +454,7 @@
       "file": "div-names.json",
       "chars": ["-", "0-9", "A-Z", "_", "a-z"],
       "min": 1,
-      "clauses": ["C2-B-119", "C2-B-127"]
+      "clauses": ["C2-B-119", "C2-B-127", "C2-B-225"]
     },
     { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
     { "name": "format_name", "forms": ["a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens"], "clauses": ["C2-B-164"] },
@@ -493,7 +493,7 @@
       "name": "language_word",
       "chars": ["#", "+", "-", ".", "/", "0-9", "A-Z", "_", "a-z"],
       "min": 1,
-      "clauses": ["C2-B-117"]
+      "clauses": ["C2-B-117", "C2-B-225"]
     },
     {
       "name": "letter_or_roman_number",
@@ -530,6 +530,6 @@
       "reads_escapes": false,
       "clauses": ["C2-B-117", "C2-B-119", "C2-B-120"]
     },
-    { "name": "raw_format", "opener": "=", "clauses": ["C2-B-116"] }
+    { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] }
   ]
 }
