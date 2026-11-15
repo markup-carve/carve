@@ -468,6 +468,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-212 | Under C2-B-147 and C2-B-149, `> a` then an indented `^ cap` line keeps `^ cap` as quote text in 0.1. **SILENT** | The same 0.2 source attaches `cap` as a figure caption. | Escape the caret as `\^ cap`; escape |
 | U-213 | Under C2-B-081 and C2-B-083, `See [^a].` then `- [^a]: note body` writes an empty item and resolves the footnote in 0.1. **SILENT** | The same 0.2 source prints the definition as item text and leaves the footnote unresolved. | Put `[^a]: note body` at document scope and write `- {% %}`; rewrite |
 | U-214 | Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1. **SILENT** | The same 0.2 source splits the unclosed code span into two cells. | Close the code run before the final pipe, as in \| a &#96;b \| c d&#96; \|; rewrite |
+| U-215 | Under C2-B-108, C2-B-110, and C2-B-114, `:: t` then `%%%` then `a` then `%%%` then `: body` writes one description list whose body is `body` in 0.1. **SILENT** | The same 0.2 source ends the description list before `: body`. | Remove the invisible percent fence span; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
