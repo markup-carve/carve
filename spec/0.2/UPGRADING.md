@@ -431,7 +431,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-180 | An indented description mark below a term is term text under C2-B-067,C2-B-069 **SILENT** | :: t ⏎  : b |  :: t ⏎  : b; rewrite |
 | U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
 | U-182 | A braced inline opener inside a bracket is scanned as inline markup under C2-I-044,C2-I-050 **SILENT** | [{^]^} | [\{^]^}; escape |
-| U-183 | An unresolved block-image shape still takes the following caption under C2-B-147,C2-B-197 **SILENT** | ![][] ⏎ ^ a | \![][] ⏎ ^ a; escape |
+| U-183 | Under C2-B-147 and C2-B-197, `![][]` followed by `^ a` stays paragraph text in 0.1. Two consecutive caret lines make two paragraphs. **SILENT** | The same 0.2 source writes a figure, or keeps both caret lines in one paragraph after escaping the image. | Escape the image opener as `\![][]`. Insert a blank line before the second caret line when present; escape |
 | U-184 | A nested list opener or pending attribute changes item ownership under C2-B-056,C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
 | U-185 | An equals marker alone in a table row starts a header section under C2-B-179,C2-B-182 **SILENT** | \|=\| | \|\=\|; escape |
 | U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
