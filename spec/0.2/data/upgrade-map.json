@@ -2150,6 +2150,16 @@
       "meaning02": "C2-B-072 and C2-B-078 put the second fence at the document column, preserving the 0.1 sibling code block.",
       "toolEntry": "U-239",
       "silent": true
+    },
+    {
+      "id": "U-240",
+      "kind": "report",
+      "group": "long language tag is accepted",
+      "from": "[a]{:abcdefgh} [b]{:abcdefghi}\n",
+      "to": "",
+      "meaning02": "C2-I-030 accepts the nine-character tag and writes lang=\"abcdefghi\" on the second span.",
+      "toolEntry": "U-240",
+      "silent": true
     }
   ],
   "tree": [
