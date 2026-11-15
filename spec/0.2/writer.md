@@ -670,7 +670,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `field-unspellable` | render-loss | warning | a field the writer could not write (C2-W-011) |
 | `writer-refused` | render-loss | warning | the writer reached a repeated repair state or its repair limit (C2-W-133) |
 | `extension-fallback-rendered` | render-loss | warning | an unknown optional extension that rendered through its fallback (C2-A-127, C2-H-076) |
-| `extension-transform-failed` | render-loss | warning | a host transform threw and the core node was retained (C2-X-050) |
+| `extension-transform-failed` | render-loss | warning | a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051) |
 | `extension-renderer-failed` | render-loss | warning | a host renderer threw or returned a value that was not a string (C2-X-050) |
 | `profile-construct-degraded` | render-loss | warning | a construct outside the active `profile` (C2-H-129) |
 
