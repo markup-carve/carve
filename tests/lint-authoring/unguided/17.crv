@@ -1,4 +1,4 @@
-\= Troubleshooting a 502 Response
+# Troubleshooting a 502 Response
 
 A 502 response from nginx usually means it could not get a valid response from the upstream application.
 
@@ -12,7 +12,7 @@ location / {
 }
 ```
 
-\== Checks
+## Checks
 
 - Confirm the application is running and listening on `127.0.0.1:3000`.
 - Check the nginx error log for connection failures or upstream timeouts.

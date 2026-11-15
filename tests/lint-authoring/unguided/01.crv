@@ -1,8 +1,9 @@
-\= Weekly Database Migration Status
+# Weekly Database Migration Status
 
 Caption: Migration milestones
 
-|= Date |= Milestone |
+| Date | Milestone |
+| --- | --- |
 | May 6 | Schema mapping completed. |
 | May 13 | Test migration completed. |
 | May 20 | Production migration planned. |
