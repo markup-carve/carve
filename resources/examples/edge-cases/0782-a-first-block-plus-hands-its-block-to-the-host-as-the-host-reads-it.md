@@ -5,7 +5,7 @@ A first-block `+` attaches one block (PART 9 SS17 L3, L4), and the host reads th
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 tail
  flush
 
@@ -30,7 +30,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 tail
 flush
 
@@ -83,8 +83,8 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 ::: compare
 
 ```carve
-[^a]: +
-~s~
+[^a]: {% %}
+{~s~}
  flush
 
 see[^a]
@@ -153,8 +153,8 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 `````carve
 - a
   - ```
-+
-````
+
+  ````
 `````
 
 ```html

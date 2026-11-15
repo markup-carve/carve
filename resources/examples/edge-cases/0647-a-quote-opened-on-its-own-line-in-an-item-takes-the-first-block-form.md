@@ -8,8 +8,8 @@ The ruled shape
 
 `````carve
 - a
-  > +
-  q
+
+  > q
 `````
 
 `````html

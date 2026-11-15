@@ -7,7 +7,7 @@ A refused `+` on its own line stays text, or fence payload at the fence content 
 ````carve
 - a
   - b
-  +
+
 tail
 ````
 
@@ -176,7 +176,7 @@ tail
 ::::::: compare
 
 ````carve
-1. [ ] +
+1. \[ ] +
 ````
 
 ```html
@@ -266,7 +266,7 @@ tail
 
 `````carve
 > - a
-> +
+>
 `````
 
 ```html
@@ -309,6 +309,7 @@ tail
         ```sh
         npm test
         ```
+
   - [ ] more
 `````
 
@@ -400,7 +401,7 @@ q</li>
 `````carve
 - a
   - b
-  +
+
 left
 `````
 
@@ -440,8 +441,8 @@ left
 
 `````carve
 - > a
-  +
-  b
+  >
+  > b
 `````
 
 ```html
@@ -462,8 +463,8 @@ left
 `````carve
 - x
   - > a
-    +
-    b
+    >
+    > b
 `````
 
 ```html
@@ -704,7 +705,7 @@ flush
 ::::::: compare
 
 `````carve
-- > +
+- >
 # h
 `````
 
@@ -726,7 +727,7 @@ flush
 ::::::: compare
 
 `````carve
-- > +
+- >
 ```
 x
 ```
@@ -749,7 +750,7 @@ x
 ::::::: compare
 
 `````carve
-- > +
+- >
 | a |
 `````
 
@@ -773,7 +774,7 @@ x
 ::::::: compare
 
 `````carve
-- > +
+- >
 > q
 `````
 
@@ -794,7 +795,7 @@ x
 
 `````carve
 - a
-  - > +
+  - >
 # h
 `````
 
@@ -821,7 +822,7 @@ x
 
 `````carve
 - a
-  - > +
+  - >
   # h
 `````
 

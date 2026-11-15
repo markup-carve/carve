@@ -10,8 +10,9 @@ The comment run starts below the note's body column and its closer misses that c
 
 ```carve
 [^n]: p
-{% a
+\{% a
  %}
+
    > q
 after
 

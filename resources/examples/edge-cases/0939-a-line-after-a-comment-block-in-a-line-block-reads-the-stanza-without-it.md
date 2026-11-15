@@ -11,7 +11,7 @@ A `%%%` span in verse leaves nothing however it ends: at its closer, or under PA
 ```carve
 - a
   - ::: |
-    %%%
+ %%%
 b
 ```
 
@@ -37,7 +37,7 @@ b
 ```carve
 - a
   - ::: |
-    %%%
+ %%%
     x
     %%%
 b

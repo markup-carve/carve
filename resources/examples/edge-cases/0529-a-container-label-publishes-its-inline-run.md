@@ -76,7 +76,7 @@ body
 :::: compare
 
 ````carve
-:::[plain]
+::: [plain]
 body
 :::
 ````

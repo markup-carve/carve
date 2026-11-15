@@ -17,9 +17,9 @@ then ends at the text and the quote below it starts a new top-level block
 
 ```carve
 - a
-+
-{.x}
-> q
+
+  {.x}
+  > q
 ```
 
 ```html
@@ -63,9 +63,9 @@ attributes vanish with the block boundary.
 
 ```carve
 - a
-+
-{.x}
-para
+
+  {.x}
+  para
 ```
 
 ```html
@@ -86,9 +86,9 @@ attribute line produced:
 
 ```carve
 - a
-+
-{.x}
-> q
+
+  {.x}
+  > q
 - c
 ```
 
@@ -112,12 +112,12 @@ line that looks like a list item is not a sibling of `- a` (carve#1238):
 
 ````carve
 - a
-+
-{.x}
-```
-- x
-code
-```
+
+  {.x}
+  ```
+  - x
+  code
+  ```
 ````
 
 ```html
@@ -140,11 +140,11 @@ description:
 ````carve
 :: t
 : d
-+
-{.x}
-```
-: x
-```
+
+  {.x}
+  ```
+  : x
+  ```
 ````
 
 ```html
@@ -198,12 +198,12 @@ other attributes in the line go on that table:
 
 ````carve
 - a
-+
-{table .x}
-```csv
-a,b
-1,2
-```
+
+  {table .x}
+  ```csv
+  a,b
+  1,2
+  ```
 ````
 
 ```html

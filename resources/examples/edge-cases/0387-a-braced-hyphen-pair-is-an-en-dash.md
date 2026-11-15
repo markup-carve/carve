@@ -11,7 +11,7 @@ consumed (markup-carve/carve#1447).
 ```carve
 The bare run is flag-shaped and stays literal: a -\--(p) b.
 
-The braced form converts wherever it stands: a --(p) b, x--y, --start.
+The braced form converts wherever it stands: a -\-(p) b, x--y, -\-start.
 ```
 
 ```html

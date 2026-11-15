@@ -3119,7 +3119,7 @@ A quoted elision word keeps its quote pair.
 ::: compare
 
 ```carve
-'n' and 'em' and 'tis'
+‘n' and 'em' and 'tis'
 ```
 
 ```html

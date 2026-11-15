@@ -7,7 +7,7 @@ A closer left of the authored fence cannot turn that fence into a block.
 ````carve
 :: t
 : d
- ```
+```
 x
 ```
 ````

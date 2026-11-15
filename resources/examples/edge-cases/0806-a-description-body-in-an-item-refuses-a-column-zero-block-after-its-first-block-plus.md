@@ -10,8 +10,9 @@ Reversed by carve#4409: a description body's `+` takes a follower only at its ma
 
 ````carve
 - a
+
   :: t
-  : +
+  : {% %}
 ```
 x
 ```
@@ -37,8 +38,9 @@ x
 ````carve
 - a
   - b
+
     :: t
-    : +
+    : {% %}
 ```
 x
 ```
@@ -115,8 +117,9 @@ x
 
 ````carve
 - a
+
   :: t
-  : +
+  : {% %}
 ```
 x
 

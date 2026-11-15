@@ -11,7 +11,7 @@ The lazy `{%` run's continuation misses the nested item's body column, so the ru
 ```carve
 - a
   - b
-{% c
+\{% c
  d %}
  tail
 
@@ -42,7 +42,7 @@ A line at the ancestor's content column still continues the innermost paragraph 
 - a
   - mid
     - b
- {% c
+ \{% c
    d %}
   tail
 

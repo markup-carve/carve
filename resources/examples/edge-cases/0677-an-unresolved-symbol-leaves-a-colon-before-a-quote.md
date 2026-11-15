@@ -5,7 +5,7 @@ A symbol without a replacement renders literally. Its final colon makes the foll
 ::: compare
 
 ```carve
-:a:"
+:a:“
 ```
 
 ```html

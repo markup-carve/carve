@@ -13,7 +13,7 @@ A `: +` description takes one block at column 0, and the lines after it read as 
 
 ```carve
 :: t
-: +
+: {% %}
 after
 : b
 ```
@@ -32,8 +32,9 @@ after
 
 ```carve
 :: t
-: +
+: {% %}
 after
+
 - y
 ```
 
@@ -53,8 +54,9 @@ after
 
 ```carve
 > :: t
-> : +
+> : {% %}
 > after
+>
 > - y
 ```
 
@@ -104,9 +106,10 @@ A shifted `: ` line between the columns of two description lists misses the nest
 ```carve
 :: t
 : d
+
   :: u
   : v
- : e
+: e
 ```
 
 ```html

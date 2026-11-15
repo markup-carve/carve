@@ -11,9 +11,10 @@ An unquoted abbreviation definition after a `+` is skipped like a link or note d
 :::::: compare
 
 `````carve
-- +
-*[A]: b
+- {% %}
 text
+
+*[A]: b
 
 A
 `````
@@ -33,9 +34,10 @@ A definition-body host and a quote host read it the same way.
 
 `````carve
 :: t
-: +
-*[A]: b
+: {% %}
 text
+
+*[A]: b
 
 A
 `````
@@ -53,9 +55,10 @@ A
 :::::: compare
 
 `````carve
-> +
-*[A]: b
+> {% %}
 text
+
+*[A]: b
 
 A
 `````
@@ -72,9 +75,10 @@ Under a host in a quote or an item it reads the same way (carve#4865).
 :::::: compare
 
 `````carve
-> - +
-> *[A]: b
+> - {% %}
 > text
+
+*[A]: b
 
 A
 `````
@@ -94,9 +98,10 @@ A
 
 `````carve
 - x
-  - +
-  *[A]: b
+  - {% %}
   text
+
+*[A]: b
 
 A
 `````
@@ -119,9 +124,10 @@ The off-column definition is erased before the `+` tests its follower (PART 0 S1
 :::::: compare
 
 `````carve
-- +
- *[A]: b
+- {% %}
 text
+
+*[A]: b
 
 A
 `````

@@ -7,7 +7,9 @@ A term at the description's content column starts a nested definition list after
 ```carve
 :: term
 : - a
-   :: sub
+
+ :: sub
+
 : def
 ```
 

@@ -102,6 +102,7 @@ A quote holding only an empty nested quote takes no caption.
 
 `````carve
 > >
+
 ^ cap
 `````
 
@@ -123,6 +124,7 @@ Nor does one holding only a bare fence pair.
 `````carve
 > :::
 > :::
+
 ^ cap
 `````
 

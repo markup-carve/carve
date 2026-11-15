@@ -58,7 +58,8 @@ Over-indented (past the term's column): the line attaches as the definition.
 
 ```carve
 - one
-  :: term
+
+   :: term
    :  def
 ```
 

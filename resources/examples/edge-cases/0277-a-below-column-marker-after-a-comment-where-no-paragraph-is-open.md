@@ -102,6 +102,7 @@ answer purely on whether a paragraph is open:
 - a
 
   > q
+
 - s
 ```
 

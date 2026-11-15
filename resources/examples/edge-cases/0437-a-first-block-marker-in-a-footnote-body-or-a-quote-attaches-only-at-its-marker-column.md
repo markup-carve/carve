@@ -14,7 +14,7 @@ A footnote body whose first line is a lone `+` over a line at its marker column.
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 flush
 
 see[^a]
@@ -40,7 +40,7 @@ into it.
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
  flush
 
 see[^a]
@@ -66,7 +66,7 @@ opened - one paragraph reading `+ flush`, not two blocks and not an attachment.
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
   flush
 
 see[^a]

@@ -5,7 +5,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{^a]^}
+[\{^a]^}
 ```
 
 ```html
@@ -17,7 +17,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{,a],}
+[\{,a],}
 ```
 
 ```html
@@ -53,7 +53,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{+a]+}
+[\{+a]+}
 ```
 
 ```html
@@ -65,7 +65,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{-a]-}
+[\{-a]-}
 ```
 
 ```html
@@ -77,7 +77,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{~a]~}
+[\{~a]~}
 ```
 
 ```html
@@ -89,7 +89,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{_a]_}
+[\{_a]_}
 ```
 
 ```html
@@ -101,7 +101,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{=a]=}
+[\{=a]=}
 ```
 
 ```html
@@ -113,7 +113,7 @@ A forced span or an editorial insertion, deletion or substitution opened inside 
 ::: compare
 
 ```carve
-[{~a ~> b]~}
+[\{~a ~> b]~}
 ```
 
 ```html

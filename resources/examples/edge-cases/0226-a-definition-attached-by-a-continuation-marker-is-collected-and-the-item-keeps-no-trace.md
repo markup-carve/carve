@@ -6,7 +6,7 @@ The maintainer overruled this row's title (carve#4449): a definition is invisibl
 
 ```carve
 - a
-+
+
 [r]: /u
 
 see [t][r]

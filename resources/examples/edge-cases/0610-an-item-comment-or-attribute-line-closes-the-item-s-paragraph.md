@@ -39,7 +39,7 @@ after *b*
 ````carve
 ::: note
 - para
-- {#x}
+- {% %}
 ```
 code
 ::::
@@ -97,7 +97,7 @@ after *b*
 ````carve
 ::: note
 - para
-  - {#x}
+  - {% %}
 ```
 code
 ::::

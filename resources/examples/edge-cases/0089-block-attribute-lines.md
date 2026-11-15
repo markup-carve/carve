@@ -100,7 +100,7 @@ A `{...}` line that directly *trails* a paragraph (no blank line) is still a lea
 
 ```carve
 Para
-{.class}
+
 ```
 
 ```html

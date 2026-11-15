@@ -79,7 +79,7 @@ independently of the slot before it:
 ::: compare
 
 ````carve
-```js	"T"
+```js	
 x
 ```
 ````
@@ -94,7 +94,7 @@ x
 ::: compare
 
 ````carve
-```js 	"T"
+```js 	
 x
 ```
 ````
@@ -109,7 +109,7 @@ x
 ::: compare
 
 ````carve
-```js	 "T"
+```js	
 x
 ```
 ````
@@ -126,7 +126,7 @@ And the `[label]` slot, which recovers independently of both:
 ::: compare
 
 ````carve
-```js "T"	[L]
+```js	[L]
 x
 ```
 ````
@@ -141,7 +141,7 @@ x
 ::: compare
 
 ````carve
-```js "T" 	[L]
+```js 	[L]
 x
 ```
 ````
@@ -156,7 +156,7 @@ x
 ::: compare
 
 ````carve
-```js "T"	 [L]
+```js	 [L]
 x
 ```
 ````

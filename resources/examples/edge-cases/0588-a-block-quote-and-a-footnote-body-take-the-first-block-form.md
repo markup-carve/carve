@@ -136,7 +136,7 @@ A note whose `+` ends the input holds the text `+`.
 ```carve
 see[^a]
 
-[^a]: +
+[^a]: {% %}
 ```
 
 ```html
@@ -158,7 +158,7 @@ So does a note with a blank line next.
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 
 see[^a]
 ```

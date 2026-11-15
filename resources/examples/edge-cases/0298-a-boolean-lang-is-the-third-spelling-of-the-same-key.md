@@ -9,7 +9,7 @@ boolean with a key/value of the same name.
 ::: compare
 
 ```carve
-[a]{:fr lang} [b]{lang :fr}
+[a]{lang} [b]{lang :fr}
 ```
 
 ```html

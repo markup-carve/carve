@@ -42,7 +42,7 @@ payload as ordinary content.
 
      %%%
      a
-%%%
+ %%%
 
    tail
 ```

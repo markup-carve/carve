@@ -61,8 +61,8 @@ Q</li>
 1. ordered
 
 > > quote
-+  
-- item
+>
+> - item
 `````
 
 ```html

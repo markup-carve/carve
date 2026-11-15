@@ -9,7 +9,7 @@ The brace group does not attach to an inline host, so its backtick opens a code 
 ::: compare
 
 ```carve
-a{title="`"}
+a{title=“`"}
 {k=v}
 b
 ```

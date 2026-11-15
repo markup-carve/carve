@@ -114,7 +114,7 @@ An empty marked cell keeps the marker run and the space that ends it (T11).
 ::: compare
 
 ```carve
-|=|
+|\=|
 ```
 
 ```html

@@ -10,7 +10,13 @@ PART 0 S3 and rule A (carve#4011). A list marker at a task item's content column
 
 `````carve
 - [ ] - a
+
+
+
   - [ ] - b
+
+
+
     - [ ] c
       - [ ] d
 `````
@@ -47,6 +53,9 @@ Without the outer level the line nests the same way.
 
 `````carve
 - [ ] - b
+
+
+
   - [ ] c
     - [ ] d
 `````

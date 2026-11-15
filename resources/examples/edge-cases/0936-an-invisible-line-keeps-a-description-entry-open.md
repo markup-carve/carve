@@ -36,7 +36,7 @@ b</p></blockquote>
 - :: term
   : payload
 %% c
-   : d2
+  : d2
 ````
 
 ```html
@@ -58,8 +58,9 @@ b</p></blockquote>
 ````carve
 :: term
 : payload
+: d2
+
 [r]: /u
- : d2
 ````
 
 ```html

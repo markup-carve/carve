@@ -9,7 +9,7 @@ The opener and the continuation are measured after the outer quote prefix of the
 ::: compare
 
 ```carve
-> - {% a
+> - \{% a
   >  b %}
 ```
 

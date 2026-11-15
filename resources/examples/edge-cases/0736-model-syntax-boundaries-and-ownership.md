@@ -37,7 +37,6 @@
 
 ```carve
 |= |
-|-|
 ```
 
 ```html
@@ -84,7 +83,7 @@ a</p>
 :::: compare
 
 ```carve
-- {{ c@code }}
+- \{{ c@code }}
 ```
 
 ```html

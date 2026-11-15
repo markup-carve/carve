@@ -19,8 +19,8 @@ paragraph — `tail` here is unclassed:
 
 ```carve
 > q
-> {.k}
-
+>
+>
 tail
 ```
 
@@ -39,7 +39,8 @@ than joining it, and A4 then has nothing left to attach to.
 
 ```carve
 > q
-> {.k}
+>
+>
 tail
 ```
 

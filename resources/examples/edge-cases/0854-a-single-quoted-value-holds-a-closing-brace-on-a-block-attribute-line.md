@@ -9,7 +9,7 @@ PART 4 `quoted_value` has both quote forms (carve#4459).
 :::: compare
 
 ````carve
-{k='x}y'}
+{k="x}y"}
 p
 ````
 

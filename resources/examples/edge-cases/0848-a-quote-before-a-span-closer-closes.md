@@ -9,7 +9,7 @@ CARVE-P3-023 R1 reads the next source character after a dash or slash, and a spa
 :::: compare
 
 ````carve
-*"Wait-"*
+*"Wait-”*
 ````
 
 ```html
@@ -21,7 +21,7 @@ CARVE-P3-023 R1 reads the next source character after a dash or slash, and a spa
 :::: compare
 
 ````carve
-_"Wait-"_
+{_"Wait-”_}
 ````
 
 ```html
@@ -45,7 +45,7 @@ _"Wait-"_
 :::: compare
 
 ````carve
-*"Wait/"*
+*"Wait/”*
 ````
 
 ```html

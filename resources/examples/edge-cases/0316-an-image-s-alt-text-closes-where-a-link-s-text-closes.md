@@ -87,7 +87,7 @@ reference tail with nothing in front of it and the whole line literal.
 ::: compare
 
 ```carve
-a ![t]z][r] b
+a ![t]z]\[r] b
 
 [r]: /i.png
 ```

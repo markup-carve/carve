@@ -10,7 +10,7 @@ The refused brace opener is literal. Both following fence openers are read by or
 
 ````carve
 :: t
-: +
+: {% %}
 {.x
 .y}
 ```

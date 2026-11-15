@@ -10,7 +10,7 @@ CARVE-P0-005 and PART 0 S1 (carve#4116). A matched `%%%` span ends at its first 
 
 `````carve
 . - %%%
-%%%
+ %%%
 x
 %%%
 `````

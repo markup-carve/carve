@@ -9,7 +9,7 @@ A marker-glued attribute does not move a later brace on the marker line (carve#5
 ::: compare
 
 ```carve
--{.g} {% b
+-{.g} \{% b
    b %}
 ```
 
@@ -25,7 +25,7 @@ b %}</li>
 ::: compare
 
 ```carve
-> 1.{#i} {% b
+> 1.{#i} \{% b
 >    b %}
 ```
 

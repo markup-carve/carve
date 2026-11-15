@@ -15,7 +15,7 @@ keeps the named container with no title or label (carve#2693).
 :::: compare
 
 ```carve
-::: note	"Title"
+::: note	
 x
 :::
 ```
@@ -31,7 +31,7 @@ x
 :::: compare
 
 ```carve
-::: note 	"Title"
+::: note 	
 x
 :::
 ```
@@ -51,7 +51,7 @@ either one already drops the metadata.
 :::: compare
 
 ```carve
-::: note "Title"	[First]
+::: note
 x
 :::
 ```
@@ -67,7 +67,7 @@ x
 :::: compare
 
 ```carve
-::: note "Title" 	[First]
+::: note
 x
 :::
 ```

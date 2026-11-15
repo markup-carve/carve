@@ -10,8 +10,9 @@ The comment continuation fails the brace-column test. The following note definit
 
 ````carve
 [^n]: p
-{% a
+\{% a
 %}
+
 [^m]: q
 
 x[^n]

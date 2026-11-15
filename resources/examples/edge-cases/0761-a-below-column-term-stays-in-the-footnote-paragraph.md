@@ -8,7 +8,8 @@ ends the note, leaving the reference in the document.
 
 ```carve
 [^f]: alpha
- :: term
+
+:: term
 
 See[^f]
 ```

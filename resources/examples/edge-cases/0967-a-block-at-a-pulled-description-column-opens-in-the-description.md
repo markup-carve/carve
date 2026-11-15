@@ -10,8 +10,9 @@ PART 0 CARVE-P0-011 ends a pulled paragraph when a block reaches the description
 
 ```carve
 :: t
-: +
+: {% %}
 h
+
   # H
 ```
 
@@ -31,8 +32,9 @@ h
 
 ```carve
 :: t
-: +
+: {% %}
 h
+
   # H
 z
 ```

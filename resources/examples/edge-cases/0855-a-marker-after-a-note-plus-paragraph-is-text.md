@@ -12,8 +12,9 @@ The paragraph a marker-line `+` attaches stays open, and a footnote body opens n
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 z
+
   - y
 
 [^a]

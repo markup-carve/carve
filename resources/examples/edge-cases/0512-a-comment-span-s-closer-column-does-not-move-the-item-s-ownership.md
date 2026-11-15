@@ -41,7 +41,7 @@ follower either, at every closer column. The `%%` control closes the group.
 - item
   %%%
   [r]: /url
-%%%
+ %%%
 
 [use][r]
 `````
@@ -100,7 +100,7 @@ follower either, at every closer column. The `%%` control closes the group.
 - item
   %%%
   hidden
-%%%
+ %%%
 tail
 `````
 
@@ -139,7 +139,7 @@ tail
   - item
     %%%
     hidden
-%%%
+ %%%
 tail
 `````
 
@@ -246,8 +246,8 @@ tail
 `````carve
 - %%%
   hidden
-%%%
- tail
+ %%%
+tail
 `````
 
 `````html
@@ -264,7 +264,7 @@ tail
 `````carve
 - %%%
   hidden
-%%%
+ %%%
 tail
 `````
 

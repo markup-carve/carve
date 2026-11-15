@@ -31,7 +31,7 @@ A `: ` line is a sibling description at any column, the way a bullet sibling is 
 ```carve
 :: t
 : a
- : b
+: b
 ```
 
 ```html
@@ -67,7 +67,7 @@ A `: ` line is a sibling description at any column, the way a bullet sibling is 
 ```carve
 :: t
 :  a
-  : b
+: b
 ```
 
 ```html
@@ -85,7 +85,7 @@ A `: ` line is a sibling description at any column, the way a bullet sibling is 
 ```carve
   :: t
   : a
- : b
+  : b
 ```
 
 ```html
@@ -104,7 +104,7 @@ A `: ` line is a sibling description at any column, the way a bullet sibling is 
 :: outer
 :  :: inner
    : a
-  : b
+: b
 ```
 
 ```html

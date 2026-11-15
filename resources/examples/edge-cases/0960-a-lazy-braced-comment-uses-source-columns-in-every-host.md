@@ -12,7 +12,7 @@ list, continuation at the opener column.
 
 ```carve
 - pre
-{% b
+\{% b
 b %}
 ```
 
@@ -32,7 +32,7 @@ list, continuation one source column deeper.
 
 ```carve
 - pre
-{% b
+\{% b
  b %}
 ```
 
@@ -52,7 +52,7 @@ quote, continuation at the opener column.
 
 ```carve
 > pre
-{% b
+\{% b
 b %}
 ```
 
@@ -70,7 +70,7 @@ quote, continuation one source column deeper.
 
 ```carve
 > pre
-{% b
+\{% b
  b %}
 ```
 
@@ -88,7 +88,7 @@ footnote, continuation at the opener column.
 
 ```carve
 [^a]: pre
-{% b
+\{% b
 b %}
 
 ref[^a]
@@ -116,7 +116,7 @@ footnote, continuation one source column deeper.
 
 ```carve
 [^a]: pre
-{% b
+\{% b
  b %}
 
 ref[^a]
@@ -145,7 +145,7 @@ div, continuation at the opener column.
 ```carve
 ::: note
 pre
-{% b
+\{% b
 b %}
 :::
 ```

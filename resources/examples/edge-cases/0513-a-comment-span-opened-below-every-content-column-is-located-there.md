@@ -33,7 +33,7 @@ the content column answers the same.
 - item
  %%%
  hidden
-%%%
+ %%%
 tail
 `````
 

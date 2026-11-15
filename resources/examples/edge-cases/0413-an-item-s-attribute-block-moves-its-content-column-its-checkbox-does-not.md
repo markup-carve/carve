@@ -160,6 +160,7 @@ column. Renaming a class cannot move either heading.
 -{.x} a
 
   # one
+
 -{.averylongclass} b
 
   # two

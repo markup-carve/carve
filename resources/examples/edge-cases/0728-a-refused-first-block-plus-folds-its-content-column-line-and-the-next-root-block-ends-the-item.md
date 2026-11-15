@@ -6,8 +6,8 @@ next root block begins after the item.
 ::: compare
 
 ```carve
-- +
-  x
+- x
+
 >
 ```
 
@@ -60,8 +60,8 @@ next root block begins after the item.
 ::: compare
 
 ```carve
-- +
-	x
+- x
+
 >
 ```
 

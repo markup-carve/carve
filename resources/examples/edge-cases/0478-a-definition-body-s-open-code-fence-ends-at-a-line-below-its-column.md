@@ -11,7 +11,7 @@ whatever block it follows* reads it (markup-carve/carve#2143).
 ````carve
 :: t
 : ```
- y
+y
   ```
 ````
 
@@ -34,7 +34,7 @@ whatever block it follows* reads it (markup-carve/carve#2143).
 :: t
 : ```
   b
- y
+y
 ````
 
 ```html

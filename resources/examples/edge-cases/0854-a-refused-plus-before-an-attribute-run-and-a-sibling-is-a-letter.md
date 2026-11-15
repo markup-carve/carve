@@ -10,7 +10,7 @@ The sibling test reads the block the run leads (CARVE-P9-067, carve#4447), so ne
 
 ```carve
 - a
-+
+
 {x}
 - c
 ```
@@ -53,7 +53,7 @@ A description reads a `: ` sibling behind the run the same way (CARVE-P9-067).
 ```carve
 :: t
 : a
-+
+
 {x}
 : b
 ```
@@ -94,7 +94,7 @@ A description takes a list, but this one stands at the content column, so the `+
 ```carve
 :: t
 : a
-+
+
 {x}
   - c
 ```

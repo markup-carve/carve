@@ -49,7 +49,7 @@ After a word the comment changes nothing: the quote is not at the start.
 ::: compare
 
 ```carve
-a {%%}'word
+a {%%}’word
 ```
 
 ```html

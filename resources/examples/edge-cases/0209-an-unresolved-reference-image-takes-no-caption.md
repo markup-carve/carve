@@ -5,7 +5,7 @@ The caption attaches to a captionable block, and a reference image that resolves
 ::: compare
 
 ```carve
-![a][nope]
+\![a][nope]
 ^ cap
 ```
 

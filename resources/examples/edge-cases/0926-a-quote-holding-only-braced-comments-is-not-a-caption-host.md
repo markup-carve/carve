@@ -10,6 +10,7 @@ carve#4799. A paragraph of only braced comments renders nothing (PART 9 comments
 
 `````carve
 > {% c %}
+
 ^ cap
 `````
 

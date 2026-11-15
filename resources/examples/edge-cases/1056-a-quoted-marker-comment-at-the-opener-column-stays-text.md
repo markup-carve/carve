@@ -9,7 +9,7 @@ A quote that opens on an item's marker line measures the comment opener and each
 ::: compare
 
 ```carve
- - > {% a
+ - > \{% a
    > b
    > z %}
 ```

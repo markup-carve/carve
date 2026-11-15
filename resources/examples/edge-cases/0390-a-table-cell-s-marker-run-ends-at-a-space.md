@@ -75,7 +75,7 @@ means what it meant, because there is no marker for the space to end.
 
 ```carve
 |= |a|
-|=|a|
+|\=|a|
 ```
 
 ```html

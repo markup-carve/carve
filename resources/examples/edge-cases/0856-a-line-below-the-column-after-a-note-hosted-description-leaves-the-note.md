@@ -45,7 +45,7 @@ A description marker line that holds no paragraph gives the line no lazy host (C
 
 ````carve
 [^f]: :: t
-  : # h
+      : # h
 b
 
 [^f]

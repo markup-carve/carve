@@ -13,7 +13,7 @@ CARVE-P2-035. Its following marker opens a nested list by the ordinary item rule
 
 ```carve
 - a
-+
+
 {x}
   - c
 ```

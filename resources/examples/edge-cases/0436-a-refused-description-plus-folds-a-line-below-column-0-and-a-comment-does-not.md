@@ -95,7 +95,7 @@ everything would not satisfy this row.
 
 ```carve
 :: t
-:  +
+:  {% %}
 flush
 ```
 

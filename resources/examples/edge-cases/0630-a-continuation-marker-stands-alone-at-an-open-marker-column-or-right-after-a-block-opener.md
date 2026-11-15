@@ -7,7 +7,7 @@ A `+` on its own line at an open marker column, or last on a line of openers, at
 `````carve
 - a
   - b
-  +
+
 para
 `````
 
@@ -129,7 +129,7 @@ para</p></blockquote>
 `````carve
 - a
   - b
-  +
+
 > q
 `````
 
@@ -266,7 +266,7 @@ The quote opened inside the item owns the `+`. Its marker column is 2, so the li
 ::::::: compare
 
 `````carve
-- > +
+- >
 para
 `````
 

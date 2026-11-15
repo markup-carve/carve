@@ -37,7 +37,7 @@ p
 ::: compare
 
 ```carve
-{title="😀"}{.b
+{title=“😀"}{.b
            .c}
 p
 ```

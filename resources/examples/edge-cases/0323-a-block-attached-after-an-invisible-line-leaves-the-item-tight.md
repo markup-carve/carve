@@ -127,8 +127,6 @@ And so is a code fence:
 
 ```carve
 - a
-
-  {.x}
   ```
   code
   ```

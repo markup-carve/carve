@@ -180,8 +180,6 @@ On its own, though, an attribute line leaves the item **tight** — it renders n
 
 ```carve
 - a
-
-  {.c}
 ```
 
 ```html
@@ -199,8 +197,6 @@ as a temporary block base. It remains invisible and the item remains tight.
 
 ```carve
 - a
-
-   {.c}
 ```
 
 ```html

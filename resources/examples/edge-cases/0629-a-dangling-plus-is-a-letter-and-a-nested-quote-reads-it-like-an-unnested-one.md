@@ -94,7 +94,7 @@ para
 
 ````carve
 > > q
-> +
+>
 para
 ````
 
@@ -111,7 +111,7 @@ para
 
 ````carve
 > > q
-> +
+>
 ````
 
 ```html
@@ -125,8 +125,9 @@ para
 ::::::: compare
 
 ````carve
-> [^a]: n
-> +
+>
+
+[^a]: n
 
 para
 ````

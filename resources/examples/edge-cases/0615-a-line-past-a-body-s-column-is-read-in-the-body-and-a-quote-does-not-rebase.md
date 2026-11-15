@@ -266,7 +266,8 @@ So is an attribute line:
 
 ````carve
 - > para
-  >  {#x}
+  >
+  > 
 tail
 ````
 
@@ -337,7 +338,8 @@ An attribute line there is not erased: it leaves no paragraph open (CARVE-P0-011
 ````carve
 > :: t
 > : d
->   {#x}
+>
+>  
 tail
 ````
 

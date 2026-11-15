@@ -12,8 +12,8 @@ CARVE-P0-005 and PART 9 §10 I5 (carve#4086). A matched `%%%` span is one extent
 - a
   %%%
   hidden
-%%%
- x
+ %%%
+x
 ````
 
 ```html
@@ -50,8 +50,8 @@ x
 - a
   - %%%
     hidden
-%%%
- { - x
+ %%%
+{ - x
 ````
 
 ```html
@@ -73,7 +73,7 @@ x
 [^n]: a
   %%%
   hidden
-%%%
+ %%%
 x
 
 r[^n]

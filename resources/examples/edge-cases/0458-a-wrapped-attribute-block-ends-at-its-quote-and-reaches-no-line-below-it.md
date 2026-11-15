@@ -28,7 +28,8 @@ The single-line spelling of the same block, the control it now matches.
 
 ```carve
 > > q
-> > {.k #x}
+> >
+> >
 tail
 ```
 

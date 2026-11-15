@@ -67,7 +67,7 @@ open either:
 
 ````carve
 ::: note
-> {#x}
+>
 ```
 code
 ::::
@@ -94,7 +94,7 @@ after *b*
 
 ````carve
 ::: note
-- {#x}
+- {% %}
 ```
 code
 ::::

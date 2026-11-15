@@ -35,6 +35,7 @@ end is still its content.
 ```
 x
 
+```
 ````
 
 ````html
@@ -77,6 +78,7 @@ The end of a list item ends the fence the same way its own closer would.
 - ```
   x
 
+  ```
 ````
 
 ````html

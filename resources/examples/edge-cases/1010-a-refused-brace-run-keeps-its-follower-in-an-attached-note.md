@@ -9,9 +9,10 @@ The continuation fails the brace-column test. The attached note keeps the litera
 ::: compare
 
 ````carve
-[^a]: +
+[^a]: {% %}
 {.x
 .y}
+
 # h
 
 see[^a]

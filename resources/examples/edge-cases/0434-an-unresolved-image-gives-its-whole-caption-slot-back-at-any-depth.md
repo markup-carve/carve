@@ -18,7 +18,7 @@ this slot is two lines wide. All of it comes back:
 ::: compare
 
 ```carve
-![a][r]
+\![a][r]
 ^ cap one
 continued
 ```

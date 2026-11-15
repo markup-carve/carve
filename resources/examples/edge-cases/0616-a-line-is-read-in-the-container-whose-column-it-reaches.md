@@ -326,7 +326,8 @@ An opener below a description body's column folds into a quote held there; only 
 ````carve
 :: t
 : > para
- # H
+
+# H
 ````
 
 ```html
@@ -349,7 +350,8 @@ A heading below a description body's column folds into its paragraph, as under a
 ````carve
 :: t
 : para
- # H
+
+# H
 ````
 
 ```html

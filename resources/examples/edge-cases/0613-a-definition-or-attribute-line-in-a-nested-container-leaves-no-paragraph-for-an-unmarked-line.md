@@ -237,7 +237,8 @@ An attribute line at an ordered item's column in a quote ends it the same way:
 
 ````carve
 > 1. para
->    {#x}
+>
+>   
 tail
 ````
 
@@ -283,7 +284,8 @@ An attribute line in the same position is not erased, so a column-0 line reaches
 
 ````carve
 - > - para
-  >   {#x}
+  >
+  >  
 tail
 ````
 

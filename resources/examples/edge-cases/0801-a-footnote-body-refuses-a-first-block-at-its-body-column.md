@@ -12,7 +12,7 @@ Reversed by carve#4409: like a list item, a footnote body's first-block `+` take
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
   flush
 
 see[^a]
@@ -35,7 +35,7 @@ see[^a]
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
   - x
   - y
 
@@ -63,7 +63,7 @@ see[^a]
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
 
   later
 
@@ -87,7 +87,7 @@ see[^a]
 ::: compare
 
 ```carve
-[^a]: +
+[^a]: {% %}
  flush
 
 see[^a]
@@ -132,7 +132,7 @@ para
 
 ```carve
 :: t
-: +
+: {% %}
     flush
 ```
 

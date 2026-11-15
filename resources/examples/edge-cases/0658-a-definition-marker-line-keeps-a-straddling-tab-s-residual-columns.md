@@ -7,7 +7,8 @@ PART 9 §24 C5 strips a container's indent by columns and, on a list-marker line
 ```carve
 :: a
 : b
-	:: t
+
+  :: t
   : zq
 ```
 

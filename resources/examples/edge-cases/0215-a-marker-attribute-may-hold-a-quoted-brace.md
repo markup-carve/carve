@@ -5,7 +5,7 @@ A list marker's attribute block is glued to the marker (`1.{…}`), and a quoted
 ::: compare
 
 ```carve
-1.{title='a}b'} item
+1.{title="a}b"} item
 ```
 
 ```html

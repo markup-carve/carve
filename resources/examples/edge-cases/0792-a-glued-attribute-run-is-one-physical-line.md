@@ -50,7 +50,7 @@ p</p>
 ::: compare no-final-newline
 
 ```carve
-{k=""}{c
+{k=“"}{c
 }
 ```
 

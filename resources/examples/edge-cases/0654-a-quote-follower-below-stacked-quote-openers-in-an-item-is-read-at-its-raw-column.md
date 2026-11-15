@@ -7,7 +7,7 @@ A quote at column 0 is refused and stands outside the list
 ::::::: compare
 
 `````carve
-- > > +
+- > >
 > q
 `````
 
@@ -31,7 +31,7 @@ A `>` at the item's content column is the outer quote's prefix, so `q` attaches 
 ::::::: compare
 
 `````carve
-- > > +
+- > > {% %}
   > q
 `````
 

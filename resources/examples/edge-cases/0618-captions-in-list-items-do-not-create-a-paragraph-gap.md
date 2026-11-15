@@ -246,6 +246,7 @@ A quote after item prose still takes its caption
 
   > q
   ^ cap
+
 - c
 ```
 
@@ -295,6 +296,7 @@ An earlier caret paragraph does not loosen an attached quote
 
   > q
   ^ cap
+
 - c
 ```
 
@@ -351,6 +353,7 @@ A multi-line attached caption keeps the list tight
   > q
   ^ cap
   more
+
 - c
 ```
 
@@ -434,6 +437,7 @@ One blank before a quote caption after a nested list
 
   > q
   ^ cap
+
 - c
 ```
 
@@ -494,6 +498,7 @@ Item prose and a nested list before a quote caption
 
   > q
   ^ cap
+
 - c
 ```
 
@@ -553,6 +558,7 @@ An ordered item holds a nested list before a quote caption
 
    > q
    ^ cap
+
 2. c
 ```
 
@@ -582,6 +588,7 @@ A quoted list holds a nested list before a quote caption
 >
 >   > q
 >   ^ cap
+>
 > - c
 ```
 

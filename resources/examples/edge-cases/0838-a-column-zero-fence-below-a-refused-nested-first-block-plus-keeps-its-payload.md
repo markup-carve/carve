@@ -58,7 +58,7 @@ A code fence at column zero refuses a nested first-block `+` (carve#4409) and st
 ::::: compare
 
 ````carve
-- > +
+- >
 ```
   x
 ```

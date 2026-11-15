@@ -11,7 +11,7 @@ The comment run's continuation misses the nested item's body column, so the run 
 ```carve
 - a
   - b
-{% c
+\{% c
   d %}
   - c
 ```
@@ -38,7 +38,7 @@ A blank after the refused run loosens the nested list without closing it.
 ```carve
 - a
   - b
-{% c
+\{% c
   d %}
 
   - c
@@ -66,7 +66,7 @@ A lazy line after the refused run remains in the deepest item before the next ma
 ```carve
 - a
   - b
-{% c
+\{% c
   d %}
  x
   - c
@@ -95,7 +95,7 @@ A later marker can also open a deeper child under the surviving nested item.
 ```carve
 - a
   - b
-{% c
+\{% c
   d %}
     - c
 ```

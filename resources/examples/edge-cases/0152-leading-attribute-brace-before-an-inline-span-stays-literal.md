@@ -39,7 +39,7 @@ A bare delimiter that opens nothing takes no block either: the characters stay c
 ::: compare
 
 ```carve
-x*{title="`"} y
+x*{title=“`"} y
 
 *x*{title="`"} y
 ```

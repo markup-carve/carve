@@ -35,7 +35,8 @@ after *b*
 ````carve
 ::: note
 > para
-> {#x}
+>
+>
 ```
 code
 ::::

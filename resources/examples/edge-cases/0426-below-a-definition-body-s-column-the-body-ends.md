@@ -56,7 +56,8 @@ text, exactly as under a list item (carve#3295).
 ```carve
 :: term
 :  definition
-  # H
+
+# H
 ```
 
 ```html

@@ -7,7 +7,7 @@ A follower at the quote's column below `- - > +` attaches
 ::::::: compare
 
 `````carve
-- - > +
+- - > {% %}
     b
 `````
 
@@ -30,7 +30,7 @@ One level deeper, a follower at the quote's column attaches too
 ::::::: compare
 
 `````carve
-- - - > +
+- - - > {% %}
       b
 `````
 

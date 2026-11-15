@@ -126,6 +126,7 @@ Caption variant 5
   x
   ```
   ^ cap
+
 - c
 ````
 
@@ -183,6 +184,7 @@ Caption variant 7
    x
    ```
    ^ cap
+
 2. c
 ````
 
@@ -212,6 +214,7 @@ Caption variant 8
   ![a](b.png)
   :::
   ^ cap
+
 - c
 ````
 

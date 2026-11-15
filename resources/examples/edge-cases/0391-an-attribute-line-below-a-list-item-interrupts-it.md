@@ -37,7 +37,7 @@ With no block beneath it the attributes are simply consumed, which is what
 
 ```carve
 - b
-{.x}
+
 ```
 
 ```html

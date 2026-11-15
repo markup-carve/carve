@@ -10,7 +10,7 @@ A `{%` that starts a continuation line of an open paragraph is at block position
 
 ```carve
 pre
-{% a
+\{% a
 b %}
 ```
 
@@ -26,7 +26,7 @@ b %}</p>
 
 ```carve
 - pre
-  {% a
+  \{% a
   b %}
 ```
 
@@ -44,7 +44,7 @@ b %}</li>
 
 ```carve
 > pre
-> {% a
+> \{% a
 > b %}
 ```
 

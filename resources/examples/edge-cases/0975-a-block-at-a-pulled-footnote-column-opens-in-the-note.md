@@ -11,7 +11,7 @@ PART 0 CARVE-P0-011 ends a pulled paragraph when a block reaches the note's cont
 ````carve
 [^1]
 
-[^1]: +
+[^1]: {% %}
 h
   ```
 z
@@ -39,8 +39,9 @@ z
 ```carve
 [^1]
 
-[^1]: +
+[^1]: {% %}
 h
+
   {.c}
   k
 ```

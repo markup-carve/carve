@@ -17,7 +17,7 @@ the markup-carve/carve#755 class).
 ::: compare
 
 ```carve
-x ^[]
+x \^[]
 ```
 
 ```html
@@ -31,7 +31,7 @@ Whitespace-only is the same case: a space between the brackets is not content.
 ::: compare
 
 ```carve
-x ^[ ]
+x \^[ ]
 ```
 
 ```html
@@ -45,7 +45,7 @@ With an attribute block the brackets are a span, and only the `^` is literal.
 ::: compare
 
 ```carve
-x ^[]{.c}
+x \^[]{.c}
 ```
 
 ```html

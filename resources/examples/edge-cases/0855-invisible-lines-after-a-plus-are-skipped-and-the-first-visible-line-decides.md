@@ -9,7 +9,7 @@ A `%%` line and one-line link or abbreviation definition are erased before the C
 ::: compare
 
 ```carve
-- +
+- {% %}
 %% c
 
 text
@@ -52,7 +52,7 @@ A sibling after the comment refuses the `+` too.
 ::: compare
 
 ```carve
-- +
+- {% %}
 %% c
 - b
 ```
@@ -71,7 +71,7 @@ The erased comment supplies no boundary. The content-column line becomes the nex
 ::: compare
 
 ```carve
-- +
+- {% %}
 %% c
   text
 ```
@@ -89,7 +89,7 @@ A line at the marker column attaches, in both comment spellings.
 ::: compare
 
 ```carve
-- +
+- {% %}
 %% c
 text
 ```

@@ -11,9 +11,10 @@ A `: ` description line is a sibling at any column once it misses the open body 
 ```carve
 :: t
 : d
+
   :: u
   : v
- : e
+: e
 ```
 
 ```html
@@ -37,10 +38,11 @@ A `: ` description line is a sibling at any column once it misses the open body 
 ```carve
 :: t
 : d
+
   :: u
   : v
 
- : e
+: e
 ```
 
 ```html

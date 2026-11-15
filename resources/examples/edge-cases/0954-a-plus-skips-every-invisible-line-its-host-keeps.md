@@ -102,8 +102,9 @@ Below the content column an attribute line closes the item, so the `+` is refuse
 ::: compare
 
 ````carve
-- +
- {x}
+- {%%}
+
+{x}
 text
 ````
 

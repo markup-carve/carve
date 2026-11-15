@@ -175,7 +175,7 @@ As the first token after the fence, the bare `[label]` may sit directly against 
 :::: compare
 
 ```carve
-:::[First]
+::: [First]
 First panel.
 :::
 ```
@@ -530,7 +530,7 @@ boundary, so its `+-` is substituted:
 ::: compare
 
 ```carve
-Vote :+1: or :-1:. Tolerance :+-: is a symbol, but a +- b and word:+-: are not.
+Vote :+1: or :-1:. Tolerance :\+-: is a symbol, but a +- b and word:+-: are not.
 ```
 
 ```html

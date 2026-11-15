@@ -14,9 +14,9 @@ admits (carve-rs#488, carve-rs#511, carve#589).
 ::: compare
 
 ```carve
-[^]: /u
+[\^]: /u
 
-see [text][^].
+see [text][\^].
 ```
 
 ```html

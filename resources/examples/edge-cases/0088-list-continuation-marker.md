@@ -12,6 +12,7 @@ Carve's bullet markers are `-` and `*` only. Unlike Markdown and Djot, `+` is **
   ```sh
   docker build -t app .
   ```
+
 - Push it
 ````
 
@@ -35,6 +36,7 @@ A quote or table attaches the same way.
 - item
 
   > note
+
 - next
 ```
 

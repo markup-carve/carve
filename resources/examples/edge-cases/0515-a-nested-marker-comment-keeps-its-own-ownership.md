@@ -14,7 +14,7 @@ owner. The ordered pair checks a different content column.
 - a
   - %%%
     hidden
-%%%
+ %%%
 tail
 ````
 
@@ -81,7 +81,7 @@ tail
 1. a
    1. %%%
       hidden
-%%%
+ %%%
 tail
 ````
 

@@ -39,7 +39,7 @@ A quote opened on an item's marker line inside a host quote refuses a column-0 l
 ::::::: compare
 
 `````carve
-> - > +
+> - >
 - s
 `````
 
@@ -65,7 +65,7 @@ A stacked quote opener in an item refuses a list at the item's column
 ::::::: compare
 
 `````carve
-- > > +
+- > >
   - s
 `````
 

@@ -10,7 +10,7 @@ A first-block `: +` description is the definition-list twin of the list-item `- 
 
 ```carve
 :: t
-: +
+: {% %}
 after
 : b
 ```
@@ -77,7 +77,7 @@ after
 
 ```carve
 :: t
-: +
+: {% %}
 after
 :: u
 : w

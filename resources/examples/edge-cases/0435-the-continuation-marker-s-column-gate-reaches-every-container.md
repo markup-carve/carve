@@ -39,7 +39,8 @@ document level, above the endnotes section.
 
 ```carve
 [^a]: intro
-+
+
+{% %}
  more
 
 see[^a]

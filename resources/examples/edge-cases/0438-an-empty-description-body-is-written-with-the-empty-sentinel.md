@@ -15,7 +15,7 @@ flush-left block, so it spells an empty body only when a blank line follows.
 
 ```carve
 :: t
-: {empty}
+: {% %}
 
 flush
 ```
@@ -36,7 +36,7 @@ At end of input, where there is no following block at all.
 
 ```carve
 :: t
-: {empty}
+: {% %}
 ```
 
 ```html
@@ -79,7 +79,7 @@ the first term inheriting it (markup-carve/carve#1636).
 
 ```carve
 :: t1
-: {empty}
+: {% %}
 :: t2
 : d2
 ```

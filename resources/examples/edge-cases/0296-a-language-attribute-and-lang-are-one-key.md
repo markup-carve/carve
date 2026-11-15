@@ -8,7 +8,7 @@ There is no precedence between the two spellings; only their order matters.
 ::: compare
 
 ```carve
-[a]{:fr lang=de} [b]{lang=de :fr}
+[a]{lang=de} [b]{lang=de :fr}
 ```
 
 ```html
@@ -23,7 +23,7 @@ what makes the shorthand invisible to the serializer.
 ::: compare
 
 ```carve
-[x]{k=1 :fr lang=de title=t}
+[x]{k=1 lang=de title=t}
 ```
 
 ```html

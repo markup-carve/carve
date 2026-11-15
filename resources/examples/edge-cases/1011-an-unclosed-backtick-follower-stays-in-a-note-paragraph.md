@@ -11,7 +11,7 @@ The brace opener is literal. The following backtick fence opens as a separate bl
 ````carve
 see[^a]
 
-[^a]: +
+[^a]: {% %}
 {.x
 .y}
 ```

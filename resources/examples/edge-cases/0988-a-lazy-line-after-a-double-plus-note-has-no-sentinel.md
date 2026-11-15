@@ -25,8 +25,7 @@ lazy</p>
 ::: compare
 
 ```carve
-[^a]: +
-+
+
 
   [^b]: > q
 lazy

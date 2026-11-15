@@ -7,8 +7,8 @@ A stacked list and quote opener refuses a follower one column in, and the `+` fo
 ::::::: compare
 
 `````carve
-- > +
- b
+- >
+b
 `````
 
 `````html
@@ -30,8 +30,8 @@ In a nested item, a follower left of the opener line's column is refused
 
 `````carve
 - a
-  - > +
- b
+  - >
+b
 `````
 
 `````html
@@ -83,7 +83,7 @@ A `>` at the inner quote's marker column is no outer prefix, so the follower is 
 ::::::: compare
 
 `````carve
-> > +
+> >
   > q
 `````
 

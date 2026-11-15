@@ -323,7 +323,7 @@ and a reference definition is collected, leaving only the paragraph.
 ::: compare
 
 ```carve
-a[r]
+a\[r]
 
 [r]: http://x
 ```

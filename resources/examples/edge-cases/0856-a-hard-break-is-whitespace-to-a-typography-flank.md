@@ -9,7 +9,7 @@ A quote after a dash closes before a hard break, as it does before a soft break.
 ::: compare
 
 ```carve
-"a-"\
+"a-”\
 b
 ```
 
@@ -67,7 +67,7 @@ A slash closes a quote the same way, and so does a single quote.
 ::: compare
 
 ```carve
-'a/'\
+'a/’\
 b
 ```
 

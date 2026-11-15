@@ -9,7 +9,7 @@ The first `]` in the quoted value closes the outer bracket run. Its region bound
 :::: compare
 
 ```carve
-[t[x](/u){title="]"}y](/z)
+[t[x](/u){title=“]"}y](/z)
 ```
 
 ```html

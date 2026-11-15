@@ -11,8 +11,8 @@ At the end of input the `+` stays a letter in its own paragraph:
 ::: compare
 
 ````carve
-> +
-q
+> q
+>
 > +
 ````
 
@@ -30,8 +30,8 @@ A following line does not make it a marker; an unmarked line folds into its para
 ::: compare
 
 ````carve
-> +
-q
+> q
+>
 > +
 r
 ````
@@ -51,9 +51,10 @@ A heading after it stands after the quote:
 ::: compare
 
 ````carve
+> q
+>
 > +
-q
-> +
+
 # h
 ````
 

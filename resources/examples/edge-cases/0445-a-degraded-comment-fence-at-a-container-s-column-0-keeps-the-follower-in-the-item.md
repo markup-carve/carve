@@ -168,7 +168,7 @@ one. Both lines are line comments and the follower is still the item's.
 
 ```carve
 - x
-%%%
+ %%%
 %%%%
 y
 ```

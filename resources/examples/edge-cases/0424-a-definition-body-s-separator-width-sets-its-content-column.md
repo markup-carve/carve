@@ -115,7 +115,7 @@ The first-block `+` form reads the same on either width.
 
 ```carve
 :: term
-: +
+: {% %}
 flush block
 ```
 

@@ -6,9 +6,9 @@ Escaping the opening `<` keeps the complete `</#id>` spelling as text. The
 :::::: compare
 
 ```carve
-\</#id>
+\</\#id>
 
-x \</#x~>y> y
+x \</\#x~>y> y
 ```
 
 ```html

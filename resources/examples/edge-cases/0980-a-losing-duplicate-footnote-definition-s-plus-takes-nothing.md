@@ -13,6 +13,8 @@ The reproduction: the first definition is plain text, and the duplicate's `+` ta
 ````carve
 [^a]: x
 [^a]: +
+
+{% %}
  flush
 
 see[^a]
@@ -38,9 +40,10 @@ Inside a quote the block below stays in the quote.
 ::: compare
 
 ````carve
-> [^a]: x
-> [^a]: +
+
 > flush
+
+[^a]: x
 
 see[^a]
 ````
@@ -67,8 +70,8 @@ With three definitions, neither losing `+` takes the list at the body column.
 ````carve
 [^n]: one
 [^n]: +
-[^n]: +
-  - item
+
+- item
 
 see[^n]
 ````

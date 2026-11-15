@@ -7,7 +7,7 @@ A heading at column 0 stands outside the host quote
 ::::::: compare
 
 `````carve
-> - > +
+> - >
 # h
 `````
 
@@ -33,7 +33,7 @@ A table row at column 0 stands outside the host quote
 ::::::: compare
 
 `````carve
-> - > +
+> - >
 | c |
 `````
 
@@ -62,7 +62,7 @@ A stacked opener on a sibling item's line refuses the heading the same way
 
 `````carve
 > - a
-> - > +
+> - >
 # h
 `````
 
