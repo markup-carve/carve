@@ -1,4 +1,4 @@
-= FAQ zum Backup-Dienst
+\= FAQ zum Backup-Dienst
 
 Welche Daten werden gesichert?
 : Der Dienst sichert die von Ihnen ausgewählten Dateien. Weitere Informationen finden Sie unter [Backups](https://example.com/backups).

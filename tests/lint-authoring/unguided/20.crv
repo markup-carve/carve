@@ -1,4 +1,4 @@
-= On-call handoff
+\= On-call handoff
 
 |= Alert |= Owner |= Next check |
 | [Alert 1] | [Owner] | [Time]\[^utc] |

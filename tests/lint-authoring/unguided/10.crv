@@ -1,4 +1,4 @@
-= Decision Record: PostgreSQL for the Team Service
+\= Decision Record: PostgreSQL for the Team Service
 
 > Decision: Use PostgreSQL instead of SQLite for the team service.
 

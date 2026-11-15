@@ -1,11 +1,11 @@
-= Bericht
+\= Bericht
 
 Einleitung mit Umlauten: Fußzeile, Prüfstand.
 
 ::: warning
 Zwei IBANs auf einer Rechnung möglich.
 
-== Weiter
+\== Weiter
 
 Text danach.
 :::
