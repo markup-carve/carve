@@ -9,8 +9,7 @@ Both continuation lines carry the quote prefix and pass the brace column. The at
 ::: compare
 
 ```carve
-> {.x
->   .y}
+> {.x .y}
 > # H
 ```
 

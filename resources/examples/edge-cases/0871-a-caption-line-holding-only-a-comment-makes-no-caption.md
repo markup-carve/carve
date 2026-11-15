@@ -29,7 +29,7 @@ PART 2 caption (carve#4559). Removing a comment must not change the output (carv
 
 `````carve
 > q
-^ %% x
+\^ %% x
 `````
 
 ```html

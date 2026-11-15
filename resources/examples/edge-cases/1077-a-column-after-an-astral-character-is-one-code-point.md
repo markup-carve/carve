@@ -23,8 +23,7 @@ p
 ::: compare
 
 ```carve
-> {.a}{title="𝒜𝒜"}{.b
->                   .c}
+> {.a}{title="𝒜𝒜"}{.b .c}
 > p
 ```
 

@@ -9,8 +9,7 @@ On a note's marker line, an attribute or comment run measures its opening brace 
 ::: compare
 
 ```carve
-[^n]: {.x
-    }
+[^n]: {.x }
     z
 
 r[^n]

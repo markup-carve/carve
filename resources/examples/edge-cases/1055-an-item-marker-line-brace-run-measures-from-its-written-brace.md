@@ -27,8 +27,7 @@ z</li>
 ::: compare
 
 ```carve
--   {.x
-     }
+-   {.x }
      z
 ```
 

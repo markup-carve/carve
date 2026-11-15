@@ -10,7 +10,7 @@ PART 9 §10 I7 and CARVE-P2-008 (carve#4217). An indented caret line opens no bl
 
 `````carve
 > ^ x
- ^ cap
+ \^ cap
 `````
 
 ```html
@@ -26,7 +26,7 @@ The same after a plain paragraph.
 
 `````carve
 > a
- ^ cap
+ \^ cap
 `````
 
 ```html

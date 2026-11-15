@@ -59,9 +59,7 @@ whitespace IS indentation, and a tab there is measured in columns.
 ::: compare
 
 ```carve
-{.a
-	.b}
-
+{.a .b}
 paragraph
 ```
 
