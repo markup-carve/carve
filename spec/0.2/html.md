@@ -126,7 +126,7 @@ roses
 
 **C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case.
 
-**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`.
+**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`. The paragraph also keeps its `<p>` where it carries attributes or a `lang` (C2-H-018): the `<p>` carries them, and the `<img>` stands inside it on the same line, as inline content does.
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
@@ -251,6 +251,30 @@ Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
 <section id="i̇stanbul-straße">
   <h1>İstanbul Straße</h1>
 </section>
+```
+
+:::
+
+An attribute line on a block image paragraph keeps the `<p>`, which carries it; the image below has none and is bare (C2-H-020).
+
+Example 37 (unverified)
+
+::: compare
+
+```carve
+{.c #i}
+![a](x.png)
+
+{:de}
+![b](y.png)
+
+![c](z.png)
+```
+
+```html
+<p id="i" class="c"><img src="x.png" alt="a"></p>
+<p lang="de"><img src="y.png" alt="b"></p>
+<img src="z.png" alt="c">
 ```
 
 :::
@@ -1488,7 +1512,7 @@ One point is open.
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 1 | 1 |
-| Paragraphs, headings and sections | 17 | 1 | 3 | 0 |
+| Paragraphs, headings and sections | 17 | 1 | 3 | 1 |
 | Lists | 9 | 0 | 1 | 3 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
@@ -1506,6 +1530,6 @@ One point is open.
 | Options | 24 | 0 | 3 | 1 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **11** |
+| **Total** | **177** | **7** | **25** | **12** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 36 examples, 25 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 37 examples, 25 generated and 12 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
