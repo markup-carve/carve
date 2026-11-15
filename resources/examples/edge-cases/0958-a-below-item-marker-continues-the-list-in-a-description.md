@@ -1,6 +1,6 @@
 ## A below-item marker continues the list in a description
 
-In a description body, a marker after a blank line at the residual column of the first item is a sibling item of the same list. The blank makes the list loose.
+In a description body, a marker after a blank line at the description content column is a sibling item of the same list. The blank makes the list loose.
 
 ::: compare
 
@@ -8,7 +8,7 @@ In a description body, a marker after a blank line at the residual column of the
 :: term
 : - a
 
-   - c
+ - c
 ```
 
 ```html

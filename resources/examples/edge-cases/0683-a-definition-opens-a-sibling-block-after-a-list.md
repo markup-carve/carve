@@ -8,7 +8,7 @@ The quote reaches the description content column after its nested item.
 :: term
 : - a
 
-   > c
+ > c
 ```
 
 ```html
