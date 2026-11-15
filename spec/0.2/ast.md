@@ -579,11 +579,11 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-150** No span starts at a line ending, except the span of a `soft_break` or a `hard_break`.
 
-**C2-A-151** A span ends directly after the last source character the construct owns. A closing delimiter and an attached attribute block are inside; a following line ending, a blank line and an attribute line that attached to nothing are outside.
+**C2-A-151** A span ends directly after the last source character the construct owns. A closing delimiter and an attached attribute block are inside; a following line ending, a blank line and an attribute line that attached to nothing are outside. The spaces and tabs at the end of a line always have an owner. At the end of a block's last line they belong to the block, which ends at the line ending, an include and a heading as every other block; the padding of a cell belongs to the cell (C2-A-149). Inside a content they belong to the node that drops them (C2-I-002), on the last line of the content as on the others: to a line comment at the end of the line, which starts at the first space or tab before its `%%` and ends at the line ending, and otherwise to the break that follows them (C2-A-153). A node that holds text ends after its last kept character. For `a %% x`, two spaces, a line feed and `b`, the paragraph spans offsets 0 to 10, the comment 1 to 8 and the soft break 8 to 9; for `{{ a.crv }}` and two spaces, the include spans 0 to 13.
 
 **C2-A-152** A break owns its line ending, so its end is column 1 of the next line. A hard break also spans its backslash. A hard break at the end of the content with no line ending after it, as at the end of a table cell (C2-I-102), spans its backslash only.
 
-**C2-A-153** A break that a parser makes from a plain line ending, with no backslash in the source, has a span: the line ending itself. It is not among the nodes that omit `pos`.
+**C2-A-153** A break that a parser makes from a plain line ending, with no backslash in the source, has a span: the spaces and tabs that C2-I-002 drops before the line ending and no line comment owns (C2-A-151), and the line ending itself. It starts directly after the last kept character of its line, so for `a`, two spaces, a line feed and `b` the soft break spans offsets 1 to 4. A hard break spans the same and its backslash (C2-A-152). It is not among the nodes that omit `pos`.
 
 **C2-A-154** A container, a list, a description list and a table end after their closer when they have one, and otherwise after their last child that has a position. Each starts at its opening markup and ends at its closing markup also when its first or last child has no position.
 
