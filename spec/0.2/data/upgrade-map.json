@@ -1820,6 +1820,26 @@
       "meaning02": "C2-B-059 and C2-B-113 require the fence to be indented under its owner and explicitly closed before the following paragraph when 0.1 ended ownership at a blank line.",
       "toolEntry": "U-204",
       "silent": true
+    },
+    {
+      "id": "U-206",
+      "kind": "report",
+      "group": "measured reference rendering changes",
+      "from": "# *Setup*\n\nSee </#Setup>.\n",
+      "to": "# *Setup*\n\nSee </#Setup>.\n",
+      "meaning02": "C2-H-095 and C2-H-096 render a resolved cross-reference with the heading plain text or caption label and number instead of the 0.1 rich or recursive display.",
+      "toolEntry": "U-206",
+      "silent": true
+    },
+    {
+      "id": "U-207",
+      "kind": "escape",
+      "group": "measured inline reference rewrites",
+      "from": "Text[^a]{.ref}.\n",
+      "to": "Text[^a]\\{.ref}.\n",
+      "meaning02": "C2-I-043 and C2-I-088 let the attribute after an unresolved footnote marker change its rendering. Escape the attribute opener to retain 0.1 literal text.",
+      "toolEntry": "U-207",
+      "silent": true
     }
   ],
   "tree": [

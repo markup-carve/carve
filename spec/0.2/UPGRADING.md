@@ -459,6 +459,8 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-201 | Under C2-I-060, C2-I-062, and C2-I-119, `{_a %% b_} y` writes `&lt;u&gt;a&lt;/u&gt; y` in 0.1. **SILENT** | The line comment closes the braced span at its own boundary in 0.2, so the source writes literal `{_a` and drops the rest of the line. | Review the braced span; report |
 | U-202 | Under C2-I-089, `x ^[a ^[b] c]` writes one footnote whose body contains literal `^[b]` in 0.1. **SILENT** | The inner opener starts a second footnote in 0.2. | Write `x ^[a \^[b] c]`; escape |
 | U-204 | Under C2-B-059 and C2-B-113, `:: t` then `:  d` then `+` then an open code fence with `a`, a blank line, and `b` keeps only `a` and the blank line inside the description fence in 0.1. **SILENT** | The unchanged source keeps `b` inside the code fence in 0.2. | Remove `+`, indent the fence under the description, and close it before `b`; rewrite |
+| U-206 | Under C2-H-095 and C2-H-096, `# *Setup*` then `See </#Setup>.` writes a link with a bold `Setup` label in 0.1. **SILENT** | The same cross-reference writes a plain `Setup` label in 0.2. | Review the cross-reference display; report |
+| U-207 | Under C2-I-043 and C2-I-088, `Text[^a]{.ref}.` writes the unresolved footnote marker and literal `{.ref}` in 0.1. **SILENT** | The attribute disappears from the text in 0.2. | Write `Text[^a]\{.ref}.`; escape |
 
 ## Part 2. Integrators: your code and your pages
 
