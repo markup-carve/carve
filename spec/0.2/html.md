@@ -1427,6 +1427,8 @@ One point is open.
 
 **C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list of `data/url-policy.json` as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
 
+**C2-H-176** In text content and attribute values, the renderer replaces a character that the HTML input stream rejects with U+FFFD. This includes U+0000, C0 controls other than tab, line feed, form feed and carriage return, C1 controls, unpaired surrogates and Unicode noncharacters. A surrogate pair that spells a noncharacter is replaced once. Raw HTML and HTML returned by a host extension renderer remain the host's responsibility.
+
 ## Counts
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
@@ -1450,7 +1452,7 @@ One point is open.
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| Later clauses | 2 | 0 | 0 | 0 |
-| **Total** | **175** | **7** | **25** | **8** |
+| Later clauses | 3 | 0 | 0 | 0 |
+| **Total** | **176** | **7** | **25** | **8** |
 
-The document has 175 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 176 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
