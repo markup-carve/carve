@@ -1227,6 +1227,19 @@
       "clauses": ["C2-W-011", "C2-W-057", "C2-W-104", "C2-W-112"]
     },
     {
+      "id": "table-attribute-invalid",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        "The value of ${key} is not valid, so the table ignores the whole attribute. Correct every entry, or remove the attribute."
+      ],
+      "message_origin": "data_file",
+      "reports": "an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227)",
+      "clauses": ["C2-B-210", "C2-B-211", "C2-B-212", "C2-B-227"]
+    },
+    {
       "id": "table-column-arity",
       "severity": "warning",
       "channel": "lint",

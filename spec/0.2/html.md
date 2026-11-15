@@ -704,7 +704,7 @@ Example 12 (generated)
 
 **C2-H-152** A table with at least one column that has a `width` writes `<colgroup>` after its caption and before its first group, with one `<col>` per column. A column with a width carries `style="width: P%;"`, where P is the width times 100 written as a decimal number without trailing zeros, so `0.305` gives `30.5%` and `0.25` gives `25%`. A column without a width is a bare `<col>`. A table where no column has a width has no `<colgroup>`.
 
-**C2-H-153** `aligns`, `widths`, `header-rows` and `footer-rows` on a table are read and not written as HTML attributes, also where a value is invalid or has no effect. `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
+**C2-H-153** `aligns`, `widths`, `header-rows` and `footer-rows` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
 
 ## Captions and figures
 

@@ -215,6 +215,8 @@ Written:
 
 **C2-W-135** A `comment` among the rows of a table, or after its last row, is written as a comment-only line at its place (C2-W-059). The trailing line comment of a row reads to the same tree as that line (C2-A-086), so the writer does not write the trailing form: `| 1 | 2 | %% note` is written as `| 1 | 2 |` and, on the next line, `%% note`.
 
+**C2-W-136** A key `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from `headRows` (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
+
 ## Canonical forms: inline
 
 **C2-W-069** Emphasis is written with `/` and strong with `*`. Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written: `{/usr/local/}`.
@@ -638,7 +640,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Four findings of the syntax chapters had no rule. Their ids are new in this document.
+Five findings of the syntax chapters had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -646,6 +648,7 @@ Four findings of the syntax chapters had no rule. Their ids are new in this docu
 | `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077) |
 | `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
+| `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -720,6 +723,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an unquoted fence title | `fence-title-syntax` |
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
+| an invalid `aligns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
 | `**bold**` | `markdown-strong-double-star` |
 | a row without a closing pipe | `table-shaped-paragraph` |
 
@@ -817,12 +821,12 @@ One point is open.
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 27 | 4 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
-| Canonical forms: tables | 11 | 0 | 1 | 0 |
+| Canonical forms: tables | 12 | 0 | 1 | 0 |
 | Canonical forms: inline | 16 | 1 | 0 | 0 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **135** | **7** | **5** | **2** |
+| **Total** | **136** | **7** | **5** | **2** |
 
-The document has 135 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

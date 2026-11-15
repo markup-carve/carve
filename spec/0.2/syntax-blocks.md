@@ -4578,7 +4578,7 @@ title: x
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `aligns`, `widths` and `header-cols` keep their 0.1 definitions (carried over from 0.1). C2-B-210 to C2-B-214 state them.
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` keeps its 0.1 definition, and `aligns` and `widths` keep theirs except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
@@ -5071,17 +5071,19 @@ a,b
 
 **C2-B-221** The `headRows` a table carries (C2-A-088) is the declared count as written, also where it is past the last row: `header-rows=5` on a table of two rows gives `headRows` 5 on its one body (C2-B-209), and the writer writes that count back (C2-W-066). `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187).
 
-**C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. Any other value is no count, and the attribute then has no effect: the table keeps the partition it has without the attribute.
+**C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. A count is valid only in this form. Any other value is invalid, and the attribute then has no effect: the table keeps the partition it has without the attribute. A valid count takes effect also where it equals the default or selects no row.
 
-**C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry `left`, `right` or `center` sets `align` of that `table_column`. Any other entry, the empty one included, leaves the column unset. Entries past the last column are ignored. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.
+**C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry is `left`, `right` or `center` and sets `align` of that `table_column`. The whole value is checked before any entry is applied: every entry, one past the last column included, must have this form, and an empty or malformed entry makes the whole value invalid, so that it sets no column. Entries past the last column set nothing. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.
 
-**C2-B-212** `widths` is a list of entries separated by commas, by position like `aligns`. An entry that is a decimal number greater than 0 and at most 100 is a percentage of the table width, and sets `width` of that `table_column` to the number divided by 100: `25` gives `0.25`. Any other entry leaves the column unset. Entries past the last column are ignored, and fewer entries are valid. The widths need not total 100; `table-width-total` reports a total above 100.
+**C2-B-212** `widths` is a list of entries separated by commas, by position like `aligns`, and its whole value is checked in the same way before any entry is applied (C2-B-211). An entry is a decimal number greater than 0 and at most 100. It is a percentage of the table width, and sets `width` of that `table_column` to the number divided by 100: `25` gives `0.25`. An empty entry or any other entry makes the whole value invalid, so that it sets no column. Entries past the last column set nothing, and fewer entries are valid. The widths need not total 100; `table-width-total` reports a total above 100.
 
-**C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry sets no width.
+**C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry makes the value invalid (C2-B-212).
 
 **C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it.
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
+
+**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the table fields (C2-A-088, C2-A-089). A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
 Example 229 (generated)
 
@@ -5107,6 +5109,29 @@ Example 229 (generated)
   <tbody>
     <tr><td style="text-align: right;">tea</td><td style="text-align: center;">2</td><td style="text-align: center;">hot</td></tr>
     <tr><td style="text-align: right;">milk</td><td style="text-align: left;">3</td><td style="text-align: center;">cold</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+One malformed entry makes each list invalid, so no column is set and both keys stay in `attrs`. No key is written as an HTML attribute (C2-B-227, C2-H-153).
+
+Example 239 (unverified)
+
+::: compare
+
+```carve
+{aligns=right,x widths=25,,25 footer-rows=two .t}
+| a | b |
+| c | d |
+```
+
+```html
+<table class="t">
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>c</td><td>d</td></tr>
   </tbody>
 </table>
 ```
@@ -5381,12 +5406,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 2 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 34 | 2 | 20 | 6 |
+| Tables | 35 | 2 | 20 | 7 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **15** | **169** | **69** |
+| **Total** | **227** | **15** | **169** | **70** |
 
-The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 227 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
