@@ -1780,6 +1780,16 @@
       "meaning02": "C2-B-076 and C2-B-078 keep a following indented line in the description body until an explicit boundary; an attribute consumed by 0.1 must be removed when it has no rendered effect.",
       "toolEntry": "U-199",
       "silent": true
+    },
+    {
+      "id": "U-200",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "{~a~>b~}{.k} c\n",
+      "to": "{-a-}{+b+}\\{.k} c\n",
+      "meaning02": "C2-I-062 writes a replacement as adjacent deletion and insertion nodes, and C2-I-043 would attach the following attribute to the insertion unless its brace is escaped.",
+      "toolEntry": "U-200",
+      "silent": true
     }
   ],
   "tree": [
