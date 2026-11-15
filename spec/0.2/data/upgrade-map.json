@@ -1930,6 +1930,16 @@
       "meaning02": "C2-I-036 and C2-B-147 let the image open as a block after the invisible brace comment is removed.",
       "toolEntry": "U-216",
       "silent": true
+    },
+    {
+      "id": "U-218",
+      "kind": "rewrite",
+      "group": "empty footnote body sentinel",
+      "from": "See[^f]\n\n[^f]: {empty}\n",
+      "to": "See[^f]\n\n[^f]: {% %}\n",
+      "meaning02": "C2-B-082 and C2-I-036 keep the footnote resolved with an empty body when an empty brace comment replaces the old sentinel.",
+      "toolEntry": "U-218",
+      "silent": true
     }
   ],
   "tree": [

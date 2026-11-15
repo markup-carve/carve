@@ -470,6 +470,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-214 | Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1. **SILENT** | The same 0.2 source splits the unclosed code span into two cells. | Close the code run before the final pipe, as in \| a &#96;b \| c d&#96; \|; rewrite |
 | U-215 | Under C2-B-108, C2-B-110, and C2-B-114, `:: t` then `%%%` then `a` then `%%%` then `: body` writes one description list whose body is `body` in 0.1. **SILENT** | The same 0.2 source ends the description list before `: body`. | Remove the invisible percent fence span; rewrite |
 | U-216 | Under C2-I-036 and C2-B-147, `{%%}![alt](x.png)` writes a block image in 0.1. **SILENT** | The same 0.2 source writes a paragraph containing the image. | Remove the invisible brace comment; rewrite |
+| U-218 | Under C2-B-082 and C2-I-036, `See[^f]` then `[^f]: {empty}` resolves an empty footnote in 0.1. **SILENT** | The same 0.2 source prints `{empty}` inside the footnote body. | Write `[^f]: {% %}` to keep the body empty; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
