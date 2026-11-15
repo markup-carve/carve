@@ -358,7 +358,7 @@
       "optIn": [
         [
           "caption-looking-paragraph",
-          11
+          10
         ]
       ]
     },
@@ -433,10 +433,6 @@
         [
           "block-marker-as-text",
           3
-        ],
-        [
-          "unclosed-container-fence",
-          5
         ]
       ],
       "aheadOfPin": [],
@@ -444,10 +440,6 @@
         [
           "block-marker-as-text",
           3
-        ],
-        [
-          "unclosed-container-fence",
-          5
         ]
       ],
       "optIn": []
@@ -506,7 +498,7 @@
       "optIn": [
         [
           "caption-looking-paragraph",
-          5
+          4
         ]
       ]
     },

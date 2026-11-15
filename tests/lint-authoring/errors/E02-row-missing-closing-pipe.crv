@@ -1,9 +1,7 @@
-\= Bericht
+# Bericht
 
 Einleitung mit Umlauten: Fußzeile, Prüfstand.
 
 |= Nr. |= Befund |
-
 | 1 | Test-PDF ohne Fußzeile
-
 | 2 | Fußzeilenspalten pro Vorlage |
