@@ -26,9 +26,9 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line.
+**Exception C2-H-007** A list item whose only block is one paragraph, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause and of C2-H-006: its `<img>` stands on its own line inside the item or the quote. A display math paragraph is one, and is written on one line.
 
-**C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body.
+**C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
 Example 1 (generated)
 
@@ -54,7 +54,7 @@ Example 1 (generated)
 
 ## Attributes
 
-**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language, then the keys in the order written, then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037).
+**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`, which takes an authored `style` behind it, C2-H-032), then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037).
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
@@ -68,7 +68,7 @@ Example 1 (generated)
 
 **C2-H-015** An authored `align` key with the value `left`, `right` or `center` on a paragraph, a div or a heading is written as `style="text-align: VALUE;"`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
 
-**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name.
+**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name. Block elements here are the element of each block node and `<li>`, `<dt>`, `<dd>`, `<thead>`, `<tbody>`, `<tfoot>` and `<tr>`; not `<section>`, `<caption>`, `<figcaption>`, `<th>`, `<td>`, nor the `<hr>` and the `<li>` of the footnote section.
 
 **C2-H-017** Attribute names, attribute values and destinations pass the filter of C2-H-128 before they are written. The filter removes attributes and blanks destinations. It never removes an element.
 
@@ -287,7 +287,7 @@ Example 37 (unverified)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** A task item carries the base class `task`. In a bullet list it also carries `style="list-style: none"`, so its bullet is never shown. In an ordered list the number remains visible and the item has no generated style declaration. An authored `style` follows the generated declaration after `; ` where there is one. The item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text (C2-H-143) of its direct paragraph and heading children, in order and joined by one space; its other blocks give no text. A `<ul>` or `<ol>` with a task item carries class `task-list`; its other items are plain `<li>` elements. The ordered list's `start` and `type` attributes follow C2-H-030.
+**C2-H-032** A task item carries the base class `task`. In a bullet list it also carries `style="list-style: none"`, so its bullet is never shown. In an ordered list the number remains visible and the item has no generated style declaration. An authored `style` follows the generated declaration after `; ` where there is one. The item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text (C2-H-143) of its direct paragraph and heading children, in order and joined by one space; its other blocks give no text. The box and its space stand directly behind `<li>`: before a `<p>` on the same line, and before a nested block at the end of the line. A `<ul>` or `<ol>` with a task item carries class `task-list`; its other items are plain `<li>` elements. The ordered list's `start` and `type` attributes follow C2-H-030.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -971,7 +971,7 @@ b {% mid %} c
 
 **C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section and the options in the order of C2-W-058, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
 
-**C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds, so `@cols:"a,,b"`, which is no list of names (C2-B-205), is written `@cols:a,,b`. A `cols` value that kept its quotes in the tree (C2-A-181) is written as stored, with no second pair. The writer does the same (C2-W-058). A value that starts with a double or a single quote is written in double quotes too, since bare it would read as the start of a quoted value (C2-B-204).
+**C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds, so `@cols:"a,,b"`, which is no list of names (C2-B-205), is written `@cols:a,,b`. A `cols` list of names is written as its names joined by commas in one pair of double quotes; the tree keeps no quotes (C2-A-181). The writer does the same (C2-W-058). A value that starts with a double or a single quote is written in double quotes too, since bare it would read as the start of a quoted value (C2-B-204).
 
 ## Inline elements
 
@@ -1100,9 +1100,9 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 :::
 
-**C2-H-139** An attribute block that is attached to an unresolved reference is written after it as text, as one brace block in the fixed order: id, classes, language, keys.
+**C2-H-139** An attribute block that is attached to an unresolved reference is written after it as text, as one brace block in the fixed order: id, classes, language, keys. A key with an empty value is written as its name alone. A value that holds whitespace, `"`, `'`, a backslash, `|` or `}` stands in double quotes, with a backslash before each `"` and each backslash in it; every other value stands bare.
 
-**C2-H-141** The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition.
+**C2-H-141** The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k="1" m="4" j="3"`.
 
 ## Footnotes
 
@@ -1120,7 +1120,7 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 **C2-H-093** The section stands at the end of the document, after the last block. A top-level `::: footnotes` directive (C2-A-066) moves it to the place of that directive. A `::: footnotes` directive inside a container places nothing and renders as `<div class="footnotes">`. As in 0.1 (CARVE-P9-073).
 
-**C2-H-094** With no numbered footnote in the document, no section is written.
+**C2-H-094** With no numbered footnote in the document, no section is written. A note whose every reference is degraded (C2-H-165) is not written, and with no note left no section is written.
 
 Example 20 (generated)
 
@@ -1216,7 +1216,7 @@ HTML and *HTML* and `HTML`.
 
 ## Mentions, tags and symbols
 
-**C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the outer element is `<a class="mention" href="URL">` or `<a class="tag" href="URL">`.
+**C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the outer element is `<a class="mention" href="URL">` or `<a class="tag" href="URL">`. Where a mention carries `label` (C2-A-101), the label replaces `@NAME` inside `<strong>`.
 
 **C2-H-101** A symbol whose name is in the `symbols` table is written as the table's value, verbatim. A symbol with no entry is written as its source, `:NAME:`. A symbol that carries attributes is wrapped in a `<span>` that carries them, around the value or the source.
 
@@ -1319,14 +1319,14 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-tight` | `<ul>`, `<ol>` | the list is tight | stays; written on every tight list (C2-H-138) |
 | `data-carve-xref` | `<a>` | the link is a cross-reference | stays |
 | `data-carve-caption-number` | `<span>` | the caption number mark | stays |
-| `data-carve-div` | `<div>` | a div with no other attribute | stays |
+| `data-carve-div` | `<div>` | a div with no other attribute written, `data-source-line` included | stays |
 | `data-carve-line-block` | `<div>` | a line block | stays |
 | `data-carve-substitution` | `<span>` | a substitution node | goes: a replacement is a `delete` and an `insert` (C2-A-097) |
 | `data-carve-src` | none | reserved, never written | stays reserved |
 
 Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data-carve-col-widths` and `data-carve-substitution`.
 
-**C2-H-115** The reserved names are the 17 names of this table that stay or are new. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
+**C2-H-115** The reserved names are the 18 names of this table that stay, are new or stay reserved: 15 stay, 2 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
 **C2-H-116** With `roundtrip` on, an authored attribute with a reserved name is dropped on every element and reported as the render loss `carrier-attribute-dropped`. With it off, the attribute passes through.
 
@@ -1390,7 +1390,7 @@ in
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram or an equation without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
-**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source, with the attributes of the paragraph on `<pre>`. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source and one line feed, as a code block writes its value (C2-A-045), with the attributes of the paragraph on `<pre>`. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
 
 **C2-H-123** `renderers` maps an extension name to a build-time renderer and is read only in static mode.
 
@@ -1416,7 +1416,7 @@ in
 
 **C2-H-160** Under a deny list a destination fails when its scheme is on the list, and under an allow list when it is not. A failed destination is written as the empty value, `href=""` or `src=""`, and is reported with `destination-denied` once per destination. The link text, the alt text and the visible text of an autolink stay. An authored `href` on a link and an authored `src` on an image are not written: the destination stands, so an attribute block cannot bring back a failed one.
 
-**C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test or when the unsplit value fails it: `ping="java script:x"` gives `ping=""`. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written. Three places need a word. Classes are tested one by one: an authored class that fails is left out and the others stay, the element's own classes among them. The `lang` field of a supplied tree is tested like an authored value. The expansion of an abbreviation definition is text and is not tested, while `abbr` and `time` written in an attribute block are authored values and are.
+**C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. A value that holds no colon is not tested. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test or when the unsplit value fails it: `ping="java script:x"` gives `ping=""`. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written. Three places need a word. Classes are tested one by one: an authored class that fails is left out and the others stay, the element's own classes among them. The `lang` field of a supplied tree is tested like an authored value. The expansion of an abbreviation definition is text and is not tested, while `abbr` and `time` written in an attribute block are authored values and are.
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
@@ -1424,11 +1424,11 @@ in
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a comment gives no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a comment gives no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
 No built-in profile keeps some footnote references and degrades others: `full` and `article` keep every `footnote_ref` and `inline_footnote`, and `comment` and `minimal` keep none, so the note numbers have no gap under any of them.
 
-**C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.
+**C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded. A `list_item` counts a level but is never degraded on its own: it keeps its `<li>`, and its blocks are degraded. Degradation comes before C2-H-069: a node at the bound writes its children in their degraded forms, so a soft break beside a comment-only line among them is one space.
 
 **C2-H-167** A link carries at most one `rel` attribute, and none when neither the author nor the profile gives a word. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. The authored value passes C2-H-161 first, so a value that test empties gives no authored word. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`. A mention or a tag that `social` gives a URL is a link for the profiles too: where `link` is outside the profile it is written as its inert span (C2-H-100), and elsewhere it takes the same `rel`.
 
@@ -1614,11 +1614,11 @@ One point is open.
 
 **C2-H-174** A task box whose item has no plain text in its direct paragraph or heading children writes no `aria-label` attribute on its checkbox.
 
-**C2-H-175** An `abbr` span with neither an authored `title` nor a nonempty derived abbreviation value writes no `title` attribute.
+**C2-H-175** An `abbr` span with neither an authored `title` nor a nonempty derived abbreviation value writes no `title` attribute. The test is made on the value as written, before the filter of C2-H-161: an authored `abbr` that the filter empties gives `title=""`.
 
 **C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list of `data/url-policy.json` as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
 
-**C2-H-176** In text content and attribute values, the renderer replaces a character that the HTML input stream rejects with U+FFFD. This includes U+0000, C0 controls other than tab, line feed, form feed and carriage return, C1 controls, unpaired surrogates and Unicode noncharacters. A surrogate pair that spells a noncharacter is replaced once. Raw HTML and HTML returned by a host extension renderer remain the host's responsibility.
+**C2-H-176** In text content and attribute values, the renderer replaces a character that the HTML input stream rejects with U+FFFD. This includes U+0000, C0 controls other than tab, line feed, form feed and carriage return, U+007F, C1 controls, unpaired surrogates and Unicode noncharacters. A surrogate pair that spells a noncharacter is replaced once. Raw HTML and HTML returned by a host extension renderer remain the host's responsibility.
 
 ## Counts
 
