@@ -1073,10 +1073,10 @@
     },
     {
       "id": "U-131",
-      "kind": "report",
+      "kind": "rewrite",
       "group": "definitions",
       "from": "* [d]:",
-      "to": "",
+      "to": "* {% %}",
       "meaning02": "<ul>\n  <li>[d]:</li>\n</ul>",
       "toolEntry": "U-131",
       "silent": true
@@ -2289,6 +2289,16 @@
       "to": "",
       "meaning02": "C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escaped.",
       "toolEntry": "U-255",
+      "silent": true
+    },
+    {
+      "id": "U-256",
+      "kind": "rewrite",
+      "group": "tag inside a failed heading brace attribute",
+      "from": "# H {#id .cls}\n",
+      "to": "# H {#id .cls\\}\n",
+      "meaning02": "C2-I-044 and C2-I-090 keep the tag visible when the closer no longer forms a brace attribute.",
+      "toolEntry": "U-256",
       "silent": true
     }
   ],
