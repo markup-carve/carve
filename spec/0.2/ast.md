@@ -593,7 +593,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-157** Such a node may carry `segments`, a list of ranges in the shape of `pos`, one per source piece in order.
 
-**C2-A-158** In a tree a parser built from source, only these node types may omit `pos`: `table_column` and `caption_number`, which have no source text; a `table_row`, a `table_cell`, a `cell_paragraph` and the inline nodes of a cell that a continuation row joined; the cells of a delimited table; and a `text` node merged from pieces that are not adjacent in the source. The final list is open (Open, point 1).
+**C2-A-158** In a tree a parser built from source, a node omits `pos` only when it has no source character or when its value is not one contiguous slice of the source (C2-A-156). Nodes with no source character are `table_column` and the `cell_paragraph` of an empty cell. Nodes that are not one slice are a `table_row`, a `table_cell` and a `cell_paragraph` that a continuation row joined, an inline node of such a cell that takes characters from more than one of its pieces, the delimited table cases of C2-A-215, and a `text` node merged from pieces that are not adjacent in the source. Every other node carries `pos`. An empty cell and a cell that holds a span mark span the text between their pipes (C2-A-149), so in `| a | |` the second cell spans offsets 5 to 6. A `caption_number` spans its `#`, and the text on each side of it spans its own characters: for `![i](a.png)`, a line feed and `^ Figure #: cap`, the text `Figure ` spans offsets 14 to 21, the number 21 to 22 and the text `: cap` 22 to 27.
 
 **C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair` and `small_caps` have no source spelling and are never positioned by a parser. A block extension transformed from source takes the claimed core node's position.
 
@@ -806,6 +806,5 @@ The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast
 
 Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
 
-1. **The list of synthesized node types.** C2-A-158 gives the candidates. C2-A-215 settles the delimited table cases; other synthesized types remain open.
 2. **Edit binding** of annotation-range paths after tree edits remains deferred. C2-A-204 defines block-boundary anchors for an unchanged tree.
 4. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.
