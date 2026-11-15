@@ -2170,6 +2170,26 @@
       "meaning02": "C2-B-129 writes the line ending inside the unresolved reference fallback as a hard break inside the hardbreak div.",
       "toolEntry": "U-241",
       "silent": true
+    },
+    {
+      "id": "U-242",
+      "kind": "rewrite",
+      "group": "indented fence run remains code content",
+      "from": "{.x\n.y}\n```\nwa\n> q\n  ```\n",
+      "to": "{.x\n.y}\n````\nwa\n> q\n  ```\n",
+      "meaning02": "C2-B-108 and C2-B-110 leave the indented run inside a four-backtick fence as code content.",
+      "toolEntry": "U-242",
+      "silent": true
+    },
+    {
+      "id": "U-243",
+      "kind": "escape",
+      "group": "backtick fence run inside a multiline brace comment",
+      "from": "- {% a\n   ```\n   z %}\nplain\n",
+      "to": "- {% a\n   \\```\n   z %}\nplain\n",
+      "meaning02": "C2-I-036 and C2-B-108 keep the escaped backtick run inside the brace comment instead of opening a fence.",
+      "toolEntry": "U-243",
+      "silent": true
     }
   ],
   "tree": [
