@@ -647,7 +647,7 @@
       "group": "inline emphasis and typography",
       "from": "an _underlined_ word and snake_case and _id\n",
       "to": "an {_underlined_} word and snake_case and _id\n",
-      "meaning02": "<p>an _underlined_ word and snake_case and _id</p>",
+      "meaning02": "<p>an _underlined_ word and snake_case and _id</p> A slash immediately after the braced underline can become bare emphasis under C2-I-046 through C2-I-048 and must be escaped when 0.1 left it literal.",
       "toolEntry": "U-065",
       "silent": true
     },
@@ -1117,7 +1117,7 @@
       "group": "lists",
       "from": "- [ ] +",
       "to": "",
-      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"+\"> +</li>\n</ul>",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"+\"> +</li>\n</ul> A following heading can also extend the checkbox aria label to include heading text.",
       "toolEntry": "U-133",
       "silent": true
     },
@@ -1367,7 +1367,7 @@
       "group": "measured rendering changes",
       "from": "[\\[][]",
       "to": "",
-      "meaning02": "<p>[[][]</p>",
+      "meaning02": "<p>[[][]</p> On an unresolved reference, following attribute blocks can be folded into a reordered literal attribute sequence.",
       "toolEntry": "U-158",
       "silent": true
     },

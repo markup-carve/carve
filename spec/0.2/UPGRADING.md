@@ -138,7 +138,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-065 | Bare underline **SILENT** | &lt;p&gt;an _underlined_ word and snake_case and _id&lt;/p&gt; | an {_underlined_} word and snake_case and _id ⏎ ; rewrite |
+| U-065 | In 0.1, `_underlined_` writes an underline, and `_z_/y/` writes an underline followed by literal `/y/`. **SILENT** | Under C2-I-046 through C2-I-048, a bare underscore is text and the slash after `{_z_}` can start emphasis in 0.2. | Write `{_underlined_}` or `{_z_}\/y/`; rewrite |
 | U-066 | Bare strike **SILENT** | &lt;p&gt;a ~struck~ word and ~/config&lt;/p&gt; | a {~struck~} word and ~/config ⏎ ; rewrite |
 | U-067 | Bare highlight **SILENT** | &lt;p&gt;a =marked= word and x =1, y= 2&lt;/p&gt; | a {=marked=} word and x {=1, y=} 2 ⏎ ; rewrite |
 | U-068 | Emphasis outside strong **SILENT** | &lt;p&gt;&lt;em&gt;&lt;strong&gt;bold italic&lt;/strong&gt;&lt;/em&gt; and &lt;strong&gt;… | */bold italic/* and */bold italic/* ⏎ ; rewrite |
@@ -355,7 +355,7 @@ The following changes are specified by the cited 0.2 clauses and require review 
 | U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. **SILENT** | The line block keeps the tab as text before `x`. | Review the line block; report |
 | U-131 | Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. **SILENT** | The item contains the literal text `[d]:`. | Review the item; report |
 | U-132 | Under C2-B-081 and C2-B-083, `[r]:` writes no HTML. **SILENT** | The line writes a paragraph containing `[r]:`. | Review the definition; report |
-| U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. | Review task HTML; report |
+| U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. The following heading makes the second example use `aria-label="bare inside"`. | Review task HTML; report |
 | U-134 | Under C2-B-032 and C2-B-081, `> [f]:` writes one empty block quote. **SILENT** | It writes a paragraph containing `[f]:`. | Review the quote; report |
 
 #### Measured block and inline rewrites
@@ -399,7 +399,7 @@ Each row gives the smallest input retained by the measurement and the exact HTML
 | U-155 | Under C2-I-034,C2-I-039, a	%% writes &lt;p&gt;a	%%&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;a&lt;/p&gt; in 0.2. | Review; report |
 | U-156 | Under C2-B-119, ::: e[ writes &lt;div class="e"&gt; ⏎  ⏎ &lt;/div&gt; in 0.1. **SILENT** | The same source writes &lt;div class="e["&gt; ⏎  ⏎ &lt;/div&gt; in 0.2. | Review; report |
 | U-157 | Under C2-B-108,C2-B-110,C2-B-122, &#96;&#96;&#96;s ""u writes &lt;pre&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.1. **SILENT** | The same source writes &lt;pre title=""&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.2. | Review; report |
-| U-158 | Under C2-I-079,C2-I-085, [\[][] writes &lt;p&gt;[\[][]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[[][]&lt;/p&gt; in 0.2. | Review; report |
+| U-158 | Under C2-I-079 and C2-I-085, `[a][a]{.c}{#i}` writes the unresolved reference and the literal `{.c}{#i}` in 0.1. **SILENT** | The same source writes the reordered literal `{#i .c}` in 0.2. | Review the unresolved reference; report |
 | U-159 | Under C2-B-046,C2-H-032, - [x] a  h writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x"&gt;&lt;input type="checkbox" checked disabled aria-label="a h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x" class="task" style="list-style: none"&gt;&lt;input type="checkbox" checked disabled aria-label="a  h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
 | U-160 | Under C2-I-087,C2-B-082, x[^f ⏎ g] ⏎ [^f g]: n writes &lt;p&gt;x[^f ⏎ g]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;x&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt; ⏎ &lt;section role="doc-endnotes" aria-label="Footnotes"&gt; ⏎   &lt;hr&gt; ⏎   &lt;ol&gt; ⏎     &lt;li id="fn1"&gt; ⏎       &lt;p&gt;n&lt;a href="#fnref1" role="doc-backlink" aria-label="Back to reference"&gt;↩&lt;/a&gt;&lt;/p&gt; ⏎     &lt;/li&gt; ⏎   &lt;/ol&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
 | U-161 | Under C2-I-067,C2-B-083, ![][a ⏎ b] writes &lt;p&gt;![][a ⏎ b]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;![][a b]&lt;/p&gt; in 0.2. | Review; report |
