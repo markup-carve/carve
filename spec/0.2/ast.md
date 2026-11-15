@@ -788,13 +788,15 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in Unicode code points of the annotation text of that node. The schema is `data/annotation-ranges.schema.json`.
 
+**C2-A-215** A table group made from a delimited table may omit `pos`. Its rows, cells, cell paragraphs and decoded text nodes omit `pos`; the table itself carries the position of its source fence. A pipe table group carries `pos`. These are the delimited table cases of C2-A-158, including the group and decoded text nodes.
+
 ## Counts
 
 | Section | Clauses |
 | --- | ---: |
 | Existing AST contract | 189 |
-| Later clauses and standard data namespaces | 25 |
-| **Total** | **214** |
+| Later clauses and standard data namespaces | 26 |
+| **Total** | **215** |
 
 ## Schema changes owed
 
@@ -804,6 +806,6 @@ The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast
 
 Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
 
-1. **The list of synthesized node types.** C2-A-158 gives the candidates. Not settled: whether the cells of a delimited table can be positioned, and whether table groups always have a position.
+1. **The list of synthesized node types.** C2-A-158 gives the candidates. C2-A-215 settles the delimited table cases; other synthesized types remain open.
 2. **Edit binding** of annotation-range paths after tree edits remains deferred. C2-A-204 defines block-boundary anchors for an unchanged tree.
 4. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.
