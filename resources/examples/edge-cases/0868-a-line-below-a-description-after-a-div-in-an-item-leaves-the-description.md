@@ -12,7 +12,7 @@ PART 9 §24 C3 (carve#4591). A closed div leaves no paragraph open, so the line 
 :: t
 : - :::
     :::
- q
+q
 `````
 
 ```html

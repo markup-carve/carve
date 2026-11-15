@@ -10,8 +10,8 @@ PART 9 §24 C3 (carve#4590). The description holds two headings, so no paragraph
 
 `````carve
 [^n]: :: t
-  : # H
-    # I
+      : # H
+        # I
 z
 
 [^n]
