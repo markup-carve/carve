@@ -41,7 +41,7 @@ Terms:
 
 **C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines. A quote is the exception: a blank line without its mark ends it at once (C2-B-032).
 
-**C2-B-218** A U+0000 in the source is read as U+FFFD, in text, in code and in every other value, so a tree from a parse never holds U+0000 (C2-A-044). Offsets count the bytes of the source as it stands. An unpaired surrogate in the string a host passes is read as U+FFFD in the same way and counts three bytes.
+**C2-B-218** A U+0000 in the source is read as U+FFFD, in text, in code and in every other value, so a tree from a parse never holds U+0000 (C2-A-044). Offsets count the bytes of the source as it stands. An unpaired surrogate in the string a host passes is read as U+FFFD in the same way and counts three bytes. A source given as bytes is decoded as UTF-8 by the WHATWG decoder: each maximal subpart of an ill-formed sequence is read as one U+FFFD, and offsets still count the source bytes, so the U+FFFD spans the bytes it replaces. The bytes `61 FF 62` give the paragraph `a`, U+FFFD, `b`, whose characters span offsets 0 to 1, 1 to 2 and 2 to 3; the bytes `61 E2 82 62` give `a`, one U+FFFD over offsets 1 to 3, and `b`. A source is never refused for its encoding.
 
 **C2-B-010** A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end.
 
