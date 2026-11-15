@@ -314,6 +314,144 @@ The 0.1 continuation marker `+` no longer owns a following block in 0.2 under C2
 | U-124 | Plus continuation in a footnote body **SILENT** | a ⏎ [^n]: + | a ⏎  ⏎ [^n]: +; rewrite |
 | U-125 | Plus continuation in a quote **SILENT** | > + ⏎ > | > ⏎ >; rewrite |
 
+#### Measured quote boundary rewrite
+
+Under C2-B-031 and C2-B-032, an empty quote directly after paragraph text is a lazy line in 0.2. For `y` followed by `>`, the 0.1 HTML has a paragraph and an empty block quote, while unchanged 0.2 source has one paragraph containing a literal `>`. A blank line before `>` retains the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-126 | `y` then `>` **SILENT** | One paragraph containing `y` and a literal `>` | `y`, a blank line, then `>`; rewrite |
+
+#### Measured list fence boundary rewrite
+
+Under C2-B-057, C2-B-109, and C2-B-111, a code fence in a list item ends when the item ends. For `- ````, a blank line, then `+`, 0.1 writes an empty code line inside the item, while unchanged 0.2 source writes an empty code block and a paragraph containing `+`. Close the fence at the item's content column to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-127 | `- ````, a blank line, then `+` **SILENT** | An empty item code block followed by a `+` paragraph | `- ````, a blank line, then an indented closer; rewrite |
+
+#### Measured description ownership rewrite
+
+Under C2-B-069, C2-B-076, and C2-B-078, a description body belongs to its term only when its mark is at the list's owning column and later body blocks are indented past that mark. For ` :: t` followed by `: x`, 0.1 writes a description list, while unchanged 0.2 source folds `: x` into the term text. Move the term mark to the owning column to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-128 | ` :: t` then `: x` **SILENT** | One term containing `: x` | `:: t` then `: x`; rewrite |
+
+#### Measured percent comment fence rewrite
+
+Under C2-B-108, C2-B-110, and C2-B-114, a longer percent run closes a comment in 0.2 when it has at least the opener's length. For `%%%`, then `%%%%`, then `y`, 0.1 hides every line, while unchanged 0.2 source shows `y` as a paragraph. Lengthen the opener beyond the internal run to retain the 0.1 HTML.
+
+| ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-129 | `%%%`, then `%%%%`, then `y` **SILENT** | A paragraph containing `y` | `%%%%%`, then `%%%%`, then `y`; rewrite |
+
+#### Measured rendering changes
+
+The following changes are specified by the cited 0.2 clauses and require review when the old HTML matters.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. **SILENT** | The line block keeps the tab as text before `x`. | Review the line block; report |
+| U-131 | Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. **SILENT** | The item contains the literal text `[d]:`. | Review the item; report |
+| U-132 | Under C2-B-081 and C2-B-083, `[r]:` writes no HTML. **SILENT** | The line writes a paragraph containing `[r]:`. | Review the definition; report |
+| U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. | Review task HTML; report |
+| U-134 | Under C2-B-032 and C2-B-081, `> [f]:` writes one empty block quote. **SILENT** | It writes a paragraph containing `[f]:`. | Review the quote; report |
+
+#### Measured block and inline rewrites
+
+The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HTML compare equal.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-135 | Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line. **SILENT** | Unchanged 0.2 source discards that blank code line; an explicit closing fence retains it. | Close the fence; rewrite |
+| U-136 | Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1. **SILENT** | Unchanged 0.2 source consumes the brace comment and prints only `x`; escaping the opening brace prints the old text. | Escape the brace; escape |
+| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` makes an empty item in 0.1. **SILENT** | Unchanged 0.2 source prints `{k}`; an empty brace comment keeps the item empty. | Write `- {% %}`; rewrite |
+| U-138 | Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source attaches `p` as a figure caption; a blank line before the caret retains the paragraph. | Insert a blank line; rewrite |
+| U-139 | Under C2-I-089, `x^[]` prints literally in 0.1. **SILENT** | Unchanged 0.2 source creates an empty inline footnote; escaping the caret retains the literal text. | Write `x\^[]`; escape |
+
+#### Measured cell and attribute changes
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-140 | Under C2-B-171, a tab between two table pipes is cell text in 0.1. **SILENT** | Unchanged 0.2 source treats the tab as cell padding and writes an empty cell. | Review the cell; report |
+| U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source prints `{k}` inside the quote; removing the consumed attribute retains the old HTML. | Remove the attribute; rewrite |
+| U-142 | Under the same clauses, `:: t` then `: {empty}` writes an empty description body in 0.1. **SILENT** | Unchanged 0.2 source prints `{empty}`; an empty brace comment retains the empty body. | Write `: {% %}`; rewrite |
+
+#### Other measured rendering changes
+
+Each row gives the smallest input retained by the measurement and the exact HTML from both renderers.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-143 | Under C2-I-047,C2-I-051, /{/ writes &lt;p&gt;&lt;em&gt;{&lt;/em&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;/{/&lt;/p&gt; in 0.2. | Review; report |
+| U-144 | Under C2-I-035,C2-I-048, {+-"+} writes &lt;p&gt;&lt;ins&gt;-”&lt;/ins&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;ins&gt;-“&lt;/ins&gt;&lt;/p&gt; in 0.2. | Review; report |
+| U-145 | Under C2-I-047,C2-I-048,C2-I-051, /*// writes &lt;p&gt;&lt;em&gt;*&lt;/em&gt;/&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;/*//&lt;/p&gt; in 0.2. | Review; report |
+| U-146 | Under C2-B-133,C2-I-044, [ %%] writes &lt;p&gt;[]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[&lt;/p&gt; in 0.2. | Review; report |
+| U-147 | Under C2-B-175,C2-B-184, \|\| ⏎ +\|\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-148 | Under C2-I-081,C2-I-084, # 	%%h writes &lt;section id="h"&gt; ⏎   &lt;h1&gt;	%%h&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="s"&gt; ⏎   &lt;h1&gt;&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-149 | Under C2-I-044,C2-I-090, :f[%%] writes &lt;p&gt;&lt;span class="ext-f"&gt;&lt;/span&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;span class="ext-f"&gt;%%&lt;/span&gt;&lt;/p&gt; in 0.2. | Review; report |
+| U-150 | Under C2-B-180,C2-B-185, {widths=5} ⏎ \|\|\| writes &lt;table&gt; ⏎   &lt;colgroup&gt; ⏎     &lt;col style="width: 5%;"&gt; ⏎   &lt;/colgroup&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;colgroup&gt; ⏎     &lt;col style="width: 5%;"&gt; ⏎     &lt;col&gt; ⏎   &lt;/colgroup&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-151 | Under C2-I-050,C2-I-052, _{_ writes &lt;p&gt;&lt;u&gt;{&lt;/u&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;{_{_}&lt;/p&gt; in 0.2. | Review; report |
+| U-152 | Under C2-B-169,C2-B-177, \|\|	&lt;\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;	&amp;lt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td colspan="2"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-153 | Under C2-B-027,C2-B-033, - 	e writes &lt;ul&gt; ⏎   &lt;li&gt;	e&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li&gt;e&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-154 | Under C2-H-088, ^[ [^1]] ⏎ [^1]: n writes &lt;p&gt;&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt; ⏎ &lt;section role="doc-endnotes" aria-label="Footnotes"&gt; ⏎   &lt;hr&gt; ⏎   &lt;ol&gt; ⏎     &lt;li id="fn1"&gt; ⏎       &lt;p&gt; [^1]&lt;a href="#fnref1" role="doc-backlink" aria-label="Back to reference"&gt;↩&lt;/a&gt;&lt;/p&gt; ⏎     &lt;/li&gt; ⏎   &lt;/ol&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt; ⏎ &lt;section role="doc-endnotes" aria-label="Footnotes"&gt; ⏎   &lt;hr&gt; ⏎   &lt;ol&gt; ⏎     &lt;li id="fn1"&gt; ⏎       &lt;p&gt; &lt;a id="fnref2" href="#fn2" role="doc-noteref"&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;a href="#fnref1" role="doc-backlink" aria-label="Back to reference"&gt;↩&lt;/a&gt;&lt;/p&gt; ⏎     &lt;/li&gt; ⏎     &lt;li id="fn2"&gt; ⏎       &lt;p&gt;n&lt;a href="#fnref2" role="doc-backlink" aria-label="Back to reference"&gt;↩&lt;/a&gt;&lt;/p&gt; ⏎     &lt;/li&gt; ⏎   &lt;/ol&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-155 | Under C2-I-034,C2-I-039, a	%% writes &lt;p&gt;a	%%&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;a&lt;/p&gt; in 0.2. | Review; report |
+| U-156 | Under C2-B-119, ::: e[ writes &lt;div class="e"&gt; ⏎  ⏎ &lt;/div&gt; in 0.1. **SILENT** | The same source writes &lt;div class="e["&gt; ⏎  ⏎ &lt;/div&gt; in 0.2. | Review; report |
+| U-157 | Under C2-B-108,C2-B-110,C2-B-122, &#96;&#96;&#96;s ""u writes &lt;pre&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.1. **SILENT** | The same source writes &lt;pre title=""&gt;&lt;code class="language-s"&gt;&lt;/code&gt;&lt;/pre&gt; in 0.2. | Review; report |
+| U-158 | Under C2-I-079,C2-I-085, [\[][] writes &lt;p&gt;[\[][]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[[][]&lt;/p&gt; in 0.2. | Review; report |
+| U-159 | Under C2-B-046,C2-H-032, - [x] a  h writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x"&gt;&lt;input type="checkbox" checked disabled aria-label="a h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul class="task-list"&gt; ⏎   &lt;li data-task-state="x" class="task" style="list-style: none"&gt;&lt;input type="checkbox" checked disabled aria-label="a  h"&gt; a  h&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-160 | Under C2-I-087,C2-B-082, x[^f ⏎ g] ⏎ [^f g]: n writes &lt;p&gt;x[^f ⏎ g]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;x&lt;a id="fnref1" href="#fn1" role="doc-noteref"&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt; ⏎ &lt;section role="doc-endnotes" aria-label="Footnotes"&gt; ⏎   &lt;hr&gt; ⏎   &lt;ol&gt; ⏎     &lt;li id="fn1"&gt; ⏎       &lt;p&gt;n&lt;a href="#fnref1" role="doc-backlink" aria-label="Back to reference"&gt;↩&lt;/a&gt;&lt;/p&gt; ⏎     &lt;/li&gt; ⏎   &lt;/ol&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-161 | Under C2-I-067,C2-B-083, ![][a ⏎ b] writes &lt;p&gt;![][a ⏎ b]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;![][a b]&lt;/p&gt; in 0.2. | Review; report |
+| U-162 | Under C2-B-171,C2-B-180, \|?v \| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td style="vertical-align: bottom;"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;?v&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-163 | Under C2-B-046,C2-B-047, -  [ ] q writes &lt;ul class="task-list"&gt; ⏎   &lt;li&gt;&lt;input type="checkbox" disabled aria-label="q"&gt; q&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li&gt;[ ] q&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-164 | Under C2-H-101, [](‮javascript:) writes &lt;p&gt;&lt;a href="‮javascript:"&gt;&lt;/a&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/p&gt; in 0.2. | Review; report |
+| U-165 | Under C2-B-171,C2-B-167, \|{#x}\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;{&lt;span class="tag"&gt;&lt;strong&gt;#x&lt;/strong&gt;&lt;/span&gt;}&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td id="x"&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-166 | Under C2-I-078, [][@a] writes &lt;p&gt;[][@a]&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[][&lt;span class="mention"&gt;&lt;strong&gt;@a&lt;/strong&gt;&lt;/span&gt;]&lt;/p&gt; in 0.2. | Review; report |
+| U-167 | Under C2-B-182,C2-B-185, \|=\| ⏎ \|:-\| writes &lt;table&gt; ⏎   &lt;thead&gt; ⏎     &lt;tr&gt;&lt;th scope="col" style="text-align: left;"&gt;=&lt;/th&gt;&lt;/tr&gt; ⏎   &lt;/thead&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;thead&gt; ⏎     &lt;tr&gt;&lt;th scope="col"&gt;&lt;/th&gt;&lt;/tr&gt; ⏎   &lt;/thead&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-168 | Under C2-B-179,C2-B-182, \|=\|\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;=&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;th scope="row"&gt;&lt;/th&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
+| U-169 | Under C2-B-100,C2-B-101, -{k} {#h} writes &lt;ul&gt; ⏎   &lt;li k=""&gt;&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.1. **SILENT** | The same source writes &lt;ul&gt; ⏎   &lt;li k=""&gt;{#h}&lt;/li&gt; ⏎ &lt;/ul&gt; in 0.2. | Review; report |
+| U-170 | Under C2-I-092, @a- writes &lt;p&gt;&lt;span class="mention"&gt;&lt;strong&gt;@a-&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;span class="mention"&gt;&lt;strong&gt;@a&lt;/strong&gt;&lt;/span&gt;-&lt;/p&gt; in 0.2. | Review; report |
+| U-171 | Under C2-B-157,C2-B-197, ![ ⏎ ]() writes &lt;img src="" alt=" ⏎ "&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;&lt;img src="" alt=" ⏎ "&gt;&lt;/p&gt; in 0.2. | Review; report |
+| U-172 | Under C2-B-066,C2-H-040, {loose} ⏎ :: T writes &lt;dl&gt; ⏎   &lt;dt&gt;T&lt;/dt&gt; ⏎ &lt;/dl&gt; in 0.1. **SILENT** | The same source writes &lt;dl loose=""&gt; ⏎   &lt;dt&gt;T&lt;/dt&gt; ⏎ &lt;/dl&gt; in 0.2. | Review; report |
+| U-173 | Under C2-I-040, c-------- writes &lt;p&gt;c––––&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;c–——&lt;/p&gt; in 0.2. | Review; report |
+| U-174 | Under C2-B-027,C2-B-014, # 	x writes &lt;section id="x"&gt; ⏎   &lt;h1&gt;	x&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="x"&gt; ⏎   &lt;h1&gt;x&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+| U-175 | Under C2-I-067,C2-I-068, []( ) writes &lt;p&gt;&lt;a href=""&gt;&lt;/a&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;[]( )&lt;/p&gt; in 0.2. | Review; report |
+| U-176 | Under C2-B-001,C2-I-084, # T ␍ b writes &lt;section id="T"&gt; ⏎   &lt;h1&gt;T&lt;/h1&gt; ⏎   &lt;p&gt;b&lt;/p&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="T-b"&gt; ⏎   &lt;h1&gt;T ␍ b&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |
+
+#### Further measured rewrites
+
+Each spelling in this table is applied only when the complete 0.1 HTML equals the rewritten 0.2 HTML.
+
+| ID | Rule | Before in 0.1 | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-177 | A footnote definition body owns only its indented continuation under C2-B-081,C2-B-087 **SILENT** | [^a]: o ⏎ + ⏎  e ⏎  ⏎ s | [^a]: o ⏎  ⏎ {% %} ⏎  e ⏎  ⏎ s; rewrite |
+| U-178 | A div label or title is recognized only in its metadata slot under C2-B-119,C2-B-121 **SILENT** | :::[+] | ::: [+]; rewrite |
+| U-179 | A fence after a description mark ends at the description boundary under C2-B-072,C2-B-078,C2-B-109 **SILENT** | :: t ⏎ : &#96;&#96;&#96; ⏎  y | :: t ⏎ : &#96;&#96;&#96; ⏎ y; rewrite |
+| U-180 | An indented description mark below a term is term text under C2-B-067,C2-B-069 **SILENT** | :: t ⏎  : b |  :: t ⏎  : b; rewrite |
+| U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
+| U-182 | A braced inline opener inside a bracket is scanned as inline markup under C2-I-044,C2-I-050 **SILENT** | [{^]^} | [\{^]^}; escape |
+| U-183 | An unresolved block-image shape still takes the following caption under C2-B-147,C2-B-197 **SILENT** | ![][] ⏎ ^ a | \![][] ⏎ ^ a; escape |
+| U-184 | A nested list opener or pending attribute changes item ownership under C2-B-056,C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
+| U-185 | An equals marker alone in a table row starts a header section under C2-B-179,C2-B-182 **SILENT** | \|=\| | \|\=\|; escape |
+| U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
+| U-187 | An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091 **SILENT** | [@]: y |  [@]: y; rewrite |
+| U-188 | A plus-minus shorthand is recognized inside a colon pair under C2-I-041 **SILENT** | :+-: | :\+-:; escape |
+| U-189 | An empty footnote label followed by braces changes inline ownership under C2-I-087,C2-I-089 **SILENT** | d[^]{} | d[\^]{}; escape |
+
+#### Remaining measured source changes
+
+The tool checks each rewrite against the complete 0.1 HTML. The report rows name differences for which a preserving 0.2 spelling has not been verified.
+
+| ID | Before in 0.1 | After in 0.2 | Tool |
+| --- | --- | --- | --- |
+| U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote. **SILENT** | The same ASCII quote writes an opening smart quote. | Write the rendered closing Unicode quote; rewrite |
+| U-191 | Under C2-B-117, a code fence with `s` and an empty quoted title has no title attribute. **SILENT** | The same fence writes `title=""`. | Remove the empty quoted title; rewrite |
+| U-192 | Under C2-B-103, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand; rewrite |
+| U-193 | Under C2-B-027 and C2-B-067, `:: ` followed by a tab and `x` writes the tab in the term. **SILENT** | The tab is marker padding and the term is `x`. | Review the term; report |
+| U-194 | Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash. **SILENT** | The tab is cell padding and only the smart dash remains. | Review the cell; report |
+| U-195 | Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span. **SILENT** | With a space after the fence, the label contains literal backticks. | Review the div label; report |
+
 ## Part 2. Integrators: your code and your pages
 
 | Surface | 0.1 | 0.2 action |

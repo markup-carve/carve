@@ -1040,6 +1040,706 @@
       "meaning02": "<blockquote><p>+</p></blockquote>",
       "toolEntry": "U-125",
       "silent": true
+    },
+    {
+      "id": "U-126",
+      "kind": "rewrite",
+      "group": "paragraphs and blocks",
+      "from": "y\n>",
+      "to": "y\n\n>",
+      "meaning02": "<p>y\n&gt;</p>",
+      "toolEntry": "U-126",
+      "silent": true
+    },
+    {
+      "id": "U-127",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "- ```\n\n+",
+      "to": "- ```\n\n  ```",
+      "meaning02": "<ul>\n  <li>\n    <pre><code></code></pre>\n  </li>\n</ul>\n<p>+</p>",
+      "toolEntry": "U-127",
+      "silent": true
+    },
+    {
+      "id": "U-128",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": " :: t\n: x",
+      "to": ":: t\n: x",
+      "meaning02": "<dl>\n  <dt>t\n: x</dt>\n</dl>",
+      "toolEntry": "U-128",
+      "silent": true
+    },
+    {
+      "id": "U-129",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "%%%\n%%%%\ny",
+      "to": "%%%%%\n%%%%\ny",
+      "meaning02": "<p>y</p>",
+      "toolEntry": "U-129",
+      "silent": true
+    },
+    {
+      "id": "U-130",
+      "kind": "report",
+      "group": "fences, quotes, comments",
+      "from": "::: |\n\tx",
+      "to": "",
+      "meaning02": "<div class=\"line-block\">\n  <p>\tx</p>\n</div>",
+      "toolEntry": "U-130",
+      "silent": true
+    },
+    {
+      "id": "U-131",
+      "kind": "report",
+      "group": "definitions",
+      "from": "* [d]:",
+      "to": "",
+      "meaning02": "<ul>\n  <li>[d]:</li>\n</ul>",
+      "toolEntry": "U-131",
+      "silent": true
+    },
+    {
+      "id": "U-132",
+      "kind": "report",
+      "group": "definitions",
+      "from": "[r]:",
+      "to": "",
+      "meaning02": "<p>[r]:</p>",
+      "toolEntry": "U-132",
+      "silent": true
+    },
+    {
+      "id": "U-133",
+      "kind": "report",
+      "group": "lists",
+      "from": "- [ ] +",
+      "to": "",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"+\"> +</li>\n</ul>",
+      "toolEntry": "U-133",
+      "silent": true
+    },
+    {
+      "id": "U-134",
+      "kind": "report",
+      "group": "definitions",
+      "from": "> [f]:",
+      "to": "",
+      "meaning02": "<blockquote><p>[f]:</p></blockquote>",
+      "toolEntry": "U-134",
+      "silent": true
+    },
+    {
+      "id": "U-135",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "```\n\n",
+      "to": "```\n\n```\n",
+      "meaning02": "<pre><code></code></pre>",
+      "toolEntry": "U-135",
+      "silent": true
+    },
+    {
+      "id": "U-136",
+      "kind": "escape",
+      "group": "inline emphasis and typography",
+      "from": "{%\n%}x",
+      "to": "\\{%\n%}x",
+      "meaning02": "<p>x</p>",
+      "toolEntry": "U-136",
+      "silent": true
+    },
+    {
+      "id": "U-137",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "- {k}",
+      "to": "- {% %}",
+      "meaning02": "<ul>\n  <li>{k}</li>\n</ul>",
+      "toolEntry": "U-137",
+      "silent": true
+    },
+    {
+      "id": "U-138",
+      "kind": "rewrite",
+      "group": "captions",
+      "from": ">\n^ p",
+      "to": ">\n\n^ p",
+      "meaning02": "<figure>\n  <blockquote>\n\n  </blockquote>\n  <figcaption>p</figcaption>\n</figure>",
+      "toolEntry": "U-138",
+      "silent": true
+    },
+    {
+      "id": "U-139",
+      "kind": "escape",
+      "group": "references and footnotes",
+      "from": "x^[]",
+      "to": "x\\^[]",
+      "meaning02": "<p>x<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-139",
+      "silent": true
+    },
+    {
+      "id": "U-140",
+      "kind": "report",
+      "group": "tables",
+      "from": "|\t|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-140",
+      "silent": true
+    },
+    {
+      "id": "U-141",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": "> {k}\nt",
+      "to": ">\nt",
+      "meaning02": "<blockquote><p>{k}</p></blockquote>\n<p>t</p>",
+      "toolEntry": "U-141",
+      "silent": true
+    },
+    {
+      "id": "U-142",
+      "kind": "rewrite",
+      "group": "attributes",
+      "from": ":: t\n: {empty}\n",
+      "to": ":: t\n: {% %}\n",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>{empty}</dd>\n</dl>",
+      "toolEntry": "U-142",
+      "silent": true
+    },
+    {
+      "id": "U-143",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "/{/",
+      "to": "",
+      "meaning02": "<p>/{/</p>",
+      "toolEntry": "U-143",
+      "silent": true
+    },
+    {
+      "id": "U-144",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "{+-\"+}",
+      "to": "",
+      "meaning02": "<p><ins>-“</ins></p>",
+      "toolEntry": "U-144",
+      "silent": true
+    },
+    {
+      "id": "U-145",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "/*//",
+      "to": "",
+      "meaning02": "<p>/*//</p>",
+      "toolEntry": "U-145",
+      "silent": true
+    },
+    {
+      "id": "U-146",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[ %%]",
+      "to": "",
+      "meaning02": "<p>[</p>",
+      "toolEntry": "U-146",
+      "silent": true
+    },
+    {
+      "id": "U-147",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "||\n+||",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td></td><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-147",
+      "silent": true
+    },
+    {
+      "id": "U-148",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# \t%%h",
+      "to": "",
+      "meaning02": "<section id=\"s\">\n  <h1></h1>\n</section>",
+      "toolEntry": "U-148",
+      "silent": true
+    },
+    {
+      "id": "U-149",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": ":f[%%]",
+      "to": "",
+      "meaning02": "<p><span class=\"ext-f\">%%</span></p>",
+      "toolEntry": "U-149",
+      "silent": true
+    },
+    {
+      "id": "U-150",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "{widths=5}\n|||",
+      "to": "",
+      "meaning02": "<table>\n  <colgroup>\n    <col style=\"width: 5%;\">\n    <col>\n  </colgroup>\n  <tbody>\n    <tr><td></td><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-150",
+      "silent": true
+    },
+    {
+      "id": "U-151",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "_{_",
+      "to": "",
+      "meaning02": "<p>_{_</p>",
+      "toolEntry": "U-151",
+      "silent": true
+    },
+    {
+      "id": "U-152",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "||\t<|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td colspan=\"2\"></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-152",
+      "silent": true
+    },
+    {
+      "id": "U-153",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "- \te",
+      "to": "",
+      "meaning02": "<ul>\n  <li>e</li>\n</ul>",
+      "toolEntry": "U-153",
+      "silent": true
+    },
+    {
+      "id": "U-154",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "^[ [^1]]\n[^1]: n",
+      "to": "",
+      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>\n[^1]: n</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p> [^1]<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "toolEntry": "U-154",
+      "silent": true
+    },
+    {
+      "id": "U-155",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "a\t%%",
+      "to": "",
+      "meaning02": "<p>a</p>",
+      "toolEntry": "U-155",
+      "silent": true
+    },
+    {
+      "id": "U-156",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "::: e[",
+      "to": "",
+      "meaning02": "<div class=\"e[\">\n\n</div>",
+      "toolEntry": "U-156",
+      "silent": true
+    },
+    {
+      "id": "U-157",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "```s \"\"u",
+      "to": "",
+      "meaning02": "<pre title=\"\"><code class=\"language-s\"></code></pre>",
+      "toolEntry": "U-157",
+      "silent": true
+    },
+    {
+      "id": "U-158",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[\\[][]",
+      "to": "",
+      "meaning02": "<p>[[][]</p>",
+      "toolEntry": "U-158",
+      "silent": true
+    },
+    {
+      "id": "U-159",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "- [x] a  h",
+      "to": "",
+      "meaning02": "<ul class=\"task-list\">\n  <li data-task-state=\"x\" class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" checked disabled aria-label=\"a  h\"> a  h</li>\n</ul>",
+      "toolEntry": "U-159",
+      "silent": true
+    },
+    {
+      "id": "U-160",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "x[^f\ng]\n[^f g]: n",
+      "to": "",
+      "meaning02": "<p>x[^f g]\n[^f g]: n</p>",
+      "toolEntry": "U-160",
+      "silent": true
+    },
+    {
+      "id": "U-161",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "![][a\nb]",
+      "to": "",
+      "meaning02": "<p>![][a b]</p>",
+      "toolEntry": "U-161",
+      "silent": true
+    },
+    {
+      "id": "U-162",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|?v |",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>?v</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-162",
+      "silent": true
+    },
+    {
+      "id": "U-163",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "-  [ ] q",
+      "to": "",
+      "meaning02": "<ul>\n  <li>[ ] q</li>\n</ul>",
+      "toolEntry": "U-163",
+      "silent": true
+    },
+    {
+      "id": "U-164",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[](‮javascript:)",
+      "to": "",
+      "meaning02": "<p><a href=\"\"></a></p>",
+      "toolEntry": "U-164",
+      "silent": true
+    },
+    {
+      "id": "U-165",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|{#x}|",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td id=\"x\"></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-165",
+      "silent": true
+    },
+    {
+      "id": "U-166",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[][@a]",
+      "to": "",
+      "meaning02": "<p>[][<span class=\"mention\"><strong>@a</strong></span>]</p>",
+      "toolEntry": "U-166",
+      "silent": true
+    },
+    {
+      "id": "U-167",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|=|\n|:-|",
+      "to": "",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\"></th></tr>\n  </thead>\n  <tbody>\n    <tr><td>:-</td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-167",
+      "silent": true
+    },
+    {
+      "id": "U-168",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "|=||",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><th scope=\"row\"></th><td></td></tr>\n  </tbody>\n</table>",
+      "toolEntry": "U-168",
+      "silent": true
+    },
+    {
+      "id": "U-169",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "-{k} {#h}",
+      "to": "",
+      "meaning02": "<ul>\n  <li k=\"\">{#h}</li>\n</ul>",
+      "toolEntry": "U-169",
+      "silent": true
+    },
+    {
+      "id": "U-170",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "@a-",
+      "to": "",
+      "meaning02": "<p><span class=\"mention\"><strong>@a</strong></span>-</p>",
+      "toolEntry": "U-170",
+      "silent": true
+    },
+    {
+      "id": "U-171",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "![\n]()",
+      "to": "",
+      "meaning02": "<p><img src=\"\" alt=\"\n\"></p>",
+      "toolEntry": "U-171",
+      "silent": true
+    },
+    {
+      "id": "U-172",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "{loose}\n:: T",
+      "to": "",
+      "meaning02": "<dl loose=\"\">\n  <dt>T</dt>\n</dl>",
+      "toolEntry": "U-172",
+      "silent": true
+    },
+    {
+      "id": "U-173",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "c--------",
+      "to": "",
+      "meaning02": "<p>c–——</p>",
+      "toolEntry": "U-173",
+      "silent": true
+    },
+    {
+      "id": "U-174",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# \tx",
+      "to": "",
+      "meaning02": "<section id=\"x\">\n  <h1>x</h1>\n</section>",
+      "toolEntry": "U-174",
+      "silent": true
+    },
+    {
+      "id": "U-175",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "[]( )",
+      "to": "",
+      "meaning02": "<p>[]( )</p>",
+      "toolEntry": "U-175",
+      "silent": true
+    },
+    {
+      "id": "U-176",
+      "kind": "report",
+      "group": "measured rendering changes",
+      "from": "# T\rb",
+      "to": "",
+      "meaning02": "<section id=\"T-b\">\n  <h1>T\rb</h1>\n</section>",
+      "toolEntry": "U-176",
+      "silent": true
+    },
+    {
+      "id": "U-177",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[^a]: o\n+\n e\n\ns",
+      "to": "[^a]: o\n\n{% %}\n e\n\ns",
+      "meaning02": "<p>s</p>",
+      "toolEntry": "U-177",
+      "silent": true
+    },
+    {
+      "id": "U-178",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[+]",
+      "to": "::: [+]",
+      "meaning02": "<p>:::[+]</p>",
+      "toolEntry": "U-178",
+      "silent": true
+    },
+    {
+      "id": "U-179",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n: ```\n y",
+      "to": ":: t\n: ```\ny",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>\n    <pre><code>y\n</code></pre>\n  </dd>\n</dl>",
+      "toolEntry": "U-179",
+      "silent": true
+    },
+    {
+      "id": "U-180",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n : b",
+      "to": " :: t\n : b",
+      "meaning02": "<dl>\n  <dt>t\n: b</dt>\n</dl>",
+      "toolEntry": "U-180",
+      "silent": true
+    },
+    {
+      "id": "U-181",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "\\</#x>",
+      "to": "\\</\\#x>",
+      "meaning02": "<p>&lt;/<span class=\"tag\"><strong>#x</strong></span>&gt;</p>",
+      "toolEntry": "U-181",
+      "silent": true
+    },
+    {
+      "id": "U-182",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "[{^]^}",
+      "to": "[\\{^]^}",
+      "meaning02": "<p>[<sup>]</sup></p>",
+      "toolEntry": "U-182",
+      "silent": true
+    },
+    {
+      "id": "U-183",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "![][]\n^ a",
+      "to": "\\![][]\n^ a",
+      "meaning02": "<figure>\n  <p>![][]</p>\n  <figcaption>a</figcaption>\n</figure>",
+      "toolEntry": "U-183",
+      "silent": true
+    },
+    {
+      "id": "U-184",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "- {{ e }}",
+      "to": "- \\{{ e }}",
+      "meaning02": "<ul>\n  <li>\n    <p>{{ e }}</p>\n  </li>\n</ul>",
+      "toolEntry": "U-184",
+      "silent": true
+    },
+    {
+      "id": "U-185",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "|=|",
+      "to": "|\\=|",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\"></th></tr>\n  </thead>\n</table>",
+      "toolEntry": "U-185",
+      "silent": true
+    },
+    {
+      "id": "U-186",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[]",
+      "to": "::: []",
+      "meaning02": "<p>:::[]</p>",
+      "toolEntry": "U-186",
+      "silent": true
+    },
+    {
+      "id": "U-187",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[@]: y",
+      "to": " [@]: y",
+      "meaning02": "",
+      "toolEntry": "U-187",
+      "silent": true
+    },
+    {
+      "id": "U-188",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": ":+-:",
+      "to": ":\\+-:",
+      "meaning02": "<p>:±:</p>",
+      "toolEntry": "U-188",
+      "silent": true
+    },
+    {
+      "id": "U-189",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "d[^]{}",
+      "to": "d[\\^]{}",
+      "meaning02": "<p>d[^]{}</p>",
+      "toolEntry": "U-189",
+      "silent": true
+    },
+    {
+      "id": "U-190",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "-\"\\\n",
+      "to": "-”\\\n",
+      "meaning02": "C2-I-035 replaces the ambiguous ASCII quote with the rendered Unicode mark.",
+      "toolEntry": "U-190",
+      "silent": true
+    },
+    {
+      "id": "U-191",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "```s\t\"\"\n",
+      "to": "```s\t\n",
+      "meaning02": "C2-B-117 omits the title when its quoted value is empty.",
+      "toolEntry": "U-191",
+      "silent": true
+    },
+    {
+      "id": "U-192",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "[]{:r lang}\n",
+      "to": "[]{lang}\n",
+      "meaning02": "C2-B-103 removes the shorthand so the explicit empty lang key wins.",
+      "toolEntry": "U-192",
+      "silent": true
+    },
+    {
+      "id": "U-193",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: \tx\n",
+      "to": ":: \tx\n",
+      "meaning02": "C2-B-027 and C2-B-067 trim the marker tab, so its HTML text changes.",
+      "toolEntry": "U-193",
+      "silent": true
+    },
+    {
+      "id": "U-194",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": "|\t---|\n",
+      "to": "|\t---|\n",
+      "meaning02": "C2-B-171 trims the cell tab, so its HTML text changes.",
+      "toolEntry": "U-194",
+      "silent": true
+    },
+    {
+      "id": "U-195",
+      "kind": "report",
+      "group": "measured ownership and inline rewrites",
+      "from": ":::[`x`]\nbody\n:::\n",
+      "to": ":::[`x`]\nbody\n:::\n",
+      "meaning02": "C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline rendering.",
+      "toolEntry": "U-195",
+      "silent": true
     }
   ],
   "tree": [
