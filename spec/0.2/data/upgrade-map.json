@@ -1740,6 +1740,16 @@
       "meaning02": "C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline rendering.",
       "toolEntry": "U-195",
       "silent": true
+    },
+    {
+      "id": "U-196",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "{k='x}y'}\np\n",
+      "to": "{k=\"x}y\"}\np\n",
+      "meaning02": "C2-B-090 and C2-B-095 retain a closing brace inside a quoted value when the value uses double quotes.",
+      "toolEntry": "U-196",
+      "silent": true
     }
   ],
   "tree": [
