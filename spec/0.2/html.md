@@ -1150,6 +1150,38 @@ Hi @ann and #tag and :smile: and :kbd[Tab].
 
 :::
 
+A template gives the mention its link; the tag has no template and stays an inert span (C2-H-126).
+
+Example 35 (unverified, `--social {"mentionUrl":"https://x.org/u/{name}"}`)
+
+::: compare
+
+```carve
+@ann.b and #topic
+```
+
+```html
+<p><a class="mention" href="https://x.org/u/ann.b"><strong>@ann.b</strong></a> and <span class="tag"><strong>#topic</strong></span></p>
+```
+
+:::
+
+A linked mention is a link for the profile: `minimal` has no `link`, so the mention is its inert span (C2-H-167).
+
+Example 36 (unverified, `--social {"mentionUrl":"https://x.org/u/{name}"}`, `--profile minimal`)
+
+::: compare
+
+```carve
+@ann
+```
+
+```html
+<p><span class="mention"><strong>@ann</strong></span></p>
+```
+
+:::
+
 ## State beyond the current block
 
 A renderer that writes each block as soon as it is parsed needs the following state. Each clause names what has to be known before a byte of the affected element can be written.
@@ -1282,7 +1314,7 @@ in
 
 **C2-H-125** `labels` replaces the strings the engine writes itself, such as the label of the footnote section and of a backlink. A label is text and is escaped where it is written. A key left out keeps its English default.
 
-**C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans.
+**C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans. It has four fields, each optional, and no other: `mentionUrl` and `tagUrl` are strings, and `resolveMention` and `resolveTag` are functions of the host. A template gives its string with each `{name}` replaced by the name, percent-encoded as UTF-8 with every character encoded except ASCII letters, digits and `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(` and `)`; no other part of the template is read. A resolver takes the name as written and returns a URL, or nothing. For a mention the resolver is asked first and the template is used when it returns nothing; a tag works the same with its own pair. An empty URL is no URL. The URL is a sink of the URL policy (C2-H-159).
 
 **C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off.
 
@@ -1312,7 +1344,7 @@ in
 
 **C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.
 
-**C2-H-167** A link carries at most one `rel` attribute, and none when neither the author nor the profile gives a word. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. The authored value passes C2-H-161 first, so a value that test empties gives no authored word. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`.
+**C2-H-167** A link carries at most one `rel` attribute, and none when neither the author nor the profile gives a word. It stands behind `href` and `title` and before the id and the classes, and holds the authored words in their order and then the words of the profile that are not among them: `{rel=me}` under `comment` gives `rel="me nofollow ugc"`. The authored value passes C2-H-161 first, so a value that test empties gives no authored word. An autolink is a link for the profiles: it is allowed where `link` is and takes the same `rel`. A mention or a tag that `social` gives a URL is a link for the profiles too: where `link` is outside the profile it is written as its inert span (C2-H-100), and elsewhere it takes the same `rel`.
 
 **C2-H-164** The lists name 0.2 node types. An inline literal counted as code in 0.1, so `literal_inline` stands in the lists that hold `code`.
 
@@ -1468,12 +1500,12 @@ One point is open.
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 1 | 1 |
 | Cross-references and abbreviations | 6 | 1 | 1 | 0 |
-| Mentions, tags and symbols | 2 | 0 | 1 | 0 |
+| Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 24 | 0 | 3 | 1 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **9** |
+| **Total** | **177** | **7** | **25** | **11** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 34 examples, 25 generated and 9 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 36 examples, 25 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
