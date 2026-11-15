@@ -502,6 +502,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-247 | Under C2-B-025 and C2-B-026, an ordered item followed by an indented table row inside an admonition writes the table outside the item in 0.1. **SILENT** | The same 0.2 source keeps the table inside the item. | Move the row to the admonition column when the complete HTML check passes; rewrite |
 | U-248 | Under C2-H-176, `c` followed by U+000B and `d` writes the control character itself between `c` and `d` in 0.1 HTML. **SILENT** | The same 0.2 source writes U+FFFD there; U+0085 and U+007F change in the same way. | Review the replacement character; report |
 | U-249 | Under C2-H-009 and C2-H-013, inline math with `{CLASS=c}` writes the attribute name `CLASS` in 0.1 HTML. **SILENT** | The same 0.2 source writes `class`, keeping the `math inline c` value. | Review the canonical attribute name; report |
+| U-250 | Under C2-B-082, C2-B-108, and C2-B-110, a note definition inside an item with an open code fence writes an empty list item and a resolved note with a trailing blank code line in 0.1. **SILENT** | The same 0.2 source can leave the note unresolved and show its definition as item text. | Move the definition to document scope, retain the empty item with a brace comment, and close the note fence when the complete HTML check passes; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 

@@ -2250,6 +2250,16 @@
       "meaning02": "C2-H-009 and C2-H-013 write the structural class attribute with its canonical lowercase name on inline math.",
       "toolEntry": "U-249",
       "silent": true
+    },
+    {
+      "id": "U-250",
+      "kind": "rewrite",
+      "group": "note fence moved outside an empty list item",
+      "from": "x[^1]\n\n- [^1]: ```\n    code\n\nafter\n",
+      "to": "x[^1]\n\n- {% %}\n\n[^1]: ```\n      code\n\n      ```\nafter\n",
+      "meaning02": "C2-B-082, C2-B-108, and C2-B-110 resolve the note at document scope while the empty comment retains the list item.",
+      "toolEntry": "U-250",
+      "silent": true
     }
   ],
   "tree": [
