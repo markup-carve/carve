@@ -463,6 +463,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-207 | Under C2-I-043 and C2-I-088, `Text[^a]{.ref}.` writes the unresolved footnote marker and literal `{.ref}` in 0.1. **SILENT** | The attribute disappears from the text in 0.2. | Write `Text[^a]\{.ref}.`; escape |
 | U-208 | Under C2-B-100 and C2-B-101, `-{+a+} text` writes a paragraph with a literal dash and an insertion in 0.1. **SILENT** | The same source opens a list item in 0.2. | Write `\-{+a+} text`; escape |
 | U-209 | Under C2-B-059, `> quoted` then `+` then `- item` then `> more` writes `more` as a paragraph beside the quoted list in 0.1. **SILENT** | After the available continuation rewrite, 0.2 keeps `more` inside the quoted list item. | Review the container boundary; no preserving rewrite was verified for this source; report |
+| U-210 | Under C2-B-069, C2-B-076, and C2-B-081, `:: term` then `:  [r]: /u` leaves an empty description body and defines `r` for a later link in 0.1. **SILENT** | The same 0.2 source prints the definition as description text and leaves the link unresolved. | Put `[r]: /u` at document scope and write `: {% %}`; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
