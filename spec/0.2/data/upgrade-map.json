@@ -1850,6 +1850,16 @@
       "meaning02": "C2-B-100 and C2-B-101 read a braced insertion next to a list marker as item syntax. Escape the dash to retain 0.1 paragraph text and its insertion.",
       "toolEntry": "U-208",
       "silent": true
+    },
+    {
+      "id": "U-209",
+      "kind": "report",
+      "group": "measured container continuation boundaries",
+      "from": "> quoted\n+\n- item\n> more\n",
+      "to": "> quoted\n>\n> - item\n> more\n",
+      "meaning02": "C2-B-059 keeps the following quote line inside the quoted list item after the available continuation rewrite. No preserving rewrite was verified for this source.",
+      "toolEntry": "U-209",
+      "silent": true
     }
   ],
   "tree": [
