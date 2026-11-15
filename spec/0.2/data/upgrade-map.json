@@ -1810,6 +1810,16 @@
       "meaning02": "C2-I-089 allows an inline footnote inside another inline footnote. Escape the inner caret to retain 0.1 literal text.",
       "toolEntry": "U-202",
       "silent": true
+    },
+    {
+      "id": "U-204",
+      "kind": "rewrite",
+      "group": "measured continuation and fence rewrites",
+      "from": ":: t\n:  d\n+\n```\na\n\nb\n```\n",
+      "to": ":: t\n:  d\n  ```\n  a\n\n  ```\nb\n```\n",
+      "meaning02": "C2-B-059 and C2-B-113 require the fence to be indented under its owner and explicitly closed before the following paragraph when 0.1 ended ownership at a blank line.",
+      "toolEntry": "U-204",
+      "silent": true
     }
   ],
   "tree": [
