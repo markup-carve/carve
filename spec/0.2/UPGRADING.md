@@ -375,7 +375,7 @@ The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HT
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
 | U-140 | Under C2-B-171, a tab between two table pipes is cell text in 0.1. **SILENT** | Unchanged 0.2 source treats the tab as cell padding and writes an empty cell. | Review the cell; report |
-| U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source prints `{k}` inside the quote; removing the consumed attribute retains the old HTML. | Remove the attribute; rewrite |
+| U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. The multiline `{.x` then `.y}` form under `- >` is also consumed. **SILENT** | Unchanged 0.2 source prints the attribute inside the quote. | Remove the consumed attribute and keep the empty quote; rewrite |
 | U-142 | Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1. **SILENT** | The same 0.2 source prints `{empty}` and keeps `flush` in the body. | Write `: {% %}` and insert a blank line before `flush`; rewrite |
 
 #### Other measured rendering changes
@@ -482,6 +482,8 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-227 | Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a percent fence and change the following list boundary. | Escape the percent run inside the brace comment when the complete HTML check passes; escape |
 | U-228 | Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1. **SILENT** | The same 0.2 source keeps the quote inside the item. | Move the quote or following list item to the description content column; rewrite |
 | U-229 | Under C2-B-076 and C2-B-081, `[^f]: - :::::` then a seven-space `:::::` writes the second div outside the item but inside the note in 0.1. A seven-space caret line after a note-hosted item is likewise outside that item. **SILENT** | The same 0.2 lines keep the div or caret inside the item. | Move the follower to the note content column when the complete HTML check passes; rewrite |
+| U-230 | Under C2-B-041 and C2-B-045, `{start=9}` before `3. x` writes `<ol start="3">` in 0.1. **SILENT** | The same 0.2 source writes `<ol start="9">` because the attribute decides. | Remove the conflicting attribute to keep the marker's start value; rewrite |
+| U-231 | Under C2-I-033 and C2-H-003, `{id='a"b&c'}` before `# H` gives the heading section ID `a"b&c` in 0.1. **SILENT** | The same 0.2 source can leave the single-quoted block unrecognized. | Write a double-quoted ID value with the embedded double quote escaped; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
