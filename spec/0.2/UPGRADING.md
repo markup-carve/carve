@@ -344,7 +344,7 @@ Under C2-B-108, C2-B-110, and C2-B-114, a longer percent run closes a comment in
 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-129 | Under C2-B-108, C2-B-110, and C2-B-114, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. **SILENT** | The same lines keep `tail` inside the list in 0.2. | Move `tail` to column zero, or indent the whole comment fence under its owner when 0.1 kept the follower inside; rewrite |
+| U-129 | Under C2-B-108, C2-B-110, and C2-B-114, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. In a quoted sequence of three bare percent runs, 0.1 can hide the follower and leave the later line outside the quote. **SILENT** | The same lines keep `tail` inside the list in 0.2; the quoted sequence can expose its follower. | Move `tail` to column zero, or indent the whole comment fence under its owner when 0.1 kept the follower inside. Add one matching bare percent line to keep the quoted follower hidden when the complete HTML check passes; rewrite |
 
 #### Measured rendering changes
 
