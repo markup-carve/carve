@@ -507,6 +507,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-254 | Under C2-I-023, C2-I-043, and C2-I-047, `/{+a/{k=b+}` writes a literal slash and an insertion, while `/x /*a %% b*/{.c} y` writes nested emphasis and strong text in 0.1. **SILENT** | The same 0.2 sources give the slash an emphasis opener or let `%%` consume the rest of its line. | Review delimiter and comment ownership; report |
 | U-255 | Under C2-I-047, two escaped HTML tags containing `http://` and `fetch("//evil/?")` pair slash delimiters around the text from `iframe` to `fetch` in 0.1. **SILENT** | The same 0.2 source closes that emphasis after `evil`. | Review the escaped text emphasis boundary; report |
 | U-256 | Under C2-I-044 and C2-I-090, `# H {#id .cls}` scans `#id` as a tag inside a failed brace attribute in 0.1. **SILENT** | The intact brace pair is literal heading text in 0.2. | Escape the closing brace as `# H {#id .cls\}` after checking the complete HTML; rewrite |
+| U-257 | Under C2-I-044 and C2-I-047, `^[/[^[g]/] b/]` gives an inline note whose body is emphasis containing a literal bracket run. A related braced insert keeps `+}]` in its text. **SILENT** | The inner bracket closes the note earlier in 0.2. | Escape the inner bracket run inside a braced span when the complete HTML check passes; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
