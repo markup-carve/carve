@@ -1874,7 +1874,7 @@ Where the guess is wrong, the author types the curly character.
 
 **Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
 
-**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1)
+**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1) For this test and for the exact run of an arrow (C2-I-116), the neighbors are the characters of the same text on each side of the run: the mark of a delimiter, opening or closing, is never a neighbor, and a braced comment between two characters is transparent (C2-I-026). So `{++-+}` inserts a plus-minus sign.
 
 Example 94 (generated)
 
@@ -2020,6 +2020,22 @@ Example 103 (generated)
 
 :::
 
+The marks of the insertions and deletions are no neighbors of the runs inside them, on either side (C2-I-117).
+
+Example 111 (unverified)
+
+::: compare
+
+```carve
+{--->-} and {-<---} and {++-1+} and {++-+} and C++-style and a{%x%}+-b
+```
+
+```html
+<p><del>→</del> and <del>←</del> and <ins>±1</ins> and <ins>±</ins> and C++-style and a±b</p>
+```
+
+:::
+
 ## The depth cap
 
 **C2-I-126** A bracket opener at the depth cap is text, and its later closing bracket cannot carry an attribute block onto a span that never formed. The attribute block keeps the reading it has after that text.
@@ -2141,13 +2157,13 @@ There is no fixed budget for the inline chapter.
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
-| Smart typography | 12 | 6 | 9 | 1 |
+| Smart typography | 12 | 6 | 9 | 2 |
 | The depth cap | 2 | 0 | 0 | 1 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **125** | **22** | **73** | **37** |
+| **Total** | **125** | **22** | **73** | **38** |
 
-The chapter has 125 clauses, 22 of them exceptions, and 110 examples. The clause count includes the exceptions.
+The chapter has 125 clauses, 22 of them exceptions, and 111 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
