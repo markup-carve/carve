@@ -8950,14 +8950,12 @@
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
             },
             "rows": {
-              "type": "string",
-              "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+              "type": "string"
             },
             "cols": {
               "oneOf": [
                 {
-                  "type": "string",
-                  "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
+                  "type": "string"
                 },
                 {
                   "type": "array",
@@ -8972,7 +8970,9 @@
             "shift": {
               "oneOf": [
                 {
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": -999999999,
+                  "maximum": 999999999
                 },
                 {
                   "const": "auto"
