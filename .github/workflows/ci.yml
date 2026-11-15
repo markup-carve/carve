@@ -249,6 +249,8 @@ jobs:
 
   conformance:
     name: spec-corpus conformance (${{ matrix.node-version }}, shard ${{ matrix.shard }}/3)
+    # The corpus is the 0.1 baseline; next2 carries 0.2 sources, checked by spec2-data.
+    if: ${{ github.ref_name != 'next2' && github.base_ref != 'next2' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
