@@ -192,8 +192,8 @@ tail
 ````carve
 - foo
   - [ ] task
-
-        > q
+  +
+  > q
 ````
 
 ```html
@@ -216,9 +216,6 @@ tail
 - foo
   - [ ] task
     +
-
-
-
   - x
 ````
 
@@ -243,8 +240,7 @@ tail
 ````carve
 - foo
   - [ ] task
-
-  {% %}
+  +
   - x
 ````
 
@@ -306,11 +302,10 @@ tail
 `````carve
 - foo
   - [ ] task
-
-        ```sh
-        npm test
-        ```
-
+  +
+  ```sh
+  npm test
+  ```
   - [ ] more
 `````
 

@@ -86,10 +86,9 @@ attribute line produced:
 
 ```carve
 - a
-
-  {.x}
-  > q
-
++
+{.x}
+> q
 - c
 ```
 

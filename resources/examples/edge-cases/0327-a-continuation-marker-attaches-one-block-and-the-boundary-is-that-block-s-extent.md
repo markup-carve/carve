@@ -87,10 +87,9 @@ clause is what carries them in:
 
 ```carve
 - a
-
-  > x
-  > y
-
++
+> x
+> y
 - next
 ```
 

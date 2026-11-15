@@ -243,10 +243,9 @@ A quote after item prose still takes its caption
 
 ```carve
 - text
-
   > q
-  ^ cap
 
+  ^ cap
 - c
 ```
 
@@ -293,10 +292,9 @@ An earlier caret paragraph does not loosen an attached quote
 
 ```carve
 - ^ cap
-
   > q
-  ^ cap
 
+  ^ cap
 - c
 ```
 
@@ -349,11 +347,10 @@ A multi-line attached caption keeps the list tight
 
 ```carve
 - ^ cap
-
   > q
+
   ^ cap
   more
-
 - c
 ```
 
@@ -434,10 +431,9 @@ One blank before a quote caption after a nested list
 
 ```carve
 - - text
-
   > q
-  ^ cap
 
+  ^ cap
 - c
 ```
 
@@ -495,10 +491,9 @@ Item prose and a nested list before a quote caption
 ```carve
 - x
   - text
-
   > q
-  ^ cap
 
+  ^ cap
 - c
 ```
 
@@ -555,10 +550,9 @@ An ordered item holds a nested list before a quote caption
 
 ```carve
 1. - text
-
    > q
-   ^ cap
 
+   ^ cap
 2. c
 ```
 
@@ -585,10 +579,9 @@ A quoted list holds a nested list before a quote caption
 
 ```carve
 > - - text
->
 >   > q
->   ^ cap
 >
+>   ^ cap
 > - c
 ```
 

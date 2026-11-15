@@ -59,10 +59,9 @@ Q</li>
 
 `````carve
 1. ordered
-
-> > quote
->
-> - item
+  > > quote
++  
+- item
 `````
 
 ```html

@@ -10,11 +10,9 @@ A `%%%` span with no payload is written as its opener directly followed by its c
 
 ```carve
 - a
-
   :: u
   : %%%
   %%%
-
 - c
 ```
 

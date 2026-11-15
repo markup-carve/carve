@@ -29,12 +29,10 @@ See[^c][^d]
 
 ````carve
 1. item
-    ```
+   [^c]: para
+    ~~~~
 
    See[^c]
-
-    ```
-[^c]: para
 ````
 
 ```html
@@ -54,12 +52,10 @@ See[^c]
 ````carve
 :: term
 : item
+  [^c]: para
    ```
 
   See[^c]
-
-   ```
-[^c]: para
 ````
 
 ```html

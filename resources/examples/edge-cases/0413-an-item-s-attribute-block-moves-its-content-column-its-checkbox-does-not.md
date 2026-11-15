@@ -158,11 +158,8 @@ column. Renaming a class cannot move either heading.
 
 ```carve
 -{.x} a
-
   # one
-
 -{.averylongclass} b
-
   # two
 ```
 

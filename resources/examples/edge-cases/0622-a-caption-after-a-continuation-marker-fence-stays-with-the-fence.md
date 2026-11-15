@@ -121,12 +121,11 @@ Caption variant 5
 
 ````carve
 - x
-
-  ```
-  x
-  ```
-  ^ cap
-
++
+```
+x
+```
+^ cap
 - c
 ````
 
@@ -179,12 +178,11 @@ Caption variant 7
 
 ````carve
 1. x
-
-   ```
-   x
-   ```
-   ^ cap
-
++
+~~~
+x
+~~~
+^ cap
 2. c
 ````
 
@@ -209,12 +207,11 @@ Caption variant 8
 
 ````carve
 - x
-
-  ::: figure
-  ![a](b.png)
-  :::
-  ^ cap
-
++
+::: figure
+![a](b.png)
+:::
+^ cap
 - c
 ````
 
