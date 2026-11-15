@@ -1890,6 +1890,26 @@
       "meaning02": "C2-B-147 and C2-B-149 keep the caret as quote text after it is escaped, rather than attaching a figure caption.",
       "toolEntry": "U-212",
       "silent": true
+    },
+    {
+      "id": "U-213",
+      "kind": "rewrite",
+      "group": "measured list definition ownership",
+      "from": "See [^a].\n\n- [^a]: note body\n",
+      "to": "[^a]: note body\n\nSee [^a].\n\n- {% %}\n",
+      "meaning02": "C2-B-081 and C2-B-083 keep the item empty and resolve the footnote after its definition is moved to document scope.",
+      "toolEntry": "U-213",
+      "silent": true
+    },
+    {
+      "id": "U-214",
+      "kind": "rewrite",
+      "group": "measured table cell code boundaries",
+      "from": "| a `b | c d |\n",
+      "to": "| a `b | c d` |\n",
+      "meaning02": "C2-B-169 keeps the middle pipe inside the code span when the matching closing run is written before the final pipe.",
+      "toolEntry": "U-214",
+      "silent": true
     }
   ],
   "tree": [

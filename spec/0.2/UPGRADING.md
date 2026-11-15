@@ -466,6 +466,8 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-210 | Under C2-B-069, C2-B-076, and C2-B-081, `:: term` then `:  [r]: /u` leaves an empty description body and defines `r` for a later link in 0.1. **SILENT** | The same 0.2 source prints the definition as description text and leaves the link unresolved. | Put `[r]: /u` at document scope and write `: {% %}`; rewrite |
 | U-211 | Under C2-B-090 and C2-B-095, `{.a` then `.b}` then a blank line and `paragraph` attaches both classes to the paragraph in 0.1. **SILENT** | The same 0.2 source prints the multiline attribute as text and leaves the paragraph unstyled. | Join the attribute as `{.a .b}` and remove the separating blank line; rewrite |
 | U-212 | Under C2-B-147 and C2-B-149, `> a` then an indented `^ cap` line keeps `^ cap` as quote text in 0.1. **SILENT** | The same 0.2 source attaches `cap` as a figure caption. | Escape the caret as `\^ cap`; escape |
+| U-213 | Under C2-B-081 and C2-B-083, `See [^a].` then `- [^a]: note body` writes an empty item and resolves the footnote in 0.1. **SILENT** | The same 0.2 source prints the definition as item text and leaves the footnote unresolved. | Put `[^a]: note body` at document scope and write `- {% %}`; rewrite |
+| U-214 | Under C2-B-169, \| a &#96;b \| c d \| keeps the middle pipe inside one code cell in 0.1. **SILENT** | The same 0.2 source splits the unclosed code span into two cells. | Close the code run before the final pipe, as in \| a &#96;b \| c d&#96; \|; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
