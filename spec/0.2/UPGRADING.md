@@ -344,7 +344,7 @@ Under C2-B-108, C2-B-110, and C2-B-114, a longer percent run closes a comment in
 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-129 | `%%%`, then `%%%%`, then `y` **SILENT** | A paragraph containing `y` | `%%%%%`, then `%%%%`, then `y`; rewrite |
+| U-129 | Under C2-B-108, C2-B-110, and C2-B-114, `- a` then ` %%% n`, ` x`, ` %%%`, and ` tail` writes `tail` outside the list in 0.1. **SILENT** | The same lines keep `tail` inside the list in 0.2. | Move `tail` to column zero, or indent the whole comment fence under its owner when 0.1 kept the follower inside; rewrite |
 
 #### Measured rendering changes
 

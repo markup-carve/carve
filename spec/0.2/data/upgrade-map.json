@@ -1077,7 +1077,7 @@
       "group": "fences, quotes, comments",
       "from": "%%%\n%%%%\ny",
       "to": "%%%%%\n%%%%\ny",
-      "meaning02": "<p>y</p>",
+      "meaning02": "<p>y</p> The fence and its following line can also move across a list or description ownership boundary; indent the fence or move the follower to column zero to retain 0.1 HTML.",
       "toolEntry": "U-129",
       "silent": true
     },
