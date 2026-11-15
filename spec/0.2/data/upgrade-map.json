@@ -2120,6 +2120,16 @@
       "meaning02": "C2-B-067 and C2-B-069 recognize sibling description marks at their owning column; a note-hosted quote likewise moves to the description sibling column.",
       "toolEntry": "U-236",
       "silent": true
+    },
+    {
+      "id": "U-237",
+      "kind": "rewrite",
+      "group": "nested item follower at outer content column",
+      "from": "- a\n  * w\n  1. v\n    - u\n",
+      "to": "- a\n  * w\n  1. v\n  - u\n",
+      "meaning02": "C2-B-056 and C2-B-076 place the follower list or text at the outer item content column.",
+      "toolEntry": "U-237",
+      "silent": true
     }
   ],
   "tree": [
