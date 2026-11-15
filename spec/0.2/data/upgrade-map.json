@@ -2040,6 +2040,16 @@
       "meaning02": "C2-B-069 and C2-B-076 place the quote at the description content column, outside the preceding list item.",
       "toolEntry": "U-228",
       "silent": true
+    },
+    {
+      "id": "U-229",
+      "kind": "rewrite",
+      "group": "note item follower at note content column",
+      "from": "[^f]: - :::::\n       :::::\n\n[^f]\n",
+      "to": "[^f]: - :::::\n      :::::\n\n[^f]\n",
+      "meaning02": "C2-B-076 and C2-B-081 place the follower outside the item and inside the note at the note content column.",
+      "toolEntry": "U-229",
+      "silent": true
     }
   ],
   "tree": [
