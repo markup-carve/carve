@@ -366,7 +366,7 @@ The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HT
 | --- | --- | --- | --- |
 | U-135 | Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line; `- q` then an indented fence and a blank line before `tail` keeps that blank code line in 0.1. **SILENT** | The same 0.2 source discards the trailing blank code line. | Close the fence after the blank line and before `tail`; rewrite |
 | U-136 | Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1. **SILENT** | Unchanged 0.2 source consumes the brace comment and prints only `x`; escaping the opening brace prints the old text. | Escape the brace; escape |
-| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item. **SILENT** | The same 0.2 sources print the attribute or keep `tail` inside the item. | Write `- {% %}` and insert a blank line before `tail`; remove an empty `{}` after the marker when the item has later text; rewrite |
+| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item. **SILENT** | The same 0.2 sources print the attribute or keep `tail` inside the item. | Write `- {% %}` and insert a blank line before `tail`; use the same empty comment for an empty item inside a quote; remove an empty `{}` after the marker when the item has later text; rewrite |
 | U-138 | Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source attaches `p` as a figure caption; a blank line before the caret retains the paragraph. | Insert a blank line; rewrite |
 | U-139 | Under C2-I-089, `x^[]` prints literally in 0.1. **SILENT** | Unchanged 0.2 source creates an empty inline footnote; escaping the caret retains the literal text. | Write `x\^[]`; escape |
 
@@ -376,7 +376,7 @@ The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HT
 | --- | --- | --- | --- |
 | U-140 | Under C2-B-171, a tab between two table pipes is cell text in 0.1. **SILENT** | Unchanged 0.2 source treats the tab as cell padding and writes an empty cell. | Review the cell; report |
 | U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. The multiline `{.x` then `.y}` form under `- >` is also consumed. **SILENT** | Unchanged 0.2 source prints the attribute inside the quote. | Remove the consumed attribute and keep the empty quote; rewrite |
-| U-142 | Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1. **SILENT** | The same 0.2 source prints `{empty}` and keeps `flush` in the body. | Write `: {% %}` and insert a blank line before `flush`; rewrite |
+| U-142 | Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1. **SILENT** | The same 0.2 source prints `{empty}` and keeps `flush` in the body. | Write `: {% %}` and insert a blank line before `flush`, and replace every sentinel when several empty descriptions occur together; rewrite |
 
 #### Other measured rendering changes
 
