@@ -2130,6 +2130,26 @@
       "meaning02": "C2-B-056 and C2-B-076 place the follower list or text at the outer item content column.",
       "toolEntry": "U-237",
       "silent": true
+    },
+    {
+      "id": "U-238",
+      "kind": "rewrite",
+      "group": "list hosted fence continuation closer",
+      "from": "- ```\n  x\n\n+\ntail\n",
+      "to": "- ```\n  x\n\n  ```\n  tail\n",
+      "meaning02": "C2-B-057 and C2-B-111 use an explicit closer at the item content column where 0.1 used a continuation to end the fence.",
+      "toolEntry": "U-238",
+      "silent": true
+    },
+    {
+      "id": "U-239",
+      "kind": "rewrite",
+      "group": "following fence outside description",
+      "from": ":: t\n: a\n\t```\n ```\n",
+      "to": ":: t\n: a\n\t```\n```\n",
+      "meaning02": "C2-B-072 and C2-B-078 put the second fence at the document column, preserving the 0.1 sibling code block.",
+      "toolEntry": "U-239",
+      "silent": true
     }
   ],
   "tree": [
