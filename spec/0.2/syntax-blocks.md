@@ -2775,7 +2775,7 @@ after
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  "T"` opens a div with a title, and `:::[x]` is text.
 
 **C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042).
 
@@ -2947,6 +2947,38 @@ text
 ```html
 <pre><code>text
 </code></pre>
+```
+
+:::
+
+A title and a label with no name stand after one or more spaces; glued to the run, the line is text (C2-B-119).
+
+Example 238 (unverified)
+
+::: compare
+
+```carve
+:::  "T"
+x
+:::
+
+::: [l]
+z
+:::
+
+:::[x] y
+```
+
+```html
+<div>
+  <p class="admonition-title">T</p>
+  <p>x</p>
+</div>
+<div>
+  <p class="div-label">l</p>
+  <p>z</p>
+</div>
+<p>:::[x] y</p>
 ```
 
 :::
@@ -5341,7 +5373,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 2 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 7 | 1 | 5 | 3 |
+| The fence opener and titles | 7 | 1 | 5 | 4 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
@@ -5352,7 +5384,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 2 | 20 | 6 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **15** | **169** | **68** |
+| **Total** | **226** | **15** | **169** | **69** |
 
 The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
