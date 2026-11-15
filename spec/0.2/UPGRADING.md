@@ -501,6 +501,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-246 | Under C2-I-087, C2-I-044, and C2-B-091, `x[^n]{#i}` followed by `## {#i}` writes the unresolved footnote attribute literally and gives the heading id `i` in 0.1. **SILENT** | The same 0.2 source drops the inline attribute and changes the generated heading id. | Escape the attribute's hash, move the authored id above the heading, and escape the heading's opening brace when the complete HTML check passes; rewrite |
 | U-247 | Under C2-B-025 and C2-B-026, an ordered item followed by an indented table row inside an admonition writes the table outside the item in 0.1. **SILENT** | The same 0.2 source keeps the table inside the item. | Move the row to the admonition column when the complete HTML check passes; rewrite |
 | U-248 | Under C2-H-176, `c` followed by U+000B and `d` writes the control character itself between `c` and `d` in 0.1 HTML. **SILENT** | The same 0.2 source writes U+FFFD there; U+0085 and U+007F change in the same way. | Review the replacement character; report |
+| U-249 | Under C2-H-009 and C2-H-013, inline math with `{CLASS=c}` writes the attribute name `CLASS` in 0.1 HTML. **SILENT** | The same 0.2 source writes `class`, keeping the `math inline c` value. | Review the canonical attribute name; report |
 
 ## Part 2. Integrators: your code and your pages
 

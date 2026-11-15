@@ -2240,6 +2240,16 @@
       "meaning02": "C2-H-176 replaces a rejected control character such as U+000B, U+0085, or U+007F with U+FFFD in HTML text.",
       "toolEntry": "U-248",
       "silent": true
+    },
+    {
+      "id": "U-249",
+      "kind": "report",
+      "group": "inline math class key is canonicalized",
+      "from": "$`a`{CLASS=c}\n",
+      "to": "",
+      "meaning02": "C2-H-009 and C2-H-013 write the structural class attribute with its canonical lowercase name on inline math.",
+      "toolEntry": "U-249",
+      "silent": true
     }
   ],
   "tree": [
