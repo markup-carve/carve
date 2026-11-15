@@ -236,7 +236,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
-**C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197) or one display math line (C2-B-198).
+**C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197) or one display math line (C2-B-198). A caret line that the container of the paragraph does not own is no caption line and is a lazy line, in an item as in a quote (C2-B-018): below `- ![](a.png)`, a line `^ cap` at column 0 is text of the item's paragraph.
 
 **Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, and owned by the container that holds the quote (C2-B-146), closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph. A caret line that the quote's container does not own, as at column 0 below a quote that sits in a list item, is a lazy line.
 
@@ -431,9 +431,9 @@ Example 16 (generated)
 
 **C2-B-028** The first line of a nested block sets that block's base column.
 
-**C2-B-029** The content of a fence is stripped by at most the indent of its opener.
+**C2-B-029** The content of a fence is stripped by at most the indent of its opener. Where the opener stands left of the content column of its item, the body is stripped by at most the opener's column.
 
-**C2-B-030** A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list. `uneven-list-indent` reports the uneven columns, and the formatter writes all markers at one column.
+**C2-B-030** A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list. The list's column is then the column of that sibling's marker: after ` - a` and `- b`, the line ` 2. c` stands past the column of the list and is a lazy line of `b`. `uneven-list-indent` reports the uneven columns, and the formatter writes all markers at one column.
 
 Example 17 (unverified)
 
@@ -2546,7 +2546,7 @@ code
 
 **C2-B-112** The body of a code fence is code and the body of a comment block is hidden: neither is read for blocks or inline content.
 
-**C2-B-113** Blank lines at the end of an unclosed code fence or comment block are not part of its body, so a trailing blank line never changes the tree.
+**C2-B-113** Blank lines at the end of an unclosed code fence, comment block or line block are not part of its body, so a trailing blank line never changes the tree.
 
 **C2-B-114** The body of a code fence and of a comment block is opaque until its closer or the end of its container.
 
@@ -4542,15 +4542,15 @@ title: x
 
 **C2-B-223** Every cell is a separate inline content. An inline construct never crosses a cell boundary, and an unclosed code span at the end of a cell is text.
 
-**C2-B-224** An escaped pipe is a literal pipe in cell text before inline parsing, including a link destination, an image destination, an image label and a reference label.
+**C2-B-224** An escaped pipe is a literal pipe in cell text before inline parsing, including a link destination, an image destination, an image label and a reference label. The list is complete: in a code span `\|` stays two characters, and in other cell text it is an ordinary escape. The key of a reference label in a cell holds `|`; outside a cell it holds `\|` (C2-I-079).
 
 **C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
 **C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block. The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
 
-**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above.
+**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above. A `^` below a cell that spans more than one column fails (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is an empty cell.
 
-**C2-B-173** A failed span is an empty cell. The empty cell that a failed span mark leaves is a header cell when every other cell of its row is one, so `|=|^|` is a head row of two header cells; in any other row it is a body cell.
+**C2-B-173** A failed span is an empty cell. The empty cell that a failed span mark leaves is a header cell when its row holds at least one other cell that is not a span mark cell and every such cell is a header cell, so `|=|^|` is a head row of two header cells and in `|^|<|` the joined cell is a body cell; in any other row it is a body cell.
 
 **Exception C2-B-174** A row span does not cross the head boundary.
 
