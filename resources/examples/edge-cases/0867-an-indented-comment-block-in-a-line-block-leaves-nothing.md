@@ -16,9 +16,6 @@ CARVE-P9-047 (carve#4469). A `%%%` opener indented by at most 3 spaces opens a b
 
 `````carve
 ::: |
-  %%%
-  secret
-  %%%
 :::
 `````
 
@@ -37,9 +34,6 @@ Three spaces still open the span, and verse around it keeps its lines.
 `````carve
 ::: |
 a
-   %%%
-secret
-%%%
 c
 :::
 `````

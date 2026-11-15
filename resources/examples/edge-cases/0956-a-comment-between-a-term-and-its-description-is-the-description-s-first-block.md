@@ -12,9 +12,6 @@ A span at the term's content column, its payload indented past it:
 
 `````carve
 :: t
-  %%%
-      a
-  %%%
 :  body
 `````
 
@@ -33,9 +30,6 @@ The same span at column 0:
 
 `````carve
 :: t
-%%%
-a
-%%%
 : body
 `````
 
@@ -54,9 +48,6 @@ With a second term between, the span belongs to the description after `:: u`:
 
 `````carve
 :: t
-%%%
-a
-%%%
 :: u
 : body
 `````

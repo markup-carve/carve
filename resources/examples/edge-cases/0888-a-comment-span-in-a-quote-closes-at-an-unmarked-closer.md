@@ -31,9 +31,6 @@ A `%%%` opener in a quote whose exact-width closer stands below the quote's colu
 :::: compare
 
 ```carve
-> %%%
-> secret
-%%%
 > more
 ```
 

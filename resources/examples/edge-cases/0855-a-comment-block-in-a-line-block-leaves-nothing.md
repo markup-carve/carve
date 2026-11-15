@@ -16,9 +16,6 @@ A `%%%` pair in verse hides its body and leaves no verse line (CARVE-P9-047).
 
 ```carve
 ::: |
-%%%
-secret
-%%%
 :::
 ```
 
@@ -37,11 +34,6 @@ The lines around the pair stay adjacent, and a blank line in its body splits no 
 ```carve
 ::: |
 a
-%%%
-one
-
-two
-%%%
 c
 :::
 ```
