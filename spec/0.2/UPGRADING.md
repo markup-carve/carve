@@ -480,6 +480,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-225 | Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1. **SILENT** | The same 0.2 source can take the caret as a caption mark. | Escape the caret so the image and caret remain in one paragraph; escape |
 | U-226 | Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1. **SILENT** | The same 0.2 source keeps the caret inside the unclosed math span. | Close the code span on its math line, or remove a trailing invisible comment after a closed span, so the caption attaches; rewrite |
 | U-227 | Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a percent fence and change the following list boundary. | Escape the percent run inside the brace comment when the complete HTML check passes; escape |
+| U-228 | Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1. **SILENT** | The same 0.2 source keeps the quote inside the item. | Move the quote or following list item to the description content column; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 

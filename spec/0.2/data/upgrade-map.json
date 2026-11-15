@@ -2030,6 +2030,16 @@
       "meaning02": "C2-I-036 and C2-B-108 keep the escaped percent run inside the brace comment instead of opening a fence.",
       "toolEntry": "U-227",
       "silent": true
+    },
+    {
+      "id": "U-228",
+      "kind": "rewrite",
+      "group": "description sibling after a list item",
+      "from": ":: term\n: - a\n\n   > c\n",
+      "to": ":: term\n: - a\n\n > c\n",
+      "meaning02": "C2-B-069 and C2-B-076 place the quote at the description content column, outside the preceding list item.",
+      "toolEntry": "U-228",
+      "silent": true
     }
   ],
   "tree": [
