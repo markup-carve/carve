@@ -300,6 +300,17 @@ The tool renders the old input in 0.1 and the proposed output in 0.2. It compare
 5. Decide how the application will handle includes, lint, extensions, importers, and non-HTML output before switching its runtime.
 6. Keep the upgraded source and the tool's JSON report together in review. Do not feed upgraded files into the tool again.
 
+#### Measured continuation rewrites
+
+The 0.1 continuation marker `+` no longer owns a following block in 0.2 under C2-B-059. Write the block at the indentation of its owning list item, description, footnote, or quote. The tool checks the HTML before applying these rewrites.
+
+| ID | Before in 0.1 | 0.2 unchanged input | After in 0.2 |
+| --- | --- | --- | --- |
+| U-122 | Plus continuation in a list item **SILENT** | - > + | - >; rewrite |
+| U-123 | Plus continuation in a description body **SILENT** | :: t ⏎ : + | :: t ⏎ : {% %}; rewrite |
+| U-124 | Plus continuation in a footnote body **SILENT** | a ⏎ [^n]: + | a ⏎  ⏎ [^n]: +; rewrite |
+| U-125 | Plus continuation in a quote **SILENT** | > + ⏎ > | > ⏎ >; rewrite |
+
 ## Part 2. Integrators: your code and your pages
 
 | Surface | 0.1 | 0.2 action |

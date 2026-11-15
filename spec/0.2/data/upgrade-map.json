@@ -1000,6 +1000,46 @@
       "meaning02": "<p><a href=\"/u\">text</a></p>",
       "toolEntry": "U-121",
       "silent": true
+    },
+    {
+      "id": "U-122",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": "- > +",
+      "to": "- >",
+      "meaning02": "<ul>\n  <li>\n    <blockquote><p>+</p></blockquote>\n  </li>\n</ul>",
+      "toolEntry": "U-122",
+      "silent": true
+    },
+    {
+      "id": "U-123",
+      "kind": "rewrite",
+      "group": "lists",
+      "from": ":: t\n: +",
+      "to": ":: t\n: {% %}",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>+</dd>\n</dl>",
+      "toolEntry": "U-123",
+      "silent": true
+    },
+    {
+      "id": "U-124",
+      "kind": "rewrite",
+      "group": "references and footnotes",
+      "from": "a\n[^n]: +",
+      "to": "a\n\n[^n]: +",
+      "meaning02": "<p>a\n[^n]: +</p>",
+      "toolEntry": "U-124",
+      "silent": true
+    },
+    {
+      "id": "U-125",
+      "kind": "rewrite",
+      "group": "fences, quotes, comments",
+      "from": "> +\n>",
+      "to": ">\n>",
+      "meaning02": "<blockquote><p>+</p></blockquote>",
+      "toolEntry": "U-125",
+      "silent": true
     }
   ],
   "tree": [
