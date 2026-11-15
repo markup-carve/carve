@@ -2781,7 +2781,7 @@ after
 
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core (carried over from 0.1); on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
 
-**C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text.
+**C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text. A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported.
 
 The backtick is the only fence character of a code block: a tilde run is text (C2-B-108).
 
@@ -2928,6 +2928,25 @@ n
 <aside class="admonition note" aria-label="Note">
   <p>n</p>
 </aside>
+```
+
+:::
+
+Two spaces after the run: the fence opens with no language, and the word is reported (C2-B-122).
+
+Example 237 (unverified)
+
+::: compare
+
+````carve
+```  b
+text
+```
+````
+
+```html
+<pre><code>text
+</code></pre>
 ```
 
 :::
@@ -5322,7 +5341,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 2 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 7 | 1 | 5 | 2 |
+| The fence opener and titles | 7 | 1 | 5 | 3 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
@@ -5333,7 +5352,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 2 | 20 | 6 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **15** | **169** | **67** |
+| **Total** | **226** | **15** | **169** | **68** |
 
 The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

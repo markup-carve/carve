@@ -721,7 +721,8 @@
       "status": "kept",
       "messages": [
         "The title after \"${type}\" uses typographic quotes - usually a CMS \"smart quote\" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} \"${title}\"${label}.",
-        "Text after the \"${type}\" fence type must be a quoted \"title\" or a [label]; unquoted it is not read as a title, and the block opens. Did you mean ${fence} ${type} \"${title}\"${label}?"
+        "Text after the \"${type}\" fence type must be a quoted \"title\" or a [label]; unquoted it is not read as a title, and the block opens. Did you mean ${fence} ${type} \"${title}\"${label}?",
+        "The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. The block opens with no language (use: \"${respaced}\")."
       ],
       "message_origin": "data_file",
       "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
