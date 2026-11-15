@@ -91,7 +91,7 @@ Conventions:
 
 **C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030 and C2-A-212. Each slot has its content kind and walk order in `spec/0.2/data/node-slots.json` and, for extensions, the tree declaration.
 
-**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including typed metadata. It visits extension slots in the order of the root or envelope declaration, without a registry. It visits recursive metadata value slots as described by `data/node-slots.json`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011).
+**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including typed metadata. It visits extension slots in the order of the root or envelope declaration, without a registry. It visits recursive metadata value slots as described by `data/node-slots.json`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011). Caption and equation numbers are assigned when their owner is visited (C2-H-170); footnote numbers and ids follow the slot order.
 
 **C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and `data/extensions.json`. It names every node-bearing child slot and its walk order.
 
@@ -324,7 +324,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-072** A `thematic_break` has no fields of its own: 0.2 has one spelling, the star run.
 
-**C2-A-073** A `code_block` carries `value` and may carry `syntax`, the language word, and `title`, a list of inlines. The fence character and the fence length are not in the tree.
+**C2-A-073** A `code_block` carries `value` and may carry `syntax`, the language word, and `title`, a list of inlines. A parsed `title` is one `text` node that holds the quoted value read as in C2-I-033; it is not inline-parsed, so `"src/*a*"` gives the text `src/*a*`. The fence character and the fence length are not in the tree.
 
 ### Comments
 
@@ -369,7 +369,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Tables
 
-**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes, and after them the comment of a comment-only line that stands before its caption (C2-A-082). Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does. The trailing line comment of a row (C2-B-167) is a `comment` node at the place that a comment-only line directly below that row would take: among the rows of the row's group, directly after the row, or, after the last row of the table, as the comment after the groups. The row then ends at its closing pipe or its row attribute, and the comment spans from the first space before its `%%` to the line ending (C2-A-151). For `| 1 | 2 | %% note`, a line feed and `| 3 | 4 |`, the body holds the first row, the comment `note` and the second row, and the first row spans offsets 0 to 9.
+**C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes, and after them the comment of a comment-only line that stands directly below the last row, with or without a caption below it (C2-A-082). Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does. The trailing line comment of a row (C2-B-167) is a `comment` node at the place that a comment-only line directly below that row would take: among the rows of the row's group, directly after the row, or, after the last row of the table, as the comment after the groups. The row then ends at its closing pipe or its row attribute, and the comment spans from the first space before its `%%` to the line ending (C2-A-151). For `| 1 | 2 | %% note`, a line feed and `| 3 | 4 |`, the body holds the first row, the comment `note` and the second row, and the first row spans offsets 0 to 9.
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
@@ -573,7 +573,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-147** A comment that came from a comment-only line satisfies C2-A-144 and C2-A-145 in the node list C2-A-075 puts it in: the open leaf, or else the innermost open container.
 
-**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them.
+**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them. Where the attribute lines go to a `figure` (C2-B-107), the figure starts at the first of them and the block inside it starts at its own opening markup.
 
 **Exception C2-A-149** A table cell does not start at its opening markup, against C2-A-148: it spans the text between its pipes.
 
@@ -724,6 +724,8 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 
+**C2-A-216** An `autolink` carries `text` only where its visible text differs from `href`, which is the email form: `<a@b.org>` gives `href` `mailto:a@b.org` and `text` `a@b.org`, and `<https://x.org>` gives `href` alone.
+
 ## Standard data namespaces
 
 **C2-A-190** `carve.source`, `carve.style` and `carve.annotation` are optional declared data namespaces with the value schemas in `data/`.
@@ -795,8 +797,8 @@ These clauses were added after other documents began to cite this one. They stan
 | Section | Clauses |
 | --- | ---: |
 | Existing AST contract | 189 |
-| Later clauses and standard data namespaces | 26 |
-| **Total** | **215** |
+| Later clauses and standard data namespaces | 27 |
+| **Total** | **216** |
 
 ## Schema changes owed
 
