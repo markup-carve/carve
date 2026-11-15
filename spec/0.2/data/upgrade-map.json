@@ -1870,6 +1870,26 @@
       "meaning02": "C2-B-069, C2-B-076, and C2-B-081 leave an empty description body and resolve the reference after the definition is moved to document scope.",
       "toolEntry": "U-210",
       "silent": true
+    },
+    {
+      "id": "U-211",
+      "kind": "rewrite",
+      "group": "measured block attribute boundaries",
+      "from": "{.a\n\t.b}\n\nparagraph\n",
+      "to": "{.a .b}\nparagraph\n",
+      "meaning02": "C2-B-090 and C2-B-095 attach the folded single-line attribute to the paragraph after the blank line is removed.",
+      "toolEntry": "U-211",
+      "silent": true
+    },
+    {
+      "id": "U-212",
+      "kind": "escape",
+      "group": "measured quote caption boundaries",
+      "from": "> a\n ^ cap\n",
+      "to": "> a\n \\^ cap\n",
+      "meaning02": "C2-B-147 and C2-B-149 keep the caret as quote text after it is escaped, rather than attaching a figure caption.",
+      "toolEntry": "U-212",
+      "silent": true
     }
   ],
   "tree": [
