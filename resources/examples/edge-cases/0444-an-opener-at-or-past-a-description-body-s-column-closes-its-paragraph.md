@@ -174,7 +174,7 @@ it for the attribute to attach to (§15 A4).
 ```carve
 :: term
 :  definition
-    {.k}
+
 tail
 ```
 
@@ -196,7 +196,7 @@ way.
 ```carve
 :: term
 :  definition
-   {.k}
+
 tail
 ```
 

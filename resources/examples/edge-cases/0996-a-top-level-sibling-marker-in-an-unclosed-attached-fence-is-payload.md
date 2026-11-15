@@ -12,6 +12,7 @@ The #5499 reading holds at the top level too: a sibling marker inside an unclose
 - ```
   - z
 
+  ```
 q
 ````
 

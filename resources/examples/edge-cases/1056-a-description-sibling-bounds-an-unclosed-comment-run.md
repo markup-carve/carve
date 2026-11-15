@@ -11,7 +11,7 @@ An unclosed marker-line comment opener is literal text. The following attribute 
 ```carve
 :: t
 :   {% a
-     {k=v}
+
 : next
 ```
 
@@ -30,7 +30,7 @@ An unclosed marker-line comment opener is literal text. The following attribute 
 ```carve
 :: t
 :   {% a
-     {k=v}
+
 : next
 z %} y
 ```

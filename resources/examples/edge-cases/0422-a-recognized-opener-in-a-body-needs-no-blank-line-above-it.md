@@ -182,7 +182,8 @@ a `>` one column in opens nothing and folds into the body's paragraph as text
 ```carve
 :: term
 :  definition
- > quote
+
+> quote
 ```
 
 ```html

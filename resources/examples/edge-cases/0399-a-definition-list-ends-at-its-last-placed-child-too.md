@@ -22,7 +22,7 @@ publishes are what moved.
 ```carve
 :: t
 :  d
-   {.k}
+
 tail
 ```
 

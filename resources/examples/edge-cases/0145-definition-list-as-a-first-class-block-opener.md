@@ -55,8 +55,9 @@ Below the content column but not at column 0, it folds in as lazy item text.
 
 ```carve
 - one
- :: term
- :  def
+
+:: term
+:  def
 ```
 
 ```html

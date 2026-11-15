@@ -100,7 +100,7 @@ A definition body ends the same way:
 ```carve
 :: t
 :  d
-   {.k}
+
 tail
 ```
 
