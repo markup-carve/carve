@@ -687,7 +687,7 @@ Example 12 (generated)
 
 **C2-H-063** The attribute line of a captioned block applies to the `<figure>`, its id included. The block inside carries only what it generates itself. In the tree these attributes are the `attrs` of the `figure` (C2-A-183).
 
-**C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it is `<figure class="carve-figure-panel">`, and the caption of the group is the last child of the group.
+**C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it is `<figure class="carve-figure-panel">`, and the caption of the group is the last child of the group. A table panel is wrapped too: the panel figure holds the `<table>`, which keeps its caption as `<caption>` (C2-H-061) and has no `<figcaption>`.
 
 **C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
 
@@ -874,6 +874,41 @@ See[^a].
     </li>
   </ol>
 </section>
+```
+
+:::
+
+A table panel stands in a panel figure like the image panel, and keeps its own `<caption>` (C2-H-064).
+
+Example 38 (unverified)
+
+::: compare
+
+```carve
+:::: figure
+![a](a.png)
+^ First
+
+| t |
+^ Second
+::::
+```
+
+```html
+<figure class="carve-figure-group">
+  <figure class="carve-figure-panel">
+    <img src="a.png" alt="a">
+    <figcaption>First</figcaption>
+  </figure>
+  <figure class="carve-figure-panel">
+    <table>
+      <caption>Second</caption>
+      <tbody>
+        <tr><td>t</td></tr>
+      </tbody>
+    </table>
+  </figure>
+</figure>
 ```
 
 :::
@@ -1518,7 +1553,7 @@ One point is open.
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
 | Tables | 9 | 1 | 1 | 0 |
-| Captions and figures | 12 | 0 | 4 | 0 |
+| Captions and figures | 12 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
@@ -1530,6 +1565,6 @@ One point is open.
 | Options | 24 | 0 | 3 | 1 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **12** |
+| **Total** | **177** | **7** | **25** | **13** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 37 examples, 25 generated and 12 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 38 examples, 25 generated and 13 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
