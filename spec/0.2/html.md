@@ -1362,6 +1362,27 @@ See [docs](https://x.org) and *bold*.
 
 :::
 
+**C2-H-177** Resolution does not read `profile`: a reference to a heading resolves as it does without a profile, and the tree does not change (C2-H-121). The render reads it. A heading outside the profile is degraded (C2-H-165) and writes no element and no id, so a reference link and a cross-reference that resolved to it are written in their unresolved forms (C2-H-085, C2-H-086), as if the heading did not exist. A link that is itself outside the profile is degraded and writes the plain text of its children.
+
+The heading is outside the `comment` profile. Its reference and its cross-reference are written as unresolved text (C2-H-177).
+
+Example 34 (unverified, `--profile comment`)
+
+::: compare
+
+```carve
+## Sub *em* `code`
+
+[Sub em code][] and </#Sub-em-code>
+```
+
+```html
+<p>## Sub em code</p>
+<p>[Sub em code][] and &lt;/#Sub-em-code&gt;</p>
+```
+
+:::
+
 ## The option list
 
 **C2-H-137** These are the 20 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
@@ -1450,9 +1471,9 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
-| Options | 23 | 0 | 3 | 0 |
+| Options | 24 | 0 | 3 | 1 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **176** | **7** | **25** | **8** |
+| **Total** | **177** | **7** | **25** | **9** |
 
-The document has 176 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 34 examples, 25 generated and 9 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
