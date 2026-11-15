@@ -2280,6 +2280,16 @@
       "meaning02": "C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and write task item HTML.",
       "toolEntry": "U-252",
       "silent": true
+    },
+    {
+      "id": "U-253",
+      "kind": "rewrite",
+      "group": "open div is closed before a footnote definition",
+      "from": ":::\nb[^1]\n\n[^1]: c",
+      "to": ":::\nb[^1]\n\n:::\n\n[^1]: c",
+      "meaning02": "C2-B-082 and C2-B-109 read the footnote definition at document scope after the explicit div closer.",
+      "toolEntry": "U-253",
+      "silent": true
     }
   ],
   "tree": [
