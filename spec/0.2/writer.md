@@ -23,6 +23,8 @@ Conventions:
 
 **Exception C2-W-133** If a block group returns to the same repair state or exceeds a finite repair limit under C2-W-089, the writer stops that group and reports `writer-refused` in the render-loss channel at the first node of the group. The diagnostic form returns the nearest source with that report. The `format` and `write` calls that return only source throw `CarveWriteError`. C2-W-002 and C2-W-003 do not apply to a refused result.
 
+**C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
+
 **C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
 **C2-W-005** The gates outrank every per-construct clause below. Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree, and another spelling of the same construct is preferred over a different construct. Such a deviation is conformant.
@@ -809,7 +811,7 @@ One point is open.
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| The writer and its two gates | 12 | 2 | 0 | 0 |
+| The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 27 | 4 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
@@ -819,6 +821,6 @@ One point is open.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **133** | **7** | **5** | **2** |
+| **Total** | **134** | **7** | **5** | **2** |
 
-The document has 133 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 134 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
