@@ -493,6 +493,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-238 | Under C2-B-057 and C2-B-111, <code>- &#96;&#96;&#96;</code>, `  x`, a blank line, `+`, and `tail` write one list item whose code holds the blank line and whose text is `tail` in 0.1. **SILENT** | The same 0.2 source ends the item before `+` and leaves `tail` outside. | Write a matching fence closer and indent `tail` under the item; rewrite |
 | U-239 | Under C2-B-072 and C2-B-078, `:: t`, `: a`, a tab-indented code fence, and a one-space code fence write two code blocks in 0.1. **SILENT** | The same 0.2 source reads the second fence as a closer and writes only the first block. | Put the second fence at column zero when the complete HTML check passes; rewrite |
 | U-240 | Under C2-I-030, `[a]{:abcdefgh} [b]{:abcdefghi}` writes a language span for `a` and literal `[b]{:abcdefghi}` in 0.1. **SILENT** | The same 0.2 source writes language spans for both `a` and `b`. | Review the new language span; report |
+| U-241 | Under C2-B-129, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1. **SILENT** | The same 0.2 source writes a hard break between `a` and `b`. | Review the fallback in the hardbreak div; report |
 
 ## Part 2. Integrators: your code and your pages
 

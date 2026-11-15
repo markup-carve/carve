@@ -2160,6 +2160,16 @@
       "meaning02": "C2-I-030 accepts the nine-character tag and writes lang=\"abcdefghi\" on the second span.",
       "toolEntry": "U-240",
       "silent": true
+    },
+    {
+      "id": "U-241",
+      "kind": "report",
+      "group": "hardbreak div changes unresolved reference fallback",
+      "from": "::: \\\n[a\nb][missing]\n:::\n",
+      "to": "",
+      "meaning02": "C2-B-129 writes the line ending inside the unresolved reference fallback as a hard break inside the hardbreak div.",
+      "toolEntry": "U-241",
+      "silent": true
     }
   ],
   "tree": [
