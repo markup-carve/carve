@@ -455,7 +455,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-108** An unresolved full or collapsed reference remains a `link` or `image` with its `children` or `alt`, `key`, `refForm` and `attrs`; it never becomes text. HTML renders its brackets and label as literal text. A shortcut forms only for a defined key and is therefore never unresolved when parsed from source.
 
-**C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. Its result is an `href` on the link, like any other resolution.
+**C2-A-109** A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. It compares plain text that the tree alone gives, so it needs no source. Its result is an `href` on the link, like any other resolution.
 
 **C2-A-110** A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (the classes of the definition first, then the reference's; the id and the keys of the reference win) is a resolution result: it is not written into `attrs` and takes no part in equality.
 

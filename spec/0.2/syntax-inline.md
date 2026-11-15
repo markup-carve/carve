@@ -1268,7 +1268,7 @@ Example 108 (generated)
 
 **C2-I-075** A full or collapsed reference is a node whether or not its label resolves. The inline scan reads the definition keys to decide whether a shortcut forms. Resolution reads the definition values later.
 
-**C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no atom, bracket, delimiter or sigil form is read in it, a code span included, and its source is its key (C2-I-079). The line comment of C2-I-077 is the one exception.
+**C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no atom, bracket, delimiter or sigil form is read in it, a code span included, and its source is its key (C2-I-079). The line comment of C2-I-077 is the one exception. The heading lookup reads the stored key once more, and that reading makes no node (C2-I-084).
 
 **Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
 
@@ -1278,13 +1278,13 @@ Example 108 (generated)
 
 **C2-I-080** A label may wrap: a line break with the whitespace around it folds to one space. A blank line ends the content and the label with it. A definition line stays on one line.
 
-**C2-I-081** The key of a link reference is looked up in the link definitions, then in the headings, for the full and for the collapsed form. A heading alone never forms a shortcut reference.
+**C2-I-081** The stored key of a full or collapsed link reference is looked up first in the link definitions, where it matches a key that is the same string. Only where no definition matches is it looked up in the headings (C2-I-084). A shortcut forms and resolves only from a definition: a heading alone never forms a shortcut reference.
 
 **C2-I-082** The attributes of a link definition merge into every reference that resolves to it: the classes of the definition and of the reference add up, the definition's first, and the reference's own id and keys win over the definition's.
 
 **Exception C2-I-083** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
 
-**C2-I-084** A heading matches when the key equals the folded source of the heading's text or its plain text without markup. The match is case-sensitive, and the first matching heading in the document wins. The reference then links to that heading's id. A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
+**C2-I-084** The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, and folds both by C2-I-079. The target is the first heading in document order that has an id and whose folded plain text equals that of the key. The match is case-sensitive. The reference links to that heading's authored or generated id; an explicit id is a destination, not a key the lookup matches. An opener left unclosed in the key is text under the fallback rule (C2-I-119), so the lookup never fails because of markup in the key. No source text is read: a tree resolves the same with and without its source, and the formatter cannot change which heading a key finds. The `key` and the carrier `data-carve-ref` keep the folded label as written (C2-A-104, C2-H-114). A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
 
 **C2-I-085** An unresolved reference is still a reference node. It renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
 
@@ -1541,6 +1541,150 @@ Example 79 (unverified)
 
 ```html
 <p><a href="/u">x</a></p>
+```
+
+:::
+
+The heading lookup compares plain text, so emphasis in the key finds a plain heading, and the braced form finds it too.
+
+Example 114 (unverified)
+
+::: compare
+
+```carve
+# A bold title
+
+[A *bold* title][] and [x][A {*bold*} title]
+```
+
+```html
+<section id="A-bold-title">
+  <h1>A bold title</h1>
+  <p><a href="#A-bold-title">A <strong>bold</strong> title</a> and <a href="#A-bold-title">x</a></p>
+</section>
+```
+
+:::
+
+The reverse: a braced heading is found by a key with bare emphasis and by a plain key.
+
+Example 115 (unverified)
+
+::: compare
+
+```carve
+# A {*bold*} title
+
+[A *bold* title][] and [A bold title][]
+```
+
+```html
+<section id="A-bold-title">
+  <h1>A <strong>bold</strong> title</h1>
+  <p><a href="#A-bold-title">A <strong>bold</strong> title</a> and <a href="#A-bold-title">A bold title</a></p>
+</section>
+```
+
+:::
+
+Code and math in the key give their values.
+
+Example 116 (unverified)
+
+::: compare
+
+```carve
+# The `x` value and $`r^2`
+
+[go][The x value and r^2] and [The `x` value and $`r^2`][]
+```
+
+```html
+<section id="The-x-value-and-r-2">
+  <h1>The <code>x</code> value and <span class="math inline" role="math">\(r^2\)</span></h1>
+  <p><a href="#The-x-value-and-r-2">go</a> and <a href="#The-x-value-and-r-2">The <code>x</code> value and <span class="math inline" role="math">\(r^2\)</span></a></p>
+</section>
+```
+
+:::
+
+An escape gives the escaped character, and smart punctuation gives its glyph. An escaped apostrophe is no glyph, so the last key matches no heading.
+
+Example 117 (unverified)
+
+::: compare
+
+```carve
+# It's a\*b
+
+[It's a\*b][] and [go][It’s a*b] and [go][It\'s a\*b]
+```
+
+```html
+<section id="It-s-a-b">
+  <h1>It’s a*b</h1>
+  <p><a href="#It-s-a-b">It’s a*b</a> and <a href="#It-s-a-b">go</a> and [go][It\'s a\*b]</p>
+</section>
+```
+
+:::
+
+The first of two headings with equal plain text wins. An unclosed opener in the key is text, as anywhere else.
+
+Example 118 (unverified)
+
+::: compare
+
+```carve
+# A *b*
+
+# A b
+
+# A *c
+
+[A b][] and [x][A *c]
+```
+
+```html
+<section id="A-b">
+  <h1>A <strong>b</strong></h1>
+</section>
+<section id="A-b-2">
+  <h1>A b</h1>
+</section>
+<section id="A-c">
+  <h1>A *c</h1>
+  <p><a href="#A-b">A b</a> and <a href="#A-c">x</a></p>
+</section>
+```
+
+:::
+
+An explicit id is the destination, not a key. An image and a shortcut never reach a heading. A definition wins over a heading of the same text.
+
+Example 119 (unverified)
+
+::: compare
+
+```carve
+{#manual}
+# Intro
+
+[Intro][] and [manual][] and ![x][Intro] and [Intro] and [Setup][]
+
+# Setup
+
+[Setup]: /setup
+```
+
+```html
+<section id="manual">
+  <h1>Intro</h1>
+  <p><a href="#manual">Intro</a> and [manual][] and ![x][Intro] and [Intro] and <a href="/setup">Setup</a></p>
+</section>
+<section id="Setup">
+  <h1>Setup</h1>
+</section>
 ```
 
 :::
@@ -2182,7 +2326,7 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 1 |
-| Reference resolution | 13 | 3 | 5 | 9 |
+| Reference resolution | 13 | 3 | 5 | 15 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 0 |
@@ -2193,9 +2337,9 @@ There is no fixed budget for the inline chapter.
 | The depth cap | 2 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **125** | **22** | **73** | **40** |
+| **Total** | **125** | **22** | **73** | **46** |
 
-The chapter has 125 clauses, 22 of them exceptions, and 113 examples. The clause count includes the exceptions.
+The chapter has 125 clauses, 22 of them exceptions, and 119 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
