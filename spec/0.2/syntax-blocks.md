@@ -4532,9 +4532,9 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The closing pipe is the last pipe of the line, also where a line comment stands before it: `| a | b | %% note | x` does not end with a pipe and is text (C2-B-168). The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
 
-**C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment. The comment stands in the tree as a comment-only line directly below the row would (C2-A-086).
+**C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment. The comment stands after whitespace, as C2-B-133 requires: `| a |%% x` and `||%%` do not end with a pipe and are text (C2-B-168). The comment stands in the tree as a comment-only line directly below the row would (C2-A-086).
 
 **C2-B-168** A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
 
@@ -5079,7 +5079,7 @@ a,b
 
 **C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry makes the value invalid (C2-B-212).
 
-**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it.
+**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it. The vertical axis has no table attribute: only cell marks set it, and a `valigns` key on a table is an ordinary key, not one of the table attributes of `data/table-marks.json`.
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
 
