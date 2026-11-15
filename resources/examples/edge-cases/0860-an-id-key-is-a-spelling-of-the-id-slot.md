@@ -74,7 +74,7 @@ The key reaches past an explicit identifier, so the value is escaped in the `id`
 ::: compare
 
 ```carve
-{id='a"b&c'}
+{id="a\"b&c"}
 # H
 
 </#a"b&c>
