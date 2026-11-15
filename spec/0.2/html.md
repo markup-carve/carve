@@ -1399,7 +1399,7 @@ in
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a comment gives no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its source text. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a comment gives no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its source text. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
 **C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.
 
@@ -1449,6 +1449,34 @@ See [docs](https://x.org) and *bold*.
 
 ```html
 <p>See docs and <strong>bold</strong>.</p>
+```
+
+:::
+
+A degraded figure and a degraded table keep their captions as paragraphs, with their numbers (C2-H-165).
+
+Example 39 (unverified, `--profile comment`)
+
+::: compare
+
+```carve
+![i](a.png)
+^ Figure #: cap
+
+| t |
+^ Table #: tc
+
+:::: figure
+::::
+^ Empty #
+```
+
+```html
+<p>[img: i]</p>
+<p>Figure 1: cap</p>
+<p>t</p>
+<p>Table 1: tc</p>
+<p>Empty 1</p>
 ```
 
 :::
@@ -1562,9 +1590,9 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
-| Options | 24 | 0 | 3 | 1 |
+| Options | 24 | 0 | 3 | 2 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **13** |
+| **Total** | **177** | **7** | **25** | **14** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 38 examples, 25 generated and 13 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 39 examples, 25 generated and 14 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
