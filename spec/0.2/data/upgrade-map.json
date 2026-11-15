@@ -2260,6 +2260,26 @@
       "meaning02": "C2-B-082, C2-B-108, and C2-B-110 resolve the note at document scope while the empty comment retains the list item.",
       "toolEntry": "U-250",
       "silent": true
+    },
+    {
+      "id": "U-251",
+      "kind": "report",
+      "group": "task item consumes a nested footnote definition",
+      "from": "[^n]: - [ ]  [^f]: x\n\nr[^n] [^f]\n",
+      "to": "",
+      "meaning02": "C2-B-046, C2-B-082, and C2-H-032 give the task item ownership of the nested definition and write task item HTML.",
+      "toolEntry": "U-251",
+      "silent": true
+    },
+    {
+      "id": "U-252",
+      "kind": "report",
+      "group": "task item changes nested description ownership",
+      "from": "- [x]   - :: term\n           : desc\n           :: next\n           : body\n",
+      "to": "",
+      "meaning02": "C2-B-046, C2-B-067, and C2-H-032 change ownership of the nested description and write task item HTML.",
+      "toolEntry": "U-252",
+      "silent": true
     }
   ],
   "tree": [
