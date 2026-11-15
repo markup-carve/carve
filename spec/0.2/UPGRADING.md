@@ -50,14 +50,13 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-019 | Later paragraph of a tight item **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt; ⏎ &lt;h1 id="Heading"&gt;Heading&lt;/h1&gt; ⏎ &lt;p&gt;more&lt;/p… | Review by hand; report |
 | U-020 | &#96;{loose}&#96; on a list with several items **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | - a ⏎ ⏎ - b ⏎ ; rewrite |
 | U-021 | Loose list with one item **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;Note text.&lt;/li&gt; ⏎ &lt;/ul&gt; | Review by hand; report |
-| U-022 | Right-aligned ordered markers | &lt;ol start="9"&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ol&gt; |  9. a ⏎ 10. b ⏎ ; rewrite |
 | U-023 | Marker indented less than the content column of the item above **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item text ⏎ 3. child&lt;/li&gt; ⏎ &lt;/ul&gt; | - item text ⏎ 3. child ⏎ ; rewrite |
 | U-024 | Alphabetic list that starts at &#96;i&#96; **SILENT** | &lt;ol type="i" data-delim=")"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ol&gt; ⏎ &lt;ol type… | {start=9} ⏎ a) one ⏎ b) two ⏎ ; rewrite |
 | U-025 | Ordered marker of ten or more digits **SILENT** | &lt;p&gt;1234567890. x&lt;/p&gt; | {start=1234567890} ⏎ . x ⏎ ; rewrite |
 | U-026 | Comment block at column 0 between two items **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | - a ⏎ %%% ⏎ x ⏎ %%% ⏎ - b ⏎ ; rewrite |
 | U-027 | Three blank lines between two lists | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | Keep it; none |
 | U-028 | &#96;-&#96; and &#96;*&#96; items | &lt;ul&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;two&lt;/li&g… | Keep it; none |
-| U-029 | Comment-only line between items, uneven marker columns, empty task box, &#96;- -&#96; | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |
+| U-029 | Comment-only line between items, empty task box, &#96;- -&#96; | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |
 | U-030 | Uppercase letter marker | &lt;p&gt;A. Smith went home.&lt;/p&gt; ⏎ &lt;ol type="A"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎… | Keep it; none |
 
 #### Attributes
@@ -70,7 +69,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-034 | Attribute line that reaches no block **SILENT** | &lt;p&gt;Paragraph.&lt;/p&gt; ⏎ &lt;p&gt;{.x}&lt;/p&gt; | Paragraph. ⏎ ; rewrite |
 | U-035 | Glued and stacked attribute blocks, empty braces **SILENT** | &lt;p id="b" class="a"&gt;Paragraph.&lt;/p&gt; | Keep it; none |
 | U-036 | Order of attributes in HTML **SILENT** | &lt;p id="b" class="a"&gt;Paragraph.&lt;/p&gt; ⏎ &lt;p&gt;&lt;span id="b" class="a"&gt;x&… | Review by hand; report |
-| U-037 | Attribute block after a fence language or an admonition name | &lt;pre&gt;&lt;code class="language-js"&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ &lt;aside c… | &#96;&#96;&#96;js ⏎ code ⏎ &#96;&#96;&#96; ⏎ ⏎ ::: note ⏎ body ⏎ ::: ⏎ ; rewrite |
+| U-037 | Brace suffix after a fence language | &lt;pre&gt;&lt;code class="language-js"&gt;a ⏎ &lt;/code&gt;&lt;/pre&gt; | &#96;&#96;&#96;js ⏎ a ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
 
 #### Definitions
 
@@ -109,7 +108,6 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | --- | --- | --- | --- |
 | U-049 | Fence closer at another indent **SILENT** | &lt;pre&gt;&lt;code&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ &lt;p&gt;after&lt;/p&gt; | &#96;&#96;&#96;&#96; ⏎ code ⏎ &#96;&#96;&#96; ⏎ after ⏎ &#96;&#96;&#96;&#96; ⏎ ; rewrite |
 | U-050 | &#96;%%%&#96; closer followed by text **SILENT** |  | %%% ⏎ hidden ⏎ visible? ⏎ %%% ⏎ after ⏎ ; rewrite |
-| U-051 | Unquoted words after a fence language or a div name | &lt;pre&gt;&lt;code class="language-js"&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ &lt;aside c… | &#96;&#96;&#96;js ⏎ code ⏎ &#96;&#96;&#96; ⏎ ⏎ ::: note ⏎ body ⏎ ::: ⏎ ; rewrite |
 | U-052 | &#96;%%&#96; line inside a line block **SILENT** | &lt;div class="line-block"&gt; ⏎ &lt;p&gt;one&lt;br&gt; ⏎ %% hidden&lt;br&gt; ⏎ two&lt;/p… | ::: \| ⏎ one ⏎ {% hidden %} ⏎ two ⏎ ::: ⏎ ; rewrite |
 | U-053 | Tab in code under a container **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item ⏎ &lt;pre&gt;&lt;code&gt;x ⏎ y ⏎ &lt;/code&gt;&lt;/pre&gt; ⏎ … | - item ⏎ ⏎ &#96;&#96;&#96; ⏎ x ⏎ y ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
 | U-054 | Fence and div spellings that read the same | &lt;pre title="T"&gt;&lt;code class="language-js"&gt;code ⏎ &lt;/code&gt;&lt;/pre&gt; | Keep it; none |
@@ -272,7 +270,7 @@ Task and plain items now share one list (`U-117`). The tool puts four line break
 - b
 ```
 
-This preserves two lists, but the 0.2 engine adds `class="task"` on the boxed item. If one mixed list is what you want, keep the original two lines and update the page CSS. In a new document, one mixed list is valid. An uppercase ordered marker with a dot needs two spaces after it, including roman numerals (`U-118`). Right-aligned numbers such as ` 9.` and `10.` form one ordered list (`U-022`, `U-119`).
+This preserves two lists, but the 0.2 engine adds `class="task"` on the boxed item. If one mixed list is what you want, keep the original two lines and update the page CSS. In a new document, one mixed list is valid. An uppercase ordered marker with a dot needs two spaces after it, including roman numerals (`U-118`). Right-aligned numbers such as ` 9.` and `10.` form one ordered list (C2-B-030).
 
 In 0.1, `1. [ ] x` is an ordered item whose text starts with `[ ] x`. In 0.2 the box is a task field and the ordered number stays visible. The tool writes `1. \[ ] x` to keep the old text (`U-120`). In 0.1, `[text]` and `![text]` remain text even when `[text]: /u` is defined. In 0.2 both are shortcut references. The tool escapes their opening brackets to keep the old text (`U-121`).
 

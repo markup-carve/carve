@@ -212,16 +212,6 @@
       "silent": true
     },
     {
-      "id": "U-022",
-      "kind": "rewrite",
-      "group": "lists",
-      "from": " 9. a\n10. b\n",
-      "to": " 9. a\n10. b\n",
-      "meaning02": "<ol start=\"9\">\n  <li>a</li>\n  <li>b</li>\n</ol>",
-      "toolEntry": "U-022",
-      "silent": false
-    },
-    {
       "id": "U-023",
       "kind": "rewrite",
       "group": "lists",
@@ -365,9 +355,9 @@
       "id": "U-037",
       "kind": "rewrite",
       "group": "attributes",
-      "from": "```js {.x}\ncode\n```\n\n::: note {.x}\nbody\n:::\n",
-      "to": "```js\ncode\n```\n\n::: note\nbody\n:::\n",
-      "meaning02": "<pre><code class=\"language-js\">code\n</code></pre>\n<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>body</p>\n</aside>",
+      "from": "```js{1,3}\na\n```\n",
+      "to": "```js\na\n```\n",
+      "meaning02": "<pre><code class=\"language-js\">a\n</code></pre>",
       "toolEntry": "U-037",
       "silent": false
     },
@@ -500,16 +490,6 @@
       "meaning02": "",
       "toolEntry": "U-050",
       "silent": true
-    },
-    {
-      "id": "U-051",
-      "kind": "rewrite",
-      "group": "fences, quotes, comments",
-      "from": "```js My Title\ncode\n```\n\n::: note My Title\nbody\n:::\n",
-      "to": "```js\ncode\n```\n\n::: note\nbody\n:::\n",
-      "meaning02": "<pre><code class=\"language-js\">code\n</code></pre>\n<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>body</p>\n</aside>",
-      "toolEntry": "U-051",
-      "silent": false
     },
     {
       "id": "U-052",
