@@ -5090,6 +5090,59 @@ c,d
 
 ::::
 
+**C2-B-226** The body of a delimited table is read as records, in the manner of RFC 4180. The separator is a comma for `csv` and a tab for `tsv`. The language word is matched as written, so a `CSV` fence is a code block that keeps its attribute. A line ending ends a row, except inside quotes. A cell that starts with `"` is quoted up to the next `"` that is not doubled: a doubled `""` stands for one `"`, and separators and line endings inside are part of the cell; what stands between the closing quote and the next separator or line ending is added to the cell as written. A `"` anywhere else is an ordinary character. Cells are not trimmed. A cell is plain text: no inline form is read in it, and its `cell_paragraph` holds one `text` node (C2-A-215), or none for an empty cell. A separator always starts another cell, so a row that ends in one has an empty last cell. An empty line is a row of one empty cell, except that one empty line at the end of the body is dropped. An empty body has no rows.
+
+The cells keep their spaces and their stars, a doubled quote is one quote, and a quoted cell holds a line break (C2-B-226).
+
+Example 234 (unverified)
+
+::: compare
+
+`````carve
+{table}
+```csv
+a,"b ""q"" c", d
+*x*,
+
+"m
+n"x,y
+
+```
+
+{table}
+```CSV
+a,b
+```
+
+{table}
+```tsv
+a	b,c
+```
+`````
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b "q" c</th><th scope="col"> d</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>*x*</td><td></td></tr>
+    <tr><td></td></tr>
+    <tr><td>m
+nx</td><td>y</td></tr>
+  </tbody>
+</table>
+<pre table=""><code class="language-CSV">a,b
+</code></pre>
+<table>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b,c</th></tr>
+  </thead>
+</table>
+```
+
+:::
+
 ## The fallback rule
 
 A line that is not a valid opener is text (C2-B-011).
@@ -5236,12 +5289,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 33 | 2 | 20 | 4 |
+| Tables | 34 | 2 | 20 | 5 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **225** | **15** | **169** | **64** |
+| **Total** | **226** | **15** | **169** | **65** |
 
-The chapter has 225 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
