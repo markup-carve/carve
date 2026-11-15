@@ -1777,7 +1777,7 @@
       "group": "measured ownership and inline rewrites",
       "from": ":: t\n:  d\n   {.k}\ntail\n",
       "to": ":: t\n:  d\n\ntail\n",
-      "meaning02": "C2-B-076 and C2-B-078 keep a following indented line in the description body until an explicit boundary; an attribute consumed by 0.1 must be removed when it has no rendered effect.",
+      "meaning02": "C2-B-076 and C2-B-078 keep a following indented line in the description body until an explicit boundary; an attribute consumed by 0.1 must be removed when it has no rendered effect. A blank line before an indented following paragraph can also keep that paragraph in the description body, so the paragraph is moved to column zero.",
       "toolEntry": "U-199",
       "silent": true
     },
@@ -1799,6 +1799,16 @@
       "to": "{_a %% b_} y\n",
       "meaning02": "C2-I-060, C2-I-062, and C2-I-119 close braced inline forms at their own nested or comment boundary, changing the rendered span.",
       "toolEntry": "U-201",
+      "silent": true
+    },
+    {
+      "id": "U-202",
+      "kind": "escape",
+      "group": "measured inline rewrites",
+      "from": "x ^[a ^[b] c]\n",
+      "to": "x ^[a \\^[b] c]\n",
+      "meaning02": "C2-I-089 allows an inline footnote inside another inline footnote. Escape the inner caret to retain 0.1 literal text.",
+      "toolEntry": "U-202",
       "silent": true
     }
   ],
