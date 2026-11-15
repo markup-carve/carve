@@ -486,6 +486,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-231 | Under C2-I-033 and C2-H-003, `{id='a"b&c'}` before `# H` gives the heading section ID `a"b&c` in 0.1. **SILENT** | The same 0.2 source can leave the single-quoted block unrecognized. | Write a double-quoted ID value with the embedded double quote escaped; rewrite |
 | U-232 | Under C2-B-069 and C2-B-076, `:: t` then `: para` then a one-space `| a |` writes a description followed by a table in 0.1. **SILENT** | The same 0.2 source writes the table inside the description body. | Move the table row to column zero to keep the 0.1 HTML; rewrite |
 | U-233 | Under C2-I-035 and C2-I-104, `:a:"q"` then `:long-name:'q'` writes `:a:“q”` and `:long-name:‘q’` in 0.1. **SILENT** | The same 0.2 source can write closing quotes at both openings. | Write literal curly opening quotes where the complete HTML check confirms the old result; rewrite |
+| U-234 | Under C2-I-079 and C2-I-085, `[\\^][]` writes a literal backslash and caret in 0.1. **SILENT** | The same 0.2 source drops the backslash while folding the unresolved label. | Add two backslashes to the run when the complete HTML check confirms the old result; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 

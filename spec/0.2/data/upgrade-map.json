@@ -2090,6 +2090,16 @@
       "meaning02": "C2-I-035 and C2-I-104 keep literal curly quotes while the remaining ASCII quotes close their spans.",
       "toolEntry": "U-233",
       "silent": true
+    },
+    {
+      "id": "U-234",
+      "kind": "rewrite",
+      "group": "literal backslash run in unresolved reference",
+      "from": "[\\^][]",
+      "to": "[\\\\\\^][]",
+      "meaning02": "C2-I-079 and C2-I-085 fold an unresolved reference label; extra source backslashes retain the 0.1 literal output.",
+      "toolEntry": "U-234",
+      "silent": true
     }
   ],
   "tree": [
