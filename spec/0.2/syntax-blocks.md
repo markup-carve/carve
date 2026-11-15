@@ -2554,6 +2554,8 @@ code
 
 **C2-B-116** A code fence whose info string is `=` directly followed by a format name is a raw block: its body goes to an output of that format as written and is not code (carried over from 0.1).
 
+**C2-B-222** The value of a code block is its body lines, with one line feed after each line, including the last line when the end of input closes an unclosed fence. Trailing blank lines of an unclosed fence remain excluded under C2-B-113.
+
 **C2-B-195** `comment-fence-closer-with-text` reports a percent run followed by other text in the body of a comment block.
 
 Example 113 (generated)
@@ -4427,6 +4429,10 @@ title: x
 
 **C2-B-169** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
 
+**C2-B-223** Every cell is a separate inline content. An inline construct never crosses a cell boundary, and an unclosed code span at the end of a cell is text.
+
+**C2-B-224** An escaped pipe is a literal pipe in cell text before inline parsing, including a link destination, an image destination, an image label and a reference label.
+
 **C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
 **C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block. The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
@@ -5180,7 +5186,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Description lists | 14 | 0 | 12 | 4 |
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 2 | 12 | 11 |
-| Fences, divs and comment blocks | 10 | 0 | 7 | 4 |
+| Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 6 | 1 | 5 | 1 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
@@ -5189,12 +5195,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 1 |
 | Thematic break | 2 | 0 | 3 | 2 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 31 | 2 | 20 | 4 |
+| Tables | 33 | 2 | 20 | 4 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **221** | **15** | **169** | **63** |
+| **Total** | **224** | **15** | **169** | **63** |
 
-The chapter has 221 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 224 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

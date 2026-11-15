@@ -784,13 +784,17 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-212** A metadata value is an object with exactly `kind` and `value`. `kind` is `string`, `boolean`, `number`, `inlines`, `blocks`, `list` or `map`. The value has that type. `inlines` and `blocks` are child lists; `list` holds ordered metadata values; `map` holds named metadata values. A walker reaches child lists at every depth. It visits root `fields` and nested `map` entries in Unicode code point name order, and `list` entries in array order. Resolution, the URL policy and rendering profiles apply to their nodes. A reader refuses more than 64 nested metadata values or more than 256 named entries across root `metadata.fields` and nested metadata maps in one document (data/limits.json).
 
+**C2-A-213** A supplied `link` or `image` with `refForm` equal to `shortcut` and a key with no definition is valid. Resolution leaves it unresolved, and rendering writes the unresolved reference as text.
+
+**C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in Unicode code points of the annotation text of that node. The schema is `data/annotation-ranges.schema.json`.
+
 ## Counts
 
 | Section | Clauses |
 | --- | ---: |
 | Existing AST contract | 189 |
-| Later clauses and standard data namespaces | 23 |
-| **Total** | **212** |
+| Later clauses and standard data namespaces | 25 |
+| **Total** | **214** |
 
 ## Schema changes owed
 

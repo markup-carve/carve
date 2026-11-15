@@ -1421,6 +1421,10 @@ One point is open.
 
 ## Later clauses
 
+**C2-H-174** A task box whose item has no plain text in its direct paragraph or heading children writes no `aria-label` attribute on its checkbox.
+
+**C2-H-175** An `abbr` span with neither an authored `title` nor a nonempty derived abbreviation value writes no `title` attribute.
+
 **C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list of `data/url-policy.json` as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
 
 ## Counts
@@ -1440,13 +1444,13 @@ One point is open.
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 1 | 1 |
-| Cross-references and abbreviations | 5 | 1 | 1 | 0 |
+| Cross-references and abbreviations | 6 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 11 | 0 | 0 | 1 |
 | Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
-| Later clauses | 1 | 0 | 0 | 0 |
-| **Total** | **173** | **7** | **25** | **8** |
+| Later clauses | 2 | 0 | 0 | 0 |
+| **Total** | **175** | **7** | **25** | **8** |
 
-The document has 173 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 175 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
