@@ -2080,6 +2080,16 @@
       "meaning02": "C2-B-069 and C2-B-076 put the dedented table outside the description, preserving the 0.1 HTML.",
       "toolEntry": "U-232",
       "silent": true
+    },
+    {
+      "id": "U-233",
+      "kind": "rewrite",
+      "group": "literal curly quote for old smart quote direction",
+      "from": ":a:\"q\"\n:long-name:'q'\n",
+      "to": ":a:“q\"\n:long-name:‘q'\n",
+      "meaning02": "C2-I-035 and C2-I-104 keep literal curly quotes while the remaining ASCII quotes close their spans.",
+      "toolEntry": "U-233",
+      "silent": true
     }
   ],
   "tree": [
