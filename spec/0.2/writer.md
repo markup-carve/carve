@@ -15,11 +15,13 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
 **Exception C2-W-131** When the writer reports `structure-unspellable` or `field-unspellable` for an input, its nearest spelling may change on another pass. The report must name the lost node or field. The stability gate of C2-W-003 applies when the first pass reports no loss.
+
+**Exception C2-W-133** If a block group returns to the same repair state or exceeds a finite repair limit under C2-W-089, the writer stops that group and reports `writer-refused` in the render-loss channel at the first node of the group. The diagnostic form returns the nearest source with that report. The `format` and `write` calls that return only source throw `CarveWriteError`. C2-W-002 and C2-W-003 do not apply to a refused result.
 
 **C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
@@ -666,6 +668,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `include-unresolved` | render-loss | warning | an include directive that was not expanded (C2-H-133) |
 | `structure-unspellable` | render-loss | warning | a node or wrapper the writer could not write (C2-W-011) |
 | `field-unspellable` | render-loss | warning | a field the writer could not write (C2-W-011) |
+| `writer-refused` | render-loss | warning | the writer reached a repeated repair state or its repair limit (C2-W-133) |
 | `extension-fallback-rendered` | render-loss | warning | an unknown optional extension that rendered through its fallback (C2-A-127, C2-H-076) |
 | `extension-transform-failed` | render-loss | warning | a host transform threw and the core node was retained (C2-X-050) |
 | `extension-renderer-failed` | render-loss | warning | a host renderer threw or returned a value that was not a string (C2-X-050) |
@@ -806,7 +809,7 @@ One point is open.
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| The writer and its two gates | 11 | 1 | 0 | 0 |
+| The writer and its two gates | 12 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 27 | 4 | 0 | 0 |
 | Canonical forms: blocks | 27 | 0 | 0 | 0 |
@@ -816,6 +819,6 @@ One point is open.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **132** | **6** | **5** | **2** |
+| **Total** | **133** | **7** | **5** | **2** |
 
-The document has 132 clauses, 6 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 133 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
