@@ -310,7 +310,7 @@ The 0.1 continuation marker `+` no longer owns a following block in 0.2 under C2
 | ID | Before in 0.1 | 0.2 unchanged input | After in 0.2 |
 | --- | --- | --- | --- |
 | U-122 | Plus continuation in a list item **SILENT** | - > + | - >; rewrite |
-| U-123 | Plus continuation in a description body **SILENT** | :: t ⏎ : + | :: t ⏎ : {% %}; rewrite |
+| U-123 | Under C2-B-059 and C2-B-076, `:: term` then `:  intro` then `+` then `  more` writes `more` outside the description in 0.1. **SILENT** | The same lines keep `more` in the description body in 0.2. | Replace `+` with a blank line and move `more` to column zero; rewrite |
 | U-124 | Plus continuation in a footnote body **SILENT** | a ⏎ [^n]: + | a ⏎  ⏎ [^n]: +; rewrite |
 | U-125 | Plus continuation in a quote **SILENT** | > + ⏎ > | > ⏎ >; rewrite |
 
@@ -447,12 +447,12 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | --- | --- | --- | --- |
 | U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote. **SILENT** | The same ASCII quote writes an opening smart quote. | Write the rendered closing Unicode quote; rewrite |
 | U-191 | Under C2-B-117, a code fence with `s` and an empty quoted title has no title attribute. **SILENT** | The same fence writes `title=""`. | Remove the empty quoted title; rewrite |
-| U-192 | Under C2-B-103, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand; rewrite |
+| U-192 | Under C2-B-103, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand, including when a later separate `lang` attribute supplies the old value; rewrite |
 | U-193 | Under C2-B-027 and C2-B-067, `:: ` followed by a tab and `x` writes the tab in the term. **SILENT** | The tab is marker padding and the term is `x`. | Review the term; report |
 | U-194 | Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash. **SILENT** | The tab is cell padding and only the smart dash remains. | Review the cell; report |
 | U-195 | Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span. **SILENT** | With a space after the fence, the label contains literal backticks. | Review the div label; report |
 | U-196 | Under C2-B-090 and C2-B-095, `{k='x}y'}` attaches `k="x}y"` to the next block. **SILENT** | The same source leaves the attribute line in paragraph text. | Write `{k="x}y"}`; rewrite |
-| U-197 | Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it. **SILENT** | The same source prints the attribute in the item. | Remove the attribute and put a blank line before the heading; rewrite |
+| U-197 | Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it. **SILENT** | The same source prints the attribute in the item. | Remove the attribute and put a blank line before the following heading or paragraph; rewrite |
 | U-198 | Under C2-I-062, `{~a~>~}` writes `&lt;del&gt;a&lt;/del&gt;&lt;ins&gt;&lt;/ins&gt;` in 0.1. **SILENT** | The source writes `&lt;s&gt;a~&amp;gt;&lt;/s&gt;` in 0.2, and C2-W-116 gives the empty insertion no spelling. | Review the replacement; report |
 | U-199 | Under C2-B-076 and C2-B-078, `:: t` then `:  d` then `   {.k}` then `tail` consumes the attribute and leaves `tail` outside the description in 0.1. **SILENT** | The same lines keep the attribute text and `tail` in the description body in 0.2. | Remove the consumed attribute and put a blank line before `tail`. For `:: term`, `: first`, a blank line, and ` second`, move `second` to column zero; rewrite |
 | U-200 | Under C2-I-062 and C2-I-043, `{~a~>b~}{.k} c` writes a deletion, an insertion, and literal `{.k}` in 0.1. **SILENT** | After the arrow is expanded in 0.2, `{.k}` attaches to the insertion. | Write `{-a-}{+b+}\{.k} c`; rewrite |

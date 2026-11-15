@@ -1017,7 +1017,7 @@
       "group": "lists",
       "from": ":: t\n: +",
       "to": ":: t\n: {% %}",
-      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>+</dd>\n</dl>",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>+</dd>\n</dl> When a standalone plus moved the next paragraph outside the description in 0.1, a blank line and column zero replace that marker.",
       "toolEntry": "U-123",
       "silent": true
     },
@@ -1707,7 +1707,7 @@
       "group": "measured ownership and inline rewrites",
       "from": "[]{:r lang}\n",
       "to": "[]{lang}\n",
-      "meaning02": "C2-B-103 removes the shorthand so the explicit empty lang key wins.",
+      "meaning02": "C2-B-103 removes the shorthand so the explicit empty lang key wins. A separate language shorthand before a later lang attribute can likewise be removed when 0.1 selected the later attribute.",
       "toolEntry": "U-192",
       "silent": true
     },
@@ -1757,7 +1757,7 @@
       "group": "measured ownership and inline rewrites",
       "from": "- a\n  {.k}\n# H\n",
       "to": "- a\n\n# H\n",
-      "meaning02": "C2-B-090, C2-B-095, and C2-B-101 leave the attribute text in the item unless it is removed before the next block.",
+      "meaning02": "C2-B-090, C2-B-095, and C2-B-101 leave the attribute text in the item unless it is removed before the next block. The same boundary can follow a plain paragraph, so a blank line keeps that paragraph outside the item.",
       "toolEntry": "U-197",
       "silent": true
     },
