@@ -4209,7 +4209,7 @@ more</p>
 
 **C2-B-204** An option is `@`, a key and, optionally, `:` and a value. The key is an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. An unquoted value is one or more characters that are not `@`, `}`, a space, a tab or a line end, so an unquoted value ends at the next option: `@shift:1@lines:1-8` is two options. A value that starts with `"` or `'` is a quoted value as in C2-I-033, and may hold `@`, spaces and `}}`. Outside `cols`, quoting a value only delimits it: `@lines:"1-2"` is `@lines:1-2`.
 
-**C2-B-205** The six keys and the shape of each value are listed in `data/include-options.json`. `lines` and `rows` take a range `N-M`: two decimal numbers without a leading zero, the first at least 1 and not greater than the second. `region` takes an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. `cols` takes a range or a double-quoted list of column names separated by commas, in which each name is not empty and a backslash takes the next character. `shift` takes `auto` or a decimal integer with an optional `+` or `-`. `code` stands alone or takes a language: one or more ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`.
+**C2-B-205** The six keys and the shape of each value are listed in `data/include-options.json`. `lines` and `rows` take a range `N-M`: two decimal numbers without a leading zero, the first at least 1 and not greater than the second. `region` takes an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. `cols` takes a range or a double-quoted list of column names separated by commas, in which each name is not empty and a backslash takes the next character. `shift` takes `auto` or a decimal integer of one to nine digits with an optional `+` or `-`, as a list marker has at most nine digits (C2-B-219); a longer number is outside the shape. `code` stands alone or takes a language: one or more ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`.
 
 **C2-B-206** A line that has the shape of C2-B-201 is no include directive, and is read as a paragraph, when it holds a second section, a key that is not one of the six, or an option that the column `without_value`, `outside_shape` or `repeated` of `data/include-options.json` sends to `paragraph`. An option that the table sends to `include_node` leaves an include node, and an expansion reports the option. Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion.
 
@@ -4237,6 +4237,25 @@ Example 228 (generated)
 
 ```html
 <p>{{ a.crv <span class="mention"><strong>@shift</strong></span>:x }}</p>
+```
+
+:::
+
+Nine digits are a shift; ten are outside the shape, and the line is a paragraph (C2-B-205, C2-B-206).
+
+Example 236 (unverified)
+
+::: compare
+
+```carve
+{{ a.crv @shift:-123456789 }}
+
+{{ a.crv @shift:1234567890 }}
+```
+
+```html
+<p>{{ a.crv @shift:-123456789 }}</p>
+<p>{{ a.crv <span class="mention"><strong>@shift</strong></span>:1234567890 }}</p>
 ```
 
 :::
@@ -5308,13 +5327,13 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 5 |
-| One-line constructs | 11 | 0 | 9 | 1 |
+| One-line constructs | 11 | 0 | 9 | 2 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 34 | 2 | 20 | 6 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **15** | **169** | **66** |
+| **Total** | **226** | **15** | **169** | **67** |
 
 The chapter has 226 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
