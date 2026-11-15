@@ -352,7 +352,7 @@ The following changes are specified by the cited 0.2 clauses and require review 
 
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
-| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. **SILENT** | The line block keeps the tab as text before `x`. | Review the line block; report |
+| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1. **SILENT** | The line block keeps the tab as text before `x`. In 0.2, the fence ends at the line block boundary and the following text becomes a separate paragraph. | Review the line block and code fence ownership; report |
 | U-131 | Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. **SILENT** | The item contains the literal text `[d]:`. | Review the item; report |
 | U-132 | Under C2-B-081 and C2-B-083, `[r]:` writes no HTML. **SILENT** | The line writes a paragraph containing `[r]:`. | Review the definition; report |
 | U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. The following heading makes the second example use `aria-label="bare inside"`. | Review task HTML; report |
