@@ -1960,6 +1960,16 @@
       "meaning02": "C2-B-095, C2-B-197, and C2-I-039 merge the attributes in source order when both blocks are glued to the image.",
       "toolEntry": "U-220",
       "silent": true
+    },
+    {
+      "id": "U-221",
+      "kind": "report",
+      "group": "wrapped link or image title",
+      "from": "[a](/u \"t\nu\")\n",
+      "to": "[a](/u \"t\nu\")\n",
+      "meaning02": "The current parser writes the wrapped title as text. C2-I-068 does not decide whether a quoted title may cross a line ending.",
+      "toolEntry": "U-221",
+      "silent": true
     }
   ],
   "tree": [
