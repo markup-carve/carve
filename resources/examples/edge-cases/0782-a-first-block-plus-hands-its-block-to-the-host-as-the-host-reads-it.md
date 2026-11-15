@@ -153,7 +153,7 @@ flush<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a
 `````carve
 - a
   - ```
- +
++
 ````
 `````
 
@@ -245,10 +245,10 @@ see[^a]
 ````carve
 - a
   - b
-  +
-  {.x}
-  ```
- code
+
+   {.x}
+    ```
+code
   ```
 ````
 

@@ -86,9 +86,9 @@ attribute line produced:
 
 ```carve
 - a
-+
-{.x}
-> q
+
+  {.x}
+  > q
 - c
 ```
 
@@ -169,11 +169,11 @@ in the inner `li` with the class on it:
 ````carve
 - a
   - b
-  +
-  {.x}
-  ```
-  code
-  ```
+
+   {.x}
+    ```
+    code
+    ```
 ````
 
 ```html

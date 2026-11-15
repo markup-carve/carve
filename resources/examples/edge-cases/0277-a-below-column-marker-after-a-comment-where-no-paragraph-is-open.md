@@ -100,8 +100,9 @@ answer purely on whether a paragraph is open:
 
 ```carve
 - a
+
   > q
- - s
+- s
 ```
 
 ```html

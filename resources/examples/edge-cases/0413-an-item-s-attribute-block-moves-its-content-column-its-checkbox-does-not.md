@@ -26,6 +26,7 @@ the item.
 
 ```carve
 -{#k} [x] bare
+
   # inside
 ```
 
@@ -47,6 +48,7 @@ rule. The metadata spelling can no longer silently select between structures.
 
 ```carve
 -{#k} [x] old
+
       # outside
 ```
 
@@ -158,8 +160,10 @@ column. Renaming a class cannot move either heading.
 
 ```carve
 -{.x} a
+
   # one
 -{.averylongclass} b
+
   # two
 ```
 
@@ -206,6 +210,7 @@ content rather than marker width.
 
 ```carve
 -{title="😀"} [x] a
+
   # h
 ```
 

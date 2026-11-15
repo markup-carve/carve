@@ -92,8 +92,8 @@ A lone `+` at an open marker column takes one block at that column; a same-colum
 
 `````carve
 - [ ] task
-+
-> q
+
+      > q
 `````
 
 ```html
@@ -247,7 +247,8 @@ x[^a]
 `````carve
 - foo
   - [ ] task
-  +
+
+  {% %}
   - x
 `````
 
@@ -377,7 +378,7 @@ x[^a]
 `````carve
 - a
   - ```
-  +
+
 
   tail
 `````
@@ -402,7 +403,7 @@ x[^a]
 `````carve
 - a
   - b
-  +
+
 
   tail
 `````
@@ -445,8 +446,8 @@ x[^a]
 - a
   - b
 
-  +
-  > q
+
+    > q
 `````
 
 ```html
@@ -568,10 +569,10 @@ x[^a]
 `````carve
 - foo
   - [ ] task
-  +
-  ```sh
-  npm test
-  ```
+
+        ```sh
+        npm test
+        ```
   - [ ] more
 `````
 

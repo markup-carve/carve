@@ -6,7 +6,8 @@ A refused `+` renders nothing and keeps the item's ownership. It ends an open fe
 
 ````carve
 - ```
-+
+  ```
+
   x
 ````
 
@@ -25,7 +26,8 @@ A refused `+` renders nothing and keeps the item's ownership. It ends an open fe
 
 ````carve
 - ```
-+
+  ```
+
 
   x
 ````
@@ -46,7 +48,8 @@ A refused `+` renders nothing and keeps the item's ownership. It ends an open fe
 ````carve
 - ```
   a
-+
+  ```
+
   x
 ````
 
@@ -67,7 +70,6 @@ A refused `+` renders nothing and keeps the item's ownership. It ends an open fe
 ````carve
 - ```
   x
-+
 
 tail
 ````
@@ -88,7 +90,6 @@ tail
 
 ````carve
 - - ```
-  +
 
 tail
 ````
@@ -112,7 +113,6 @@ tail
 
 ````carve
 - ```
-+
 
 tail
 ````
@@ -133,7 +133,6 @@ tail
 ````carve
 - ```=html
   x
-+
 
 tail
 ````

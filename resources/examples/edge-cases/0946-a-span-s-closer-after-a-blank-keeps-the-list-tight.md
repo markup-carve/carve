@@ -71,6 +71,7 @@ A blank inside a list item's `%%%` span is payload, and the span's closer is the
 
 ```carve
 - a
+
   :: u
   : %%%
 
