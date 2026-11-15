@@ -204,6 +204,27 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-120 | Ordered marker followed by task box text **SILENT** | &lt;ol class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled aria-label="x"&gt; x&lt;/li&gt; ⏎ &lt;/ol&gt; | `1. \[ ] x`; escape |
 | U-121 | Defined shortcut that was text **SILENT** | &lt;p&gt;&lt;a href="/u"&gt;text&lt;/a&gt;&lt;/p&gt; | `\[text]` before `[text]: /u`; escape |
 
+### Rulings of 16 November 2026
+
+These rulings change what some documents give against the 0.1 engine or against early 0.2 engines. They have no rewrite-tool entry yet, so the table carries no `U-` id; the clause decides.
+
+| What you wrote | Before | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A div name or fence language with a character glued behind it: `::: glossary>`, ```` ```js} ````, ```` ```=html~ ```` | 0.1: text. Early 0.2: the whole word was the name or language, as `class="glossary&gt;"`. | The name ends at the first character outside its set; the rest is reported and dropped. | C2-B-225 |
+| An admonition name with a glued attribute block: `::: note{.x}` | Early 0.2: a div with `class="note{.x}"`. | The admonition `note`; the attribute block is reported and not applied. | C2-B-105, C2-B-225 |
+| Two spaces after a fence run: ```` ```  b ```` | Early 0.2: language `b`. | No language; `b` is reported. | C2-B-122 |
+| Spaces at the end of a line inside a code span | Early 0.2: kept in the code value. | Removed, as in text. | C2-I-002, C2-I-015 |
+| `{++-+}`, an insertion of `+-` | Early 0.2: `+-`. | `±`. | C2-I-117 |
+| A letter assigned in Unicode 18.0.0 next to a delimiter | Depended on the engine's Unicode tables. | Unicode 18.0.0 decides. | C2-I-127 |
+| `{{ a.crv @shift:1234567890 }}`, ten or more digits | An include with a rounded number. | A paragraph. | C2-B-205 |
+| An attribute line on a block image | Early 0.2: a bare `<img>`, the id and classes lost. | `<p id="…" class="…"><img …></p>`. | C2-H-020 |
+| A table panel of a figure group | Early 0.2: a bare `<table>`. | `<figure class="carve-figure-panel">` around the `<table>`. | C2-H-064 |
+| A captioned figure or table under `comment` or `minimal` | Early 0.2: `Figure : cap`, table caption lost. | `Figure 1: cap` as a paragraph after the degraded block. | C2-H-165 |
+| A linked mention under a profile without `link` | Early 0.2: an `<a class="mention">`. | The inert `<span class="mention">`. | C2-H-167 |
+| A reference to a heading the profile degrades | Early 0.2 library resolution read the profile. | The tree does not change with the profile; the reference renders as unresolved text. | C2-H-177 |
+| A trailing comment on a table row, `\| 1 \| 2 \| %% note` | Early 0.2: no tree node for the comment. | A `comment` node after the row; `fmt` writes it on its own line below the row. | C2-A-086, C2-W-135 |
+| Positions (`pos`) of tree consumers | Early 0.2: no `pos` on empty cells, span mark cells, caption numbers; an include and a last-line comment ended before trailing spaces. | These carry `pos`; trailing spaces belong to the block, the line comment or the break. | C2-A-151, C2-A-153, C2-A-158 |
+
 ### Worked source changes
 
 These before and after pairs were rendered on both engines. The after text is the tool's actual output.
