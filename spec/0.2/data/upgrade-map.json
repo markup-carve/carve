@@ -2230,6 +2230,16 @@
       "meaning02": "C2-B-025 and C2-B-026 put the table at the admonition column, outside the ordered item.",
       "toolEntry": "U-247",
       "silent": true
+    },
+    {
+      "id": "U-248",
+      "kind": "report",
+      "group": "rejected HTML control character is replaced",
+      "from": "c followed by U+000B and d",
+      "to": "",
+      "meaning02": "C2-H-176 replaces a rejected control character such as U+000B, U+0085, or U+007F with U+FFFD in HTML text.",
+      "toolEntry": "U-248",
+      "silent": true
     }
   ],
   "tree": [
