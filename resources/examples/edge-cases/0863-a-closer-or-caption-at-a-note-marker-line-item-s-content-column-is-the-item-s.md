@@ -104,13 +104,13 @@ A caption line under a quote there captions the quote, as it does under an item 
 
 ::::::
 
-One column left the line misses the item and is the note's (carve#4496): the closer opens a div in the note, and the caption line is the note's text.
+At the note content column, the line misses the item and is the note's (carve#4496): the closer opens a div in the note, and the caption line is the note's text.
 
 :::::: compare
 
 ```carve
 [^f]: - :::::
-       :::::
+      :::::
 
 [^f]
 ```
@@ -143,7 +143,7 @@ One column left the line misses the item and is the note's (carve#4496): the clo
 
 ```carve
 [^f]: - | a |
-       ^ cap
+      ^ cap
 
 [^f]
 ```
