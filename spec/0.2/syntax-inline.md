@@ -206,7 +206,7 @@ Example 7 (generated)
 
 **C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
 
-**Exception C2-I-017** A code span never fails. With no closing run in the content it runs to the end of the content, and trailing whitespace is dropped.
+**Exception C2-I-017** A code span never fails. With no closing run in the content it runs to the end of the content, and trailing whitespace is dropped. At the end of a table cell the opening run is text instead (C2-B-223), with a `!`, `$` or `$$` before it as without one: the cell `` | x `a | `` holds the text `` x `a ``.
 
 **C2-I-018** A `!` glued before the opening run makes a literal-text span: its content is written as escaped text with no code element. With an attribute block it is written as a span element that carries the attributes.
 
@@ -1241,7 +1241,7 @@ Example 66 (generated)
 
 :::
 
-**C2-I-122** A URL character is an ASCII letter or digit, one of `-`, `.`, `_`, `~`, `:`, `/`, `?`, `#`, `[`, `]`, `@`, `!`, `$`, `&`, `'`, `(`, `)`, `*`, `+`, `,`, `;`, `=` and `%`, or a character outside ASCII that is not whitespace, not a control character (general category Cc) and not a format character (Cf). Every other ASCII character is no URL character, among them a space, `"`, `\`, a backtick, `{`, `}`, `|`, `^`, `<` and `>`. The scheme holds ASCII characters only, so `<1a:x>` is no autolink.
+**C2-I-122** A URL character is an ASCII letter or digit, one of `-`, `.`, `_`, `~`, `:`, `/`, `?`, `#`, `[`, `]`, `@`, `!`, `$`, `&`, `'`, `(`, `)`, `*`, `+`, `,`, `;`, `=` and `%`, or a character outside ASCII that does not have the Unicode property White_Space, is not a control character (general category Cc) and is not a format character (Cf), all of the version C2-I-127 pins. Every other ASCII character is no URL character, among them a space, `"`, `\`, a backtick, `{`, `}`, `|`, `^`, `<` and `>`. The scheme holds ASCII characters only, so `<1a:x>` is no autolink.
 
 **C2-I-123** The local part and the domain of an email address are each one or more ASCII letters, digits, `.`, `-`, `_` and `+`. The domain is followed by a dot and one or more ASCII letters, which end the address. So `<a@b>` and `<a@b.c1>` are no autolinks, and an address with a character outside ASCII is none either.
 
@@ -1270,7 +1270,7 @@ Example 108 (generated)
 
 **C2-I-076** A reference label is the run of characters up to the next `]` that no backslash escapes. It is taken whole: no atom, bracket, delimiter or sigil form is read in it, a code span included, and its source is its key (C2-I-079). The line comment of C2-I-077 is the one exception. The heading lookup reads the stored key once more, and that reading makes no node (C2-I-084).
 
-**Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.
+**Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`. Where a label fails, only the label's brackets are text; the pair before it is then tested as a shortcut (C2-I-072), so `[x][a %% b]` with a definition of `x` is a link `x` followed by the text `[a`.
 
 **Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. The first character is that of the label's source, before folding: `[a][ @b]` is a reference with the key `@b`. (carried over from 0.1)
 
@@ -1891,7 +1891,7 @@ An abbreviation definition is a block line (C2-B-084). Its effect is inline.
 
 **C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. (carried over from 0.1)
 
-**C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. (carried over from 0.1)
+**C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. (carried over from 0.1) An atom is a boundary, and so are the edges of an inline footnote; a braced comment is transparent (C2-I-026), so in `HTML{%x%}s` the term does not match.
 
 **Exception C2-I-100** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
 
@@ -2004,7 +2004,7 @@ Smart typography reads the text that the scan left as text and never reads insid
 
 **Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens. The word `n` is exempt: `Rock 'n' roll` holds two apostrophes.
 
-**Exception C2-I-109** Single quotes do not nest. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
+**Exception C2-I-109** Single quotes do not nest. C2-I-108 is tested first: a quoted word opens also while a run is open, so `'a 'tis' b` holds two opening quotes. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
 
 **C2-I-110** A quote that was emitted is never changed: an opening single quote stays an opening quote when no closing quote follows.
 
@@ -2014,7 +2014,7 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-114** Three dots become an ellipsis. (carried over from 0.1)
 
-**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1)
+**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1) Only replaced runs take part in the match: `->`, `<-` and `=>` take no characters, so `->=` holds the text `-` and the sign for `>=`.
 
 **Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
 
