@@ -287,7 +287,7 @@ Example 37 (unverified)
 
 **C2-H-031** An ordered list whose delimiter is `)` carries `data-delim=")"`. A list with the dot carries no such attribute. Both delimiters are meaning (C2-B-037), so the attribute is written on every render, with `roundtrip` on or off.
 
-**C2-H-032** A task item carries the base class `task`. In a bullet list it also carries `style="list-style: none"`, so its bullet is never shown. In an ordered list the number remains visible and the item has no generated style declaration. An authored `style` follows the generated declaration after `; ` where there is one. The item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text of its direct paragraph and heading children. A `<ul>` or `<ol>` with a task item carries class `task-list`; its other items are plain `<li>` elements. The ordered list's `start` and `type` attributes follow C2-H-030.
+**C2-H-032** A task item carries the base class `task`. In a bullet list it also carries `style="list-style: none"`, so its bullet is never shown. In an ordered list the number remains visible and the item has no generated style declaration. An authored `style` follows the generated declaration after `; ` where there is one. The item starts with `<input type="checkbox" disabled aria-label="TEXT">` and one space, with `checked` before `disabled` for `x`; TEXT is the plain text (C2-H-143) of its direct paragraph and heading children, in order and joined by one space; its other blocks give no text. A `<ul>` or `<ol>` with a task item carries class `task-list`; its other items are plain `<li>` elements. The ordered list's `start` and `type` attributes follow C2-H-030.
 
 **C2-H-033** A task item carries `data-task-state` with its mark (C2-A-060). Of the nine box characters, `x` and `X` both give `x`, the space gives no attribute, and `_`, `/`, `!`, `-`, `>` and `?` give themselves.
 
@@ -400,6 +400,31 @@ Example 8 (unverified)
   <li>
     <blockquote><p>quote</p></blockquote>
     <p>after</p>
+  </li>
+</ul>
+```
+
+:::
+
+The label of the box joins the texts of the item's two paragraphs; the quote gives none (C2-H-032).
+
+Example 40 (unverified)
+
+::: compare
+
+```carve
+- [ ] first *a*
+
+  second
+
+  > quote
+```
+
+```html
+<ul class="task-list">
+  <li class="task" style="list-style: none"><input type="checkbox" disabled aria-label="first a second"> first <strong>a</strong>
+    <p>second</p>
+    <blockquote><p>quote</p></blockquote>
   </li>
 </ul>
 ```
@@ -1576,7 +1601,7 @@ One point is open.
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 1 | 1 |
 | Paragraphs, headings and sections | 17 | 1 | 3 | 1 |
-| Lists | 9 | 0 | 1 | 3 |
+| Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
@@ -1593,6 +1618,6 @@ One point is open.
 | Options | 24 | 0 | 3 | 2 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **14** |
+| **Total** | **177** | **7** | **25** | **15** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 39 examples, 25 generated and 14 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 177 clauses, 7 of them marked with the word "Exception", and 40 examples, 25 generated and 15 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
