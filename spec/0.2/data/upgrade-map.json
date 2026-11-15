@@ -1073,10 +1073,10 @@
     },
     {
       "id": "U-131",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "definitions",
       "from": "* [d]:",
-      "to": "* {% %}",
+      "to": "",
       "meaning02": "<ul>\n  <li>[d]:</li>\n</ul>",
       "toolEntry": "U-131",
       "silent": true
