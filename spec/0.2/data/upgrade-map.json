@@ -2210,6 +2210,16 @@
       "meaning02": "C2-B-108 and C2-B-110 keep the blank code line when the quoted list fence has an explicit closer.",
       "toolEntry": "U-245",
       "silent": true
+    },
+    {
+      "id": "U-246",
+      "kind": "rewrite",
+      "group": "unresolved footnote attribute and heading id",
+      "from": "x[^n]{#i}\n\n## {#i}\n",
+      "to": "x[^n]{\\#i}\n\n{#i}\n## \\{#i}\n",
+      "meaning02": "C2-I-087, C2-I-044, and C2-B-091 keep the unresolved footnote attribute literal while the heading receives its authored id from the line above.",
+      "toolEntry": "U-246",
+      "silent": true
     }
   ],
   "tree": [
