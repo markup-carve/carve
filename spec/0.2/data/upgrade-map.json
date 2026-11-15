@@ -1157,7 +1157,7 @@
       "group": "attributes",
       "from": "- {k}",
       "to": "- {% %}",
-      "meaning02": "<ul>\n  <li>{k}</li>\n</ul>",
+      "meaning02": "<ul>\n  <li>{k}</li>\n</ul> A blank line before the following block is also needed when 0.1 ended the empty owner there. An empty `{}` directly after the marker can be removed to keep the 0.1 list item.",
       "toolEntry": "U-137",
       "silent": true
     },
@@ -1207,7 +1207,7 @@
       "group": "attributes",
       "from": ":: t\n: {empty}\n",
       "to": ":: t\n: {% %}\n",
-      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>{empty}</dd>\n</dl>",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>{empty}</dd>\n</dl> A blank line before the following block is also needed when 0.1 ended the empty owner there.",
       "toolEntry": "U-142",
       "silent": true
     },
@@ -1839,6 +1839,16 @@
       "to": "Text[^a]\\{.ref}.\n",
       "meaning02": "C2-I-043 and C2-I-088 let the attribute after an unresolved footnote marker change its rendering. Escape the attribute opener to retain 0.1 literal text.",
       "toolEntry": "U-207",
+      "silent": true
+    },
+    {
+      "id": "U-208",
+      "kind": "escape",
+      "group": "measured item boundary rewrites",
+      "from": "-{+a+} text\n",
+      "to": "\\-{+a+} text\n",
+      "meaning02": "C2-B-100 and C2-B-101 read a braced insertion next to a list marker as item syntax. Escape the dash to retain 0.1 paragraph text and its insertion.",
+      "toolEntry": "U-208",
       "silent": true
     }
   ],

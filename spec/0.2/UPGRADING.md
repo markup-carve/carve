@@ -366,7 +366,7 @@ The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HT
 | --- | --- | --- | --- |
 | U-135 | Under C2-B-113, an unclosed ` ``` ` fence with one trailing blank line writes one code line. **SILENT** | Unchanged 0.2 source discards that blank code line; an explicit closing fence retains it. | Close the fence; rewrite |
 | U-136 | Under C2-I-036, `{%` followed by a newline and `%}x` prints literally in 0.1. **SILENT** | Unchanged 0.2 source consumes the brace comment and prints only `x`; escaping the opening brace prints the old text. | Escape the brace; escape |
-| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` makes an empty item in 0.1. **SILENT** | Unchanged 0.2 source prints `{k}`; an empty brace comment keeps the item empty. | Write `- {% %}`; rewrite |
+| U-137 | Under C2-B-090, C2-B-100, and C2-B-101, `- {k}` writes an empty item in 0.1; `- {.k}` then `tail` leaves `tail` outside that item. **SILENT** | The same 0.2 sources print the attribute or keep `tail` inside the item. | Write `- {% %}` and insert a blank line before `tail`; remove an empty `{}` after the marker when the item has later text; rewrite |
 | U-138 | Under C2-B-147 and C2-B-149, `>` followed by `^ p` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source attaches `p` as a figure caption; a blank line before the caret retains the paragraph. | Insert a blank line; rewrite |
 | U-139 | Under C2-I-089, `x^[]` prints literally in 0.1. **SILENT** | Unchanged 0.2 source creates an empty inline footnote; escaping the caret retains the literal text. | Write `x\^[]`; escape |
 
@@ -376,7 +376,7 @@ The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HT
 | --- | --- | --- | --- |
 | U-140 | Under C2-B-171, a tab between two table pipes is cell text in 0.1. **SILENT** | Unchanged 0.2 source treats the tab as cell padding and writes an empty cell. | Review the cell; report |
 | U-141 | Under C2-B-090, C2-B-095, and C2-B-101, `> {k}` followed by `t` writes an empty quote and a paragraph in 0.1. **SILENT** | Unchanged 0.2 source prints `{k}` inside the quote; removing the consumed attribute retains the old HTML. | Remove the attribute; rewrite |
-| U-142 | Under the same clauses, `:: t` then `: {empty}` writes an empty description body in 0.1. **SILENT** | Unchanged 0.2 source prints `{empty}`; an empty brace comment retains the empty body. | Write `: {% %}`; rewrite |
+| U-142 | Under C2-B-090, C2-B-100, and C2-B-101, `:: t` then `: {empty}` then `flush` writes an empty description body and a following paragraph in 0.1. **SILENT** | The same 0.2 source prints `{empty}` and keeps `flush` in the body. | Write `: {% %}` and insert a blank line before `flush`; rewrite |
 
 #### Other measured rendering changes
 
@@ -461,6 +461,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-204 | Under C2-B-059 and C2-B-113, `:: t` then `:  d` then `+` then an open code fence with `a`, a blank line, and `b` keeps only `a` and the blank line inside the description fence in 0.1. **SILENT** | The unchanged source keeps `b` inside the code fence in 0.2. | Remove `+`, indent the fence under the description, and close it before `b`; rewrite |
 | U-206 | Under C2-H-095 and C2-H-096, `# *Setup*` then `See </#Setup>.` writes a link with a bold `Setup` label in 0.1. **SILENT** | The same cross-reference writes a plain `Setup` label in 0.2. | Review the cross-reference display; report |
 | U-207 | Under C2-I-043 and C2-I-088, `Text[^a]{.ref}.` writes the unresolved footnote marker and literal `{.ref}` in 0.1. **SILENT** | The attribute disappears from the text in 0.2. | Write `Text[^a]\{.ref}.`; escape |
+| U-208 | Under C2-B-100 and C2-B-101, `-{+a+} text` writes a paragraph with a literal dash and an insertion in 0.1. **SILENT** | The same source opens a list item in 0.2. | Write `\-{+a+} text`; escape |
 
 ## Part 2. Integrators: your code and your pages
 
