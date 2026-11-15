@@ -1770,6 +1770,16 @@
       "meaning02": "C2-I-062 has no arrow replacement, and C2-W-116 gives an empty insertion or deletion no spelling.",
       "toolEntry": "U-198",
       "silent": true
+    },
+    {
+      "id": "U-199",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": ":: t\n:  d\n   {.k}\ntail\n",
+      "to": ":: t\n:  d\n\ntail\n",
+      "meaning02": "C2-B-076 and C2-B-078 keep a following indented line in the description body until an explicit boundary; an attribute consumed by 0.1 must be removed when it has no rendered effect.",
+      "toolEntry": "U-199",
+      "silent": true
     }
   ],
   "tree": [
