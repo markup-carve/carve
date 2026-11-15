@@ -2020,6 +2020,16 @@
       "meaning02": "C2-B-147 and C2-B-198 attach the caption after the display math span closes on its line.",
       "toolEntry": "U-226",
       "silent": true
+    },
+    {
+      "id": "U-227",
+      "kind": "escape",
+      "group": "percent run inside a multiline brace comment",
+      "from": "- {% a\n   %%%\n   z %}\nplain\n",
+      "to": "- {% a\n   \\%%%\n   z %}\nplain\n",
+      "meaning02": "C2-I-036 and C2-B-108 keep the escaped percent run inside the brace comment instead of opening a fence.",
+      "toolEntry": "U-227",
+      "silent": true
     }
   ],
   "tree": [
