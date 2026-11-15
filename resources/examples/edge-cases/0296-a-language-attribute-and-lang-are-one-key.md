@@ -52,7 +52,6 @@ desugaring happens before that merge too.
 ::: compare
 
 ```carve
-{:fr}
 {lang=de}
 Text
 ```

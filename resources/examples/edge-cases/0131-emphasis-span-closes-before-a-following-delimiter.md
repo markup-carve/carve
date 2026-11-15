@@ -9,7 +9,7 @@ immediately after the closing `_` (the slash-adjacency guard above).
 ::: compare
 
 ```carve
-_z_/y/
+{_z_}\/y/
 ```
 
 ```html

@@ -57,7 +57,8 @@ accepted wider-separator `:  +` puts
 
 ```carve
 :: t
-: {empty}
+: {% %}
+
 flush
 ```
 

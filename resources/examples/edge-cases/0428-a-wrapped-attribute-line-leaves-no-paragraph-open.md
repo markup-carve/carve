@@ -51,7 +51,8 @@ The one-line spelling is the control.
 ::: compare
 
 ```carve
-- {.a}
+- {% %}
+
 tail
 ```
 

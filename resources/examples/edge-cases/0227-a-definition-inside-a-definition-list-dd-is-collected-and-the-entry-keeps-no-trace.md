@@ -5,8 +5,10 @@ A `<dd>` continues like a list item (§17, definition_body) and is one of the bl
 ::: compare
 
 ```carve
+[r]: /u
+
 :: term
-:  [r]: /u
+: {% %}
 
 see [t][r]
 ```
@@ -24,8 +26,10 @@ see [t][r]
 ::: compare
 
 ```carve
+[^f]: x
+
 :: term
-:  [^f]: x
+: {% %}
 
 see[^f]
 ```

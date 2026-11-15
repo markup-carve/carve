@@ -69,7 +69,7 @@ The empty block `{}` is a blessed exception: it yields a bare `<li>` (so a defau
 ::: compare
 
 ```carve
--{} A bare item via the empty block.
+- A bare item via the empty block.
 ```
 
 ```html
@@ -85,7 +85,7 @@ The abutting block is consumed as list-item attributes only when it yields at le
 ::: compare
 
 ```carve
--{+a+} text
+\-{+a+} text
 ```
 
 ```html

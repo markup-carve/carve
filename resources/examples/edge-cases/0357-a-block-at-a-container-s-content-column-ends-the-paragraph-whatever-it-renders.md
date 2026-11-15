@@ -15,7 +15,7 @@ invisible and every implementation already ends the item on it:
 
 ```carve
 - a
-  {.k}
+
 tail
 ```
 

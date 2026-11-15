@@ -105,8 +105,9 @@ item's column with no paragraph open, so it opens a code block of its own
     ```
     code
 
-  # h
     ```
+  # h
+  ```
 ````
 
 ```html
@@ -130,6 +131,7 @@ item's column with no paragraph open, so it opens a code block of its own
   ```
   b
 
+  ```
 y
   ```
 ````

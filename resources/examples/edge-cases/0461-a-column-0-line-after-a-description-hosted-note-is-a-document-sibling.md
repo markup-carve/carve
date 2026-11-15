@@ -85,8 +85,10 @@ and the `<dd>` keeps both. This is the reach boundary the rows above turn on.
 ::: compare
 
 ```carve
+[^f]: note
+
 :: t
-:  [^f]: note
+: {% %}
     - nested
 tail
 ```

@@ -265,10 +265,10 @@ level and holds `z`.
 
 ````carve
 - x
-+
-```
-a
+  ```
+  a
 
+  ```
 b
 ```
 

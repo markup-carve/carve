@@ -10,7 +10,8 @@ PART 9 §24 C3 (carve#4590). An item holding only an attribute block leaves no p
 
 `````carve
 [^n]: :::
-  - {.x}
+  - {% %}
+
 z
 
 [^n]

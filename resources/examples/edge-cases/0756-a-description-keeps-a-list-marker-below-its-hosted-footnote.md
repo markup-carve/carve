@@ -8,8 +8,10 @@ Under the note's open paragraph a list marker is text, because a list marker int
 :::: compare
 
 ```carve
+[^q]: note
+
 :: t
-:  [^q]: note
+: {% %}
     * child
 tail
 ```

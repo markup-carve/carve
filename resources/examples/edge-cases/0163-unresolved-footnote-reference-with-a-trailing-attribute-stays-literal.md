@@ -7,7 +7,7 @@ does not become an attributed span: it stays literal text, and a following
 ::: compare
 
 ```carve
-Text[^a]{.ref}.
+Text[^a]\{.ref}.
 ```
 
 ```html

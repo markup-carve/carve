@@ -177,8 +177,8 @@ outside the `dd`.
 ```carve
 :: term
 :  intro
-+
-  more
+
+more
 ```
 
 ```html

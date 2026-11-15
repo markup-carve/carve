@@ -12,8 +12,10 @@ A list marker interrupts an open paragraph only as a tight sublist in a list ite
 ::: compare
 
 ```carve
+[^q]: note
+
 :: t
-:  [^q]: note
+: {% %}
    * child
 
 r[^q]
@@ -44,8 +46,10 @@ r[^q]
 ::: compare
 
 ```carve
+[^q]: note
+
 :: t
-: [^q]: note
+: {% %}
   1. child
 
 r[^q]
@@ -112,8 +116,10 @@ r[^q]
 ::: compare
 
 ```carve
+[^q]: note
+
 :: t
-: [^q]: note
+: {% %}
 
   - child
 

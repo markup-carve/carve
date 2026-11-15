@@ -78,7 +78,8 @@ above.
 ```carve
 :: t
 :  d
-  {.k}
+
+{.k}
 tail
 ```
 

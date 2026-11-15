@@ -20,7 +20,7 @@ note (markup-carve/carve#1188).
 ::: compare
 
 ```carve
-x ^[a ^[b] c]
+x ^[a \^[b] c]
 ```
 
 ```html
@@ -62,7 +62,7 @@ x ^[a [^1] c]
 ::: compare
 
 ```carve
-x ^[a ^[b ^[c] d] e]
+x ^[a \^[b \^[c] d] e]
 ```
 
 ```html

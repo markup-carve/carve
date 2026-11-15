@@ -95,9 +95,7 @@ after
 ::::::: compare
 
 ````carve
-- +
-  ::: d
-  {.c}
+- ::: d
 after
 ````
 

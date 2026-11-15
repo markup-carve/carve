@@ -237,9 +237,9 @@ stays in it.
 ```carve
 :: t
 :  x
-%%%
-y
-%%%
+  %%%
+  y
+  %%%
    more
 ```
 
@@ -264,9 +264,9 @@ the line after it.
 ```carve
 :: t
 :  x
- %%%
-y
- %%%
+  %%%
+  y
+  %%%
 z
 ```
 
@@ -288,7 +288,7 @@ Two columns in, the last column below the body's own, answers the same.
 :: t
 :  x
   %%%
-y
+  y
   %%%
 z
 ```

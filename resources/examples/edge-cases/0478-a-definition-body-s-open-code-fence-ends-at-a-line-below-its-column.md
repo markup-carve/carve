@@ -60,7 +60,8 @@ answer. ` y` ends it, and the trailing run opens an empty code block after `y`.
 : a
   ```
   b
- y
+  ```
+y
   ```
 ````
 
@@ -118,7 +119,8 @@ block after `z`.
 : a
   ```
   b
- y
+  ```
+y
 
 z
   ```

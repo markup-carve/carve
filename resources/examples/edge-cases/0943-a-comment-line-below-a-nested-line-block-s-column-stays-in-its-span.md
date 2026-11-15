@@ -10,9 +10,9 @@ A comment-shaped line inside an open `%%%` span is span payload at any column, a
 
 ```carve
 - - ::: |
-    %%%
-%%%%
-    %%%
+  %%%
+  %%%%
+  %%%
 z
 ```
 
@@ -38,9 +38,9 @@ z
 ```carve
 - x
   - ::: |
-    %%%
-%% c
-    %%%
+  %%%
+  %% c
+  %%%
 z
 ```
 
@@ -149,9 +149,9 @@ z</p>
 ```carve
 - :: t
   : ::: |
-    %%%
-%%%%
-    %%%
+  %%%
+  %%%%
+  %%%
 z
 ```
 
@@ -177,9 +177,9 @@ z
 
 ```carve
 - - ::: |
- %%%
-x
-    %%%
+  %%%
+  x
+  %%%
 z
 ```
 

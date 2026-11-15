@@ -5,7 +5,7 @@ Footnote recognition is off inside a note (PART 9 SS16), so a nested `^[` is a l
 ::: compare
 
 ```carve
-^[x ^[a](u) b]
+^[x \^[a](u) b]
 ```
 
 ```html
@@ -25,7 +25,7 @@ Footnote recognition is off inside a note (PART 9 SS16), so a nested `^[` is a l
 ::: compare
 
 ```carve
-^[x ^[a][r] b]
+^[x \^[a][r] b]
 
 [r]: /v
 ```
@@ -47,7 +47,7 @@ Footnote recognition is off inside a note (PART 9 SS16), so a nested `^[` is a l
 ::: compare
 
 ```carve
-^[x ^[a]{.c} b]
+^[x \^[a]{.c} b]
 ```
 
 ```html

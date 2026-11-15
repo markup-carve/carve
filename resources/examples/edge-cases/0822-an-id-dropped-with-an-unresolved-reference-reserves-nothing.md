@@ -28,7 +28,7 @@ An automatic slug reads the same way.
 ::: compare
 
 ```carve
-x[^n]{#i}
+x[^n]{\#i}
 
 ## i
 ```

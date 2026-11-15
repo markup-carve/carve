@@ -198,7 +198,8 @@ An attribute block opens no paragraph either, so it never reaches the line below
 ::: compare
 
 ```carve
-- {.k}
+- {% %}
+
 tail
 ```
 
@@ -496,7 +497,7 @@ line below (markup-carve/carve#1342):
 
 ```carve
 - a
-  {.x}
+
 tail
 ```
 
@@ -518,7 +519,6 @@ asks for a second PARAGRAPH:
 ```carve
 - a
 
-  {.x}
 tail
 ```
 

@@ -48,8 +48,6 @@ it was covering source nothing in it owns (markup-carve/carve#1524).
 ```carve
 - a
 
-  {.x}
-
 tail
 ```
 

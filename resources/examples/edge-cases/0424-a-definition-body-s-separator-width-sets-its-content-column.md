@@ -53,7 +53,7 @@ Column 1 does not reach it, and the block after the blank is the document's own.
 :: term
 : first
 
- second
+second
 ```
 
 ```html
@@ -76,7 +76,7 @@ never in what they mean.
 :: term
 :  first
 
-  second
+second
 ```
 
 ```html

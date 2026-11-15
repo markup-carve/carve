@@ -19,8 +19,8 @@ a</p></blockquote>
 :::: compare
 
 ```carve
-> - > +
-> - > +
+> - >
+> - >
  s
 ```
 

@@ -52,7 +52,7 @@ block after either one is text.
 ::: compare
 
 ```carve
-{~a~>b~}{.k} c
+{-a-}{+b+}\{.k} c
 
 {#note#}{.k} c
 ```

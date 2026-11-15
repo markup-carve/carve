@@ -26,7 +26,7 @@ An attribute line is its own block; the following fence opens on its authored ba
 
 ````carve
 - t
-  {.c}
+
   %% c
    ````
   x

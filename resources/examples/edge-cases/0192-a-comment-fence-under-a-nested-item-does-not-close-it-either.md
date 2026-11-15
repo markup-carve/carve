@@ -9,7 +9,7 @@ The fence form behaves as the `%%` line does: it is invisible, it leaves the ite
  %%% c
  x
  %%%
- b
+b
 ```
 
 ```html

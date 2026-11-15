@@ -41,7 +41,7 @@ An attribute line at that column does the same:
 ````carve
 - a
   - para
-    {#x}
+
 x
 ````
 

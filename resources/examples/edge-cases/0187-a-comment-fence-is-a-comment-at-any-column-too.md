@@ -9,7 +9,7 @@
  %%% n
  x
  %%%
- tail
+tail
 ```
 
 ```html

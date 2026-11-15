@@ -88,7 +88,8 @@ A definition body reads the same way, on both sides.
 : a
   ```
   b
- y
+  ```
+y
 ```
 ````
 
@@ -114,7 +115,8 @@ A definition body reads the same way, on both sides.
 : a
   ```
   b
- y
+  ```
+y
    ```
 ````
 

@@ -57,7 +57,6 @@ A list item is the same container question:
 
 ```carve
 - a
-  {.k}
 
 tail
 ```

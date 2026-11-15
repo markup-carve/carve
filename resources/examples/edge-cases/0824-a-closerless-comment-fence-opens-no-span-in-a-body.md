@@ -18,7 +18,7 @@ A `%%%` with no exact-width closer ahead is the line form of a comment and opens
 :: t
 : head
 
-  %%%
+%%%
 %% below
 
   tail
