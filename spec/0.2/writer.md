@@ -23,7 +23,7 @@ Conventions:
 
 **Exception C2-W-133** If a block group returns to the same repair state or exceeds a finite repair limit under C2-W-089, the writer stops that group and reports `writer-refused` in the render-loss channel at the first node of the group. The diagnostic form returns the nearest source with that report. The `format` and `write` calls that return only source throw `CarveWriteError`. C2-W-002 and C2-W-003 do not apply to a refused result.
 
-**C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
+**C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. The error carries those diagnostics. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
 
 **C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
