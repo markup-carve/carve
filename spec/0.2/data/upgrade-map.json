@@ -1790,6 +1790,16 @@
       "meaning02": "C2-I-062 writes a replacement as adjacent deletion and insertion nodes, and C2-I-043 would attach the following attribute to the insertion unless its brace is escaped.",
       "toolEntry": "U-200",
       "silent": true
+    },
+    {
+      "id": "U-201",
+      "kind": "report",
+      "group": "measured inline rendering changes",
+      "from": "{_a %% b_} y\n",
+      "to": "{_a %% b_} y\n",
+      "meaning02": "C2-I-060, C2-I-062, and C2-I-119 close braced inline forms at their own nested or comment boundary, changing the rendered span.",
+      "toolEntry": "U-201",
+      "silent": true
     }
   ],
   "tree": [

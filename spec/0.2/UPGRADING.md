@@ -456,6 +456,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-198 | Under C2-I-062, `{~a~>~}` writes `&lt;del&gt;a&lt;/del&gt;&lt;ins&gt;&lt;/ins&gt;` in 0.1. **SILENT** | The source writes `&lt;s&gt;a~&amp;gt;&lt;/s&gt;` in 0.2, and C2-W-116 gives the empty insertion no spelling. | Review the replacement; report |
 | U-199 | Under C2-B-076 and C2-B-078, `:: t` then `:  d` then `   {.k}` then `tail` consumes the attribute and leaves `tail` outside the description in 0.1. **SILENT** | The same lines keep the attribute text and `tail` in the description body in 0.2. | Remove the consumed attribute and put a blank line before `tail`; rewrite |
 | U-200 | Under C2-I-062 and C2-I-043, `{~a~>b~}{.k} c` writes a deletion, an insertion, and literal `{.k}` in 0.1. **SILENT** | After the arrow is expanded in 0.2, `{.k}` attaches to the insertion. | Write `{-a-}{+b+}\{.k} c`; rewrite |
+| U-201 | Under C2-I-060, C2-I-062, and C2-I-119, `{_a %% b_} y` writes `&lt;u&gt;a&lt;/u&gt; y` in 0.1. **SILENT** | The line comment closes the braced span at its own boundary in 0.2, so the source writes literal `{_a` and drops the rest of the line. | Review the braced span; report |
 
 ## Part 2. Integrators: your code and your pages
 
