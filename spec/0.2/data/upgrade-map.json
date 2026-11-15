@@ -1750,6 +1750,16 @@
       "meaning02": "C2-B-090 and C2-B-095 retain a closing brace inside a quoted value when the value uses double quotes.",
       "toolEntry": "U-196",
       "silent": true
+    },
+    {
+      "id": "U-197",
+      "kind": "rewrite",
+      "group": "measured ownership and inline rewrites",
+      "from": "- a\n  {.k}\n# H\n",
+      "to": "- a\n\n# H\n",
+      "meaning02": "C2-B-090, C2-B-095, and C2-B-101 leave the attribute text in the item unless it is removed before the next block.",
+      "toolEntry": "U-197",
+      "silent": true
     }
   ],
   "tree": [

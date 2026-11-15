@@ -452,6 +452,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-194 | Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash. **SILENT** | The tab is cell padding and only the smart dash remains. | Review the cell; report |
 | U-195 | Under C2-B-119 and C2-B-121, `:::[`x`]` writes a div label containing a code span. **SILENT** | With a space after the fence, the label contains literal backticks. | Review the div label; report |
 | U-196 | Under C2-B-090 and C2-B-095, `{k='x}y'}` attaches `k="x}y"` to the next block. **SILENT** | The same source leaves the attribute line in paragraph text. | Write `{k="x}y"}`; rewrite |
+| U-197 | Under C2-B-090, C2-B-095, and C2-B-101, `- a` then `  {.k}` then `# H` consumes the attribute without attaching it. **SILENT** | The same source prints the attribute in the item. | Remove the attribute and put a blank line before the heading; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 
