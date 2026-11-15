@@ -945,7 +945,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-080** An image is `<img src="URL" alt="ALT">`, with `title` when it has a tooltip. `alt` is always written, empty for a decorative image. A supplied image without `src` writes `src=""`. A `longDescription` writes its blocks as visible HTML after the block that contains the image. This keeps block elements outside a paragraph and needs no generated id or reference.
 
-**C2-H-081** A link or an autolink inside link text is unwrapped: its content is written and its element is not (C2-A-111).
+**C2-H-081** A direct link, a reference link, or an autolink inside link text is unwrapped: its content is written and its anchor is not (C2-A-111). A resolved cross-reference inside link text writes its generated plain text without an anchor. A mention or tag with a `social` URL inside link text writes its inert span instead of an anchor. These rules apply at every depth of the link text. An unresolved reference or cross-reference writes its ordinary text. Raw HTML, trusted symbol values, and extension renderer output remain verbatim; the core does not inspect anchors supplied by those payloads. A core citation group writes text and makes no anchor.
 
 **C2-H-082** A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href="">`. The denial is reported as the render loss `destination-denied`.
 
@@ -1024,7 +1024,7 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 **C2-H-087** Footnotes are numbered from 1 in the order of their first reference in the document. A labeled footnote and an inline footnote share the one sequence. A later reference to the same label reuses its number. References in the body of the document are numbered first, in document order; references that stand inside a note are numbered after them, note by note in the order of the notes' numbers.
 
-**C2-H-088** A footnote reference is `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on. An id the author wrote on the reference replaces the generated one, and the backlink of the note points to it.
+**C2-H-088** A footnote reference or inline footnote writes its note mark as `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on. An id the author wrote on a reference replaces the generated one, and the backlink of the note points to it. When a note mark occurs anywhere in the text of a direct or reference link, including inside an inline descendant, nothing is written at its place. The marks are written directly after the closing `</a>` of the outermost rendered link in source order. The footnote and inline footnote nodes stay at their places in the tree, and the backlinks point to the moved marks. An image's alternative text and every other plain text rendering are unchanged. A cross-reference has generated plain text and no inline children that can hold a note mark. A heading's generated id is on its heading or section element, not on an enclosing anchor, so a link inside a heading follows this rule as elsewhere.
 
 **C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
 
@@ -1064,6 +1064,37 @@ After.
     </li>
     <li id="fn2">
       <p>inline <strong>x</strong><a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Example 33 (unverified)
+
+::: compare
+
+```carve
+[see *this[^a]* and ^[inline] page[^b]](/u)
+
+[^a]: A
+[^b]: B
+```
+
+```html
+<p><a href="/u">see <strong>this</strong> and  page</a><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a><a id="fnref3" href="#fn3" role="doc-noteref"><sup>3</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>A<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>inline<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn3">
+      <p>B<a href="#fnref3" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
 </section>
@@ -1129,7 +1160,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 **C2-H-104** *Forward references.* A heading reference, a cross-reference and a caption number in a cross-reference can point at a block further down. They resolve only at the end of the document.
 
-**C2-H-105** *Footnotes.* The number of a note is known at its first reference (C2-H-087), so a reference can be written at once when the definitions are known. The note bodies and their backlinks are buffered to the place of the section, and a `::: footnotes` div above the last reference has to wait for the end.
+**C2-H-105** *Footnotes.* The number of a note is known at its first reference (C2-H-087), so a reference outside link text can be written at once when the definitions are known. A reference inside link text waits for the link's closing tag (C2-H-088). The note bodies and their backlinks are buffered to the place of the section, and a `::: footnotes` div above the last reference has to wait for the end.
 
 **C2-H-106** *Tightness.* Whether a list is loose is known only when the list closes (C2-B-191). A streaming renderer buffers each top-level list as a whole, because the first item's `<p>` depends on a blank line that may follow the last item but one.
 
@@ -1408,7 +1439,7 @@ One point is open.
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
-| Footnotes | 8 | 0 | 1 | 0 |
+| Footnotes | 8 | 0 | 1 | 1 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 0 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
@@ -1416,6 +1447,6 @@ One point is open.
 | Options | 23 | 0 | 3 | 0 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 1 | 0 | 0 | 0 |
-| **Total** | **173** | **7** | **25** | **7** |
+| **Total** | **173** | **7** | **25** | **8** |
 
-The document has 173 clauses, 7 of them marked with the word "Exception", and 32 examples, 25 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 173 clauses, 7 of them marked with the word "Exception", and 33 examples, 25 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
