@@ -1017,7 +1017,7 @@
       "group": "fences, quotes, comments",
       "from": "> +\n>",
       "to": ">\n>",
-      "meaning02": "<blockquote><p>+</p></blockquote>",
+      "meaning02": "C2-B-059 removes the 0.1 plus; an empty quote line can keep a following code-span paragraph separate.",
       "toolEntry": "U-125",
       "silent": true
     },
@@ -2294,10 +2294,10 @@
     {
       "id": "U-256",
       "kind": "rewrite",
-      "group": "tag inside a failed heading brace attribute",
+      "group": "tag inside a failed brace attribute",
       "from": "# H {#id .cls}\n",
       "to": "# H {#id .cls\\}\n",
-      "meaning02": "C2-I-044 and C2-I-090 keep the tag visible when the closer no longer forms a brace attribute.",
+      "meaning02": "C2-I-044 and C2-I-090 keep the tag visible when a failed brace attribute has its opening or closing brace escaped.",
       "toolEntry": "U-256",
       "silent": true
     },
