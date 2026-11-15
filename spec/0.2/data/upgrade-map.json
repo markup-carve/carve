@@ -1990,6 +1990,16 @@
       "meaning02": "C2-B-087 and C2-B-076 keep the description body in the note while the dedented caret line remains outside it.",
       "toolEntry": "U-223",
       "silent": true
+    },
+    {
+      "id": "U-224",
+      "kind": "report",
+      "group": "percent fence at a container boundary",
+      "from": "> %%%\n> secret\n  %%%\nafter\n",
+      "to": "> %%%\n> secret\n  %%%\nafter\n",
+      "meaning02": "C2-B-108, C2-B-110, and C2-B-114 give the percent fence a different container extent, which can retain after inside the quote.",
+      "toolEntry": "U-224",
+      "silent": true
     }
   ],
   "tree": [
