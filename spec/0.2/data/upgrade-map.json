@@ -1920,6 +1920,16 @@
       "meaning02": "C2-B-108, C2-B-110, and C2-B-114 keep the description body with its term after the invisible percent span is removed.",
       "toolEntry": "U-215",
       "silent": true
+    },
+    {
+      "id": "U-216",
+      "kind": "rewrite",
+      "group": "measured invisible brace comments",
+      "from": "{%%}![alt](x.png)\n",
+      "to": "![alt](x.png)\n",
+      "meaning02": "C2-I-036 and C2-B-147 let the image open as a block after the invisible brace comment is removed.",
+      "toolEntry": "U-216",
+      "silent": true
     }
   ],
   "tree": [
