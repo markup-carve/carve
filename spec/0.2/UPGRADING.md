@@ -496,6 +496,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-241 | Under C2-B-129, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1. **SILENT** | The same 0.2 source writes a hard break between `a` and `b`. | Review the fallback in the hardbreak div; report |
 | U-242 | Under C2-B-108 and C2-B-110, a three-backtick fence containing an indented three-backtick line can keep that line as code content in 0.1. **SILENT** | The same 0.2 source can close the fence at the indented line. | Lengthen the opening fence to four backticks when the complete HTML check passes; rewrite |
 | U-243 | Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a code fence and change the following list boundary. | Escape the first backtick inside the brace comment when the complete HTML check passes; escape |
+| U-244 | Under C2-B-082, C2-B-091, and C2-B-095, `{.a}` followed by `[^f]: note`, a blank line, and `Visible` writes class `a` on the visible paragraph in 0.1. **SILENT** | The same 0.2 source leaves the visible paragraph without that class. | Move the floating attribute below the footnote definition when the complete HTML check passes; rewrite |
 
 ## Part 2. Integrators: your code and your pages
 

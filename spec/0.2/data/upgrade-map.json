@@ -2190,6 +2190,16 @@
       "meaning02": "C2-I-036 and C2-B-108 keep the escaped backtick run inside the brace comment instead of opening a fence.",
       "toolEntry": "U-243",
       "silent": true
+    },
+    {
+      "id": "U-244",
+      "kind": "rewrite",
+      "group": "floating block attribute across a footnote definition",
+      "from": "{.a}\n[^f]: note\n\nVisible\n",
+      "to": "[^f]: note\n\n{.a}\nVisible\n",
+      "meaning02": "C2-B-082, C2-B-091, and C2-B-095 attach the attribute to the visible paragraph when it is written after the definition.",
+      "toolEntry": "U-244",
+      "silent": true
     }
   ],
   "tree": [
