@@ -80,6 +80,8 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-050** A host transform or renderer exception does not escape the engine. When a transform throws, the engine retains the claimed core node and reports a diagnostic that names the extension. When a renderer throws or returns a value that is not a string, the engine renders the extension fallback and reports a diagnostic that names the extension. The size of a renderer's HTML string is the host's responsibility.
 
+**C2-X-051** If the engine cannot prepare a claim's canonical source record because the writer refuses it (C2-W-133), the engine retains the core node and reports `extension-transform-failed` naming the extension. Parsing and rendering continue with that core node.
+
 **C2-X-035** With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`.
 
 **C2-X-036** Every profile restriction and URL policy check applies inside slots and fallback.
@@ -262,7 +264,7 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | --- | ---: |
 | Registration and matching | 14 |
 | Transformation and carriage | 17 |
-| Resolution, rendering and equality | 8 |
+| Resolution, rendering and equality | 9 |
 | Standard extension: tabs | 10 |
 | Writing consistency | 1 |
-| **Total** | **50** |
+| **Total** | **51** |
