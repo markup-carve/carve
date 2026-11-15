@@ -234,7 +234,7 @@ Example 24 (generated)
 
 :::
 
-Example 25 (generated, `lowercaseHeadingIds`, which is `headingIds: lower`)
+Example 25 (generated, `--heading-ids lower`)
 
 ::: compare
 
@@ -1340,7 +1340,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
-Example 23 (unverified)
+Example 23 (unverified, `--roundtrip`)
 
 ::: compare
 
