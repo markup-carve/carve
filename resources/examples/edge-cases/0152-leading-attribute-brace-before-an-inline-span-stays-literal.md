@@ -14,14 +14,14 @@ An unattached `{…}` attribute block that opens a line has nothing to its left 
 
 :::
 
-The braces of an unattached block are text like any other, so a code span or link that starts inside them runs past the `}`, and a lone brace inside a forced span is text too.
+In 0.2, a valid quoted attribute block is one opaque atom. The rendered opening quotes below keep the older code span and link HTML by leaving the brace runs as text. A lone brace inside a forced span is text too.
 
 ::: compare
 
 ```carve
-x{.k title="`"} y
+x{.k title=“`"} y
 
-x{title="[a"}](u)
+x{title=“[a"}](u)
 
 x{*a { b*} c
 ```
