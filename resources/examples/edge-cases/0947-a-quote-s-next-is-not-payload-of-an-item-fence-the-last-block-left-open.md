@@ -34,12 +34,16 @@ A `+` is a marker, consumed when it attaches (PART 9 §17 L3). When the block th
 
 ::: compare
 
+An explicit closer after the bare quote line keeps that line as a blank code
+line in 0.2.
+
 ````carve
 > a
 >
 > 1. ```
 >    x
 >
+>    ```
 > y
 ````
 
@@ -49,6 +53,7 @@ A `+` is a marker, consumed when it attaches (PART 9 §17 L3). When the block th
   <ol>
     <li>
       <pre><code>x
+
 </code></pre>
     </li>
   </ol>

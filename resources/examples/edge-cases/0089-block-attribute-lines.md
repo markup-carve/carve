@@ -127,15 +127,15 @@ Next
 
 :::
 
-A footnote definition is invisible to block-attribute placement, so a pending
-class floats past it to the next visible paragraph (PART 9 §15 A2a).
+In 0.2 a footnote definition takes a pending block attribute. Place the class
+immediately above the visible paragraph to style that paragraph (C2-B-091, C2-B-095).
 
 ::: compare
 
 ```carve
-{.a}
 [^f]: note
 
+{.a}
 Visible
 ```
 
