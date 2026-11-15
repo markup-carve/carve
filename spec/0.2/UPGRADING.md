@@ -445,7 +445,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
-| U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote. **SILENT** | The same ASCII quote writes an opening smart quote. | Write the rendered closing Unicode quote; rewrite |
+| U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote, and <code>x{.k title="&#96;"} y</code> can read its backtick as code in 0.1. **SILENT** | The same ASCII quote writes an opening smart quote, and the quoted attribute is one opaque atom in 0.2. | Write the rendered Unicode quote, replacing multiple attribute openers together when the complete HTML check passes; rewrite |
 | U-191 | Under C2-B-117, a code fence with `s` and an empty quoted title has no title attribute. **SILENT** | The same fence writes `title=""`. | Remove the empty quoted title; rewrite |
 | U-192 | Under C2-B-103, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand, including when a later separate `lang` attribute supplies the old value; rewrite |
 | U-193 | Under C2-B-027 and C2-B-067, `:: ` followed by a tab and `x` writes the tab in the term. **SILENT** | The tab is marker padding and the term is `x`. | Review the term; report |

@@ -1687,7 +1687,7 @@
       "group": "measured ownership and inline rewrites",
       "from": "-\"\\\n",
       "to": "-”\\\n",
-      "meaning02": "C2-I-035 replaces the ambiguous ASCII quote with the rendered Unicode mark.",
+      "meaning02": "C2-I-035 permits the rendered Unicode quote to retain the older smart quote direction and to prevent a quoted attribute from becoming one opaque atom. The tool can replace multiple openers together after checking the complete HTML.",
       "toolEntry": "U-190",
       "silent": true
     },
