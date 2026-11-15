@@ -28,7 +28,7 @@ Terms:
 
 **C2-I-001** Inline content is parsed one content at a time, after the block pass has settled every line of the document: no block decision depends on inline content, and every definition and heading is known when the first content is read.
 
-**C2-I-002** A content is the list of its source spans in order, one per line, without the prefixes of its containers, without markers and without indent. Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011). In a table cell the padding before the closing pipe is removed first, so a backslash that stands before that padding ends the cell and is a hard break (C2-I-102); a no-break space at the end of a cell is a backslash and a space followed by the padding.
+**C2-I-002** A content is the list of its source spans in order, one per line, without the prefixes of its containers, without markers and without indent. Spaces and tabs at the end of a line of the content are not part of it, on the last line as on the others; a space that a backslash escapes is not such a space (C2-I-011). They are removed before any inline form is read, so the rule holds inside a code span, a math span, a literal span, a raw span and a comment as in text. In a table cell the padding before the closing pipe is removed first, so a backslash that stands before that padding ends the cell and is a hard break (C2-I-102); a no-break space at the end of a cell is a backslash and a space followed by the padding.
 
 **C2-I-003** Two neighboring spans are joined by one line break.
 
@@ -184,7 +184,7 @@ Example 7 (generated)
 
 **C2-I-014** A run of one or more backticks opens a code span. The opener is the whole run. (carried over from 0.1)
 
-**C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1)
+**C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1) The spaces and tabs at the end of each line are removed before the span is read (C2-I-002): `` `a ``, two spaces, a line break and `` b` `` give the value `a`, a line feed and `b`.
 
 **C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
 
