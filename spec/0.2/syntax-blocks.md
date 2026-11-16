@@ -2789,7 +2789,7 @@ after
 
 ## The fence opener and titles
 
-**C2-B-117** After the run, a code fence opener holds an optional language word, an optional quoted title and an optional label in brackets, in that order.
+**C2-B-117** After the run, a code fence opener holds an optional language word, an optional quoted title and an optional label in brackets, in that order. A label in brackets, here and on a div opener (C2-B-119), is the text between `[` and the first `]` behind it (`bracket_label` in `data/line-shapes.json`), so it holds no `]`, and it holds no line break, since an opener is one line.
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
