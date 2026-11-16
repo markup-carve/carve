@@ -1,6 +1,6 @@
 name: 0.2 spec data
 
-# The data files of spec/0.2 against the six documents. Work on next2 lands by
+# The data files of spec/0.2 against the nine documents, and the documents against each other. Work on next2 lands by
 # push as well as by pull request, so the check runs on both.
 on:
   push:

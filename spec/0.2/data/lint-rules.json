@@ -699,6 +699,22 @@
       "clauses": ["C2-A-127", "C2-H-076"]
     },
     {
+      "id": "extension-renderer-failed",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "reports": "a host renderer threw or returned a value that was not a string (C2-X-050)",
+      "clauses": ["C2-X-050"]
+    },
+    {
+      "id": "extension-transform-failed",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "reports": "a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051)",
+      "clauses": ["C2-X-050", "C2-X-051"]
+    },
+    {
       "id": "fence-closer-indented",
       "severity": "hint",
       "channel": "lint",
@@ -1906,6 +1922,14 @@
       "messages": ["This link reference definition is unused."],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]
+    },
+    {
+      "id": "writer-refused",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "reports": "the writer reached a repeated repair state or its repair limit (C2-W-133)",
+      "clauses": ["C2-W-133"]
     }
   ]
 }

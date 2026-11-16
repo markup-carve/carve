@@ -530,7 +530,7 @@ Written:
 
 **C2-W-105** The severity is one of `hint`, `warning` and `error`, in lower case. The 0.1 engine source writes the first with a capital, `Hint`. The default is `warning`: a rule has that severity unless the catalog names another.
 
-**C2-W-106** Every code is an entry of one catalog, a data file in `resources/`. A code is a contract: it is not renamed and not reused.
+**C2-W-106** Every code is an entry of one catalog, `data/lint-rules.json`. A code is a contract: it is not renamed and not reused.
 
 **C2-W-107** Lint is computed from the tokens and the tree of the parse. It never reads the raw text with patterns of its own, so it cannot disagree with the parser about what a line is.
 

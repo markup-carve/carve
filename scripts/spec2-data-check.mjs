@@ -1,7 +1,10 @@
 // Checks the data files of the 0.2 spec (spec/0.2/data).
 //   node scripts/spec2-data-check.mjs
 // Fails when a file breaks its schema, cites a clause id that no document
-// defines, names a row of another file that does not exist, or is out of order.
+// defines, names a row of another file that does not exist, or is out of order, and when the documents
+// disagree with each other: a cited clause id that no document defines, an example number used twice,
+// a count table or a count sentence that the document does not match, a reported code that is not in
+// lint-rules.json or a catalog code that no document names, and an option table that differs from options.json.
 // Prints the clauses of the two syntax chapters that no row cites, as a report.
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync } from 'node:fs'
@@ -289,6 +292,195 @@ else {
   for (const row of data['upgrade-map']?.tree ?? []) {
     if (!(shown.get(row.id) ?? '').startsWith(`| ${row.id} | ${row.kind} |`)) fail(`UPGRADING.md: ${row.id} has a different change kind`)
   }
+}
+
+// The documents against each other: clause ids, example numbers, the count tables, the codes and the options.
+const FENCE_LINE = /^\s*(`{3,}|~{3,})/
+/** The lines of a document with every fenced line blanked, so examples do not count as prose. */
+function prose(text) {
+  let open = null
+  return text.split('\n').map((line) => {
+    const fence = FENCE_LINE.exec(line)
+    if (open) {
+      if (fence && fence[1][0] === open[0] && fence[1].length >= open.length && line.trim() === fence[1]) open = null
+      return ''
+    }
+    if (fence) { open = fence[1]; return '' }
+    return line
+  })
+}
+const texts = Object.fromEntries(Object.keys(DOCUMENTS).map(name => [name, readDocument(name, DOCUMENTS[name]).text]))
+
+// Every clause id cited anywhere exists, except one that a counts section names as deleted.
+const cites = { ...Object.fromEntries(Object.entries(texts).map(([name, text]) => [`${name}.md`, text])) }
+for (const name of ['UPGRADING.md', 'README.md', 'data/README.md', 'trees/README.md']) cites[name] = readFileSync(join(root, 'spec/0.2', name), 'utf8')
+for (const dir of ['data', 'data/schemas', 'trees']) {
+  for (const name of execFileSync('git', ['ls-files', `spec/0.2/${dir}/*.json`], { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean)) {
+    if (dirname(name) === `spec/0.2/${dir}`) cites[name.slice('spec/0.2/'.length)] = readFileSync(join(root, name), 'utf8')
+  }
+}
+const deleted = new Set()
+for (const text of Object.values(texts)) {
+  const counts = text.split(/^## Counts$/m)[1] ?? ''
+  for (const line of counts.split('\n')) if (/\bdeleted\b/.test(line)) for (const match of line.replace(/Ids run to C2-[A-Z]-\d{3}/, '').matchAll(/C2-[A-Z]-\d{3}/g)) deleted.add(match[0])
+}
+for (const id of deleted) if (defined.has(id)) fail(`${id} is named as deleted and is still defined`)
+for (const [name, text] of Object.entries(cites)) {
+  const lines = text.split('\n')
+  lines.forEach((line, at) => {
+    for (const match of line.matchAll(/C2-[A-Z]-\d{3}/g)) {
+      if (!defined.has(match[0]) && !deleted.has(match[0])) fail(`${name}:${at + 1}: cites ${match[0]}, which no document defines`)
+    }
+  })
+}
+
+// Example numbers are unique within a document.
+for (const [name, text] of Object.entries(texts)) {
+  const seen = new Set()
+  for (const match of text.matchAll(/^Example (\d+) \(/gm)) {
+    if (seen.has(match[1])) fail(`${name}.md: Example ${match[1]} stands twice`)
+    seen.add(match[1])
+  }
+}
+
+/** Clauses, exceptions and examples by status in each `##` section of a document. */
+function sectionCounts(text) {
+  const sections = new Map()
+  let current = null
+  for (const line of prose(text)) {
+    const heading = /^## (.+)$/.exec(line)
+    if (heading) { current = { clauses: 0, exceptions: 0, generated: 0, unverified: 0, verified: 0 }; sections.set(heading[1].trim(), current); continue }
+    if (!current) continue
+    const clause = /^\*\*(Exception )?C2-[A-Z]-\d{3}\*\*/.exec(line)
+    if (clause) { current.clauses++; if (clause[1]) current.exceptions++ }
+    const example = /^Example \d+ \((generated|unverified|verified)\b/.exec(line)
+    if (example) current[example[1]]++
+  }
+  return sections
+}
+const sum = (rows) => rows.reduce((total, row) => {
+  for (const key of Object.keys(row)) total[key] = (total[key] ?? 0) + row[key]
+  return total
+}, {})
+// The rows of a counts table that stand for more than one section.
+const GROUPS = {
+  ast: { 'Later clauses and standard data namespaces': ['Later clauses', 'Standard data namespaces'] },
+}
+const COLUMNS = { Clauses: 'clauses', Exceptions: 'exceptions', 'Examples generated': 'generated', 'Examples unverified': 'unverified' }
+for (const [name, text] of Object.entries(texts)) {
+  const sections = sectionCounts(text)
+  const total = sum([...sections.values()])
+  const counts = text.split(/^## Counts$/m)[1]?.split(/^## /m)[0]
+  if (counts === undefined) continue
+  // The first table of the section; a later one, as the comparison of the inline chapter, is no count table.
+  const lines = counts.split('\n')
+  const first = lines.findIndex(line => line.startsWith('|'))
+  const table = first < 0 ? [] : lines.slice(first, lines.findIndex((line, at) => at > first && !line.startsWith('|')))
+  if (table.length) {
+    const header = table[0].split('|').slice(1, -1).map(cell => cell.trim())
+    const covered = new Set()
+    for (const line of table.slice(2)) {
+      const cells = line.split('|').slice(1, -1).map(cell => cell.trim().replaceAll('**', ''))
+      const label = cells[0]
+      let rows
+      if (label === 'Total') rows = [...sections.values()]
+      else if (GROUPS[name]?.[label]) rows = GROUPS[name][label].map(section => sections.get(section) ?? {})
+      else if (sections.has(label)) rows = [sections.get(label)]
+      else if (name === 'ast' && label === 'Existing AST contract') {
+        const later = new Set(Object.values(GROUPS.ast).flat())
+        rows = [...sections].filter(([section]) => !later.has(section)).map(([, row]) => row)
+      } else { fail(`${name}.md counts: the row "${label}" names no section`); continue }
+      if (label !== 'Total') rows.forEach(row => covered.add(row))
+      const got = sum(rows)
+      header.forEach((column, at) => {
+        const key = COLUMNS[column] ?? (column === 'Examples' ? 'examples' : null)
+        if (at === 0 || key === null) return
+        const want = key === 'examples' ? (got.generated ?? 0) + (got.unverified ?? 0) + (got.verified ?? 0) : (got[key] ?? 0)
+        if (Number(cells[at]) !== want) fail(`${name}.md counts: "${label}" ${column} says ${cells[at]}, the document holds ${want}`)
+      })
+    }
+    for (const [section, row] of sections) if ((row.clauses || row.generated || row.unverified) && section !== 'Counts' && !covered.has(row)) fail(`${name}.md counts: no row for the section "${section}"`)
+  }
+  // The sentences that restate the totals.
+  const examples = total.generated + total.unverified + total.verified
+  const said = [
+    [/has (\d+) clauses/, total.clauses], [/holds (\d+) clauses/, total.clauses], [/(\d+) of them (?:marked|exceptions)/, total.exceptions],
+    [/and (\d+) exceptions? against/, total.exceptions], [/: \d+ rules and (\d+) exceptions?\./, total.exceptions], [/(\d+) rules and \d+ exceptions?\./, total.clauses - total.exceptions],
+    [/and (\d+) examples/, examples], [/holds (\d+) examples/, examples], [/(\d+) generated and/, total.generated],
+    [/(\d+) unverified\b/, total.unverified], [/(\d+) verified and/, total.verified],
+  ]
+  for (const line of counts.split('\n').filter(line => !line.startsWith('|'))) {
+    for (const [pattern, want] of said) {
+      const match = pattern.exec(line)
+      if (match && Number(match[1]) !== want) fail(`${name}.md counts: "${match[0]}" says ${match[1]}, the document holds ${want}`)
+    }
+    if (/examples, all unverified/.test(line) && total.unverified !== examples) fail(`${name}.md counts: not every example is unverified`)
+    const ids = /Ids run to (C2-[A-Z]-(\d{3}))/.exec(line)
+    if (ids) {
+      const prefix = ids[1].slice(0, 5)
+      const last = Math.max(...[...defined].filter(id => id.startsWith(prefix)).map(id => Number(id.slice(5))))
+      if (Number(ids[2]) !== last) fail(`${name}.md counts: ids run to ${prefix}${last}, not ${ids[1]}`)
+      for (let n = 1; n <= last; n++) {
+        const id = `${prefix}${String(n).padStart(3, '0')}`
+        if (!defined.has(id) && !deleted.has(id)) fail(`${name}.md counts: ${id} is neither defined nor named as deleted`)
+      }
+    }
+  }
+}
+const importCounts = /holds (\d+) element rows, (\d+) attribute rows, (\d+) conventions, (\d+) codes and (\d+) loss rows/.exec(texts['import-html'])
+if (!importCounts) fail('import-html.md counts: the sentence on the rows of data/import-html.json is missing')
+else ['elements', 'attributes', 'conventions', 'codes', 'losses'].forEach((list, at) => {
+  if (Number(importCounts[at + 1]) !== (data['import-html']?.[list] ?? []).length) fail(`import-html.md counts: ${list} says ${importCounts[at + 1]}, the data file holds ${(data['import-html']?.[list] ?? []).length}`)
+})
+
+// Codes: a code a clause reports with is in lint-rules.json, and every code there is named in a document.
+const rules = new Map((data['lint-rules']?.rules ?? []).map(rule => [rule.id, rule]))
+const CODE = '([a-z0-9]+(?:/[a-z0-9-]+|-[a-z0-9]+)+)'
+const REPORTS = [
+  new RegExp(`(?<!\` )(?:reported with|reported as|reports|report|reporting|the codes?|render-loss code|render loss) \`${CODE}\``, 'g'),
+  new RegExp(`\`${CODE}\` (?:reports|is reported|in the (?:parse|render-loss|lint) channel)`, 'g'),
+]
+const named = new Set()
+for (const [name, text] of Object.entries(texts)) {
+  prose(text).forEach((line, at) => {
+    for (const match of line.matchAll(new RegExp(`\`${CODE}\``, 'g'))) if (rules.has(match[1])) named.add(match[1])
+    for (const pattern of REPORTS) for (const match of line.matchAll(pattern)) {
+      if (!rules.has(match[1])) fail(`${name}.md:${at + 1}: reports \`${match[1]}\`, which lint-rules.json does not hold`)
+    }
+  })
+}
+for (const id of rules.keys()) if (!named.has(id)) fail(`lint-rules.json: ${id} is named by no document`)
+// The writer's table of the parse and render-loss channels and the importer's table of codes agree with the catalog.
+const channelTable = texts.writer.split('### The codes of the parse channel and of the render-loss channel')[1]?.split(/^### /m)[0] ?? ''
+if (!channelTable) fail('writer.md: the table of the parse and render-loss channels is missing')
+for (const line of channelTable.split('\n').filter(line => /^\| `/.test(line))) {
+  const [codes, channel, severity] = line.split('|').slice(1, 4).map(cell => cell.trim())
+  for (const match of codes.matchAll(/`([^`]+)`/g)) {
+    const rule = rules.get(match[1])
+    if (!rule) fail(`writer.md channel table: ${match[1]} is not in lint-rules.json`)
+    else if (rule.channel !== channel || rule.severity !== severity) fail(`writer.md channel table: ${match[1]} is ${channel} ${severity}, lint-rules.json says ${rule.channel} ${rule.severity}`)
+  }
+}
+const importTable = texts['import-html'].split('**C2-M-083**')[1]?.split('\n\n')[1] ?? ''
+const importRows = new Map(importTable.split('\n').slice(2).map(line => line.split('|').slice(1, 3).map(cell => cell.trim().replaceAll('`', ''))))
+for (const code of data['import-html']?.codes ?? []) {
+  const rule = rules.get(code.id)
+  if (!rule || rule.channel !== code.channel || rule.severity !== code.severity) fail(`import-html.json codes: ${code.id} differs from its row in lint-rules.json`)
+  if (importRows.get(code.id) !== code.severity) fail(`import-html.md C2-M-083: ${code.id} differs from its row in import-html.json`)
+}
+if (importRows.size !== (data['import-html']?.codes ?? []).length) fail('import-html.md C2-M-083: the table and import-html.json hold different codes')
+
+// The option table of C2-H-137 lists the rows of options.json, with their kinds.
+const optionTable = texts.html.split('**C2-H-137**')[1]?.split('\n\n')[1] ?? ''
+const optionRows = optionTable.split('\n').slice(2).map(line => line.split('|').slice(1, 3).map(cell => cell.trim().replaceAll('`', '')))
+const options = data.options?.options ?? []
+if (optionRows.length !== options.length) fail(`html.md C2-H-137: ${optionRows.length} options in the table, ${options.length} in options.json`)
+for (const [option, kind] of optionRows) {
+  const row = options.find(entry => entry.name === option)
+  const readers = row && (Array.isArray(row.read_by) ? row.read_by : [row.read_by])
+  const kinds = row && [row.kind, ...readers.filter(reader => reader === 'import')]
+  if (!row) fail(`html.md C2-H-137: ${option} is not in options.json`)
+  else if (kind !== kinds.join(', ')) fail(`html.md C2-H-137: ${option} is of the kind ${kind}, options.json says ${kinds.join(', ')}`)
 }
 
 console.log(`Documents: ${sources.join('; ')}`)
