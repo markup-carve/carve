@@ -57,7 +57,7 @@
             "htmlIncludes": { "type": "string" },
             "tree": { "type": "object" },
             "children": { "type": "array" },
-            "carve": { "type": "string" },
+            "carve": { "type": "string", "pattern": "\\n$" },
             "diagnostics": { "$ref": "#/$defs/diagnostics" }
           },
           "additionalProperties": false,

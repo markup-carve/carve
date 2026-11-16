@@ -28,12 +28,12 @@ Each entry:
 | `expected.htmlIncludes` | where the example states its output in prose: a piece the HTML holds |
 | `expected.tree` | the expected tree, positions included, where the tree gate holds one (`trees/`) |
 | `expected.children` | for `import`: the children of the imported document, without positions |
-| `expected.carve` | for `write` and `import`: the source the canonical writer gives |
+| `expected.carve` | for `write` and `import`: the source the canonical writer gives, with its final line feed (C2-W-022) |
 | `expected.diagnostics` | codes of `data/lint-rules.json` that the example's text says are reported; not a complete list, except for `lint`, where it is what the example states |
 | `status`, `reason` | `verified` or `unverified`, and why, as the conventions of the document define it |
 | `note` | where the example states its input in prose (blocks Example 247) |
 
-Comparing: HTML is compared byte for byte. A tree is compared under the equality of C2-A-162, or with positions where the engine claims C2-A-165. An include example is parsed with a resolver that serves exactly `files` and returns each name as its id (`includes.md`, conventions).
+Comparing: HTML is compared byte for byte, and so is Carve source (`expected.carve`). A tree is compared under the equality of C2-A-162, or with positions where the engine claims C2-A-165. An include example is parsed with a resolver that serves exactly `files` and returns each name as its id (`includes.md`, conventions).
 
 What the status means:
 

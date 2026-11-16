@@ -69,6 +69,9 @@ function statusOf(example) {
 // Codes of the catalog that the prose of the example names; the order of first mention.
 const diagnosticsOf = (example) => [...new Set([...example.text.matchAll(/`([a-z0-9/-]+)`/g)].map(m => m[1]).filter(code => codes.has(code)))]
 
+// A written source ends with one line ending (C2-W-022); a fence body holds no final line feed.
+const sourceOf = (fence) => fence === undefined ? undefined : `${fence.body}\n`
+
 // blocks Example 247 states its input in prose.
 const DESCRIBED = { 'syntax-blocks-247': { input: `${'> '.repeat(201)}x`, htmlIncludes: '<p>&gt; x</p>', note: 'input and output stated in prose: 200 nested quotes, the innermost holds <p>&gt; x</p>' } }
 
@@ -83,12 +86,12 @@ function entryOf(example) {
     entry.kind = 'import'
     entry.html = byLang('html')[0]?.body
     expected.children = JSON.parse(byLang('json')[0]?.body ?? 'null')
-    expected.carve = byLang('carve')[0]?.body
+    expected.carve = sourceOf(byLang('carve')[0])
   } else if (example.document === 'writer') {
     // An example with an input and no written source states only what lint reports (writer Example 8).
     entry.kind = fences[1] ? 'write' : 'lint'
     entry.input = fences[0]?.body
-    if (fences[1]) expected.carve = fences[1].body
+    if (fences[1]) expected.carve = sourceOf(fences[1])
   } else if (example.document === 'includes') {
     entry.kind = 'include'
     entry.files = Object.fromEntries(Object.entries(example.files).map(([name, file]) => [name, file.bytes ? { bytes: file.bytes } : { text: file.text }]))

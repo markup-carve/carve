@@ -67853,7 +67853,7 @@
    "input": "````\na```b\n````",
    "options": {},
    "expected": {
-    "carve": "```\na```b\n```",
+    "carve": "```\na```b\n```\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -67906,7 +67906,7 @@
     "alignTables": true
    },
    "expected": {
-    "carve": "|= Name     |={>} 価格 | Note |\n| tea       | 2        | <    |\n+ green tea |          |      |\n| café      | 12.5     | hot  |",
+    "carve": "|= Name     |={>} 価格 | Note |\n| tea       | 2        | <    |\n+ green tea |          |      |\n| café      | 12.5     | hot  |\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68317,7 +68317,7 @@
    "input": "| a |\n+ |\n%% x\n+ |",
    "options": {},
    "expected": {
-    "carve": "| a |\n%% x\n+ |",
+    "carve": "| a |\n%% x\n+ |\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68447,7 +68447,7 @@
    "input": "Mail <a@b.org> or <mailto:a@b.org>",
    "options": {},
    "expected": {
-    "carve": "Mail <a@b.org> or <mailto:a@b.org>",
+    "carve": "Mail <a@b.org> or <mailto:a@b.org>\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68550,7 +68550,7 @@
    "input": "A line.\n\n\\# not a heading\n\n\\- not a list",
    "options": {},
    "expected": {
-    "carve": "A line.\n\n\\# not a heading\n\n\\- not a list",
+    "carve": "A line.\n\n\\# not a heading\n\n\\- not a list\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68655,7 +68655,7 @@
    "input": "````js\na\n```\nb\n````",
    "options": {},
    "expected": {
-    "carve": "````js\na\n```\nb\n````",
+    "carve": "````js\na\n```\nb\n````\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68698,7 +68698,7 @@
    "input": "1. a\n1. b\n1. c\n\n\n\n\n\n1. d",
    "options": {},
    "expected": {
-    "carve": "1. a\n2. b\n3. c\n\n\n\n1. d",
+    "carve": "1. a\n2. b\n3. c\n\n\n\n1. d\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -68918,7 +68918,7 @@
    "input": "[a](/u 'T') and [x]{kbd=\"\"}\n\n- [X] done\n- [ ] open\n   continued",
    "options": {},
    "expected": {
-    "carve": "[a](/u \"T\") and [x]{kbd}\n\n- [x] done\n- [ ] open\n  continued",
+    "carve": "[a](/u \"T\") and [x]{kbd}\n\n- [x] done\n- [ ] open\n  continued\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -69156,7 +69156,7 @@
    "input": "{.a}{k=v}{#b}\n# Title\n\n- one\n\n  two\n- three",
    "options": {},
    "expected": {
-    "carve": "{#b .a k=v}\n= Title\n\n- one\n\n  two\n- three",
+    "carve": "{#b .a k=v}\n= Title\n\n- one\n\n  two\n- three\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -69339,7 +69339,7 @@
    "input": "- ```js\n  x\n  ```\n\n- * inner",
    "options": {},
    "expected": {
-    "carve": "- ```js\n  x\n  ```\n\n- * inner",
+    "carve": "- ```js\n  x\n  ```\n\n- * inner\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -73928,7 +73928,7 @@
       ]
      }
     ],
-    "carve": "Hallo",
+    "carve": "Hallo\n",
     "diagnostics": [
      "import-element-dropped",
      "import-attribute-dropped"
@@ -73982,7 +73982,7 @@
       ]
      }
     ],
-    "carve": "`<b>`{=html} and [x]{.c}"
+    "carve": "`<b>`{=html} and [x]{.c}\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74023,7 +74023,7 @@
       ]
      }
     ],
-    "carve": "one\ntwo"
+    "carve": "one\ntwo\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74066,7 +74066,7 @@
       ]
      }
     ],
-    "carve": "lead *x*"
+    "carve": "lead *x*\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74100,7 +74100,7 @@
       ]
      }
     ],
-    "carve": "a"
+    "carve": "a\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74134,7 +74134,7 @@
       ]
      }
     ],
-    "carve": "a&b © A c"
+    "carve": "a&b © A c\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74173,7 +74173,7 @@
       }
      }
     ],
-    "carve": "{#s}\n== T"
+    "carve": "{#s}\n== T\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74213,7 +74213,7 @@
       ]
      }
     ],
-    "carve": ":::\nno heading\n:::"
+    "carve": ":::\nno heading\n:::\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74250,7 +74250,7 @@
       ]
      }
     ],
-    "carve": "```js \"Example\"\nlet a = 1\n```"
+    "carve": "```js \"Example\"\nlet a = 1\n```\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74316,7 +74316,7 @@
       "spacing": "tight"
      }
     ],
-    "carve": "c) three\nd) [x] done"
+    "carve": "c) three\nd) [x] done\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74377,7 +74377,7 @@
       "spacing": "loose"
      }
     ],
-    "carve": "- a\n\n- b"
+    "carve": "- a\n\n- b\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74424,7 +74424,7 @@
       "spacing": "tight"
      }
     ],
-    "carve": "- only"
+    "carve": "- only\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74471,7 +74471,7 @@
       "spacing": "tight"
      }
     ],
-    "carve": "- a"
+    "carve": "- a\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74545,7 +74545,7 @@
       ]
      }
     ],
-    "carve": ":: Term\n: One\n: Two\n\n  Three"
+    "carve": ":: Term\n: One\n: Two\n\n  Three\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74596,7 +74596,7 @@
       ]
      }
     ],
-    "carve": ":: a\n: b"
+    "carve": ":: a\n: b\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74767,7 +74767,7 @@
       }
      }
     ],
-    "carve": "{footer-rows=1}\n|= Item |={>} Cost |\n| tea | 2 |\n| all | 2 |\n^ Prices"
+    "carve": "{footer-rows=1}\n|= Item |={>} Cost |\n| tea | 2 |\n| all | 2 |\n^ Prices\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74825,7 +74825,7 @@
       ]
      }
     ],
-    "carve": "| a b |"
+    "carve": "| a b |\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74875,7 +74875,7 @@
       }
      }
     ],
-    "carve": "{.wide}\n![Cat](/cat.png)\n^ A cat"
+    "carve": "{.wide}\n![Cat](/cat.png)\n^ A cat\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -74944,7 +74944,7 @@
       }
      }
     ],
-    "carve": "| a |\n^ T"
+    "carve": "| a |\n^ T\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -74984,7 +74984,7 @@
       ]
      }
     ],
-    "carve": "::: warning \"Careful\"\nHot.\n:::"
+    "carve": "::: warning \"Careful\"\nHot.\n:::\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75035,7 +75035,7 @@
       ]
      }
     ],
-    "carve": ":x[e] @ann {#c#}"
+    "carve": ":x[e] @ann {#c#}\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75069,7 +75069,7 @@
       ]
      }
     ],
-    "carve": "::: toc\nx\n:::"
+    "carve": "::: toc\nx\n:::\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75128,7 +75128,7 @@
       ]
      }
     ],
-    "carve": "A /b/ and *c*."
+    "carve": "A /b/ and *c*.\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75285,7 +75285,7 @@
       ]
      }
     ],
-    "carve": "H{,2,}O, x{^2^}, {=m=}, {-d-}, {+i+}, [Ctrl]{kbd}, [HTML]{abbr=HyperText}, [today]{time=2026-11-16}"
+    "carve": "H{,2,}O, x{^2^}, {=m=}, {-d-}, {+i+}, [Ctrl]{kbd}, [HTML]{abbr=HyperText}, [today]{time=2026-11-16}\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75330,7 +75330,7 @@
       ]
      }
     ],
-    "carve": "$$`x^2`\n\n$`y`"
+    "carve": "$$`x^2`\n\n$`y`\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75370,7 +75370,7 @@
       ]
      }
     ],
-    "carve": "[ok](/u \"T\") bad plain"
+    "carve": "[ok](/u \"T\") bad plain\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75427,7 +75427,7 @@
       ]
      }
     ],
-    "carve": "![A](/a.png)\n\nInline ![I](/i.png){width=10} and gone"
+    "carve": "![A](/a.png)\n\nInline ![I](/i.png){width=10} and gone\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75476,7 +75476,7 @@
       }
      }
     ],
-    "carve": "{#p1 .lead .note :de data-id=7 style=\"color: red\"}\nText"
+    "carve": "{#p1 .lead .note :de data-id=7 style=\"color: red\"}\nText\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75520,7 +75520,7 @@
       ]
      }
     ],
-    "carve": "[t]{data-k=2}"
+    "carve": "[t]{data-k=2}\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75566,7 +75566,7 @@
       ]
      }
     ],
-    "carve": ":::\nMore\n\nBody\n:::"
+    "carve": ":::\nMore\n\nBody\n:::\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75609,7 +75609,7 @@
       }
      }
     ],
-    "carve": "::: top\n= Site\n:::"
+    "carve": "::: top\n= Site\n:::\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75676,7 +75676,7 @@
       ]
      }
     ],
-    "carve": "A [fine]{} [print]{} [x]{}"
+    "carve": "A [fine]{} [print]{} [x]{}\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -75728,7 +75728,7 @@
       ]
      }
     ],
-    "carve": "x[^1]\n\n[^1]: Note"
+    "carve": "x[^1]\n\n[^1]: Note\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75779,7 +75779,7 @@
       "value": "<script>run()</script>\n"
      }
     ],
-    "carve": "```=html\n<!-- note -->\n```\n\na`<!-- inline -->`{=html}b\n\n```=html\n<script>run()</script>\n```",
+    "carve": "```=html\n<!-- note -->\n```\n\na`<!-- inline -->`{=html}b\n\n```=html\n<script>run()</script>\n```\n",
     "diagnostics": [
      "field-unspellable"
     ]
@@ -75819,7 +75819,7 @@
       ]
      }
     ],
-    "carve": "Video: `<iframe src=\"/v\"></iframe>`{=html}"
+    "carve": "Video: `<iframe src=\"/v\"></iframe>`{=html}\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75858,7 +75858,7 @@
       ]
      }
     ],
-    "carve": "ab\n\nVideo:",
+    "carve": "ab\n\nVideo:\n",
     "diagnostics": [
      "import-element-dropped",
      "import-whitespace-normalized"
@@ -75892,7 +75892,7 @@
       ]
      }
     ],
-    "carve": "ab",
+    "carve": "ab\n",
     "diagnostics": [
      "import-element-dropped"
     ]
@@ -75937,7 +75937,7 @@
       ]
      }
     ],
-    "carve": "x[]{#a}",
+    "carve": "x[]{#a}\n",
     "diagnostics": [
      "structure-unspellable"
     ]
@@ -75991,7 +75991,7 @@
       ]
      }
     ],
-    "carve": "[a ](/x)[b](/y)"
+    "carve": "[a ](/x)[b](/y)\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -76043,7 +76043,7 @@
       }
      }
     ],
-    "carve": "{#a}\n== A\n\n{#a}\n== B"
+    "carve": "{#a}\n== A\n\n{#a}\n== B\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
@@ -76078,7 +76078,7 @@
       ]
      }
     ],
-    "carve": "ab"
+    "carve": "ab\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -76198,7 +76198,7 @@
       "spacing": "loose"
      }
     ],
-    "carve": "{#Intro}\n= Intro\n\nSee [the guide](/guide \"Guide\") and [https://example.com](https://example.com).\n\n- one\n\n  more\n\n- two"
+    "carve": "{#Intro}\n= Intro\n\nSee [the guide](/guide \"Guide\") and [https://example.com](https://example.com).\n\n- one\n\n  more\n\n- two\n"
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit cd8e431b gives this tree and this source (import-html.md, conventions)"
