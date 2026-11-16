@@ -24,7 +24,7 @@
       "type": "object",
       "properties": {
         "path": { "type": "string", "pattern": "^(?:|/(?:[^~/]|~[01])*)*$" },
-        "offset": { "type": "integer", "minimum": 0 }
+        "offset": { "type": "integer", "minimum": 0, "description": "UTF-8 bytes into the annotation text of the node at path (C2-A-207, C2-A-214)" }
       },
       "required": ["path", "offset"],
       "additionalProperties": false

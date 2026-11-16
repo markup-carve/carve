@@ -762,7 +762,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-204** A block-boundary anchor uses the containing block's path and offset zero for its start or the block's annotation-text length for its end; a boundary between two blocks uses the end of the preceding block, or the start of the following block when there is no preceding block.
 
-**C2-A-205** A sidecar range keeps its start and end paths and code point offsets through a tree round trip, while rebinding after edits remains outside this contract.
+**C2-A-205** A sidecar range keeps its start and end paths and byte offsets through a tree round trip, while rebinding after edits remains outside this contract.
 
 ```json
 {"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
@@ -770,7 +770,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-206** The three namespace schemas validate only their own values. A tree-only reader checks declaration, namespace placement, duplicate annotation ids and root metadata child slots. A reader given the tree and annotation-range sidecar also checks every annotation id against a range.
 
-**C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count Unicode code points.
+**C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count the UTF-8 bytes of that text, as the layout sidecar does (C2-L-012), and a reader refuses an offset that falls inside the bytes of one character.
 
 **C2-A-208** Source format, locator parts, importer name and version, style names and language, and annotation ids are nonempty strings; style page break and keep flags are booleans.
 
@@ -784,7 +784,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-213** A supplied `link` or `image` with `refForm` equal to `shortcut` and a key with no definition is valid. Resolution leaves it unresolved, and rendering writes the unresolved reference as text.
 
-**C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in Unicode code points of the annotation text of that node. The schema is `data/annotation-ranges.schema.json`.
+**C2-A-214** The annotation-range sidecar is a JSON object with a `ranges` list. Each range has a nonempty string `id`, a `start` object and an `end` object. Each endpoint has an RFC 6901 `path` into the tree and a nonnegative integer `offset` measured in UTF-8 bytes of the annotation text of that node (C2-A-207). The schema is `data/annotation-ranges.schema.json`.
 
 **C2-A-215** A table group made from a delimited table may omit `pos`. Its rows, cells, cell paragraphs and decoded text nodes omit `pos`; the table itself carries the position of its source fence. A pipe table group carries `pos`. These are the delimited table cases of C2-A-158, including the group and decoded text nodes.
 
