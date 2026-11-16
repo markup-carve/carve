@@ -93,7 +93,32 @@ Conventions:
 
 **C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). This is requirement W4.
 
-**C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list, except when attribute lines of the second list stand above the comment. In that case the attribute lines and any consecutive line comments follow the preceding list with no blank lines. A line comment can follow a list, a description list or a footnote body as a sibling in two cases. One is C2-W-123. The other is a comment that stands below the attribute lines of the next block: those lines are written above the comment, as the source had them, since an attribute line closes the list and the comment then belongs to the container (C2-B-091). In every other place the comment line belongs to the last item (C2-B-138), a parse never gives that tree, and for a supplied tree the writer reports `structure-unspellable` (C2-W-117).
+**C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list, except when attribute lines of the second list stand above the comment. In that case the attribute lines and any consecutive line comments follow the preceding list after one blank line, since directly below the last paragraph of the list an attribute line is a lazy line of that paragraph (C2-B-024, blocks Example 264). A line comment can follow a list, a description list or a footnote body as a sibling in two cases. One is C2-W-123. The other is a comment that stands below the attribute lines of the next block: those lines are written above the comment, as the source had them, after that blank line, since the attribute line then closes the list and the comment belongs to the container (C2-B-091). In every other place the comment line belongs to the last item (C2-B-138), a parse never gives that tree, and for a supplied tree the writer reports `structure-unspellable` (C2-W-117).
+
+Example 12 (unverified)
+
+Input:
+
+```carve
+- a
+
+
+{.c}
+%% x
+- b
+```
+
+Written:
+
+```carve
+- a
+
+{.c}
+%% x
+- b
+```
+
+One blank line ends the first list; the attribute line of the second list then stands above the comment.
 
 **C2-W-029** Two lists are adjacent for C2-W-028 also when every block between them writes nothing.
 
@@ -901,7 +926,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 25 | 4 | 0 | 0 |
+| Layout | 25 | 4 | 0 | 1 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 1 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
@@ -909,6 +934,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **6** |
+| **Total** | **136** | **7** | **5** | **7** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 11 examples, 5 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 12 examples, 5 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
