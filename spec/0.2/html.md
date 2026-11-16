@@ -1421,7 +1421,7 @@ in
 
 **C2-H-140** Under `roundtrip` a resolved reference written in the collapsed form carries the presence carrier `data-carve-ref-collapsed` beside `data-carve-ref`. A reference in the full form carries `data-carve-ref` alone. A shortcut reference carries the presence carrier `data-carve-ref-shortcut` beside `data-carve-ref`.
 
-**C2-H-178** With `roundtrip` on, each maximal run of consecutive `abbreviation_def` nodes among the children of the document is written at the place of the run as one `<template data-carve-abbreviations>`. A node of any other type ends the run, a comment included, so two definitions with a comment between them give two templates. A template stands where the first definition of its run would stand, inside the section that holds that place when `sections` is on (C2-H-026). With `roundtrip` off a definition writes nothing (C2-H-071).
+**C2-H-178** With `roundtrip` on, each maximal run of consecutive `abbreviation_def` nodes among the children of the document is written at the place of the run as one `<template data-carve-abbreviations>`. A node of any other type ends the run, a comment included, so two definitions with a comment between them give two templates. A template stands where the first definition of its run would stand, inside the section that holds that place when `sections` is on (C2-H-026). With `roundtrip` off a definition writes nothing (C2-H-071). A profile does not degrade an `abbreviation_def`, also one outside the profile (C2-H-165): the template is data and no presentation, so it is written under every profile, and the definition is not reported as degraded.
 
 **C2-H-179** The text of the template is the run as the canonical writer spells it: each definition by C2-W-055, with its attribute line directly above it (C2-W-047), and one blank line between two definitions (C2-W-017). No line ending follows the last line. The text is escaped as text content (C2-H-002) and stands between `<template data-carve-abbreviations>` and `</template>` with nothing else around it. The start tag stands on its own line with the indent of its level (C2-H-005); every later line of the text starts at column 0, as a line break inside inline content does.
 
@@ -1539,6 +1539,25 @@ RnD.
 ```html
 <template data-carve-abbreviations>*[RnD]: R&amp;D &lt;research&gt; "and" development</template>
 <p><abbr title="R&amp;D &lt;research&gt; &quot;and&quot; development">RnD</abbr>.</p>
+```
+
+:::
+
+Under `comment` the abbreviation is outside the profile and gives its plain text, but the definition still writes its template (C2-H-178).
+
+Example 50 (unverified, `--roundtrip`, `--profile comment`)
+
+::: compare
+
+```carve
+*[A]: Able
+
+A b
+```
+
+```html
+<template data-carve-abbreviations>*[A]: Able</template>
+<p>A b</p>
 ```
 
 :::
