@@ -89,9 +89,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-019** `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included.
 
-**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the node whose `value` holds the break, or, where the fragment starts a node, the pointer of that node, which then need not have a `value` (C2-L-048); and `offset`, the UTF-8 byte offset in that `value` at which the fragment of that row starts, or 0 where the wrap names the start of a node (C2-L-021). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
-
-**C2-L-021** The joining character that a continuation row leaves in the cell's text, a space, or a line feed inside a node whose value is its source (C2-A-094, C2-B-184), is the character before `offset`. An `offset` of 0 marks the start of the node the wrap names, which need not have a `value`; no joining character is located then. A fragment that joins an empty cell has `offset` 0.
+**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the text node among the children of the cell's paragraph that holds the space joining that row's fragment (C2-B-184); and `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts. A wrap falls between two fragments, so it never lies inside another node (C2-L-048). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `refForm` (C2-A-105).
 
@@ -202,7 +200,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-047** Every block has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
 
-**C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has one wrap for that row with the path of its first inline node and `offset` 0. Where the break falls behind a hard break, the wrap names the node behind it with `offset` 0. Where a node with a `value` crosses the rows, as a code span does, the wrap names that node and `offset` is the byte behind the line feed in its value.
+**C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.
 
 **C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed, in a cell joined from continuation rows as well.
 

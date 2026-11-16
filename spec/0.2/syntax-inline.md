@@ -2261,7 +2261,7 @@ Example 113 (unverified)
 
 **C2-I-119** A form with a closer opens only when its closer is found in the same content. A failed opener is literal text, and the scan goes on directly behind it. An opening brace that fails as an attribute block is first tried as the later braced forms (C2-I-043) and is text only when it opens none of them.
 
-**C2-I-120** No inline form crosses the end of its content: a table cell, a heading, a term, a caption and a paragraph each end every form that is open in them.
+**C2-I-120** No inline form crosses the end of its content: a table cell and each fragment of a continuation row (C2-B-184), a heading, a term, a caption and a paragraph each end every form that is open in them.
 
 The two forms that never fail are the code span and the math span (C2-I-017, C2-I-020).
 

@@ -232,6 +232,22 @@ These rulings change what some documents give against the 0.1 engine or against 
 | Inline markup nested about 200 deep inside quotes, lists or divs, as `- *[x](u)` behind 197 quote marks | 0.1 and early 0.2: blocks and inline nodes shared one cap of 200, so deep blocks left inline openers as text. | Blocks and inline content have a limit of 200 each; inline depth counts from zero in each inline content, so the link forms. | C2-B-190, C2-I-118 |
 | A delimited table whose `header-rows` count is larger than its rows: `{table header-rows=5}` on two rows | 0.1 and early 0.2: no head, every cell a header cell, all rows in one body, and `fmt` kept the 5. | Every row is in the head; `fmt` writes the effective count, and `table-row-count-clamped` reports it. | C2-B-209, C2-B-221 |
 | A comment-only line directly below a heading, at or left of its marker: `= Title`, `%% note`, `  more` | 0.1 and early 0.2: the comment closed the heading and stood beside it, and `more` was a paragraph. | The comment is a child of the heading, and `more` continues the heading; the HTML of a heading followed by an unindented line is unchanged. `deprecated-indented-line-under-heading` reports `more`. | C2-B-137, C2-B-154 |
+| An inline form that crosses a continuation row, as a code span opened in a row and closed in its `+` row | 0.1: rows joined before inline parsing, one code span with a space, `<code>a b</code>`. Early 0.2: one code span whose value holds a line feed. | Each fragment is read alone: the backticks, and any other opener without its closer in the same row, are text. | C2-B-184, C2-B-223 |
+
+A code span, or any other inline form, that crossed a continuation row is now text. Write the cell on one row, which gives the code a space where the row broke, or use a delimited table when the value must keep its line break: a delimited cell is plain text and may hold a quoted line break (C2-B-226).
+
+Before:
+
+```carve
+| `a | 1 |
++ b` | 2 |
+```
+
+After, on one row:
+
+```carve
+| `a b` | 1 2 |
+```
 
 ### Worked source changes
 

@@ -4763,7 +4763,7 @@ title: x
 
 **C2-B-169** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
 
-**C2-B-223** Every cell is a separate inline content. An inline construct never crosses a cell boundary, and an unclosed code span at the end of a cell is text.
+**C2-B-223** Every cell is a separate inline content, and so is every fragment of a continuation row (C2-B-184). An inline construct never crosses a cell boundary or a row, and an unclosed code span at the end of a cell or a fragment is text.
 
 **C2-B-224** An escaped pipe is a literal pipe in cell text before inline parsing, including a link destination, an image destination, an image label and a reference label. The list is complete: in a code span `\|` stays two characters, and in other cell text it is an ordinary escape. The key of a reference label in a cell holds `|`; outside a cell it holds `\|` (C2-I-079).
 
@@ -4795,7 +4795,7 @@ title: x
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
-**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, with one space between the cell's text and the fragment, and an empty fragment adds nothing. Inside a code span, a raw span, a literal span, math, a braced comment and an editorial comment, the nodes whose `value` is their source as written (C2-I-015, C2-I-025, C2-I-063), the join is the line feed and not the space, as in a paragraph: `` `a `` continued by `` b` `` is a code span with the value `a`, a line feed and `b`. Ordinary text is joined with the space. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
+**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, and an empty fragment adds nothing. Each fragment is an inline content by itself (C2-B-223), so every inline form opens and closes inside one physical row, and an opener whose closer is not in its own fragment is text, as at the end of a cell. The cell holds the nodes of its fragments in order, with one space of text between two fragments: `` `a `` continued by `` b` `` is the text `` `a b` ``. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
 
 **C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
 
@@ -5166,6 +5166,27 @@ Example 215 (generated)
 <table>
   <tbody>
     <tr><td>1</td><td>2 b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A code span cannot cross rows: each backtick is text in its own fragment (C2-B-184).
+
+Example 249 (unverified)
+
+::: compare
+
+```carve
+| `a | 1 |
++ b` | 2 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>`a b`</td><td>1 2</td></tr>
   </tbody>
 </table>
 ```
@@ -5633,10 +5654,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 2 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 2 | 19 | 8 |
+| Tables | 35 | 2 | 19 | 9 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **169** | **77** |
+| **Total** | **229** | **14** | **169** | **78** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
