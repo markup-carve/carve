@@ -688,7 +688,7 @@ Team,10,"$49, billed yearly"
 
 :::
 
-**C2-N-046** `rows` counts the parsed records of the whole file from 1, header records included, after the leading U+FEFF is removed. A quoted field that holds line breaks is one record. A whole physical line that is a well-formed marker of C2-N-039 is no record under any selection or none: it is no row, no cell, and does not count toward `rows` or `header-rows`. A marker is recognized only outside a quoted field, here and for `region`: inside a quoted field the line is data of that field. The first `header-rows` records of the file, one by default, form the head, and a selection chooses only body records, so a head record inside the range is not repeated. A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. (I1d, carried over)
+**C2-N-046** `rows` counts the parsed records of the whole file from 1, header records included, after the leading U+FEFF is removed. A quoted field that holds line breaks is one record. A whole physical line that is a well-formed marker of C2-N-039 is no record under any selection or none: it is no row, no cell, and does not count toward `rows` or `header-rows`. A marker is recognized only outside a quoted field, here and for `region`: inside a quoted field the line is data of that field. The first `header-rows` records of the file, one by default, form the head, and the last `footer-rows` records of the file, none by default, form the foot. Both are written under any selection, and a selection chooses only body records, so a head or foot record inside the range is not repeated. The two counts are taken on the records of the whole file as C2-B-221 takes them on the rows of a table: the head takes its records first, and a `footer-rows` count larger than the records below the head takes them all. A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. (I1d, carried over)
 
 Example 34 (unverified)
 
@@ -728,6 +728,43 @@ last</td></tr>
 :::
 
 The two marker lines stand inside a quoted field, so they are data of the cell.
+
+Example 37 (unverified)
+
+File `t.csv`:
+
+```csv
+H
+a
+b
+F
+```
+
+::: compare
+
+```carve
+{table footer-rows=1}
+{{ t.csv @rows:2-4 @code:csv }}
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">H</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>a</td></tr>
+    <tr><td>b</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>F</td></tr>
+  </tfoot>
+</table>
+```
+
+:::
+
+Record 4 is the foot of the file, so the range puts only `a` and `b` in the body, and `F` is written once, in the foot.
 
 **C2-N-047** `cols` with a list of names takes the columns whose head names match exactly, in the order given, so it may reorder them. The names are matched against the head of the whole file (C2-N-046) under any selection: a `lines` or `region` selection chooses records and never makes a new head. A name the first head record lacks, an empty head name and a head name that occurs twice leave the include unexpanded with `include-cols-invalid`, and a name given twice with `include-cols-duplicate`. `cols` with a range selects columns by number and is valid only with `header-rows=0`; on another table, or past the last column, it gives `include-cols-invalid`. `cols` combines with any one selection or none. (I1d, carried over)
 
@@ -1332,7 +1369,7 @@ I13 and I14 were unassigned in 0.1.
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
 | Expansion | 9 | 0 | 7 |
-| Selection, transforms and mode | 29 | 0 | 15 |
+| Selection, transforms and mode | 29 | 0 | 16 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
 | Attributes and captions | 4 | 2 | 2 |
@@ -1340,6 +1377,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **36** |
+| **Total** | **88** | **2** | **37** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 36 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 37 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

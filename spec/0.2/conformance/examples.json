@@ -72021,6 +72021,185 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
+   "id": "includes-37",
+   "document": "includes.md",
+   "number": 37,
+   "section": "endregion keep",
+   "clauses": [
+    "C2-N-047"
+   ],
+   "kind": "include",
+   "files": {
+    "t.csv": {
+     "text": "H\na\nb\nF\n"
+    }
+   },
+   "input": "{table footer-rows=1}\n{{ t.csv @rows:2-4 @code:csv }}",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">H</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n  <tfoot>\n    <tr><td>F</td></tr>\n  </tfoot>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "include",
+       "path": "t.csv",
+       "options": {
+        "rows": "2-4",
+        "code": "csv"
+       },
+       "attrs": {
+        "keyValues": [
+         [
+          "table",
+          ""
+         ],
+         [
+          "footer-rows",
+          "1"
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 32,
+        "startOffset": 0,
+        "endOffset": 53
+       },
+       "file": "t.csv",
+       "children": [
+        {
+         "type": "table",
+         "columns": [
+          {
+           "type": "table_column"
+          }
+         ],
+         "children": [
+          {
+           "type": "table_head",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": true,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "H"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_body",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": false,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "a"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": false,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "b"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_foot",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": false,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "F"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 0,
+          "endOffset": 7,
+          "file": "t.csv"
+         }
+        }
+       ]
+      }
+     ],
+     "srcByteLength": 53,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
+  },
+  {
    "id": "includes-36",
    "document": "includes.md",
    "number": 36,
