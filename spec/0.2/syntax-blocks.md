@@ -3477,7 +3477,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
-**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment, is skipped by ownership, by a pending attribute line, by the count of blank lines and by the end of a table, and it does not separate a caption from its block.
+**Exception C2-B-137** A *comment-only line*, a line outside an opaque body that holds nothing but a line comment, is not a line for block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138.
 
 **C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
@@ -4170,7 +4170,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). A continuation line is a lazy line of the heading as of a paragraph (C2-B-012), so it ends where a paragraph ends (C2-B-013): at a blank line and at every interrupter (C2-B-014 to C2-B-020, C2-B-200), which are a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. Ownership comes first, as for every line (C2-B-025, C2-B-026), and the column is counted behind the marks of the open quotes (C2-B-003): a line that lacks the mark of an open quote closes that quote, so below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). A continuation line is a lazy line of the heading as of a paragraph (C2-B-012), so it ends where a paragraph ends (C2-B-013): at a blank line and at every interrupter (C2-B-014 to C2-B-020, C2-B-200), which are a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. Ownership comes first, as for every line (C2-B-025, C2-B-026), and the column is counted behind the marks of the open quotes (C2-B-003): a line that lacks the mark of an open quote closes that quote, so below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block; a comment-only line is no such line (C2-B-137), so its comment is a child of the heading (C2-B-138) and an indented line below it still continues the heading. So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -4187,6 +4187,27 @@ and a paragraph
   <h2>A long heading that
 continues here</h2>
   <p>and a paragraph</p>
+</section>
+```
+
+:::
+
+A comment-only line at column 0 does not close the heading, and its comment renders nothing (C2-H-069).
+
+Example 248 (unverified)
+
+::: compare
+
+```carve
+= Title
+%% note
+  continues
+```
+
+```html
+<section id="Title-continues">
+  <h1>Title
+continues</h1>
 </section>
 ```
 
@@ -4756,7 +4777,7 @@ title: x
 
 **Exception C2-B-174** A row span does not cross the head boundary.
 
-**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them is skipped and does not break the adjacency (C2-B-137).
+**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
 **C2-B-176** A fragment past the last column forms a new cell.
 
@@ -5608,14 +5629,14 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
-| Headings | 5 | 0 | 3 | 5 |
+| Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 9 | 2 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 35 | 2 | 19 | 8 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **169** | **76** |
+| **Total** | **229** | **14** | **169** | **77** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
