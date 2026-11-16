@@ -41,7 +41,7 @@ Terms:
 
 **C2-B-009** A blank line belongs to no container: the next line that is not blank decides which containers stay open, so an indented line belongs to its item after any number of blank lines. A quote is the exception: a blank line without its mark ends it at once (C2-B-032).
 
-**C2-B-218** A U+0000 in the source is read as U+FFFD, in text, in code and in every other value, so a tree from a parse never holds U+0000 (C2-A-044). Offsets count the bytes of the source as it stands. An unpaired surrogate in the string a host passes is read as U+FFFD in the same way and counts three bytes. A source given as bytes is decoded as UTF-8 by the WHATWG decoder: each maximal subpart of an ill-formed sequence is read as one U+FFFD, and offsets still count the source bytes, so the U+FFFD spans the bytes it replaces. The bytes `61 FF 62` give the paragraph `a`, U+FFFD, `b`, whose characters span offsets 0 to 1, 1 to 2 and 2 to 3; the bytes `61 E2 82 62` give `a`, one U+FFFD over offsets 1 to 3, and `b`. A source is never refused for its encoding.
+**C2-B-218** A U+0000 in the source is read as U+FFFD, in text, in code and in every other value, so a tree from a parse never holds U+0000 (C2-A-044). Offsets count the bytes of the source as it stands. An unpaired surrogate in the string a host passes is read as U+FFFD in the same way and counts three bytes. A source given as bytes is decoded as UTF-8 by the WHATWG decoder: each maximal subpart of an ill-formed sequence is read as one U+FFFD, and offsets still count the source bytes, so the U+FFFD spans the bytes it replaces, and a layout sidecar keeps such a source as bytes (C2-L-056). The bytes `61 FF 62` give the paragraph `a`, U+FFFD, `b`, whose characters span offsets 0 to 1, 1 to 2 and 2 to 3; the bytes `61 E2 82 62` give `a`, one U+FFFD over offsets 1 to 3, and `b`. A source is never refused for its encoding.
 
 **C2-B-010** A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end.
 
@@ -5947,7 +5947,7 @@ a,b
 
 **C2-B-209** The head of a delimited table is its first row unless `header-rows` gives a count (C2-B-210). A count N makes the first N rows the head, and 0 gives a table with no head. A count larger than the number of rows is the number of rows, so every row is in the head, and `table-row-count-clamped` reports the count.
 
-**C2-B-221** The `headRows` a table carries (C2-A-088) is the effective count of C2-B-209, and the writer writes that count (C2-W-066): `header-rows=5` on a table of two rows gives the tree of `header-rows=2`, a head of both rows and no body. `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187), so where the two counts together exceed the rows the head takes its rows first: `header-rows=2 footer-rows=2` on three rows gives a head of two rows and a footer of one.
+**C2-B-221** The tree holds the effective partition of C2-B-209 in its groups and no count (C2-A-088). The sidecar records the effective count as `headerRows` (C2-L-057), and the writer writes that count (C2-W-066): `header-rows=5` on a table of two rows gives the tree of `header-rows=2`, a head of both rows and no body. `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187), so where the two counts together exceed the rows the head takes its rows first: `header-rows=2 footer-rows=2` on three rows gives a head of two rows and a footer of one.
 
 **C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. A count is valid only in this form. Any other value is invalid, and the attribute then has no effect: the table keeps the partition it has without the attribute. A valid count takes effect also where it equals the default or selects no row.
 
@@ -5961,7 +5961,7 @@ a,b
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
 
-**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the table fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
 Example 229 (generated)
 
@@ -6062,6 +6062,51 @@ c,d
 ```
 
 ::::
+
+A pipe table and a delimited table with the same cells in the same groups give equal trees, also where the delimited table declares its partition (C2-A-088, C2-L-023): Examples 267 and 268 have the same tree and the same HTML. The count `0` is a fact of the sidecar of Example 268 (C2-L-057).
+
+Example 267 (unverified)
+
+::: compare
+
+```carve
+| a | b |
+| 1 | 2 |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Example 268 (unverified)
+
+::: compare
+
+````carve
+{table header-rows=0}
+```csv
+a,b
+1,2
+```
+````
+
+```html
+<table>
+  <tbody>
+    <tr><td>a</td><td>b</td></tr>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 **C2-B-226** The body of a delimited table is read as records, in the manner of RFC 4180. The separator is a comma for `csv` and a tab for `tsv`. The language word is matched as written, so a `CSV` fence is a code block that keeps its attribute. A line ending ends a row, except inside quotes. A cell that starts with `"` is quoted up to the next `"` that is not doubled: a doubled `""` stands for one `"`, and separators and line endings inside are part of the cell; what stands between the closing quote and the next separator or line ending is added to the cell as written. A `"` anywhere else is an ordinary character. Cells are not trimmed. A cell is plain text: no inline form is read in it, and its `cell_paragraph` holds one `text` node (C2-A-215), or none for an empty cell. A separator always starts another cell, so a row that ends in one has an empty last cell. An empty line is a row of one empty cell, except that one empty line at the end of the body is dropped. An empty body has no rows.
 
@@ -6288,10 +6333,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 1 | 18 | 15 |
+| Tables | 35 | 1 | 18 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **100** |
+| **Total** | **228** | **13** | **166** | **102** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

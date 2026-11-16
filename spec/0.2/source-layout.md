@@ -4,7 +4,7 @@ Status: draft on `next2`. The reference engine implements an earlier layout shap
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 
-The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Six facts are new here: they were tree fields in that draft and moved out of the tree.
+The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Seven facts are new here: they were tree fields in that draft or in an earlier 0.2 draft and moved out of the tree.
 
 Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nnn`. `C2-A-nnn`, `C2-B-nnn` and `C2-I-nnn` name clauses of the AST document and of the block and inline chapters.
 
@@ -29,8 +29,8 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 | Field | Value |
 | --- | --- |
 | `version` | `2` |
-| `encoding` | `"utf-8"` |
-| `source` | the original input as a string |
+| `encoding` | `"utf-8"`, or `"base64"` for a byte input that is not well-formed UTF-8 (C2-L-056) |
+| `source` | the original input: the string, or under `"base64"` the bytes in base64 |
 | `lineEndings` | `none`, `lf`, `crlf`, `cr` or `mixed` |
 | `bom` | whether the input starts with U+FEFF |
 | `nodes` | a list of node entries |
@@ -45,7 +45,9 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. The slots of one node are visited in the order `title`, `children`, `caption`. No two entries have the same path.
 
-**C2-L-012** `startByte` and `endByte` are a range in UTF-8 bytes of the original source, start inclusive and end exclusive. For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of `source`. Every other offset in the sidecar is in UTF-8 bytes too.
+**C2-L-012** `startByte` and `endByte` are a range in bytes of the original input, start inclusive and end exclusive: its UTF-8 bytes, or under `"base64"` the bytes as given (C2-L-056). For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of the input. An offset into a node value, as in `wraps` (C2-L-020), counts the UTF-8 bytes of that value.
+
+**C2-L-056** `encoding` is `"base64"` exactly when the input was given as bytes that are not well-formed UTF-8 (C2-B-218), and `"utf-8"` for every other input. Under `"base64"`, `source` holds those bytes in the base64 alphabet of RFC 4648, section 4, with padding, and the ranges count them as they stand, so they still equal `pos`. A string input with an unpaired surrogate is no byte input: it keeps `"utf-8"`, and its `source` holds U+FFFD in place of the surrogate, whose three bytes are the ones C2-B-218 counts. For the bytes `61 FF 62` the sidecar has `"encoding": "base64"` and `"source": "Yf9i"`, and the entry of the paragraph spans bytes 0 to 3.
 
 **C2-L-013** A producer does not invent a range. A node whose source is not one contiguous range, such as a cell joined from continuation rows, has an entry whose range runs from the start of its first piece to the end of its last. Such a node has no `pos` (C2-A-156), so this range is not a position.
 
@@ -80,6 +82,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 | `wraps`, `continuationLines` | a `table_cell`, a `table_row` | where continuation rows broke the cell, and how many the row has | `cell_wrap`, `cellWraps`, `table_row.continuationLines` |
 | `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the last closing bracket | `link.rawRef`, `image.rawRef` |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
+| `headerRows` | a delimited `table` | the effective count of its `header-rows` attribute | `table_body.headRows` |
 
 **C2-L-016** `bare` says whether an ordered list was numbered with the bare dot or with written numbers. A list that mixes both (C2-B-043) records the form of its first marker, and the formatter writes the whole list in that form. The tree holds only the start value (C2-A-056).
 
@@ -93,7 +96,9 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `refForm` (C2-A-105).
 
-**C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells, apart from `headRows`, which only a `header-rows` attribute declares (C2-A-088).
+**C2-L-023** `sourceFormat` says how a table was written. The tree is the same for a pipe table and a delimited table with the same cells in the same groups (C2-A-088): blocks Examples 267 and 268 give equal trees.
+
+**C2-L-057** `headerRows` on the entry of a delimited table is the effective count of a valid `header-rows` attribute the source gave (C2-B-209, C2-B-221), 0 included. A table without the attribute, and a pipe table, on which the attribute has no effect (C2-B-186), have no such fact. The groups of the tree hold the partition; the fact records only that the count was written. A `headerRows` that differs from the number of head rows of the tree contradicts the tree, and the writer ignores it (C2-L-006).
 
 ```json
 {
@@ -183,12 +188,13 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 | hard-break block | opener when all breaks are hard and the class is last, else class form | kept, when the tree allows it |
 | table row | one line | kept: continuation rows at the recorded places |
 | table form | pipe table, delimited when it has no rows | kept, when the tree allows it |
+| head count of a delimited table | `header-rows` only where the head is not the first row (C2-W-066) | kept, when it equals the head |
 | code fence | backticks, shortest safe length | normalized to the default |
 | heading marker | `=` | normalized to `=` |
 | thematic break | `***` | normalized to `***` |
 | bullet character | from the tree | from the tree |
 
-**C2-L-042** Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering, the quote form, the hard-break form, the table form and continuation rows.
+**C2-L-042** Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering, the quote form, the hard-break form, the table form, a declared head count and continuation rows.
 
 **C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener.
 
@@ -196,7 +202,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 
-**C2-L-046** The writer reads seven facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
+**C2-L-046** The writer reads eight facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
 
 **C2-L-047** Every block of the top-level document has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. The blocks in the children of an expanded include have no entries (C2-N-082). An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
 

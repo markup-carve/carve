@@ -2678,6 +2678,14 @@
       "to": "a figure_group with the same children, caption and attrs; kind is dropped",
       "migrationRule": "C2-A-084 C2-A-178",
       "silent": false
+    },
+    {
+      "id": "T-053",
+      "kind": "move",
+      "from": "table_body.headRows",
+      "to": "dropped; the groups hold the partition, and the count goes to a source-layout sidecar as headerRows when the caller asks for one",
+      "migrationRule": "C2-A-088 C2-A-178",
+      "silent": false
     }
   ]
 }

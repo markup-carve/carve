@@ -2,14 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://markup-carve.github.io/carve/spec/0.2/data/layout-schema.json",
   "title": "Carve source layout version 2",
-  "description": "C2-L-007 to C2-L-015 and C2-L-055",
+  "description": "C2-L-007 to C2-L-015, C2-L-055 to C2-L-057",
   "type": "object",
   "properties": {
     "version": {
       "const": 2
     },
     "encoding": {
-      "const": "utf-8"
+      "enum": [
+        "utf-8",
+        "base64"
+      ]
     },
     "source": {
       "type": "string"
@@ -86,6 +89,10 @@
           },
           "hardBreakOpener": {
             "type": "boolean"
+          },
+          "headerRows": {
+            "type": "integer",
+            "minimum": 0
           },
           "sourceFormat": {
             "enum": [
@@ -179,5 +186,20 @@
     "bom",
     "nodes"
   ],
-  "additionalProperties": false
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "encoding": {
+        "const": "base64"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "source": {
+        "type": "string",
+        "pattern": "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+      }
+    }
+  }
 }

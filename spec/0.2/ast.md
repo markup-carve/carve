@@ -226,7 +226,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `superscript` | inline | inlines | none |
 | `symbol` | inline | none | `name` |
 | `table` | block | table groups, `comment` | `columns`, `caption`? |
-| `table_body` | `table` | `table_row`, `comment` | `headRows`?, `rowHeadColumns`? |
+| `table_body` | `table` | `table_row`, `comment` | `rowHeadColumns`? |
 | `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`?, `scope`?, `headerIds`? |
 | `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`? |
 | `table_foot` | `table` | `table_row`, `comment` | none |
@@ -368,7 +368,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that have a header cell and no other cell, and one body for the rest (C2-B-178).
 
-**C2-A-088** A `table_body` whose partition the source declared carries `headRows`, the effective count (C2-B-221), also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
+**C2-A-088** The partition of a table into head, body and foot is held by its groups alone: the `table_head`, `table_body` and `table_foot` nodes and the rows each holds. No node carries a count of head rows. A `header-rows` attribute that set the partition is spelling, recorded in the layout sidecar (C2-L-057), so a pipe table and a delimited table with the same cells in the same groups are equal trees (C2-L-023).
 
 **C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign` and `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
 
@@ -678,6 +678,7 @@ The invariants below are written so that a test can check each one on any tree a
 | the former stored task state | removed; the state derives from `task.mark`. |
 | `include.options` string pairs | decoded typed option object; source quoting moves to layout. |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
+| `table_body.headRows` | dropped; the groups hold the partition, and the count goes to a source-layout sidecar as `headerRows` when the caller asks for one |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
 | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class |
 | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, which takes the `caption` and the `attrs` of the figure; the comments go where C2-A-082 places them; `kind` is dropped |

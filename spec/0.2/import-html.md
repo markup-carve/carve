@@ -18,7 +18,7 @@ Conventions:
 
 **C2-M-002** The input is a document when, after any leading ASCII whitespace and comments, it starts with `<!doctype` or with `<html`, compared without ASCII case. A document is parsed with the HTML Standard's parsing algorithm for documents. Any other input is a fragment and is parsed with the HTML fragment parsing algorithm with a `body` element as the context element.
 
-**C2-M-003** The importer reads the tree the parser builds, not the input text. So character references are decoded, a carriage return and a CR LF pair are one line feed (C2-H-195 row 1), U+0000 in text is U+FFFD, attribute names are in lower case (C2-H-195 row 14), and the elements the parser opens, closes or moves stand where the parser put them. The importer repeats none of this work and reports none of it.
+**C2-M-003** The importer reads the tree the parser builds, not the input text. So character references are decoded, a carriage return and a CR LF pair are one line feed (C2-H-195 row 1), U+0000 in text is U+FFFD, attribute names are in lower case (C2-H-195 row 13), and the elements the parser opens, closes or moves stand where the parser put them. The importer repeats none of this work and reports none of it.
 
 **C2-M-004** A document's children are the children of its `<body>`. The `lang` of `<body>`, or else of `<html>`, is the `lang` of the document node, and the same holds for a `dir` of `ltr`, `rtl` or `auto`. Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`.
 
@@ -552,9 +552,9 @@ The importer gives a `figure_group` around the table; C2-H-199 reads the table w
 | admonition | `aside` | first class `admonition`, second class a kind of C2-H-154 | admonition; `aria-label` and `aria-labelledby` are not kept |
 | admonition-title | `p` | class exactly `admonition-title`, first block of a div or admonition | its title |
 | critic-comment | `span` | first class `critic-comment` | critic_comment |
-| directive | `div` | first class a directive kind: `bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc` | directive (C2-H-195 row 10) |
+| directive | `div` | first class a directive kind: `bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc` | directive (C2-H-195 row 9) |
 | div-label | `p` | class exactly `div-label`, after the title | groupLabel |
-| ext | `span` | first class `ext-NAME` | inline_extension NAME (C2-H-195 row 11) |
+| ext | `span` | first class `ext-NAME` | inline_extension NAME (C2-H-195 row 10) |
 | figure-group | `figure` | first class `carve-figure-group` | figure_group |
 | math | `span` | classes `math inline` or `math display`, text between `\(` and `\)` or `\[` and `\]` | math |
 | mention | `span` | first class `mention`, one `strong` child whose text starts with the sigil | mention |
@@ -1309,7 +1309,7 @@ The importer reads `<wbr>` as a soft break, which renders as a space.
 
 **C2-M-092** The list of C2-M-091 is complete as far as known. A tree fact that it does not name is expected to survive a render without `roundtrip` and an import. A round trip that loses another fact is a defect of this specification or of the engine.
 
-**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`), whose importer keeps raw content as the option `rawHtml` on does. With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 rows 8 and 9, which the harness does not yet apply. With those rows all 434 come back equal after the listed losses.
+**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`), whose importer keeps raw content as the option `rawHtml` on does. With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 row 8 and the declared head count, which was then the tree field `table_body.headRows` and is now a sidecar fact (C2-A-088); the harness applies neither. With those two all 434 come back equal after the listed losses.
 
 Example 40 (verified)
 

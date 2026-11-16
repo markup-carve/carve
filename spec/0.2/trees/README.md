@@ -8,6 +8,7 @@ The gate of the tree document (`ast.md`, "The tree gate"). Every file is JSON wi
 | `examples-includes.json` | the expanded tree, with positions, of every example of `includes.md`: `files` holds the files the example names, which the resolver serves under their names and returns as ids (`includes.md`, conventions), `source` the entry document, `options.includes` the include settings the example's flags set, and `tree` the tree, each `pos` local to the file it names |
 | `nodes.json` | supplied trees, without source and positions, for the node types and fields no example tree holds; each names its `clauses` |
 | `refused.json` | trees a reader refuses: `clauses`, `reason`, and `refusedBy`, which is `schema` when `data/ast-schema.json` refuses the tree and `reader` when only a reader check beyond the schema does |
+| `layouts.json` | layout sidecars (`source-layout.md`): each has `clauses`, the `layout`, and `input`, the byte input in hex where it is not a string; a sidecar marked `refused` is one `data/layout-schema.json` refuses, every other must be accepted and its ranges must lie inside the input |
 
 The examples of `import-html.md` have no fixture file: the gate reads the children each example states, wraps them in a document and checks that tree against the schema, with no position.
 
@@ -17,7 +18,7 @@ The examples of `import-html.md` have no fixture file: the gate reads the childr
 npm run spec2:data
 ```
 
-runs `scripts/spec2-trees.mjs --check`. It validates every positive tree against the schema and every tree with a source against the position invariants C2-A-139 to C2-A-159, checks that the example trees and the examples of the chapters match one to one with the same source and that a tree an example states in a `json` fence is the fixture tree without positions or a node of it, that every node type and field of the schema occurs, and that each refused tree is refused as `refusedBy` says. A tree of an include example states only part of the tree (`includes.md`, conventions): it matches when the fixture tree or one of its nodes holds every field the stated tree names.
+runs `scripts/spec2-trees.mjs --check`. It validates every positive tree against the schema and every tree with a source against the position invariants C2-A-139 to C2-A-159, checks that the example trees and the examples of the chapters match one to one with the same source and that a tree an example states in a `json` fence is the fixture tree without positions or a node of it, that every node type and field of the schema occurs, that each refused tree is refused as `refusedBy` says, that the trees of blocks Examples 267 and 268 are equal (C2-L-023), and that each sidecar of `layouts.json` is accepted or refused as it says. A tree of an include example states only part of the tree (`includes.md`, conventions): it matches when the fixture tree or one of its nodes holds every field the stated tree names.
 
 ## Adding a tree
 

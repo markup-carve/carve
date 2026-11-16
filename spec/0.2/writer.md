@@ -203,7 +203,7 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A table whose body carries `headRows` is written as a delimited table with its `header-rows` attribute, the only form that declares the field (C2-A-088). A table whose rows all stand in its head has no body to carry the field; written as a delimited table it takes `header-rows` with the number of its head rows (C2-B-221). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A delimited table is written with a `header-rows` attribute, whose value is the number of rows of its head, 0 for a table with no head, where the head is not exactly the first row, the default of the form (C2-B-209), and where the sidecar records `headerRows` with that number (C2-L-057). A pipe table never takes the attribute: its header cells make its head (C2-A-087). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035). A node in a pipe table cell whose value holds a line feed, which only a supplied tree gives, has no spelling there: the writer writes a space in place of each line feed and reports `field-unspellable` (C2-W-117). A delimited table writes a cell that holds a line break in double quotes (C2-W-066).
 
@@ -254,7 +254,7 @@ Written:
 + |
 ```
 
-**C2-W-136** A key `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from `headRows` (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
+**C2-W-136** A key `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
 
 ## Canonical forms: inline
 
@@ -306,7 +306,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 ## The sidecar
 
-**C2-W-083** The writer takes five spellings from the sidecar when the fact is present and the tree allows the form (C2-L-042):
+**C2-W-083** The writer takes six spellings from the sidecar when the fact is present and the tree allows the form (C2-L-042):
 
 | Spelling | Fact | With the fact | Without |
 |---|---|---|---|
@@ -314,6 +314,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 | quote form | `fenced` | `>` lines or quote fence | `>` lines |
 | hard-break block | `hardBreakOpener` | opener or class form | opener when every break is hard and the class is last, else class form |
 | table form | `sourceFormat` | pipe or delimited | pipe; delimited when the table has no rows |
+| declared head count | `headerRows` | `header-rows` on a delimited table, also where it equals the default | `header-rows` only where the head is not the first row |
 | continuation rows | `continuationLines`, `wraps` | rows broken at the recorded places | one line per row |
 
 **C2-W-084** The writer also takes `rawRef` (C2-W-075).

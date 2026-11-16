@@ -221,7 +221,6 @@ This section is non-normative. Bridges can use these marker attributes when anot
 | Marker | Carve tree field | Value form |
 | --- | --- | --- |
 | `carve-columns` | `table.columns` | JSON array of column nodes |
-| `carve-head-rows` | `table_body.headRows` | decimal integer, including `0` |
 | `carve-comment` | `comment.form`, `comment.value` | JSON object |
 | `carve-critic-comment` | `critic_comment.value` | string |
 | `carve-tree` | definition nodes in `document.children` | JSON array of nodes |

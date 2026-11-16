@@ -1404,7 +1404,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-118** `data-task-state`, `data-delim` and the `task-list` class are not carriers. Every render writes them (C2-H-031 to C2-H-033).
 
-**C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
+**C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form, the declared head count of a delimited table and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023, C2-L-057) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
 **C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
 
@@ -1720,14 +1720,13 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 6 | the spacing of a loose list whose items start with no paragraph | `- > q⏎⏎- > r` | `- > q⏎- > r`: a tight list, since no item writes a `<p>` of its own (C2-H-034) |
 | 7 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
 | 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone |
-| 9 | a declared head count, `table_body.headRows` (C2-A-088) | ```` {table header-rows=2}⏎```csv⏎a⏎b⏎c⏎``` ```` | `\|= a \|⏎\|= b \|⏎\| c \|`: a pipe table whose first two rows are header rows; the count is gone |
-| 10 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
-| 11 | a span with the class `ext-NAME` | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
-| 12 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
-| 13 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
-| 14 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
-| 15 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
-| 16 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
+| 9 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
+| 10 | a span with the class `ext-NAME` | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
+| 11 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
+| 12 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
+| 13 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
+| 14 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
+| 15 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 

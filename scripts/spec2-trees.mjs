@@ -424,6 +424,31 @@ for (const example of importExamples()) {
   imported++
 }
 
+// C2-L-023: example pairs whose trees are equal under C2-A-162 (positions and srcByteLength skipped).
+const EQUAL_TREES = [['syntax-blocks-267', 'syntax-blocks-268']]
+const exampleTrees = new Map(CHAPTERS.flatMap(chapter => existsSync(join(dir, exampleFile(chapter))) ? read(exampleFile(chapter)).trees : []).map(entry => [entry.id, entry.tree]))
+const forEquality = (tree) => { const plain = withoutPositions(tree); delete plain.srcByteLength; return plain }
+for (const [a, b] of EQUAL_TREES) {
+  if (!exampleTrees.has(a) || !exampleTrees.has(b)) fail(`equal trees: ${a} or ${b} has no tree`)
+  else if (!sameJson(forEquality(exampleTrees.get(a)), forEquality(exampleTrees.get(b)))) fail(`equal trees: ${a} and ${b} differ (C2-L-023)`)
+}
+
+// layouts.json: sidecars the layout schema accepts or refuses, and the range invariants of C2-L-012 and C2-L-056.
+const layoutSchema = JSON.parse(readFileSync(join(spec, 'data/layout-schema.json'), 'utf8'))
+const validateLayout = new Ajv2020({ strict: true, allErrors: false }).compile(layoutSchema)
+const layouts = existsSync(join(dir, 'layouts.json')) ? read('layouts.json') : (fail('layouts.json: missing'), { layouts: [] })
+for (const entry of layouts.layouts) {
+  const label = `layouts.json ${entry.id}`
+  if (!entry.clauses?.length) fail(`${label}: needs clauses`)
+  const accepted = validateLayout(entry.layout)
+  if (entry.refused) { if (accepted) fail(`${label}: the layout schema accepts it, but the fixture says it is refused`); continue }
+  if (!accepted) { fail(`${label}: the layout schema refuses it at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`); continue }
+  const bytes = entry.layout.encoding === 'base64' ? Buffer.from(entry.layout.source, 'base64') : Buffer.from(entry.layout.source, 'utf8')
+  if (entry.layout.encoding === 'base64' && Buffer.from(bytes.toString('utf8'), 'utf8').equals(bytes)) fail(`${label}: base64 holds well-formed UTF-8, which C2-L-056 writes as utf-8`)
+  if (entry.input !== undefined && !Buffer.from(entry.input.replaceAll(' ', ''), 'hex').equals(bytes)) fail(`${label}: source is not the input bytes`)
+  for (const node of entry.layout.nodes) if (node.startByte > node.endByte || node.endByte > bytes.length) fail(`${label}: ${node.path} has a range outside the input (C2-L-012)`)
+}
+
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])
 for (const entry of nodes) { checkPositive(entry, 'nodes.json'); positive++ }
 
@@ -452,4 +477,4 @@ if (failures.length) {
   console.error(`spec 0.2 trees: ${failures.length} failures\n  ${failures.slice(0, 400).join('\n  ')}`)
   process.exit(1)
 }
-console.log(`spec 0.2 trees: ${positive} positive trees and ${imported} imported trees (${NODE_TYPES.size} node types, ${seenFields.size} fields), ${refused.length} refused trees`)
+console.log(`spec 0.2 trees: ${positive} positive trees and ${imported} imported trees (${NODE_TYPES.size} node types, ${seenFields.size} fields), ${refused.length} refused trees, ${layouts.layouts.length} layouts, ${EQUAL_TREES.length} equal pair`)

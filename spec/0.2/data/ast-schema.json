@@ -15696,10 +15696,6 @@
             ]
           }
         },
-        "headRows": {
-          "type": "integer",
-          "minimum": 0
-        },
         "rowHeadColumns": {
           "type": "integer",
           "minimum": 0
