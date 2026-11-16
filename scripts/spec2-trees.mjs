@@ -8,6 +8,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
+import { examplesOf as extractExamples } from './lib/spec2-examples.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = join(root, 'spec/0.2')
@@ -18,57 +19,20 @@ const COMMON = new Set(['type', 'attrs', 'data', 'pos', 'segments', 'metadata', 
 const failures = []
 const fail = (message) => failures.push(message)
 
-const HEADER = /^Example (\d+) \((?:generated|unverified)([^)]*)\)\s*$/
-const FENCE = /^(`{3,}|~{3,})(\w*)\s*$/
+// The examples come from the one extractor that the conformance corpus also reads.
+const examples = (document) => extractExamples(spec, document)
 
-/** The examples of a chapter that have a Carve input, with the parse options their flags set. */
+/** The examples of a chapter that have a Carve input, with the parse options their flags set and the tree they state. */
 function examplesOf(chapter) {
-  const lines = readFileSync(join(spec, `${chapter}.md`), 'utf8').split('\n')
-  const out = []
-  for (let at = 0; at < lines.length; at++) {
-    const header = HEADER.exec(lines[at])
-    if (!header) continue
-    let line = at + 1
-    while (line < lines.length && !HEADER.test(lines[line]) && !FENCE.test(lines[line])) line++
-    const open = FENCE.exec(lines[line] ?? '')
-    if (!open || open[2] !== 'carve') continue
-    let end = line + 1
-    while (end < lines.length && lines[end] !== open[1]) end++
+  return examples(chapter).filter(example => example.fences[0]?.lang === 'carve').map(example => {
     const options = {}
-    const ids = /--heading-ids (\w+)/.exec(header[2])
+    const ids = example.flags.map(flag => /^--heading-ids (\w+)$/.exec(flag)).find(Boolean)
     if (ids) options.headingIds = ids[1]
-    // The tree an example states, the first json fence before the next example, clause or heading.
-    let json = end + 1
-    while (json < lines.length && !HEADER.test(lines[json]) && !/^(\*\*|#)/.test(lines[json]) && lines[json] !== '```json') json++
-    let stated
-    if (lines[json] === '```json') {
-      let close = json + 1
-      while (close < lines.length && lines[close] !== '```') close++
-      stated = JSON.parse(lines.slice(json + 1, close).join('\n'))
-    }
-    out.push({ id: `${chapter}-${header[1]}`, source: lines.slice(line + 1, end).join('\n'), options, stated })
-  }
-  return out
+    const json = example.fences.find(fence => fence.lang === 'json')
+    return { id: `${chapter}-${example.number}`, source: example.fences[0].body, options, stated: json ? JSON.parse(json.body) : undefined }
+  })
 }
 
-/** The fence that starts at `line`, its language and its body, and the line after its closer. */
-function fenceAt(lines, line) {
-  const open = FENCE.exec(lines[line] ?? '')
-  if (!open) return null
-  let end = line + 1
-  while (end < lines.length && lines[end] !== open[1]) end++
-  return { lang: open[2], body: lines.slice(line + 1, end).join('\n'), next: end + 1 }
-}
-
-const ANY_HEADER = /^Example (\d+) \((?:generated|unverified|verified)([^)]*)\)\s*$/
-const flagsOf = (text) => text.split(',').map(flag => flag.replaceAll('`', '').trim()).filter(Boolean)
-// The end of an example: the next example, clause or heading.
-const endsExample = (line) => ANY_HEADER.test(line) || /^(\*\*|#)/.test(line)
-
-// includes.md, conventions: the resolver of an example serves the files of its `File` lines under
-// their names and returns each name as its id. A file is the body of its fence and a final line feed.
-const FILE_LINE = /^File `([^`]+)`:\s*$/
-const FILE_BYTES = /^File `([^`]+)` holds the (?:\w+ )?bytes `([0-9A-F]{2}(?: [0-9A-F]{2})*)`/
 // The flags of an include example that change its tree; `null` for those that change only the render.
 const INCLUDE_FLAGS = new Map([
   ['with the depth limit lowered to 1', { depth: 1 }],
@@ -78,78 +42,48 @@ const INCLUDE_FLAGS = new Map([
 
 /** The examples of includes.md: the files, the entry source, the include settings and the stated tree. */
 function includeExamples() {
-  const lines = readFileSync(join(spec, 'includes.md'), 'utf8').split('\n')
   const out = []
-  for (let at = 0; at < lines.length; at++) {
-    const header = ANY_HEADER.exec(lines[at])
-    if (!header) continue
-    const id = `includes-${header[1]}`
-    const files = {}
+  for (const example of examples('includes')) {
+    const id = `includes-${example.number}`
     const includes = {}
-    for (const flag of flagsOf(header[2])) {
-      if (!INCLUDE_FLAGS.has(flag)) fail(`includes.md Example ${header[1]}: unknown flag "${flag}"`)
+    for (const flag of example.flags) {
+      if (!INCLUDE_FLAGS.has(flag)) fail(`includes.md Example ${example.number}: unknown flag "${flag}"`)
       else Object.assign(includes, INCLUDE_FLAGS.get(flag))
     }
-    let source
-    let stated
-    let line = at + 1
-    while (line < lines.length && !endsExample(lines[line])) {
-      const named = FILE_LINE.exec(lines[line])
-      const bytes = FILE_BYTES.exec(lines[line])
-      if (named) {
-        let fence = line + 1
-        while (fence < lines.length && !FENCE.test(lines[fence])) fence++
-        const block = fenceAt(lines, fence)
-        files[named[1]] = `${block.body}\n`
-        line = block.next
-        continue
-      }
-      if (bytes) {
-        const buffer = Buffer.from(bytes[2].replaceAll(' ', ''), 'hex')
-        const text = buffer.toString('utf8')
-        if (!Buffer.from(text, 'utf8').equals(buffer)) fail(`includes.md Example ${header[1]}: the bytes of ${bytes[1]} are not UTF-8`)
-        files[bytes[1]] = text
-      }
-      const block = fenceAt(lines, line)
-      if (block) {
-        if (block.lang === 'carve' && source === undefined) source = block.body
-        else if (block.lang === 'json' && stated === undefined) stated = JSON.parse(block.body)
-        line = block.next
-        continue
-      }
-      line++
+    // includes.md, conventions: the resolver serves the files of the example under their names; a file is the
+    // body of its fence and a final line feed, or the bytes its line names.
+    const files = {}
+    for (const [name, file] of Object.entries(example.files)) {
+      if (file.text !== undefined) { files[name] = file.text; continue }
+      const buffer = Buffer.from(file.bytes.replaceAll(' ', ''), 'hex')
+      const text = buffer.toString('utf8')
+      if (!Buffer.from(text, 'utf8').equals(buffer)) fail(`includes.md Example ${example.number}: the bytes of ${name} are not UTF-8`)
+      files[name] = text
     }
-    if (source === undefined) { fail(`includes.md Example ${header[1]}: no Carve input`); continue }
-    out.push({ id, files, source, options: Object.keys(includes).length ? { includes } : undefined, stated })
+    const source = example.fences.find(fence => fence.lang === 'carve')?.body
+    const json = example.fences.find(fence => fence.lang === 'json')
+    if (source === undefined) { fail(`includes.md Example ${example.number}: no Carve input`); continue }
+    out.push({ id, files, source, options: Object.keys(includes).length ? { includes } : undefined, stated: json ? JSON.parse(json.body) : undefined })
   }
   return out
 }
 
 /** The examples of import-html.md: the HTML input, the import flags and the stated children of the document. */
 function importExamples() {
-  const lines = readFileSync(join(spec, 'import-html.md'), 'utf8').split('\n')
   const out = []
-  for (let at = 0; at < lines.length; at++) {
-    const header = ANY_HEADER.exec(lines[at])
-    if (!header) continue
-    const label = `import-html.md Example ${header[1]}`
+  for (const example of examples('import-html')) {
+    const label = `import-html.md Example ${example.number}`
     const options = {}
-    for (const flag of flagsOf(header[2])) {
+    for (const flag of example.flags) {
       if (flag === 'import option rawHtml on') options.rawHtml = true
       else fail(`${label}: unknown flag "${flag}"`)
     }
-    const blocks = []
-    let line = at + 1
-    while (line < lines.length && !endsExample(lines[line])) {
-      const block = fenceAt(lines, line)
-      if (block) { blocks.push(block); line = block.next } else line++
-    }
-    const [html, json, carve] = blocks
-    if (blocks.length !== 3 || html.lang !== 'html' || json.lang !== 'json' || carve.lang !== 'carve') {
+    const [html, json, carve] = example.fences
+    if (example.fences.length !== 3 || html.lang !== 'html' || json.lang !== 'json' || carve.lang !== 'carve') {
       fail(`${label}: needs an html, a json and a carve fence, in that order`)
       continue
     }
-    out.push({ id: `import-html-${header[1]}`, html: html.body, options, children: JSON.parse(json.body) })
+    out.push({ id: `import-html-${example.number}`, html: html.body, options, children: JSON.parse(json.body) })
   }
   return out
 }

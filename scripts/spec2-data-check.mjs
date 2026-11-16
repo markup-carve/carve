@@ -196,6 +196,9 @@ else {
   // The tree gate of ast.md: the fixtures of spec/0.2/trees.
   try { counts.push(execFileSync('node', [join(root, 'scripts/spec2-trees.mjs'), '--check'], { cwd: root, stdio: 'pipe' }).toString().trim()) }
   catch (error) { fail(`trees: ${(error.stderr ?? '').toString().trim() || error.message}`) }
+  // The shared conformance corpus of spec/0.2/conformance: stale or invalid fails.
+  try { counts.push(execFileSync('node', [join(root, 'scripts/spec2-conformance.mjs'), '--check'], { cwd: root, stdio: 'pipe' }).toString().trim()) }
+  catch (error) { fail(`conformance: ${(error.stderr ?? '').toString().trim() || error.message}`) }
 }
 
 // Names that one file takes from another.
@@ -314,7 +317,7 @@ const texts = Object.fromEntries(Object.keys(DOCUMENTS).map(name => [name, readD
 // Every clause id cited anywhere exists, except one that a counts section names as deleted.
 const cites = { ...Object.fromEntries(Object.entries(texts).map(([name, text]) => [`${name}.md`, text])) }
 for (const name of ['UPGRADING.md', 'README.md', 'data/README.md', 'trees/README.md']) cites[name] = readFileSync(join(root, 'spec/0.2', name), 'utf8')
-for (const dir of ['data', 'data/schemas', 'trees']) {
+for (const dir of ['data', 'data/schemas', 'trees', 'conformance']) {
   for (const name of execFileSync('git', ['ls-files', `spec/0.2/${dir}/*.json`], { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean)) {
     if (dirname(name) === `spec/0.2/${dir}`) cites[name.slice('spec/0.2/'.length)] = readFileSync(join(root, name), 'utf8')
   }

@@ -10,6 +10,8 @@ on:
       - 'scripts/spec2-data-check.mjs'
       - 'scripts/spec2-trees.mjs'
       - 'scripts/spec2-unicode.mjs'
+      - 'scripts/spec2-conformance.mjs'
+      - 'scripts/lib/spec2-examples.mjs'
       - '.github/workflows/spec2-data.yml'
   pull_request:
     branches: [next2]
@@ -18,6 +20,8 @@ on:
       - 'scripts/spec2-data-check.mjs'
       - 'scripts/spec2-trees.mjs'
       - 'scripts/spec2-unicode.mjs'
+      - 'scripts/spec2-conformance.mjs'
+      - 'scripts/lib/spec2-examples.mjs'
       - '.github/workflows/spec2-data.yml'
 
 permissions:

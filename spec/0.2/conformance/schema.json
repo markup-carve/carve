@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/spec/0.2/conformance/schema.json",
+  "title": "Carve 0.2 conformance corpus",
+  "description": "One schema for the three files of spec/0.2/conformance: examples.json, clause-cases.json and refused-trees.json. See README.md.",
+  "type": "object",
+  "required": ["$schema", "kind", "description"],
+  "properties": {
+    "$schema": { "const": "./schema.json" },
+    "kind": { "enum": ["examples", "clause-cases", "refused-trees"] },
+    "description": { "type": "string" },
+    "examples": { "type": "array", "items": { "$ref": "#/$defs/example" } },
+    "cases": { "type": "array", "items": { "$ref": "#/$defs/clauseCase" } },
+    "trees": { "type": "array", "items": { "$ref": "#/$defs/refusedTree" } }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    { "if": { "properties": { "kind": { "const": "examples" } } }, "then": { "required": ["examples"], "properties": { "examples": true } } },
+    { "if": { "properties": { "kind": { "const": "clause-cases" } } }, "then": { "required": ["cases"], "properties": { "cases": true } } },
+    { "if": { "properties": { "kind": { "const": "refused-trees" } } }, "then": { "required": ["trees"], "properties": { "trees": true } } }
+  ],
+  "$defs": {
+    "clauseId": { "type": "string", "pattern": "^C2-[ABHILMNWX]-[0-9]{3}$" },
+    "clauses": { "type": "array", "items": { "$ref": "#/$defs/clauseId" } },
+    "options": {
+      "type": "object",
+      "description": "Parse, render, format and import options by the names of data/options.json.",
+      "propertyNames": { "enum": ["alignTables", "headingIds", "includes", "profile", "rawHtml", "roundtrip", "social", "sourceLines", "urlPolicy"] }
+    },
+    "file": {
+      "type": "object",
+      "description": "A file the resolver serves: its text, or its bytes in hex where they are not text.",
+      "oneOf": [
+        { "required": ["text"], "properties": { "text": { "type": "string" } }, "additionalProperties": false },
+        { "required": ["bytes"], "properties": { "bytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$" } }, "additionalProperties": false }
+      ]
+    },
+    "diagnostics": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9/-]+$" } },
+    "example": {
+      "type": "object",
+      "required": ["id", "document", "number", "section", "clauses", "kind", "options", "expected", "status", "reason"],
+      "properties": {
+        "id": { "type": "string" },
+        "document": { "enum": ["syntax-blocks.md", "syntax-inline.md", "ast.md", "html.md", "writer.md", "source-layout.md", "includes.md", "extensions.md", "import-html.md"] },
+        "number": { "type": "integer", "minimum": 1 },
+        "section": { "type": "string" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "kind": { "enum": ["render", "write", "include", "import"] },
+        "input": { "type": "string" },
+        "html": { "type": "string" },
+        "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" } },
+        "options": { "$ref": "#/$defs/options" },
+        "expected": {
+          "type": "object",
+          "properties": {
+            "html": { "type": "string" },
+            "tree": { "type": "object" },
+            "children": { "type": "array" },
+            "carve": { "type": "string" },
+            "diagnostics": { "$ref": "#/$defs/diagnostics" }
+          },
+          "additionalProperties": false
+        },
+        "status": { "enum": ["verified", "unverified"] },
+        "reason": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "clauseCase": {
+      "type": "object",
+      "required": ["id", "clauses", "why", "input", "options", "expected", "from"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^CC-[0-9]{3}$" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "why": { "type": "string", "description": "The deciding sentence, quoted from the first clause it names: CLAUSE-ID, a colon, a space, the sentence; ' ... ' joins two pieces." },
+        "summary": { "type": "string" },
+        "input": { "type": "string" },
+        "options": { "$ref": "#/$defs/options" },
+        "expected": {
+          "type": "object",
+          "required": ["html", "children"],
+          "properties": {
+            "html": { "type": "string" },
+            "children": { "type": "array" }
+          },
+          "additionalProperties": false
+        },
+        "from": { "type": "array", "items": { "type": "string", "pattern": "^(js|php|rs):.+$" } },
+        "corrected": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "refusedTree": {
+      "type": "object",
+      "required": ["id", "clauses", "reason", "refusedBy", "tree"],
+      "properties": {
+        "id": { "type": "string" },
+        "clauses": { "$ref": "#/$defs/clauses" },
+        "reason": { "type": "string" },
+        "refusedBy": { "enum": ["schema", "reader"] },
+        "tree": { "type": "object" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
