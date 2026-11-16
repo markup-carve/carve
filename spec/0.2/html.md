@@ -1610,7 +1610,23 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a comment gives no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+
+Under `minimal` the editorial comment gives no text, and the math span, which the source leaves unclosed, is written as the writer spells the node, with its closing backtick (C2-H-165).
+
+Example 48 (unverified, `--profile minimal`)
+
+::: compare
+
+```carve
+a {#c#} b $`m
+```
+
+```html
+<p>a  b $`m`</p>
+```
+
+:::
 
 No built-in profile keeps some footnote references and degrades others: `full` and `article` keep every `footnote_ref` and `inline_footnote`, and `comment` and `minimal` keep none, so the note numbers have no gap under any of them.
 
@@ -1694,7 +1710,7 @@ Example 39 (unverified, `--profile comment`)
 
 :::
 
-Inside a degraded figure and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its source text (C2-H-165).
+Inside a degraded figure and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its spelling (C2-H-165).
 
 Example 41 (unverified, `--profile minimal`)
 
