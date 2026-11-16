@@ -2266,7 +2266,7 @@ Example 89 (generated)
 
 **Exception C2-B-096** A caption takes no attribute line.
 
-**Exception C2-B-097** An attribute line that its container does not own closes that container like any other line, and two lists with an attribute line between them are not adjacent (C2-B-053).
+**C2-B-097** An attribute line is a line like any other for ownership, so one that its container does not own closes that container (C2-B-026). It is neither a blank line nor a comment-only line, so two lists with an attribute line between them are not one list (C2-B-053).
 
 **C2-B-098** The order inside a brace block is fixed in the tree and the output: the id, then the classes, then the language, then the keys, classes and keys each as written.
 
@@ -4170,7 +4170,7 @@ Example 172 (generated)
 
 **C2-B-153** Everything after that space is inline content: trailing marker characters and a brace block are heading text.
 
-**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). Such a continuation line is read like a lazy line of a paragraph, so every interrupter of a paragraph interrupts a heading too (C2-B-014 to C2-B-020, C2-B-200): a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. A blank line ends the heading. The column is counted behind the marks of every open container (C2-B-003), so a continuation line carries all of them: a line that lacks the mark of an open quote does not continue a heading, it closes that quote, and below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
+**C2-B-154** A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break, or by a hard break where the line above ends in a backslash (C2-I-102). A continuation line is a lazy line of the heading as of a paragraph (C2-B-012), so it ends where a paragraph ends (C2-B-013): at a blank line and at every interrupter (C2-B-014 to C2-B-020, C2-B-200), which are a fence line, a table row and a thematic break anywhere, and inside an item a list marker that is indented past the item's marker. Ownership comes first, as for every line (C2-B-025, C2-B-026), and the column is counted behind the marks of the open quotes (C2-B-003): a line that lacks the mark of an open quote closes that quote, so below `> > # H` the line `>   cont` is a paragraph of the outer quote. A line that is not indented past the marker starts a new block, a comment-only line included: it closes the heading and its comment belongs to the container (C2-B-138). So text directly below a heading is a paragraph and two headings need no blank line between them. In 0.1 a heading was one line and an indented line below it was a paragraph.
 
 Example 226 (unverified)
 
@@ -4322,7 +4322,7 @@ Example 179 (generated)
 
 **C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1. C2-B-201 to C2-B-206 state it.
 
-**C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197). Comment-only lines below that line do not count (C2-B-137), for a block image as for a math block (C2-B-158).
+**C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197). A comment-only line is not a line of the paragraph (C2-B-137, C2-B-138), so comment-only lines below that line leave it one line, for a block image as for a math block (C2-B-158).
 
 **C2-B-158** A paragraph that closes as exactly one display math line (C2-B-198) is a math block, a fact set at close like the promotion of a block image.
 
@@ -5598,7 +5598,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 4 |
 | Definitions | 9 | 0 | 7 | 4 |
-| Attribute lines | 21 | 2 | 12 | 11 |
+| Attribute lines | 21 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 5 | 4 |
 | Sigil divs | 11 | 0 | 11 | 1 |
@@ -5611,9 +5611,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 2 | 20 | 7 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **15** | **170** | **74** |
+| **Total** | **229** | **14** | **170** | **74** |
 
-The chapter has 229 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
