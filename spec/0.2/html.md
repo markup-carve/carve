@@ -2086,15 +2086,15 @@ One point is open.
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 1 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
-| Footnotes | 8 | 0 | 1 | 1 |
-| Cross-references and abbreviations | 6 | 1 | 1 | 0 |
+| Footnotes | 8 | 0 | 1 | 2 |
+| Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 7 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 6 |
+| Options | 24 | 0 | 3 | 7 |
 | The option list | 1 | 0 | 0 | 0 |
-| Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **29** |
+| Later clauses | 4 | 0 | 0 | 0 |
+| **Total** | **198** | **7** | **25** | **31** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 54 examples, 25 generated and 29 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 56 examples, 25 generated and 31 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

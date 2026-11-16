@@ -792,11 +792,13 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 ## Counts
 
-| Section | Clauses |
-| --- | ---: |
-| Existing AST contract | 189 |
-| Later clauses and standard data namespaces | 27 |
-| **Total** | **216** |
+| Section | Clauses | Exceptions |
+| --- | ---: | ---: |
+| Existing AST contract | 177 | 2 |
+| Later clauses and standard data namespaces | 36 | 1 |
+| **Total** | **213** | **3** |
+
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-083, C2-A-085 and C2-A-090 are deleted.
 
 ## Schema changes owed
 

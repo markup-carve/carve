@@ -904,14 +904,14 @@ One point is open.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 27 | 4 | 0 | 0 |
-| Canonical forms: blocks | 27 | 0 | 0 | 0 |
-| Canonical forms: tables | 12 | 0 | 1 | 0 |
-| Canonical forms: inline | 16 | 1 | 0 | 0 |
+| Layout | 25 | 4 | 0 | 0 |
+| Canonical forms: blocks | 27 | 0 | 0 | 1 |
+| Canonical forms: tables | 12 | 0 | 1 | 1 |
+| Canonical forms: inline | 15 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **137** | **7** | **5** | **3** |
+| **Total** | **136** | **7** | **5** | **6** |
 
-The document has 137 clauses, 7 of them marked with the word "Exception", and 8 examples, 5 generated and 3 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 11 examples, 5 generated and 6 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

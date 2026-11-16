@@ -2344,7 +2344,7 @@ There is no fixed budget for the inline chapter.
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 10 | 0 | 3 | 3 |
+| Preliminaries | 10 | 0 | 3 | 4 |
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 0 | 3 | 1 |
 | Math spans | 1 | 0 | 1 | 1 |
@@ -2367,9 +2367,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **118** | **17** | **67** | **53** |
+| **Total** | **118** | **17** | **67** | **54** |
 
-The chapter has 118 clauses, 17 of them exceptions, and 120 examples. The clause count includes the exceptions.
+The chapter has 118 clauses, 17 of them exceptions, and 121 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

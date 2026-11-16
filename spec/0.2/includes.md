@@ -1228,7 +1228,7 @@ I13 and I14 were unassigned in 0.1.
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
 | Expansion | 9 | 0 | 6 |
-| Selection, transforms and mode | 29 | 0 | 11 |
+| Selection, transforms and mode | 29 | 0 | 13 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
 | Attributes and captions | 4 | 2 | 2 |
@@ -1236,6 +1236,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **31** |
+| **Total** | **88** | **2** | **33** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 31 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 33 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
