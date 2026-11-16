@@ -8656,7 +8656,7 @@
     },
     "include": {
       "type": "object",
-      "description": "include: C2-A-050, C2-A-181, C2-N-017, C2-N-073",
+      "description": "include: C2-A-050, C2-A-181, C2-N-017, C2-N-073; children need file, C2-N-017",
       "properties": {
         "type": {
           "const": "include"
@@ -8968,7 +8968,8 @@
         "type",
         "path"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependentRequired": { "children": ["file"] }
     },
     "inline_extension": {
       "type": "object",
@@ -12296,7 +12297,7 @@
     },
     "paragraph": {
       "type": "object",
-      "description": "paragraph: C2-A-050; a caption needs a role, C2-A-082",
+      "description": "paragraph: C2-A-050; a caption needs a role, C2-A-082; a role needs its children, C2-A-136, C2-A-184",
       "properties": {
         "type": {
           "const": "paragraph"
@@ -12578,7 +12579,13 @@
         "children"
       ],
       "additionalProperties": false,
-      "dependentRequired": { "caption": ["role"] }
+      "dependentRequired": { "caption": ["role"] },
+      "allOf": [
+        { "if": { "type": "object", "properties": { "role": { "const": "image" } }, "required": ["role"] },
+          "then": { "type": "object", "properties": { "children": { "type": "array", "contains": { "$ref": "#/$defs/image" }, "minContains": 1, "maxContains": 1, "items": { "oneOf": [{ "$ref": "#/$defs/image" }, { "$ref": "#/$defs/soft_break" }, { "$ref": "#/$defs/comment" }] } } } } },
+        { "if": { "type": "object", "properties": { "role": { "const": "math" } }, "required": ["role"] },
+          "then": { "type": "object", "properties": { "children": { "type": "array", "contains": { "allOf": [{ "$ref": "#/$defs/math" }, { "type": "object", "properties": { "display": { "const": true } }, "required": ["display"] }] }, "minContains": 1, "maxContains": 1, "items": { "oneOf": [{ "allOf": [{ "$ref": "#/$defs/math" }, { "type": "object", "properties": { "display": { "const": true } }, "required": ["display"] }] }, { "$ref": "#/$defs/soft_break" }, { "$ref": "#/$defs/comment" }] } } } } }
+      ]
     },
     "raw_block": {
       "type": "object",
@@ -16127,7 +16134,7 @@
     },
     "table_column": {
       "type": "object",
-      "description": "table_column: C2-A-050, C2-A-089, C2-A-090",
+      "description": "table_column: C2-A-050, C2-A-089",
       "properties": {
         "type": {
           "const": "table_column"
@@ -16159,9 +16166,6 @@
             "center"
           ],
           "$comment": "resolution result"
-        },
-        "authored": {
-          "const": true
         },
         "attrs": {
           "type": "object",

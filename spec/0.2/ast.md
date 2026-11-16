@@ -67,13 +67,13 @@ Conventions:
 }
 ```
 
-**C2-A-014** `astVersion` is `major.minor` and versions this contract, not the language. A leading zero is refused.
+**C2-A-014** `astVersion` is `major.minor` and versions this contract, not the language. A leading zero is refused. Until the 0.2.0 release, contract 2.0 may still change; the rules of this section on what a version may change apply from that release on.
 
-**C2-A-015** A major version may remove, rename or reinterpret a field or a node type.
+**C2-A-015** A major version may remove, rename or reinterpret a field or a node type. Every major version ships a migration function from the previous major version (C2-A-176).
 
-**C2-A-016** A minor version adds only three things: optional declared extensions, extension nodes with a fallback, and namespaced `data`. It adds no core field and no core node type.
+**C2-A-016** A minor version adds only three things: optional declared extensions, extension nodes with a fallback, and namespaced `data`. It adds no core field and no core node type. A new construct therefore enters as an extension node with a fallback, and is promoted to a core node at the next major version.
 
-**C2-A-017** An extension declaration has a qualified `name`, a boolean `required`, a nonempty `version` and `slots`, an ordered list of distinct slot names. A reader matches the version as an exact string under C2-X-003. If both the root and envelope declare one name, their version, required flag and ordered slots agree.
+**C2-A-017** An extension declaration has a qualified `name`, a boolean `required`, a nonempty `version` and `slots`, an ordered list of distinct slot names. The names in one list of declarations are distinct, and a reader refuses a list that holds one name twice. A reader matches the version as an exact string under C2-X-003. If both the root and envelope declare one name, their version, required flag and ordered slots agree.
 
 **C2-A-018** A reader refuses a higher major version, an unknown required extension, an unknown core field, an unknown core node type and an extension node without a valid fallback.
 
@@ -91,7 +91,7 @@ Conventions:
 
 **C2-A-024** Named child slots are `caption`, `short`, `prefix`, `locator.children`, `suffix`, `pairs`, `base`, `annotation`, `title`, `longDescription`, `columns`, `fallback`, extension `slots`, and the node-bearing metadata keys of C2-A-030 and C2-A-212. Each slot has its content kind and walk order in `spec/0.2/data/node-slots.json` and, for extensions, the tree declaration.
 
-**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including typed metadata. It visits extension slots in the order of the root or envelope declaration, without a registry. It visits recursive metadata value slots as described by `data/node-slots.json`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011). Caption and equation numbers are assigned when their owner is visited (C2-H-170); footnote numbers and ids follow the slot order.
+**C2-A-025** A walker visits the slots in `spec/0.2/data/node-slots.json` order, including typed metadata. It visits extension slots in the order of the root or envelope declaration, without a registry. It visits recursive metadata value slots as described by `data/node-slots.json`. It never searches opaque `data` or extension `props` for nodes. Resolution visits `title`, then `children`, then `caption` in source order (C2-L-011). Caption and equation numbers are assigned when their owner is visited (C2-H-170), and footnote numbers and ids follow the same order (C2-H-087), so a footnote reference in the title of a div is numbered before one in its children.
 
 **C2-A-026** `spec/0.2/data/node-slots.json` is generated from `spec/0.2/data/ast-schema.json` and `data/extensions.json`. It names every node-bearing child slot and its walk order.
 
@@ -113,7 +113,7 @@ Conventions:
 
 **C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-099, C2-B-104).
 
-**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). Names are the same when they agree without regard to ASCII letter case, within one block as across merged blocks. A key occurs once in `keyValues`, at the place and in the spelling where it was first written, with the value written last.
+**C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). Names are the same when they agree without regard to ASCII letter case, within one block as across merged blocks. A key occurs once in `keyValues`, at the place and in the spelling where it was first written, with the value written last. A reader refuses a supplied `keyValues` that holds two keys of one name.
 
 **C2-A-036** A reader never looks for nodes inside `keyValues`: `{type=widget}` is an ordinary attribute.
 
@@ -228,7 +228,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `table` | block | table groups, `comment` | `columns`, `caption`? |
 | `table_body` | `table` | `table_row`, `comment` | `headRows`?, `rowHeadColumns`? |
 | `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`?, `scope`?, `headerIds`? |
-| `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`?, `authored`? |
+| `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`? |
 | `table_foot` | `table` | `table_row`, `comment` | none |
 | `table_head` | `table` | `table_row`, `comment` | none |
 | `table_row` | table group | `table_cell` | none |
@@ -370,9 +370,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** A `table_body` whose partition the source declared carries `headRows`, the effective count (C2-B-221), also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
-**C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign`, `width` and `authored` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
-
-**C2-A-090** `table_column.authored` is `true` on a column the source spelled, which is one that `aligns` or `widths` gives a value, and absent on one the producer inferred. It is a tree fact and takes part in equality.
+**C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign` and `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks.
 
@@ -382,12 +380,12 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-094** A continuation row leaves no node and no field. Each fragment is read as inline content by itself, and the cell holds the nodes of its fragments in order with one space of ordinary text between two fragments (C2-B-184). Where the row broke is spelling and is in the sidecar.
 
-**C2-A-095** A table has no field for the widths of a separator row, since 0.2 has no such row; no field for the kind of source content of a cell, since `cell_paragraph` says it; and no field for whether it was written as a pipe table or a delimited table, which is spelling.
+**C2-A-095** A table has no field for the widths of a separator row, since 0.2 has no such row; no field for the kind of source content of a cell, since `cell_paragraph` says it; no field for whether it was written as a pipe table or a delimited table, which is spelling; and no field for whether the source spelled a column, which its `align` and `width` say (C2-B-211, C2-B-212).
 
 ```json
 {
   "type": "table",
-  "columns": [{ "type": "table_column", "align": "right", "authored": true }],
+  "columns": [{ "type": "table_column", "align": "right" }],
   "children": [
     {
       "type": "table_body",
@@ -699,7 +697,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-183** A captioned block carries its own `attrs`, `lang` and `dir`, as every block does: the attribute line above it applies to it (C2-B-091). HTML writes them on the `<figure>` it puts around the block (C2-H-063), and a table keeps them on `<table>`.
 
-**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph with a `caption`.
+**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph with a `caption`. A reader refuses `role` on a paragraph of another shape: with `image` the children are one `image`, with `math` one display `math`, each with only soft breaks and comments beside it (C2-A-136).
 
 **C2-A-185** Five facts are set when a block closes: paragraph `role` for image or math, caption attachment, list spacing and table footer rows (C2-B-191). Each is a tree fact used by equality.
 
@@ -716,7 +714,7 @@ These clauses were added after other documents began to cite this one. They stan
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), keys that occur once in `keyValues` (C2-A-035), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 

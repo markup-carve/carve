@@ -1143,6 +1143,41 @@ See [*a*][nope]{.c #i} and [/b/][].
 
 **C2-H-087** Footnotes are numbered from 1 in the order of their first reference in the document. A labeled footnote and an inline footnote share the one sequence. A later reference to the same label reuses its number. References in the body of the document are numbered first, in document order; references that stand inside a note are numbered after them, note by note in the order of the notes' numbers.
 
+A footnote reference in the title of a div is reached before the children of the div, as in the source (C2-A-025).
+
+Example 56 (unverified)
+
+::: compare
+
+```carve
+::: note "[^a]"
+[^b]
+:::
+
+[^a]: A
+[^b]: B
+```
+
+```html
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1"><a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+  <p><a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+</aside>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>A<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>B<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
 **C2-H-088** A footnote reference or inline footnote writes its note mark as `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on. An id the author wrote on a reference replaces the generated one, and the backlink of the note points to it. When a note mark occurs anywhere in the text of a direct or reference link, including inside an inline descendant, nothing is written at its place. The marks are written directly after the closing `</a>` of the outermost rendered link in source order. The footnote and inline footnote nodes stay at their places in the tree, and the backlinks point to the moved marks. An image's alternative text and every other plain text rendering are unchanged. A cross-reference has generated plain text and no inline children that can hold a note mark. A heading's generated id is on its heading or section element, not on an enclosing anchor, so a link inside a heading follows this rule as elsewhere.
 
 **C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
