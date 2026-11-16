@@ -66,7 +66,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-029** A transform gives the same node for the same claimed core node, extension version and configuration.
 
-**C2-X-030** A reader refuses more than 32 nested unqualified inline extension nodes along `children` used as fallback under C2-A-124, or more than 8 MiB of decoded payload on one extension node under C2-A-132.
+**C2-X-030** A reader refuses more than 32 nested unqualified inline extension nodes along `children` used as fallback under C2-A-124, or more than 8 MiB of decoded payload on one extension node under C2-A-132. The nesting bound counts only that path, the `children` of unqualified inline extension nodes: a qualified fallback holds no extension node (C2-X-022, C2-A-126), so it nests none.
 
 **C2-X-031** A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and a qualified extension nesting depth greater than 32 through slots or children.
 
