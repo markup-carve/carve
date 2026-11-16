@@ -37,9 +37,39 @@ function examplesOf(chapter) {
     const options = {}
     const ids = /--heading-ids (\w+)/.exec(header[2])
     if (ids) options.headingIds = ids[1]
-    out.push({ id: `${chapter}-${header[1]}`, source: lines.slice(line + 1, end).join('\n'), options })
+    // The tree an example states, the first json fence before the next example, clause or heading.
+    let json = end + 1
+    while (json < lines.length && !HEADER.test(lines[json]) && !/^(\*\*|#)/.test(lines[json]) && lines[json] !== '```json') json++
+    let stated
+    if (lines[json] === '```json') {
+      let close = json + 1
+      while (close < lines.length && lines[close] !== '```') close++
+      stated = JSON.parse(lines.slice(json + 1, close).join('\n'))
+    }
+    out.push({ id: `${chapter}-${header[1]}`, source: lines.slice(line + 1, end).join('\n'), options, stated })
   }
   return out
+}
+
+const withoutPositions = (value) => Array.isArray(value) ? value.map(withoutPositions)
+  : value !== null && typeof value === 'object'
+    ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'pos' && key !== 'segments').map(([key, item]) => [key, withoutPositions(item)]))
+    : value
+const sameJson = (a, b) => JSON.stringify(sortKeys(a)) === JSON.stringify(sortKeys(b))
+const sortKeys = (value) => Array.isArray(value) ? value.map(sortKeys)
+  : value !== null && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, sortKeys(value[key])])) : value
+
+/** Whether the tree an example states, a node or a list of top-level nodes, is the fixture tree or a node of it. */
+function statesTree(tree, stated) {
+  const plain = withoutPositions(tree)
+  if (Array.isArray(stated)) return sameJson(plain.children, stated)
+  const queue = [plain]
+  while (queue.length) {
+    const node = queue.pop()
+    if (sameJson(node, stated)) return true
+    if (Array.isArray(node.children)) queue.push(...node.children.filter(child => child && typeof child === 'object'))
+  }
+  return false
 }
 
 const schema = JSON.parse(readFileSync(join(spec, 'data/ast-schema.json'), 'utf8'))
@@ -191,6 +221,7 @@ for (const chapter of CHAPTERS) {
     const entry = byId.get(example.id)
     if (!entry) fail(`${file}: no tree for ${example.id}`)
     else if (entry.source !== example.source) fail(`${file} ${example.id}: the source differs from the example in ${chapter}.md`)
+    else if (example.stated !== undefined && !statesTree(entry.tree, example.stated)) fail(`${file} ${example.id}: the tree differs from the one the example states`)
   }
   const ids = new Set(examples.map(example => example.id))
   for (const entry of trees) {

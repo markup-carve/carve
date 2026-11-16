@@ -16,7 +16,7 @@ The examples of `includes.md` have no fixture yet: their trees need a resolver a
 npm run spec2:data
 ```
 
-runs `scripts/spec2-trees.mjs --check`. It validates every positive tree against the schema and every tree with a source against the position invariants C2-A-139 to C2-A-159, checks that the example trees and the examples of the chapters match one to one with the same source, that every node type and field of the schema occurs, and that each refused tree is refused as `refusedBy` says.
+runs `scripts/spec2-trees.mjs --check`. It validates every positive tree against the schema and every tree with a source against the position invariants C2-A-139 to C2-A-159, checks that the example trees and the examples of the chapters match one to one with the same source and that a tree an example states in a `json` fence is the fixture tree without positions or a node of it, that every node type and field of the schema occurs, and that each refused tree is refused as `refusedBy` says.
 
 ## Adding a tree
 

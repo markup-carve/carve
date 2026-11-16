@@ -254,6 +254,52 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
 
+Below an open paragraph an attribute line is a lazy line and waits for nothing, and a comment-only line below it is not seen by block structure (C2-B-137): the paragraph of the item takes both lines, and the comment is its child (C2-B-138).
+
+Example 264 (unverified)
+
+::: compare
+
+```carve
+. a
+{c}
+%%
+```
+
+```html
+<ol>
+  <li>a
+{c}</li>
+</ol>
+```
+
+:::
+
+```json
+{
+  "type": "list",
+  "marker": { "kind": "ordered", "style": "1", "delimiter": "." },
+  "spacing": "tight",
+  "children": [
+    {
+      "type": "list_item",
+      "children": [
+        {
+          "type": "paragraph",
+          "children": [
+            { "type": "text", "value": "a" },
+            { "type": "soft_break" },
+            { "type": "text", "value": "{c}" },
+            { "type": "soft_break" },
+            { "type": "comment", "form": "line", "value": "" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
 Example 9 (generated)
 
 ::: compare
@@ -2101,6 +2147,57 @@ HTML
 
 **C2-B-085** For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.
 
+The first definition of `n` wins and renders; the later one stays in the tree, and resolution visits it like every other node (C2-A-025, C2-A-135), so its link carries `href`.
+
+Example 262 (unverified)
+
+::: compare
+
+```carve
+x[^n]
+
+[^n]: a
+[^n]: [x][d]
+
+[d]: /u
+```
+
+```html
+<p>x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>a<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+```json
+[
+  {
+    "type": "paragraph",
+    "children": [{ "type": "text", "value": "x" }, { "type": "footnote_ref", "key": "n", "namespace": "footnote", "number": 1 }]
+  },
+  { "type": "footnote", "key": "n", "namespace": "footnote", "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "a" }] }] },
+  {
+    "type": "footnote",
+    "key": "n",
+    "namespace": "footnote",
+    "children": [
+      {
+        "type": "paragraph",
+        "children": [{ "type": "link", "key": "d", "namespace": "link", "refForm": "full", "href": "/u", "children": [{ "type": "text", "value": "x" }] }]
+      }
+    ]
+  },
+  { "type": "link_reference_definition", "key": "d", "namespace": "link", "href": "/u" }
+]
+```
+
 **C2-B-086** Every paragraph of a footnote body gets `<p>`.
 
 **C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker. The marker line may start with any block, as the marker line of an item does (C2-B-057): `[^n]: > q` holds a quote.
@@ -3040,6 +3137,29 @@ after
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core (carried over from 0.1); on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
 
 **C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text. A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported.
+
+Only spaces separate the parts of an opener (C2-B-006): behind a tab the quoted title is further words, reported and not kept (C2-B-122).
+
+Example 263 (unverified)
+
+::: compare
+
+````carve
+```js	"T"
+x
+```
+````
+
+```html
+<pre><code class="language-js">x
+</code></pre>
+```
+
+:::
+
+```json
+{ "type": "code_block", "value": "x\n", "syntax": "js" }
+```
 
 The backtick is the only fence character of a code block: a tilde run is text (C2-B-108).
 
@@ -4049,6 +4169,34 @@ Example 257 (unverified)
 **C2-B-148** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
 
 **C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.
+
+A raw block is not one of the six blocks of C2-B-147, so the caret line below it is text (C2-B-149).
+
+Example 265 (unverified)
+
+::: compare
+
+````carve
+```=html
+<b>x</b>
+```
+^ cap
+````
+
+```html
+<pre><code class="language-html">&lt;b&gt;x&lt;/b&gt;
+</code></pre>
+<p>^ cap</p>
+```
+
+:::
+
+```json
+[
+  { "type": "raw_block", "format": "html", "value": "<b>x</b>\n" },
+  { "type": "paragraph", "children": [{ "type": "text", "value": "^ cap" }] }
+]
+```
 
 **C2-B-150** The first bare `#` in a caption's text is the caption number mark, and the sequences and the label word that selects one keep their 0.1 definition (carried over from 0.1). C2-B-207 and C2-B-208 state the mark and the label, and C2-H-149 to C2-H-151 the numbering.
 
@@ -6097,7 +6245,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Preliminaries | 11 | 1 | 4 | 4 |
-| Paragraphs and interrupters | 15 | 3 | 6 | 2 |
+| Paragraphs and interrupters | 15 | 3 | 6 | 3 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
@@ -6107,13 +6255,13 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
-| Definitions | 9 | 0 | 7 | 5 |
+| Definitions | 9 | 0 | 7 | 6 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 7 | 1 | 4 | 7 |
+| The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 6 |
-| Captions | 7 | 0 | 12 | 2 |
+| Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
@@ -6121,7 +6269,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 1 | 18 | 15 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **95** |
+| **Total** | **228** | **13** | **166** | **99** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
