@@ -1669,7 +1669,37 @@ Example 62 (unverified)
 
 **C2-B-068** An entry with terms only is valid.
 
-**C2-B-069** A term is one inline leaf: its text continues like paragraph text.
+**C2-B-069** A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.
+
+The term mark, its space and a tab: the tab stands before the content column and is not text of the term (C2-B-069).
+
+Example 261 (unverified)
+
+::: compare
+
+```carve
+:: 	x
+: d
+```
+
+```html
+<dl>
+  <dt>x</dt>
+  <dd>d</dd>
+</dl>
+```
+
+:::
+
+```json
+{
+  "type": "definition_list",
+  "children": [
+    { "type": "definition_term", "children": [{ "type": "text", "value": "x" }] },
+    { "type": "definition_description", "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "d" }] }] }
+  ]
+}
+```
 
 **C2-B-070** A fence line or a table row directly below term text is an interrupter, and because a term owns no lines, it closes the description list, whatever its indent.
 
@@ -6076,7 +6106,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
-| Description lists | 14 | 0 | 12 | 4 |
+| Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 9 | 0 | 7 | 5 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
@@ -6091,7 +6121,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 1 | 18 | 15 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **94** |
+| **Total** | **228** | **13** | **166** | **95** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

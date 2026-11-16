@@ -1667,7 +1667,7 @@
       "group": "measured ownership and inline rewrites",
       "from": ":: \tx\n",
       "to": ":: \tx\n",
-      "meaning02": "C2-B-027 and C2-B-067 trim the marker tab, so its HTML text changes.",
+      "meaning02": "C2-B-069 starts the term at its content column, so the marker tab is dropped and its HTML text changes.",
       "toolEntry": "U-193",
       "silent": true
     },
