@@ -605,7 +605,7 @@ The 0.2 entry point is `carve-js/v2/src/index.ts` in this checkout. The current 
 | `parseWithProvenance`, `createEditorSession`, `astNodePaths`, node identity, provenance and annotation-range helpers | No 0.2 counterpart. `parseWithLayout` covers source layout only. |
 | `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | No 0.2 counterpart. |
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | No 0.2 lint runner yet. `parseWithDiagnostics` reports parser and resolution findings. |
-| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0 and reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190). The `v2/` engine has no importer yet. |
+| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The `v2/` engine has no importer yet. |
 | `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | No 0.2 importer. |
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | No include expansion in the 0.2 engine yet; `includes.md` specifies it. Until then an `include` node remains unexpanded in the tree. |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |

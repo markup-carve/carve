@@ -526,7 +526,7 @@ Written:
 
 **C2-W-103** A parse, a render, a write and a lint run report into one diagnostics record (C2-A-172). Every entry has a code, a severity, a position, a message and a channel (C2-A-173). The position is a byte range in the source, a path into the tree, or both: a finding of the writer on a supplied tree has the path alone.
 
-**C2-W-104** The channel is `parse`, `render-loss` or `lint`. A code belongs to one channel. The writer's codes `structure-unspellable` and `field-unspellable` are in the render-loss channel.
+**C2-W-104** The channel is `parse`, `render-loss` or `lint`. A code belongs to one channel. The writer's codes `structure-unspellable` and `field-unspellable` are in the render-loss channel, and so are the codes of the HTML importer (C2-M-080).
 
 **C2-W-105** The severity is one of `hint`, `warning` and `error`, in lower case. The 0.1 engine source writes the first with a capital, `Hint`. The default is `warning`: a rule has that severity unless the catalog names another.
 
@@ -650,7 +650,7 @@ The `include-` rules are defined by the Includes document (`includes.md`): the c
 | Severity | Rules and codes |
 |---|---|
 | error | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence`, `unclosed-frontmatter`, `delimited-table-malformed`, `fence-opener-fallback`, and the render-loss code `destination-denied` |
-| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, `comment-splits-table-row`, `table-row-count-clamped`, and the new rules marked hint in the next table |
+| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, `comment-splits-table-row`, `table-row-count-clamped`, the new rules marked hint in the next table, and the render-loss code `import-whitespace-normalized` |
 
 `unclosed-container-fence` is an error also for a stray closer that opens a div running to the end. The `deprecated-` rules are warnings.
 
@@ -743,6 +743,8 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `extension-transform-failed` | render-loss | warning | a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051) |
 | `extension-renderer-failed` | render-loss | warning | a host renderer threw or returned a value that was not a string (C2-X-050) |
 | `profile-construct-degraded` | render-loss | warning | a construct outside the active `profile` (C2-H-129) |
+| `import-attribute-dropped`, `import-carrier-ignored`, `import-destination-denied`, `import-element-dropped`, `import-element-mapped`, `import-structure-repaired` | render-loss | warning | a fact of the HTML input that an import dropped or changed (C2-M-080, C2-M-083) |
+| `import-whitespace-normalized` | render-loss | hint | whitespace that an import removed or turned into a space (C2-M-020, C2-M-083) |
 
 ### Rules of 0.1 that become obsolete
 

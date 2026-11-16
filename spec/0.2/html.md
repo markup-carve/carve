@@ -6,7 +6,7 @@ This document defines how a 0.2 tree becomes HTML. The block and inline chapters
 
 Conventions:
 
-- A clause is a paragraph that starts with an id of the form `C2-H-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the sidecar document and the writer document. `CARVE-Pn-nnn` names a 0.1 clause.
+- A clause is a paragraph that starts with an id of the form `C2-H-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-I-nnn`, `C2-L-nnn`, `C2-M-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the sidecar document, the HTML import document and the writer document. `CARVE-Pn-nnn` names a 0.1 clause.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
 - Each example is a `compare` container that holds the Carve input and the expected HTML. The line above it gives its number and its status. *Generated* means the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input. A flag named beside the status was passed to the engine. *Unverified* means the HTML was written by hand from the clauses and has not been run through any engine.
 - Generated examples write headings with `#`, which 0.2 accepts (C2-B-152), because the 0.1 engine reads `=` as text.
@@ -1406,7 +1406,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
-**C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021).
+**C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
@@ -1597,7 +1597,7 @@ A b
 
 ## Import
 
-**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as the importer reads that element. Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as `import-html.md` maps that element (C2-M-007). Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
 
 **C2-H-197** A carrier sets only the facts its row of C2-H-186 names. How the importer reads an element that carries no carrier does not depend on carriers elsewhere in the document, except a carrier of an ancestor whose row names that reading, as `data-carve-line-block` does for the lines it holds. So `<p>a&nbsp;b</p>` imports to the same tree alone and beside `<ul data-carve-tight>`, and a render with `roundtrip` that holds no carrier imports as every other render does.
 
