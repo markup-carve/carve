@@ -22,6 +22,7 @@ const DOCUMENTS = {
   html: 'origin/spec/0.2-html-writer',
   writer: 'origin/spec/0.2-html-writer',
   includes: 'origin/next2',
+  'import-html': 'origin/next2',
 }
 
 // file -> the lists it holds, with the key that identifies a row and how the list is ordered.
@@ -37,6 +38,7 @@ const FILES = {
   'include-options': { options: ['name', 'rank'] },
   includes: { causes: ['name', 'rank'], conflicts: ['name', 'name'] },
   'inline-atoms': { atoms: ['name', 'name'] },
+  'import-html': { elements: ['name', 'name'], attributes: ['name', 'name'], conventions: ['name', 'name'], codes: ['id', 'id'], losses: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },
   'inline-scan': { steps: ['name', 'rank'], fallbacks: ['name', 'name'] },
@@ -77,7 +79,7 @@ const sources = []
 for (const [name, ref] of Object.entries(DOCUMENTS)) {
   const { text, from } = readDocument(name, ref)
   sources.push(`${name}.md from ${from}`)
-  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILNWX]-\d{3})\*\*/gm)) defined.add(match[1])
+  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILMNWX]-\d{3})\*\*/gm)) defined.add(match[1])
 }
 
 const data = {}
@@ -141,7 +143,7 @@ else {
   const schema = JSON.parse(schemaText)
   try { ajv.compile(schema) } catch (error) { fail(`ast-schema.json: invalid JSON Schema: ${error.message}`) }
   collectClauses(schema, 'ast-schema.json')
-  for (const match of schemaText.matchAll(/C2-[ABHILNWX]-\d{3}/g)) {
+  for (const match of schemaText.matchAll(/C2-[ABHILMNWX]-\d{3}/g)) {
     cited.add(match[0])
     if (!defined.has(match[0])) fail(`ast-schema.json: cites ${match[0]}, which no document defines`)
   }
