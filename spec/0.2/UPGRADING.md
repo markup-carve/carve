@@ -224,6 +224,8 @@ These rulings change what some documents give against the 0.1 engine or against 
 | A reference to a heading the profile degrades | Early 0.2 library resolution read the profile. | The tree does not change with the profile; the reference renders as unresolved text. | C2-H-177 |
 | A trailing comment on a table row, `\| 1 \| 2 \| %% note` | Early 0.2: no tree node for the comment. | A `comment` node after the row; `fmt` writes it on its own line below the row. | C2-A-086, C2-W-135 |
 | Positions (`pos`) of tree consumers | Early 0.2: no `pos` on empty cells, span mark cells, caption numbers; an include and a last-line comment ended before trailing spaces. | These carry `pos`; trailing spaces belong to the block, the line comment or the break. | C2-A-151, C2-A-153, C2-A-158 |
+| A code span line that ends in a backslash and one space | 0.1: the space was removed. | The escaped space stays in the code value; a tab there is still removed. | C2-I-002 |
+| A div opener with a sigil glued to a word, `::: >a`, or with a first word that is no name, `::: *` | 0.1: text. Early 0.2: a div. | `::: >a` opens a quote fence, `::: *` an anonymous div; the words are reported. | C2-B-119, C2-B-122 |
 | An abbreviation expansion after two spaces or after a space and a tab: `*[HTML]:  Hyper Text` | 0.1 and early 0.2: the leading space or tab was dropped. | It is the first character of the expansion, as `title=" Hyper Text"`. | C2-B-084 |
 
 ### Worked source changes
