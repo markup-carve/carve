@@ -1427,7 +1427,7 @@ in
 
 **C2-H-180** Every definition of the run is in the text, in tree order: one that no abbreviation uses and one whose key an earlier definition holds (C2-B-085) are written like every other one. The renderer neither drops nor merges a definition.
 
-**C2-H-181** A definition that the writer cannot spell is in the text as the writer writes it, and the render reports the writer's loss entry (C2-W-117). An expansion that holds a line break is such a case: it is not split over two lines (C2-B-084).
+**C2-H-181** A definition that the writer cannot spell is in the text as the writer writes it, and the render reports the writer's loss entry (C2-W-117). An expansion that holds a line break is such a case: it is written with one space in place of each line break (C2-W-055), so the template still reads back as a run of definitions (C2-H-187).
 
 With `roundtrip` on, a run of two definitions gives one template, and the blank line between them is the one the writer puts between two blocks.
 
