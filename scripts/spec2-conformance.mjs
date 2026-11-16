@@ -55,10 +55,10 @@ const GENERATED = {
 const UNVERIFIED = {
   writer: 'the written source was written by hand from the clauses (writer.md, conventions)',
   includes: 'the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)',
-  'import-html': 'the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)',
+  'import-html': 'the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)',
   default: 'the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)',
 }
-const VERIFIED = { 'import-html': 'the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)' }
+const VERIFIED = { 'import-html': 'the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)' }
 
 function statusOf(example) {
   if (example.status === 'generated') return { status: 'verified', reason: GENERATED[example.document] ?? GENERATED.default }

@@ -74271,7 +74271,7 @@
     ]
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-2",
@@ -74323,7 +74323,7 @@
     "carve": "`<b>`{=html} and [x]{.c}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-3",
@@ -74364,7 +74364,7 @@
     "carve": "one\ntwo\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-4",
@@ -74407,7 +74407,7 @@
     "carve": "lead *x*\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-5",
@@ -74441,7 +74441,7 @@
     "carve": "a\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-6",
@@ -74475,7 +74475,7 @@
     "carve": "a&b © A c\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-7",
@@ -74514,7 +74514,7 @@
     "carve": "{#s}\n== T\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-8",
@@ -74554,7 +74554,7 @@
     "carve": ":::\nno heading\n:::\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-9",
@@ -74591,7 +74591,7 @@
     "carve": "```js \"Example\"\nlet a = 1\n```\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-10",
@@ -74657,7 +74657,7 @@
     "carve": "c) three\nd) [x] done\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-11",
@@ -74718,7 +74718,7 @@
     "carve": "- a\n\n- b\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-12",
@@ -74765,7 +74765,7 @@
     "carve": "- only\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-13",
@@ -74812,7 +74812,7 @@
     "carve": "- a\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-14",
@@ -74886,7 +74886,7 @@
     "carve": ":: Term\n: One\n: Two\n\n  Three\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-15",
@@ -74937,7 +74937,7 @@
     "carve": ":: a\n: b\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-16",
@@ -75108,7 +75108,7 @@
     "carve": "{footer-rows=1}\n|= Item |={>} Cost |\n| tea | 2 |\n| all | 2 |\n^ Prices\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-17",
@@ -75166,7 +75166,7 @@
     "carve": "| a b |\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-18",
@@ -75216,7 +75216,7 @@
     "carve": "{.wide}\n![Cat](/cat.png)\n^ A cat\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-19",
@@ -75285,7 +75285,7 @@
     "carve": "| a |\n^ T\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-43",
@@ -75333,7 +75333,7 @@
     "carve": "::: figure\nx\n:::\n^ y\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-20",
@@ -75373,7 +75373,7 @@
     "carve": "::: warning \"Careful\"\nHot.\n:::\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-21",
@@ -75424,7 +75424,7 @@
     "carve": ":x[e] @ann {#c#}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-22",
@@ -75458,7 +75458,7 @@
     "carve": "::: toc\nx\n:::\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-23",
@@ -75517,7 +75517,7 @@
     "carve": "A /b/ and *c*.\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-24",
@@ -75674,7 +75674,7 @@
     "carve": "H{,2,}O, x{^2^}, {=m=}, {-d-}, {+i+}, [Ctrl]{kbd}, [HTML]{abbr=HyperText}, [today]{time=2026-11-16}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-25",
@@ -75719,7 +75719,7 @@
     "carve": "$$`x^2`\n\n$`y`\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-26",
@@ -75759,7 +75759,7 @@
     "carve": "[ok](/u \"T\") bad plain\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-27",
@@ -75816,7 +75816,7 @@
     "carve": "![A](/a.png)\n\nInline ![I](/i.png){width=10} and gone\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-28",
@@ -75865,7 +75865,7 @@
     "carve": "{#p1 .lead .note :de data-id=7 style=\"color: red\"}\nText\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-29",
@@ -75909,7 +75909,7 @@
     "carve": "[t]{data-k=2}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-30",
@@ -75955,7 +75955,7 @@
     "carve": ":::\nMore\n\nBody\n:::\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-31",
@@ -75998,7 +75998,7 @@
     "carve": "::: top\n= Site\n:::\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-32",
@@ -76065,7 +76065,7 @@
     "carve": "A [fine]{} [print]{} [x]{}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-33",
@@ -76117,7 +76117,7 @@
     "carve": "x[^1]\n\n[^1]: Note\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-34",
@@ -76168,7 +76168,7 @@
     "carve": "```=html\n<!-- note -->\n```\n\na`<!-- inline -->`{=html}b\n\n```=html\n<script>run()</script>\n```\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-35",
@@ -76205,7 +76205,7 @@
     "carve": "Video: `<iframe src=\"/v\"></iframe>`{=html}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-41",
@@ -76248,7 +76248,7 @@
     ]
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-42",
@@ -76281,7 +76281,7 @@
     ]
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-36",
@@ -76323,7 +76323,7 @@
     "carve": "x[]{#a}\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-37",
@@ -76374,7 +76374,7 @@
     "carve": "[a ](/x)[b](/y)\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-38",
@@ -76426,7 +76426,7 @@
     "carve": "{#a}\n== A\n\n{#a}\n== B\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-39",
@@ -76461,7 +76461,7 @@
     "carve": "ab\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
    "id": "import-html-40",
@@ -76581,7 +76581,7 @@
     "carve": "{#Intro}\n= Intro\n\nSee [the guide](/guide \"Guide\") and [https://example.com](https://example.com).\n\n- one\n\n  more\n\n- two\n"
    },
    "status": "verified",
-   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   }
  ]
 }
