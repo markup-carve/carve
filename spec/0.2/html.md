@@ -940,7 +940,7 @@ Example 38 (unverified)
 
 ## Comments, frontmatter and definitions
 
-**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A comment-only line inside a paragraph or another leaf, which is a line that holds nothing but comments of any form and spaces, takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The tree keeps both breaks.
+**C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A comment-only line inside a paragraph or another leaf, which is a line that holds nothing but comments of any form and spaces, takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The test is made in each list of inline children on its own, also in the children of an inline node such as a strong span: a line of that list is what stands between two of its breaks, and the end of the list counts as the end of the content. The tree keeps both breaks.
 
 **C2-H-070** Frontmatter renders nothing.
 
@@ -965,6 +965,27 @@ b {% mid %} c
 ```html
 <p>a</p>
 <p>b  c</p>
+```
+
+:::
+
+The line `%% c` holds only a comment within the children of the strong span, so the break behind it is not written (C2-H-069).
+
+Example 47 (unverified)
+
+::: compare
+
+```carve
+a
+{*x
+%% c
+*} b
+```
+
+```html
+<p>a
+<strong>x
+</strong> b</p>
 ```
 
 :::
