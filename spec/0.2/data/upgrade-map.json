@@ -1572,16 +1572,6 @@
       "silent": true
     },
     {
-      "id": "U-183",
-      "kind": "escape",
-      "group": "measured ownership and inline rewrites",
-      "from": "![][]\n^ a",
-      "to": "\\![][]\n^ a",
-      "meaning02": "<figure>\n  <p>![][]</p>\n  <figcaption>a</figcaption>\n</figure>",
-      "toolEntry": "U-183",
-      "silent": true
-    },
-    {
       "id": "U-184",
       "kind": "escape",
       "group": "measured ownership and inline rewrites",
@@ -1699,16 +1689,6 @@
       "to": ":::[`x`]\nbody\n:::\n",
       "meaning02": "C2-B-119 and C2-B-121 read the label in the metadata slot without the 0.1 inline rendering.",
       "toolEntry": "U-195",
-      "silent": true
-    },
-    {
-      "id": "U-196",
-      "kind": "rewrite",
-      "group": "measured ownership and inline rewrites",
-      "from": "{k='x}y'}\np\n",
-      "to": "{k=\"x}y\"}\np\n",
-      "meaning02": "C2-B-090 and C2-B-095 retain a closing brace inside a quoted value when the value uses double quotes.",
-      "toolEntry": "U-196",
       "silent": true
     },
     {
@@ -2009,16 +1989,6 @@
       "to": "3. x\n",
       "meaning02": "C2-B-041 and C2-B-045 give the attribute precedence over the marker when both stand in 0.2 source.",
       "toolEntry": "U-230",
-      "silent": true
-    },
-    {
-      "id": "U-231",
-      "kind": "rewrite",
-      "group": "double quote inside a quoted id value",
-      "from": "{id='a\"b&c'}\n# H\n\n</#a\"b&c>\n",
-      "to": "{id=\"a\\\"b&c\"}\n# H\n\n</#a\"b&c>\n",
-      "meaning02": "C2-I-033 and C2-H-003 retain the escaped double quote inside the quoted ID value.",
-      "toolEntry": "U-231",
       "silent": true
     },
     {

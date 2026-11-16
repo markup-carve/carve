@@ -1361,6 +1361,19 @@
       "clauses": ["C2-B-168"]
     },
     {
+      "id": "table-span-marker-attribute",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": [
+        "This \"${marker}\" joins the cell ${direction}, so its attribute block applies to no cell and carve fmt drops it. Move the attributes to the cell it joins, or remove them."
+      ],
+      "message_origin": "data_file",
+      "reports": "a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174)",
+      "clauses": ["C2-B-174"]
+    },
+    {
       "id": "table-span-marker-blocked",
       "severity": "warning",
       "channel": "lint",

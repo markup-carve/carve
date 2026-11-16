@@ -1744,7 +1744,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays, and for every node inside it at any depth. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
 Under `minimal` the editorial comment gives no text, and the math span is written as the writer spells the node (C2-H-165).
 
@@ -1758,6 +1758,66 @@ a {#c#} b $`m`
 
 ```html
 <p>a  b $`m`</p>
+```
+
+:::
+
+The children of a degraded link take the inline forms too, at every depth: the raw span and the autolink give their spellings, as they would outside the link (C2-H-165).
+
+Example 53 (unverified, `--profile minimal`)
+
+::: compare
+
+```carve
+[a `<br>`{=html}](u) b
+
+[<a:b>](u)
+```
+
+```html
+<p>a `&lt;br&gt;`{=html} b</p>
+<p>&lt;a:b&gt;</p>
+```
+
+:::
+
+```json
+[
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "type": "link",
+        "href": "u",
+        "children": [
+          { "type": "text", "value": "a " },
+          { "type": "raw_inline", "format": "html", "value": "<br>" }
+        ]
+      },
+      { "type": "text", "value": " b" }
+    ]
+  },
+  {
+    "type": "paragraph",
+    "children": [{ "type": "link", "href": "u", "children": [{ "type": "autolink", "href": "a:b" }] }]
+  }
+]
+```
+
+A heading outside the profile becomes a paragraph, and a paragraph that is the first block of a tight item is written bare (C2-H-034, C2-H-165).
+
+Example 54 (unverified, `--profile minimal`)
+
+::: compare
+
+```carve
+- # H
+```
+
+```html
+<ul>
+  <li># H</li>
+</ul>
 ```
 
 :::
@@ -1966,21 +2026,21 @@ One point is open.
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
-| Code and raw content | 9 | 0 | 1 | 0 |
+| Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 1 | 0 |
 | Captions and figures | 12 | 0 | 4 | 1 |
-| Comments, frontmatter and definitions | 5 | 0 | 1 | 0 |
+| Comments, frontmatter and definitions | 5 | 0 | 1 | 1 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 1 | 1 |
 | Cross-references and abbreviations | 6 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 15 | 0 | 0 | 6 |
+| Roundtrip carriers | 15 | 0 | 0 | 7 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 3 |
+| Options | 24 | 0 | 3 | 6 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **23** |
+| **Total** | **198** | **7** | **25** | **29** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 54 examples, 25 generated and 29 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

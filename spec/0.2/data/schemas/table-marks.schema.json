@@ -89,7 +89,7 @@
           },
           "blocked_by": {
             "type": "array",
-            "items": { "enum": ["first_column", "first_row_of_group", "cell_above_spans_columns"] },
+            "items": { "enum": ["first_column", "left_cell_covered_by_row_span", "first_row_of_group", "cell_above_spans_columns"] },
             "uniqueItems": true,
             "description": "Where the mark joins nothing. A group is the head, the body or the foot (C2-B-174)."
           }

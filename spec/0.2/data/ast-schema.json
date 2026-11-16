@@ -8670,19 +8670,22 @@
           "type": "object",
           "properties": {
             "lines": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
             },
             "region": {
               "type": "string",
               "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
             },
             "rows": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
             },
             "cols": {
               "oneOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "pattern": "^[1-9][0-9]*-[1-9][0-9]*$"
                 },
                 {
                   "type": "array",

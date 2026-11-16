@@ -21,7 +21,7 @@ Conventions:
 
 **Exception C2-W-131** When the writer reports `structure-unspellable` or `field-unspellable` for an input, its nearest spelling may change on another pass. The report must name the lost node or field. The stability gate of C2-W-003 applies when the first pass reports no loss.
 
-**Exception C2-W-133** If a block group returns to the same repair state or exceeds a finite repair limit under C2-W-089, the writer stops that group and reports `writer-refused` in the render-loss channel at the first node of the group. The diagnostic form returns the nearest source with that report. The `format` and `write` calls that return only source throw `CarveWriteError`. C2-W-002 and C2-W-003 do not apply to a refused result.
+**Exception C2-W-133** If a block group returns to the same repair state or exceeds the repair limit of the engine under C2-W-089, the writer stops that group and reports `writer-refused` in the render-loss channel at the first node of the group. The diagnostic form returns the nearest source with that report. The `format` and `write` calls that return only source throw `CarveWriteError`. C2-W-002 and C2-W-003 do not apply to a refused result. The limit is a constant of each engine, so two engines may refuse different groups, and a refusal is outside byte conformance. No engine stops a group at its limit before the parses of its repairs have read 24,000,000 characters, or 1,000 times the characters of the group as written, line ends included, where that is more.
 
 **C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. The error carries those diagnostics. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
 
@@ -179,7 +179,7 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-062** A cell is written as its prefix glued to the opening pipe, one space, its content and one space before the next pipe. The prefix is the header mark `=` when the cell is a header cell, then the brace block when the cell has alignment or attributes; in that brace block the alignment mark stands first: `|={>} Price |`.
 
-**C2-W-063** A span mark is written with the same padding: `| ^ |`, `| < |`. A cell whose content is only `^` or `<` and is not a span is written with an escape.
+**C2-W-063** A span mark is written with the same padding: `| ^ |`, `| < |`. In the head it carries the header mark, `|= ^ |`, so that a row of span marks stays a head row (C2-B-174). A cell whose content is only `^` or `<` and is not a span is written with an escape.
 
 **C2-W-064** A row is written with exactly the cells it has. The writer adds no empty cell to make the rows equally wide.
 
@@ -642,7 +642,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Seven findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
+Eight findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -654,6 +654,7 @@ Seven findings of the syntax chapters, and one of the tree and writer chapters, 
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 | `include-option-invalid` | warning | an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which has no effect (C2-B-206) |
+| `table-span-marker-attribute` | warning | a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 

@@ -252,7 +252,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-023** A term mark never opens a nested description list without a blank line: directly after paragraph text inside an item it is a lazy line.
 
-**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
+**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
 
 Example 9 (generated)
 
@@ -678,6 +678,59 @@ x</li>
 ```
 
 :::
+
+The footnote body does not own a line at column 0, so the list inside it closes with it, and `- x` opens a list at the top level (C2-B-228). The unused definition writes nothing.
+
+Example 258 (unverified)
+
+::: compare
+
+```carve
+[^1]: - a
+- x
+```
+
+```html
+<ul>
+  <li>x</li>
+</ul>
+```
+
+:::
+
+```json
+[
+  {
+    "type": "footnote",
+    "key": "1",
+    "namespace": "footnote",
+    "children": [
+      {
+        "type": "list",
+        "marker": { "kind": "bullet", "char": "-" },
+        "spacing": "tight",
+        "children": [
+          {
+            "type": "list_item",
+            "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "a" }] }]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "list",
+    "marker": { "kind": "bullet", "char": "-" },
+    "spacing": "tight",
+    "children": [
+      {
+        "type": "list_item",
+        "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "x" }] }]
+      }
+    ]
+  }
+]
+```
 
 ## Block quotes
 
@@ -1165,7 +1218,7 @@ Example 45 (unverified)
 
 **C2-B-229** A marker line is read in three steps. First the marker is tested on the text behind its required space, a task box included, as the bare dot is (C2-B-043). Then a task box is read directly after that space (C2-B-046). Then the content starts behind the box and its space. In `. [x] . x` the text behind the first dot is `[x] . x`, which does not start with a dot, so the dot is a marker, the item has a box, and its content `. x` is a nested ordered list (C2-B-058).
 
-The item has no paragraph, so the box has an empty label, and the space behind the box ends its line of HTML (C2-H-032).
+The item has no paragraph, so the box writes no `aria-label` (C2-H-174), and the space behind the box ends its line of HTML (C2-H-032).
 
 Example 246 (unverified)
 
@@ -1177,7 +1230,7 @@ Example 246 (unverified)
 
 ```html
 <ol class="task-list">
-  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label=""> 
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled> 
     <ol>
       <li>x</li>
     </ol>
@@ -2952,7 +3005,7 @@ after
 
 **C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  "T"` opens a div with a title, and `:::[x]` is text. Behind those spaces a sigil starts a sigil div also when further words are glued to it, and C2-B-122 reports the words: `::: >a` opens a quote fence. When neither a name, a sigil, a title nor a label starts there, the line still opens an anonymous div, and C2-B-122 reports what follows the spaces: `::: *` and `::: {.x}` open a div with no name. Such a line never closes a div (C2-B-125).
 
-**C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042).
+**C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042). Its value, the text between the quotes, is an inline content of one line, read once the opener is split into its parts, so a `%%` after whitespace in it starts a line comment that ends at the closing quote (C2-I-023).
 
 **C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core (carried over from 0.1); on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
 
@@ -3106,6 +3159,36 @@ n
 ```
 
 :::
+
+The title of a div is inline content, so its `%%` starts a comment that ends at the closing quote (C2-B-120).
+
+Example 254 (unverified)
+
+::: compare
+
+```carve
+::: note "a %% b"
+c
+:::
+```
+
+```html
+<aside class="admonition note" aria-labelledby="adm-1">
+  <p class="admonition-title" id="adm-1">a</p>
+  <p>c</p>
+</aside>
+```
+
+:::
+
+```json
+{
+  "type": "admonition",
+  "kind": "note",
+  "title": [{ "type": "text", "value": "a" }, { "type": "comment", "form": "line", "value": "b" }],
+  "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "c" }] }]
+}
+```
 
 Two spaces after the run: the fence opens with no language, and the word is reported (C2-B-122).
 
@@ -3475,7 +3558,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
-**Exception C2-B-137** A *comment-only line*, a line outside an opaque body that holds nothing but a line comment, is not a line for block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138.
+**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138.
 
 **C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
@@ -3861,6 +3944,73 @@ See [c]().
 ```
 
 :::
+
+The `%%` line at column 0 is not owned by the item, so the item closes with its open fence, and the line is then a comment-only line of the document (C2-B-137). The indented `b` that follows opens a paragraph, since no list is open.
+
+Example 256 (unverified)
+
+::: compare
+
+````carve
+- ```
+  a
+%% c
+  b
+````
+
+```html
+<ul>
+  <li>
+    <pre><code>a
+</code></pre>
+  </li>
+</ul>
+<p>b</p>
+```
+
+:::
+
+```json
+[
+  {
+    "type": "list",
+    "marker": { "kind": "bullet", "char": "-" },
+    "spacing": "tight",
+    "children": [{ "type": "list_item", "children": [{ "type": "code_block", "value": "a\n" }] }]
+  },
+  { "type": "comment", "form": "line", "value": "c" },
+  { "type": "paragraph", "children": [{ "type": "text", "value": "b" }] }
+]
+```
+
+The attribute line reaches no block, so at the end of the quote it is a paragraph of text (C2-B-192). That paragraph stands on the line above the comment, so it comes first among the children of the quote (C2-A-145).
+
+Example 257 (unverified)
+
+::: compare
+
+```carve
+> {.a}
+%% x
+```
+
+```html
+<blockquote>
+  <p>{.a}</p>
+</blockquote>
+```
+
+:::
+
+```json
+{
+  "type": "block_quote",
+  "children": [
+    { "type": "paragraph", "children": [{ "type": "text", "value": "{.a}" }] },
+    { "type": "comment", "form": "line", "value": "x" }
+  ]
+}
+```
 
 ## Captions
 
@@ -4345,7 +4495,7 @@ Example 179 (generated)
 
 **C2-B-158** A paragraph that closes as exactly one display math line (C2-B-198) is a math block, a fact set at close like the promotion of a block image.
 
-**C2-B-197** A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)` or `![alt][label]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces. An image whose form runs over a line ending is not such a line.
+**C2-B-197** A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)`, `![alt][label]` or the collapsed `![alt][]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces. The label, which in the collapsed form is the alt text, must be a label under C2-I-079, so `![ ][]` is no such line. An image whose form runs over a line ending is not such a line.
 
 **C2-B-198** A display math line is decided by its shape and not by inline parsing: the line consists of exactly one display math span, `$$` glued to a code span, optional attribute blocks glued to it, and trailing spaces. A span that closes on a later line is not such a line.
 
@@ -4533,6 +4683,55 @@ Example 236 (unverified)
 ```
 
 :::
+
+A collapsed image whose alt text holds only a space has no label (C2-I-079), so the line is no block image line and the caret line is a lazy line of the paragraph (C2-B-197).
+
+Example 255 (unverified)
+
+::: compare
+
+```carve
+![ ][]
+^ cap
+```
+
+```html
+<p>![ ][]
+^ cap</p>
+```
+
+:::
+
+```json
+{
+  "type": "paragraph",
+  "children": [
+    { "type": "text", "value": "![ ][]" },
+    { "type": "soft_break" },
+    { "type": "text", "value": "^ cap" }
+  ]
+}
+```
+
+`code` takes a language of one or more characters, so an empty quoted value is outside its shape: the option is invalid and kept as written (C2-B-205, C2-B-206).
+
+Example 259 (unverified)
+
+::: compare
+
+```carve
+{{ a.crv @code:"" }}
+```
+
+```html
+<p>{{ a.crv @code:"" }}</p>
+```
+
+:::
+
+```json
+{ "type": "include", "path": "a.crv", "invalid": ["@code:\"\""] }
+```
 
 ## Thematic break
 
@@ -4769,13 +4968,13 @@ title: x
 
 **C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
-**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block. The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
+**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
 
-**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above when that cell stands in the same group of the table (C2-B-174). A `<` in the first column, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is the text of its cell.
+**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above when that cell stands in the same group of the table (C2-B-174). A `<` in the first column, a `<` whose left cell is covered by a row span from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is the text of its cell.
 
 **C2-B-173** A span mark that joins nothing is an ordinary cell that holds the mark as text, and `table-span-marker-blocked` reports it. Its prefix applies as on any cell (C2-B-171): `|= ^ |` in the first row is a header cell that holds `^`.
 
-**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left counts as that cell, and a `^` below a cell of one column counts as that cell; any other span mark counts as the cell it is.
+**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it.
 
 **C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
@@ -4783,7 +4982,7 @@ title: x
 
 **Exception C2-B-177** Without the closing pipe a `+` line is text and ends the table.
 
-**C2-B-178** The head of a table is its leading rows made only of header cells.
+**C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174).
 
 **C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table. C2-B-209 and C2-B-210 state its default and its value.
 
@@ -5038,7 +5237,70 @@ Example 209 (unverified)
 
 :::
 
-The row span would cross from the head into the body, so the mark joins nothing and is the text of its cell.
+The left cell of the `<` is covered by the row span of `a`, so the `<` joins nothing and is the text of its cell (C2-B-172).
+
+Example 252 (unverified)
+
+::: compare
+
+```carve
+| a | b |
+| ^ | < |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td rowspan="2">a</td><td>b</td></tr>
+    <tr><td>&lt;</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+```json
+{
+  "type": "table",
+  "columns": [{ "type": "table_column" }, { "type": "table_column" }],
+  "children": [
+    {
+      "type": "table_body",
+      "children": [
+        {
+          "type": "table_row",
+          "children": [
+            {
+              "type": "table_cell",
+              "header": false,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "a" }] }],
+              "rowspan": 2
+            },
+            {
+              "type": "table_cell",
+              "header": false,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "b" }] }]
+            }
+          ]
+        },
+        {
+          "type": "table_row",
+          "children": [
+            { "type": "table_cell", "header": false, "span": "rowspan", "children": [] },
+            {
+              "type": "table_cell",
+              "header": false,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "<" }] }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+The row of a bare `^` has no header cell, so it is a body row (C2-B-174). The row span would cross from the head into the body, so the mark joins nothing and is the text of its cell.
 
 Example 210 (unverified)
 
@@ -5088,6 +5350,151 @@ Example 250 (unverified)
   <tfoot>
     <tr><td>^</td><td>3</td></tr>
   </tfoot>
+</table>
+```
+
+:::
+
+The `^` stands in the first row, so it joins nothing and is a data cell; the row then has a cell that is no header cell and is a body row (C2-B-173, C2-B-178).
+
+Example 260 (unverified)
+
+::: compare
+
+```carve
+|=|^|
+```
+
+```html
+<table>
+  <tbody>
+    <tr><th scope="row"></th><td>^</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+```json
+{
+  "type": "table",
+  "columns": [{ "type": "table_column" }, { "type": "table_column" }],
+  "children": [
+    {
+      "type": "table_body",
+      "children": [
+        {
+          "type": "table_row",
+          "children": [
+            {
+              "type": "table_cell",
+              "header": true,
+              "children": [{ "type": "cell_paragraph", "children": [] }]
+            },
+            {
+              "type": "table_cell",
+              "header": false,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "^" }] }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+With the header mark the row of a `^` is a head row, so the mark joins the header cell above it. The covered row writes no cell (C2-H-058), and the mark stays in the tree as an empty cell (C2-A-092).
+
+Example 251 (unverified)
+
+::: compare
+
+```carve
+|= H |
+|= ^ |
+| a |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th rowspan="2" scope="col">H</th></tr>
+    <tr></tr>
+  </thead>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+```json
+{
+  "type": "table",
+  "columns": [{ "type": "table_column" }],
+  "children": [
+    {
+      "type": "table_head",
+      "children": [
+        {
+          "type": "table_row",
+          "children": [
+            {
+              "type": "table_cell",
+              "header": true,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "H" }] }],
+              "rowspan": 2
+            }
+          ]
+        },
+        {
+          "type": "table_row",
+          "children": [{ "type": "table_cell", "header": false, "span": "rowspan", "children": [] }]
+        }
+      ]
+    },
+    {
+      "type": "table_body",
+      "children": [
+        {
+          "type": "table_row",
+          "children": [
+            {
+              "type": "table_cell",
+              "header": false,
+              "children": [{ "type": "cell_paragraph", "children": [{ "type": "text", "value": "a" }] }]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+A brace block on a mark that joins is kept nowhere: the tree is that of Example 251, and `table-span-marker-attribute` reports the block (C2-B-174).
+
+Example 253 (unverified)
+
+::: compare
+
+```carve
+|= H |
+|={.x} ^ |
+| a |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th rowspan="2" scope="col">H</th></tr>
+    <tr></tr>
+  </thead>
+  <tbody>
+    <tr><td>a</td></tr>
+  </tbody>
 </table>
 ```
 
@@ -5663,7 +6070,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 |---|---|---|---|---|
 | Preliminaries | 11 | 1 | 4 | 4 |
 | Paragraphs and interrupters | 15 | 3 | 6 | 2 |
-| Container ownership and stripping | 7 | 0 | 3 | 6 |
+| Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
@@ -5672,21 +6079,21 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 4 |
-| Definitions | 9 | 0 | 7 | 4 |
+| Definitions | 9 | 0 | 7 | 5 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 7 | 1 | 4 | 5 |
+| The fence opener and titles | 7 | 1 | 4 | 7 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 17 | 4 | 14 | 4 |
+| Comments | 17 | 4 | 14 | 6 |
 | Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 6 |
-| One-line constructs | 11 | 0 | 8 | 3 |
+| One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 1 | 18 | 11 |
+| Tables | 35 | 1 | 18 | 15 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **82** |
+| **Total** | **228** | **13** | **166** | **94** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

@@ -9,18 +9,18 @@
   "cell_prefix": {
     "sequence": [
       { "part": "optional", "mark": "|=" },
-      { "part": "optional", "ref": "brace_block" },
+      { "part": "optional", "ref": "brace_blocks" },
       { "part": "optional", "sequence": [{ "part": "space", "min": 1 }] }
     ],
-    "clauses": ["C2-B-171"]
+    "clauses": ["C2-B-093", "C2-B-171"]
   },
-  "header_cell_mark": { "mark": "|=", "head": "leading_rows_of_only_header_cells", "clauses": ["C2-B-171", "C2-B-178"] },
+  "header_cell_mark": { "mark": "|=", "head": "leading_rows_with_a_header_cell_and_no_other_cell", "clauses": ["C2-B-171", "C2-B-178"] },
   "span_marks": [
     {
       "mark": "<",
       "joins": "cell_to_left",
       "failed": "cell_with_the_mark_as_text",
-      "blocked_by": ["first_column"],
+      "blocked_by": ["first_column", "left_cell_covered_by_row_span"],
       "clauses": ["C2-B-172", "C2-B-173", "C2-B-174", "C2-B-183"]
     },
     {
