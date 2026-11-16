@@ -315,7 +315,31 @@ let a = 1
 
 **C2-M-031** `<ul>` and `<menu>` are a bullet `list` with the marker `-`, and `<ol>` is an ordered `list`. `<li>` is a `list_item`. The `type` of `<ol>` gives the style when it is `a`, `A`, `i` or `I`, and decimal otherwise. Its `start`, read as an HTML integer, gives `start` when it is not 1. `data-delim=")"`, which every render writes (C2-H-031), gives the delimiter `)`; otherwise the delimiter is `.`.
 
-**C2-M-032** An `<input type="checkbox">` that is a child of `<li>` is the task box. The item has a `task` whose mark is the value of `data-task-state` when that value is the state attribute of a row of `task-states.json`, and otherwise `x` when the box carries `checked` and a space when it does not. A `data-task-state` with another value is ignored and reported with `import-attribute-dropped`. One space directly after the box is removed. `type`, `checked`, `disabled` and `aria-label` of the box are read; any other attribute of it is dropped and reported. The class `task` and the declaration `list-style: none` that a render gives a task item (C2-H-032), and the class `task-list` of its list, are not kept.
+**C2-M-032** The first `<input type="checkbox">` that is a child of `<li>` is the task box; each further one is dropped and reported with `import-element-dropped`, also with `rawHtml` on. The item has a `task` whose mark is the value of `data-task-state` when that value is the state attribute of a row of `task-states.json`, and otherwise `x` when the box carries `checked` and a space when it does not. A `data-task-state` with another value is ignored and reported with `import-attribute-dropped`. One space directly after the box is removed. `type`, `checked`, `disabled` and `aria-label` of the box are read; any other attribute of it is dropped and reported. The class `task` and the declaration `list-style: none` that a render gives a task item (C2-H-032), and the class `task-list` of its list, are not kept.
+
+Example 47 (verified)
+
+::: compare
+
+```html
+<ul><li><input type="checkbox"><input type="checkbox" checked> x</li></ul>
+```
+
+```json
+[
+  {"type":"list","children":[{"type":"list_item","children":[{"type":"paragraph","children":[{"type":"text","value":"x"}]}],"task":{"mark":" "}}],"marker":{"kind":"bullet","char":"-"},"spacing":"tight"}
+]
+```
+
+```carve
+- [ ] x
+```
+
+:::
+
+The first box gives the task mark; the second is dropped, and the space before `x` is then at the start of the paragraph (C2-M-018).
+
+Reported: `import-element-dropped`, `import-whitespace-normalized`.
 
 **C2-M-033** A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034). A list is also loose when an item holds more than one block that is no list. Otherwise it is tight. A list with one item is tight (C2-B-062).
 
@@ -1467,4 +1491,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 46 examples: 45 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 47 examples: 46 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

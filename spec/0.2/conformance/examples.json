@@ -74636,6 +74636,60 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-47",
+   "document": "import-html.md",
+   "number": 47,
+   "section": "Lists",
+   "clauses": [
+    "C2-M-031",
+    "C2-M-032",
+    "C2-M-033",
+    "C2-M-034",
+    "C2-M-036"
+   ],
+   "kind": "import",
+   "html": "<ul><li><input type=\"checkbox\"><input type=\"checkbox\" checked> x</li></ul>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "list",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ],
+        "task": {
+         "mark": " "
+        }
+       }
+      ],
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight"
+     }
+    ],
+    "carve": "- [ ] x\n",
+    "diagnostics": [
+     "import-element-dropped",
+     "import-whitespace-normalized"
+    ]
+   },
+   "status": "verified",
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-10",
    "document": "import-html.md",
    "number": 10,
