@@ -24,8 +24,11 @@
             "description": "The kind the option list gives the option."
           },
           "read_by": {
-            "enum": ["parse", "resolve", "render", "format", "lint"],
-            "description": "The stage that reads the option. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-A-134)."
+            "oneOf": [
+              { "enum": ["parse", "resolve", "render", "format", "lint", "import"] },
+              { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import"] } }
+            ],
+            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-A-134). `import` is the HTML importer, which reads `rawHtml` (C2-M-066)."
           },
           "type": {
             "enum": ["boolean", "enum", "list", "map", "structure"],
@@ -35,8 +38,8 @@
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
-            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
-            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+            "items": { "type": "string", "pattern": "^C2-[ABHILMNW]-[0-9]{3}$" },
+            "description": "The clause ids of the 0.2 documents that the row encodes. The row is normative together with these clauses."
           },
           "values": {
             "type": "array",

@@ -472,7 +472,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-115** An `image` may carry `alt`, `decorative`, `tooltip`, `resourceId` and `longDescription`, a list of blocks. `decorative: true` requires `alt` to be absent, and an absent `alt` requires `decorative: true`; a reader refuses either contradictory pair. A parse of Carve source produces no `longDescription` or `decorative` field. A resolved reference takes its tooltip from its definition.
 
-**C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The `display` field records cross-reference display separately from reference spelling. A Carve writer reports `display` as unspellable (C2-I-096).
+**C2-A-116** An `xref` carries `key`, `namespace`, and optional `display` (`number`, `page`, `title` or `full`); resolution may add `href`. The `display` field records cross-reference display separately from reference spelling. A Carve writer reports `display` as unspellable (C2-I-096). A parsed `xref` always carries the namespace `heading`, read as the namespace of the document's ids, which numbered captions share (C2-H-095): the parse does not know whether the key names a heading or a caption.
 
 **C2-A-117** A `footnote_ref` carries `key` and `namespace: "footnote"`, and `number` once resolved. An `abbreviation` carries `key` and `namespace: "abbr"`, and may carry `expansion`.
 
@@ -622,7 +622,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-172** A parse, a render, a write and a lint run report into one diagnostics record that sits beside the tree. Nothing in the tree marks a node as diagnosed.
 
-**C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is `parse`, `render-loss` or `lint`, and a code belongs to one channel (C2-W-104). The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone.
+**C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is `parse`, `render-loss` or `lint`, and a code belongs to one channel (C2-W-104). The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone. An entry of the HTML importer is positioned in the bytes of its HTML input and may also carry `foreignType`, the name of the HTML node it is about (C2-M-081).
 
 **C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1. The `strictLosses` option turns render-loss entries into errors.
 

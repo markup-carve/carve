@@ -124,7 +124,7 @@ roses
 
 **C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them.
 
-**C2-H-019** A paragraph that holds only comments renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case.
+**C2-H-019** A paragraph that holds only comments and the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case, and so is one of braced comments on several lines.
 
 **C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`. The paragraph also keeps its `<p>` where it carries attributes or a `lang` (C2-H-018): the `<p>` carries them, and the `<img>` stands inside it on the same line, as inline content does.
 
@@ -1755,7 +1755,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans. It has four fields, each optional, and no other: `mentionUrl` and `tagUrl` are strings, and `resolveMention` and `resolveTag` are functions of the host. A template gives its string with each `{name}` replaced by the name, percent-encoded as UTF-8 with every character encoded except ASCII letters, digits and `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(` and `)`; no other part of the template is read. A resolver takes the name as written and returns a URL, or nothing. For a mention the resolver is asked first and the template is used when it returns nothing; a tag works the same with its own pair. An empty URL is no URL. The URL is a sink of the URL policy (C2-H-159).
 
-**C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off.
+**C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off. The HTML importer reads the same option: off, it drops comments and raw elements (C2-M-066).
 
 **C2-H-128** `urlPolicy` sets which URL schemes pass on `href`, `src` and every other URL sink: a deny list, whose default is the 0.1 list of script schemes and protocol-handler schemes, or an allow list. The option has no off value. The filter also removes blocked attribute names, event handlers among them, and blanks a `style` value that holds a URL function, as in 0.1 (PART 9 section 25). The list of blocked attribute names is a data file in `resources/`. C2-H-159 to C2-H-162 state the test and the filter. An object that holds both a deny list and an allow list is refused (C2-H-137); an empty object is the default deny list.
 
@@ -2021,7 +2021,7 @@ Example 34 (unverified, `--profile comment`)
 | `sections` | render | boolean | on | C2-H-127 |
 | `smartTypography` | render | boolean | on | C2-H-127 |
 | `roundtrip` | render | boolean | off | C2-H-127 |
-| `rawHtml` | render | boolean | off | C2-H-127 |
+| `rawHtml` | render, import | boolean | off | C2-H-127, C2-M-066 |
 | `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list, listed in `data/options.json` | C2-H-128 |
 | `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
 | `strictLosses` | render | boolean | off | C2-H-130 |
@@ -2030,7 +2030,7 @@ Example 34 (unverified, `--profile comment`)
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 
-Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, one is a format option and two are lint options.
+Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml` is read by the HTML importer as well (C2-M-066).
 
 ## The clauses of PART 10
 

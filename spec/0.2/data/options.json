@@ -100,10 +100,10 @@
     {
       "name": "rawHtml",
       "kind": "render",
-      "read_by": "render",
+      "read_by": ["import", "render"],
       "type": "boolean",
       "default": false,
-      "clauses": ["C2-H-127", "C2-H-137"]
+      "clauses": ["C2-H-127", "C2-H-137", "C2-M-066"]
     },
     {
       "name": "renderers",

@@ -827,10 +827,10 @@ Example 29 (unverified)
 - `div`: the element is a `div` with its attributes and its children read as blocks.
 - `span`: the element is a `span` with its attributes and its children read as inline content.
 - `unwrap`: the element gives no node, and its children are read in its place.
-- `raw`: the element is raw HTML (C2-M-065).
+- `raw`: the element is raw HTML (C2-M-065) when the import option `rawHtml` is on, and gives nothing when it is off (C2-M-066).
 - `drop`: the element and its content give nothing.
 
-**C2-M-057** Every treatment but `map` and `unwrap` is reported: `div` and `span` with `import-element-mapped`, `drop` with `import-element-dropped`. `unwrap` is reported with `import-element-mapped` unless the row says otherwise. The choice is fixed by the table; an importer does not choose another treatment.
+**C2-M-057** Every treatment but `map` and `unwrap` is reported: `div` and `span` with `import-element-mapped`, `drop` with `import-element-dropped`, and `raw` as C2-M-066 states. `unwrap` is reported with `import-element-mapped` unless the row says otherwise. The choice is fixed by the table; an importer does not choose another treatment.
 
 | Element | Treatment | Node | Note |
 |---|---|---|---|
@@ -841,7 +841,7 @@ Example 29 (unverified)
 | `address` | div | div |  |
 | `article` | div | div |  |
 | `aside` | map | admonition; div when it is none |  |
-| `audio` | raw | raw_block or raw_inline |  |
+| `audio` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `b` | map | strong |  |
 | `base` | drop |  | reported once with head |
 | `bdi` | span | span |  |
@@ -851,7 +851,7 @@ Example 29 (unverified)
 | `body` | unwrap |  | the document node; not reported |
 | `br` | map | hard_break |  |
 | `button` | span | span |  |
-| `canvas` | raw | raw_block or raw_inline |  |
+| `canvas` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `caption` | map | caption of the table |  |
 | `center` | div | div |  |
 | `cite` | span | span |  |
@@ -868,7 +868,7 @@ Example 29 (unverified)
 | `dl` | map | definition_list |  |
 | `dt` | map | definition_term |  |
 | `em` | map | emphasis |  |
-| `embed` | raw | raw_block or raw_inline |  |
+| `embed` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `fieldset` | div | div |  |
 | `figcaption` | map | caption |  |
 | `figure` | map | the captioned block, or figure_group |  |
@@ -887,9 +887,9 @@ Example 29 (unverified)
 | `hr` | map | thematic_break |  |
 | `html` | unwrap |  | the document node; not reported |
 | `i` | map | emphasis |  |
-| `iframe` | raw | raw_block or raw_inline |  |
+| `iframe` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `img` | map | image |  |
-| `input` | map | the task box of its item; raw elsewhere |  |
+| `input` | map | the task box of its item; raw elsewhere, nothing with `rawHtml` off |  |
 | `ins` | map | insert |  |
 | `kbd` | map | span with the key kbd |  |
 | `label` | span | span |  |
@@ -897,22 +897,22 @@ Example 29 (unverified)
 | `li` | map | list_item |  |
 | `link` | drop |  | reported once with head |
 | `main` | div | div |  |
-| `map` | raw | raw_block or raw_inline |  |
+| `map` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `mark` | map | highlight |  |
 | `math` | map | math |  |
 | `menu` | map | list, bullet |  |
 | `meta` | drop |  | reported once with head |
-| `meter` | raw | raw_block or raw_inline |  |
+| `meter` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `nav` | div | div |  |
-| `noscript` | raw | raw_block or raw_inline |  |
-| `object` | raw | raw_block or raw_inline |  |
+| `noscript` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
+| `object` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `ol` | map | list, ordered |  |
 | `output` | span | span |  |
 | `p` | map | paragraph |  |
 | `param` | drop |  |  |
 | `picture` | unwrap |  | its img is read |
 | `pre` | map | code_block |  |
-| `progress` | raw | raw_block or raw_inline |  |
+| `progress` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `q` | span | span |  |
 | `rb` | map | ruby |  |
 | `rp` | drop |  | not reported |
@@ -920,25 +920,25 @@ Example 29 (unverified)
 | `ruby` | map | ruby |  |
 | `s` | map | strike |  |
 | `samp` | span | span |  |
-| `script` | raw | raw_block or raw_inline |  |
+| `script` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `search` | div | div |  |
 | `section` | map | heading and its blocks, a footnote section, or a div |  |
-| `select` | raw | raw_block or raw_inline |  |
+| `select` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `small` | span | span |  |
 | `source` | drop |  |  |
 | `span` | map | span, or a convention |  |
 | `strike` | map | strike |  |
 | `strong` | map | strong |  |
-| `style` | raw | raw_block or raw_inline |  |
+| `style` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `sub` | map | subscript |  |
 | `summary` | map | the first paragraph of its details |  |
 | `sup` | map | superscript, or a footnote reference |  |
-| `svg` | raw | raw_block or raw_inline |  |
+| `svg` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `table` | map | table |  |
 | `tbody` | map | table_body |  |
 | `td` | map | table_cell |  |
-| `template` | raw | raw_block; an abbreviation template where C2-H-187 reads it |  |
-| `textarea` | raw | raw_block or raw_inline |  |
+| `template` | raw | raw_block, nothing with `rawHtml` off; an abbreviation template where C2-H-187 reads it |  |
+| `textarea` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `tfoot` | map | table_foot |  |
 | `th` | map | table_cell |  |
 | `thead` | map | table_head |  |
@@ -950,7 +950,7 @@ Example 29 (unverified)
 | `u` | map | underline |  |
 | `ul` | map | list, bullet |  |
 | `var` | span | span |  |
-| `video` | raw | raw_block or raw_inline |  |
+| `video` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `wbr` | drop |  |  |
 
 **C2-M-058** An element whose counterpart needs a parent element and that stands outside it, such as an `<li>` outside a list or a `<figcaption>` outside a `<figure>`, is read with the treatment `unwrap`: its children are read in its place. These are `li`, `dt`, `dd`, `caption`, `figcaption`, `summary` and `legend`. The HTML parser already drops table parts outside a table.
@@ -1067,13 +1067,13 @@ The importer keeps the `<sup>` as a superscript around the reference and keeps t
 
 ## Raw content
 
-**C2-M-065** A comment is a `raw_inline` with the format `html` in inline content and a `raw_block` with the format `html` among blocks. An element of the treatment `raw` is the same, with its outer HTML as serialized by the HTML Standard as the value. A raw block value ends with a line feed (C2-A-045, C2-A-048).
+**C2-M-065** With the import option `rawHtml` on, a comment is a `raw_inline` with the format `html` in inline content and a `raw_block` with the format `html` among blocks. An element of the treatment `raw` is the same, with its outer HTML as serialized by the HTML Standard as the value. A raw block value ends with a line feed (C2-A-045, C2-A-048).
 
-**C2-M-066** The importer always produces raw content for these inputs, and has no option to drop it. Whether raw HTML reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
+**C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment and every element of the treatment `raw` is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of the table "Elements", every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node made from an element or a comment of the input, so neither the written source nor a later render with any setting carries that HTML. The option does not change what a carrier sets: a `data-carve-raw` span is still a `raw_inline` (C2-H-186). With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
 
 **C2-M-067** A reserved name of C2-H-115 is removed from an element before the element is serialized as raw content, as C2-H-186 requires.
 
-Example 34 (unverified)
+Example 34 (unverified, import option `rawHtml` on)
 
 ::: compare
 
@@ -1105,7 +1105,7 @@ a`<!-- inline -->`{=html}b
 
 The importer leaves out the final line feed of both raw blocks, which the writer reports as `field-unspellable`.
 
-Example 35 (unverified)
+Example 35 (unverified, import option `rawHtml` on)
 
 ::: compare
 
@@ -1126,6 +1126,32 @@ Video: `<iframe src="/v"></iframe>`{=html}
 :::
 
 The importer reads `<iframe>` as an empty span with the key `src`.
+
+Example 41 (unverified)
+
+::: compare
+
+```html
+<!-- note --><p>a<!-- inline -->b</p><script>run()</script>
+<p>Video: <iframe src="/v"></iframe></p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"ab"}]},
+  {"type":"paragraph","children":[{"type":"text","value":"Video:"}]}
+]
+```
+
+```carve
+ab
+
+Video:
+```
+
+:::
+
+The input of Examples 34 and 35 with `rawHtml` off, the default. The two comments, the script and the iframe give four `import-element-dropped` entries. The text around the inline comment is joined (C2-M-073), and the space before the iframe is removed at the end of its paragraph (C2-M-018) and reported with `import-whitespace-normalized`.
 
 ## Normalization
 
@@ -1238,7 +1264,7 @@ The importer reads `<wbr>` as a soft break, which renders as a space.
 
 **C2-M-080** An importer reports into the diagnostics record of C2-A-172. Every entry has a code, a severity, a position, a message and a channel (C2-A-173). The codes of the importer are in the render-loss channel, as those of the writer are (C2-W-104), and a code keeps that channel in every tool.
 
-**C2-M-081** The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them. An entry may also carry the path of the node it produced in the imported tree. The entry names the element by its lower-case tag name, or `#comment`, `#text` or `#doctype`.
+**C2-M-081** The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them. An entry may also carry the path of the node it produced in the imported tree. The entry names that node in the field `foreignType` (C2-A-173): its lower-case tag name, or `#comment`, `#text` or `#doctype`.
 
 **C2-M-082** Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported. The importer reports what it changed; the writer reports what it cannot spell (C2-M-074). `strictLosses` makes every render-loss entry an error (C2-A-174), the importer's included.
 
@@ -1249,16 +1275,16 @@ The importer reads `<wbr>` as a soft break, which renders as a space.
 | `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
-| `import-element-dropped` | warning | an element given nothing, with its content: the head, the doctype, the treatment `drop` |
+| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment and the treatment `raw` |
 | `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
 | `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a clamped row span, an empty node that held attributes, a ruby base without annotation |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
 
 ## The guarantee
 
-**C2-M-090** For Carve HTML rendered with `roundtrip`, C2-H-188 to C2-H-196 state what survives.
+**C2-M-090** For Carve HTML rendered with `roundtrip`, C2-H-188 to C2-H-196 state what survives. Both guarantees assume an import with the option `rawHtml` on; with it off, the comments and the elements of the treatment `raw` that the render passed through are also lost (C2-M-066).
 
-**C2-M-091** For Carve HTML rendered without `roundtrip` and not changed afterwards, an import gives back the parsed tree of the source, except for these losses: the losses of a render with `roundtrip` (C2-H-119, C2-H-193, C2-H-194, C2-H-195), the facts that the render itself does not write (comments, smart punctuation as glyphs, unresolved references, includes, denied destinations, filtered attributes and the other render losses of `html.md`), and every fact a carrier of C2-H-186 sets. Without the carrier, each element reads as it stands; the rows of `losses` in `data/import-html.json` say what comes back:
+**C2-M-091** For Carve HTML rendered without `roundtrip` and not changed afterwards, an import gives back the parsed tree of the source, except for these losses: the losses of a render with `roundtrip` (C2-H-119, C2-H-193, C2-H-194, C2-H-195), the facts that the render itself does not write (comments, smart punctuation as glyphs, unresolved references, includes, denied destinations, filtered attributes and the other render losses of `html.md`), every fact a carrier of C2-H-186 sets, and, with the import option `rawHtml` off, what C2-M-066 drops. Without the carrier, each element reads as it stands; the rows of `losses` in `data/import-html.json` say what comes back:
 
 | Carrier | Comes back as |
 |---|---|
@@ -1283,7 +1309,7 @@ The importer reads `<wbr>` as a soft break, which renders as a space.
 
 **C2-M-092** The list of C2-M-091 is complete as far as known. A tree fact that it does not name is expected to survive a render without `roundtrip` and an import. A round trip that loses another fact is a defect of this specification or of the engine.
 
-**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`). With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 rows 8 and 9, which the harness does not yet apply. With those rows all 434 come back equal after the listed losses.
+**C2-M-093** Evidence, measured on the 434 examples of the specification that the harness of the reference importer reads (`import/scripts/roundtrip.ts`, `carve-js` commit `cd8e431b`), whose importer keeps raw content as the option `rawHtml` on does. With `roundtrip`: 320 trees are equal as they stand and 431 after the losses the harness applies. Without `roundtrip`: 250 are equal as they stand and 337 after the same losses. Of the other 97, 94 differ only in facts of the table above, so 431 are equal after the losses of C2-M-091; this count attributes each remaining difference of the harness to a carrier and is not a mode of the harness. The remaining three are the same three in both runs, and their only differences are C2-H-195 rows 8 and 9, which the harness does not yet apply. With those rows all 434 come back equal after the listed losses.
 
 Example 40 (verified)
 
@@ -1329,4 +1355,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 40 examples: 26 verified and 14 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 41 examples: 26 verified and 15 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

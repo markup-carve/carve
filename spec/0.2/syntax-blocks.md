@@ -3714,7 +3714,29 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-139** Only the line form makes a comment-only line: a line that holds only a braced comment is a paragraph.
 
-**C2-B-140** A paragraph that holds only comments counts as content of its container and renders nothing: no empty paragraph element is written.
+**C2-B-140** A paragraph that holds only comments and the breaks between them counts as content of its container and renders nothing: no empty paragraph element is written.
+
+Example 266 (unverified)
+
+::: compare
+
+```carve
+a
+
+{%%}
+{%%}
+
+b
+```
+
+```html
+<p>a</p>
+<p>b</p>
+```
+
+:::
+
+The middle paragraph holds two braced comments and the soft break between them, and renders nothing.
 
 **C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.
 
@@ -6260,7 +6282,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 17 | 4 | 14 | 6 |
+| Comments | 17 | 4 | 14 | 7 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6269,7 +6291,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 1 | 18 | 15 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **99** |
+| **Total** | **228** | **13** | **166** | **100** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
