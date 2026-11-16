@@ -39,14 +39,14 @@
   ],
   "quotes": [
     { "kind": "left_double_quote", "source": "\"", "glyph": "“", "clauses": ["C2-I-104"] },
-    { "kind": "left_single_quote", "source": "'", "glyph": "‘", "clauses": ["C2-I-104", "C2-I-109"] },
-    { "kind": "right_double_quote", "source": "\"", "glyph": "”", "clauses": ["C2-I-104", "C2-I-106"] },
+    { "kind": "left_single_quote", "source": "'", "glyph": "‘", "clauses": ["C2-I-104"] },
+    { "kind": "right_double_quote", "source": "\"", "glyph": "”", "clauses": ["C2-I-104"] },
     {
       "kind": "right_single_quote",
       "source": "'",
       "glyph": "’",
       "apostrophe": true,
-      "clauses": ["C2-I-104", "C2-I-105", "C2-I-106", "C2-I-107", "C2-I-109"]
+      "clauses": ["C2-I-104", "C2-I-105"]
     }
   ],
   "dashes": [
@@ -54,19 +54,9 @@
     { "kind": "en_dash", "source": "--", "glyph": "–", "clauses": ["C2-I-111"] }
   ],
   "quote_opens_after": {
-    "positions": ["content_start", "whitespace", "no_break_space", "opening_curly_quote", "hyphen_or_dash"],
-    "chars": ["(", "/", ":", "=", "[", "{"],
+    "positions": ["content_start", "opening_mark_or_bracket", "whitespace", "no_break_space", "opening_straight_quote"],
+    "chars": ["(", ":", "=", "[", "{", "‘", "“"],
     "clauses": ["C2-I-104"]
-  },
-  "quote_closes_after_hyphen_dash_or_slash_before": {
-    "positions": ["content_end", "whitespace"],
-    "chars": ["!", "\"", "'", ")", ",", ".", ":", ";", "?", "]"],
-    "clauses": ["C2-I-106"]
-  },
-  "apostrophe_words": {
-    "words": ["bout", "cause", "em", "n", "til", "tis", "tisn", "twas", "twasn", "twere", "twill", "twould"],
-    "letter_case": "any",
-    "clauses": ["C2-I-107", "C2-I-108"]
   },
   "hyphen_run": {
     "min": 2,

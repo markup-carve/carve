@@ -20,7 +20,7 @@ Terms:
 - The *content* is the text of one of these, as the block pass left it. A table row is split into cells first, and each cell has a content of its own. Every rule below works on one content.
 - A *form* is one spelling of a construct, such as the braced form of emphasis. The `form` field of a reference node is written as a code word.
 - A *word character* is a Unicode letter or number (general category L or N, of the version C2-I-127 pins).
-- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104, C2-I-106, C2-I-109), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
+- *Whitespace* is a space, a tab or a line break. The start and the end of the content count as whitespace. Where a rule tests the character before or after a position (C2-I-023, C2-I-047, C2-I-048, C2-I-104), a no-break space counts as whitespace too, written as a backslash and a space (C2-I-011) or as the character U+00A0. It does not count where a rule needs a space as a separator, such as after a block marker.
 - Two things are *glued* when no character stands between them.
 - An *atom* is a form whose characters are taken as one token. The atoms are listed under C2-I-005.
 - A *bracket construct* is a form built on a bracket pair: a span, a link, an image, a reference, an inline footnote, an inline extension.
@@ -187,7 +187,7 @@ Example 110 (unverified)
 
 **C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
 
-**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `"a-"\ b` the second quote closes (C2-I-106), and `*\ a*` holds no strong.
+**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `a\ "b"` the first quote opens (C2-I-104), and `*\ a*` holds no strong.
 
 **C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
 
@@ -2017,19 +2017,9 @@ Example 93 (generated)
 
 Smart typography reads the text that the scan left as text and never reads inside an atom. Each match is a `smart_punctuation` node that keeps the typed characters in its `source` field (C2-A-098). The node is always built. The `smartTypography` option is a render option: it selects the glyph or the typed characters when the node is written (C2-H-078), and it does not change the tree. Where a clause below says that characters become a glyph, it names the glyph of that node.
 
-**C2-I-104** A straight quote opens at the start of content, after whitespace, after one of `(`, `[`, `{`, `=`, `:`, `/` or a hyphen or dash, and after an opening curly quote. Otherwise it closes. The start of a span's or a link's content is a start of content, and the end of a closed inline node counts as a word character. The rule holds for every node with inline content: emphasis, strong, the braced forms, a span, a link, an inline footnote and an inline extension. (carried over from 0.1)
+**C2-I-104** A straight quote, `"` or `'`, is read from its two neighbors alone, as C2-I-117 defines them: the characters of the same text on each side of it. A mark of a delimiter, a bracket that belongs to a construct and an atom are no neighbors, and a braced comment is transparent (C2-I-026). A no-break space and a hard break are whitespace (C2-I-011, C2-I-102). A quote opens when the neighbor before it is whitespace or opening punctuation, or when it has none because the quote stands at the start of the content or directly behind an opening mark or bracket. Otherwise it closes, also directly behind a closing mark, a closing bracket or an atom. Opening punctuation is one of `(`, `[`, `{`, `=`, `:`, `“` and `‘`, or a straight quote that opens. No quote looks past its neighbors and none depends on another quote that is not its neighbor: quotes do not pair, so an opening quote without a closing quote stays an opening quote.
 
-**Exception C2-I-105** A single quote before an ASCII digit is an apostrophe. (carried over from 0.1)
-
-**Exception C2-I-106** After a hyphen, a dash or a slash, a quote closes when the next character is absent, whitespace or one of `"`, `'`, `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]`. The next character is read from the source as written, so the backslash of a hard break is that character; only a braced comment is skipped (C2-I-026). (carried over from 0.1)
-
-**Exception C2-I-107** A single quote that would open and is followed by one of the words `tis`, `tisn`, `twas`, `twasn`, `twere`, `twill`, `twould`, `em`, `cause`, `til`, `n` and `bout`, in any letter case, is an apostrophe. The word is the run of ASCII letters behind the quote and ends where they end: a digit or punctuation may follow it, a letter outside ASCII may not.
-
-**Exception C2-I-108** When that word is followed by a single quote and then by a character that is neither a letter nor a number, the word is quoted and the first quote opens. The word `n` is exempt: `Rock 'n' roll` holds two apostrophes.
-
-**Exception C2-I-109** Single quotes do not nest. C2-I-108 is tested first: a quoted word opens also while a run is open, so `'a 'tis' b` holds two opening quotes. An opening single quote starts a run when none is open, and a closing single quote that does not stand after whitespace or inside a word ends it. While a run is open, a single quote that would open before a letter or a number is an apostrophe. The state is kept per content, and an inline footnote has its own. (carried over from 0.1)
-
-**C2-I-110** A quote that was emitted is never changed: an opening single quote stays an opening quote when no closing quote follows.
+**Exception C2-I-105** A single quote before an ASCII digit closes, also where C2-I-104 would open it. A single quote between two word characters closes by C2-I-104. Both are the apostrophe, which has the kind and the glyph of a closing single quote. (carried over from 0.1)
 
 Where the guess is wrong, the author types the curly character.
 
@@ -2057,21 +2047,25 @@ Example 94 (generated)
 
 :::
 
-Example 95 (generated)
+A quote after a space opens, whatever follows it, so a leading elision gets an opening quote. Where the apostrophe matters, the author types `’`.
+
+Example 95 (unverified)
 
 ::: compare
 
 ```carve
-'tis the season and 'em' and rock 'n' roll and 'I told 'em so,' he said.
+'tis the season and 'em' and rock 'n' roll and 'I told 'em so,' he said, and ’tis.
 ```
 
 ```html
-<p>’tis the season and ‘em’ and rock ’n’ roll and ‘I told ’em so,’ he said.</p>
+<p>‘tis the season and ‘em’ and rock ‘n’ roll and ‘I told ‘em so,’ he said, and ’tis.</p>
 ```
 
 :::
 
-Example 96 (generated)
+A hyphen, a dash and a slash are no opening punctuation, so a quote behind one closes.
+
+Example 96 (unverified)
 
 ::: compare
 
@@ -2080,14 +2074,14 @@ Example 96 (generated)
 ```
 
 ```html
-<p>“Wait—” he said and he said—“Go” and “app/config/”. and and/“or”</p>
+<p>“Wait—” he said and he said—”Go” and “app/config/”. and and/”or”</p>
 ```
 
 :::
 
-The opening quote has no partner and stays an opening quote.
+Quotes do not pair, so a quote inside a quotation opens after a space as the first one did.
 
-Example 97 (generated)
+Example 97 (unverified)
 
 ::: compare
 
@@ -2096,10 +2090,12 @@ Example 97 (generated)
 ```
 
 ```html
-<p>‘I said ’yes’ twice’ and ‘one’ ‘two’</p>
+<p>‘I said ‘yes’ twice’ and ‘one’ ‘two’</p>
 ```
 
 :::
+
+The opening quote has no partner and stays an opening quote.
 
 Example 98 (unverified)
 
@@ -2199,6 +2195,22 @@ Example 111 (unverified)
 
 ```html
 <p><del>→</del> and <del>←</del> and <ins>±1</ins> and <ins>±</ins> and C++-style and a±b</p>
+```
+
+:::
+
+A quote reads the same neighbors (C2-I-104). Behind the opening mark of a strong span a quote opens; behind a code span, a link or a closing mark it closes; a braced comment is transparent.
+
+Example 121 (unverified)
+
+::: compare
+
+```carve
+*'a'* and `x`'s and [b](/u)'s and {%c%}'d' and x{%c%}'s
+```
+
+```html
+<p><strong>‘a’</strong> and <code>x</code>’s and <a href="/u">b</a>’s and ‘d’ and x’s</p>
 ```
 
 :::
@@ -2354,13 +2366,13 @@ There is no fixed budget for the inline chapter.
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
-| Smart typography | 12 | 6 | 9 | 2 |
+| Smart typography | 7 | 2 | 6 | 6 |
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **124** | **22** | **73** | **46** |
+| **Total** | **119** | **18** | **70** | **50** |
 
-The chapter has 124 clauses, 22 of them exceptions, and 119 examples. The clause count includes the exceptions.
+The chapter has 119 clauses, 18 of them exceptions, and 120 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
