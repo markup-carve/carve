@@ -5269,9 +5269,9 @@ a,b
 
 :::
 
-**C2-B-209** The head of a delimited table is its first row unless `header-rows` gives a count (C2-B-210). A count N makes the first N rows the head, and 0 gives a table with no head. A count larger than the number of rows gives no head: every cell of the table is a header cell, and all rows stand in one body.
+**C2-B-209** The head of a delimited table is its first row unless `header-rows` gives a count (C2-B-210). A count N makes the first N rows the head, and 0 gives a table with no head. A count larger than the number of rows is the number of rows, so every row is in the head, and `table-row-count-clamped` reports the count.
 
-**C2-B-221** The `headRows` a table carries (C2-A-088) is the declared count as written, also where it is past the last row: `header-rows=5` on a table of two rows gives `headRows` 5 on its one body (C2-B-209), and the writer writes that count back (C2-W-066). `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187).
+**C2-B-221** The `headRows` a table carries (C2-A-088) is the effective count of C2-B-209, and the writer writes that count (C2-W-066): `header-rows=5` on a table of two rows gives the tree of `header-rows=2`, a head of both rows and no body. `footer-rows` counts on a delimited table as on a pipe table, from the last row upward and only below the head (C2-B-187), so where the two counts together exceed the rows the head takes its rows first: `header-rows=2 footer-rows=2` on three rows gives a head of two rows and a footer of one.
 
 **C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. A count is valid only in this form. Any other value is invalid, and the attribute then has no effect: the table keeps the partition it has without the attribute. A valid count takes effect also where it equals the default or selects no row.
 
@@ -5285,7 +5285,7 @@ a,b
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
 
-**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the table fields (C2-A-088, C2-A-089). A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the table fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
 Example 229 (generated)
 
@@ -5340,7 +5340,7 @@ Example 239 (unverified)
 
 :::
 
-Example 230 (generated)
+Example 230 (unverified)
 
 :::: compare
 
@@ -5378,10 +5378,10 @@ c,d
   </tbody>
 </table>
 <table>
-  <tbody>
-    <tr><th scope="row">a</th><th scope="row">b</th></tr>
-    <tr><th scope="row">c</th><th scope="row">d</th></tr>
-  </tbody>
+  <thead>
+    <tr><th scope="col">a</th><th scope="col">b</th></tr>
+    <tr><th scope="col">c</th><th scope="col">d</th></tr>
+  </thead>
 </table>
 ```
 
@@ -5612,10 +5612,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 9 | 2 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 2 | 20 | 7 |
+| Tables | 35 | 2 | 19 | 8 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **170** | **75** |
+| **Total** | **229** | **14** | **169** | **76** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

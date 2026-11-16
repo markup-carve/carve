@@ -1309,6 +1309,17 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "table-row-count-clamped",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["${key}=${count} asks for more rows than the table has, so it takes ${effective}. Write ${key}=${effective}."],
+      "message_origin": "data_file",
+      "reports": "a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209)",
+      "clauses": ["C2-B-187", "C2-B-209", "C2-B-227"]
+    },
+    {
       "id": "table-row-without-closing-pipe",
       "severity": "hint",
       "channel": "lint",

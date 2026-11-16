@@ -185,7 +185,7 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A table whose body carries `headRows` is written as a delimited table with its `header-rows` attribute, the only form that declares the field (C2-A-088). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A table whose body carries `headRows` is written as a delimited table with its `header-rows` attribute, the only form that declares the field (C2-A-088). A table whose rows all stand in its head has no body to carry the field; written as a delimited table it takes `header-rows` with the number of its head rows (C2-B-221). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035), except in a pipe table where the value of a node in a cell holds a line feed, as a code span that crossed rows does (C2-B-184): there the writer breaks the row into continuation rows at each such line feed, the only spelling of a pipe table that keeps the value. A delimited table writes such a cell in double quotes (C2-W-066). A break of the source that fell inside a label, which has no `value` to record it in (C2-L-020), is not kept: that cell is written on one line, and a `rawRef` that holds a line feed is written there with one space in its place (C2-W-075).
 
@@ -597,7 +597,7 @@ The `include-` rules of 0.1 belong to the Includes document, which follows later
 | Severity | Rules and codes |
 |---|---|
 | error | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence`, `unclosed-frontmatter`, `delimited-table-malformed`, `fence-opener-fallback`, and the render-loss code `destination-denied` |
-| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, `comment-splits-table-row`, and the new rules marked hint in the next table |
+| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, `comment-splits-table-row`, `table-row-count-clamped`, and the new rules marked hint in the next table |
 
 `unclosed-container-fence` is an error also for a stray closer that opens a div running to the end. The `deprecated-` rules are warnings.
 
@@ -642,7 +642,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Five findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
+Six findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -652,6 +652,7 @@ Five findings of the syntax chapters, and one of the tree and writer chapters, h
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
 | `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
+| `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -727,6 +728,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
 | an invalid `aligns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
+| a `header-rows` or `footer-rows` count past the rows | `table-row-count-clamped` |
 | a comment between a table row and its continuation row | `comment-splits-table-row` |
 | `**bold**` | `markdown-strong-double-star` |
 | a row without a closing pipe | `table-shaped-paragraph` |

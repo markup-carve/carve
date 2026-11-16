@@ -373,7 +373,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that hold only header cells, and one body for the rest (C2-B-178).
 
-**C2-A-088** A `table_body` whose partition the source declared carries `headRows`, also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
+**C2-A-088** A `table_body` whose partition the source declared carries `headRows`, the effective count (C2-B-221), also when the value is 0. A body the producer inferred omits it. The presence of the field is a tree fact and takes part in equality.
 
 **C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign`, `width` and `authored` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
 
