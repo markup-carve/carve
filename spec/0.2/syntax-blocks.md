@@ -3995,9 +3995,7 @@ Example 257 (unverified)
 ```
 
 ```html
-<blockquote>
-  <p>{.a}</p>
-</blockquote>
+<blockquote><p>{.a}</p></blockquote>
 ```
 
 :::
