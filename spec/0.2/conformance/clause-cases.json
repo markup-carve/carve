@@ -6872,6 +6872,124 @@
    "from": [
     "rs:S7-B-171-glued-prefix"
    ]
+  },
+  {
+   "id": "CC-079",
+   "clauses": [
+    "C2-H-007",
+    "C2-H-062"
+   ],
+   "why": "C2-H-007: A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. C2-H-062: An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption.",
+   "summary": "captioned math paragraph alone in a list item renders its figure on its own lines",
+   "input": "- $$`x`\n  ^ cap",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <figure>\n      <p><span class=\"math display\" role=\"math\">\\[x\\]</span></p>\n      <figcaption>cap</figcaption>\n    </figure>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "math",
+            "display": true,
+            "value": "x"
+           }
+          ],
+          "role": "math",
+          "caption": {
+           "type": "caption",
+           "children": [
+            {
+             "type": "paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "cap"
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-080",
+   "clauses": [
+    "C2-H-040",
+    "C2-H-062"
+   ],
+   "why": "C2-H-040: A description with one visible block writes a paragraph without a caption bare; a captioned one is its figure (C2-H-062).",
+   "summary": "captioned math paragraph alone in a description renders its figure",
+   "input": ":: t\n: $$`x`\n  ^ cap",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>t</dt>\n  <dd>\n    <figure>\n      <p><span class=\"math display\" role=\"math\">\\[x\\]</span></p>\n      <figcaption>cap</figcaption>\n    </figure>\n  </dd>\n</dl>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       },
+       {
+        "type": "definition_description",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "math",
+            "display": true,
+            "value": "x"
+           }
+          ],
+          "role": "math",
+          "caption": {
+           "type": "caption",
+           "children": [
+            {
+             "type": "paragraph",
+             "children": [
+              {
+               "type": "text",
+               "value": "cap"
+              }
+             ]
+            }
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

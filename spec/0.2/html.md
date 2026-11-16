@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause and of C2-H-006: its `<img>` stands on its own line inside the item or the quote. A display math paragraph is one, and is written on one line.
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause and of C2-H-006: its `<img>` stands on its own line inside the item or the quote. A display math paragraph without a caption is one, and is written on one line; a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
@@ -437,7 +437,7 @@ Example 40 (unverified)
 
 **C2-H-039** A term holds inline content and never a `<p>`.
 
-**C2-H-040** A description with one visible block writes a paragraph bare. A description with several visible blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the visible blocks of the description, as C2-H-006 does for a quote: a comment and a definition are not counted. A description list has no `spacing` field.
+**C2-H-040** A description with one visible block writes a paragraph without a caption bare; a captioned one is its figure (C2-H-062). A description with several visible blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the visible blocks of the description, as C2-H-006 does for a quote: a comment and a definition are not counted. A description list has no `spacing` field.
 
 Example 9 (generated)
 
