@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: inline content
 
-Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 2 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how inline content becomes inline nodes. Block structure, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of an inline decision.
 
