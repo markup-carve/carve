@@ -1562,6 +1562,16 @@
       "silent": true
     },
     {
+      "id": "U-183",
+      "kind": "escape",
+      "group": "measured ownership and inline rewrites",
+      "from": "![a][nope]\n^ cap",
+      "to": "\\![a][nope]\n^ cap",
+      "meaning02": "<figure>\n  <p>![a][nope]</p>\n  <figcaption>cap</figcaption>\n</figure>",
+      "toolEntry": "U-183",
+      "silent": true
+    },
+    {
       "id": "U-184",
       "kind": "escape",
       "group": "measured ownership and inline rewrites",
@@ -1629,16 +1639,6 @@
       "to": "x{.k title=“`\"} y`\n",
       "meaning02": "C2-I-104 closes a quote before a hard break as 0.1 did, so that case needs no rewrite. C2-I-017 reads the unclosed backtick as text; the rendered Unicode quote and a closing run keep the 0.1 HTML <p>x{.k title=“<code>\"} y</code></p>.",
       "toolEntry": "U-190",
-      "silent": true
-    },
-    {
-      "id": "U-191",
-      "kind": "rewrite",
-      "group": "measured ownership and inline rewrites",
-      "from": "```s\t\"\"\n",
-      "to": "```s\t\n",
-      "meaning02": "C2-B-117 omits the title when its quoted value is empty.",
-      "toolEntry": "U-191",
       "silent": true
     },
     {

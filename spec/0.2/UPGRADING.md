@@ -496,6 +496,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-180 | An indented description mark below a term is term text under C2-B-067,C2-B-069 **SILENT** | :: t ⏎  : b |  :: t ⏎  : b; rewrite |
 | U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
 | U-182 | Under C2-I-044 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
+| U-183 | Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1. **SILENT** | The same 0.2 source writes a figure with the text `![a][nope]` and the caption `cap`. | Escape the image opener as `\![a][nope]`; escape |
 | U-184 | A nested list opener or pending attribute changes item ownership under C2-B-056,C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
 | U-185 | An equals marker alone in a table row starts a header section under C2-B-179,C2-B-182 **SILENT** | \|=\| | \|\=\|; escape |
 | U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
@@ -510,7 +511,6 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
 | U-190 | Under C2-I-035, `-"` before a hard break writes a closing smart quote, and <code>x{.k title="&#96;"} y</code> reads its backtick as code to the end in 0.1. **SILENT** | The quote before a hard break closes, as in 0.1 (C2-I-104), and needs no change. In <code>x{.k title="&#96;"} y</code> the backtick has no closer and is text (C2-I-017), and the brace opens no attribute block. | Write the rendered Unicode quote before the backtick and close the code span where the content ends, <code>x{.k title=“&#96;"} y&#96;</code>, when the complete HTML check passes; rewrite |
-| U-191 | Under C2-B-117, a code fence with `s` and an empty quoted title has no title attribute. **SILENT** | The same fence writes `title=""`. | Remove the empty quoted title; rewrite |
 | U-192 | Under C2-B-103, `[]{:r lang}` writes an empty `lang` attribute. **SILENT** | The language shorthand wins and writes `lang="r"`. | Remove the shorthand, including when a later separate `lang` attribute supplies the old value; rewrite |
 | U-193 | Under C2-B-067 and C2-B-069, `:: ` followed by a tab and `x` writes the tab in the term. **SILENT** | The tab is marker padding and the term is `x`. | Review the term; report |
 | U-194 | Under C2-B-171, a table cell beginning with a tab and `---` writes the tab and a smart dash. **SILENT** | The tab is cell padding and only the smart dash remains. | Review the cell; report |
@@ -574,7 +574,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-258 | Under C2-I-017, a backtick run with no closing run of its length, <code>a &#96;b c</code>, is code to the end of the content in 0.1. **SILENT** | The run is text. | Close the span where the code ends, <code>a &#96;b c&#96;</code>; rewrite |
 | U-259 | Under C2-B-173 and C2-B-174, a span mark that cannot join, `\|= ^\|`, is an empty cell in 0.1. | A cell that holds `^` as text, reported by `table-span-marker-blocked`. | Write an empty cell, `\|= \|`; rewrite |
 
-U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-183, U-196 and U-231 are withdrawn for the same reason: `![][]` above `^ a` stays paragraph text, since its brackets are text (C2-I-072, C2-B-197), and `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104).
+U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
 
 ## Part 2. Integrators: your code and your pages
 
