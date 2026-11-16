@@ -20,10 +20,10 @@
     { "name": "srcdoc", "match": "name", "clauses": ["C2-H-161"] }
   ],
   "url_list_attributes": [
-    { "name": "attributionsrc", "separators": ["ascii_whitespace"], "clauses": ["C2-H-161"] },
-    { "name": "imagesrcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-161"] },
-    { "name": "ping", "separators": ["ascii_whitespace"], "clauses": ["C2-H-161"] },
-    { "name": "srcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-161"] }
+    { "name": "attributionsrc", "separators": ["ascii_whitespace"], "clauses": ["C2-H-159", "C2-H-160", "C2-H-161"] },
+    { "name": "imagesrcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-159", "C2-H-160", "C2-H-161"] },
+    { "name": "ping", "separators": ["ascii_whitespace"], "clauses": ["C2-H-159", "C2-H-160", "C2-H-161"] },
+    { "name": "srcset", "separators": ["comma", "ascii_whitespace"], "clauses": ["C2-H-159", "C2-H-160", "C2-H-161"] }
   ],
   "style_patterns": [
     { "text": "-moz-binding", "clauses": ["C2-H-162"] },

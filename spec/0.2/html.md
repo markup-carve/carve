@@ -1732,11 +1732,30 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-132** A render loss is an entry of the diagnostics record with the channel for render losses (C2-A-173). The 0.1 loss codes that apply to HTML stay: `raw-format-dropped`, `destination-denied`, `carrier-attribute-dropped`. The catalog lists every code of the channel (C2-W-113). `destination-denied` has the severity error.
 
-**C2-H-159** The URL sinks are the `href` of a link and of an autolink, the `src` of an image, and a URL that a `social` template gives (C2-H-126). A destination is tested on a copy: first every character of the list `probe_removes` of `data/url-policy.json` is removed from it, anywhere in the value, so `java` U+0001 `script:` tests as `javascript:`. U+FFFD is on the list because a U+0000 of the source is read as U+FFFD (C2-B-218) before the test. When the rest starts with an ASCII letter, then ASCII letters, digits, `+`, `-` and `.`, and then a colon, that run is the scheme, compared without ASCII case. A destination with no scheme, such as a relative path or a fragment, passes under a deny list and under an allow list. The `default` of `urlPolicy` in `data/options.json` is the default deny list.
+**C2-H-159** The URL sinks are the `href` of a link and of an autolink, the `src` of an image, each token of an authored attribute of the list `url_list_attributes` (C2-H-161), and a URL that a `social` template gives (C2-H-126). A destination is tested on a copy: first every character of the list `probe_removes` of `data/url-policy.json` is removed from it, anywhere in the value, so `java` U+0001 `script:` tests as `javascript:`. U+FFFD is on the list because a U+0000 of the source is read as U+FFFD (C2-B-218) before the test. When the rest starts with an ASCII letter, then ASCII letters, digits, `+`, `-` and `.`, and then a colon, that run is the scheme, compared without ASCII case. A destination with no scheme, such as a relative path or a fragment, passes under a deny list and under an allow list. A network-path reference such as `//x.org/p` is one: it takes the scheme of the page, as a relative path does. The `default` of `urlPolicy` in `data/options.json` is the default deny list.
 
 **C2-H-160** Under a deny list a destination fails when its scheme is on the list, and under an allow list when it is not. A failed destination is written as the empty value, `href=""` or `src=""`, and is reported with `destination-denied` once per destination. The link text, the alt text and the visible text of an autolink stay. An authored `href` on a link and an authored `src` on an image are not written: the destination stands, so an attribute block cannot bring back a failed one.
 
-**C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. A value that holds no colon is not tested. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test or when the unsplit value fails it: `ping="java script:x"` gives `ping=""`. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written. Three places need a word. Classes are tested one by one: an authored class that fails is left out and the others stay, the element's own classes among them. The `lang` field of a supplied tree is tested like an authored value. The expansion of an abbreviation definition is text and is not tested, while `abbr` and `time` written in an attribute block are authored values and are.
+**C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. A value that holds no colon is not tested. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test or the policy of C2-H-160, or when the unsplit value fails this test: `ping="java script:x"` gives `ping=""`, and so does an `https` URL in `srcset` under an allow list without `https`. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written. Three places need a word. Classes are tested one by one: an authored class that fails is left out and the others stay, the element's own classes among them. The `lang` field of a supplied tree is tested like an authored value. The expansion of an abbreviation definition is text and is not tested, while `abbr` and `time` written in an attribute block are authored values and are.
+
+Under an allow list a token of `srcset` meets the same policy as the `src` beside it, and a network-path reference has no scheme of its own (C2-H-159, C2-H-161).
+
+Example 55 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
+
+::: compare
+
+```carve
+![x](/i.png){srcset="https://x.org/i.png 1x"}
+
+[x](//x.org/p)
+```
+
+```html
+<img src="/i.png" alt="x" srcset="">
+<p><a href="//x.org/p">x</a></p>
+```
+
+:::
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
