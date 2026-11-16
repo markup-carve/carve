@@ -12296,7 +12296,7 @@
     },
     "paragraph": {
       "type": "object",
-      "description": "paragraph: C2-A-050",
+      "description": "paragraph: C2-A-050; a caption needs a role, C2-A-082",
       "properties": {
         "type": {
           "const": "paragraph"
@@ -12577,7 +12577,8 @@
         "type",
         "children"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "dependentRequired": { "caption": ["role"] }
     },
     "raw_block": {
       "type": "object",

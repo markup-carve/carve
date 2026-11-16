@@ -816,7 +816,7 @@
       "kind": "escape",
       "group": "new block shapes",
       "from": "```=html \"T\"\n<b>x</b>\n```\n",
-      "to": "{%%}```=html \"T\"\n<b>x</b>\n```\n",
+      "to": "{%%}```=html \"T\"\n<b>x</b>```\n```\n",
       "meaning02": "<pre><code class=\"language-html\">&lt;b&gt;x&lt;/b&gt;\n</code></pre>",
       "toolEntry": "U-105",
       "silent": true
@@ -1017,7 +1017,7 @@
       "group": "fences, quotes, comments",
       "from": "> +\n>",
       "to": ">\n>",
-      "meaning02": "C2-B-059 removes the 0.1 plus; an empty quote line can keep a following code-span paragraph separate.",
+      "meaning02": "C2-B-059 removes the 0.1 plus; an empty quote line can keep a following code-span paragraph separate. A backtick run 0.1 read to the end of its content is text in 0.2 (C2-I-017).",
       "toolEntry": "U-125",
       "silent": true
     },
@@ -1199,16 +1199,6 @@
       "to": "",
       "meaning02": "<p>/{/</p>",
       "toolEntry": "U-143",
-      "silent": true
-    },
-    {
-      "id": "U-144",
-      "kind": "report",
-      "group": "measured rendering changes",
-      "from": "{+-\"+}",
-      "to": "",
-      "meaning02": "<p><ins>-“</ins></p>",
-      "toolEntry": "U-144",
       "silent": true
     },
     {
@@ -1635,9 +1625,9 @@
       "id": "U-190",
       "kind": "rewrite",
       "group": "measured ownership and inline rewrites",
-      "from": "-\"\\\n",
-      "to": "-”\\\n",
-      "meaning02": "C2-I-035 permits the rendered Unicode quote to retain the older smart quote direction and to prevent a quoted attribute from becoming one opaque atom. The tool can replace multiple openers together after checking the complete HTML.",
+      "from": "x{.k title=\"`\"} y\n",
+      "to": "x{.k title=“`\"} y`\n",
+      "meaning02": "C2-I-104 closes a quote before a hard break as 0.1 did, so that case needs no rewrite. C2-I-017 reads the unclosed backtick as text; the rendered Unicode quote and a closing run keep the 0.1 HTML <p>x{.k title=“<code>\"} y</code></p>.",
       "toolEntry": "U-190",
       "silent": true
     },
@@ -2250,6 +2240,26 @@
       "meaning02": "C2-I-044 and C2-I-047 preserve the old note text when its bracket run is escaped inside a braced emphasis span.",
       "toolEntry": "U-257",
       "silent": true
+    },
+    {
+      "id": "U-258",
+      "kind": "rewrite",
+      "group": "rulings of 16 November",
+      "from": "a `b c\n",
+      "to": "a `b c`\n",
+      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>.",
+      "toolEntry": "U-258",
+      "silent": true
+    },
+    {
+      "id": "U-259",
+      "kind": "rewrite",
+      "group": "rulings of 16 November",
+      "from": "|= ^|\n",
+      "to": "|= |\n",
+      "meaning02": "C2-B-173 and C2-B-174 make a span mark that cannot join the text of its cell; an empty cell keeps the 0.1 <th scope=\"col\"></th>.",
+      "toolEntry": "U-259",
+      "silent": false
     }
   ],
   "tree": [
