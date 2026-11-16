@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost list when its marker matches under C2-B-049; otherwise it closes the open lists and opens a new one, whatever its value. A marker indented past an item's, description's or footnote body's marker opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line or directly on the marker line.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost open list when its marker matches under C2-B-049 and the container that holds that list owns the line (C2-B-025); otherwise it closes the open lists and opens a new one, whatever its value, in the innermost container that owns the line (C2-B-228). A marker indented past an item's, description's or footnote body's marker opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -540,6 +540,141 @@ Example 21 (generated)
 </code></pre>
   </li>
 </ul>
+```
+
+:::
+
+**C2-B-228** An interrupter closes the open paragraph, and the line is then read as a line with no paragraph open: C2-B-025 decides which containers own it, and an item, a description or a footnote body whose marker it is not indented past closes with every block inside it (C2-B-026). The lists inside a closed body are closed with it, so a list marker continues only a list whose container owns the line (C2-B-015, C2-B-054). This holds for every interrupter and every container whose body is its marker line and the lines indented past its marker. A line that is no interrupter stays a lazy line of the paragraph at any column (C2-B-012).
+
+The paragraph `one` is open in the footnote body. The marker on line 5 is left of every open list, and the footnote does not own a line at column 0, so the footnote closes and the marker opens a list at the top level (C2-B-228).
+
+Example 242 (unverified)
+
+::: compare
+
+```carve
+Text[^n].
+
+[^n]: note
+  - one
+- x
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<ul>
+  <li>x</li>
+</ul>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>one</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+The marker need not match the list in the note: any value opens the new list (C2-B-015).
+
+Example 243 (unverified)
+
+::: compare
+
+```carve
+Text[^n].
+
+[^n]: note
+  1. one
+2. x
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<ol start="2">
+  <li>x</li>
+</ol>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ol>
+        <li>one</li>
+      </ol>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+A description body closes the same way, and the description list closes with it. A list marker directly after description text stays a lazy line (C2-B-022); here the open paragraph is the item text `one`.
+
+Example 244 (unverified)
+
+::: compare
+
+```carve
+:: t
+: d
+  - one
+- x
+```
+
+```html
+<dl>
+  <dt>t</dt>
+  <dd>
+    <p>d</p>
+    <ul>
+      <li>one</li>
+    </ul>
+  </dd>
+</dl>
+<ul>
+  <li>x</li>
+</ul>
+```
+
+:::
+
+Plain text at column 0 is no interrupter, so it is a lazy line of `one` inside the note (C2-B-012).
+
+Example 245 (generated)
+
+::: compare
+
+```carve
+Text[^n].
+
+[^n]: note
+  - one
+x
+```
+
+```html
+<p>Text<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note</p>
+      <ul>
+        <li>one
+x</li>
+      </ul>
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -1040,7 +1175,7 @@ Example 45 (unverified)
 
 **C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart (C2-B-142).
 
-**C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
+**C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
 
 **Exception C2-B-055** A marker between the columns of two open lists joins the deeper list, and `list-marker-below-content-column` reports it.
 
@@ -5429,7 +5564,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 |---|---|---|---|---|
 | Preliminaries | 11 | 1 | 4 | 4 |
 | Paragraphs and interrupters | 15 | 3 | 6 | 2 |
-| Container ownership and stripping | 6 | 0 | 2 | 3 |
+| Container ownership and stripping | 7 | 0 | 3 | 6 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
@@ -5452,9 +5587,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 2 | 20 | 7 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **227** | **15** | **169** | **70** |
+| **Total** | **228** | **15** | **170** | **73** |
 
-The chapter has 227 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 228 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

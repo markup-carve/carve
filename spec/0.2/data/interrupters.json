@@ -22,7 +22,7 @@
       "when": ["at_open_list_column", "indented_past_enclosing_marker"],
       "carries_quote_marks": true,
       "not_when": ["at_description_list_column_after_term_or_description_text", "left_of_list_column_after_item_text"],
-      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-056"]
+      "clauses": ["C2-B-013", "C2-B-015", "C2-B-020", "C2-B-021", "C2-B-022", "C2-B-030", "C2-B-056", "C2-B-228"]
     },
     {
       "name": "c",

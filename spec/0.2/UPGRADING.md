@@ -227,6 +227,7 @@ These rulings change what some documents give against the 0.1 engine or against 
 | A code span line that ends in a backslash and one space | 0.1: the space was removed. | The escaped space stays in the code value; a tab there is still removed. | C2-I-002 |
 | A div opener with a sigil glued to a word, `::: >a`, or with a first word that is no name, `::: *` | 0.1: text. Early 0.2: a div. | `::: >a` opens a quote fence, `::: *` an anonymous div; the words are reported. | C2-B-119, C2-B-122 |
 | An abbreviation expansion after two spaces or after a space and a tab: `*[HTML]:  Hyper Text` | 0.1 and early 0.2: the leading space or tab was dropped. | It is the first character of the expansion, as `title=" Hyper Text"`. | C2-B-084 |
+| A list marker at column 0 directly below item text of a list inside a footnote or a description: `[^n]: note`, `  - one`, `- x` | Early 0.2: a lazy line, so `- x` was text of `one`. | The note or the description closes and the marker opens a list at the top level, as in 0.1. | C2-B-015, C2-B-228 |
 
 ### Worked source changes
 
