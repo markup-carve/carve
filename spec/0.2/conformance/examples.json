@@ -71231,8 +71231,7 @@
     "C2-N-043",
     "C2-N-044",
     "C2-N-045",
-    "C2-N-046",
-    "C2-N-047"
+    "C2-N-046"
    ],
    "kind": "include",
    "files": {
@@ -71325,8 +71324,7 @@
     "C2-N-043",
     "C2-N-044",
     "C2-N-045",
-    "C2-N-046",
-    "C2-N-047"
+    "C2-N-046"
    ],
    "kind": "include",
    "files": {
@@ -71395,8 +71393,7 @@
     "C2-N-043",
     "C2-N-044",
     "C2-N-045",
-    "C2-N-046",
-    "C2-N-047"
+    "C2-N-046"
    ],
    "kind": "include",
    "files": {
@@ -71625,6 +71622,139 @@
       }
      ],
      "srcByteLength": 38,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
+  },
+  {
+   "id": "includes-34",
+   "document": "includes.md",
+   "number": 34,
+   "section": "Code",
+   "clauses": [
+    "C2-N-042",
+    "C2-N-043",
+    "C2-N-044",
+    "C2-N-045",
+    "C2-N-046"
+   ],
+   "kind": "include",
+   "files": {
+    "a.csv": {
+     "text": "Name\n\"first\n#region keep\nmid\n#endregion keep\nlast\"\n"
+    }
+   },
+   "input": "{table}\n{{ a.csv @code:csv }}",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">Name</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>first\n#region keep\nmid\n#endregion keep\nlast</td></tr>\n  </tbody>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "include",
+       "path": "a.csv",
+       "options": {
+        "code": "csv"
+       },
+       "attrs": {
+        "keyValues": [
+         [
+          "table",
+          ""
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 22,
+        "startOffset": 0,
+        "endOffset": 29
+       },
+       "file": "a.csv",
+       "children": [
+        {
+         "type": "table",
+         "columns": [
+          {
+           "type": "table_column"
+          }
+         ],
+         "children": [
+          {
+           "type": "table_head",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": true,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "Name"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_body",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": false,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "first\n#region keep\nmid\n#endregion keep\nlast"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 6,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 50,
+          "file": "a.csv"
+         }
+        }
+       ]
+      }
+     ],
+     "srcByteLength": 29,
      "stages": [
       "includeExpansion",
       "referenceResolution",
