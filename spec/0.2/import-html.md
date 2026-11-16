@@ -341,7 +341,7 @@ The first box gives the task mark; the second is dropped, and the space before `
 
 Reported: `import-element-dropped`, `import-whitespace-normalized`.
 
-**C2-M-033** A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034). A list is also loose when an item holds more than one block that is no list. Otherwise it is tight. A list with one item is tight (C2-B-062).
+**C2-M-033** A list is loose when an item has a `<p>` with no attribute as its first child, after whitespace and the task box, since a tight list writes that paragraph bare (C2-H-034). A list is also loose when an item holds more than one block that is no list. Otherwise it is tight. A list with one item is tight even so (C2-B-062).
 
 **C2-M-034** A child of a list that is no `<li>` is dropped with its content and reported with `import-structure-repaired`. Text that holds only whitespace is not such a child.
 
