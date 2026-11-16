@@ -200,7 +200,7 @@ Top.
 
 **C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1.
 
-**C2-N-021** The frontmatter of an included file is that file's frontmatter: it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document.
+**C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
 
 Example 5 (unverified)
 
@@ -240,6 +240,33 @@ Top.
   ]
 }
 ```
+
+Example 35 (unverified)
+
+File `a.crv`:
+
+```carve
+---
+x
+---
+```
+
+::: compare
+
+```carve
+{{ a.crv @code }}
+```
+
+```html
+<pre><code>---
+x
+---
+</code></pre>
+```
+
+:::
+
+With `code` the include has one child, the code block, and the frontmatter lines are its content.
 
 **C2-N-022** A directive may stand wherever a block line stands: as the only block of a list item, a description or a quote, or among other blocks. The include is then a child of that container, and its children are blocks of that container for rendering (C2-N-075). The spacing of the list is decided in the including file (C2-B-062): blank lines inside the included file do not make the list loose.
 
@@ -1272,7 +1299,7 @@ I13 and I14 were unassigned in 0.1.
 | --- | --- | --- | --- |
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
-| Expansion | 9 | 0 | 6 |
+| Expansion | 9 | 0 | 7 |
 | Selection, transforms and mode | 29 | 0 | 14 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
@@ -1281,6 +1308,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **34** |
+| **Total** | **88** | **2** | **35** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 34 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 35 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

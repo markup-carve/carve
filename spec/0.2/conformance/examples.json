@@ -70140,6 +70140,79 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
+   "id": "includes-35",
+   "document": "includes.md",
+   "number": 35,
+   "section": "Expansion",
+   "clauses": [
+    "C2-N-015",
+    "C2-N-016",
+    "C2-N-017",
+    "C2-N-018",
+    "C2-N-019",
+    "C2-N-020",
+    "C2-N-021",
+    "C2-N-022",
+    "C2-N-023"
+   ],
+   "kind": "include",
+   "files": {
+    "a.crv": {
+     "text": "---\nx\n---\n"
+    }
+   },
+   "input": "{{ a.crv @code }}",
+   "options": {},
+   "expected": {
+    "html": "<pre><code>---\nx\n---\n</code></pre>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "include",
+       "path": "a.crv",
+       "options": {
+        "code": true
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 18,
+        "startOffset": 0,
+        "endOffset": 17
+       },
+       "file": "a.crv",
+       "children": [
+        {
+         "type": "code_block",
+         "value": "---\nx\n---\n",
+         "pos": {
+          "startLine": 1,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 9,
+          "file": "a.crv"
+         }
+        }
+       ]
+      }
+     ],
+     "srcByteLength": 17,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
+  },
+  {
    "id": "includes-6",
    "document": "includes.md",
    "number": 6,
