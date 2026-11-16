@@ -231,6 +231,17 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "comment-splits-table-row",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["This comment stands between a table row and its continuation, so it belongs after the whole row. Move it above the row or below the continuation."],
+      "message_origin": "data_file",
+      "reports": "a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-A-086, C2-B-175)",
+      "clauses": ["C2-A-086", "C2-B-175", "C2-W-135", "C2-W-137"]
+    },
+    {
       "id": "consumed-key-near-miss",
       "severity": "warning",
       "channel": "lint",

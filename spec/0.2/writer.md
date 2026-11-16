@@ -597,7 +597,7 @@ The `include-` rules of 0.1 belong to the Includes document, which follows later
 | Severity | Rules and codes |
 |---|---|
 | error | `unclosed-code-fence`, `unclosed-container-fence`, `unclosed-comment-fence`, `unclosed-frontmatter`, `delimited-table-malformed`, `fence-opener-fallback`, and the render-loss code `destination-denied` |
-| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, and the new rules marked hint in the next table |
+| hint | `comment-shaped-emphasis`, `glob-shaped-strong`, `thematic-break-spelling`, `comment-splits-table-row`, and the new rules marked hint in the next table |
 
 `unclosed-container-fence` is an error also for a stray closer that opens a div running to the end. The `deprecated-` rules are warnings.
 
@@ -642,7 +642,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Five findings of the syntax chapters had no rule. Their ids are new in this document.
+Five findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -651,6 +651,7 @@ Five findings of the syntax chapters had no rule. Their ids are new in this docu
 | `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
 | `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
+| `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -726,8 +727,23 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
 | an invalid `aligns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
+| a comment between a table row and its continuation row | `comment-splits-table-row` |
 | `**bold**` | `markdown-strong-double-star` |
 | a row without a closing pipe | `table-shaped-paragraph` |
+
+**C2-W-137** `comment-splits-table-row` reports a comment between a table row and its continuation row (C2-B-175), as a comment-only line or as the trailing comment of the row, at the comment. The comment belongs to the row's group after the whole row (C2-A-086), so it does not stay where it was written, and where it ends the last group the writer keeps it there only with an empty continuation row behind it (C2-W-135). The message suggests moving the comment above the row or below its last continuation row. The rule is a hint and changes neither the tree nor `fmt` (C2-W-108).
+
+Example 8 (unverified)
+
+Input:
+
+```carve
+| a |
+%% x
++ b |
+```
+
+Reported: `comment-splits-table-row`, severity hint, on line 2, offsets 6 to 10.
 
 ## Out of scope
 
@@ -828,7 +844,7 @@ One point is open.
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 10 | 0 | 0 | 0 |
-| **Total** | **136** | **7** | **5** | **2** |
+| Diagnostics and lint | 11 | 0 | 0 | 1 |
+| **Total** | **137** | **7** | **5** | **3** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 7 examples, 5 generated and 2 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 137 clauses, 7 of them marked with the word "Exception", and 8 examples, 5 generated and 3 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
