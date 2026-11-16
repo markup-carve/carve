@@ -875,7 +875,7 @@ Deep.
 
 :::
 
-**C2-N-065** The size cap `include_bytes` of `data/limits.json`, 8388608, bounds the sum of the UTF-8 byte lengths of every text the resolver returns in one expansion, the same file counted each time it is read. A text that would carry the sum past the cap is refused with `include-budget` (`size_exceeded`), and once the sum has reached the cap every later include is refused with `include-budget` before its resolver is called (`size_spent`). A host may lower the cap and may not raise it.
+**C2-N-065** The size cap `include_bytes` of `data/limits.json`, 8388608, bounds the sum of the UTF-8 byte lengths of every text the resolver returns in one expansion, the same file counted each time it is read. A text that would carry the sum past the cap is refused with `include-budget` (`size_exceeded`) and does not count toward the sum, and once the sum has reached the cap every later include is refused with `include-budget` before its resolver is called (`size_spent`). A host may lower the cap and may not raise it.
 
 **C2-N-066** A cycle is an include whose returned id is the id of the top-level document or the `file` of an include around it. It is refused with `include-cycle`, so a file that includes itself, directly or through other files, is read once on that chain.
 
