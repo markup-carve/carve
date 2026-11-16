@@ -969,7 +969,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "reports": "an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment and the treatment `raw`",
+      "reports": "an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span",
       "clauses": ["C2-M-005", "C2-M-046", "C2-M-057", "C2-M-066"]
     },
     {

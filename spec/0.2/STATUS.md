@@ -10,7 +10,7 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 
 | Document | Prefix | Clauses | Rules | Exceptions | Labeled | Examples |
 |---|---|---|---|---|---|---|
-| `syntax-blocks.md` | C2-B | 228 | 228 | 34 | 13 | 268 |
+| `syntax-blocks.md` | C2-B | 228 | 228 | 34 | 13 | 269 |
 | `syntax-inline.md` | C2-I | 118 | 152 | 35 | 17 | 121 |
 | `ast.md` | C2-A | 213 | 413 | 61 | 3 | 0 |
 | `html.md` | C2-H | 198 | 465 | 86 | 7 | 56 |
@@ -18,8 +18,8 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `source-layout.md` | C2-L | 56 | 84 | 19 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 211 | 47 | 2 | 33 |
 | `extensions.md` | C2-X | 51 | 84 | 8 | 0 | 0 |
-| `import-html.md` | C2-M | 84 | 214 | 40 | 1 | 41 |
-| **Total** | | **1,172** | **2,155** | **419** | **50** | **530** |
+| `import-html.md` | C2-M | 84 | 214 | 40 | 1 | 42 |
+| **Total** | | **1,172** | **2,155** | **419** | **50** | **532** |
 
 `UPGRADING.md` is a non-normative guide with its upgrade map.
 
@@ -33,8 +33,8 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 
 - `npm run spec2:data`: every data file against its schema and its clauses, the documents against each other (clause ids cited anywhere, example numbers, count tables and count sentences, codes against the catalog, the option table), and the two gates below.
 - `npm run spec2:unicode`: the Unicode category ranges against UnicodeData.txt of the pinned version 18.0.0.
-- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 501 positive trees with positions, 41 imported trees, 35 refused trees, the equal pair of blocks Examples 267 and 268, and 7 layout sidecars; every node type and field of the schema occurs.
-- The corpus (`scripts/spec2-conformance.mjs`): 530 examples and 35 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; 78 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
+- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 502 positive trees with positions, 42 imported trees, 35 refused trees, the equal pair of blocks Examples 267 and 268, and 7 layout sidecars; every node type and field of the schema occurs.
+- The corpus (`scripts/spec2-conformance.mjs`): 532 examples and 35 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; 78 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
@@ -55,8 +55,5 @@ The standard extensions. The mechanism of `extensions.md` is part of the candida
 
 ## Known open points
 
-- **O6.** Whether a `data-carve-raw` span is also dropped under the import option `rawHtml` off (C2-M-066, C2-H-186). With the maintainer.
-- **O7.** The status line of the include examples: all are marked unverified with a reason that is stale since carve-js expands includes (`includes.md`, conventions). With the maintainer.
-- **O8.** A paragraph that holds a hard break and then a comment-only line. C2-H-069 does not write the break, and C2-H-019 renders nothing only for "only comments and the breaks between them", so the paragraph writes `<p></p>`. Whether that is intended is not ruled.
 - **O9.** The layout sidecar has no gate of its own beyond `trees/layouts.json`. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
 - **O10.** Annotation ranges (C2-A-204) are anchored for an unchanged tree only; how their paths follow an edit is not part of 0.2.0.

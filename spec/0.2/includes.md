@@ -8,7 +8,7 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-N-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-H-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the HTML document, the sidecar document and the writer document. `I1` to `I16` name the rules of the 0.1 include section.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
-- An example names the files a resolver serves, each in a fenced block below a line `File`, then a `compare` container with the entry document and the expected HTML, and where the tree matters the tree in JSON. The resolver of an example serves exactly those files under the names shown and returns each name as its id. Every example is *unverified*: no engine expands an include under these clauses yet.
+- An example names the files a resolver serves, each in a fenced block below a line `File`, then a `compare` container with the entry document and the expected HTML, and where the tree matters the tree in JSON. The resolver of an example serves exactly those files under the names shown and returns each name as its id. Every example is *unverified*: the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked.
 - JSON examples leave out `pos` unless the example is about positions, and leave out the nodes the example is not about.
 - The tables that decide a rule are data files: `data/includes.json` lists the failure causes and the option combinations, `data/include-options.json` the options, and `data/limits.json` the two limits.
 

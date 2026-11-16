@@ -54,7 +54,7 @@ const GENERATED = {
 }
 const UNVERIFIED = {
   writer: 'the written source was written by hand from the clauses (writer.md, conventions)',
-  includes: 'no engine expands an include under these clauses yet (includes.md, conventions)',
+  includes: 'the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)',
   'import-html': 'the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)',
   default: 'the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)',
 }

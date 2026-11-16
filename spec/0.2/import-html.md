@@ -1069,7 +1069,7 @@ The importer keeps the `<sup>` as a superscript around the reference and keeps t
 
 **C2-M-065** With the import option `rawHtml` on, a comment is a `raw_inline` with the format `html` in inline content and a `raw_block` with the format `html` among blocks. An element of the treatment `raw` is the same, with its outer HTML as serialized by the HTML Standard as the value. A raw block value ends with a line feed (C2-A-045, C2-A-048).
 
-**C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment and every element of the treatment `raw` is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of the table "Elements", every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node made from an element or a comment of the input, so neither the written source nor a later render with any setting carries that HTML. The option does not change what a carrier sets: a `data-carve-raw` span is still a `raw_inline` (C2-H-186). With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
+**C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment, every element of the treatment `raw` and every `data-carve-raw` span (C2-H-186) is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of the table "Elements", every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node, so neither the written source nor a later render with any setting carries raw content of the input. With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
 
 **C2-M-067** A reserved name of C2-H-115 is removed from an element before the element is serialized as raw content, as C2-H-186 requires.
 
@@ -1152,6 +1152,28 @@ Video:
 :::
 
 The input of Examples 34 and 35 with `rawHtml` off, the default. The two comments, the script and the iframe give four `import-element-dropped` entries. The text around the inline comment is joined (C2-M-073), and the space before the iframe is removed at the end of its paragraph (C2-M-018) and reported with `import-whitespace-normalized`.
+
+Example 42 (unverified)
+
+::: compare
+
+```html
+<p>a<span data-carve-raw="html">&lt;script&gt;x()&lt;/script&gt;</span>b</p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"ab"}]}
+]
+```
+
+```carve
+ab
+```
+
+:::
+
+With `rawHtml` off, the default, the raw span that a render with `roundtrip` wrote is dropped and gives one `import-element-dropped` entry whose `foreignType` is `span`. The text around it is joined (C2-M-073).
 
 ## Normalization
 
@@ -1275,14 +1297,14 @@ The importer reads `<wbr>` as a soft break, which renders as a space.
 | `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
-| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment and the treatment `raw` |
+| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
 | `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
 | `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a clamped row span, an empty node that held attributes, a ruby base without annotation |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
 
 ## The guarantee
 
-**C2-M-090** For Carve HTML rendered with `roundtrip`, C2-H-188 to C2-H-196 state what survives. Both guarantees assume an import with the option `rawHtml` on; with it off, the comments and the elements of the treatment `raw` that the render passed through are also lost (C2-M-066).
+**C2-M-090** For Carve HTML rendered with `roundtrip`, C2-H-188 to C2-H-196 state what survives. Both guarantees assume an import with the option `rawHtml` on; with it off, the comments and the elements of the treatment `raw` that the render passed through and the raw spans it wrote with `data-carve-raw` are also lost (C2-M-066).
 
 **C2-M-091** For Carve HTML rendered without `roundtrip` and not changed afterwards, an import gives back the parsed tree of the source, except for these losses: the losses of a render with `roundtrip` (C2-H-119, C2-H-193, C2-H-194, C2-H-195), the facts that the render itself does not write (comments, smart punctuation as glyphs, unresolved references, includes, denied destinations, filtered attributes and the other render losses of `html.md`), every fact a carrier of C2-H-186 sets, and, with the import option `rawHtml` off, what C2-M-066 drops. Without the carrier, each element reads as it stands; the rows of `losses` in `data/import-html.json` say what comes back:
 
@@ -1355,4 +1377,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 41 examples: 26 verified and 15 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 42 examples: 26 verified and 16 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

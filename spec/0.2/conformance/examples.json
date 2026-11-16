@@ -18556,6 +18556,170 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-269",
+   "document": "syntax-blocks.md",
+   "number": 269,
+   "section": "Comments",
+   "clauses": [
+    "C2-B-133",
+    "C2-B-134",
+    "C2-B-135",
+    "C2-B-136",
+    "C2-B-137",
+    "C2-B-138",
+    "C2-B-139",
+    "C2-B-140",
+    "C2-B-141",
+    "C2-B-142",
+    "C2-B-143",
+    "C2-B-144",
+    "C2-B-145",
+    "C2-B-199",
+    "C2-B-215",
+    "C2-B-216",
+    "C2-B-217"
+   ],
+   "kind": "render",
+   "input": "\\\n{% c %}\n| b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "hard_break",
+         "pos": {
+          "startLine": 1,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 1,
+          "startOffset": 0,
+          "endOffset": 2
+         }
+        },
+        {
+         "type": "comment",
+         "form": "braced",
+         "value": "c",
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 8,
+          "startOffset": 2,
+          "endOffset": 9
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 8,
+        "startOffset": 0,
+        "endOffset": 9
+       }
+      },
+      {
+       "type": "table",
+       "columns": [
+        {
+         "type": "table_column"
+        }
+       ],
+       "children": [
+        {
+         "type": "table_body",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "b",
+                 "pos": {
+                  "startLine": 3,
+                  "endLine": 3,
+                  "startColumn": 3,
+                  "endColumn": 4,
+                  "startOffset": 12,
+                  "endOffset": 13
+                 }
+                }
+               ],
+               "pos": {
+                "startLine": 3,
+                "endLine": 3,
+                "startColumn": 3,
+                "endColumn": 4,
+                "startOffset": 12,
+                "endOffset": 13
+               }
+              }
+             ],
+             "pos": {
+              "startLine": 3,
+              "endLine": 3,
+              "startColumn": 2,
+              "endColumn": 5,
+              "startOffset": 11,
+              "endOffset": 14
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 1,
+            "endColumn": 6,
+            "startOffset": 10,
+            "endOffset": 15
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 10,
+          "endOffset": 15
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 10,
+        "endOffset": 15
+       }
+      }
+     ],
+     "srcByteLength": 15,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-142",
    "document": "syntax-blocks.md",
    "number": 142,
@@ -69508,7 +69672,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-2",
@@ -69632,7 +69796,7 @@
     ]
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-3",
@@ -69741,7 +69905,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-4",
@@ -69850,7 +70014,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-5",
@@ -69973,7 +70137,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-6",
@@ -70181,7 +70345,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-7",
@@ -70351,7 +70515,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-8",
@@ -70403,7 +70567,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-9",
@@ -70454,7 +70618,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-10",
@@ -70624,7 +70788,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-33",
@@ -70681,7 +70845,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-11",
@@ -70735,7 +70899,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-12",
@@ -70880,7 +71044,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-13",
@@ -70972,7 +71136,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-14",
@@ -71055,7 +71219,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-15",
@@ -71149,7 +71313,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-32",
@@ -71219,7 +71383,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-16",
@@ -71469,7 +71633,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-17",
@@ -71583,7 +71747,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-18",
@@ -71717,7 +71881,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-19",
@@ -71997,7 +72161,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-20",
@@ -72310,7 +72474,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-21",
@@ -72422,7 +72586,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-22",
@@ -72596,7 +72760,7 @@
     ]
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-23",
@@ -72674,7 +72838,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-24",
@@ -72792,7 +72956,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-25",
@@ -72851,7 +73015,7 @@
     ]
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-26",
@@ -72936,7 +73100,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-27",
@@ -73184,7 +73348,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-28",
@@ -73394,7 +73558,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-29",
@@ -73501,7 +73665,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-30",
@@ -73583,7 +73747,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "includes-31",
@@ -73734,7 +73898,7 @@
     }
    },
    "status": "unverified",
-   "reason": "no engine expands an include under these clauses yet (includes.md, conventions)"
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
    "id": "import-html-1",
@@ -75698,6 +75862,39 @@
     "diagnostics": [
      "import-element-dropped",
      "import-whitespace-normalized"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
+   "id": "import-html-42",
+   "document": "import-html.md",
+   "number": 42,
+   "section": "Raw content",
+   "clauses": [
+    "C2-M-065",
+    "C2-M-066",
+    "C2-M-067"
+   ],
+   "kind": "import",
+   "html": "<p>a<span data-carve-raw=\"html\">&lt;script&gt;x()&lt;/script&gt;</span>b</p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "ab"
+       }
+      ]
+     }
+    ],
+    "carve": "ab",
+    "diagnostics": [
+     "import-element-dropped"
     ]
    },
    "status": "unverified",
