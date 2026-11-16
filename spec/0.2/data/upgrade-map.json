@@ -577,7 +577,7 @@
       "group": "tables",
       "from": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
       "to": "|= a |= b |\n| ^ | 2 |\n| 3 | 4 |\n",
-      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td></td><td>2</td></tr>\n    <tr><td>3</td><td>4</td></tr>\n  </tbody>\n</table>",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>^</td><td>2</td></tr>\n    <tr><td>3</td><td>4</td></tr>\n  </tbody>\n</table>",
       "toolEntry": "U-060",
       "silent": true
     },

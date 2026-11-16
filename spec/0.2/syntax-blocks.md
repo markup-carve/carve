@@ -4773,11 +4773,11 @@ title: x
 
 **C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional glued brace block. The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
 
-**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above. A `^` below a cell that spans more than one column fails (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is an empty cell.
+**C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above when that cell stands in the same group of the table (C2-B-174). A `<` in the first column, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is the text of its cell.
 
-**C2-B-173** A failed span is an empty cell. The empty cell that a failed span mark leaves is a header cell when its row holds at least one other cell that is not a span mark cell and every such cell is a header cell, so `|=|^|` is a head row of two header cells and in `|^|<|` the joined cell is a body cell; in any other row it is a body cell.
+**C2-B-173** A span mark that joins nothing is an ordinary cell that holds the mark as text, and `table-span-marker-blocked` reports it. Its prefix applies as on any cell (C2-B-171): `|= ^ |` in the first row is a header cell that holds `^`.
 
-**Exception C2-B-174** A row span does not cross the head boundary.
+**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left counts as that cell, and a `^` below a cell of one column counts as that cell; any other span mark counts as the cell it is.
 
 **C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
@@ -4797,7 +4797,7 @@ title: x
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
-**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, and an empty fragment adds nothing. Each fragment is an inline content by itself (C2-B-223), so every inline form opens and closes inside one physical row, and an opener whose closer is not in its own fragment is text, as at the end of a cell. The cell holds the nodes of its fragments in order, with one space of text between two fragments: `` `a `` continued by `` b` `` is the text `` `a b` ``. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that fails it joins the empty cell the mark leaves (C2-B-173).
+**C2-B-184** Each fragment of a continuation row joins the cell of its column in the row above, and an empty fragment adds nothing. Each fragment is an inline content by itself (C2-B-223), so every inline form opens and closes inside one physical row, and an opener whose closer is not in its own fragment is text, as at the end of a cell. The cell holds the nodes of its fragments in order, with one space of text between two fragments: `` `a `` continued by `` b` `` is the text `` `a b` ``. Span marks are read from the first line of the row; a fragment whose column holds a span mark joins the cell that covers that column once spans are resolved, and under a span mark that joins nothing it joins the cell that holds the mark (C2-B-173).
 
 **C2-B-185** A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.
 
@@ -5020,7 +5020,7 @@ Example 208 (generated)
 
 :::
 
-Example 209 (generated)
+Example 209 (unverified)
 
 ::: compare
 
@@ -5033,14 +5033,14 @@ Example 209 (generated)
 <table>
   <tbody>
     <tr><td>a</td><td>b</td></tr>
-    <tr><td></td><td>c</td></tr>
+    <tr><td>&lt;</td><td>c</td></tr>
   </tbody>
 </table>
 ```
 
 :::
 
-The row span would cross the head boundary, so it fails.
+The row span would cross from the head into the body, so the mark joins nothing and is the text of its cell.
 
 Example 210 (unverified)
 
@@ -5058,9 +5058,38 @@ Example 210 (unverified)
     <tr><th scope="col">H</th></tr>
   </thead>
   <tbody>
-    <tr><td></td></tr>
+    <tr><td>^</td></tr>
     <tr><td>a</td></tr>
   </tbody>
+</table>
+```
+
+:::
+
+A `^` with the header mark in the first row is a header cell that holds the mark. The foot starts a group, so its `^` joins nothing either (C2-B-173, C2-B-174).
+
+Example 250 (unverified)
+
+::: compare
+
+```carve
+{footer-rows=1}
+|= ^ |= A |
+| 1 | 2 |
+| ^ | 3 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">^</th><th scope="col">A</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>^</td><td>3</td></tr>
+  </tfoot>
 </table>
 ```
 
@@ -5656,12 +5685,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 3 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 2 | 19 | 9 |
+| Tables | 35 | 1 | 18 | 11 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **167** | **80** |
+| **Total** | **229** | **13** | **166** | **82** |
 
-The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 229 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

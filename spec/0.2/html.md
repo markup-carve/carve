@@ -690,8 +690,6 @@ Example 49 (unverified, `--roundtrip`)
 
 **C2-H-059** `widths` gives a `<colgroup>` as in 0.1. C2-H-152 states it.
 
-**Exception C2-H-060** A row span that crosses a group boundary cannot be written with separate groups. In a parsed tree only the boundary between body and foot can be crossed (C2-B-174). The table is then written with one `<tbody>` that holds every row, and cell kind, scope and alignment are still computed from the groups.
-
 **C2-H-061** The caption of a table is `<caption>`, the first child of `<table>`. The attributes of the table stay on `<table>`.
 
 Example 12 (generated)
@@ -1323,7 +1321,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 **C2-H-109** *Description wrapping.* Whether the first paragraph of a description is bare is known only when the description closes (C2-H-040).
 
-**C2-H-110** *Task lists and table groups.* The `task-list` class, the head of a table and the fallback of C2-H-060 are known when the list or the table closes.
+**C2-H-110** *Task lists and table groups.* The `task-list` class and the head and the foot of a table are known when the list or the table closes.
 
 **C2-H-111** A renderer may buffer more than these clauses require. Its output has to equal the output of a renderer that works from the finished tree. 0.2.0 defines no streaming renderer with weaker guarantees.
 
@@ -1967,7 +1965,7 @@ One point is open.
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 0 |
-| Tables | 9 | 1 | 1 | 0 |
+| Tables | 8 | 0 | 1 | 0 |
 | Captions and figures | 12 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 0 |
 | Inline elements | 8 | 0 | 1 | 0 |
@@ -1981,6 +1979,6 @@ One point is open.
 | Options | 24 | 0 | 3 | 3 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **198** | **8** | **25** | **23** |
+| **Total** | **197** | **7** | **25** | **23** |
 
-The document has 198 clauses, 8 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 197 clauses, 7 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

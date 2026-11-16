@@ -1367,11 +1367,11 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "The \"${marker}\" span marker cannot extend a cell. ${reason} It renders as a cell of its own; escape it as \"\\${marker}\" to keep the character as text, or remove it."
+        "The \"${marker}\" span marker cannot extend a cell. ${reason} It is a cell that holds \"${marker}\" as text; escape it as \"\\${marker}\" to say so, or remove it."
       ],
-      "message_origin": "engine_0_1",
-      "change": "also a row span stopped at the head boundary (C2-B-174)",
-      "clauses": ["C2-B-174"]
+      "message_origin": "data_file",
+      "change": "a mark that joins nothing is now the text of its cell, also at a group boundary: head, body or foot (C2-B-173, C2-B-174)",
+      "clauses": ["C2-B-172", "C2-B-173", "C2-B-174"]
     },
     {
       "id": "table-width-total",
