@@ -2,7 +2,7 @@
 
 **Freeze candidate 1.** The candidate is the text of `spec/0.2/` at the commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a change to a frozen clause makes a freeze candidate 2.
 
-Commit: the commit that adds this file. Its id is written here in the commit after it.
+Commit: `37e57932e007fe912234021ea5d699bab041e51c` (`37e57932`). The commit after it writes only this line.
 
 ## Documents
 
