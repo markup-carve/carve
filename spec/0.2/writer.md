@@ -37,7 +37,7 @@ Conventions:
 
 **C2-W-009** The writer keeps what the tree holds (C2-A-166), takes from the sidecar the author's form where 0.2 has two equal forms (C2-W-083), and writes the one canonical form everywhere else.
 
-**C2-W-010** This document defines the output. How a writer finds it, by trial and reparse or by an exact test, is its own choice and has no effect on the bytes. Its work on one text grows at most linearly with the length of the text: the procedure of C2-W-088 run as stated, one parse of the whole text for each escape, does not meet this bound on a text that needs many escapes, such as `\[x]` written N times under a definition of `x`.
+**C2-W-010** This document defines the output. How a writer finds it, by trial and reparse or by an exact test, is its own choice and has no effect on the bytes. Its work on one text grows at most linearly with the length of the text: the procedure of C2-W-088 run as stated, one parse of the whole text for each escape, does not meet this bound on a text that needs many escapes, such as `\[x]` written N times under a definition of `x`. The bound holds with the refusal of C2-W-133: a writer that decides what it can from tables and parses again for the rest (C2-W-089) counts the characters those parses read against its repair limit, and refuses a group that exceeds it. A limit linear in the group, such as the floor of C2-W-133, keeps the work linear, and a refused group is outside byte conformance (C2-W-133).
 
 ## What the writer cannot spell
 
