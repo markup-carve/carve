@@ -229,6 +229,7 @@ These rulings change what some documents give against the 0.1 engine or against 
 | An abbreviation expansion after two spaces or after a space and a tab: `*[HTML]:  Hyper Text` | 0.1 and early 0.2: the leading space or tab was dropped. | It is the first character of the expansion, as `title=" Hyper Text"`. | C2-B-084 |
 | A list marker at column 0 directly below item text of a list inside a footnote or a description: `[^n]: note`, `  - one`, `- x` | Early 0.2: a lazy line, so `- x` was text of `one`. | The note or the description closes and the marker opens a list at the top level, as in 0.1. | C2-B-015, C2-B-228 |
 | A bare dot with a task box before a further dot: `. [x] . x` | 0.1: an item with the text `[x] . x`. Early 0.2 (one engine): a paragraph. | A task item whose content `. x` is a nested ordered list. | C2-B-043, C2-B-229 |
+| Inline markup nested about 200 deep inside quotes, lists or divs, as `- *[x](u)` behind 197 quote marks | 0.1 and early 0.2: blocks and inline nodes shared one cap of 200, so deep blocks left inline openers as text. | Blocks and inline content have a limit of 200 each; inline depth counts from zero in each inline content, so the link forms. | C2-B-190, C2-I-118 |
 
 ### Worked source changes
 

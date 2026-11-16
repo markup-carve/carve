@@ -2203,31 +2203,29 @@ Example 111 (unverified)
 
 :::
 
-## The depth cap
+## The depth limit
 
-**C2-I-126** A bracket opener at the depth cap is text, and it takes part in no pairing: a later closing bracket pairs with the nearest open bracket that is not such text, or is text when there is none. So no closing bracket carries an attribute block onto a span that never formed; the attribute block keeps the reading it has after that text.
+**C2-I-118** Inline nesting stops at depth 200 in each inline content, whatever the blocks around it: the count starts at zero where the content starts (C2-I-120), and no block counts (C2-B-190). The depth of an opener is the number of entries open on the bracket stack and the delimiter stack together when the opener is read. Every opening bracket, `^[`, extension bracket and delimiter opener that was pushed and is not yet closed or removed counts one, whether or not it later forms a construct. An opener read while 200 entries are open is text: it is not pushed and takes part in no pairing, and the scan goes on behind it. A later closer pairs as if that opener were not there, so a closing bracket pairs with the nearest pushed bracket or is text when there is none, and no closing bracket carries an attribute block onto a construct that never formed. Nothing read after the opener changes the decision.
 
-**C2-I-118** Nesting stops at depth 200, blocks and inlines together, counted as in C2-B-190: each open quote, list, item, description, footnote body and div counts one, each open inline node counts one, 200 in total. An opener that would pass the cap is plain text: the scan goes on behind it and reads the following content as usual. An open bracket counts one while it is open, whether or not its pair later forms a construct: an opening bracket is text when the block depth and the open brackets reach the cap. When delimiters pair, a delimiter opener is text when the block depth, the open delimiter entries and the bracket constructs around it reach the cap, and a bracket construct that would lie past the cap is text with its brackets, its tail or label as typed. For a bracket construct, a link and an image alike, the count is the block depth, the bracket constructs around it and every delimiter entry that is open on the stack where the construct opens, whether or not that entry later pairs: an entry counts as an open bracket does. So behind 197 quote marks, `- *![x](u)` and `- *[x](u)` leave the image and the link as text: the quotes, the list and the item take 199 levels, the unpaired `*` the last one.
+The limit applies to every opener that takes content: a bracket, a bare delimiter, a braced opener, `^[` and the bracket of an inline extension. Behind 197 quote marks, `- *[x](u)` forms its link, since the quotes, the list and the item do not count.
 
-The cap applies to every opener that takes content: a bracket, a bare delimiter, a braced opener, `^[` and the bracket of an inline extension.
-
-The paragraph has no container, so 200 superscripts nest. The opener number 201 is text, and so is the last closer, which finds no open opener (C2-I-057).
+The quote does not count, so 200 superscripts nest inside it. The opener number 201 is text, and so is the last closer, which finds no open opener (C2-I-057).
 
 Example 104 (unverified)
 
 ::: compare
 
 ```carve
-{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^x^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}
+> {^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^x^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}
 ```
 
 ```html
-<p><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup>{^x</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>^}</p>
+<blockquote><p><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup><sup>{^x</sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup></sup>^}</p></blockquote>
 ```
 
 :::
 
-The 199 superscripts and the star that never pairs fill the cap, so the link and the image are text (C2-I-118). With one superscript less both form.
+The 199 superscripts and the star that never pairs are 200 open entries when the first `[` is read, so the link and the image are text (C2-I-118). With one superscript less both form.
 
 Example 112 (unverified)
 
@@ -2243,7 +2241,7 @@ Example 112 (unverified)
 
 :::
 
-The 199 open brackets and the bracket of the extension fill the cap. The next `[` is text and pairs with nothing, so the first `]` closes the extension (C2-I-126).
+The 199 open brackets and the bracket of the extension are 200 open entries. The next `[` is text and pairs with nothing, so the first `]` closes the extension (C2-I-118).
 
 Example 113 (unverified)
 
@@ -2278,7 +2276,7 @@ The two forms that never fail are the code span and the math span (C2-I-017, C2-
 | unclosed braced opener | the brace and its mark (C2-I-060) |
 | unclosed braced comment or editorial comment | the brace and its mark (C2-I-043) |
 | unclosed autolink or cross-reference | the angle bracket (C2-I-073, C2-I-096) |
-| opener past the depth cap | the opener (C2-I-118) |
+| opener past the depth limit | the opener (C2-I-118) |
 
 Example 105 (generated)
 
@@ -2357,12 +2355,12 @@ There is no fixed budget for the inline chapter.
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
 | Smart typography | 12 | 6 | 9 | 2 |
-| The depth cap | 2 | 0 | 0 | 3 |
+| The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **125** | **22** | **73** | **46** |
+| **Total** | **124** | **22** | **73** | **46** |
 
-The chapter has 125 clauses, 22 of them exceptions, and 119 examples. The clause count includes the exceptions.
+The chapter has 124 clauses, 22 of them exceptions, and 119 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

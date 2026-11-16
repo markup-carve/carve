@@ -623,7 +623,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-170** A reader validates a tree against `spec/0.2/data/ast-schema.json` at decode and refuses a failure. The files under `resources/` describe the 0.1 contract.
 
-**C2-A-171** A reader accepts every tree its own parser can produce at the nesting cap (C2-B-190) and refuses deeper input. It derives its bound from the cap by the worst cost per level of its own encoding.
+**C2-A-171** A reader accepts every tree its own parser can produce at the two nesting limits, 200 blocks (C2-B-190) and 200 inline levels in each inline content (C2-I-118), and refuses deeper input. It derives its bound from the limits by the worst cost per level of its own encoding.
 
 ## Diagnostics
 

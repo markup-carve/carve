@@ -36,7 +36,8 @@
           },
           "unit": {
             "enum": [
-              "open_nodes",
+              "open_blocks",
+              "open_entries",
               "columns",
               "lines",
               "levels",

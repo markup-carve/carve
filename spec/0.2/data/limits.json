@@ -2,11 +2,18 @@
   "$schema": "schemas/limits.schema.json",
   "limits": [
     {
-      "name": "depth_cap",
+      "name": "block_depth",
       "value": 200,
-      "unit": "open_nodes",
+      "unit": "open_blocks",
       "clauses": [
-        "C2-B-190",
+        "C2-B-190"
+      ]
+    },
+    {
+      "name": "inline_depth",
+      "value": 200,
+      "unit": "open_entries",
+      "clauses": [
         "C2-I-118"
       ]
     },

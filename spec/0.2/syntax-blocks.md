@@ -5468,7 +5468,11 @@ A line that is not a valid opener is text (C2-B-011).
 
 **C2-B-189** Whether a line is an opener is decided on that line alone and never by whether a closer follows, so a construct with a closer of its own always opens (C2-B-111).
 
-**C2-B-190** Nesting stops at depth 200, blocks and inlines together: each open quote, list, item, description list, description, footnote body and div counts one, each open inline node counts one, and past the cap an opener is text. A marker that opens two containers at once, a list and its item or a description list and its first description, is tested as one: when both do not fit, the whole marker is text and neither opens.
+**C2-B-190** Block nesting stops at depth 200: each open quote, list, item, description list, description, footnote body and div counts one, and while 200 are open an opener of one more is text. Inline nodes do not count; inline content has its own limit (C2-I-118). A marker that opens two containers at once, a list and its item or a description list and its first description, is tested as one: when both do not fit, the whole marker is text and neither opens.
+
+Example 247 (unverified)
+
+The input is one line of 201 quote marks, each `>` and one space, followed by `x`. The first 200 marks open 200 nested quotes. The last mark is text, so the innermost quote holds `<p>&gt; x</p>`. With 200 marks it holds `<p>x</p>`.
 
 Example 221 (generated)
 
@@ -5609,12 +5613,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 35 | 2 | 20 | 7 |
-| The fallback rule | 2 | 0 | 3 | 0 |
+| The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **170** | **74** |
+| **Total** | **229** | **14** | **170** | **75** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
-This draft has no example for a list-table, for the depth cap or for a lone CR. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
+This draft has no example for a list-table or for a lone CR. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
