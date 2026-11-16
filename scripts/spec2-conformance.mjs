@@ -66,8 +66,12 @@ function statusOf(example) {
   return { status: 'unverified', reason: UNVERIFIED[example.document] ?? UNVERIFIED.default }
 }
 
-// Codes of the catalog that the prose of the example names; the order of first mention.
-const diagnosticsOf = (example) => [...new Set([...example.text.matchAll(/`([a-z0-9/-]+)`/g)].map(m => m[1]).filter(code => codes.has(code)))]
+// The codes of the example's `Reported:` line, in their order; no code is taken from other prose.
+function diagnosticsOf(example) {
+  const named = example.reported.flatMap(line => [...line.matchAll(/`([a-z0-9/-]+)`/g)].map(m => m[1]))
+  for (const code of named) if (!codes.has(code)) fail(`${example.document}.md Example ${example.number}: the Reported line names ${code}, which data/lint-rules.json does not list`)
+  return [...new Set(named)]
+}
 
 // A written source ends with one line ending (C2-W-022); a fence body holds no final line feed.
 const sourceOf = (fence) => fence === undefined ? undefined : `${fence.body}\n`

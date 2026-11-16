@@ -1555,6 +1555,8 @@ Example 56 (unverified)
 
 :::
 
+Reported: `deprecated-spaced-thematic-break`.
+
 Example 57 (generated)
 
 ::: compare
@@ -2576,6 +2578,8 @@ text
 
 :::
 
+Reported: `block-opener-without-blank-line`.
+
 The attribute line belongs to the item and finds no block there, so it becomes a paragraph of the item before line 4 is read.
 
 Example 96 (unverified)
@@ -3416,6 +3420,8 @@ y
 
 :::
 
+Reported: `fence-title-syntax`.
+
 ## Sigil divs
 
 A *sigil div* is a div whose opener names how its body is read: `::: |` is a line block, `::: \` a hard-break block, `::: >` a quote fence (C2-B-196).
@@ -4001,6 +4007,8 @@ Example 153 (unverified)
 ```
 
 :::
+
+Reported: `unclosed-code-fence`.
 
 Line 2 is an interrupter, so the braced comment does not close.
 
@@ -5719,6 +5727,8 @@ Example 253 (unverified)
 ```
 
 :::
+
+Reported: `table-span-marker-attribute`.
 
 Example 211 (generated)
 

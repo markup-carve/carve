@@ -4,13 +4,13 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 export const DOCUMENTS = ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html']
-// Documents whose explanatory text follows the example rather than leading into it.
-const TEXT_AFTER = new Set(['writer', 'includes', 'import-html'])
 
 export const HEADER = /^Example (\d+) \((generated|unverified|verified)([^)]*)\)\s*$/
 export const FENCE = /^(`{3,}|~{3,})(\w*)\s*$/
 const CLAUSE = /^\*\*(?:Exception )?(C2-[A-Z]-\d{3})\*\*/
 const FILE_LINE = /^File `([^`]+)`:\s*$/
+// The line of an example that states what is reported: the only source of its expected diagnostics.
+export const REPORTED = /^Reported: /
 const FILE_BYTES = /^File `([^`]+)` holds the (?:\w+ )?bytes `([0-9A-F]{2}(?: [0-9A-F]{2})*)`/
 // The end of an example: the next example, clause or heading.
 const endsExample = (line) => HEADER.test(line) || /^(\*\*|#)/.test(line)
@@ -39,21 +39,10 @@ function sectionClauses(lines, line) {
   return { heading: lines[start].replace(/^#+\s*/, ''), clauses: ids }
 }
 
-/** The paragraph of prose directly above the header, unless it is a clause, a heading or a block. */
-function leadText(lines, header) {
-  let end = header - 1
-  while (end >= 0 && lines[end].trim() === '') end--
-  let start = end
-  while (start > 0 && lines[start - 1].trim() !== '') start--
-  const text = lines.slice(start, end + 1)
-  if (!text.length || /^(\*\*|#|:::|`{3,}|~{3,}|\||Example )/.test(text[0])) return ''
-  return text.join(' ')
-}
-
 /**
  * Every example of one document. Each has `document`, `number`, `status`, `flags`, `section`, `clauses`, the
  * fences in order (`lang`, `body`, `label`: the line of text above the fence inside the example), `files` of an
- * include example (a `File` line and its fence, or its bytes), and `text`, the prose of the example.
+ * include example (a `File` line and its fence, or its bytes), and `reported`, the `Reported:` lines of the example.
  */
 export function examplesOf(spec, document) {
   const lines = readFileSync(join(spec, `${document}.md`), 'utf8').split('\n')
@@ -63,7 +52,7 @@ export function examplesOf(spec, document) {
     if (!header) continue
     const fences = []
     const files = {}
-    const prose = []
+    const reported = []
     let label = null
     let line = at + 1
     while (line < lines.length && !endsExample(lines[line])) {
@@ -88,12 +77,11 @@ export function examplesOf(spec, document) {
       const text = lines[line].trim()
       if (text && !text.startsWith(':::')) {
         label = text
-        prose.push(text)
+        if (REPORTED.test(text)) reported.push(text)
       }
       line++
     }
     const { heading, clauses } = sectionClauses(lines, at)
-    const lead = TEXT_AFTER.has(document) ? '' : leadText(lines, at)
     out.push({
       document,
       number: Number(header[1]),
@@ -103,7 +91,7 @@ export function examplesOf(spec, document) {
       clauses,
       fences,
       files,
-      text: (TEXT_AFTER.has(document) ? prose : [lead, ...(fences.length ? [] : prose)]).filter(Boolean).join(' '),
+      reported,
       line: at + 1,
     })
   }

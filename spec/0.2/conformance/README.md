@@ -29,7 +29,7 @@ Each entry:
 | `expected.tree` | the expected tree, positions included, where the tree gate holds one (`trees/`) |
 | `expected.children` | for `import`: the children of the imported document, without positions |
 | `expected.carve` | for `write` and `import`: the source the canonical writer gives, with its final line feed (C2-W-022) |
-| `expected.diagnostics` | codes of `data/lint-rules.json` that the example's text says are reported; not a complete list, except for `lint`, where it is what the example states |
+| `expected.diagnostics` | the codes of `data/lint-rules.json` on the line of the example that starts with `Reported:`; no code is taken from other prose. Not a complete list, except for `lint`, where it is what the example states |
 | `status`, `reason` | `verified` or `unverified`, and why, as the conventions of the document define it |
 | `note` | where the example states its input in prose (blocks Example 247) |
 

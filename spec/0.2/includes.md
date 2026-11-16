@@ -105,6 +105,8 @@ After.
 
 The unclosed fence of `child.crv` ends at the end of that file and reports `unclosed-code-fence` there.
 
+Reported: `unclosed-code-fence`.
+
 **C2-N-016** The blocks of that document, after selection (C2-N-027 to C2-N-052), become the `children` of the include node. The include node stays where the directive stood. There is no splice of source text, so a directive cannot complete or interrupt a construct of the including file.
 
 **C2-N-017** An include node carries `file`, the id the resolver returned, whenever the resolver returned a text for it, and `children` exactly when it was expanded. An unexpanded include has no `children`; an include of an empty file, or of a selection that holds no block, has an empty `children` list. A node that has `children` also has `file`. Both fields are resolution results (C2-A-133): tree equality skips them.
@@ -882,6 +884,8 @@ Back to </#tip>.
 
 `duplicate-id` reports the heading of `child.crv`. In 0.1 it was renamed to `tip-2` and the cross-reference followed it.
 
+Reported: `duplicate-id`.
+
 **C2-N-059** Caption numbers and equation numbers are counted once, over the expanded tree, in document order (C2-H-170).
 
 **C2-N-060** Within one file a second definition of a key is a duplicate (C2-B-085). A key that two files each define once is no duplicate and reports nothing.
@@ -978,6 +982,8 @@ Example 25 (unverified)
 :::
 
 The parse reports `include-not-found`, and the render `include-unresolved`.
+
+Reported: `include-not-found`, `include-unresolved`.
 
 ## Attributes and captions
 

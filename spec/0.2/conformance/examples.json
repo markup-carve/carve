@@ -7690,10 +7690,7 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    },
-    "diagnostics": [
-     "deprecated-spaced-thematic-break"
-    ]
+    }
    },
    "status": "verified",
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
@@ -8210,7 +8207,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "deprecated-spaced-thematic-break"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -13011,10 +13011,7 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    },
-    "diagnostics": [
-     "block-opener-without-blank-line"
-    ]
+    }
    },
    "status": "verified",
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
@@ -13537,7 +13534,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "block-opener-without-blank-line"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -75779,10 +75779,7 @@
       "value": "<script>run()</script>\n"
      }
     ],
-    "carve": "```=html\n<!-- note -->\n```\n\na`<!-- inline -->`{=html}b\n\n```=html\n<script>run()</script>\n```\n",
-    "diagnostics": [
-     "field-unspellable"
-    ]
+    "carve": "```=html\n<!-- note -->\n```\n\na`<!-- inline -->`{=html}b\n\n```=html\n<script>run()</script>\n```\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
@@ -75937,10 +75934,7 @@
       ]
      }
     ],
-    "carve": "x[]{#a}\n",
-    "diagnostics": [
-     "structure-unspellable"
-    ]
+    "carve": "x[]{#a}\n"
    },
    "status": "unverified",
    "reason": "the tree was written by hand from the clauses because the reference importer differs; the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"

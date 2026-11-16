@@ -52,6 +52,8 @@ Hallo
 
 The doctype and the head give two `import-element-dropped` entries, and the class of `<body>` an `import-attribute-dropped` entry. The document node has `lang: "de"`.
 
+Reported: `import-element-dropped`, `import-attribute-dropped`.
+
 ## Carriers and the two documents
 
 **C2-M-007** Where an element carries a reserved name of C2-H-115, `html.md` governs what the name sets, when it is ignored (C2-H-185, C2-H-186) and how the definitions are rebuilt (C2-H-191 to C2-H-194). This document governs every element and every attribute that no carrier covers, and the reading of a carrier's element in every respect the carrier's row does not name.
@@ -1153,6 +1155,8 @@ Video:
 
 The input of Examples 34 and 35 with `rawHtml` off, the default. The two comments, the script and the iframe give four `import-element-dropped` entries. The text around the inline comment is joined (C2-M-073), and the space before the iframe is removed at the end of its paragraph (C2-M-018) and reported with `import-whitespace-normalized`.
 
+Reported: `import-element-dropped`, `import-whitespace-normalized`.
+
 Example 42 (unverified)
 
 ::: compare
@@ -1174,6 +1178,8 @@ ab
 :::
 
 With `rawHtml` off, the default, the raw span that a render with `roundtrip` wrote is dropped and gives one `import-element-dropped` entry whose `foreignType` is `span`. The text around it is joined (C2-M-073).
+
+Reported: `import-element-dropped`.
 
 ## Normalization
 
