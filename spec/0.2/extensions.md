@@ -242,7 +242,6 @@ This section is non-normative. Bridges can use these marker attributes when anot
 | `carve-admonition` | `admonition.kind` | string |
 | `carve-directive` | `directive.kind` | string |
 | `carve-figure-group` | `figure_group` identity | `true` |
-| `carve-figure-kind` | `figure.kind` | string |
 | `carve-paragraph` | `paragraph.attrs`, `paragraph.role` | JSON object of present fields |
 | `carve-footnote-ref` | `footnote_ref.key`, `footnote_ref.namespace` | JSON object |
 | `carve-inline-attrs` | inline node `attrs` | JSON object |

@@ -96,12 +96,6 @@
       "clauses": ["C2-B-090", "C2-B-091", "C2-B-095", "C2-B-096"]
     },
     {
-      "name": "captioned_block",
-      "where": "attribute_line_above_captioned_block",
-      "applies_to": "table_for_a_table_and_figure_for_every_other_target",
-      "clauses": ["C2-B-107"]
-    },
-    {
       "name": "cell_alignment",
       "where": "first_in_brace_block_of_cell_prefix",
       "marks": ["<", ">", "~"],

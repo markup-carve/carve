@@ -443,9 +443,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -966,9 +963,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -1044,9 +1038,6 @@
                 },
                 {
                   "$ref": "#/$defs/div"
-                },
-                {
-                  "$ref": "#/$defs/figure"
                 },
                 {
                   "$ref": "#/$defs/figure_group"
@@ -1226,9 +1217,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -1738,9 +1726,6 @@
                           "$ref": "#/$defs/div"
                         },
                         {
-                          "$ref": "#/$defs/figure"
-                        },
-                        {
                           "$ref": "#/$defs/figure_group"
                         },
                         {
@@ -1831,9 +1816,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -1865,6 +1847,9 @@
               }
             ]
           }
+        },
+        "caption": {
+          "$ref": "#/$defs/caption"
         },
         "attrs": {
           "type": "object",
@@ -2054,9 +2039,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -3975,6 +3957,9 @@
         "value": {
           "type": "string"
         },
+        "caption": {
+          "$ref": "#/$defs/caption"
+        },
         "syntax": {
           "type": "string"
         },
@@ -4620,9 +4605,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -5576,9 +5558,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -5938,9 +5917,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -6282,9 +6258,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -6845,243 +6818,6 @@
       ],
       "additionalProperties": false
     },
-    "figure": {
-      "type": "object",
-      "description": "figure: C2-A-050",
-      "properties": {
-        "type": {
-          "const": "figure"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "oneOf": [
-              {
-                "$ref": "#/$defs/admonition"
-              },
-              {
-                "$ref": "#/$defs/block_extension"
-              },
-              {
-                "$ref": "#/$defs/block_quote"
-              },
-              {
-                "$ref": "#/$defs/code_block"
-              },
-              {
-                "$ref": "#/$defs/comment"
-              },
-              {
-                "$ref": "#/$defs/definition_list"
-              },
-              {
-                "$ref": "#/$defs/directive"
-              },
-              {
-                "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
-              },
-              {
-                "$ref": "#/$defs/figure_group"
-              },
-              {
-                "$ref": "#/$defs/heading"
-              },
-              {
-                "$ref": "#/$defs/include"
-              },
-              {
-                "$ref": "#/$defs/line_block"
-              },
-              {
-                "$ref": "#/$defs/list"
-              },
-              {
-                "$ref": "#/$defs/paragraph"
-              },
-              {
-                "$ref": "#/$defs/raw_block"
-              },
-              {
-                "$ref": "#/$defs/section"
-              },
-              {
-                "$ref": "#/$defs/table"
-              },
-              {
-                "$ref": "#/$defs/thematic_break"
-              }
-            ]
-          }
-        },
-        "caption": {
-          "$ref": "#/$defs/caption"
-        },
-        "kind": {
-          "enum": [
-            "image",
-            "table",
-            "listing",
-            "equation",
-            "other"
-          ]
-        },
-        "attrs": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "classes": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "keyValues": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "prefixItems": [
-                  {
-                    "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
-                  },
-                  {
-                    "type": "string"
-                  }
-                ],
-                "minItems": 2,
-                "maxItems": 2,
-                "items": false
-              }
-            }
-          },
-          "additionalProperties": false
-        },
-        "data": {
-          "type": "object",
-          "patternProperties": {
-            "^[A-Za-z][A-Za-z0-9_-]*(?:\\.[A-Za-z][A-Za-z0-9_-]*)+$": {},
-            "^carve\\.source$": {
-              "$ref": "#/definitions/carveSource"
-            },
-            "^carve\\.style$": {
-              "$ref": "#/definitions/carveStyleNode"
-            },
-            "^carve\\.annotation$": {
-              "$ref": "#/definitions/carveAnnotation"
-            }
-          },
-          "additionalProperties": false
-        },
-        "pos": {
-          "type": "object",
-          "properties": {
-            "startLine": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "endLine": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "startColumn": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "endColumn": {
-              "type": "integer",
-              "minimum": 1
-            },
-            "startOffset": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "endOffset": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "file": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "startLine",
-            "endLine",
-            "startColumn",
-            "endColumn",
-            "startOffset",
-            "endOffset"
-          ],
-          "additionalProperties": false
-        },
-        "segments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "startLine": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "endLine": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "startColumn": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "endColumn": {
-                "type": "integer",
-                "minimum": 1
-              },
-              "startOffset": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "endOffset": {
-                "type": "integer",
-                "minimum": 0
-              },
-              "file": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "startLine",
-              "endLine",
-              "startColumn",
-              "endColumn",
-              "startOffset",
-              "endOffset"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "metadata": {
-          "$ref": "#/definitions/metadata"
-        },
-        "dir": {
-          "enum": [
-            "ltr",
-            "rtl",
-            "auto"
-          ]
-        },
-        "lang": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "type",
-        "children"
-      ],
-      "additionalProperties": false
-    },
     "figure_group": {
       "type": "object",
       "description": "figure_group: C2-A-050",
@@ -7116,9 +6852,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -7344,9 +7077,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -8823,9 +8553,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -11555,9 +11282,6 @@
                 "$ref": "#/$defs/div"
               },
               {
-                "$ref": "#/$defs/figure"
-              },
-              {
                 "$ref": "#/$defs/figure_group"
               },
               {
@@ -12604,6 +12328,9 @@
             ]
           }
         },
+        "caption": {
+          "$ref": "#/$defs/caption"
+        },
         "attrs": {
           "type": "object",
           "properties": {
@@ -13301,9 +13028,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -16072,9 +15796,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -19661,9 +19382,6 @@
                       "$ref": "#/$defs/div"
                     },
                     {
-                      "$ref": "#/$defs/figure"
-                    },
-                    {
                       "$ref": "#/$defs/figure_group"
                     },
                     {
@@ -19745,9 +19463,6 @@
                       "$ref": "#/$defs/div"
                     },
                     {
-                      "$ref": "#/$defs/figure"
-                    },
-                    {
                       "$ref": "#/$defs/figure_group"
                     },
                     {
@@ -19810,9 +19525,6 @@
               },
               {
                 "$ref": "#/$defs/div"
-              },
-              {
-                "$ref": "#/$defs/figure"
               },
               {
                 "$ref": "#/$defs/figure_group"
@@ -20081,9 +19793,6 @@
                   },
                   {
                     "$ref": "#/$defs/div"
-                  },
-                  {
-                    "$ref": "#/$defs/figure"
                   },
                   {
                     "$ref": "#/$defs/figure_group"

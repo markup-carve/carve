@@ -38,6 +38,7 @@
     ],
     "block_quote": [
       "children",
+      "caption",
       "metadata.title",
       "metadata.subtitle",
       "metadata.bibliography.title",
@@ -95,6 +96,7 @@
     ],
     "code_block": [
       "title",
+      "caption",
       "metadata.title",
       "metadata.subtitle",
       "metadata.bibliography.title",
@@ -169,14 +171,6 @@
     ],
     "emphasis": [
       "children",
-      "metadata.title",
-      "metadata.subtitle",
-      "metadata.bibliography.title",
-      "metadata.bibliography.containerTitle"
-    ],
-    "figure": [
-      "children",
-      "caption",
       "metadata.title",
       "metadata.subtitle",
       "metadata.bibliography.title",
@@ -332,6 +326,7 @@
     ],
     "paragraph": [
       "children",
+      "caption",
       "metadata.title",
       "metadata.subtitle",
       "metadata.bibliography.title",

@@ -2583,7 +2583,7 @@
       "id": "T-038",
       "kind": "rename",
       "from": "figure.target and shortCaption",
-      "to": "figure.kind and caption.short",
+      "to": "caption.short; the figure itself is unwrapped (T-051, T-052)",
       "migrationRule": "C2-A-050",
       "silent": false
     },
@@ -2681,6 +2681,22 @@
       "from": "no extension source record; block extension deferred in an earlier draft",
       "to": "qualified block_extension and inline_extension may carry a typed source record; a block extension has a required core fallback",
       "migrationRule": "C2-A-122 C2-A-125 C2-X-024",
+      "silent": false
+    },
+    {
+      "id": "T-051",
+      "kind": "merge",
+      "from": "a figure that holds one image paragraph, code block, quote or math paragraph, and comments after it",
+      "to": "that block, with the caption and the attrs of the figure in its own fields; the comments go where C2-A-082 places them; kind is dropped",
+      "migrationRule": "C2-A-082 C2-A-178",
+      "silent": false
+    },
+    {
+      "id": "T-052",
+      "kind": "move",
+      "from": "any other figure",
+      "to": "a figure_group with the same children, caption and attrs; kind is dropped",
+      "migrationRule": "C2-A-084 C2-A-178",
       "silent": false
     }
   ]

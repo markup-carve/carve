@@ -156,7 +156,7 @@ Conventions:
 
 ## Node types
 
-Contract 2.0 as drafted on `next-ast2` has 75 node types. This document has 74: `escaped_text`, `critic_substitution` and `cell_wrap` are gone, and `line` and `include` are new.
+Contract 2.0 as drafted on `next-ast2` has 75 node types. This document has 73: `escaped_text`, `critic_substitution`, `cell_wrap` and `figure` are gone, and `line` and `include` are new.
 
 **C2-A-050** The node types are those of the table below. A tree that holds any other core `type` is refused (C2-A-018).
 
@@ -169,7 +169,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `admonition` | block | blocks | `kind`, `title`?, `groupLabel`? |
 | `autolink` | inline | none | `href`, `text`? |
 | `block_extension` | block | blocks | `name`, `version`, `props`?, `slots`?, `fallback`, `payload`?, `resourceIds`?, `source`? |
-| `block_quote` | block | blocks | none |
+| `block_quote` | block | blocks | `caption`? |
 | `caption` | `caption` slot | blocks | `short`? |
 | `caption_number` | inline | none | `n`? |
 | `cell_paragraph` | `table_cell` | inlines | none |
@@ -177,7 +177,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `citation_definition` | top level | inlines | `key`, `namespace`, `metadata`? |
 | `citation_group` | inline | `citation` | `raw` |
 | `code` | inline | none | `value` |
-| `code_block` | block | none | `value`, `syntax`?, `title`?, `groupLabel`? |
+| `code_block` | block | none | `value`, `syntax`?, `title`?, `groupLabel`?, `caption`? |
 | `comment` | block, inline | none | `form`, `value` |
 | `critic_comment` | inline | none | `value` |
 | `definition_description` | `definition_list` | blocks | none |
@@ -188,7 +188,6 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `div` | block | blocks | `title`?, `groupLabel`? |
 | `document` | root | blocks | `astVersion`, `srcByteLength`?, `extensions`?, `stages`?, `resources`? |
 | `emphasis` | inline | inlines | none |
-| `figure` | block | blocks | `caption`?, `kind`? |
 | `figure_group` | block | blocks | `caption`? |
 | `footnote` | top level | blocks | `key`, `namespace` |
 | `footnote_ref` | inline | none | `number`?, `key`, `namespace` |
@@ -211,7 +210,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `math` | inline | none | `display`, `number`?, `value`, `numberPrefix`? |
 | `mention` | inline | none | `target`, `kind`, `label`? |
 | `non_breaking_space` | inline | none | none |
-| `paragraph` | block | inlines | `role`? |
+| `paragraph` | block | inlines | `role`?, `caption`? |
 | `raw_block` | block | none | `format`, `value` |
 | `raw_inline` | inline | none | `format`, `value` |
 | `ruby` | inline | none | `pairs` |
@@ -348,13 +347,9 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-081** A caption is a `caption` node with block `children` and an optional inline `short`. A producer does not derive `short` from the full caption.
 
-**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). A table carries its caption in its own `caption` slot. An image, a code block, a quote and a math block are wrapped in a `figure` that carries the caption. The comment of a comment-only line between a block and its caption (C2-B-137) is a child of that `figure`, after the block; below a block image or a math block it is a child of that paragraph, which is still open when the comment is read (C2-A-136, C2-A-184); for a figure group it is the last child of the group; and for a table it is the last child of the table, so that no sibling lies inside another's span (C2-A-145).
+**C2-A-082** In 0.2 a caption attaches to an image, a table, a code block, a quote, a math block or a figure group (C2-B-147). Each of them carries its caption in its own `caption` slot: the `paragraph` of a block image or a math block, the `code_block`, the `block_quote`, the `table` and the `figure_group`. The parser makes no wrapper. A reader refuses a `caption` on a paragraph whose `role` is neither `image` nor `math`. The comment of a comment-only line between a block and its caption (C2-B-137) is placed by C2-B-138: below a block image or a math block it is a child of that paragraph, which is still open, and below a quote a child of the quote's open leaf or of the quote. For a figure group it is the last child of the group, and for a table the last child of the table. Below a code block, which holds no children, it is the sibling after the block (C2-A-145).
 
-**C2-A-083** A `figure` carries block `children`, an optional `caption` and an optional `kind` (`image`, `table`, `listing`, `equation` or `other`). An absent `kind` makes no claim.
-
-**C2-A-084** A `figure_group` carries block `children` in source order and an optional `caption`, the caption of the group. Its panels are the `figure` and `table` nodes among its children; there is no separate panel list.
-
-**C2-A-085** A table inside a figure keeps its own caption, and the caption of the figure describes the figure.
+**C2-A-084** A `figure_group` carries block `children` in source order and an optional `caption`, the caption of the group. Its panels are the tables among its children, and the image paragraphs, code blocks, quotes and math blocks among them that carry a caption; there is no separate panel list.
 
 ```json
 {
@@ -567,13 +562,13 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-144** A child lies inside its parent: its `startOffset` is not before the parent's and its `endOffset` is not after it. A node without `pos` is skipped, and its children are compared with the nearest ancestor that has one.
 
-**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped. One case is exempt: the comment of a comment-only line that stands between an attribute line and the block that takes it (C2-B-137) lies inside the span of that block (C2-A-148) and is its sibling before it.
+**C2-A-145** Siblings are ordered and disjoint: for two nodes `a` before `b` in one node list, `a.endOffset` is not greater than `b.startOffset`. Nodes without `pos` are skipped. Two cases are exempt: the comment of a comment-only line that stands between an attribute line and the block that takes it (C2-B-137) lies inside the span of that block (C2-A-148) and is its sibling before it, and the comment of a comment-only line between a code block and its caption lies inside the span of the code block (C2-A-154) and is its sibling after it (C2-A-082).
 
 **Exception C2-A-146** Two breaks that meet at one line ending share it, against C2-A-145.
 
 **C2-A-147** A comment that came from a comment-only line satisfies C2-A-144 and C2-A-145 in the node list C2-A-075 puts it in: the open leaf, or else the innermost open container.
 
-**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them. Where the attribute lines go to a `figure` (C2-B-107), the figure starts at the first of them and the block inside it starts at its own opening markup.
+**C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them.
 
 **Exception C2-A-149** A table cell does not start at its opening markup, against C2-A-148: it spans the text between its pipes.
 
@@ -585,7 +580,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-153** A break that a parser makes from a plain line ending, with no backslash in the source, has a span: the spaces and tabs that C2-I-002 drops before the line ending and no line comment owns (C2-A-151), and the line ending itself. It starts directly after the last kept character of its line, so for `a`, two spaces, a line feed and `b` the soft break spans offsets 1 to 4. A hard break spans the same and its backslash (C2-A-152). It is not among the nodes that omit `pos`.
 
-**C2-A-154** A container, a list, a description list and a table end after their closer when they have one, and otherwise after their last child that has a position. Each starts at its opening markup and ends at its closing markup also when its first or last child has no position.
+**C2-A-154** A container, a list, a description list and a table end after their closer when they have one, and otherwise after their last child that has a position. Each starts at its opening markup and ends at its closing markup also when its first or last child has no position. A block that carries a caption, a figure group and a table included, ends where its caption ends, and the caption spans from its caret to the end of its last line (C2-A-151).
 
 **C2-A-155** A container with no positioned child spans its own opening markup and is not zero-width.
 
@@ -644,7 +639,6 @@ The invariants below are written so that a test can check each one on any tree a
 | `image.longDescription` | reports the field | renders its blocks after the image |
 | `image.decorative` | reports the field | writes empty `alt` |
 | `xref.display` | reports the field | uses the default core text |
-| a `table` inside a `figure` | writes the table with its own caption | `figure` around the table |
 | blocks in `table_cell.children` | reports the loss | renders the blocks in the cell |
 | `small_caps` | writes the children | `span` with class `smallcaps` |
 | `section` | writes the children | `section` element |
@@ -653,7 +647,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 ## Migration
 
-**C2-A-176** Trees of other contract versions are upgraded by a migration function, not by the reader: a 2.0 reader refuses a tree that holds `escaped_text`, `critic_substitution` or `cell_wrap` (C2-A-018).
+**C2-A-176** Trees of other contract versions are upgraded by a migration function, not by the reader: a 2.0 reader refuses a tree that holds `escaped_text`, `critic_substitution`, `cell_wrap` or `figure` (C2-A-018).
 
 **C2-A-177** A 2.0 producer writes `"2.0"`. The `next-ast2` draft never shipped. A migration function recognizes its tree or an earlier 0.2 draft tree by the retired node types and fields in the table below.
 
@@ -688,6 +682,8 @@ The invariants below are written so that a test can check each one on any tree a
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
 | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class |
+| a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, which takes the `caption` and the `attrs` of the figure; the comments go where C2-A-082 places them; `kind` is dropped |
+| any other `figure` | a `figure_group` with the same children, `caption` and `attrs`; `kind` is dropped |
 
 **C2-A-179** A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on) and then migrated as above.
 
@@ -701,9 +697,9 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-182** An `include` node has a position like any other block: it starts at its opening braces and ends after its closing braces and the spaces and tabs behind them on its line (C2-A-151). For `{{ a.crv }}` and two spaces the include spans offsets 0 to 13; indented by two spaces, with two spaces behind it, it spans 2 to 15.
 
-**C2-A-183** The attributes of a captioned block that is wrapped in a `figure` are the `attrs` of the `figure`, not of the block inside. A table carries its own.
+**C2-A-183** A captioned block carries its own `attrs`, `lang` and `dir`, as every block does: the attribute line above it applies to it (C2-B-091). HTML writes them on the `<figure>` it puts around the block (C2-H-063), and a table keeps them on `<table>`.
 
-**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph inside a `figure`.
+**C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph with a `caption`.
 
 **C2-A-185** Five facts are set when a block closes: paragraph `role` for image or math, caption attachment, list spacing and table footer rows (C2-B-191). Each is a tree fact used by equality.
 

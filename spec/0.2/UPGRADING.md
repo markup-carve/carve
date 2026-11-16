@@ -219,6 +219,7 @@ These rulings change what some documents give against the 0.1 engine or against 
 | `{{ a.crv @shift:1234567890 }}`, ten or more digits | 0.1: an include with a rounded number. Early 0.2: a paragraph. | An include whose node keeps the option as written in `invalid`, with no effect; `include-option-invalid` reports it. | C2-B-205, C2-B-206 |
 | An include option with an unknown key, a value outside its shape, a missing value or a repeated key: `{{ a.crv @size:2 }}`, `{{ a.crv @shift:x }}`, `{{ a.crv @lines }}` | Early 0.2: a paragraph for some options and an include for others, depending on the key. | Always an include. The option has no effect, the node keeps it as written, `fmt` writes it back, and `include-option-invalid` reports it. | C2-A-181, C2-B-206 |
 | A span mark that cannot join: `\| < \|` in the first column, `\| ^ \|` in the first row, below a head row or in the first footer row | 0.1 and early 0.2: an empty cell, a header cell when the other cells of its row were; a row span from the body into the foot made the HTML one `<tbody>`. | A cell that holds `<` or `^` as text, reported by `table-span-marker-blocked`; its header mark applies as on any cell. No span crosses the head, the body or the foot. Remove the mark, or write an empty cell. | C2-B-172 to C2-B-174 |
+| Trees of a captioned image, code block, quote or math block, for tree consumers | Early 0.2: a `figure` node around the block, holding the caption and the attributes of the attribute line. | The block carries `caption` in its own slot and keeps its attributes; there is no `figure` node, and the HTML is unchanged. Migrate stored trees by T-051 and T-052. | C2-A-082, C2-A-183, C2-H-062 |
 | An attribute line on a block image | Early 0.2: a bare `<img>`, the id and classes lost. | `<p id="…" class="…"><img …></p>`. | C2-H-020 |
 | A table panel of a figure group | Early 0.2: a bare `<table>`. | `<figure class="carve-figure-panel">` around the `<table>`. | C2-H-064 |
 | A captioned figure or table under `comment` or `minimal` | Early 0.2: `Figure : cap`, table caption lost. | `Figure 1: cap` as a paragraph after the degraded block. | C2-H-165 |
@@ -786,7 +787,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-035 | rename | list.items, definition_list.items, table.rows, table_row.cells, citation_group.items | children with typed child slots | C2-A-050 C2-A-051 |
 | T-036 | split | table.rows and rowGroups | table_head, table_body, table_foot children; table columns move to table_column nodes | C2-A-050 |
 | T-037 | split | table_cell inline children and blocks | cell_paragraph child for inline content; block children for other content | C2-A-050 |
-| T-038 | rename | figure.target and shortCaption | figure.kind and caption.short | C2-A-050 |
+| T-038 | rename | figure.target and shortCaption | caption.short; the figure itself is unwrapped (T-051, T-052) | C2-A-050 |
 | T-039 | rename | mention.user | target, kind and optional label | C2-A-050 |
 | T-040 | rename | inline_footnote.inline | children | C2-A-050 |
 | T-041 | rename | inline_extension.content | children; declared props, slots, fallback, payload and resourceIds | C2-A-050 |
@@ -799,6 +800,8 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-048 | drop | 0.1 rawRef, sourceFormat and layout-only fields | use semantic fields; original spelling is unavailable without source/layout | C2-A-178 |
 | T-049 | add | include directive | include with path, section, typed valid options and the invalid options as written; no expansion in core tree | C2-A-181 |
 | T-050 | add | no extension source record; block extension deferred in an earlier draft | qualified `block_extension` and `inline_extension` may carry a typed `source` record; a block extension has a required core fallback | C2-A-122 C2-A-125 C2-X-024 |
+| T-051 | merge | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, with the `caption` and the `attrs` of the figure in its own fields; the comments go where C2-A-082 places them; `kind` is dropped | C2-A-082 C2-A-178 |
+| T-052 | move | any other `figure` | a `figure_group` with the same children, `caption` and `attrs`; `kind` is dropped | C2-A-084 C2-A-178 |
 
 ### Reading and storing 2.0 trees
 

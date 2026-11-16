@@ -2286,8 +2286,6 @@ Example 89 (generated)
 
 **C2-B-106** The attributes of a link definition are merged into every link that uses it, and the link's own values win.
 
-**C2-B-107** The attribute line above a captioned block applies to the captioned whole: to the table for a table, and to the figure for every other target (carried over from 0.1).
-
 **C2-B-192** Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.
 
 **C2-B-193** A brace block with no content, alone on a line, is text and not an attribute line.
@@ -5675,7 +5673,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 4 |
 | Definitions | 9 | 0 | 7 | 4 |
-| Attribute lines | 21 | 1 | 12 | 11 |
+| Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 5 |
 | Sigil divs | 11 | 0 | 11 | 1 |
@@ -5688,9 +5686,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 1 | 18 | 11 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **13** | **166** | **82** |
+| **Total** | **228** | **13** | **166** | **82** |
 
-The chapter has 229 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

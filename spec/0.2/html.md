@@ -68,7 +68,7 @@ Example 1 (generated)
 
 **C2-H-015** An authored `align` key with the value `left`, `right` or `center` on a paragraph, a div or a heading is written as `style="text-align: VALUE;"`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
 
-**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name. Block elements here are the element of each block node and `<li>`, `<dt>`, `<dd>`, `<thead>`, `<tbody>`, `<tfoot>` and `<tr>`; not `<section>`, `<caption>`, `<figcaption>`, `<th>`, `<td>`, nor the `<hr>` and the `<li>` of the footnote section.
+**C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name. Block elements here are the element of each block node, the `<figure>` around a captioned block (C2-H-062), and `<li>`, `<dt>`, `<dd>`, `<thead>`, `<tbody>`, `<tfoot>` and `<tr>`; not `<section>`, `<caption>`, `<figcaption>`, `<th>`, `<td>`, nor the `<hr>` and the `<li>` of the footnote section.
 
 **C2-H-017** Attribute names, attribute values and destinations pass the filter of C2-H-128 before they are written. The filter removes attributes and blanks destinations. It never removes an element.
 
@@ -722,11 +722,11 @@ Example 12 (generated)
 
 ## Captions and figures
 
-**C2-H-062** A captioned image, code block, quote or math block is written as `<figure>` around the block and then `<figcaption>` with the caption.
+**C2-H-062** An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption. The tree has no node for this `<figure>`. With `sourceLines` on it carries the line the block starts on, and the element of the block inside it the line of the block's own opening markup, after its attribute lines.
 
-**C2-H-063** The attribute line of a captioned block applies to the `<figure>`, its id included. The block inside carries only what it generates itself. In the tree these attributes are the `attrs` of the `figure` (C2-A-183).
+**C2-H-063** The `attrs`, `lang` and `dir` of such a block are written on its `<figure>`, its id included (C2-A-183). The block inside carries only what it generates itself, so a captioned block image is the bare `<img>` (C2-H-020).
 
-**C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it is `<figure class="carve-figure-panel">`, and the caption of the group is the last child of the group. A table panel is wrapped too: the panel figure holds the `<table>`, which keeps its caption as `<caption>` (C2-H-061) and has no `<figcaption>`.
+**C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it (C2-A-084) is `<figure class="carve-figure-panel">` in place of the `<figure>` of C2-H-062, and the caption of the group is the last child of the group. A table panel is wrapped too: the panel figure holds the `<table>`, which keeps its caption as `<caption>` (C2-H-061) and has no `<figcaption>`.
 
 **C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
 
@@ -815,7 +815,7 @@ Example 14 (generated)
 
 :::
 
-**C2-H-135** The label word of a caption selects its number sequence, as in 0.1 (C2-B-208, C2-H-149). `figure.kind` (C2-A-083) selects it only in a supplied tree whose caption has no label word.
+**C2-H-135** The label word of a caption selects its number sequence, as in 0.1 (C2-B-208, C2-H-149).
 
 **C2-H-149** Each sequence key (C2-B-208) has its own count, from 1, in document order. Each caption with a mark takes the next number of the sequence of its key. The label words are not a closed list: `Figure`, `Table`, `Listing` and `Equation` have no special meaning, the block under the caption does not select the sequence, and `Fig.`, `figure` and `Figure` count apart. The number is written in place of the mark as a decimal number, and the rest of the caption is written as it stands. A caption without a mark is written as it stands and takes no number.
 
@@ -823,7 +823,7 @@ Example 14 (generated)
 
 **C2-H-170** Captions and numbered equations of one key are counted in document order, a node before the nodes inside it: the caption of a table takes its number before an equation in a cell of that table.
 
-**C2-H-151** In a supplied tree, a display `math` node that carries `numberPrefix` takes the next number of the sequence whose key is its `numberPrefix`, counted together with the captions of that key. The number is written after the math element as ` <span class="equation-number">PREFIX N</span>`. Inline math takes no number. A display math node inside a `figure` or `figure_group` whose caption has a mark takes no number of its own: the nearest such caption around it owns the number. `numberPrefix` has no source spelling, so a parsed tree holds no numbered equation, and `^ Equation #` numbers a caption.
+**C2-H-151** In a supplied tree, a display `math` node that carries `numberPrefix` takes the next number of the sequence whose key is its `numberPrefix`, counted together with the captions of that key. The number is written after the math element as ` <span class="equation-number">PREFIX N</span>`. Inline math takes no number. A display math node inside a block or a `figure_group` whose caption has a mark takes no number of its own: the nearest such caption around it owns the number. `numberPrefix` has no source spelling, so a parsed tree holds no numbered equation, and `^ Equation #` numbers a caption.
 
 Example 26 (generated)
 
@@ -1223,7 +1223,7 @@ Example 33 (unverified)
 
 ## Cross-references and abbreviations
 
-**C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-097).
+**C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-097). The id of a numbered caption is the `attrs.id` of the block that carries it.
 
 **C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
 
@@ -1700,6 +1700,8 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 
 **C2-H-190** A sanitizer that removes `<template>` elements or `data-` attributes removes the facts they carry. The rest of the HTML still imports: an element whose carrier was removed is read as it stands.
 
+**C2-H-199** A `<figure>` that holds one block element and then a `<figcaption>`, and that is no figure group, is read as that block with the caption in its `caption` slot (C2-A-082), and the attributes of the `<figure>` are the block's `attrs`. A panel `<figure class="carve-figure-panel">` is read the same way without its class, and a panel that holds a `<table>` gives that table.
+
 Importing the output of Examples 23 and 42 to 46 gives the reference forms, the ids, the autolink, the cross-reference, the footnote labels, the div and the definitions of their inputs.
 
 ## Options
@@ -1740,9 +1742,9 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096), static math (C2-H-168) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
 
-**C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
+**C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
 Under `minimal` the editorial comment gives no text, and the math span is written as the writer spells the node (C2-H-165).
 
@@ -1814,7 +1816,7 @@ See [docs](https://x.org) and *bold*.
 
 :::
 
-A degraded figure and a degraded table keep their captions as paragraphs, with their numbers (C2-H-165).
+A degraded captioned block and a degraded table keep their captions as paragraphs, with their numbers (C2-H-165).
 
 Example 39 (unverified, `--profile comment`)
 
@@ -1842,7 +1844,7 @@ Example 39 (unverified, `--profile comment`)
 
 :::
 
-Inside a degraded figure and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its spelling (C2-H-165).
+Inside a degraded captioned image and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its spelling (C2-H-165).
 
 Example 41 (unverified, `--profile minimal`)
 
@@ -1975,10 +1977,10 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 6 |
-| Import | 17 | 1 | 0 | 2 |
+| Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 3 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **197** | **7** | **25** | **23** |
+| **Total** | **198** | **7** | **25** | **23** |
 
-The document has 197 clauses, 7 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
