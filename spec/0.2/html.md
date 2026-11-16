@@ -632,7 +632,7 @@ Text[^1].
 
 **C2-H-050** With `rawHtml` off, which is the default, a raw block with the format `html` is written as a code block with the language `html`: `<pre><code class="language-html">`, the escaped payload, `</code></pre>`.
 
-**C2-H-051** With `rawHtml` off, a raw span with the format `html` is written as its escaped payload, with no element around it.
+**C2-H-051** With `rawHtml` off, a raw span with the format `html` is written as its escaped payload. With `roundtrip` off no element stands around it; with `roundtrip` on it stands in `<span data-carve-raw="html">` (C2-H-114). The carrier is written for no other raw span: with `rawHtml` on a raw span with the format `html` is verbatim (C2-H-053), and a raw span in any other format renders nothing (C2-H-054), also under `roundtrip`.
 
 **C2-H-052** The escaped form is not a render loss. The CLI prints one line on stderr per run in which it escaped raw HTML, and the line names the flag `--raw-html`.
 
@@ -659,6 +659,22 @@ a `<i>y</i>`{=html} b
 ```
 
 :::::
+
+With `roundtrip` on and `rawHtml` off, the escaped payload of the raw span stands in its carrier element (C2-H-051).
+
+Example 49 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+`<b>x</b>`{=html}
+```
+
+```html
+<p><span data-carve-raw="html">&lt;b&gt;x&lt;/b&gt;</span></p>
+```
+
+:::
 
 **C2-H-134** With `rawHtml` on, a raw HTML block whose payload has no line and one whose payload is one blank line both write one empty line. HTML does not show the difference that `value` keeps (C2-A-048).
 
@@ -1313,7 +1329,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 ## Roundtrip carriers
 
-**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for, and writes the abbreviation definitions as templates (C2-H-178). The option adds the carriers and the abbreviation templates and changes nothing else. It is off by default.
+**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for, and writes the abbreviation definitions as templates (C2-H-178). The option adds the carriers, the carrier element of a raw span (C2-H-051) and the abbreviation templates, and changes no rendered text. It is off by default.
 
 **C2-H-113** A carrier exists only for a fact the tree holds. A spelling that the sidecar holds has no carrier, and neither has a field that 0.2 deleted.
 
