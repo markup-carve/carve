@@ -43,7 +43,7 @@ Conventions:
 
 **C2-W-011** A Carve writer reports every supplied node or field that source cannot spell with `structure-unspellable` or `field-unspellable`, naming its JSON path (C2-A-175). This includes `scope`, `headerIds`, `longDescription`, `decorative`, `xref.display` and root `metadata.fields`. A parse of Carve source produces none of them. Frontmatter is raw source text and is never parsed into `fields`. When a document has a frontmatter node, the writer writes that node unchanged and reports no separate loss for `fields`; otherwise it reports `metadata.fields` under this rule.
 
-**C2-W-117** The table of C2-A-175 is not the whole list. For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. No such loss is silent. Among these are: a frontmatter value that holds a line of three hyphens, and a frontmatter format that does not have the shape of a format name (C2-B-164); `spacing: "loose"` on a list of one item; a caption with more than one block; a class that holds a space, a tab or a line break; a definition key that holds a closing bracket with no backslash before it, or that folds to nothing; an abbreviation definition whose key is not one or more ASCII letters and digits, or whose expansion is empty, ends with a space or a tab, or holds a line break (C2-B-084, C2-W-055); a line comment whose value holds a line break; a `non_breaking_space` node at the end of a table cell (C2-I-002); a code span, a literal-text span or a math span whose value starts with a line break and ends with a backtick (C2-W-077); a paragraph, a list or a description list with no children; `directive.tocTarget`; an `autolink` whose `text` differs from its target; an `abbreviation` with no definition of its key in the document; a mention with a `label` or a kind other than `user`; and `metadata`, except `metadata.fields` with a frontmatter node under C2-W-011.
+**C2-W-117** The table of C2-A-175 is not the whole list. For every node, field and value of a supplied tree that no clause of this document writes in a form that reads back to the same value, the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field, `structure-unspellable` for a node. No such loss is silent. Among these are: a frontmatter value that holds a line of three hyphens, and a frontmatter format that does not have the shape of a format name (C2-B-164); `spacing: "loose"` on a list of one item; a caption with more than one block; a class that holds a space, a tab or a line break; a definition key that holds a closing bracket with no backslash before it, or that folds to nothing; an abbreviation definition whose key is not one or more ASCII letters and digits, or whose expansion is empty, ends with a space or a tab, or holds a line break (C2-B-084, C2-W-055); a line comment whose value holds a line break or ends with a space or a tab; a `non_breaking_space` node at the end of a table cell (C2-I-002); a code span, a literal-text span or a math span whose value starts with a line break and ends with a backtick (C2-W-077); a paragraph, a list or a description list with no children; `directive.tocTarget`; an `autolink` whose `text` is no email address or whose `href` is not `mailto:` followed by that `text`; an `abbreviation` with no definition of its key in the document; a mention with a `label` or a kind other than `user`; and `metadata`, except `metadata.fields` with a frontmatter node under C2-W-011.
 
 **C2-W-124** Where a field that cannot be spelled makes its whole node read back as another type, as a frontmatter `format` that is no format name does, the report is `structure-unspellable` at that node. A loss is reported at the node that did not read back, not at a wrapper around it.
 
@@ -77,8 +77,6 @@ Conventions:
 
 **Exception C2-W-132** A space or tab inside an image's `alt` value is verbatim content, including one before a line break. The writer keeps it when removing it would change the value.
 
-**Exception C2-W-023** A line that ends in a line comment keeps the comment's value as it is, because a `%%` comment runs to the end of its line. The value holds no spaces at its end (C2-A-074), so no trailing space is written for it.
-
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. A continuation line of a caption or of a term is written at the column of the first character of its text, behind the mark and its space. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
 **C2-W-128** Continuation lines of an ordered item with a task box are indented to the width of its marker and marker padding, as for every other item. The task box does not increase that indent.
@@ -107,9 +105,9 @@ Conventions:
 
 **C2-W-032** A div, an admonition or a hard-break block with an empty body is written with one blank line between opener and closer. An empty line block is written with its closer directly below its opener, because a blank line in it is a `line` (C2-A-069).
 
-**C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed. A supplied code or raw block whose value has no final line break (C2-A-047) is written with one, and the writer reports `field-unspellable` for `value`. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
+**C2-W-033** Every fence, div and comment block is written with its closer, also when the source left it unclosed, except the fence of C2-W-123. A supplied code or raw block whose value has no final line break (C2-A-047) is written with one, and the writer reports `field-unspellable` for `value`. The closer stands at the column of its opener. The closer of a code fence and of a comment block is a bare run of the opener's length (C2-B-110).
 
-**C2-W-123** One fence is written without its closer: the last block of a list, a description list or a footnote body, when a comment follows that container as its sibling. Only the open fence lets the comment line end the container (C2-B-111, C2-B-135); behind a closed fence the comment would be a child of the item (C2-B-138).
+**Exception C2-W-123** One fence is written without its closer: the last block of a list, a description list or a footnote body, when a comment follows that container as its sibling. Only the open fence lets the comment line end the container (C2-B-111, C2-B-135); behind a closed fence the comment would be a child of the item (C2-B-138).
 
 **C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073).
 
@@ -121,9 +119,29 @@ Conventions:
 
 **C2-W-036** A thematic break is written as `***`.
 
-**C2-W-037** A code block is written with a backtick fence, the shortest run of at least three backticks that is longer than every backtick run in its body (C2-B-110). An info string that holds a backtick has no spelling (C2-B-118): a parse never gives one, and for a supplied tree the writer leaves it out and reports `field-unspellable`.
+**C2-W-037** A code block is written with a backtick fence of the length C2-W-038 states. An info string that holds a backtick has no spelling (C2-B-118): a parse never gives one, and for a supplied tree the writer leaves it out and reports `field-unspellable`.
 
 **C2-W-038** The fence of a code block and of a raw block is the shortest run of at least three backticks that is longer than every bare backtick run on a line of the value, at any indent (C2-B-109 has no column test). This is requirement W6.
+
+A backtick run that is followed by other text on its line closes no fence, so it does not lengthen the fence (C2-B-110, C2-W-038).
+
+Example 9 (unverified)
+
+Input:
+
+`````carve
+````
+a```b
+````
+`````
+
+Written:
+
+````carve
+```
+a```b
+```
+````
 
 **C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
 
@@ -215,7 +233,26 @@ Written:
 | café      | 12.5     | hot  |
 ```
 
-**C2-W-135** A `comment` among the rows of a table, or after its last row, is written as a comment-only line at its place (C2-W-059). The trailing line comment of a row reads to the same tree as that line (C2-A-086), so the writer does not write the trailing form: `| 1 | 2 | %% note` is written as `| 1 | 2 |` and, on the next line, `%% note`. A comment that is the last child of the last group is written below the last row and its continuation rows and is followed by the empty continuation row `+ |`, which adds nothing to the row (C2-B-184) and keeps the comment in its group (C2-A-086): the tree of `| a |`, `%% x` and `+ b |` on three lines is written `| a b |`, `%% x` and `+ |`, and `fmt`, which keeps the continuation row of the source (C2-A-094), writes `| a |`, `+ b |`, `%% x` and `+ |`.
+**C2-W-135** A `comment` among the rows of a table, or after its last row, is written as a comment-only line at its place (C2-W-059). The trailing line comment of a row reads to the same tree as that line (C2-A-086), so the writer does not write the trailing form: `| 1 | 2 | %% note` is written as `| 1 | 2 |` and, on the next line, `%% note`. A comment that is the last child of the last group is written below the last row and its continuation rows and is followed by the empty continuation row `+ |`, which adds nothing to the row (C2-B-184) and keeps the comment in its group (C2-A-086): the tree of `| a |`, `%% x` and `+ b |` on three lines is written `| a b |`, `%% x` and `+ |`, and `fmt`, which keeps the continuation row of the source (C2-A-094), writes `| a |`, `+ b |`, `%% x` and `+ |`. That last row stands for every continuation row of the source that has only empty fragments, and `fmt` writes none of those again, so its output is formatted to the same bytes (C2-W-003).
+
+Example 11 (unverified)
+
+Input:
+
+```carve
+| a |
++ |
+%% x
++ |
+```
+
+Written:
+
+```carve
+| a |
+%% x
++ |
+```
 
 **C2-W-136** A key `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from `headRows` (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
 
@@ -241,7 +278,23 @@ Written:
 
 **C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
 
-**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets (C2-I-073), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is written as `#`, the mark of C2-B-150; only its number is a resolution result (C2-A-133, C2-A-162) and is not written. An inline node that needs content and has none in a supplied tree, such as an emphasis, a span or a link text with no children where the syntax needs at least one character, has no spelling: the writer leaves it out and reports `structure-unspellable`. A `cell_paragraph` is written as the content of its cell (C2-W-062).
+**C2-W-116** Every other inline node is written in the one spelling its syntax clause gives: a mention as `@name` and a tag as `#name` (C2-I-090), a symbol as `:name:` (C2-I-093), an inline extension as `:name[content]` (C2-I-094), superscript as `{^text^}` and subscript as `{,text,}` (C2-I-057), an insertion as `{+text+}` and a deletion as `{-text-}`, an editorial comment as `{#text#}` (C2-I-063), an inline footnote as `^[content]` (C2-I-089), a footnote reference as `[^label]` (C2-I-087), a cross-reference as `</#id>` (C2-I-096), an autolink as its target in angle brackets, which for the email form is its `text` (C2-I-073, C2-A-216), a no-break space as a backslash and a space (C2-I-011), a literal-text span as `!` glued to a code span (C2-I-018), raw inline as a code span with `{=format}` glued to it (C2-I-021), and an `abbreviation` as its `key`, the word as typed. A `caption_number` is written as `#`, the mark of C2-B-150; only its number is a resolution result (C2-A-133, C2-A-162) and is not written. An inline node that needs content and has none in a supplied tree, such as an emphasis, a span or a link text with no children where the syntax needs at least one character, has no spelling: the writer leaves it out and reports `structure-unspellable`. A `cell_paragraph` is written as the content of its cell (C2-W-062).
+
+An email autolink is written as its visible text, and a `mailto:` URL as its URL (C2-W-116, C2-A-216).
+
+Example 10 (unverified)
+
+Input:
+
+```carve
+Mail <a@b.org> or <mailto:a@b.org>
+```
+
+Written:
+
+```carve
+Mail <a@b.org> or <mailto:a@b.org>
+```
 
 **C2-W-079** A hard break is written as a backslash at the end of the line.
 
@@ -794,7 +847,7 @@ Fates: *ported* (the rule holds, restated in 0.2 terms), *simplified* (one of th
 | CARVE-P11-018 | an empty colon fence body | ported | C2-W-032 |
 | CARVE-P11-019 | a footnote definition with no blocks | removed: 0.2 has no sentinel, and an empty supplied body is unspellable | C2-W-057 |
 | CARVE-P11-020 | a hard break in a line block | ported | C2-W-080 |
-| CARVE-P11-021 | a line whose last node is a comment | ported | C2-W-023 |
+| CARVE-P11-021 | a line whose last node is a comment | ported | C2-W-022 |
 | CARVE-P11-022 to 026 | Markdown escaping and hard break | out of scope | none |
 | CARVE-P11-027 | continuation lines of an item | simplified | C2-W-024, C2-W-026 |
 | CARVE-P11-028 | an unused definition in the other targets | out of scope | none |
