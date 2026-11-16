@@ -237,7 +237,7 @@ Written:
 
 **C2-W-076** An attribute block of an inline host is written glued to the host, as one block in the order of C2-W-048. Glued blocks of the source are merged (C2-I-039).
 
-**C2-W-077** A code span is written with the shortest backtick run that does not occur in its content, and with one space of padding on each side when the content starts or ends with a backtick or with a space that C2-I-016 would remove.
+**C2-W-077** A code span is written with the shortest backtick run that does not occur in its content, and with one space of padding on each side when the content starts or ends with a backtick or with a space that C2-I-016 would remove. A value that starts with a line break and ends with a backtick has no padded spelling, since the pad before the line break is trailing whitespace (C2-I-002) and only the closing pad would stay. Such a code span is written open, with no closing run, which C2-I-017 reads back, when it is the last node of a content that is not a table cell or a line of a line block and it has no attribute block: the value of a line feed and a backtick is written ``` `` ```, a line feed and a backtick. Anywhere else it has no spelling, and the writer reports `field-unspellable` (C2-W-117).
 
 **C2-W-078** A smart-punctuation node is written as its `source` (C2-A-098).
 
