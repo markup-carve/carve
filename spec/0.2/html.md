@@ -944,7 +944,7 @@ Example 38 (unverified)
 
 **C2-H-070** Frontmatter renders nothing.
 
-**C2-H-071** A link definition and an abbreviation definition render nothing. A footnote definition renders only through the footnote section (C2-H-089).
+**C2-H-071** A link definition and an abbreviation definition render nothing, except that with `roundtrip` on a run of abbreviation definitions writes a template (C2-H-178). A footnote definition renders only through the footnote section (C2-H-089).
 
 Example 15 (generated)
 
@@ -1292,7 +1292,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 
 ## Roundtrip carriers
 
-**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for. The option adds these attributes and changes nothing else. It is off by default.
+**C2-H-112** With `roundtrip` on, the renderer adds attributes that carry tree facts HTML has no spelling for, and writes the abbreviation definitions as templates (C2-H-178). The option adds the carriers and the abbreviation templates and changes nothing else. It is off by default.
 
 **C2-H-113** A carrier exists only for a fact the tree holds. A spelling that the sidecar holds has no carrier, and neither has a field that 0.2 deleted.
 
@@ -1313,7 +1313,7 @@ A renderer that writes each block as soon as it is parsed needs the following st
 | `data-carve-inline-footnote` | the note `<li>` | the note is an inline footnote | stays |
 | `data-carve-raw` | `<span>` | a raw span and its format | stays |
 | `data-carve-escaped` | `<span>` | one escaped character | goes: `escaped_text` is not a node type (C2-A-041) |
-| `data-carve-abbreviations` | `<template>` | the abbreviation definitions, one per line | stays |
+| `data-carve-abbreviations` | `<template>` | a run of abbreviation definitions, as Carve source (C2-H-179) | stays; the text is no longer one definition per line |
 | `data-carve-col-widths` | `<table>` | the dash widths of a separator row | goes: the separator row is cut and `table.separatorWidths` is deleted |
 | `data-carve-label` | `<pre>` | the label of a code fence | stays |
 | `data-carve-tight` | `<ul>`, `<ol>` | the list is tight | stays; written on every tight list (C2-H-138) |
@@ -1328,7 +1328,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-115** The reserved names are the 18 names of this table that stay, are new or stay reserved: 15 stay, 2 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
-**C2-H-116** With `roundtrip` on, an authored attribute with a reserved name is dropped on every element and reported as the render loss `carrier-attribute-dropped`. With it off, the attribute passes through.
+**C2-H-116** With `roundtrip` on, an authored attribute with a reserved name is dropped on every element and reported as the render loss `carrier-attribute-dropped`. With it off, the attribute passes through. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
 
 **C2-H-117** A presence carrier is written as the bare attribute name, with no value. A reader takes the name as presence and does not compare a value.
 
@@ -1336,7 +1336,7 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
-**C2-H-120** How an importer reads the carriers (CARVE-P10-017, CARVE-P10-021) is part of the importer, which is not in 0.2.0. The names of C2-H-115 are fixed now so that 0.2.0 output can be read back later.
+**C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021).
 
 The 0.1 engine writes three of these carriers with the value `1`. The expected output has the bare names of C2-H-117.
 
@@ -1384,6 +1384,171 @@ in
 
 **C2-H-140** Under `roundtrip` a resolved reference written in the collapsed form carries the presence carrier `data-carve-ref-collapsed` beside `data-carve-ref`. A reference in the full form carries `data-carve-ref` alone. A shortcut reference carries the presence carrier `data-carve-ref-shortcut` beside `data-carve-ref`.
 
+**C2-H-178** With `roundtrip` on, each maximal run of consecutive `abbreviation_def` nodes among the children of the document is written at the place of the run as one `<template data-carve-abbreviations>`. A node of any other type ends the run, a comment included, so two definitions with a comment between them give two templates. A template stands where the first definition of its run would stand, inside the section that holds that place when `sections` is on (C2-H-026). With `roundtrip` off a definition writes nothing (C2-H-071).
+
+**C2-H-179** The text of the template is the run as the canonical writer spells it: each definition by C2-W-055, with its attribute line directly above it (C2-W-047), and one blank line between two definitions (C2-W-017). No line ending follows the last line. The text is escaped as text content (C2-H-002) and stands between `<template data-carve-abbreviations>` and `</template>` with nothing else around it. The start tag stands on its own line with the indent of its level (C2-H-005); every later line of the text starts at column 0, as a line break inside inline content does.
+
+**C2-H-180** Every definition of the run is in the text, in tree order: one that no abbreviation uses and one whose key an earlier definition holds (C2-B-085) are written like every other one. The renderer neither drops nor merges a definition.
+
+**C2-H-181** A definition that the writer cannot spell is in the text as the writer writes it, and the render reports the writer's loss entry (C2-W-117). An expansion that holds a line break is such a case: it is not split over two lines (C2-B-084).
+
+With `roundtrip` on, a run of two definitions gives one template, and the blank line between them is the one the writer puts between two blocks.
+
+Example 42 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+*[HTML]: HyperText Markup Language
+*[CSS]: Cascading Style Sheets
+
+HTML and CSS.
+```
+
+```html
+<template data-carve-abbreviations>*[HTML]: HyperText Markup Language
+
+*[CSS]: Cascading Style Sheets</template>
+<p><abbr title="HyperText Markup Language">HTML</abbr> and <abbr title="Cascading Style Sheets">CSS</abbr>.</p>
+```
+
+:::
+
+Two runs apart give two templates, each at its place. The second one stands inside the section of the heading above it.
+
+Example 43 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+*[A]: Alpha
+
+# H
+
+A and B.
+
+*[B]: Beta
+```
+
+```html
+<template data-carve-abbreviations>*[A]: Alpha</template>
+<section data-carve-generated-id id="H">
+  <h1>H</h1>
+  <p><abbr title="Alpha">A</abbr> and <abbr title="Beta">B</abbr>.</p>
+  <template data-carve-abbreviations>*[B]: Beta</template>
+</section>
+```
+
+:::
+
+The attribute line of a definition is part of the text. It writes no HTML attribute.
+
+Example 44 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+{#x .c}
+*[A]: Alpha
+
+A.
+```
+
+```html
+<template data-carve-abbreviations>{#x .c}
+*[A]: Alpha</template>
+<p><abbr title="Alpha">A</abbr>.</p>
+```
+
+:::
+
+An unused definition and a duplicate stay in the text. The first definition of `A` decides the title (C2-B-085).
+
+Example 45 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+*[A]: First
+*[A]: Second
+*[U]: Unused
+
+A.
+```
+
+```html
+<template data-carve-abbreviations>*[A]: First
+
+*[A]: Second
+
+*[U]: Unused</template>
+<p><abbr title="First">A</abbr>.</p>
+```
+
+:::
+
+The text is escaped as text content: `&`, `<` and `>` are escaped, and a quotation mark is not.
+
+Example 46 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+*[RnD]: R&D <research> "and" development
+
+RnD.
+```
+
+```html
+<template data-carve-abbreviations>*[RnD]: R&amp;D &lt;research&gt; "and" development</template>
+<p><abbr title="R&amp;D &lt;research&gt; &quot;and&quot; development">RnD</abbr>.</p>
+```
+
+:::
+
+## Import
+
+**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115. An element that carries none of them is read as the importer reads that element. Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+
+**C2-H-183** The importer parses the HTML by the HTML Standard. The text of a `<template>` is the text of its template contents, which the HTML parser places in the content fragment of the template and not among its child nodes.
+
+**C2-H-184** A carrier is read only on an element that the importer reads as structure: an element of the kind and at the place the table of C2-H-186 names. On any other element the carrier is ignored.
+
+**C2-H-185** A carrier whose value is malformed, which contradicts the HTML around it or which contradicts another carrier of its element is ignored. The column "Ignored when" of C2-H-186 lists these cases for each name. Where two carriers contradict each other, both are ignored. A carrier that is ignored sets no tree fact, and the other carriers of its element are read as usual.
+
+**C2-H-186** An importer never keeps a reserved name as an authored attribute, whether it reads the carrier or ignores it. What a reader does with each name:
+
+| Name | Element | Tree fact it sets | Ignored when |
+|---|---|---|---|
+| `data-marker` | `<ul>` | `list.marker.char` is the value | the value is not `-` or `*` |
+| `data-carve-tight` | `<ul>`, `<ol>` | `list.spacing` is `tight` | an item's first block is a `<p>` with no attribute, which a tight list writes bare (C2-H-034, C2-H-018) |
+| `data-carve-explicit-id` | the `<section>` of a heading (C2-H-027), or an `<h1>` to `<h6>` that opens no section | the `id` of the element is the heading's authored `attrs.id` | the element has no `id`; it carries `data-carve-generated-id`; a `<section>` whose first child is no heading element |
+| `data-carve-generated-id` | as `data-carve-explicit-id` | the `id` of the element is generated: the heading has no `attrs.id`, and resolution computes `generatedId` again (C2-A-134) | the element has no `id`; it carries `data-carve-explicit-id`; a `<section>` whose first child is no heading element |
+| `data-carve-ref` | `<a>`, `<img>` | the link or image is a reference: `key` is the value, `namespace` is `link` and `refForm` is `full` | the value is empty or differs from its folded form (C2-A-104); the element carries `data-carve-autolink` or `data-carve-xref` |
+| `data-carve-ref-collapsed` | an `<a>` or `<img>` whose `data-carve-ref` is read | `refForm` is `collapsed` | the element carries `data-carve-ref-shortcut` |
+| `data-carve-ref-shortcut` | an `<a>` or `<img>` whose `data-carve-ref` is read | `refForm` is `shortcut` | the element carries `data-carve-ref-collapsed` |
+| `data-carve-autolink` | `<a>` | an `autolink` whose `href` is the `href` of the element, with `text` where the text of the element differs from it (C2-A-216) | the `<a>` holds an element or has no `href`; it carries `data-carve-ref` or `data-carve-xref` |
+| `data-carve-footnote-label` | a footnote reference `<a>` (C2-H-088); a note `<li>` of the footnote section (C2-H-089) | the `key` of the `footnote_ref`, or of the `footnote` the note is read as, is the value | the value is empty or differs from its folded form; the `<a>` and the note it points to carry different values; the `<li>` carries `data-carve-inline-footnote`; the `<a>` carries `data-carve-xref` |
+| `data-carve-inline-footnote` | a note `<li>` of the footnote section | the reference that points to the note is an `inline_footnote` whose `children` are the inline content of the note without its backlink | the `<li>` carries `data-carve-footnote-label`; the note holds more than one paragraph; no reference points to it |
+| `data-carve-raw` | `<span>` | a `raw_inline` whose `format` is the value and whose `value` is the text of the span | the value is not a raw format name (C2-B-225); the span holds an element or carries another attribute |
+| `data-carve-abbreviations` | `<template>` at the top level of the flow (C2-H-187) | the `abbreviation_def` nodes of its text, at its place (C2-H-187) | it stands elsewhere; its template contents hold anything but text; its text gives a block that is no abbreviation definition |
+| `data-carve-label` | the `<pre>` of a code block | `code_block.groupLabel` is the value | the value holds a line break or a character the label of a fence opener cannot hold (C2-B-117); the `<pre>` holds anything but one `<code>` |
+| `data-carve-xref` | `<a>` | an `xref` whose `key` is the `href` without its leading `#`; the text of the element is generated and is not read (C2-H-096) | the `href` does not start with `#` or holds nothing behind it, or what follows is no cross-reference id (C2-I-096); the element carries `data-carve-ref`, `data-carve-autolink` or `data-carve-footnote-label` |
+| `data-carve-caption-number` | a `<span>` inside a `<figcaption>` or a `<caption>` | a `caption_number` node in place of the span; the digits it holds are not read | the span holds an element or carries another attribute |
+| `data-carve-div` | `<div>` | a `div` | the `<div>` carries another attribute, since the renderer writes the carrier only on a div with none (C2-H-114); it carries `data-carve-line-block` |
+| `data-carve-line-block` | `<div>` with the class `line-block` | a `line_block`: each `<p>` is a stanza, each `<br>` ends a `line`, and an empty `line` stands between two stanzas (C2-A-069, C2-H-043) | the `<div>` lacks the class or holds anything but `<p>` children; it carries `data-carve-div` |
+| `data-carve-src` | any | none: the name is removed | never: no fact is read from it |
+
+**C2-H-187** A `<template data-carve-abbreviations>` is read only at the top level of the flow: as a child of the fragment, or of a `<section>` that the importer reads as the section of a heading (C2-H-026). Its text is parsed with the Carve block reader as a document of its own, with no second grammar. When that document holds at least one block and every block is an `abbreviation_def`, those nodes are inserted, in their order, among the children of the document at the place of the template, with their attributes and without `pos` (C2-A-159). Otherwise the template gives no definition.
+
+**C2-H-188** Round trip is promised only for HTML that the renderer wrote with `roundtrip` on and that was not changed afterwards. For such HTML the importer recovers each fact that a carrier names. It does not recover what has no carrier: the sidecar facts of C2-H-119 and the facts that HTML and the carriers do not hold.
+
+**C2-H-189** With `rawHtml` on, raw HTML is passed through verbatim (C2-H-053), so a document can hold a template or a carrier that the renderer did not make. The importer cannot tell the two apart and reads them alike. A carrier is data and not a grant: reading one never makes the importer trust the HTML around it, and a renderer applies its options and the URL policy to an imported tree as to any other.
+
+**C2-H-190** A sanitizer that removes `<template>` elements or `data-` attributes removes the facts they carry. The rest of the HTML still imports: an element whose carrier was removed is read as it stands.
+
+Importing the output of Examples 23 and 42 to 46 gives the reference forms, the ids, the autolink, the cross-reference, the footnote labels, the div and the definitions of their inputs.
+
 ## Options
 
 **C2-H-121** Fourteen of the 20 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
@@ -1420,7 +1585,7 @@ in
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
-**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096), static math (C2-H-168) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of a roundtrip carrier (C2-H-114), which is data for a reader and not presentation. (carried over from 0.1)
+**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096), static math (C2-H-168) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 
@@ -1597,7 +1762,7 @@ Fourteen are render options, counting `headingIds`, which switches a resolution 
 | CARVE-P10-013 | an escaped raw block is written as code | C2-H-050 |
 | CARVE-P10-014 | `data-delim` | C2-H-031 |
 | CARVE-P10-015, 016 | the carriers | C2-H-112 to C2-H-115, five names removed |
-| CARVE-P10-017, 021 | import of carriers | not ported: importers are not in 0.2.0 (C2-H-120) |
+| CARVE-P10-017, 021 | import of carriers | ported to the HTML importer: C2-H-120, C2-H-182 to C2-H-190 |
 | CARVE-P10-018 | one option for the carriers of every target | C2-H-112; the Markdown target is not in 0.2.0 |
 | CARVE-P10-019 | an authored reserved name is dropped | C2-H-116 |
 | CARVE-P10-020 | retired in 0.1 | none |
@@ -1640,10 +1805,11 @@ One point is open.
 | Cross-references and abbreviations | 6 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 11 | 0 | 0 | 1 |
+| Roundtrip carriers | 15 | 0 | 0 | 6 |
+| Import | 9 | 0 | 0 | 0 |
 | Options | 24 | 0 | 3 | 3 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **177** | **7** | **25** | **16** |
+| **Total** | **190** | **7** | **25** | **21** |
 
-The document has 177 clauses, 7 of them marked with the word "Exception", and 41 examples, 25 generated and 16 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 190 clauses, 7 of them marked with the word "Exception", and 46 examples, 25 generated and 21 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

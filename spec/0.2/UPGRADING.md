@@ -562,7 +562,8 @@ The 0.2 entry point is `carve-js/v2/src/index.ts` in this checkout. The current 
 | `parseWithProvenance`, `createEditorSession`, `astNodePaths`, node identity, provenance and annotation-range helpers | No 0.2 counterpart. `parseWithLayout` covers source layout only. |
 | `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | No 0.2 counterpart. |
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | No 0.2 lint runner yet. `parseWithDiagnostics` reports parser and resolution findings. |
-| `htmlToAst`, `htmlToCarve`, `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | No 0.2 importer. |
+| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0 and reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190). The `v2/` engine has no importer yet. |
+| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | No 0.2 importer. |
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | No include expansion in the 0.2 engine. An `include` node remains in the tree. |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
@@ -686,7 +687,7 @@ The table groups differences observed by rendering the same source with both eng
 | Footnotes | A plain top-level footnote still rendered `<a role="doc-noteref">` plus `<section role="doc-endnotes">` with `fn1` and `fnref1` in both engines. Definition placement and lazy lines can remove or add that markup. | Verify note links and backlink scripts on real pages. |
 | Raw HTML and escaping | 0.1 emitted `=html` raw blocks and spans by default. 0.2 escapes a raw block inside `<pre><code class="language-html">` and escapes an inline raw span when `rawHtml` is false. Bare `<b>` text stays escaped in both. | Set `rawHtml: true` only where the old output is required and allowed. |
 | URL filtering | Both default engines blanked a tested `javascript:` link and `data:` image URL, keeping `href=""` or `src=""`. 0.2 also filters URL-valued attributes by its `urlPolicy`, and refuses a disabled policy. | Test scheme handling and any code that assumes a missing attribute instead of an empty one. |
-| Source lines and carriers | `sourceLine` becomes `sourceLines`. `roundtrip` carriers and their names changed. | Update `data-source-line` readers and do not parse old carrier names as a 2.0 contract. |
+| Source lines and carriers | `sourceLine` becomes `sourceLines`. `roundtrip` carriers and their names changed. The `<template data-carve-abbreviations>` now holds the Carve source of one run of definitions, attribute lines and blank lines included, and stands at the place of that run (C2-H-178, C2-H-179). | Update `data-source-line` readers and do not parse old carrier names as a 2.0 contract. Read an abbreviation template with the Carve block reader, not line by line. |
 | Opaque blocks and comments | A changed fence or comment closer can replace a code block, div, or hidden comment with visible paragraph text. | Review syntax highlighting and content hiding. |
 
 For one concrete HTML comparison, the unchanged 0.1 source below produced two `<ul>` elements in 0.1 and one `<ul class="task-list">` with both `<li>` elements in 0.2:
