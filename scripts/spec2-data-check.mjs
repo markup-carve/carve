@@ -188,6 +188,9 @@ else {
   if (!existsSync(slotsPath)) fail('node-slots.json: data file is missing')
   else try { execFileSync('node', [join(root, 'scripts/spec2-node-slots.mjs'), '--check'], { cwd: root, stdio: 'pipe' }) }
   catch { fail('node-slots.json: does not match slots generated from ast-schema.json') }
+  // The tree gate of ast.md: the fixtures of spec/0.2/trees.
+  try { counts.push(execFileSync('node', [join(root, 'scripts/spec2-trees.mjs'), '--check'], { cwd: root, stdio: 'pipe' }).toString().trim()) }
+  catch (error) { fail(`trees: ${(error.stderr ?? '').toString().trim() || error.message}`) }
 }
 
 // Names that one file takes from another.

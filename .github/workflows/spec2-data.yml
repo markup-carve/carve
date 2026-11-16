@@ -8,6 +8,7 @@ on:
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'
+      - 'scripts/spec2-trees.mjs'
       - 'scripts/spec2-unicode.mjs'
       - '.github/workflows/spec2-data.yml'
   pull_request:
@@ -15,6 +16,7 @@ on:
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'
+      - 'scripts/spec2-trees.mjs'
       - 'scripts/spec2-unicode.mjs'
       - '.github/workflows/spec2-data.yml'
 

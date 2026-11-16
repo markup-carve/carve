@@ -588,7 +588,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-157** Such a node may carry `segments`, a list of ranges in the shape of `pos`, one per source piece in order.
 
-**C2-A-158** In a tree a parser built from source, a node omits `pos` only when it has no source character or when its value is not one contiguous slice of the source (C2-A-156). Nodes with no source character are `table_column` and the `cell_paragraph` of an empty cell. Nodes that are not one slice are a `table_row`, a `table_cell` and a `cell_paragraph` that a continuation row joined, an inline node of such a cell that takes characters from more than one of its pieces, the delimited table cases of C2-A-215, and a `text` node merged from pieces that are not adjacent in the source. Every other node carries `pos`. An empty cell and a cell that holds a span mark span the text between their pipes (C2-A-149), so in `| a | |` the second cell spans offsets 5 to 6. A `caption_number` spans its `#`, and the text on each side of it spans its own characters: for `![i](a.png)`, a line feed and `^ Figure #: cap`, the text `Figure ` spans offsets 14 to 21, the number 21 to 22 and the text `: cap` 22 to 27.
+**C2-A-158** In a tree a parser built from source, a node omits `pos` only when it has no source character or when its value is not one contiguous slice of the source (C2-A-156). Nodes with no source character are `table_column`, the `cell_paragraph` of an empty cell and a `line` with no children (C2-A-069). Nodes that are not one slice are a `table_row`, a `table_cell` and a `cell_paragraph` that a continuation row joined, an inline node of such a cell that takes characters from more than one of its pieces, the delimited table cases of C2-A-215, and a `text` node merged from pieces that are not adjacent in the source. Every other node carries `pos`. An empty cell and a cell that holds a span mark span the text between their pipes (C2-A-149), so in `| a | |` the second cell spans offsets 5 to 6. A `caption_number` spans its `#`, and the text on each side of it spans its own characters: for `![i](a.png)`, a line feed and `^ Figure #: cap`, the text `Figure ` spans offsets 14 to 21, the number 21 to 22 and the text `: cap` 22 to 27.
 
 **C2-A-159** A node of a tree that was built or imported without Carve source has no position and omits `pos`. The types `section`, `ruby`, `ruby_pair` and `small_caps` have no source spelling and are never positioned by a parser. A block extension transformed from source takes the claimed core node's position.
 
@@ -788,6 +788,10 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-215** A table group made from a delimited table may omit `pos`. Its rows, cells, cell paragraphs and decoded text nodes omit `pos`; the table itself carries the position of its source fence. A pipe table group carries `pos`. These are the delimited table cases of C2-A-158, including the group and decoded text nodes.
 
+## The tree gate
+
+The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a Carve example of the block, inline, HTML and writer chapters, and each supplied tree that holds a node type or a field no example tree holds, passes `data/ast-schema.json`; each tree that has its source passes the position invariants C2-A-139 to C2-A-159 against it. Every node type and every field of the schema occurs in at least one of them. Each refused tree names the clause that refuses it and whether the schema refuses it or only a reader check beyond the schema. `npm run spec2:data` checks all of this, and no fixture is waived. An engine meets the gate when its parse of each example equals the fixture under C2-A-161 with every `pos` equal too, and its reader accepts every positive tree and refuses every refused one.
+
 ## Counts
 
 | Section | Clauses |
@@ -805,4 +809,3 @@ The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast
 Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
 
 2. **Edit binding** of annotation-range paths after tree edits remains deferred. C2-A-204 defines block-boundary anchors for an unchanged tree.
-4. **The gate for this document.** The plan asks for one and states none. A candidate: the schema validates every tree of the corpus, and the position invariants hold with no waiver file.
