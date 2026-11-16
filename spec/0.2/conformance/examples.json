@@ -74478,6 +74478,48 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-44",
+   "document": "import-html.md",
+   "number": 44,
+   "section": "Block elements",
+   "clauses": [
+    "C2-M-023",
+    "C2-M-024",
+    "C2-M-025",
+    "C2-M-026",
+    "C2-M-027",
+    "C2-M-028",
+    "C2-M-029",
+    "C2-M-030"
+   ],
+   "kind": "import",
+   "html": "<section id=\"outer\"><h1 id=\"inner\">H</h1></section>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "H"
+       }
+      ],
+      "attrs": {
+       "id": "inner"
+      }
+     }
+    ],
+    "carve": "{#inner}\n= H\n",
+    "diagnostics": [
+     "import-attribute-dropped"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-7",
    "document": "import-html.md",
    "number": 7,

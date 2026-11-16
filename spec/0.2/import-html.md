@@ -208,9 +208,34 @@ The no-break space before `c` is the character U+00A0 in the text (C2-H-195 row 
 
 **C2-M-025** The `id` of a heading element is its authored `attrs.id`. Without the carrier `data-carve-generated-id` the importer cannot tell a generated id from an authored one, so every id is authored (C2-M-091).
 
-**C2-M-026** A `<section>` whose first child element is a heading element, with only whitespace before it, is the section a render opens at a heading (C2-H-026). It gives the heading and then the blocks that follow it in the section; the `<section>` itself gives no node. Its `id` is the heading's id (C2-H-027).
+**C2-M-026** A `<section>` whose first child element is a heading element, with only whitespace before it, is the section a render opens at a heading (C2-H-026). It gives the heading and then the blocks that follow it in the section; the `<section>` itself gives no node. Its `id` is the heading's id (C2-H-027). Where the heading element carries an `id` of its own that differs, that `id` wins, and the `id` of the `<section>` is dropped and reported with `import-attribute-dropped`.
 
 **C2-M-027** Every other attribute of such a section is dropped and reported with `import-attribute-dropped`. A render writes no other attribute on it.
+
+Example 44 (unverified)
+
+::: compare
+
+```html
+<section id="outer"><h1 id="inner">H</h1></section>
+```
+
+```json
+[
+  {"type":"heading","level":1,"children":[{"type":"text","value":"H"}],"attrs":{"id":"inner"}}
+]
+```
+
+```carve
+{#inner}
+= H
+```
+
+:::
+
+The heading element keeps its own `id`; the `id` of the section is dropped.
+
+Reported: `import-attribute-dropped`.
 
 **C2-M-028** A `<section>` that does not open with a heading is read as a `div` with its attributes, and is reported with `import-element-mapped`.
 
@@ -1390,4 +1415,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 43 examples: 43 verified and 0 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 44 examples: 43 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
