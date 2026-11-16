@@ -75503,6 +75503,73 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-46",
+   "document": "import-html.md",
+   "number": 46,
+   "section": "Inline elements",
+   "clauses": [
+    "C2-M-044",
+    "C2-M-045",
+    "C2-M-046",
+    "C2-M-047",
+    "C2-M-048",
+    "C2-M-049"
+   ],
+   "kind": "import",
+   "html": "<p><time>today</time> <abbr>HTML</abbr></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "today"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "time",
+           ""
+          ]
+         ]
+        }
+       },
+       {
+        "type": "text",
+        "value": " "
+       },
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "HTML"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "abbr",
+           ""
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[today]{time} [HTML]{abbr}\n"
+   },
+   "status": "verified",
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-23",
    "document": "import-html.md",
    "number": 23,

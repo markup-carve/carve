@@ -680,7 +680,29 @@ x
 
 **C2-M-046** `<br>` is a `hard_break`. `<wbr>` is dropped and reported with `import-element-dropped`: it marks a place where a line may break and renders nothing.
 
-**C2-M-047** `<kbd>` is a `span` with the key `kbd` and an empty value, and `<time>` a span with the key `time` and the value of `datetime` (C2-H-075). `<abbr>` is an `abbreviation` when an abbreviation template (C2-H-187) defines its text with its `title` as the expansion and it holds no element; otherwise it is a span with the key `abbr` and the value of `title`.
+**C2-M-047** `<kbd>` is a `span` with the key `kbd` and an empty value, and `<time>` a span with the key `time` and the value of `datetime`, or an empty value when it has none (C2-H-075). `<abbr>` is an `abbreviation` when an abbreviation template (C2-H-187) defines its text with its `title` as the expansion and it holds no element; otherwise it is a span with the key `abbr` and the value of `title`, or an empty value when it has none.
+
+Example 46 (verified)
+
+::: compare
+
+```html
+<p><time>today</time> <abbr>HTML</abbr></p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"span","children":[{"type":"text","value":"today"}],"attrs":{"keyValues":[["time",""]]}},{"type":"text","value":" "},{"type":"span","children":[{"type":"text","value":"HTML"}],"attrs":{"keyValues":[["abbr",""]]}}]}
+]
+```
+
+```carve
+[today]{time} [HTML]{abbr}
+```
+
+:::
+
+With no `datetime` and no `title`, each key has an empty value.
 
 **C2-M-048** `<ruby>` is a `ruby` node: each `<rt>` closes a pair whose base is the content before it, and `<rb>` gives its content. `<rp>` is dropped without a report, since every render writes the parentheses again. A base with no `<rt>` after it is text, reported with `import-structure-repaired`.
 
@@ -1445,4 +1467,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 45 examples: 44 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 46 examples: 45 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
