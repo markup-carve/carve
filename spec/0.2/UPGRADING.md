@@ -1,6 +1,6 @@
 # Upgrading from Carve 0.1 to Carve 0.2
 
-This is a non-normative guide. Carve 0.2 is still a draft. The [0.2 specification](README.md) defines behavior. The [upgrade map](data/upgrade-map.json) holds the source and tree changes in these tables. Its source examples are literal strings with line breaks. `SILENT` means unchanged 0.1 source still parses in 0.2 but produces different HTML. Review those entries even when a document has no syntax error.
+This is a non-normative guide. Carve 0.2 is a freeze candidate and not yet released ([status](STATUS.md)). The [0.2 specification](README.md) defines behavior. The [upgrade map](data/upgrade-map.json) holds the source and tree changes in these tables. Its source examples are literal strings with line breaks. `SILENT` means unchanged 0.1 source still parses in 0.2 but produces different HTML. Review those entries even when a document has no syntax error.
 
 ## Part 1. Authors: your documents
 
@@ -832,7 +832,7 @@ For stored 1.x JSON, first identify the producer's exact contract version. Map o
 
 Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown optional data. Walk only declared child slots, including root metadata `headers`, `footers`, `abstract` and nested `fields` values. A metadata value tags a string, boolean, number, inline list, block list, ordered value list or named value map. The core HTML renderer ignores root metadata; the Carve writer reports `fields` when no frontmatter node preserves the raw source. The [0.2 extension interface](extensions.md) lets a registered matcher claim a core inline, div, or code-block node and transform it into a declared `inline_extension` or `block_extension`. Both need a valid same-role fallback containing only core nodes; qualified forms may carry a typed `source` record for the writer. Declarations on the root or envelope carry slot names in walk order. A tree-only reader checks annotation id shape and duplicates; a reader with the range sidecar also checks each referenced range. `carve.tabs` is the specified standard extension. An extension renderer is trusted host code and returns HTML unchanged; hosts use trusted renderers for untrusted documents. The interface is specified but is not built in the current engine. For unknown required extensions, refuse the tree; for unknown optional ones, use the valid fallback as the spec directs. Do not silently discard an extension's payload or `data` on storage round trips.
 
-## Open work
+## Tooling not yet shipped
 
 - Build and publish a 0.2 CLI, including `fmt --normalize`.
 - Add a versioned migration function for stored AST 1.x and earlier 0.2 draft JSON, with loss reports.

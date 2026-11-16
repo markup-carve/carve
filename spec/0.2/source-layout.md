@@ -1,6 +1,6 @@
 # Carve 0.2: the source-layout sidecar
 
-Status: draft on `next2`. The reference engine implements an earlier layout shape.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 
@@ -223,8 +223,3 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 ## Schema
 
 [`data/layout-schema.json`](data/layout-schema.json) defines the closed version 2 layout record.
-
-## Open
-
-1. **Names and shape of the moved facts.** `bare`, `fenced`, `rawRef` and `sourceFormat` keep their draft tree names. `hardBreakOpener`, `wraps` and `continuationLines` on a row entry are first drafted here. An alternative for the first two booleans is to derive them from `markerRaw` and `openerRaw`, which already tell a bare dot and a quote fence.
-2. **The gate for this document.** The plan asks for one and states none. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.

@@ -1,6 +1,6 @@
 # Carve 0.2: the canonical writer, `carve fmt` and lint
 
-Status: first draft on `next2`. Nothing in this document is implemented yet.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This document defines the canonical writer, which turns a tree into Carve source, the formatter `carve fmt` built on it, and lint. It ports the clauses of PART 11 of the 0.1 grammar that 0.2 keeps and adds the 0.2 decisions. The Markdown, plain-text and ANSI writers are not part of 0.2.0 (section "Out of scope").
 
@@ -657,9 +657,9 @@ The `include-` rules are defined by the Includes document (`includes.md`): the c
 
 ### New rules
 
-The 29 rules of the migrate and lint design and one rule added later, with the later rulings applied. Severity and message are those of the design unless the last column says otherwise.
+The 29 rules of the migrate and lint design and one rule added since, with the rulings since applied. Severity and message are those of the design unless the last column says otherwise.
 
-| Rule | Severity | Reports | After the later rulings |
+| Rule | Severity | Reports | After the rulings |
 |---|---|---|---|
 | `block-opener-without-blank-line` | warning | a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition | a table row is no trigger, because a row interrupts (C2-B-019) |
 | `unattached-caption` | warning | a caption line that is not directly below one of the six caption targets, a caption after a blank line among them | the target list has six kinds, the figure group included |
@@ -765,7 +765,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 
 The design also listed `table-shaped-paragraph` as obsolete. It stays, because a row has to end with a pipe again.
 
-### The lint topics of the later rulings
+### The lint topics of the rulings
 
 Each topic the rulings name, with the rule that reports it. No id is new here.
 
@@ -894,12 +894,6 @@ Fates: *ported* (the rule holds, restated in 0.2 terms), *simplified* (one of th
 | CARVE-P11-082 | plain-text covered cells | out of scope | none |
 
 Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope. The PART 11 review counted 24 out of scope and 3 removed. The difference is the 16 clauses of the section "Out of scope", CARVE-P11-043, and the two sentinel clauses CARVE-P11-019 and CARVE-P11-040.
-
-## Open
-
-One point is open.
-
-1. **The gate for this document.** The plan asks for one. The two properties of C2-W-002 and C2-W-003 on the corpus and the enumerated sets are the gate of phase 5. A gate for the document itself, such as an example for every canonical form, is not stated.
 
 ## Counts
 

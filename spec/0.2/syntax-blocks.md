@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: block structure
 
-Status: first draft on `next2`. Nothing in this chapter is implemented yet.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how the lines of a Carve document form blocks. Inline content, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of a block decision.
 
@@ -6342,4 +6342,4 @@ The chapter has 228 clauses, and 13 exceptions against a budget of 25. The claus
 
 ## Not covered
 
-This draft has no example for a list-table or for a lone CR. No question found while writing is open: the eight of the first draft are ruled and written into the clauses above.
+The chapter has no example for a list-table or for a lone CR.

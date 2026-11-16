@@ -1,6 +1,6 @@
 # Carve 0.2: HTML rendering
 
-Status: first draft on `next2`. Nothing in this document is implemented yet.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This document defines how a 0.2 tree becomes HTML. The block and inline chapters say which tree a source gives, `ast.md` defines the tree, and `writer.md` defines the way back to source. It ports PART 10 of the 0.1 grammar and the rendering parts of PART 9 and PART 9R, and applies the 0.2 decisions.
 
@@ -2053,13 +2053,7 @@ Fourteen are render options, counting `headingIds`, which switches a resolution 
 
 The five attribute ranks of PART 10 section 1 are replaced by the fixed order of C2-H-009.
 
-## Open
-
-One point is open.
-
-1. **The gate for this document.** The plan asks for one and states none. A candidate: every example of this document and of the Syntax chapters passes in phase 4, and no rendered byte depends on a sidecar.
-
-## Later clauses
+## Further clauses
 
 **C2-H-174** A task box whose item has no plain text in its direct paragraph or heading children writes no `aria-label` attribute on its checkbox.
 
@@ -2093,7 +2087,7 @@ One point is open.
 | Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 7 |
 | The option list | 1 | 0 | 0 | 0 |
-| Later clauses | 4 | 0 | 0 | 0 |
+| Further clauses | 4 | 0 | 0 | 0 |
 | **Total** | **198** | **7** | **25** | **31** |
 
 The document has 198 clauses, 7 of them marked with the word "Exception", and 56 examples, 25 generated and 31 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

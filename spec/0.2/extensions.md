@@ -1,6 +1,6 @@
 # Carve 0.2: extensions
 
-Status: draft on `next2`.
+Status: freeze candidate 1 of Carve 0.2 on `next2`: the extension mechanism is frozen with the core, and the standard extensions are not (`STATUS.md`).
 
 This document defines the extension interface for Carve 0.2.0.
 
@@ -91,6 +91,8 @@ This document defines the extension interface for Carve 0.2.0.
 **C2-X-038** A reader validates extension props and slot content kinds against its registered extension schema when it knows the extension. It validates slot names against the tree declaration even without a registry.
 
 ## Standard extension: tabs
+
+The standard extensions are a catalog that follows the core: this section is not part of freeze candidate 1, and the clauses of the sections before and after it are.
 
 **C2-X-039** The core provides optional `carve.tabs` and `carve.tab` extensions at version `1`. The `tabs` div matcher produces `carve.tabs`; the nested `tab` div produces `carve.tab` only inside its `tabs` slot. A `tab` div elsewhere stays a core div.
 

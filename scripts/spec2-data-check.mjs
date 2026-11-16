@@ -316,7 +316,7 @@ const texts = Object.fromEntries(Object.keys(DOCUMENTS).map(name => [name, readD
 
 // Every clause id cited anywhere exists, except one that a counts section names as deleted.
 const cites = { ...Object.fromEntries(Object.entries(texts).map(([name, text]) => [`${name}.md`, text])) }
-for (const name of ['UPGRADING.md', 'README.md', 'data/README.md', 'trees/README.md']) cites[name] = readFileSync(join(root, 'spec/0.2', name), 'utf8')
+for (const name of ['UPGRADING.md', 'README.md', 'STATUS.md', 'data/README.md', 'trees/README.md', 'conformance/README.md']) cites[name] = readFileSync(join(root, 'spec/0.2', name), 'utf8')
 for (const dir of ['data', 'data/schemas', 'trees', 'conformance']) {
   for (const name of execFileSync('git', ['ls-files', `spec/0.2/${dir}/*.json`], { cwd: root, encoding: 'utf8' }).split('\n').filter(Boolean)) {
     if (dirname(name) === `spec/0.2/${dir}`) cites[name.slice('spec/0.2/'.length)] = readFileSync(join(root, name), 'utf8')
@@ -367,7 +367,7 @@ const sum = (rows) => rows.reduce((total, row) => {
 }, {})
 // The rows of a counts table that stand for more than one section.
 const GROUPS = {
-  ast: { 'Later clauses and standard data namespaces': ['Later clauses', 'Standard data namespaces'] },
+  ast: { 'Further clauses and standard data namespaces': ['Further clauses', 'Standard data namespaces'] },
 }
 const COLUMNS = { Clauses: 'clauses', Exceptions: 'exceptions', 'Examples generated': 'generated', 'Examples unverified': 'unverified' }
 for (const [name, text] of Object.entries(texts)) {

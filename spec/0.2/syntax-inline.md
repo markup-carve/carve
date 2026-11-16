@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: inline content
 
-Status: first draft on `next2`. Nothing in this chapter is implemented yet.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how inline content becomes inline nodes. Block structure, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of an inline decision.
 
@@ -2385,7 +2385,3 @@ The numbers are not like for like. Several clauses here join two or three atomic
 ## Not covered
 
 The citation syntax itself is defined with its extension. The element a span becomes for the keys `kbd`, `abbr` and `time`, footnote numbering, the links of mentions and tags, the `mailto:` link of an email autolink, the symbol table and URL filtering belong to the HTML rendering document. That a line of a line block keeps its leading spaces is a block rule.
-
-## Open questions found while writing
-
-None is open. The 14 questions of the first draft are ruled and written into the clauses above.

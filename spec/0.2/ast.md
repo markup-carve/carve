@@ -1,6 +1,6 @@
 # Carve 0.2: the AST, contract 2.0
 
-Status: draft on `next2`. The reference engine implements an earlier 2.0 shape.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This document defines the tree a Carve 0.2 parser returns and its JSON form, which one implementation writes and another reads. It is ported from the contract 2.0 draft on the `next-ast2` branch (PART 12 of the 0.1 grammar, clauses CARVE-P12-nnn) and brought in line with the 0.2 syntax. Spelling that the draft kept in the tree lives in the source-layout sidecar, which has its own document (`source-layout.md`).
 
@@ -688,7 +688,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-180** The migration is lossy for spelling by design and reports nothing for it. It reports a loss when a tree holds something that 0.2 cannot represent at all.
 
-## Later clauses
+## Further clauses
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
@@ -796,17 +796,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
 | Existing AST contract | 177 | 2 |
-| Later clauses and standard data namespaces | 36 | 1 |
+| Further clauses and standard data namespaces | 36 | 1 |
 | **Total** | **213** | **3** |
 
 The clause count includes the exceptions. Ids run to C2-A-216; C2-A-083, C2-A-085 and C2-A-090 are deleted.
 
-## Schema changes owed
+## Schema
 
 The Carve 0.2 tree and envelope are defined by [`data/ast-schema.json`](data/ast-schema.json). The `resources/` schema describes 0.1.
-
-## Open
-
-Points the plan or the tracking ticket leaves open. None is decided here. The contradictions found while porting were ruled on 2026-11-13 and are written into the clauses above.
-
-2. **Edit binding** of annotation-range paths after tree edits remains deferred. C2-A-204 defines block-boundary anchors for an unchanged tree.
