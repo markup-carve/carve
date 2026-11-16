@@ -138,7 +138,7 @@ Top.
 {
   "type": "document",
   "astVersion": "2.0",
-  "stages": ["includeExpansion", "referenceResolution"],
+  "stages": ["includeExpansion", "referenceResolution", "tableAlignment"],
   "children": [
     {"type": "paragraph", "children": [{"type": "text", "value": "Top."}]},
     {
@@ -1006,7 +1006,7 @@ Text.
 
 :::
 
-**C2-N-073** A caption line directly below a code include attaches to the include (C2-B-147). When the include is expanded, its child carries the same caption, and the child is captioned as an authored code block or table is (C2-H-062). A caption below an include without `code` is text, and `unattached-caption` reports it (C2-B-149).
+**C2-N-073** A caption line directly below a code include attaches to the include (C2-B-147). When the include is expanded, its child carries the same caption, and the child is captioned as an authored code block or table is (C2-H-062). The copy in the child has no `pos`: its characters are in the including file, and a node under the children of an include is positioned in the included file (C2-A-142). The caption of the include keeps its position. A caption below an include without `code` is text, and `unattached-caption` reports it (C2-B-149).
 
 **Exception C2-N-074** The caption of an expanded include takes no number and is not written: the copy in its child is numbered and written. The caption of an unexpanded include is numbered where it stands and written after the directive's paragraph as one more paragraph, as C2-H-165 writes the caption of a degraded block.
 

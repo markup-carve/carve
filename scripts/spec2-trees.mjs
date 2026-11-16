@@ -51,6 +51,128 @@ function examplesOf(chapter) {
   return out
 }
 
+/** The fence that starts at `line`, its language and its body, and the line after its closer. */
+function fenceAt(lines, line) {
+  const open = FENCE.exec(lines[line] ?? '')
+  if (!open) return null
+  let end = line + 1
+  while (end < lines.length && lines[end] !== open[1]) end++
+  return { lang: open[2], body: lines.slice(line + 1, end).join('\n'), next: end + 1 }
+}
+
+const ANY_HEADER = /^Example (\d+) \((?:generated|unverified|verified)([^)]*)\)\s*$/
+const flagsOf = (text) => text.split(',').map(flag => flag.replaceAll('`', '').trim()).filter(Boolean)
+// The end of an example: the next example, clause or heading.
+const endsExample = (line) => ANY_HEADER.test(line) || /^(\*\*|#)/.test(line)
+
+// includes.md, conventions: the resolver of an example serves the files of its `File` lines under
+// their names and returns each name as its id. A file is the body of its fence and a final line feed.
+const FILE_LINE = /^File `([^`]+)`:\s*$/
+const FILE_BYTES = /^File `([^`]+)` holds the (?:\w+ )?bytes `([0-9A-F]{2}(?: [0-9A-F]{2})*)`/
+// The flags of an include example that change its tree; `null` for those that change only the render.
+const INCLUDE_FLAGS = new Map([
+  ['with the depth limit lowered to 1', { depth: 1 }],
+  ['sourceLines on', null],
+  ['profile set to comment', null],
+])
+
+/** The examples of includes.md: the files, the entry source, the include settings and the stated tree. */
+function includeExamples() {
+  const lines = readFileSync(join(spec, 'includes.md'), 'utf8').split('\n')
+  const out = []
+  for (let at = 0; at < lines.length; at++) {
+    const header = ANY_HEADER.exec(lines[at])
+    if (!header) continue
+    const id = `includes-${header[1]}`
+    const files = {}
+    const includes = {}
+    for (const flag of flagsOf(header[2])) {
+      if (!INCLUDE_FLAGS.has(flag)) fail(`includes.md Example ${header[1]}: unknown flag "${flag}"`)
+      else Object.assign(includes, INCLUDE_FLAGS.get(flag))
+    }
+    let source
+    let stated
+    let line = at + 1
+    while (line < lines.length && !endsExample(lines[line])) {
+      const named = FILE_LINE.exec(lines[line])
+      const bytes = FILE_BYTES.exec(lines[line])
+      if (named) {
+        let fence = line + 1
+        while (fence < lines.length && !FENCE.test(lines[fence])) fence++
+        const block = fenceAt(lines, fence)
+        files[named[1]] = `${block.body}\n`
+        line = block.next
+        continue
+      }
+      if (bytes) {
+        const buffer = Buffer.from(bytes[2].replaceAll(' ', ''), 'hex')
+        const text = buffer.toString('utf8')
+        if (!Buffer.from(text, 'utf8').equals(buffer)) fail(`includes.md Example ${header[1]}: the bytes of ${bytes[1]} are not UTF-8`)
+        files[bytes[1]] = text
+      }
+      const block = fenceAt(lines, line)
+      if (block) {
+        if (block.lang === 'carve' && source === undefined) source = block.body
+        else if (block.lang === 'json' && stated === undefined) stated = JSON.parse(block.body)
+        line = block.next
+        continue
+      }
+      line++
+    }
+    if (source === undefined) { fail(`includes.md Example ${header[1]}: no Carve input`); continue }
+    out.push({ id, files, source, options: Object.keys(includes).length ? { includes } : undefined, stated })
+  }
+  return out
+}
+
+/** The examples of import-html.md: the HTML input, the import flags and the stated children of the document. */
+function importExamples() {
+  const lines = readFileSync(join(spec, 'import-html.md'), 'utf8').split('\n')
+  const out = []
+  for (let at = 0; at < lines.length; at++) {
+    const header = ANY_HEADER.exec(lines[at])
+    if (!header) continue
+    const label = `import-html.md Example ${header[1]}`
+    const options = {}
+    for (const flag of flagsOf(header[2])) {
+      if (flag === 'import option rawHtml on') options.rawHtml = true
+      else fail(`${label}: unknown flag "${flag}"`)
+    }
+    const blocks = []
+    let line = at + 1
+    while (line < lines.length && !endsExample(lines[line])) {
+      const block = fenceAt(lines, line)
+      if (block) { blocks.push(block); line = block.next } else line++
+    }
+    const [html, json, carve] = blocks
+    if (blocks.length !== 3 || html.lang !== 'html' || json.lang !== 'json' || carve.lang !== 'carve') {
+      fail(`${label}: needs an html, a json and a carve fence, in that order`)
+      continue
+    }
+    out.push({ id: `import-html-${header[1]}`, html: html.body, options, children: JSON.parse(json.body) })
+  }
+  return out
+}
+
+/** Whether `actual` holds every field that `expected` names, with lists of the same length. */
+function holds(actual, expected) {
+  if (Array.isArray(expected)) return Array.isArray(actual) && actual.length === expected.length && expected.every((item, at) => holds(actual[at], item))
+  if (expected === null || typeof expected !== 'object') return actual === expected
+  return actual !== null && typeof actual === 'object' && !Array.isArray(actual)
+    && Object.entries(expected).every(([key, item]) => holds(actual[key], item))
+}
+
+/** includes.md, conventions: a stated tree leaves out the nodes it is not about, so it is the tree or a node of it in part. */
+function statesPart(tree, stated) {
+  const queue = [tree]
+  while (queue.length) {
+    const node = queue.pop()
+    if (holds(node, stated)) return true
+    if (Array.isArray(node.children)) queue.push(...node.children.filter(child => child && typeof child === 'object'))
+  }
+  return false
+}
+
 const withoutPositions = (value) => Array.isArray(value) ? value.map(withoutPositions)
   : value !== null && typeof value === 'object'
     ? Object.fromEntries(Object.entries(value).filter(([key]) => key !== 'pos' && key !== 'segments').map(([key, item]) => [key, withoutPositions(item)]))
@@ -118,21 +240,44 @@ const UNPOSITIONED = new Set(['table_column', 'cell_paragraph', 'table_row', 'ta
 const NEVER_PARSED = new Set(['section', 'ruby', 'ruby_pair', 'small_caps'])
 const inside = (a, b) => a.startOffset >= b.startOffset && a.endOffset <= b.endOffset
 
-/** The first violation of C2-A-139 to C2-A-159 in a tree a parser built from `source`. */
-function positionFailures(tree, source) {
-  const { table, bytes } = sourceTable(source)
+/**
+ * The first violation of C2-A-139 to C2-A-159 in a tree a parser built from `source`, or from the entry
+ * source and the included `files`: positions are local to the file that `pos.file` names (C2-N-019).
+ */
+function positionFailures(tree, source, files = {}) {
+  const tables = new Map([[undefined, sourceTable(source)]])
+  for (const [id, text] of Object.entries(files)) tables.set(id, sourceTable(text))
   const found = []
-  walk(tree, (node, outer, path, ancestors) => {
+  // C2-A-142: a node under the children of an include is in the include's file; its other slots are not.
+  const fileOf = new Map()
+  const assign = (value, file) => {
+    if (Array.isArray(value)) return value.forEach(item => assign(item, file))
+    if (value === null || typeof value !== 'object') return
+    if (isNode(value)) fileOf.set(value, file)
+    for (const [key, child] of Object.entries(value)) {
+      if (key === 'data' || key === 'pos' || key === 'segments' || key === 'attrs') continue
+      assign(child, isNode(value) && value.type === 'include' && key === 'children' ? value.file : file)
+    }
+  }
+  assign(tree, undefined)
+  walk(tree, (node, _outer, path, ancestors) => {
     const where = `${path || '/'} (${node.type})`
     if (NEVER_PARSED.has(node.type)) found.push(`${where}: a parser never builds this type (C2-A-159)`)
     if (!('pos' in node)) {
       const inCell = ancestors.some(a => a.type === 'table_cell')
       const emptyLine = node.type === 'line' && node.children.length === 0
-      if (node.type !== 'document' && !UNPOSITIONED.has(node.type) && !inCell && !emptyLine) found.push(`${where}: no pos (C2-A-158)`)
+      // C2-N-073: the caption that an expanded code include copies into its child.
+      const chain = [...ancestors, node]
+      const copied = chain.some((a, at) => a.type === 'caption' && at >= 2 && chain[at - 2].type === 'include' && chain[at - 2].caption && chain[at - 1].caption === a)
+      if (node.type !== 'document' && !UNPOSITIONED.has(node.type) && !inCell && !emptyLine && !copied) found.push(`${where}: no pos (C2-A-158)`)
       return
     }
     const pos = node.pos
     if (pos === null || typeof pos !== 'object') return found.push(`${where}: pos is not an object (C2-A-139)`)
+    if (pos.file !== fileOf.get(node)) return found.push(`${where}: pos.file is not the file of the include that holds it (C2-A-142)`)
+    if (!tables.has(pos.file)) return found.push(`${where}: pos.file names no file of the example (C2-A-142)`)
+    const { table, bytes } = tables.get(pos.file)
+    const outer = ancestors.findLast(a => a.pos && a.pos.file === pos.file)?.pos
     if (pos.startOffset > pos.endOffset) return found.push(`${where}: start behind end (C2-A-143)`)
     if (pos.endOffset > bytes.length) return found.push(`${where}: end past the source (C2-A-143)`)
     const start = table.get(pos.startOffset)
@@ -168,6 +313,9 @@ const ajv = new Ajv2020({ strict: true, allErrors: false })
 const validate = ajv.compile(schema)
 const read = (name) => JSON.parse(readFileSync(join(dir, name), 'utf8'))
 const exampleFile = (chapter) => `examples-${chapter}.json`
+const INCLUDE_FILE = exampleFile('includes')
+// includes.md, conventions: the resolver serves exactly the files of the example and returns each name as its id.
+const fixtureResolver = (files) => (request) => Object.hasOwn(files, request.path) ? { text: files[request.path], id: request.path } : { error: 'not_found' }
 
 if (process.argv[2] === '--write') {
   const engineRoot = resolve(process.argv[3] ?? '')
@@ -188,6 +336,19 @@ if (process.argv[2] === '--write') {
     writeFileSync(path, `{\n "description": "The tree of each example of ${chapter}.md that has a Carve input, with positions. See README.md.",\n "trees": [\n${body}\n ]\n}\n`)
     console.log(`${exampleFile(chapter)}: ${trees.length} trees`)
   }
+  const path = join(dir, INCLUDE_FILE)
+  const kept = existsSync(path) ? new Map(read(INCLUDE_FILE).trees.map(entry => [entry.id, entry])) : new Map()
+  const trees = includeExamples().map(({ id, files, source, options }) => {
+    const old = kept.get(id)
+    if (old && old.source === source && sameJson(old.files, files) && sameJson(old.options, options)) return old
+    const entry = { id, files, source }
+    if (options) entry.options = options
+    entry.tree = JSON.parse(encodeTree(parse(source, { includes: { resolver: fixtureResolver(files), ...options?.includes } })))
+    return entry
+  })
+  const body = trees.map(entry => `  ${JSON.stringify(entry)}`).join(',\n')
+  writeFileSync(path, `{\n "description": "The expanded tree of each example of includes.md, with positions local to each file, from a resolver that serves the files of the example. See README.md.",\n "trees": [\n${body}\n ]\n}\n`)
+  console.log(`${INCLUDE_FILE}: ${trees.length} trees`)
   process.exit(0)
 }
 
@@ -207,7 +368,7 @@ function checkPositive(entry, file) {
     return fail(`${label}: the schema refuses the tree at ${error.instancePath || '/'}: ${error.message}`)
   }
   cover(entry.tree)
-  if (typeof entry.source === 'string') for (const failure of positionFailures(entry.tree, entry.source)) fail(`${label}: ${failure}`)
+  if (typeof entry.source === 'string') for (const failure of positionFailures(entry.tree, entry.source, entry.files)) fail(`${label}: ${failure}`)
 }
 
 let positive = 0
@@ -230,6 +391,39 @@ for (const chapter of CHAPTERS) {
     positive++
   }
 }
+// includes.md: one expanded tree per example, from the files the example names.
+if (!existsSync(join(dir, INCLUDE_FILE))) fail(`${INCLUDE_FILE}: missing`)
+else {
+  const trees = read(INCLUDE_FILE).trees
+  const byId = new Map(trees.map(entry => [entry.id, entry]))
+  const examples = includeExamples()
+  for (const example of examples) {
+    const entry = byId.get(example.id)
+    if (!entry) fail(`${INCLUDE_FILE}: no tree for ${example.id}`)
+    else if (entry.source !== example.source || !sameJson(entry.files, example.files) || !sameJson(entry.options, example.options)) {
+      fail(`${INCLUDE_FILE} ${example.id}: the source, the files or the options differ from the example in includes.md`)
+    } else if (example.stated !== undefined && !statesPart(entry.tree, example.stated)) fail(`${INCLUDE_FILE} ${example.id}: the tree differs from the one the example states`)
+  }
+  const ids = new Set(examples.map(example => example.id))
+  for (const entry of trees) {
+    if (!ids.has(entry.id)) fail(`${INCLUDE_FILE} ${entry.id}: no such example in includes.md`)
+    if (!entry.tree.stages?.includes('includeExpansion')) fail(`${INCLUDE_FILE} ${entry.id}: the stages do not name includeExpansion (C2-N-006)`)
+    checkPositive(entry, INCLUDE_FILE)
+    positive++
+  }
+}
+
+// import-html.md: the children an example states are those of a valid tree with no positions (C2-M-001).
+let imported = 0
+for (const example of importExamples()) {
+  const label = `import-html.md ${example.id}`
+  const tree = { type: 'document', astVersion: '2.0', children: example.children }
+  if (!Array.isArray(example.children)) { fail(`${label}: the json fence is not a list of blocks`); continue }
+  if (JSON.stringify(example.children).includes('"pos"')) fail(`${label}: an imported tree states no positions`)
+  checkPositive({ id: example.id, tree }, 'import-html.md')
+  imported++
+}
+
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])
 for (const entry of nodes) { checkPositive(entry, 'nodes.json'); positive++ }
 
@@ -258,4 +452,4 @@ if (failures.length) {
   console.error(`spec 0.2 trees: ${failures.length} failures\n  ${failures.slice(0, 400).join('\n  ')}`)
   process.exit(1)
 }
-console.log(`spec 0.2 trees: ${positive} positive trees (${NODE_TYPES.size} node types, ${seenFields.size} fields), ${refused.length} refused trees`)
+console.log(`spec 0.2 trees: ${positive} positive trees and ${imported} imported trees (${NODE_TYPES.size} node types, ${seenFields.size} fields), ${refused.length} refused trees`)
