@@ -1727,6 +1727,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 13 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
 | 14 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
 | 15 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
+| 16 | the whitespace at the edge of a delimited-table cell | ```` {table}⏎```csv⏎a, d⏎``` ```` | `\|= a \|= d \|`: the cell is written `<th scope="col"> d</th>`, and the import removes the space at the edge of its inline content (C2-M-018) |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 
