@@ -59,7 +59,7 @@ Text
 
 **C2-N-009** An id is a string that names one target. Two spellings of a path that reach the same target give the same id, so `a/b.crv` and `a/./b.crv` are one id. The cycle check (C2-N-066), `pos.file` (C2-N-019) and the include node's `file` (C2-N-017) all use this id.
 
-**C2-N-010** A path is resolved relative to the including file, never relative to the root or to the working directory of a process.
+**C2-N-010** A path is resolved relative to the including file, never relative to the root or to the working directory of a process. The one exception: with the entry read from standard input and a named root (C2-N-004), the path base of the entry document is that root, so its includes resolve against the root.
 
 **C2-N-011** Content is text when it is well-formed UTF-8 and holds no U+0000. A resolver reports any other content as `non_text` and does not replace a byte: the replacement rule for the top-level input does not apply to an included file. A leading U+FEFF of a returned text is not content.
 
