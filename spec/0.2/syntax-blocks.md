@@ -2775,7 +2775,7 @@ after
 
 **Exception C2-B-118** A backtick run whose info string holds a backtick is not an opener.
 
-**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  "T"` opens a div with a title, and `:::[x]` is text.
+**C2-B-119** After the run, a div opener holds an optional name or sigil, an optional quoted title and an optional label in brackets, in that order. A name stands after one or more spaces behind the run, like a sigil (C2-B-196): a name glued to the run, as in `:::note`, makes the line text. A title or a label may stand with no name before it, after one or more spaces behind the run as a name does: `:::  "T"` opens a div with a title, and `:::[x]` is text. Behind those spaces a sigil starts a sigil div also when further words are glued to it, and C2-B-122 reports the words: `::: >a` opens a quote fence. When neither a name, a sigil, a title nor a label starts there, the line still opens an anonymous div, and C2-B-122 reports what follows the spaces: `::: *` and `::: {.x}` open a div with no name. Such a line never closes a div (C2-B-125).
 
 **C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042).
 
@@ -2979,6 +2979,31 @@ z
   <p>z</p>
 </div>
 <p>:::[x] y</p>
+```
+
+:::
+
+The first opener starts with the quote sigil, so it opens a quote fence; the second starts with no name, sigil, title or label, so it opens an anonymous div. `fence-title-syntax` reports `a` and `*` (C2-B-119, C2-B-122).
+
+Example 240 (unverified)
+
+::: compare
+
+```carve
+::: >a
+x
+:::
+
+::: *
+y
+:::
+```
+
+```html
+<blockquote><p>x</p></blockquote>
+<div>
+  <p>y</p>
+</div>
 ```
 
 :::

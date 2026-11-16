@@ -255,6 +255,10 @@
             [
               { "part": "space", "min": 1 },
               { "part": "ref", "ref": "bracket_label" }
+            ],
+            [
+              { "part": "space", "min": 1 },
+              { "part": "content", "min": 1, "has_non_space": true }
             ]
           ]
         }
