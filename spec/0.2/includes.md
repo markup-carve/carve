@@ -395,7 +395,34 @@ skip
 
 :::
 
-**C2-N-029** A block in the sense of C2-N-028 is a node in a block list of the file's body at any depth that is not a definition, a comment or frontmatter. An id carried only by something else, an inline node, a list item, a table row or cell, a term, a footnote or a block inside a footnote, selects nothing.
+**C2-N-029** A block in the sense of C2-N-028 is a node in a block list of the file's body at any depth that is not a definition, a comment, frontmatter or an include, whose own id is no target (C2-N-072). An id carried only by something else, an inline node, a list item, a table row or cell, a term, a footnote or a block inside a footnote, selects nothing.
+
+Example 33 (unverified)
+
+File `a.crv`:
+
+```carve
+{#pick}
+{{ b.crv }}
+```
+
+File `b.crv`:
+
+```carve
+B.
+```
+
+::: compare
+
+```carve
+{{ a.crv #pick }}
+```
+
+```html
+<p>{{ a.crv #pick }}</p>
+```
+
+:::
 
 **C2-N-030** A section that selects nothing leaves the include unexpanded, and `include-section` reports it. The file stays a resolved dependency: the node keeps `file`.
 
@@ -575,7 +602,27 @@ server.listen(3000)
 }
 ```
 
-**C2-N-043** The payload holds one line per selected line, each ended by one line feed, as an authored fence's content is: a CRLF or a lone CR becomes a line feed, a last line without a line ending gains one, a selected blank last line keeps its line feed, and an empty selection gives the value `""`. A leading U+FEFF of the file is not payload; a U+FEFF that opens a later line is.
+**C2-N-043** The payload holds one line per selected line, each ended by one line feed, as an authored fence's content is: a CRLF becomes a line feed, a lone CR stays as content of its line (C2-B-010), a last line without a line ending gains one, a selected blank last line keeps its line feed, and an empty selection gives the value `""`. A leading U+FEFF of the file is not payload; a U+FEFF that opens a later line is.
+
+A lone CR ends no line, in the file as in an authored fence, so the one selected line keeps it (C2-B-010, C2-N-034).
+
+Example 32 (unverified)
+
+File `a.txt` holds the three bytes `61 0D 62`: `a`, a CR and `b`, with no line ending.
+
+```carve
+{{ a.txt @code @lines:1-1 }}
+```
+
+```json
+{
+  "type": "include",
+  "path": "a.txt",
+  "options": {"code": true, "lines": "1-1"},
+  "file": "a.txt",
+  "children": [{"type": "code_block", "value": "a\rb\n"}]
+}
+```
 
 **C2-N-044** The child's `pos` is in the included file. It starts at column 1 of the first selected line, after a leading U+FEFF on line 1, and ends directly after the last character of the last selected line, without its line ending. An empty selection has a zero-width span at the start of the file, after a leading U+FEFF, or at column 1 of the closing marker line of an empty region. A table made from the payload (C2-N-045) has the same span, and its cells keep their positions in the file.
 
