@@ -1,6 +1,6 @@
 # Carve 0.2: importing HTML
 
-Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`); the examples say where the reference importer (`import/` of `carve-js`) differs.
+Status: freeze candidate 1 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`); the examples are verified against the reference importer (`import/` of `carve-js`).
 
 This document defines how an HTML importer turns HTML into a 0.2 tree. `html.md` defines how a tree becomes HTML and, in its section "Import", how the carriers of a render with `roundtrip` are read back (C2-H-182 to C2-H-199). This document covers everything else: HTML from any other tool, Carve HTML rendered without `roundtrip`, and every element and attribute that carries no carrier. The mapping is the one the reference importer follows. No carrier is added: a fact that HTML cannot hold is a loss, and the importer reports it.
 
@@ -9,7 +9,7 @@ Conventions:
 - A clause is a paragraph that starts with an id of the form `C2-M-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-H-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the HTML document, the sidecar document and the writer document.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
 - The tables of this document are also the rows of `data/import-html.json`. Where a row and its clause disagree, the clause wins.
-- Each example is a `compare` container that holds the HTML input, the children of the imported document as JSON without positions and provenance, and the Carve source the canonical writer gives for that tree. The line above it gives its number and status. *Verified* means the reference importer at `carve-js` `next2` commit `cd8e431b` gives this tree and this source. *Unverified* means the tree was written by hand from the clauses because the importer differs; the source was then produced by the 0.2 writer from that tree with no loss reported. The diagnostics named in the text beside an example are the codes of this document, which the importer does not yet use (C2-M-083).
+- Each example is a `compare` container that holds the HTML input, the children of the imported document as JSON without positions and provenance, and the Carve source the canonical writer gives for that tree. The line above it gives its number and status. *Verified* means the reference importer at `carve-js` `next2` commit `0266e137` gives this tree and this source, with the example's import option. *Unverified* means the tree was written by hand from the clauses because the importer differs; the source was then produced by the 0.2 writer from that tree with no loss reported. A line below an example that starts with `Reported:` names codes the import reports; it need not name every one.
 - "Report X" means: add an entry with the code X to the diagnostics record (C2-M-080).
 
 ## Scope and input
@@ -64,7 +64,7 @@ Reported: `import-element-dropped`, `import-attribute-dropped`.
 
 **C2-M-010** The conventions of the Carve renderer that need no carrier are part of the mapping and apply to every input: the section a render opens at a heading (C2-M-026), the footnote section (C2-M-061 to C2-M-064), the classes of the table "Conventions" (C2-M-035), the task box (C2-M-032) and the alignment declarations (C2-M-075). Foreign HTML that uses one of them is read as Carve HTML that uses it.
 
-Example 2 (verified)
+Example 2 (verified, import option `rawHtml` on)
 
 ::: compare
 
@@ -138,7 +138,7 @@ two
 
 :::
 
-Example 4 (unverified)
+Example 4 (verified)
 
 ::: compare
 
@@ -158,9 +158,7 @@ lead *x*
 
 :::
 
-The importer keeps the two leading spaces, which the writer cannot spell.
-
-Example 5 (unverified)
+Example 5 (verified)
 
 ::: compare
 
@@ -237,9 +235,9 @@ Example 7 (verified)
 
 :::
 
-The class `c` is dropped and reported; the importer drops it without a report.
+The class `c` is dropped and reported.
 
-Example 8 (unverified)
+Example 8 (verified)
 
 ::: compare
 
@@ -344,7 +342,7 @@ Example 11 (verified)
 
 :::
 
-Example 12 (unverified)
+Example 12 (verified)
 
 ::: compare
 
@@ -384,8 +382,6 @@ Example 13 (verified)
 
 :::
 
-The importer drops the text `stray` without a report.
-
 **C2-M-036** `<dl>` is a `definition_list`, `<dt>` a `definition_term` of inline content and `<dd>` a `definition_description` of blocks. A `<div>` child of `<dl>`, which the HTML Standard allows around a group of terms and descriptions, is read as the children it holds. Any other child is dropped with its content and reported with `import-structure-repaired`.
 
 Example 14 (verified)
@@ -412,7 +408,7 @@ Example 14 (verified)
 
 :::
 
-Example 15 (unverified)
+Example 15 (verified)
 
 ::: compare
 
@@ -522,7 +518,7 @@ Example 18 (verified)
 
 :::
 
-Example 19 (unverified)
+Example 19 (verified)
 
 ::: compare
 
@@ -543,7 +539,7 @@ Example 19 (unverified)
 
 :::
 
-The importer gives a `figure_group` around the table; C2-H-199 reads the table with its caption.
+C2-H-199 reads the table with its caption.
 
 ## Conventions
 
@@ -801,7 +797,7 @@ Text
 
 `onclick` is dropped and reported (C2-H-161).
 
-Example 29 (unverified)
+Example 29 (verified)
 
 ::: compare
 
@@ -961,7 +957,7 @@ Example 29 (unverified)
 
 **C2-M-060** An `<aside>` that is no admonition of the table "Conventions" is a `div`, as is every row with the treatment `div`.
 
-Example 30 (unverified)
+Example 30 (verified)
 
 ::: compare
 
@@ -985,9 +981,7 @@ Body
 
 :::
 
-The importer gives the div the class `details` and reads the summary as a span.
-
-Example 31 (unverified)
+Example 31 (verified)
 
 ::: compare
 
@@ -1008,8 +1002,6 @@ Example 31 (unverified)
 ```
 
 :::
-
-The importer reads `<header>` and the heading in it as spans.
 
 Example 32 (verified)
 
@@ -1041,7 +1033,7 @@ A [fine]{} [print]{} [x]{}
 
 **C2-M-064** The footnote definitions stand after the blocks of the document and after the rebuilt link definitions (C2-H-194), in the order of the notes. A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158).
 
-Example 33 (unverified)
+Example 33 (verified)
 
 ::: compare
 
@@ -1065,8 +1057,6 @@ x[^1]
 
 :::
 
-The importer keeps the `<sup>` as a superscript around the reference and keeps the backlink.
-
 ## Raw content
 
 **C2-M-065** With the import option `rawHtml` on, a comment is a `raw_inline` with the format `html` in inline content and a `raw_block` with the format `html` among blocks. An element of the treatment `raw` is the same, with its outer HTML as serialized by the HTML Standard as the value. A raw block value ends with a line feed (C2-A-045, C2-A-048).
@@ -1075,7 +1065,7 @@ The importer keeps the `<sup>` as a superscript around the reference and keeps t
 
 **C2-M-067** A reserved name of C2-H-115 is removed from an element before the element is serialized as raw content, as C2-H-186 requires.
 
-Example 34 (unverified, import option `rawHtml` on)
+Example 34 (verified, import option `rawHtml` on)
 
 ::: compare
 
@@ -1105,9 +1095,7 @@ a`<!-- inline -->`{=html}b
 
 :::
 
-The importer leaves out the final line feed of both raw blocks, which the writer reports as `field-unspellable`.
-
-Example 35 (unverified, import option `rawHtml` on)
+Example 35 (verified, import option `rawHtml` on)
 
 ::: compare
 
@@ -1127,9 +1115,7 @@ Video: `<iframe src="/v"></iframe>`{=html}
 
 :::
 
-The importer reads `<iframe>` as an empty span with the key `src`.
-
-Example 41 (unverified)
+Example 41 (verified)
 
 ::: compare
 
@@ -1157,7 +1143,7 @@ The input of Examples 34 and 35 with `rawHtml` off, the default. The two comment
 
 Reported: `import-element-dropped`, `import-whitespace-normalized`.
 
-Example 42 (unverified)
+Example 42 (verified)
 
 ::: compare
 
@@ -1199,7 +1185,7 @@ Reported: `import-element-dropped`.
 
 **C2-M-075** On a `<p>`, a `<div>` and a heading element, a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;` is the key `align` with that value, as a render writes it (C2-H-015).
 
-Example 36 (unverified)
+Example 36 (verified)
 
 ::: compare
 
@@ -1218,8 +1204,6 @@ x[]{#a}
 ```
 
 :::
-
-The importer keeps the empty paragraph and the empty strong, which the writer reports as `structure-unspellable`.
 
 Example 37 (verified)
 
@@ -1266,7 +1250,7 @@ Example 38 (verified)
 
 :::
 
-Example 39 (unverified)
+Example 39 (verified)
 
 ::: compare
 
@@ -1285,8 +1269,6 @@ ab
 ```
 
 :::
-
-The importer reads `<wbr>` as a soft break, which renders as a space.
 
 ## Diagnostics
 
@@ -1383,4 +1365,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 42 examples: 26 verified and 16 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 42 examples: 42 verified and 0 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
