@@ -488,7 +488,32 @@ Example 15 (verified)
 
 **C2-M-040** `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it. `align`, or a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;`, gives the cell's alignment; `valign` gives its vertical alignment. The alignments are then resolved backward by C2-B-213: a body cell that shows the mark of its column's header cell takes it from there, and in a table with no head a column whose cells all show one alignment gives it to the column.
 
-**C2-M-041** A `<col>` of the first `<colgroup>` whose `style` is exactly `width: N%;` gives its column the width N/100 (C2-H-152). `<caption>` is the table's `caption`, read as blocks. Any other child of `<table>`, of a row group or of a row is dropped and reported with `import-structure-repaired`.
+**C2-M-041** A `<col>` of the first `<colgroup>` whose `style` is exactly `width: N%;` gives its column the width N/100 (C2-H-152). The first `<caption>` is the table's `caption`, read as blocks; each further one is dropped with its content and reported with `import-element-dropped`. Any other child of `<table>`, of a row group or of a row is dropped and reported with `import-structure-repaired`.
+
+Example 48 (unverified)
+
+::: compare
+
+```html
+<table><caption>A</caption><caption>B</caption><tr><td>x</td></tr></table>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"x"}]}]}]}]}],"columns":[{"type":"table_column"}],"caption":{"type":"caption","children":[{"type":"paragraph","children":[{"type":"text","value":"A"}]}]}}
+]
+```
+
+```carve
+| x |
+^ A
+```
+
+:::
+
+The first caption fills the slot, and the second is dropped.
+
+Reported: `import-element-dropped`.
 
 Example 16 (verified)
 
@@ -1491,4 +1516,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 47 examples: 46 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 48 examples: 46 verified and 2 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
