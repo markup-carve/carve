@@ -1564,7 +1564,9 @@ A b
 
 ## Import
 
-**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115. An element that carries none of them is read as the importer reads that element. Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+**C2-H-182** The HTML importer reads an HTML fragment and returns a tree. This section states what it does with the 18 reserved names of C2-H-115, how it rebuilds the definitions that have no carrier, and what does not survive. An element that carries none of them is read as the importer reads that element. Where this section says that a carrier is ignored, the importer reads its element in the same way, as if the carrier were not there: the HTML is read as it stands.
+
+**C2-H-197** A carrier sets only the facts its row of C2-H-186 names. How the importer reads an element that carries no carrier does not depend on carriers elsewhere in the document, except a carrier of an ancestor whose row names that reading, as `data-carve-line-block` does for the lines it holds. So `<p>a&nbsp;b</p>` imports to the same tree alone and beside `<ul data-carve-tight>`, and a render with `roundtrip` that holds no carrier imports as every other render does.
 
 **C2-H-183** The importer parses the HTML by the HTML Standard. The text of a `<template>` is the text of its template contents, which the HTML parser places in the content fragment of the template and not among its child nodes.
 
@@ -1597,7 +1599,104 @@ A b
 
 **C2-H-187** A `<template data-carve-abbreviations>` is read only at the top level of the flow: as a child of the fragment, or of a `<section>` that the importer reads as the section of a heading (C2-H-026). Its text is parsed with the Carve block reader as a document of its own, with no second grammar. When that document holds at least one block and every block is an `abbreviation_def`, those nodes are inserted, in their order, among the children of the document at the place of the template, with their attributes and without `pos` (C2-A-159). Otherwise the template gives no definition.
 
+**C2-H-191** A link definition renders nothing (C2-H-071) and has no carrier, as in 0.1. The importer rebuilds the definitions from the references whose `data-carve-ref` it reads. For each key it makes one `link_reference_definition` whose `href` is the `href` and whose `tooltip` is the `title` of the first `<a>` or `<img>` in document order that carries the key. The rebuilt definitions stand after the last block of the document, in the order in which their keys are first met, and the footnote definitions follow them (C2-H-194). A rebuilt definition has no attributes: the attributes that a definition merged into its references (C2-H-141) are read as attributes of each reference.
+
+**Exception C2-H-198** No definition is rebuilt for a key whose first element is an `<a>` with the `href` `#ID`, where the heading lookup of the key (C2-I-084) finds the heading with the id ID in the imported tree. That reference resolved to the heading and needs no definition. A key that the lookup does not match, such as `d` in `[x][d]` with `[d]: #intro`, gets its definition.
+
+**C2-H-192** Two elements with one key and a different `href` or `title` occur only in HTML that was changed after the render, since every reference of a key resolves to one definition. The first element decides the definition. A later element is still read as a reference with the key, so it resolves through that definition: its own `href` and `title` are not read.
+
+**C2-H-193** HTML holds no trace of three facts of link definitions, so they do not survive: a definition that no reference uses, a later definition of a key that an earlier one holds (C2-B-085), and the place of a definition among the blocks. In the source, `unused-link-reference-definition` (C2-W-106) reports the first and `duplicate-link-reference-definition` the second.
+
+**C2-H-194** A footnote definition renders only as a note of the footnote section (C2-H-089), which holds one note per used footnote, in the order of the footnote numbers. The importer reads each note that carries `data-carve-footnote-label` as a `footnote` whose key is the value and whose blocks are the blocks of the note without its backlinks. These definitions follow the rebuilt link definitions, in the order of the notes. A note that carries `data-carve-inline-footnote` gives no definition: its reference reads back as the inline footnote (C2-H-186). The key and the blocks of every used footnote survive, and so does the place of a `footnotes` directive that places the section (C2-H-158). As for link definitions, an unused footnote definition, a later definition of a key and the place of a definition among the blocks do not survive. `unused-footnote-definition` (C2-W-106) and `duplicate-footnote-definition` report the first two in the source.
+
+Example 51 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+[a][r] and [b][r], [r][] and [r].
+
+[u]: /unused
+
+[r]: /dest "Title"
+
+Tail.
+
+[r]: /later
+```
+
+```html
+<p><a href="/dest" title="Title" data-carve-ref="r">a</a> and <a href="/dest" title="Title" data-carve-ref="r">b</a>, <a href="/dest" title="Title" data-carve-ref="r" data-carve-ref-collapsed>r</a> and <a href="/dest" title="Title" data-carve-ref="r" data-carve-ref-shortcut>r</a>.</p>
+<p>Tail.</p>
+```
+
+:::
+
+Importing this HTML gives the four references with their forms and one definition of `r` after the last block, `[r]: /dest "Title"`. The unused definition of `u`, the later definition of `r` and the place of the first one are gone.
+
+Example 52 (unverified, `--roundtrip`)
+
+::: compare
+
+```carve
+A[^n], B[^m] and ^[inline] C[^n].
+
+[^u]: Unused.
+
+[^m]: M.
+
+Middle.
+
+[^n]: N.
+```
+
+```html
+<p>A<a id="fnref1" href="#fn1" role="doc-noteref" data-carve-footnote-label="n"><sup>1</sup></a>, B<a id="fnref2" href="#fn2" role="doc-noteref" data-carve-footnote-label="m"><sup>2</sup></a> and <a id="fnref3" href="#fn3" role="doc-noteref"><sup>3</sup></a> C<a id="fnref1-2" href="#fn1" role="doc-noteref" data-carve-footnote-label="n"><sup>1</sup></a>.</p>
+<p>Middle.</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1" data-carve-footnote-label="n">
+      <p>N.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference 1">↩<sup>1</sup></a> <a href="#fnref1-2" role="doc-backlink" aria-label="Back to reference 2">↩<sup>2</sup></a></p>
+    </li>
+    <li id="fn2" data-carve-footnote-label="m">
+      <p>M.<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn3" data-carve-inline-footnote>
+      <p>inline<a href="#fnref3" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and `Middle.`, then `[^n]: N.` and `[^m]: M.` in the order of the notes. The definition of `u` is gone, and so are the places of the two others.
+
 **C2-H-188** Round trip is promised only for HTML that the renderer wrote with `roundtrip` on and that was not changed afterwards. For such HTML the importer recovers each fact that a carrier names. It does not recover what has no carrier: the sidecar facts of C2-H-119 and the facts that HTML and the carriers do not hold.
+
+**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1 and 7.
+
+| Row | Fact | Input | Comes back as |
+|---|---|---|---|
+| 1 | a carriage return in a text, code or math value | `a`, U+000D, `b` | `a⏎b`: the HTML input stream turns the carriage return into a line feed (C2-H-183), which reads as a soft break |
+| 2 | the type of a raw block in the format `html` with `rawHtml` off | ```` ```=html⏎<b>x</b>⏎``` ```` | ```` ```html⏎<b>x</b>⏎``` ````: a code block, as it was written (C2-H-050) |
+| 3 | a `non_breaking_space` node | `a\ b` | `a`, U+00A0, `b`: the character in text. A literal U+00A0 writes the same `&nbsp;` (C2-H-002) and survives |
+| 4 | a `non_breaking_space` node that starts a line of a line block | `::: \|⏎\ a⏎:::` | `::: \|⏎ a⏎:::`: a leading space, which C2-H-043 writes as the same `&nbsp;` |
+| 5 | a soft break directly before a hard break | `a⏎\⏎b` | `a\⏎b`: the line ending before `<br>` is layout |
+| 6 | the spacing of a loose list whose items start with no paragraph | `- > q⏎⏎- > r` | `- > q⏎- > r`: a tight list, since no item writes a `<p>` of its own (C2-H-034) |
+| 7 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
+| 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone |
+| 9 | a declared head count, `table_body.headRows` (C2-A-088) | ```` {table header-rows=2}⏎```csv⏎a⏎b⏎c⏎``` ```` | `\|= a \|⏎\|= b \|⏎\| c \|`: a pipe table whose first two rows are header rows; the count is gone |
+| 10 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
+| 11 | a span with the class `ext-NAME` | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
+| 12 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
+| 13 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
+| 14 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |
+| 15 | a link definition whose destination is the heading its key finds | `[Intro][]⏎⏎[Intro]: #intro⏎⏎{#intro}⏎# Intro` | `[Intro][]⏎⏎{#intro}⏎= Intro`: no definition, by C2-H-198; the reference resolves to the heading |
+| 16 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
+
+**C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 
 **C2-H-189** With `rawHtml` on, raw HTML is passed through verbatim (C2-H-053), so a document can hold a template or a carrier that the renderer did not make. The importer cannot tell the two apart and reads them alike. A carrier is data and not a grant: reading one never makes the importer trust the HTML around it, and a renderer applies its options and the URL policy to an imported tree as to any other.
 
@@ -1878,10 +1977,10 @@ One point is open.
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 6 |
-| Import | 9 | 0 | 0 | 0 |
+| Import | 17 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 3 |
 | The option list | 1 | 0 | 0 | 0 |
 | Later clauses | 3 | 0 | 0 | 0 |
-| **Total** | **190** | **7** | **25** | **21** |
+| **Total** | **198** | **8** | **25** | **23** |
 
-The document has 190 clauses, 7 of them marked with the word "Exception", and 46 examples, 25 generated and 21 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 8 of them marked with the word "Exception", and 48 examples, 25 generated and 23 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
