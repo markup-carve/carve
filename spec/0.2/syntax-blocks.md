@@ -3016,7 +3016,7 @@ text
 
 :::
 
-Example 127 (generated)
+Example 127 (unverified)
 
 ::: compare
 
@@ -3026,8 +3026,8 @@ x
 ````
 
 ```html
-<p><code>a`b
-x</code></p>
+<p>```a`b
+x</p>
 ```
 
 :::
@@ -4763,7 +4763,7 @@ title: x
 
 **C2-B-169** Cells are split before their content is read: a pipe is not a separator when it is escaped or when it stands between a backtick run and its matching closing run on the same line.
 
-**C2-B-223** Every cell is a separate inline content, and so is every fragment of a continuation row (C2-B-184). An inline construct never crosses a cell boundary or a row, and an unclosed code span at the end of a cell or a fragment is text.
+**C2-B-223** Every cell is a separate inline content, and so is every fragment of a continuation row (C2-B-184). An inline construct never crosses a cell boundary or a row, so a backtick run whose closing run is not in its cell or fragment is text (C2-I-017).
 
 **C2-B-224** An escaped pipe is a literal pipe in cell text before inline parsing, including a link destination, an image destination, an image label and a reference label. The list is complete: in a code span `\|` stays two characters, and in other cell text it is an ordinary escape. The key of a reference label in a cell holds `|`; outside a cell it holds `\|` (C2-I-079).
 
@@ -5646,7 +5646,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 9 | 0 | 7 | 4 |
 | Attribute lines | 21 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
-| The fence opener and titles | 7 | 1 | 5 | 4 |
+| The fence opener and titles | 7 | 1 | 4 | 5 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
@@ -5657,7 +5657,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 2 | 19 | 9 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **169** | **78** |
+| **Total** | **229** | **14** | **168** | **79** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

@@ -81,7 +81,7 @@ The backtick opens a code span before the star can close, so the strong span nev
 
 The block pass comes first: the blank line ends the paragraph, and neither the star nor the code span reaches across it.
 
-Example 1 (generated)
+Example 1 (unverified)
 
 ::: compare
 
@@ -95,8 +95,8 @@ d`
 
 ```html
 <p>*a</p>
-<p>b* and <code>c</code></p>
-<p>d<code></code></p>
+<p>b* and `c</p>
+<p>d`</p>
 ```
 
 :::
@@ -124,7 +124,7 @@ Example 3 (generated)
 ::: compare
 
 ```carve
-*a `b* c
+*a `b* c`
 ```
 
 ```html
@@ -229,7 +229,7 @@ Example 7 (generated)
 
 **C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
 
-**Exception C2-I-017** A code span never fails. With no closing run in the content it runs to the end of the content, and trailing whitespace is dropped. At the end of a table cell the opening run is text instead (C2-B-223), with a `!`, `$` or `$$` before it as without one: the cell `` | x `a | `` holds the text `` x `a ``.
+**C2-I-017** A backtick run with no closing run of its length later in the same content opens nothing (C2-I-119): the run is text, and so is a `!`, `$` or `$$` glued before it. The scan goes on behind the run, so a shorter or longer run after it may open a span. This holds for a code span, a literal-text span and a math span alike, and in a table cell as anywhere: the cell `` | x `a | `` holds the text `` x `a ``.
 
 **C2-I-018** A `!` glued before the opening run makes a literal-text span: its content is written as escaped text with no code element. With an attribute block it is written as a span element that carries the attributes.
 
@@ -265,7 +265,7 @@ c</code> d</p>
 
 :::
 
-Example 10 (generated)
+Example 10 (unverified)
 
 ::: compare
 
@@ -274,7 +274,7 @@ see `unclosed *x* and [y](/u)
 ```
 
 ```html
-<p>see <code>unclosed *x* and [y](/u)</code></p>
+<p>see `unclosed <strong>x</strong> and <a href="/u">y</a></p>
 ```
 
 :::
@@ -297,8 +297,6 @@ Example 11 (generated)
 
 **C2-I-019** A `$` glued before a code span makes inline math, and `$$` makes display math. The content is the span's verbatim text. A `$` with no backtick run after it is text. (carried over from 0.1)
 
-**C2-I-020** A math span follows C2-I-017: unclosed, it runs to the end of its content.
-
 Example 12 (generated)
 
 ::: compare
@@ -313,7 +311,7 @@ $`x^2` and $$`E = mc^2` and $5 and $`x`{.c}
 
 :::
 
-Example 13 (generated)
+Example 13 (unverified)
 
 ::: compare
 
@@ -322,7 +320,7 @@ the sum $`a + b
 ```
 
 ```html
-<p>the sum <span class="math inline" role="math">\(a + b\)</span></p>
+<p>the sum $`a + b</p>
 ```
 
 :::
@@ -2275,10 +2273,9 @@ Example 113 (unverified)
 
 **C2-I-120** No inline form crosses the end of its content: a table cell and each fragment of a continuation row (C2-B-184), a heading, a term, a caption and a paragraph each end every form that is open in them.
 
-The two forms that never fail are the code span and the math span (C2-I-017, C2-I-020).
-
 | Form that fails | What is text |
 |---|---|
+| unclosed code span, literal-text span or math span | the backtick run and a `!`, `$` or `$$` glued before it (C2-I-017) |
 | unclosed bracket | the bracket (C2-I-006) |
 | bracket pair with a broken link tail | the pair and the tail (C2-I-069) |
 | unclosed inline footnote | `^[` (C2-I-089) |
@@ -2347,10 +2344,10 @@ There is no fixed budget for the inline chapter.
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 10 | 0 | 4 | 2 |
+| Preliminaries | 10 | 0 | 3 | 3 |
 | Backslash escapes | 4 | 0 | 2 | 0 |
-| Code spans | 5 | 1 | 4 | 0 |
-| Math spans | 2 | 0 | 2 | 0 |
+| Code spans | 5 | 0 | 3 | 1 |
+| Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 2 | 1 | 1 | 1 |
 | Comments | 5 | 2 | 4 | 1 |
 | Attribute blocks | 15 | 2 | 6 | 5 |
@@ -2370,9 +2367,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **119** | **18** | **70** | **50** |
+| **Total** | **118** | **17** | **67** | **53** |
 
-The chapter has 119 clauses, 18 of them exceptions, and 120 examples. The clause count includes the exceptions.
+The chapter has 118 clauses, 17 of them exceptions, and 120 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

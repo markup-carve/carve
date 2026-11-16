@@ -1746,14 +1746,14 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A `figure`, a `figure_group` and a `table` write their caption after their degraded blocks, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
-Under `minimal` the editorial comment gives no text, and the math span, which the source leaves unclosed, is written as the writer spells the node, with its closing backtick (C2-H-165).
+Under `minimal` the editorial comment gives no text, and the math span is written as the writer spells the node (C2-H-165).
 
 Example 48 (unverified, `--profile minimal`)
 
 ::: compare
 
 ```carve
-a {#c#} b $`m
+a {#c#} b $`m`
 ```
 
 ```html
