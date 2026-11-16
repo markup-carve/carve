@@ -198,7 +198,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-046** The writer reads seven facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
 
-**C2-L-047** Every block has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
+**C2-L-047** Every block of the top-level document has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. The blocks in the children of an expanded include have no entries (C2-N-082). An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
 
 **C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.
 

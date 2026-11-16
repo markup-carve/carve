@@ -6350,6 +6350,7 @@
           "type": "array",
           "items": {
             "enum": [
+              "includeExpansion",
               "referenceResolution",
               "tableAlignment"
             ]
@@ -8655,7 +8656,7 @@
     },
     "include": {
       "type": "object",
-      "description": "include: C2-A-050, C2-A-181",
+      "description": "include: C2-A-050, C2-A-181, C2-N-017, C2-N-073",
       "properties": {
         "type": {
           "const": "include"
@@ -8730,6 +8731,75 @@
             "pattern": "^@"
           },
           "minItems": 1
+        },
+        "file": {
+          "type": "string",
+          "$comment": "resolution result"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/admonition"
+              },
+              {
+                "$ref": "#/$defs/block_extension"
+              },
+              {
+                "$ref": "#/$defs/block_quote"
+              },
+              {
+                "$ref": "#/$defs/code_block"
+              },
+              {
+                "$ref": "#/$defs/comment"
+              },
+              {
+                "$ref": "#/$defs/definition_list"
+              },
+              {
+                "$ref": "#/$defs/directive"
+              },
+              {
+                "$ref": "#/$defs/div"
+              },
+              {
+                "$ref": "#/$defs/figure_group"
+              },
+              {
+                "$ref": "#/$defs/heading"
+              },
+              {
+                "$ref": "#/$defs/include"
+              },
+              {
+                "$ref": "#/$defs/line_block"
+              },
+              {
+                "$ref": "#/$defs/list"
+              },
+              {
+                "$ref": "#/$defs/paragraph"
+              },
+              {
+                "$ref": "#/$defs/raw_block"
+              },
+              {
+                "$ref": "#/$defs/section"
+              },
+              {
+                "$ref": "#/$defs/table"
+              },
+              {
+                "$ref": "#/$defs/thematic_break"
+              }
+            ]
+          },
+          "$comment": "resolution result"
+        },
+        "caption": {
+          "$ref": "#/$defs/caption"
         },
         "attrs": {
           "type": "object",

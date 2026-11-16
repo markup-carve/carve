@@ -38,6 +38,7 @@
             "enum": [
               "open_blocks",
               "open_entries",
+              "bytes",
               "columns",
               "lines",
               "levels",
@@ -50,7 +51,7 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^C2-[ABHILWX]-[0-9]{3}$"
+              "pattern": "^C2-[ABHILNWX]-[0-9]{3}$"
             },
             "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
           }

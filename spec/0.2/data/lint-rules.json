@@ -925,15 +925,266 @@
       "clauses": ["C2-W-106"]
     },
     {
-      "id": "include-option-invalid",
+      "id": "include-attributes-unused",
       "severity": "warning",
       "channel": "lint",
       "status": "new",
       "default": "on",
-      "messages": ["The include option ${option} ${reason}, so it has no effect. Correct it or remove it."],
+      "messages": ["The attributes above this include apply to nothing, because it has no @code option. Remove them or move them into the included file."],
       "message_origin": "data_file",
-      "reports": "an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which the node keeps as written (C2-B-206)",
-      "clauses": ["C2-A-181", "C2-B-206"]
+      "reports": "an attribute line on an include without `code`, which applies to nothing (C2-N-072)",
+      "clauses": ["C2-N-071", "C2-N-072"]
+    },
+    {
+      "id": "include-block-in-inline",
+      "status": "obsolete",
+      "why": "there is no inline include; a directive in inline content is text (C2-N-002)",
+      "clauses": ["C2-N-002"]
+    },
+    {
+      "id": "include-budget",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: the included texts reach the size cap of ${limit} bytes."],
+      "message_origin": "data_file",
+      "reports": "an include refused by the size cap, before or after its resolver was called (C2-N-065)",
+      "change": "the cap is the row include_bytes of limits.json over the texts the resolver returns, not max(1 MB, 8 x input length) over the output",
+      "clauses": ["C2-N-061", "C2-N-065"]
+    },
+    {
+      "id": "include-call-limit",
+      "status": "obsolete",
+      "why": "there is no separate bound on resolver calls; the depth limit and the size cap bound them (C2-N-067)",
+      "clauses": ["C2-N-067"]
+    },
+    {
+      "id": "include-cols-duplicate",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: @cols names the column ${name} twice."],
+      "message_origin": "data_file",
+      "reports": "a column named twice in `cols` (C2-N-047)",
+      "clauses": ["C2-N-047", "C2-N-061"]
+    },
+    {
+      "id": "include-cols-invalid",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: @cols ${reason}."],
+      "message_origin": "data_file",
+      "reports": "a `cols` name that the head lacks, an empty or repeated head name, or a column range that the table does not allow (C2-N-047)",
+      "clauses": ["C2-N-047", "C2-N-061"]
+    },
+    {
+      "id": "include-cycle",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: it would include a file that is already being included."],
+      "message_origin": "data_file",
+      "reports": "an include whose file is the top-level document or the file of an include around it (C2-N-066)",
+      "clauses": ["C2-N-061", "C2-N-066"]
+    },
+    {
+      "id": "include-depth",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: it is nested deeper than ${limit} levels."],
+      "message_origin": "data_file",
+      "reports": "an include whose file would stand deeper than include_depth (C2-N-064)",
+      "change": "the limit is the row include_depth of limits.json, 16, which a host may lower",
+      "clauses": ["C2-N-061", "C2-N-064"]
+    },
+    {
+      "id": "include-duplicate-option",
+      "status": "obsolete",
+      "replaced_by": "include-option-invalid",
+      "why": "a repeated key is an invalid option (C2-B-206)",
+      "clauses": ["C2-B-206"]
+    },
+    {
+      "id": "include-expanded-roundtrip",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Include \"${path}\" was expanded, so the roundtrip HTML holds the included content and not the directive."],
+      "message_origin": "data_file",
+      "reports": "an expanded include under `roundtrip`, whose directive an import of the HTML cannot recover (C2-N-079)",
+      "clauses": ["C2-N-079"]
+    },
+    {
+      "id": "include-footnote-rename",
+      "status": "obsolete",
+      "why": "footnote labels resolve per file and nothing is renamed (C2-N-055)",
+      "clauses": ["C2-N-055"]
+    },
+    {
+      "id": "include-heading-clamp",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["A shift moves the heading \"${text}\" outside levels 1 to 6; it is kept at level ${level}."],
+      "message_origin": "data_file",
+      "reports": "a heading whose shifted level is clamped to 1 or 6 (C2-N-048)",
+      "clauses": ["C2-N-048"]
+    },
+    {
+      "id": "include-id-rename",
+      "status": "obsolete",
+      "replaced_by": "duplicate-id",
+      "why": "ids are not renamed across files; a repeated authored id is a duplicate id (C2-N-057, C2-N-058)",
+      "clauses": ["C2-N-057", "C2-N-058"]
+    },
+    {
+      "id": "include-lines-invalid",
+      "status": "obsolete",
+      "replaced_by": "include-option-invalid",
+      "why": "a range outside its shape is an invalid option (C2-B-205)",
+      "clauses": ["C2-B-205"]
+    },
+    {
+      "id": "include-lines-out-of-range",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: @lines starts past the last line of the file."],
+      "message_origin": "data_file",
+      "reports": "a line range that starts past the last line (C2-N-035)",
+      "clauses": ["C2-N-035", "C2-N-061"]
+    },
+    {
+      "id": "include-lines-table-rows-hint",
+      "severity": "hint",
+      "channel": "lint",
+      "status": "kept",
+      "default": "on",
+      "messages": ["@lines counts physical lines. Use @rows to select records of this table."],
+      "message_origin": "data_file",
+      "reports": "`lines` on a delimited table include (C2-N-088)",
+      "clauses": ["C2-N-088"]
+    },
+    {
+      "id": "include-no-resolver",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["Include \"${path}\" was not expanded: no include resolver is configured."],
+      "message_origin": "data_file",
+      "reports": "an include in a parse that has no resolver (C2-N-003)",
+      "change": "0.1 reported nothing for a directive with no resolver",
+      "clauses": ["C2-N-003", "C2-N-061"]
+    },
+    {
+      "id": "include-non-text",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: the file is not text."],
+      "message_origin": "data_file",
+      "reports": "content that is not well-formed UTF-8 or holds U+0000 (C2-N-011)",
+      "clauses": ["C2-N-011", "C2-N-061"]
+    },
+    {
+      "id": "include-not-found",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["Include \"${path}\" was not expanded: the file does not exist."],
+      "message_origin": "data_file",
+      "reports": "a target that does not exist inside the root (C2-N-013)",
+      "change": "0.1 reported it as include-unresolved",
+      "clauses": ["C2-N-013", "C2-N-061"]
+    },
+    {
+      "id": "include-option-invalid",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["The include option ${option} ${reason}, so the include is not expanded. Correct it or remove it."],
+      "message_origin": "data_file",
+      "reports": "an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which the node keeps as written (C2-B-206) and which keeps the include from being expanded (C2-N-025)",
+      "clauses": ["C2-A-181", "C2-B-206", "C2-N-025"]
+    },
+    {
+      "id": "include-outside-root",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["Include \"${path}\" was not expanded: the path leads outside the include root."],
+      "message_origin": "data_file",
+      "reports": "a target whose canonical path lies outside the containment root, whether or not it exists (C2-N-012, C2-N-013)",
+      "change": "0.1 reported it as include-unresolved",
+      "clauses": ["C2-N-012", "C2-N-013", "C2-N-061"]
+    },
+    {
+      "id": "include-region-invalid",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: the region ${name} ${reason}."],
+      "message_origin": "data_file",
+      "reports": "region markers that are malformed, unmatched, mismatched, unclosed or repeated, or a region the file does not open (C2-N-041)",
+      "clauses": ["C2-N-041", "C2-N-061"]
+    },
+    {
+      "id": "include-rows-invalid",
+      "status": "obsolete",
+      "replaced_by": "include-option-invalid",
+      "why": "a range outside its shape is an invalid option (C2-B-205); rows outside a table code include is reported by include-selection-conflict (C2-N-024)",
+      "clauses": ["C2-B-205", "C2-N-024"]
+    },
+    {
+      "id": "include-rows-out-of-range",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: @rows starts past the last record."],
+      "message_origin": "data_file",
+      "reports": "a row range that starts past the last record (C2-N-046)",
+      "clauses": ["C2-N-046", "C2-N-061"]
+    },
+    {
+      "id": "include-section",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: no heading or block has the id ${name}."],
+      "message_origin": "data_file",
+      "reports": "a section that selects nothing (C2-N-030)",
+      "clauses": ["C2-N-030", "C2-N-061"]
+    },
+    {
+      "id": "include-selection-conflict",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "kept",
+      "messages": ["Include \"${path}\" was not expanded: ${reason}."],
+      "message_origin": "data_file",
+      "reports": "options that break a row of conflicts in includes.json (C2-N-024)",
+      "change": "also reports rows or cols outside a table code include, which 0.1 reported as include-rows-invalid or include-cols-invalid",
+      "clauses": ["C2-N-024", "C2-N-061"]
+    },
+    {
+      "id": "include-unknown-option",
+      "status": "obsolete",
+      "replaced_by": "include-option-invalid",
+      "why": "an unknown key is an invalid option (C2-B-206)",
+      "clauses": ["C2-B-206"]
+    },
+    {
+      "id": "include-unreadable",
+      "severity": "warning",
+      "channel": "parse",
+      "status": "new",
+      "messages": ["Include \"${path}\" was not expanded: the file cannot be read."],
+      "message_origin": "data_file",
+      "reports": "a target inside the root that exists and cannot be read, or that the resolver refuses (C2-N-013)",
+      "change": "0.1 reported it as include-unresolved",
+      "clauses": ["C2-N-013", "C2-N-061"]
     },
     {
       "id": "include-unresolved",
@@ -942,8 +1193,9 @@
       "status": "kept",
       "messages": ["Include \"${path}\" could not be resolved."],
       "message_origin": "engine_0_1",
-      "reports": "an include directive that was not expanded (C2-H-133)",
-      "clauses": ["C2-H-133"]
+      "reports": "an include directive that was not expanded, whatever the cause (C2-H-133, C2-N-070)",
+      "change": "a render loss only; the cause is reported by its own code in the parse channel (C2-N-061)",
+      "clauses": ["C2-H-133", "C2-N-070"]
     },
     {
       "id": "indented-code-block",
@@ -1441,12 +1693,12 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This caption line is not directly below an image, table, code block, quote, math block or figure group, so it is text. If a blank line separates it from such a block, remove the blank line; otherwise escape the caret."
+        "This caption line is not directly below an image, table, code block, quote, math block, figure group or code include, so it is text. If a blank line separates it from such a block, remove the blank line; otherwise escape the caret."
       ],
       "message_origin": "data_file",
       "reports": "a caption line that is not directly below one of the six caption targets, a caption after a blank line among them",
       "change": "the target list has six kinds, the figure group included",
-      "clauses": ["C2-B-149"]
+      "clauses": ["C2-B-149", "C2-N-073"]
     },
     {
       "id": "unattached-inline-attribute",

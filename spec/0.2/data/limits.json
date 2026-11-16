@@ -10,6 +10,22 @@
       ]
     },
     {
+      "name": "include_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-N-065"
+      ]
+    },
+    {
+      "name": "include_depth",
+      "value": 16,
+      "unit": "levels",
+      "clauses": [
+        "C2-N-064"
+      ]
+    },
+    {
       "name": "inline_depth",
       "value": 200,
       "unit": "open_entries",

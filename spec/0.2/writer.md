@@ -167,7 +167,7 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
-**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117).
+**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117). The writer never writes the `children` or the `file` of an expanded include, and reports no loss for them (C2-N-080).
 
 **C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment, and `{%%}` when its value is empty. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075), and when the block before it is a table, because the comment would become a child of the table (C2-A-086); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line, and so is a comment that is the sibling after a code block with a caption (C2-A-082); a heading before it needs none and gets none, which is an exception to the blank line of C2-W-017, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
 
@@ -590,7 +590,7 @@ Three ids stand in `docs/validation.md` on `main` and were not found in the engi
 | `fence-delimiter-indentation` | not found in the engine; not in the catalog |
 | `bibliography-placement-in-container` | not found in the engine; not in the catalog |
 
-The `include-` rules of 0.1 belong to the Includes document, which follows later. `empty-include-path`, which reads the shape of the directive, and `include-option-invalid`, which reads its options, are the two include rules in this catalog.
+The `include-` rules are defined by the Includes document (`includes.md`): the causes that leave an include unexpanded report in the parse channel (C2-N-061), and the table of the parse and render-loss channels below lists them. `empty-include-path`, which reads the shape of the directive, is an include rule of this catalog, and `include-option-invalid`, which reads its options, moved to the parse channel when expansion was defined.
 
 ### Severities other than warning
 
@@ -653,7 +653,7 @@ Eight findings of the syntax chapters, and one of the tree and writer chapters, 
 | `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
-| `include-option-invalid` | warning | an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which has no effect (C2-B-206) |
+| `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
 | `table-span-marker-attribute` | warning | a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
@@ -678,7 +678,11 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `raw-format-dropped` | render-loss | warning | raw content in a format the target does not write (C2-H-054) |
 | `destination-denied` | render-loss | error | a destination that `urlPolicy` blanked (C2-H-082) |
 | `carrier-attribute-dropped` | render-loss | warning | an authored attribute with a reserved carrier name under `roundtrip` (C2-H-116) |
-| `include-unresolved` | render-loss | warning | an include directive that was not expanded (C2-H-133) |
+| `include-unresolved` | render-loss | warning | an include directive that was not expanded, whatever the cause (C2-H-133, C2-N-070) |
+| `include-expanded-roundtrip` | render-loss | warning | an expanded include under `roundtrip`, whose directive an import cannot recover (C2-N-079) |
+| `include-option-invalid` | parse | warning | an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which keeps the include from being expanded (C2-B-206, C2-N-025) |
+| `include-no-resolver`, `include-not-found`, `include-outside-root`, `include-unreadable`, `include-non-text`, `include-cycle`, `include-depth`, `include-budget`, `include-selection-conflict`, `include-section`, `include-region-invalid`, `include-lines-out-of-range`, `include-rows-out-of-range`, `include-cols-invalid`, `include-cols-duplicate` | parse | warning | the cause that left an include unexpanded, one code per cause (C2-N-061, `data/includes.json`) |
+| `include-heading-clamp` | parse | warning | a shifted heading level clamped to 1 or 6 (C2-N-048) |
 | `structure-unspellable` | render-loss | warning | a node or wrapper the writer could not write (C2-W-011) |
 | `field-unspellable` | render-loss | warning | a field the writer could not write (C2-W-011) |
 | `writer-refused` | render-loss | warning | the writer reached a repeated repair state or its repair limit (C2-W-133) |
@@ -697,6 +701,11 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `markdown-italic-underline` | a bare underscore pair is text, not underline | `deprecated-bare-underline` |
 | `list-item-body-detached` | a line past the marker column stays in the item | `list-item-body-below-content-column` |
 | `ordered-list-split-by-indent` | lists with markers at different columns are one list (C2-B-054) | `uneven-list-indent` |
+| `include-block-in-inline` | there is no inline include (C2-N-002) | none |
+| `include-id-rename` | ids are not renamed across files (C2-N-057) | `duplicate-id` |
+| `include-footnote-rename` | footnote labels resolve per file (C2-N-055) | none |
+| `include-call-limit` | the depth limit and the size cap bound the resolver calls (C2-N-067) | none |
+| `include-unknown-option`, `include-duplicate-option`, `include-lines-invalid`, `include-rows-invalid` | each is an invalid option (C2-B-206); `rows` outside a table code include is a conflict (C2-N-024) | `include-option-invalid`, `include-selection-conflict` |
 
 The design also listed `table-shaped-paragraph` as obsolete. It stays, because a row has to end with a pipe again.
 

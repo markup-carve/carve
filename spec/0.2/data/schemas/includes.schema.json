@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Carve 0.2 include expansion: failure causes and option conflicts",
+  "description": "The causes that leave an include unexpanded, in the order they are tested (C2-N-061), and the combinations of selection, transform and mode that a directive may not hold (C2-N-024). `causes` is sorted by `rank`, `conflicts` by `name`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "causes",
+    "conflicts"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "schemas/includes.schema.json"
+    },
+    "causes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rank",
+          "name",
+          "code",
+          "stage",
+          "when",
+          "clauses"
+        ],
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The place of the cause in the order of tests. The first cause that applies is reported and no later one is tested."
+          },
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z_]*$",
+            "description": "The cause. The four causes with stage `resolver` are the error causes a resolver returns (C2-N-007)."
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^include-[a-z-]+$",
+            "description": "The code reported in the parse channel with severity warning. Two rows share `include-budget`: the size cap is one cause, tested before and after the resolver."
+          },
+          "stage": {
+            "enum": [
+              "before_resolver",
+              "resolver",
+              "after_resolver"
+            ],
+            "description": "before_resolver: tested without calling the resolver; the node has no `file`. resolver: returned by the resolver; the node has no `file`. after_resolver: tested on the returned text; the node keeps `file` (C2-N-062)."
+          },
+          "when": {
+            "type": "string",
+            "description": "When the cause applies, in the words of the clauses."
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILNWX]-[0-9]{3}$"
+            },
+            "description": "The clauses the row encodes."
+          }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "rule",
+          "options",
+          "code",
+          "clauses"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z_]*$"
+          },
+          "rule": {
+            "enum": [
+              "at_most_one",
+              "exclusive",
+              "requires_table_code"
+            ],
+            "description": "at_most_one: at most one of `options` stands in a directive. exclusive: the options of the list do not stand together. requires_table_code: the option needs `code` with the language `csv` or `tsv` and the `table` flag in the include's attributes."
+          },
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "section",
+                "lines",
+                "region",
+                "rows",
+                "cols",
+                "shift",
+                "code"
+              ]
+            },
+            "description": "`section` is the `#name` of the directive; the other names are rows of include-options.json."
+          },
+          "code": {
+            "const": "include-selection-conflict"
+          },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^C2-[ABHILNWX]-[0-9]{3}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

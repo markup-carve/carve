@@ -18,7 +18,7 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
           "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
         }
       }
@@ -46,7 +46,7 @@
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
-            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
             "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
           },
           "spelling": { "type": "string", "description": "What the case looks like." }
@@ -64,7 +64,7 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
           "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
         }
       },
@@ -83,7 +83,7 @@
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
-          "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+          "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
           "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
         }
       },

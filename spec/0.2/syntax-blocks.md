@@ -4016,7 +4016,7 @@ Example 257 (unverified)
 
 **C2-B-146** A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.
 
-**C2-B-147** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group.
+**C2-B-147** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group. A code include, an include whose valid options hold `code`, takes a caption too, which its expansion gives to the block it becomes (C2-N-073).
 
 **C2-B-148** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
 
@@ -4489,7 +4489,7 @@ Example 179 (generated)
 
 ## One-line constructs
 
-**C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1. C2-B-201 to C2-B-206 state it.
+**C2-B-156** An include directive, `{{ ... }}` alone on its line, is a block of one line and not an interrupter, and the shape of the directive is carried over from 0.1. C2-B-201 to C2-B-206 state it, and the Includes document (`includes.md`) states its expansion.
 
 **C2-B-157** A block image stays a paragraph while its lines are read, and the paragraph is promoted when it closes as exactly one block image line (C2-B-197). A comment-only line is not a line of the paragraph (C2-B-137, C2-B-138), so comment-only lines below that line leave it one line, for a block image as for a math block (C2-B-158).
 
@@ -4627,13 +4627,13 @@ more</p>
 
 **C2-B-202** A path is bare or quoted. A bare path is one or more characters, none of them a space, `#`, `@`, `}`, `"` or `“` (U+201C), so a bare path ends at the section or at the first option. A double-quoted path is `"`, one or more characters and `"`: a backslash takes the next character with it, and an unescaped `"` and a line end do not occur. Its value is read like a quoted attribute value (C2-I-033): a backslash before an ASCII punctuation character is dropped, and a backslash before any other character stays, so `"a\.crv"` names `a.crv` and `"notes\new.crv"` names `notes\new.crv`. A path in curly quotes, `“`, one or more characters other than `”` and `”`, is read as written, with no escape. An empty path in any form makes the line text (`empty-include-path`).
 
-**C2-B-203** A section is `#` and a name: an ASCII letter, digit or `_`, then ASCII letters, digits, `_` and `-`. A directive holds at most one section. The section names a heading or a block of the included file by its id; selecting it is the expansion's job.
+**C2-B-203** A section is `#` and a name: an ASCII letter, digit or `_`, then ASCII letters, digits, `_` and `-`. A directive holds at most one section. The section names a heading or a block of the included file by its id; selecting it is the expansion's job (C2-N-027 to C2-N-031).
 
 **C2-B-204** An option is `@`, a key and, optionally, `:` and a value. The key is an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. An unquoted value is one or more characters that are not `@`, `}`, a space, a tab or a line end, so an unquoted value ends at the next option: `@shift:1@lines:1-8` is two options. A value that starts with `"` or `'` is a quoted value as in C2-I-033, and may hold `@`, spaces and `}}`. Outside `cols`, quoting a value only delimits it: `@lines:"1-2"` is `@lines:1-2`.
 
 **C2-B-205** The six keys and the shape of each value are listed in `data/include-options.json`. `lines` and `rows` take a range `N-M`: two decimal numbers without a leading zero, the first at least 1 and not greater than the second. `region` takes an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. `cols` takes a range or a double-quoted list of column names separated by commas, in which each name is not empty and a backslash takes the next character. `shift` takes `auto` or a decimal integer of one to nine digits with an optional `+` or `-`, as a list marker has at most nine digits (C2-B-219); a longer number is outside the shape. `code` stands alone or takes a language: one or more ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`.
 
-**C2-B-206** The basic shape of a directive is `{{`, a path, at most one section, any number of options of the form `@key` or `@key:value`, and `}}`, alone on its line, as C2-B-201 to C2-B-204 spell them. Every line of the basic shape is an include directive: the keys and the value shapes of C2-B-205 do not change the block. An option is invalid when its key is not one of the six, when its value is outside the shape of its key, when it has no value and `data/include-options.json` needs one, or when its key stood earlier in the directive. An invalid option has no effect: the node keeps it as written (C2-A-181), and `include-option-invalid` reports it. Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion.
+**C2-B-206** The basic shape of a directive is `{{`, a path, at most one section, any number of options of the form `@key` or `@key:value`, and `}}`, alone on its line, as C2-B-201 to C2-B-204 spell them. Every line of the basic shape is an include directive: the keys and the value shapes of C2-B-205 do not change the block. An option is invalid when its key is not one of the six, when its value is outside the shape of its key, when it has no value and `data/include-options.json` needs one, or when its key stood earlier in the directive. An invalid option has no effect on the tree: the node keeps it as written (C2-A-181), `include-option-invalid` reports it, and the expansion leaves an include that holds one unexpanded (C2-N-025). Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion (C2-N-024).
 
 Example 227 (unverified)
 

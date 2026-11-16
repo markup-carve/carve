@@ -255,6 +255,22 @@ After, on one row:
 | `a b` | 1 2 |
 ```
 
+### Include expansion
+
+The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
+
+| What you wrote | 0.1 | 0.2 | Clause |
+| --- | --- | --- | --- |
+| One authored id in two files, `{#tip}` in the document and in an included file | The later id became `tip-2`, the references of its file followed it, and `include-id-rename` reported it. | Both elements keep `tip`; `duplicate-id` reports the later one, and every `</#tip>` and `#tip` link reaches the first in document order, also from the file of the later one. Give each id one name across the files. | C2-N-057, C2-N-058 |
+| One footnote label in two files | The later label was renamed, and `include-footnote-rename` reported it. | Two notes; a reference reaches the note of its own file, else of the nearest including file. | C2-N-055 |
+| A footnote reference in the including document to a note that only an included file defines | Resolved, the note was numbered. | Unresolved: definitions reach outward, never inward. Define the note in the including document. | C2-N-054, C2-N-055 |
+| A directive inside a sentence, a heading or a table cell | Expanded inline. | Text; only a directive alone on its line is an include. | C2-N-002 |
+| A directive with no resolver | Literal, no warning, no dependency. | Literal, with `include-no-resolver` and the render loss `include-unresolved`; the node is a dependency that was not read. | C2-N-003, C2-N-070, C2-N-083 |
+| A missing file, a path outside the root, an unreadable file | `include-unresolved` for all three. | `include-not-found`, `include-outside-root` or `include-unreadable`, and the render loss `include-unresolved`. | C2-N-061 |
+| An option value outside its shape or a repeated key, as `@lines:5-2` or two `@code` | `include-lines-invalid`, `include-duplicate-option` and others; the directive stayed literal. | `include-option-invalid`; the directive stays literal. | C2-N-025 |
+| A large include tree | A budget of `max(1 MB, 8 x input length)` over the output and at most 1000 resolver calls. | A cap of 8388608 bytes over the texts the resolver returns, and no call bound. | C2-N-065, C2-N-067 |
+| Malformed quoting in a `{table}` CSV or TSV include | A code block. | A table, as on an authored fence, with `delimited-table-malformed`. | C2-N-045, C2-B-181 |
+
 ### Worked source changes
 
 These before and after pairs were rendered on both engines. The after text is the tool's actual output.
@@ -590,7 +606,7 @@ The 0.2 entry point is `carve-js/v2/src/index.ts` in this checkout. The current 
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | No 0.2 lint runner yet. `parseWithDiagnostics` reports parser and resolution findings. |
 | `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0 and reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190). The `v2/` engine has no importer yet. |
 | `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | No 0.2 importer. |
-| `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | No include expansion in the 0.2 engine. An `include` node remains in the tree. |
+| `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | No include expansion in the 0.2 engine yet; `includes.md` specifies it. Until then an `include` node remains unexpanded in the tree. |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
 | `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | No 0.2 counterpart. |

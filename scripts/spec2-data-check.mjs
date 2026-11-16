@@ -21,6 +21,7 @@ const DOCUMENTS = {
   'source-layout': 'origin/spec/0.2-ast',
   html: 'origin/spec/0.2-html-writer',
   writer: 'origin/spec/0.2-html-writer',
+  includes: 'origin/next2',
 }
 
 // file -> the lists it holds, with the key that identifies a row and how the list is ordered.
@@ -34,6 +35,7 @@ const FILES = {
   extensions: { extensions: ['name', 'name'] },
   'heading-slug': { removed: ['code_point', 'code_point'], reversed: ['glyph', 'glyph'] },
   'include-options': { options: ['name', 'rank'] },
+  includes: { causes: ['name', 'rank'], conflicts: ['name', 'name'] },
   'inline-atoms': { atoms: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },
@@ -75,7 +77,7 @@ const sources = []
 for (const [name, ref] of Object.entries(DOCUMENTS)) {
   const { text, from } = readDocument(name, ref)
   sources.push(`${name}.md from ${from}`)
-  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILWX]-\d{3})\*\*/gm)) defined.add(match[1])
+  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILNWX]-\d{3})\*\*/gm)) defined.add(match[1])
 }
 
 const data = {}
@@ -139,7 +141,7 @@ else {
   const schema = JSON.parse(schemaText)
   try { ajv.compile(schema) } catch (error) { fail(`ast-schema.json: invalid JSON Schema: ${error.message}`) }
   collectClauses(schema, 'ast-schema.json')
-  for (const match of schemaText.matchAll(/C2-[ABHILWX]-\d{3}/g)) {
+  for (const match of schemaText.matchAll(/C2-[ABHILNWX]-\d{3}/g)) {
     cited.add(match[0])
     if (!defined.has(match[0])) fail(`ast-schema.json: cites ${match[0]}, which no document defines`)
   }
@@ -238,6 +240,13 @@ for (const row of data['inline-braces']?.order ?? []) {
 for (const atom of data['inline-scan']?.never_fail ?? []) need(atoms, atom, 'inline-scan.json never_fail', 'row of inline-atoms.json')
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
+const includeOptions = names('include-options', 'options')
+for (const row of [...(data.includes?.causes ?? []), ...(data.includes?.conflicts ?? [])]) {
+  need(codes, row.code, `includes.json ${row.name}`, 'id of lint-rules.json')
+  const kept = data['lint-rules']?.rules.find(rule => rule.id === row.code)
+  if (kept && kept.channel !== 'parse') fail(`includes.json ${row.name}: ${row.code} is not a code of the parse channel`)
+  for (const option of row.options ?? []) if (option !== 'section') need(includeOptions, option, `includes.json ${row.name}`, 'row of include-options.json')
+}
 
 // The Unicode ranges are generated (scripts/spec2-unicode.mjs --check compares them with the
 // source); here only their order is checked, so the check runs without the network.
@@ -282,7 +291,7 @@ console.log(`Clauses defined: ${defined.size}. Clauses cited by a data row: ${ci
 console.log(`Rows:\n  ${counts.join('\n  ')}`)
 
 // The phase 1 gate asks for a row where a rule is table-shaped. This list is for review, not a failure.
-for (const [prefix, chapter] of [['C2-B-', 'syntax-blocks.md'], ['C2-I-', 'syntax-inline.md']]) {
+for (const [prefix, chapter] of [['C2-B-', 'syntax-blocks.md'], ['C2-I-', 'syntax-inline.md'], ['C2-N-', 'includes.md']]) {
   const all = [...defined].filter(id => id.startsWith(prefix)).sort()
   const missing = all.filter(id => !cited.has(id))
   console.log(`${chapter}: ${missing.length} of ${all.length} clauses are cited by no data row${missing.length ? ':\n  ' + missing.join(' ') : '.'}`)

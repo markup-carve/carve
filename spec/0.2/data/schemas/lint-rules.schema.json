@@ -23,7 +23,7 @@
             "type": "array",
             "minItems": 1,
             "uniqueItems": true,
-            "items": { "type": "string", "pattern": "^C2-[ABHILW]-[0-9]{3}$" },
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
             "description": "The clauses that define the finding or name the code. A row that cites only C2-W-106 has no clause of its own: its finding keeps its 0.1 definition and the row stands in the catalog by that clause."
           },
           "severity": { "enum": ["hint", "warning", "error"], "description": "The severity. Absent for a retired id." },

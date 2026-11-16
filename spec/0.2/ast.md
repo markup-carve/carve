@@ -152,7 +152,7 @@ Conventions:
 
 **C2-A-048** `raw_block.value` follows the same rules as `code_block.value`.
 
-**C2-A-049** `frontmatter` is the first child when present. It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
+**C2-A-049** `frontmatter` is the first child when present, of the document or of an include whose file has frontmatter (C2-N-021). It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
 
 ## Node types
 
@@ -191,12 +191,12 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `figure_group` | block | blocks | `caption`? |
 | `footnote` | top level | blocks | `key`, `namespace` |
 | `footnote_ref` | inline | none | `number`?, `key`, `namespace` |
-| `frontmatter` | top level, first child | none | `format`, `value` |
+| `frontmatter` | top level, first child; first child of an `include` | none | `format`, `value` |
 | `hard_break` | inline | none | none |
 | `heading` | block | inlines | `level`, `generatedId`? |
 | `highlight` | inline | inlines | none |
 | `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
-| `include` | block | none | `path`, `section`?, `options`?, `invalid`? |
+| `include` | block | blocks, once expanded | `path`, `section`?, `options`?, `invalid`?, `file`?, `caption`? |
 | `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`?, `source`? |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
@@ -240,7 +240,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-051** A list of blocks admits only content blocks. A type that exists only inside its container (`list_item`, `definition_term`, `definition_description`, `line`, the table groups, `table_row`, `table_cell`, `cell_paragraph`, `caption`, `citation`, `ruby_pair`, `table_column`) is refused anywhere else.
 
-**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children`, because a definition stands at the top level (C2-B-081). Each stands at its place in source order among the other blocks; no definition is moved or collected. A reader refuses one inside a container.
+**C2-A-052** `footnote`, `link_reference_definition`, `abbreviation_def` and `citation_definition` occur only in `document.children` and in the `children` of an expanded include, because a definition stands at the top level of its file (C2-B-081, C2-N-031). Each stands at its place in source order among the other blocks; no definition is moved or collected. A reader refuses one inside a container.
 
 ## Blocks
 
@@ -526,7 +526,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`. The `headingIds` option is `off`, `keep-case`, `lower` or `ascii`, and `keep-case` is the default; with `off` no `generatedId` is produced, and an authored id stays.
 
-**C2-A-135** The root `stages` list names the resolution stages that ran: `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
+**C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete.
 
 **C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The `role` is a tree fact used by equality.
 
@@ -542,7 +542,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-141** Lines and columns start at 1, offsets start at 0, and a reader refuses a smaller value. Columns count Unicode code points, offsets count original UTF-8 bytes, and ends are exclusive.
 
-**C2-A-142** `pos.file`, when present, is a string id of the included input whose coordinates are measured. Absence means the top-level input; positions in different files are never compared.
+**C2-A-142** `pos.file`, when present, is a string id of the included input whose coordinates are measured. Absence means the top-level input; positions in different files are never compared. In an expanded tree the id is the `file` of the include whose children hold the node (C2-N-019).
 
 ```json
 {
@@ -618,7 +618,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-170** A reader validates a tree against `spec/0.2/data/ast-schema.json` at decode and refuses a failure. The files under `resources/` describe the 0.1 contract.
 
-**C2-A-171** A reader accepts every tree its own parser can produce at the two nesting limits, 200 blocks (C2-B-190) and 200 inline levels in each inline content (C2-I-118), and refuses deeper input. It derives its bound from the limits by the worst cost per level of its own encoding.
+**C2-A-171** A reader accepts every tree its own parser can produce at the two nesting limits, 200 blocks (C2-B-190) and 200 inline levels in each inline content (C2-I-118), and refuses deeper input. The levels are counted within each file: the children of an expanded include start again at level 0 (C2-N-015), so one chain of includes may hold the top-level document and 16 included files (C2-N-064), each as deep as the limits allow. It derives its bound from the limits by the worst cost per level of its own encoding.
 
 ## Diagnostics
 
@@ -693,7 +693,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An `include` has `path`, optional `section`, an optional decoded `options` object and optional `invalid`. `options` holds the valid options only (C2-B-205): `lines` and `rows` are range strings, `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer of at most nine digits or `"auto"`, and `code` is a syntax string or `true` when no value was written. A reader refuses a value outside the shape of its key, a range whose first number is greater than its second included. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`. `invalid` is the list of the invalid options (C2-B-206) in source order, each as written from its `@` to the end of its value, quotes and escapes included, so `@shift:x` and `@cols:"a,,b"` are kept as they stand. The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
+**C2-A-181** An `include` has `path`, optional `section`, an optional decoded `options` object and optional `invalid`. `options` holds the valid options only (C2-B-205): `lines` and `rows` are range strings, `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer of at most nine digits or `"auto"`, and `code` is a syntax string or `true` when no value was written. A reader refuses a value outside the shape of its key, a range whose first number is greater than its second included. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`. `invalid` is the list of the invalid options (C2-B-206) in source order, each as written from its `@` to the end of its value, quotes and escapes included, so `@shift:x` and `@cols:"a,,b"` are kept as they stand. Expansion adds `file` and `children`, both resolution results (C2-N-017). A caption below a code include is its `caption` (C2-N-073), and its own `attrs` act only through the child of a code include (C2-N-072). This replaces the earlier draft list of string pairs.
 
 **C2-A-182** An `include` node has a position like any other block: it starts at its opening braces and ends after its closing braces and the spaces and tabs behind them on its line (C2-A-151). For `{{ a.crv }}` and two spaces the include spans offsets 0 to 13; indented by two spaces, with two spaces behind it, it spans 2 to 15.
 

@@ -1004,7 +1004,7 @@ a
 
 :::
 
-**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. 0.2.0 expands no include, so every directive renders this way.
+**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. An include is unexpanded when no resolver was given or when its expansion failed (C2-N-061); an expanded include writes its children and nothing else (C2-N-075).
 
 **C2-H-171** When an unexpanded include is written, an option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds. An invalid option is written as the source spelled it (C2-A-181), so `@cols:"a,,b"`, which is no list of names (C2-B-205), stays `@cols:"a,,b"`. A `cols` list of names is written as its names joined by commas in one pair of double quotes; the tree keeps no quotes (C2-A-181). The writer does the same (C2-W-058). A value that starts with a double or a single quote is written in double quotes too, since bare it would read as the start of a quoted value (C2-B-204).
 
@@ -1956,7 +1956,7 @@ Example 34 (unverified, `--profile comment`)
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
 | `extensions` | parse | list of extensions | empty: the core alone | the extension API; the only option that changes parsing |
-| `includes` | parse | include root or resolver, with its limits | none: no directive is expanded (C2-H-133) | the Includes document |
+| `includes` | parse | include root or resolver, with its limits | none: no directive is expanded (C2-H-133) | the Includes document (`includes.md`, C2-N-003) |
 | `headingIds` | resolution | `off`, `keep-case`, `lower` or `ascii` | `keep-case` | C2-H-131 |
 | `mode` | render | `interactive` or `static` | `interactive` | C2-H-122 |
 | `renderers` | render | map from extension name to renderer | empty | C2-H-123 |
