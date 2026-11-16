@@ -1322,16 +1322,6 @@
       "silent": true
     },
     {
-      "id": "U-156",
-      "kind": "report",
-      "group": "measured rendering changes",
-      "from": "::: e[",
-      "to": "",
-      "meaning02": "<div class=\"e[\">\n\n</div>",
-      "toolEntry": "U-156",
-      "silent": true
-    },
-    {
       "id": "U-157",
       "kind": "report",
       "group": "measured rendering changes",
@@ -1489,16 +1479,6 @@
       "to": "",
       "meaning02": "<dl loose=\"\">\n  <dt>T</dt>\n</dl>",
       "toolEntry": "U-172",
-      "silent": true
-    },
-    {
-      "id": "U-173",
-      "kind": "report",
-      "group": "measured rendering changes",
-      "from": "c--------",
-      "to": "",
-      "meaning02": "<p>c–——</p>",
-      "toolEntry": "U-173",
       "silent": true
     },
     {
@@ -1819,16 +1799,6 @@
       "to": "Text[^a]\\{.ref}.\n",
       "meaning02": "C2-I-043 and C2-I-088 let the attribute after an unresolved footnote marker change its rendering. Escape the attribute opener to retain 0.1 literal text.",
       "toolEntry": "U-207",
-      "silent": true
-    },
-    {
-      "id": "U-208",
-      "kind": "escape",
-      "group": "measured item boundary rewrites",
-      "from": "-{+a+} text\n",
-      "to": "\\-{+a+} text\n",
-      "meaning02": "C2-B-100 and C2-B-101 read a braced insertion next to a list marker as item syntax. Escape the dash to retain 0.1 paragraph text and its insertion.",
-      "toolEntry": "U-208",
       "silent": true
     },
     {
