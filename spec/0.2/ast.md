@@ -197,7 +197,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `heading` | block | inlines | `level`, `generatedId`? |
 | `highlight` | inline | inlines | none |
 | `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
-| `include` | block | none | `path`, `section`?, `options`? |
+| `include` | block | none | `path`, `section`?, `options`?, `invalid`? |
 | `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`?, `source`? |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
@@ -697,7 +697,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 These clauses were added after other documents began to cite this one. They stand here so that no earlier id moves, and they go to their sections at the next renumbering.
 
-**C2-A-181** An `include` has `path`, optional `section`, and optional decoded `options` object. `lines` and `rows` are range strings; an out-of-shape `lines`, `rows` or `cols` value, which `data/include-options.json` keeps on the node, remains a decoded string for expansion to report (C2-B-206), and a `rows` or `cols` written without a value is the empty string. `shift` has at most nine digits (C2-B-205). `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer or `"auto"`, and `code` is a syntax string or `true` when no value was written. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`; a repeated `rows` or `cols` keeps the first value (C2-B-206). The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
+**C2-A-181** An `include` has `path`, optional `section`, an optional decoded `options` object and optional `invalid`. `options` holds the valid options only (C2-B-205): `lines` and `rows` are range strings, `region` is an identifier string, `cols` is either a range string or a list of name strings, `shift` is an integer of at most nine digits or `"auto"`, and `code` is a syntax string or `true` when no value was written. No quoting or escapes remain in these values; source spelling belongs to the layout record (C2-L-055). The option names and order come from `data/include-options.json`. `invalid` is the list of the invalid options (C2-B-206) in source order, each as written from its `@` to the end of its value, quotes and escapes included, so `@shift:x` and `@cols:"a,,b"` are kept as they stand. The node has no `children` and expansion remains the application's job. This replaces the earlier draft list of string pairs.
 
 **C2-A-182** An `include` node has a position like any other block: it starts at its opening braces and ends after its closing braces and the spaces and tabs behind them on its line (C2-A-151). For `{{ a.crv }}` and two spaces the include spans offsets 0 to 13; indented by two spaces, with two spaces behind it, it spans 2 to 15.
 

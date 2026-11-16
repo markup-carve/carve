@@ -216,7 +216,8 @@ These rulings change what some documents give against the 0.1 engine or against 
 | Spaces at the end of a line inside a code span | Early 0.2: kept in the code value. | Removed, as in text. | C2-I-002, C2-I-015 |
 | `{++-+}`, an insertion of `+-` | Early 0.2: `+-`. | `±`. | C2-I-117 |
 | A letter assigned in Unicode 18.0.0 next to a delimiter | Depended on the engine's Unicode tables. | Unicode 18.0.0 decides. | C2-I-127 |
-| `{{ a.crv @shift:1234567890 }}`, ten or more digits | An include with a rounded number. | A paragraph. | C2-B-205 |
+| `{{ a.crv @shift:1234567890 }}`, ten or more digits | 0.1: an include with a rounded number. Early 0.2: a paragraph. | An include whose node keeps the option as written in `invalid`, with no effect; `include-option-invalid` reports it. | C2-B-205, C2-B-206 |
+| An include option with an unknown key, a value outside its shape, a missing value or a repeated key: `{{ a.crv @size:2 }}`, `{{ a.crv @shift:x }}`, `{{ a.crv @lines }}` | Early 0.2: a paragraph for some options and an include for others, depending on the key. | Always an include. The option has no effect, the node keeps it as written, `fmt` writes it back, and `include-option-invalid` reports it. | C2-A-181, C2-B-206 |
 | An attribute line on a block image | Early 0.2: a bare `<img>`, the id and classes lost. | `<p id="…" class="…"><img …></p>`. | C2-H-020 |
 | A table panel of a figure group | Early 0.2: a bare `<table>`. | `<figure class="carve-figure-panel">` around the `<table>`. | C2-H-064 |
 | A captioned figure or table under `comment` or `minimal` | Early 0.2: `Figure : cap`, table caption lost. | `Figure 1: cap` as a paragraph after the degraded block. | C2-H-165 |
@@ -795,7 +796,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-046 | add | resolution outputs | generatedId, number, resolvedAlign, href or src, display and table span counts remain in resolved tree | C2-A-106 C2-A-162 |
 | T-047 | move | source spelling and physical layout | source-layout record from parseWithLayout; marker, fences, wraps, whitespace and quote choices | C2-L-003 |
 | T-048 | drop | 0.1 rawRef, sourceFormat and layout-only fields | use semantic fields; original spelling is unavailable without source/layout | C2-A-178 |
-| T-049 | add | include directive | include with path, section and typed options; no expansion in core tree | C2-A-181 |
+| T-049 | add | include directive | include with path, section, typed valid options and the invalid options as written; no expansion in core tree | C2-A-181 |
 | T-050 | add | no extension source record; block extension deferred in an earlier draft | qualified `block_extension` and `inline_extension` may carry a typed `source` record; a block extension has a required core fallback | C2-A-122 C2-A-125 C2-X-024 |
 
 ### Reading and storing 2.0 trees

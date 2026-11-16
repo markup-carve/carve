@@ -4485,7 +4485,7 @@ more</p>
 
 **C2-B-205** The six keys and the shape of each value are listed in `data/include-options.json`. `lines` and `rows` take a range `N-M`: two decimal numbers without a leading zero, the first at least 1 and not greater than the second. `region` takes an ASCII letter or `_`, then ASCII letters, digits, `_` and `-`. `cols` takes a range or a double-quoted list of column names separated by commas, in which each name is not empty and a backslash takes the next character. `shift` takes `auto` or a decimal integer of one to nine digits with an optional `+` or `-`, as a list marker has at most nine digits (C2-B-219); a longer number is outside the shape. `code` stands alone or takes a language: one or more ASCII letters, digits and `-`, `_`, `+`, `#`, `.`, `/`.
 
-**C2-B-206** A line that has the shape of C2-B-201 is no include directive, and is read as a paragraph, when it holds a second section, a key that is not one of the six, or an option that the column `without_value`, `outside_shape` or `repeated` of `data/include-options.json` sends to `paragraph`. An option that the table sends to `include_node` leaves an include node, and an expansion reports the option. Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion.
+**C2-B-206** The basic shape of a directive is `{{`, a path, at most one section, any number of options of the form `@key` or `@key:value`, and `}}`, alone on its line, as C2-B-201 to C2-B-204 spell them. Every line of the basic shape is an include directive: the keys and the value shapes of C2-B-205 do not change the block. An option is invalid when its key is not one of the six, when its value is outside the shape of its key, when it has no value and `data/include-options.json` needs one, or when its key stood earlier in the directive. An invalid option has no effect: the node keeps it as written (C2-A-181), and `include-option-invalid` reports it. Whether two selection options may stand together, and every other rule about the content an include brings in, belong to the expansion.
 
 Example 227 (unverified)
 
@@ -4501,21 +4501,23 @@ Example 227 (unverified)
 
 :::
 
-Example 228 (generated)
+An option out of shape and an unknown key leave the include, and the node keeps both as written (C2-B-206).
+
+Example 228 (unverified)
 
 ::: compare
 
 ```carve
-{{ a.crv @shift:x }}
+{{ a.crv @shift:x @size:2 }}
 ```
 
 ```html
-<p>{{ a.crv <span class="mention"><strong>@shift</strong></span>:x }}</p>
+<p>{{ a.crv @shift:x @size:2 }}</p>
 ```
 
 :::
 
-Nine digits are a shift; ten are outside the shape, and the line is a paragraph (C2-B-205, C2-B-206).
+Nine digits are a shift; ten are outside the shape, so the option is invalid and kept as written (C2-B-205, C2-B-206).
 
 Example 236 (unverified)
 
@@ -4529,7 +4531,7 @@ Example 236 (unverified)
 
 ```html
 <p>{{ a.crv @shift:-123456789 }}</p>
-<p>{{ a.crv <span class="mention"><strong>@shift</strong></span>:1234567890 }}</p>
+<p>{{ a.crv @shift:1234567890 }}</p>
 ```
 
 :::
@@ -5651,13 +5653,13 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Comments | 17 | 4 | 14 | 4 |
 | Captions | 7 | 0 | 12 | 2 |
 | Headings | 5 | 0 | 3 | 6 |
-| One-line constructs | 11 | 0 | 9 | 2 |
+| One-line constructs | 11 | 0 | 8 | 3 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
 | Tables | 35 | 2 | 19 | 9 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **229** | **14** | **168** | **79** |
+| **Total** | **229** | **14** | **167** | **80** |
 
 The chapter has 229 clauses, and 14 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 

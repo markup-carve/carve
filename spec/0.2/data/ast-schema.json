@@ -8993,6 +8993,14 @@
           },
           "additionalProperties": false
         },
+        "invalid": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^@"
+          },
+          "minItems": 1
+        },
         "attrs": {
           "type": "object",
           "properties": {

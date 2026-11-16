@@ -2671,7 +2671,7 @@
       "id": "T-049",
       "kind": "add",
       "from": "include directive",
-      "to": "include with path, section and typed options; no expansion in core tree",
+      "to": "include with path, section, typed valid options and the invalid options as written; no expansion in core tree",
       "migrationRule": "C2-A-181",
       "silent": false
     },

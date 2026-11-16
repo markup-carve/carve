@@ -167,7 +167,7 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
-**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117).
+**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117).
 
 **C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment, and `{%%}` when its value is empty. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a term or a caption, because without the blank line the comment would be a lazy line of that leaf and move into it (C2-B-024, C2-A-075), and when the block before it is a table, because the comment would become a child of the table (C2-A-086); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line (C2-A-082); a heading before it needs none and gets none, which is an exception to the blank line of C2-W-017, since a comment at the container's column is not indented past the heading marker (C2-B-154); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
 
@@ -590,7 +590,7 @@ Three ids stand in `docs/validation.md` on `main` and were not found in the engi
 | `fence-delimiter-indentation` | not found in the engine; not in the catalog |
 | `bibliography-placement-in-container` | not found in the engine; not in the catalog |
 
-The `include-` rules of 0.1 belong to the Includes document, which follows later. `empty-include-path`, which reads the shape of the directive, is the one include rule in this catalog.
+The `include-` rules of 0.1 belong to the Includes document, which follows later. `empty-include-path`, which reads the shape of the directive, and `include-option-invalid`, which reads its options, are the two include rules in this catalog.
 
 ### Severities other than warning
 
@@ -642,7 +642,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Six findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
+Seven findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -653,6 +653,7 @@ Six findings of the syntax chapters, and one of the tree and writer chapters, ha
 | `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
+| `include-option-invalid` | warning | an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which has no effect (C2-B-206) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 
@@ -729,6 +730,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
 | an invalid `aligns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
 | a `header-rows` or `footer-rows` count past the rows | `table-row-count-clamped` |
+| an include option that is invalid | `include-option-invalid` |
 | a comment between a table row and its continuation row | `comment-splits-table-row` |
 | `**bold**` | `markdown-strong-double-star` |
 | a row without a closing pipe | `table-shaped-paragraph` |

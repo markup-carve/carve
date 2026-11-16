@@ -925,6 +925,17 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "include-option-invalid",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["The include option ${option} ${reason}, so it has no effect. Correct it or remove it."],
+      "message_origin": "data_file",
+      "reports": "an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which the node keeps as written (C2-B-206)",
+      "clauses": ["C2-A-181", "C2-B-206"]
+    },
+    {
       "id": "include-unresolved",
       "severity": "warning",
       "channel": "render-loss",
