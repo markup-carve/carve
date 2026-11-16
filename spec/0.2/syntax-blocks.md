@@ -1837,7 +1837,25 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then only spaces. So `[a]: /u 'T'` has a title, in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
 
-**C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.
+**C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty. Exactly one space separates the colon from the expansion: every character after it belongs to the expansion, a leading space or tab included, except the spaces and tabs at the end of the line.
+
+The expansion starts after the one separator space, so the second space is its first character (C2-B-084).
+
+Example 241 (unverified)
+
+::: compare
+
+```carve
+*[HTML]:  Hyper Text
+
+HTML
+```
+
+```html
+<p><abbr title=" Hyper Text">HTML</abbr></p>
+```
+
+:::
 
 **C2-B-085** For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.
 
