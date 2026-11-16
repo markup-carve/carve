@@ -47,7 +47,7 @@ Text
 
 **C2-N-004** A command-line tool expands includes by default when it reads its entry document from a file and writes any target other than Carve source. It uses the resolver of C2-N-012 with the containment root set to the directory of the entry file, as a canonical path with every symbolic link resolved. The tool offers a way to turn expansion off and a way to name another root. With the entry read from standard input there is no entry file and so no default root: the tool expands nothing unless the caller names a root.
 
-**C2-N-005** A processor whose output is Carve source does not expand, whether or not a resolver is given: `carve fmt`, a render to the Carve target and every other pipeline whose product is Carve source return the directive as the author wrote it. (I15, carried over)
+**C2-N-005** A processor whose output is Carve source does not expand, whether or not a resolver is given: `carve fmt`, a render to the Carve target and every other pipeline whose product is Carve source return the directive as the author wrote it. Such a processor reports no `include-no-resolver` (C2-N-003), since it expands nothing by its own rule. (I15, carried over)
 
 **C2-N-006** Expansion runs after the top-level document is parsed and before resolution (C2-A-135), as part of the parse that the `includes` option configures. A tree in which expansion ran lists `includeExpansion` in the root `stages` (C2-A-135).
 
