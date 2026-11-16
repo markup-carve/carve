@@ -19,16 +19,17 @@ Each entry:
 | `id` | the document stem and the example number, as `syntax-blocks-12` |
 | `document`, `number` | the document file and the number the example has there |
 | `section`, `clauses` | the heading of the section the example stands in, and the clause ids that section defines |
-| `kind` | `render`: Carve input to HTML; `write`: Carve input to canonical Carve; `include`: an entry document and the files a resolver serves; `import`: HTML input to a tree and canonical Carve |
+| `kind` | `render`: Carve input to HTML; `write`: Carve input to canonical Carve; `lint`: Carve input to the codes lint reports; `include`: an entry document and the files a resolver serves; `import`: HTML input to a tree and canonical Carve |
 | `input` | the Carve input; absent for `import` |
 | `html` | the HTML input of an `import` example |
 | `files` | for `include`: each file the resolver serves under its name, which is also its id, as `{ "text": ... }` or as `{ "bytes": "61 FF" }` in hex |
 | `options` | the options the example's flags set, by the names of `data/options.json`; `{}` for none |
 | `expected.html` | the expected HTML |
+| `expected.htmlIncludes` | where the example states its output in prose: a piece the HTML holds |
 | `expected.tree` | the expected tree, positions included, where the tree gate holds one (`trees/`) |
 | `expected.children` | for `import`: the children of the imported document, without positions |
 | `expected.carve` | for `write` and `import`: the source the canonical writer gives |
-| `expected.diagnostics` | codes of `data/lint-rules.json` that the example's text says are reported; not a complete list |
+| `expected.diagnostics` | codes of `data/lint-rules.json` that the example's text says are reported; not a complete list, except for `lint`, where it is what the example states |
 | `status`, `reason` | `verified` or `unverified`, and why, as the conventions of the document define it |
 | `note` | where the example states its input in prose (blocks Example 247) |
 

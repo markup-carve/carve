@@ -70,7 +70,7 @@ function statusOf(example) {
 const diagnosticsOf = (example) => [...new Set([...example.text.matchAll(/`([a-z0-9/-]+)`/g)].map(m => m[1]).filter(code => codes.has(code)))]
 
 // blocks Example 247 states its input in prose.
-const DESCRIBED = { 'syntax-blocks-247': { input: `${'> '.repeat(201)}x`, note: 'input and output stated in prose: the innermost quote holds <p>&gt; x</p>' } }
+const DESCRIBED = { 'syntax-blocks-247': { input: `${'> '.repeat(201)}x`, htmlIncludes: '<p>&gt; x</p>', note: 'input and output stated in prose: 200 nested quotes, the innermost holds <p>&gt; x</p>' } }
 
 function entryOf(example) {
   const id = `${example.document}-${example.number}`
@@ -85,7 +85,8 @@ function entryOf(example) {
     expected.children = JSON.parse(byLang('json')[0]?.body ?? 'null')
     expected.carve = byLang('carve')[0]?.body
   } else if (example.document === 'writer') {
-    entry.kind = 'write'
+    // An example with an input and no written source states only what lint reports (writer Example 8).
+    entry.kind = fences[1] ? 'write' : 'lint'
     entry.input = fences[0]?.body
     if (fences[1]) expected.carve = fences[1].body
   } else if (example.document === 'includes') {
@@ -97,6 +98,7 @@ function entryOf(example) {
     entry.kind = 'render'
     entry.input = byLang('carve')[0]?.body ?? DESCRIBED[id]?.input
     if (byLang('html')[0]) expected.html = byLang('html')[0].body
+    if (DESCRIBED[id]?.htmlIncludes) expected.htmlIncludes = DESCRIBED[id].htmlIncludes
   }
   if (fixtureTrees.has(id)) expected.tree = fixtureTrees.get(id)
   const diagnostics = diagnosticsOf(example)
@@ -106,6 +108,7 @@ function entryOf(example) {
   Object.assign(entry, statusOf(example))
   if (DESCRIBED[id]) entry.note = DESCRIBED[id].note
   if (entry.input === undefined && entry.html === undefined) fail(`${id}: no input`)
+  if (!Object.keys(expected).length) fail(`${id}: no expected result`)
   return entry
 }
 

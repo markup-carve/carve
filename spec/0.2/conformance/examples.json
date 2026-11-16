@@ -33993,10 +33993,12 @@
    "kind": "render",
    "input": "> > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > x",
    "options": {},
-   "expected": {},
+   "expected": {
+    "htmlIncludes": "<p>&gt; x</p>"
+   },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)",
-   "note": "input and output stated in prose: the innermost quote holds <p>&gt; x</p>"
+   "note": "input and output stated in prose: 200 nested quotes, the innermost holds <p>&gt; x</p>"
   },
   {
    "id": "syntax-blocks-221",
@@ -69310,7 +69312,7 @@
    "clauses": [
     "C2-W-137"
    ],
-   "kind": "write",
+   "kind": "lint",
    "input": "| a |\n%% x\n+ b |",
    "options": {},
    "expected": {

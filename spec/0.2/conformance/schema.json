@@ -45,7 +45,7 @@
         "number": { "type": "integer", "minimum": 1 },
         "section": { "type": "string" },
         "clauses": { "$ref": "#/$defs/clauses" },
-        "kind": { "enum": ["render", "write", "include", "import"] },
+        "kind": { "enum": ["render", "write", "lint", "include", "import"] },
         "input": { "type": "string" },
         "html": { "type": "string" },
         "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" } },
@@ -54,12 +54,14 @@
           "type": "object",
           "properties": {
             "html": { "type": "string" },
+            "htmlIncludes": { "type": "string" },
             "tree": { "type": "object" },
             "children": { "type": "array" },
             "carve": { "type": "string" },
             "diagnostics": { "$ref": "#/$defs/diagnostics" }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "minProperties": 1
         },
         "status": { "enum": ["verified", "unverified"] },
         "reason": { "type": "string" },
