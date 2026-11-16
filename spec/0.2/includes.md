@@ -729,7 +729,39 @@ last</td></tr>
 
 The two marker lines stand inside a quoted field, so they are data of the cell.
 
-**C2-N-047** `cols` with a list of names takes the columns whose head names match exactly, in the order given, so it may reorder them. A name the first head record lacks, an empty head name and a head name that occurs twice leave the include unexpanded with `include-cols-invalid`, and a name given twice with `include-cols-duplicate`. `cols` with a range selects columns by number and is valid only with `header-rows=0`; on another table, or past the last column, it gives `include-cols-invalid`. `cols` combines with any one selection or none. (I1d, carried over)
+**C2-N-047** `cols` with a list of names takes the columns whose head names match exactly, in the order given, so it may reorder them. The names are matched against the head of the whole file (C2-N-046) under any selection: a `lines` or `region` selection chooses records and never makes a new head. A name the first head record lacks, an empty head name and a head name that occurs twice leave the include unexpanded with `include-cols-invalid`, and a name given twice with `include-cols-duplicate`. `cols` with a range selects columns by number and is valid only with `header-rows=0`; on another table, or past the last column, it gives `include-cols-invalid`. `cols` combines with any one selection or none. (I1d, carried over)
+
+Example 36 (unverified)
+
+File `a.csv`:
+
+```csv
+Name,Price
+A,1
+B,2
+```
+
+::: compare
+
+```carve
+{table}
+{{ a.csv @lines:2-2 @cols:"Price" @code:csv }}
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Price</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Line 2 selects the record `A,1`; the head is still the first record of the file, so `Price` names its second column.
 
 ### Shift
 
@@ -1300,7 +1332,7 @@ I13 and I14 were unassigned in 0.1.
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
 | Expansion | 9 | 0 | 7 |
-| Selection, transforms and mode | 29 | 0 | 14 |
+| Selection, transforms and mode | 29 | 0 | 15 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
 | Attributes and captions | 4 | 2 | 2 |
@@ -1308,6 +1340,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **35** |
+| **Total** | **88** | **2** | **36** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 35 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 36 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

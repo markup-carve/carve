@@ -71839,6 +71839,139 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
+   "id": "includes-36",
+   "document": "includes.md",
+   "number": 36,
+   "section": "endregion keep",
+   "clauses": [
+    "C2-N-047"
+   ],
+   "kind": "include",
+   "files": {
+    "a.csv": {
+     "text": "Name,Price\nA,1\nB,2\n"
+    }
+   },
+   "input": "{table}\n{{ a.csv @lines:2-2 @cols:\"Price\" @code:csv }}",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">Price</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td></tr>\n  </tbody>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "include",
+       "path": "a.csv",
+       "options": {
+        "lines": "2-2",
+        "cols": [
+         "Price"
+        ],
+        "code": "csv"
+       },
+       "attrs": {
+        "keyValues": [
+         [
+          "table",
+          ""
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 47,
+        "startOffset": 0,
+        "endOffset": 54
+       },
+       "file": "a.csv",
+       "children": [
+        {
+         "type": "table",
+         "columns": [
+          {
+           "type": "table_column"
+          }
+         ],
+         "children": [
+          {
+           "type": "table_head",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": true,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "Price"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_body",
+           "children": [
+            {
+             "type": "table_row",
+             "children": [
+              {
+               "type": "table_cell",
+               "header": false,
+               "children": [
+                {
+                 "type": "cell_paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "1"
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 11,
+          "endOffset": 14,
+          "file": "a.csv"
+         }
+        }
+       ]
+      }
+     ],
+     "srcByteLength": 54,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
+  },
+  {
    "id": "includes-17",
    "document": "includes.md",
    "number": 17,
