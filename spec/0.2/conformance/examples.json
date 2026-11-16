@@ -74952,6 +74952,54 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
   },
   {
+   "id": "import-html-43",
+   "document": "import-html.md",
+   "number": 43,
+   "section": "Figures",
+   "clauses": [
+    "C2-M-042",
+    "C2-M-043"
+   ],
+   "kind": "import",
+   "html": "<figure><p>x</p><figcaption>y</figcaption></figure>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "y"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ],
+    "carve": "::: figure\nx\n:::\n^ y\n"
+   },
+   "status": "verified",
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-20",
    "document": "import-html.md",
    "number": 20,

@@ -1734,7 +1734,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 
 **C2-H-190** A sanitizer that removes `<template>` elements or `data-` attributes removes the facts they carry. The rest of the HTML still imports: an element whose carrier was removed is read as it stands.
 
-**C2-H-199** A `<figure>` that holds one block element and then a `<figcaption>`, and that is no figure group, is read as that block with the caption in its `caption` slot (C2-A-082), and the attributes of the `<figure>` are the block's `attrs`. A panel `<figure class="carve-figure-panel">` is read the same way without its class, and a panel that holds a `<table>` gives that table.
+**C2-H-199** A `<figure>` that holds one block element and then a `<figcaption>`, and that is no figure group, is read as that block with the caption in its `caption` slot when C2-A-082 lets that block carry a caption and it has none yet (any other such figure is a `figure_group`, C2-M-043), and the attributes of the `<figure>` are the block's `attrs`. A panel `<figure class="carve-figure-panel">` is read the same way without its class, and a panel that holds a `<table>` gives that table.
 
 Importing the output of Examples 23 and 42 to 46 gives the reference forms, the ids, the autolink, the cross-reference, the footnote labels, the div and the definitions of their inputs.
 

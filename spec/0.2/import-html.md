@@ -494,7 +494,7 @@ Example 17 (verified)
 
 **C2-M-042** A `<figure>` whose first class is `carve-figure-group` is a `figure_group` whose panels are its `<figure>` children, and whose `<figcaption>` is its caption (C2-H-063, C2-H-064).
 
-**C2-M-043** Any other `<figure>` that holds one block and a `<figcaption>` is that block with the caption in its `caption` slot, and with the attributes of the `<figure>` as its attributes (C2-H-199, C2-A-183). A figure with no `<figcaption>` that holds one image paragraph is that paragraph. A figure that holds more than one block, or one block with no caption slot, is a `figure_group`.
+**C2-M-043** Any other `<figure>` that holds one block, which C2-A-082 lets carry a caption and which has none yet, and a `<figcaption>` is that block with the caption in its `caption` slot, and with the attributes of the `<figure>` as its attributes (C2-H-199, C2-A-183). A figure with no `<figcaption>` that holds one image paragraph is that paragraph. A figure that holds more than one block, or one block that C2-A-082 does not let carry a caption or that has a caption already, is a `figure_group`.
 
 Example 18 (verified)
 
@@ -540,6 +540,31 @@ Example 19 (verified)
 :::
 
 C2-H-199 reads the table with its caption.
+
+Example 43 (verified)
+
+::: compare
+
+```html
+<figure><p>x</p><figcaption>y</figcaption></figure>
+```
+
+```json
+[
+  {"type":"figure_group","children":[{"type":"paragraph","children":[{"type":"text","value":"x"}]}],"caption":{"type":"caption","children":[{"type":"paragraph","children":[{"type":"text","value":"y"}]}]}}
+]
+```
+
+```carve
+::: figure
+x
+:::
+^ y
+```
+
+:::
+
+A plain paragraph carries no caption (C2-A-082), so the figure is a group around it.
 
 ## Conventions
 
@@ -1365,4 +1390,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 42 examples: 42 verified and 0 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 43 examples: 43 verified and 0 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
