@@ -76162,6 +76162,62 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-45",
+   "document": "import-html.md",
+   "number": 45,
+   "section": "Raw content",
+   "clauses": [
+    "C2-M-065",
+    "C2-M-066",
+    "C2-M-067"
+   ],
+   "kind": "import",
+   "html": "<div><!--x--><p>y</p>a<!--z--></div>",
+   "options": {
+    "rawHtml": true
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "raw_block",
+        "format": "html",
+        "value": "<!--x-->\n"
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "raw_inline",
+          "format": "html",
+          "value": "<!--z-->"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": ":::\n```=html\n<!--x-->\n```\n\ny\n\na`<!--z-->`{=html}\n:::\n"
+   },
+   "status": "verified",
+   "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-34",
    "document": "import-html.md",
    "number": 34,

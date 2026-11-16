@@ -90,7 +90,7 @@ The raw span carries a carrier and is read by C2-H-186; the span beside it carri
 
 **C2-M-011** Each element is read in one of two contexts. The children of the document, of a `<div>`, `<blockquote>`, `<li>`, `<dd>`, `<figure>`, `<figcaption>`, `<caption>`, `<details>`, an admonition, a section and a cell that holds a block element are read as blocks. The children of `<p>`, `<h1>` to `<h6>`, `<dt>`, `<summary>`, a cell that holds no block element, and of every element read as an inline node are read as inline content.
 
-**C2-M-012** Among blocks, a run of adjacent text nodes, comments and elements that are no block element of the table "Elements" is one paragraph, as a render writes a bare paragraph. A run that holds only whitespace gives nothing.
+**C2-M-012** Among blocks, a run of adjacent text nodes, comments and elements that are no block element of the table "Elements" is one paragraph, as a render writes a bare paragraph. A run that holds only whitespace gives nothing. With the import option `rawHtml` on, a comment in a run that also holds inline content, text that is not whitespace or an element, is a `raw_inline` of that paragraph; a run that holds only comments and whitespace gives one `raw_block` per comment (C2-M-065). A run splits only at a block element.
 
 **Exception C2-M-013** A run that holds only `<img>` elements, whitespace and comments gives one image paragraph per `<img>` (C2-H-020), not one paragraph.
 
@@ -1111,6 +1111,36 @@ x[^1]
 
 **C2-M-065** With the import option `rawHtml` on, a comment is a `raw_inline` with the format `html` in inline content and a `raw_block` with the format `html` among blocks. An element of the treatment `raw` is the same, with its outer HTML as serialized by the HTML Standard as the value. A raw block value ends with a line feed (C2-A-045, C2-A-048).
 
+Example 45 (verified, import option `rawHtml` on)
+
+::: compare
+
+```html
+<div><!--x--><p>y</p>a<!--z--></div>
+```
+
+```json
+[
+  {"type":"div","children":[{"type":"raw_block","format":"html","value":"<!--x-->\n"},{"type":"paragraph","children":[{"type":"text","value":"y"}]},{"type":"paragraph","children":[{"type":"text","value":"a"},{"type":"raw_inline","format":"html","value":"<!--z-->"}]}]}
+]
+```
+
+````carve
+:::
+```=html
+<!--x-->
+```
+
+y
+
+a`<!--z-->`{=html}
+:::
+````
+
+:::
+
+The first comment has no inline content beside it before the block element, so it is a raw block; the second stands in the run of `a` and is a raw span of that paragraph.
+
 **C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment, every element of the treatment `raw` and every `data-carve-raw` span (C2-H-186) is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of the table "Elements", every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node, so neither the written source nor a later render with any setting carries raw content of the input. With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
 
 **C2-M-067** A reserved name of C2-H-115 is removed from an element before the element is serialized as raw content, as C2-H-186 requires.
@@ -1415,4 +1445,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 44 examples: 43 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 45 examples: 44 verified and 1 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
