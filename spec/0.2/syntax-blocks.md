@@ -852,7 +852,7 @@ Example 29 (generated)
 
 **C2-B-042** The first marker alone fixes the style: digits and the bare dot are one style, decimal, a lone `i` or `I` is roman, any other single letter is alphabetic, and two or more roman letters are roman.
 
-**C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot whose content starts with another dot and a space is no marker, so `. . . and then silence` is a paragraph.
+**C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot is no marker when the text behind its required space starts with another dot and a space, so `. . . and then silence` is a paragraph. A task box behind the space is read only after this test (C2-B-229).
 
 **C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
 
@@ -1159,6 +1159,30 @@ Example 45 (unverified)
   <li class="task" style="list-style: none"><input type="checkbox" disabled aria-label="a"> a</li>
   <li>b</li>
 </ul>
+```
+
+:::
+
+**C2-B-229** A marker line is read in three steps. First the marker is tested on the text behind its required space, a task box included, as the bare dot is (C2-B-043). Then a task box is read directly after that space (C2-B-046). Then the content starts behind the box and its space. In `. [x] . x` the text behind the first dot is `[x] . x`, which does not start with a dot, so the dot is a marker, the item has a box, and its content `. x` is a nested ordered list (C2-B-058).
+
+The item has no paragraph, so the box has an empty label, and the space behind the box ends its line of HTML (C2-H-032).
+
+Example 246 (unverified)
+
+::: compare
+
+```carve
+. [x] . x
+```
+
+```html
+<ol class="task-list">
+  <li data-task-state="x" class="task"><input type="checkbox" checked disabled aria-label=""> 
+    <ol>
+      <li>x</li>
+    </ol>
+  </li>
+</ol>
 ```
 
 :::
@@ -5568,7 +5592,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
-| Task items | 3 | 0 | 1 | 4 |
+| Task items | 4 | 0 | 1 | 5 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
@@ -5587,9 +5611,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 2 | 20 | 7 |
 | The fallback rule | 2 | 0 | 3 | 0 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **15** | **170** | **73** |
+| **Total** | **229** | **15** | **170** | **74** |
 
-The chapter has 228 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 229 clauses, and 15 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

@@ -208,7 +208,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
 
-**C2-L-051** A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`.
+**C2-L-051** A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`. This is a fact of the layout record only: the marker tests of the block chapter read the text behind the marker before the box is taken out (C2-B-229).
 
 **C2-L-052** `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line. `lazy` is a later line of a paragraph inside the node, at any depth, that stands left of the content column; `indent` is a later line at or right of it.
 
