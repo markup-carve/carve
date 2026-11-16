@@ -1619,10 +1619,11 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This \"${marker}\" joins the cell ${direction}, so its attribute block applies to no cell and carve fmt drops it. Move the attributes to the cell it joins, or remove them."
+        "This \"${marker}\" joins the cell ${direction}, so its attribute block applies to no cell and carve fmt drops it. Move the attributes to the cell it joins, or remove them.",
+        "This \"${marker}\" joins the cell ${direction}, and its header mark makes no head row, so it marks no cell and carve fmt drops it. Remove the \"=\", or make the row a head row."
       ],
       "message_origin": "data_file",
-      "reports": "a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174)",
+      "reports": "a prefix of a span mark that joins a cell and that the tree does not keep: a brace block, or a header mark that does not make its row a head row (C2-B-174)",
       "clauses": ["C2-B-174"]
     },
     {

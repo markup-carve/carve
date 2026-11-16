@@ -4974,7 +4974,7 @@ title: x
 
 **C2-B-173** A span mark that joins nothing is an ordinary cell that holds the mark as text, and `table-span-marker-blocked` reports it. Its prefix applies as on any cell (C2-B-171): `|= ^ |` in the first row is a header cell that holds `^`.
 
-**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it.
+**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.
 
 **C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
