@@ -197,7 +197,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `highlight` | inline | inlines | none |
 | `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
 | `include` | block | blocks, once expanded | `path`, `section`?, `options`?, `invalid`?, `file`?, `caption`? |
-| `inline_extension` | inline | inlines | `name`, `version`?, `props`?, `slots`?, `fallback`?, `payload`?, `resourceIds`?, `source`? |
+| `inline_extension` | inline | inlines | `name`, `version` and `fallback` (both required when `name` is qualified, else optional), `props`?, `slots`?, `payload`?, `resourceIds`?, `source`? |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
 | `line` | `line_block` | inlines | none |
@@ -490,7 +490,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ## Extension nodes, foreign data and resources
 
-**C2-A-122** `block_extension` and `inline_extension` carry `name`, a version for qualified names, opaque JSON `props`, `children`, optional named `slots`, a fallback for qualified names, optional `payload`, and optional `source` under C2-X-024. Each payload alternative has exactly nonempty string `format` and non-null JSON `value`; unknown fields are refused. The 8 MiB limit of C2-A-132 counts a string value in UTF-8 bytes and another value in UTF-8 JSON bytes. This replaces the earlier version and source-field shape.
+**C2-A-122** `block_extension` and `inline_extension` carry `name`, a nonempty `version` that a qualified name requires, opaque JSON `props`, `children`, optional named `slots`, a fallback that a qualified name requires, optional `payload`, and optional `source` under C2-X-024. Each payload alternative has exactly nonempty string `format` and non-null JSON `value`; unknown fields are refused. The 8 MiB limit of C2-A-132 counts a string value in UTF-8 bytes and another value in UTF-8 JSON bytes. This replaces the earlier version and source-field shape.
 
 **C2-A-123** A qualified name has the grammar `namespace.name`, with each segment matching `[A-Za-z][A-Za-z0-9_-]*` and one or more dot-separated namespace segments. A qualified extension node is declared by the full name on the root or envelope and carries a same-role fallback, whether it is inline or block. This closes the earlier draft dot-only test.
 
