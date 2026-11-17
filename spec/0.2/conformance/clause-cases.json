@@ -53244,6 +53244,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1082",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a later patch version may use unsupported features",
+   "kind": "lint",
+   "input": "---\ncarve: 0.2.1\n---\nx\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carve-version-unsupported"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

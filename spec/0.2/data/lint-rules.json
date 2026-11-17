@@ -186,10 +186,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "document declares Carve ${version}; this engine implements ${SPEC_VERSION}, so constructs added after that version will not render as intended",
-        "document declares an unrecognized Carve version \"${version}\"; this engine implements ${SPEC_VERSION}"
-      ],
+      "messages": ["This engine implements 0.2; features of the declared ${version} version may be unsupported."],
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${version}` of the second message is escaped as in a JSON string."],
       "change": "it reads the frontmatter key `carve-version` of 0.1 and the key `carve`",
