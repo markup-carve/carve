@@ -1331,10 +1331,10 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "This list marker starts at column ${column}, between the columns of two open lists, so it joins the deeper list. Start it at column ${contentColumn} to make that explicit, or at column ${baseColumn} to put it in the outer list."
+        "This list marker starts at column ${column}, between the columns of two open lists, so it is read at the column of the deeper list. Start it at column ${contentColumn} to make that explicit, or at column ${baseColumn} to put it in the outer list."
       ],
       "message_origin": "data_file",
-      "change": "new message: the marker joins the deeper list (C2-B-055)",
+      "change": "new message: the marker is read at the column of the deeper list (C2-B-055)",
       "clauses": ["C2-B-055"]
     },
     {
