@@ -1700,9 +1700,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "\"${spelling}\" writes a cell's attribute block before its alignment marker, which Carve no longer reads as one. The block is part of the cell's marker run and the run ends at a space, so with the \"${marker}\" glued to it there is no run: the braces are content and the cell is neither attributed nor aligned. Write \"${marker}${block} \" to align it, or \"${block} ${marker}\" to keep the \"${marker}\" as content deliberately."
-      ],
+      "messages": ["The cell-prefix attribute attaches, but the following alignment mark is text and does not align the cell; put the mark at the start of the brace block."],
       "message_origin": "engine_0_1",
       "reports": "a table row cell whose text, directly behind its pipe, starts with a valid attribute block that is not empty and that `<`, `>` or `~` follows with no space between; once per cell, the range is the block and the mark (C2-B-171, C2-B-182)",
       "clauses": ["C2-B-171", "C2-B-182"]

@@ -53206,6 +53206,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1080",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a cell prefix attribute attaches before a stray alignment mark",
+   "kind": "lint",
+   "input": "|{.x}> a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-marker-run-padding"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
