@@ -2302,16 +2302,6 @@
       "silent": false
     },
     {
-      "id": "U-270",
-      "kind": "rewrite",
-      "group": "rulings of 17 November",
-      "from": "|=a|\n| x |\n",
-      "to": "|= a |\n| x |\n",
-      "meaning02": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: the header mark needs a space, a tab, `{`, `<`, `>`, `?`, `~` or the end of the cell behind it; otherwise the `=` is cell text, as in 0.1. The rewrite is for a source written for a header cell under freeze candidate 5, not for a 0.1 document.",
-      "toolEntry": "U-270",
-      "silent": true
-    },
-    {
       "id": "U-271",
       "kind": "report",
       "group": "rulings of 17 November",

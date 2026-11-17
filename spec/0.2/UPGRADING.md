@@ -261,11 +261,7 @@ These rulings change what some documents give against freeze candidate 5 of 0.2 
 
 Vertical alignment reads as in 0.1 (C2-B-182, C2-B-211, C2-B-213). Against candidate 5: `{>v}` on a cell is right and bottom, where it was right and the bare key `v`; `{>^}` is a mark, where it was cell text; and `valigns` sets the columns, where it was written as an HTML attribute. U-260 and U-261 are withdrawn, U-162 is a rewrite, and U-269 records the one difference to 0.1.
 
-A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?`, `~` or the end of the cell behind it (C2-B-171).
-
-| ID | What you wrote | Before | 0.2 now and tool |
-| --- | --- | --- | --- |
-| U-270 | `\|=a\|`, meant as a header cell, with the text glued to the header mark **SILENT** | 0.1: a data cell with the text `=a`. Freeze candidate 5 and early 0.2 engines: a header cell that holds `a`. | A data cell with the text `=a`, as in 0.1. Where a header cell is meant, write `\|= a \|`; rewrite |
+A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?`, `~` or the end of the cell behind it (C2-B-171). Against candidate 5: `|=a|` is a data cell with the text `=a`, where it was a header cell that held `a`; write `|= a |` where a header cell is meant.
 
 ### Rulings of 17 November 2026, open points
 
@@ -283,6 +279,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | O21 | Only a valid attribute block glued to a div name, a fence language or a raw format is reported as an attribute block (`fence-opener-fallback`); a brace block that is no valid attribute block starts further words (`fence-title-syntax`). The tree and the HTML are the same either way. | C2-B-225 |
 | H1 | Confirmed: the header mark keeps its cell where any of the four alignment marks `<`, `>`, `?`, `~` or any `{` follows it, whether or not a brace block forms: `\|=?v a\|` and `\|={}a\|` are header cells (CC-096, CC-092). | C2-B-171 |
 | H2 | A tab after the header mark keeps the header cell, as a space does; U-303 (report) records the difference to 0.1, which read `\|=` and a tab as a data cell. | C2-B-171 |
+| H3 | U-270 is withdrawn: 0.2 reads `\|=a\|` as 0.1 did, a data cell with the text `=a`, so a 0.1 document has nothing to upgrade. | C2-B-171 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -642,6 +639,8 @@ U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` gi
 U-266 and U-268 are withdrawn: `![5 \* 3](/i.png)` writes `alt="5 * 3"` and a cross-reference to a panel of a numbered figure group, `</#fig-x-a>`, writes `Figure 1a`, in 0.1 and 0.2 alike (C2-I-074, C2-H-095, C2-H-096).
 
 U-224 is withdrawn: `> %%%`, `> secret`, an unmarked `  %%%` and `after` give the same HTML in 0.1 and 0.2, an empty quote and the paragraph `after`, since the closer of a comment block closes it on any line (C2-B-109). The note shape of U-224 agrees too: `[^1]: %%%`, `  hidden`, `%%%` and `  shown` keep `shown` in the note.
+
+U-270 is withdrawn: `|=a|` gives the same HTML in 0.1 and 0.2, a data cell with the text `=a` (C2-B-171), so a 0.1 document has nothing to upgrade; the rewrite to `|= a |` served only sources written for freeze candidate 5, and the upgrade tool checks each rewrite against the 0.1 HTML, which it would change.
 
 U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark glued to a letter is cell text (C2-B-171).
 
