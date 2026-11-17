@@ -54524,6 +54524,25 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1144",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "table-shaped heading line remains heading text",
+ "kind": "lint",
+ "input": "# H\n  | a\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "table-shaped-paragraph"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
