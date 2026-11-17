@@ -54464,7 +54464,7 @@
    "diagnostics": [
     {
      "code": "fence-title-syntax",
-     "messageWhen": "an anonymous div opener has further words, including its sigil"
+     "messageWhen": "an anonymous div opener has unrecognized further words after the fence run"
     }
    ]
   },
