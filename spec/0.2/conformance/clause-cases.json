@@ -53225,6 +53225,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1081",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a label before a gapped destination can resolve as a shortcut",
+   "kind": "lint",
+   "input": "[a]: /u\n\n[a] (/v)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-gap-before-destination"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

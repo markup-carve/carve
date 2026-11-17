@@ -1350,7 +1350,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["The gap after this link label keeps the link as text; write ]( with no space."],
+      "messages": ["The gap after this label prevents the parenthesized destination from attaching; write `](` with no space for an inline link. A defined shortcut reference can still resolve the label."],
       "message_origin": "engine_0_1",
       "reports": "on each paragraph, table row and heading line, outside code spans and escapes, each `[label]` with a non-empty label that is followed by one or more whitespace characters and a parenthesis group `(...)` whose first non-space character is not `)`, matched from left to right without overlap; once per match (C2-I-066, C2-I-069)",
       "clauses": ["C2-I-066", "C2-I-069"]
