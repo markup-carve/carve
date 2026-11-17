@@ -2260,6 +2260,26 @@
       "meaning02": "C2-B-173 and C2-B-174 make a span mark that cannot join the text of its cell; an empty cell keeps the 0.1 <th scope=\"col\"></th>.",
       "toolEntry": "U-259",
       "silent": false
+    },
+    {
+      "id": "U-260",
+      "kind": "report",
+      "group": "third review",
+      "from": "{valigns=\"top,bottom\"}\n| a | b |\n",
+      "to": "",
+      "meaning02": "<table valigns=\"top,bottom\">\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-213: `valigns` is an ordinary key, and 0.2 has no source that sets a vertical alignment.",
+      "toolEntry": "U-260",
+      "silent": true
+    },
+    {
+      "id": "U-261",
+      "kind": "report",
+      "group": "third review",
+      "from": "|={>^} Qty |\n",
+      "to": "",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">{&gt;^} Qty</th></tr>\n  </thead>\n</table> C2-B-182 and data/table-marks.json define no vertical mark, so the braced mark is cell text.",
+      "toolEntry": "U-261",
+      "silent": true
     }
   ],
   "tree": [
