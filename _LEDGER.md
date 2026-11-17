@@ -151,3 +151,9 @@ Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples
 Search: `blockquote-marker-without-space`, `C2-B-031`, `C2-B-161`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/containers.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Frontmatter input reports without producing quote or text output.
+
+## CR9-15
+
+Search: `table-row-cell-count`, `C2-B-178`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/table-marks.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A table without a head still has a first row.

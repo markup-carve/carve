@@ -1732,8 +1732,8 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This table row has ${cells} cells; the header has ${width}. Add or remove a cell to match the table."],
-      "message_origin": "engine_0_1",
+      "messages": ["This table row has ${cells} cells; the first row has ${width}. Add or remove a cell to match the table."],
+      "message_origin": "data_file",
       "reports": "a pipe table row, after the first row, whose cell count differs from that of the first row, and a continuation row that adds a cell past the last column of its row; once per row, the range starts at the row's first pipe or at the `+` (C2-B-166, C2-B-175, C2-B-176)",
       "clauses": ["C2-B-166", "C2-B-175", "C2-B-176"]
     },

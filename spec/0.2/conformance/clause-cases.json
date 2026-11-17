@@ -52775,6 +52775,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1060",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "body-only table row count uses first-row width",
+   "kind": "lint",
+   "input": "| a |\n| b | c |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-row-cell-count"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
