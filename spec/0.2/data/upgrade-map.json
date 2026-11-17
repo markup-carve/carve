@@ -2127,7 +2127,7 @@
       "group": "unresolved footnote attribute and heading id",
       "from": "x[^n]{#i}\n\n## {#i}\n",
       "to": "x[^n]{\\#i}\n\n{#i}\n## \\{#i}\n",
-      "meaning02": "C2-I-087, C2-I-044, and C2-B-091 keep the unresolved footnote attribute literal while the heading receives its authored id from the line above.",
+      "meaning02": "C2-I-087, C2-I-119, and C2-B-091 keep the unresolved footnote attribute literal while the heading receives its authored id from the line above.",
       "toolEntry": "U-246",
       "silent": true
     },
@@ -2227,7 +2227,7 @@
       "group": "tag inside a failed brace attribute",
       "from": "# H {#id .cls}\n",
       "to": "# H {#id .cls\\}\n",
-      "meaning02": "C2-I-044 and C2-I-090 keep the tag visible when a failed brace attribute has its opening or closing brace escaped.",
+      "meaning02": "C2-I-119 and C2-I-090 keep the tag visible when a failed brace attribute has its opening or closing brace escaped.",
       "toolEntry": "U-256",
       "silent": true
     },
@@ -2237,7 +2237,7 @@
       "group": "nested bracket text in an inline note",
       "from": "^[/[^[g]/] b/]\n",
       "to": "^[{/\\[\\^[g]\\/\\] b/}]\n",
-      "meaning02": "C2-I-044 and C2-I-047 preserve the old note text when its bracket run is escaped inside a braced emphasis span.",
+      "meaning02": "C2-I-119 and C2-I-047 preserve the old note text when its bracket run is escaped inside a braced emphasis span.",
       "toolEntry": "U-257",
       "silent": true
     },

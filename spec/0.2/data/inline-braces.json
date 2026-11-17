@@ -40,5 +40,5 @@
       "clauses": ["C2-I-043", "C2-I-055"]
     }
   ],
-  "otherwise": { "result": "text", "clauses": ["C2-I-044"] }
+  "otherwise": { "result": "text", "clauses": ["C2-I-043", "C2-I-119"] }
 }

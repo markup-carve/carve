@@ -666,8 +666,6 @@ Example 31 (generated)
 
 **C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
 
-**C2-I-044** A brace that starts none of these is text.
-
 **Exception C2-I-045** Glued to a closed code span, `{=name}` is tried together with the attribute block, before the highlight opener (C2-I-021).
 
 There are no braced quote forms: `{'` and `{"` are a brace followed by a quote. An include directive `{{ ... }}` is a block line; inside inline content each of its braces is read on its own.
@@ -747,8 +745,6 @@ a {'x'} b and {"a": "b"}
 **C2-I-052** There is no combined token for strong emphasis. Each order of the two delimiters is plain nesting, in the order written.
 
 **Exception C2-I-053** A bare span that holds its own delimiter character between two word characters does not form: its entry leaves the stack, every other entry stays, and both delimiters are text. Only the span's own content counts, not the inside of an atom, of a bracket construct or of a braced span. (carried over from 0.1)
-
-**C2-I-054** An opener with no closer in its content is text.
 
 Example 36 (generated)
 
@@ -974,7 +970,7 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-059** Bare and braced entries share the one delimiter stack, and the first pair closed wins: when a pair closes, every entry opened after its opener is removed, bare or braced, and is text (C2-I-051).
 
-**C2-I-060** A braced opener that finds no closer, or that is removed, is text: its two characters are literal, the scan goes on behind them, and the mark is not read again as a bare delimiter.
+**C2-I-060** A braced opener that finds no closer, or that is removed, is text (C2-I-119), and its mark is not read again as a bare delimiter: `{*a* b` stays text.
 
 **Exception C2-I-061** A braced opener glued to its own closer forms nothing, and both tokens are text. (carried over from 0.1)
 
@@ -2311,7 +2307,7 @@ Example 113 (unverified)
 | unclosed inline footnote | `^[` (C2-I-089) |
 | unclosed inline extension | the sigil, the name and the bracket (C2-I-094) |
 | unclosed or invalid attribute block | the whole run (C2-I-034) |
-| unclosed bare delimiter | the delimiter (C2-I-054) |
+| unclosed bare delimiter | the delimiter (C2-I-119) |
 | unclosed braced opener | the brace and its mark (C2-I-060) |
 | unclosed braced comment or editorial comment | the brace and its mark (C2-I-043) |
 | unclosed autolink or cross-reference | the angle bracket (C2-I-073, C2-I-096) |
@@ -2381,8 +2377,8 @@ There is no fixed budget for the inline chapter.
 | Raw inline | 2 | 1 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 1 |
 | Attribute blocks | 15 | 2 | 6 | 5 |
-| The opening brace | 3 | 1 | 3 | 1 |
-| Emphasis and strong | 9 | 3 | 7 | 6 |
+| The opening brace | 2 | 1 | 3 | 1 |
+| Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 2 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 1 |
@@ -2397,9 +2393,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **117** | **16** | **69** | **54** |
+| **Total** | **115** | **16** | **69** | **54** |
 
-The chapter has 117 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
+The chapter has 115 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

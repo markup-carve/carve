@@ -28,7 +28,7 @@
       "text": "the backtick run, and a `!`, `$` or `$$` glued before it",
       "clauses": ["C2-I-017", "C2-I-119"]
     },
-    { "name": "unclosed_bare_delimiter", "text": "the delimiter", "clauses": ["C2-I-054", "C2-I-119"] },
+    { "name": "unclosed_bare_delimiter", "text": "the delimiter", "clauses": ["C2-I-119"] },
     { "name": "unclosed_braced_opener", "text": "the brace and its mark", "clauses": ["C2-I-060", "C2-I-119"] },
     {
       "name": "unclosed_braced_or_editorial_comment",

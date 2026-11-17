@@ -38769,7 +38769,6 @@
    "section": "The opening brace",
    "clauses": [
     "C2-I-043",
-    "C2-I-044",
     "C2-I-045"
    ],
    "kind": "render",
@@ -38910,7 +38909,6 @@
    "section": "The opening brace",
    "clauses": [
     "C2-I-043",
-    "C2-I-044",
     "C2-I-045"
    ],
    "kind": "render",
@@ -39064,7 +39062,6 @@
    "section": "The opening brace",
    "clauses": [
     "C2-I-043",
-    "C2-I-044",
     "C2-I-045"
    ],
    "kind": "render",
@@ -39144,7 +39141,6 @@
    "section": "The opening brace",
    "clauses": [
     "C2-I-043",
-    "C2-I-044",
     "C2-I-045"
    ],
    "kind": "render",
@@ -39361,8 +39357,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "/emphasis/ and *strong* and *a\nb* and * a* and *a *",
@@ -39544,8 +39539,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "*́a* and *a*",
@@ -39630,8 +39624,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "/a /b/ c/",
@@ -39741,8 +39734,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "a_*x* and _*x*_",
@@ -39876,8 +39868,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "/*both*/ and */both/*",
@@ -40013,8 +40004,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "**bold** and *a** and ***x*** and /b// and //x//",
@@ -40074,8 +40064,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, 50%, a = b = c",
@@ -40135,8 +40124,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "x =1, y= 2 and ~/config and _id",
@@ -40196,8 +40184,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "snake_case_name and _private and __init__ and ~5 minutes~ and a == b",
@@ -40257,8 +40244,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "the /etc/ dir and /usr/local/ and /etc/hosts/ file",
@@ -40355,8 +40341,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "cd /tmp/ && ls /var/",
@@ -40478,8 +40463,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "glob *.js or src/* and 5 *3 and 4* 2",
@@ -40613,8 +40597,7 @@
     "C2-I-050",
     "C2-I-051",
     "C2-I-052",
-    "C2-I-053",
-    "C2-I-054"
+    "C2-I-053"
    ],
    "kind": "render",
    "input": "*a /b* c/",
