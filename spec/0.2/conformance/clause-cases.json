@@ -54178,48 +54178,51 @@
   "from": []
  },
  {
-  "id": "CC-1127",
-  "clauses": [
-   "C2-I-055",
-   "C2-I-059",
-   "C2-I-060"
-  ],
-  "why": "C2-I-055: A braced opener is `{` and a mark, and a braced closer is the mark and `}`.",
-  "summary": "formed highlight brace reports in opt-in Djot lint",
-  "kind": "lint",
-  "input": "a {=b=} c\n",
-  "options": {
-   "rules": {
-    "djot-highlight-braces": "on"
+ "id": "CC-1127",
+ "clauses": [
+  "C2-W-106",
+  "C2-I-055",
+  "C2-I-059",
+  "C2-I-060"
+ ],
+ "why": "C2-W-106: The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree. Catalog djot-highlight-braces: each formed braced highlight node from `{=x=}` that survives delimiter pairing",
+ "summary": "formed highlight brace reports in opt-in Djot lint",
+ "kind": "lint",
+ "input": "a {=b=} c\n",
+ "options": {
+  "rules": {
+   "djot-highlight-braces": "on"
+  }
+ },
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "djot-highlight-braces"
    }
-  },
-  "expected": {
-   "diagnostics": [
-    {
-     "code": "djot-highlight-braces"
-    }
-   ]
-  },
-  "from": []
+  ]
  },
+ "from": []
+},
  {
-  "id": "CC-1128",
-  "clauses": [
-   "C2-W-107",
-   "C2-I-062"
-  ],
-  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
-  "summary": "escaped substitution arrow does not report",
-  "kind": "lint",
-  "input": "{~a\\~>b~}\n",
-  "options": {},
-  "expected": {
-   "notReported": [
-    "deprecated-substitution-arrow"
-   ]
-  },
-  "from": []
+ "id": "CC-1128",
+ "clauses": [
+  "C2-W-106",
+  "C2-W-107",
+  "C2-I-010",
+  "C2-I-062"
+ ],
+ "why": "C2-W-106: The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree. C2-I-010: A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. Catalog deprecated-substitution-arrow: the first `~>` not behind a backslash in the strike's own inline content, outside a nested braced span or bracket construct",
+ "summary": "escaped substitution arrow does not report",
+ "kind": "lint",
+ "input": "{~a\\~>b~}\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-substitution-arrow"
+  ]
  },
+ "from": []
+},
 {
   "id": "CC-1129",
   "clauses": [

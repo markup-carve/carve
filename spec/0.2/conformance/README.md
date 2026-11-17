@@ -45,7 +45,7 @@ An unverified example is still the expected result: where an engine differs, the
 
 ## Clause cases
 
-Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expected` and `from`, the engine case files it was merged from (`js:ID`, `php:ID`, `rs:ID`; empty for a case written from the clauses). `why` quotes the sentence that decides the case, as `C2-B-130: ...`; several quotes follow one another, and ` ... ` joins two pieces of one clause. `corrected`, where present, says what the engine files expected before the clause corrected it.
+Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expected` and `from`, the engine case files it was merged from (`js:ID`, `php:ID`, `rs:ID`; empty for a case written from the clauses). `why` quotes the sentence that decides the case, as `C2-B-130: ...`; several quotes follow one another, and ` ... ` joins two pieces of one clause. A catalog trigger may be quoted as `Catalog rule-id: reports fragment`; the gate checks it against that row. `corrected`, where present, says what the engine files expected before the clause corrected it.
 
 `kind` names the call the case runs (`tooling.md`, C2-T-005). An entry without `kind` is a render whose `expected` states both `html` and `children`, the children of the document without positions; that is the shape of every case up to CC-359.
 
