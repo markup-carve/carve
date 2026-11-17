@@ -59,6 +59,8 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `write` | `tree`, and `layout`, its sidecar | `writeWithDiagnostics`, and `write` for a refusal | `carve`, diagnostics (the losses), `refusal` |
 | `tree` | `tree`, a JSON value, or `json`, JSON text | `decodeTree` | `accepted`, `tree`, `refusal` |
 | `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
+| `import` | `html` | `importDocument` with `from: "html"` | `children`, `carve`, diagnostics, `refusal` |
+| `cli` | `args`, `stdin`, `files` | the program `carve` | `status`, `stdout`, `stdoutJson`, `stdoutDiagnostics`, `stderrCategory`, `stderrDiagnostics`, `filesAfter` |
 
 `inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
 
@@ -109,6 +111,22 @@ A `layout` case compares the sidecar that `parseWithLayout` returns with `expect
 ```
 
 The check fails a sidecar the layout schema refuses (a supplied one, unless the case expects `CarveLayoutError`), an expected sidecar whose `source` is not the input or whose ranges lie outside it, and a fact both expected and excluded.
+
+### Command lines
+
+A `cli` case runs the program (`tooling.md`; the reference engine names it `carve2`, C2-T-002) with `args`, the arguments after the program name, in a directory that holds exactly `files`, with `stdin` on standard input (empty where absent). Its `options` are `{}`: a command line sets options with flags. `expected.status` is the exit status and is always stated. `stdout` is standard output byte for byte, and `stdoutJson` the same output read as one JSON document and compared as a JSON value (C2-T-023). `stdoutDiagnostics` and `stderrDiagnostics` are the diagnostic lines of C2-T-019 on each stream, in order, as diagnostic objects whose `file` is the FILE of the line; the message is not compared. `stderrCategory` is the CATEGORY of the failure line `carve[CATEGORY]:` that opens standard error (C2-T-039), and `null` where standard error holds no failure line. `filesAfter` gives files of the directory after the run: `{ "text": ... }`, `{ "json": ... }` for a report compared as a JSON value, or `null` for a file that must not exist.
+
+```json
+{
+  "kind": "cli",
+  "args": ["fmt", "--check", "a.crv"],
+  "files": { "a.crv": { "text": "a\n\n\nb\n" } },
+  "options": {},
+  "expected": { "status": 1, "stdout": "a.crv:3\n- \n+ b\n", "stderrCategory": null }
+}
+```
+
+The check fails a command or a flag that `data/cli.json` does not list for the command, unless the case expects the category `usage`; a category whose status differs from the one `data/cli.json` gives it; and a field of a command line expected from a library call, or the other way round.
 
 ### Refusals
 

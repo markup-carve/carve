@@ -221,6 +221,7 @@ const readerProblems = readerChecks(spec)
 const REFUSALS = {
   render: ['CarveInputError', 'CarveRenderError', 'CarveOptionError', 'CarveTreeError'],
   parse: ['CarveInputError', 'CarveOptionError'],
+  cli: [],
   layout: ['CarveInputError', 'CarveOptionError'],
   lint: ['CarveOptionError'],
   format: ['CarveWriteError', 'CarveOptionError'],
@@ -276,6 +277,44 @@ function layoutProblems(entry) {
   return problems
 }
 
+// A command line case runs a command of data/cli.json with flags that command lists, unless it expects the usage
+// failure; a failure category has its status; only a command line case states what a command line writes.
+const cli = readJson(join(spec, 'data/cli.json'))
+const CLI_FIELDS = ['status', 'stdout', 'stdoutJson', 'stdoutDiagnostics', 'stderrCategory', 'stderrDiagnostics', 'filesAfter']
+function commandProblems(entry) {
+  const problems = []
+  const fields = Object.keys(entry.expected).filter(field => CLI_FIELDS.includes(field))
+  if (entry.kind !== 'cli') {
+    if (fields.length) problems.push(`expects ${fields.join(', ')} from a call that is no command line`)
+    if (entry.args || entry.stdin !== undefined) problems.push('gives arguments to a call that is no command line')
+    return problems
+  }
+  if (entry.expected.status === undefined) problems.push('states no exit status')
+  if (Object.keys(entry.options).length) problems.push('sets options, which a command line takes as flags')
+  for (const field of Object.keys(entry.expected)) if (!CLI_FIELDS.includes(field)) problems.push(`expects ${field} from a command line`)
+  const category = entry.expected.stderrCategory
+  if (category) {
+    const row = cli.categories.find(item => item.name === category)
+    if (!row) problems.push(`expects the category ${category}, which data/cli.json does not list`)
+    else if (row.status !== entry.expected.status) problems.push(`expects the category ${category} with status ${entry.expected.status}, data/cli.json gives ${row.status}`)
+  }
+  const commands = new Set(cli.commands.map(row => row.name))
+  const command = commands.has(entry.args[0]) ? entry.args[0] : 'render'
+  if (category !== 'usage') {
+    for (const arg of entry.args.slice(commands.has(entry.args[0]) ? 1 : 0)) {
+      if (arg === '--') break
+      if (!arg.startsWith('-') || arg === '-') continue
+      const name = arg === '-w' ? 'write' : arg.replace(/^--(no-)?/, '').split('=')[0]
+      const flag = cli.flags.find(row => row.name === name)
+      if (!flag || !flag.commands.includes(command)) problems.push(`passes ${arg}, which data/cli.json does not list for ${command}`)
+    }
+  }
+  for (const list of [entry.expected.stdoutDiagnostics ?? [], entry.expected.stderrDiagnostics ?? []]) {
+    for (const item of list) if (!codes.has(typeof item === 'string' ? item : item.code)) problems.push(`expects the line of ${typeof item === 'string' ? item : item.code}, which data/lint-rules.json does not list`)
+  }
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -302,6 +341,7 @@ for (const entry of cases.cases) {
   for (const problem of diagnosticProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of refusalProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of commandProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }
