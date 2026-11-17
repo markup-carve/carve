@@ -2212,6 +2212,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 16 | the whitespace at the edge of a delimited-table cell | ```` {table}⏎```csv⏎a, d⏎``` ```` | `\|= a \|= d \|`: the cell is written `<th scope="col"> d</th>`, and the import removes the space at the edge of its inline content (C2-M-018) |
 | 17 | an authored key with the name of a structural attribute that its element does not generate | `[a](/u){title=x}` | `[a](/u "x")`: the import reads the attribute as the structure it names (C2-H-013); `{type=A}` above `. a` comes back as a list of the style `A` the same way |
 | 18 | a hard break that ends a line of a line block other than the last line of its stanza | `::: \|⏎a\⏎b⏎:::` | `::: \|⏎a⏎b⏎:::`: the one `<br>` reads as the line end (C2-H-043) |
+| 19 | a semantic key in another case on a span | `[x]{KBD}` | `[x]{kbd}`: the HTML parser lowers the case of the attribute name (C2-H-183), and the key in lower case is the element of that key, `<kbd>x</kbd>` (C2-H-075); 0.1 had the same limit |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 
