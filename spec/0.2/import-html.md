@@ -1641,4 +1641,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 **C2-M-099** This document holds 83 clauses: 82 rules and 1 exception. It holds 59 examples: 46 verified and 13 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
 
-The reduction of 17 November 2026 deleted C2-M-073, whose rule another clause states; its id is not reused.
+The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.

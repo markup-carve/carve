@@ -2540,7 +2540,7 @@ There is no fixed budget for the inline chapter.
 | The display math line | 1 | 0 | 1 | 0 |
 | **Total** | **109** | **14** | **70** | **61** |
 
-The chapter has 109 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule another clause states; their ids are not reused.
+The chapter has 109 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule other clauses state or give; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

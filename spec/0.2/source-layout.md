@@ -227,4 +227,4 @@ Where 0.2 has one canonical form, the formatter writes it whatever the sidecar r
 
 ## Counts
 
-The document has 53 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002, C2-L-043 and C2-L-044, whose rule another clause states; their ids are not reused.
+The document has 53 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002, C2-L-043 and C2-L-044, whose rule other clauses state or give; their ids are not reused.
