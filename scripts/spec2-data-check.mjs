@@ -507,11 +507,13 @@ const commandNames = new Set((cli.commands ?? []).map(row => row.name))
 sameSet(new Set(toolingTable(tooling, '| Command |').map(row => unquote(row[0]))), commandNames, 'tooling.md commands')
 const specified = (cli.commands ?? []).filter(row => row.specified).map(row => row.name)
 const listed = new Map()
+const flagCells = []
 const flagSection = (command, body) => {
   for (const row of toolingTable(body, '| Flag |')) {
     const flag = unquote(row[0]).replace(/^--/, '')
     if (!listed.has(flag)) listed.set(flag, new Set())
     listed.get(flag).add(command)
+    flagCells.push({ command, flag, value: row[1], meaning: row[2] })
   }
 }
 for (const part of tooling.split(/^### /m).slice(1)) {
@@ -545,6 +547,25 @@ for (const row of cli.flags ?? []) {
   if ((row.kind === 'enum') !== (row.values !== undefined)) fail(`${where}: values belong to an enum flag and only to one`)
 }
 for (const flag of listed.keys()) if (!(cli.flags ?? []).some(row => row.name === flag)) fail(`tooling.md: --${flag} is not in cli.json flags`)
+// The Value and Meaning cells of each flag table against its row: kind, values, default, repeatable, short form and option.
+const tick = String.fromCharCode(96)
+const valueCell = row => {
+  if (row.kind === 'switch') return row.default === true ? 'switch, on' : 'switch'
+  if (row.kind === 'enum') return row.values.map(value => tick + value + tick).join(', ')
+  if (row.kind === 'json') return 'JSON'
+  if (row.kind === 'count') return `count, ${row.default}`
+  if (row.kind === 'code') return row.repeatable ? 'code, repeatable' : 'code'
+  return row.kind
+}
+for (const cell of flagCells) {
+  const row = (cli.flags ?? []).find(entry => entry.name === cell.flag)
+  if (!row) continue
+  const where = `tooling.md carve ${cell.command} --${cell.flag}`
+  if (cell.value !== valueCell(row)) fail(`${where}: the value is "${cell.value}", cli.json gives "${valueCell(row)}"`)
+  const option = new RegExp('the option ' + tick + '([A-Za-z]+)' + tick).exec(cell.meaning)?.[1]
+  if (option !== row.option) fail(`${where}: the meaning names the option ${option ?? 'none'}, cli.json ${row.option ?? 'none'}`)
+  if (row.short !== undefined && !cell.meaning.includes(tick + row.short + tick)) fail(`${where}: the meaning does not name the short form ${row.short}`)
+}
 const categoryRows = toolingTable(tooling, '| Status | Category |')
 sameSet(new Set(categoryRows.map(row => unquote(row[1]))), new Set((cli.categories ?? []).map(row => row.name)), 'tooling.md categories')
 for (const row of categoryRows) {
@@ -555,7 +576,14 @@ for (const row of categoryRows) {
   if (errors.join(',') !== [...kept.errors].sort().join(',')) fail(`tooling.md categories: ${kept.name} names other errors than cli.json`)
 }
 sameSet(new Set(toolingTable(tooling, '| Call |').map(row => unquote(row[0]))), new Set((cli.library ?? []).map(row => row.name)), 'tooling.md library')
-sameSet(new Set(toolingTable(tooling, '| Field |').map(row => unquote(row[0]))), new Set((cli.entry_fields ?? []).map(row => row.name)), 'tooling.md entry fields')
+const fieldRows = toolingTable(tooling, '| Field |')
+sameSet(new Set(fieldRows.map(row => unquote(row[0]))), new Set((cli.entry_fields ?? []).map(row => row.name)), 'tooling.md entry fields')
+for (const row of fieldRows) {
+  const kept = (cli.entry_fields ?? []).find(entry => entry.name === unquote(row[0]))
+  if (!kept) continue
+  if ((row[2] === 'always') !== kept.always) fail(`tooling.md entry fields: ${kept.name} is present "${row[2]}", cli.json says always ${kept.always}`)
+  if (row[2].startsWith('on the command line') === kept.library) fail(`tooling.md entry fields: ${kept.name} is present "${row[2]}", cli.json says library ${kept.library}`)
+}
 
 console.log(`Documents: ${sources.join('; ')}`)
 console.log(`Clauses defined: ${defined.size}. Clauses cited by a data row: ${cited.size}.`)
