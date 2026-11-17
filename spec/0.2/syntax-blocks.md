@@ -2564,7 +2564,7 @@ The language part, as in `{:en}`, sets the node's `lang` and is not a key (C2-A-
 
 **C2-B-104** When a brace block or a merged run of them holds several ids, the last id written wins.
 
-**C2-B-105** An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error.
+**C2-B-105** An attribute block glued to a div name, a code fence language or a raw fence format does not stop the block from opening, and `fence-opener-fallback` reports it with severity error.
 
 **C2-B-106** The attributes of a link definition, from its attribute line and from the block at the end of its line, merged in that order as glued blocks are (C2-B-093), are merged into every link and image that uses it, and the link's own values win.
 

@@ -41962,7 +41962,7 @@
     "C2-B-225",
     "C2-W-138"
    ],
-   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105) C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
+   "why": "C2-B-105: An attribute block glued to a div name, a code fence language or a raw fence format does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105) C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "an attribute block glued to a fence language is reported",
    "kind": "parse",
    "input": "```js{.c}\nx\n```",
@@ -41988,7 +41988,7 @@
     "C2-B-105",
     "C2-B-225"
    ],
-   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105)",
+   "why": "C2-B-105: An attribute block glued to a div name, a code fence language or a raw fence format does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105)",
    "summary": "the attribute line above a fence is not reported",
    "kind": "parse",
    "input": "{.c}\n```js\nx\n```",
@@ -51274,7 +51274,7 @@
     "C2-B-105",
     "C2-B-225"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122).",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-105: An attribute block glued to a div name, a code fence language or a raw fence format does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122).",
    "summary": "an attribute block glued to an admonition name is reported at its brace",
    "kind": "parse",
    "input": "::: note{.x}\n:::\n",
@@ -54148,6 +54148,26 @@
      "column": 2,
      "endLine": 1,
      "endColumn": 10
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1126",
+  "clauses": [
+   "C2-B-105",
+   "C2-B-225"
+  ],
+  "why": "C2-B-105: An attribute block glued to a div name, a code fence language or a raw fence format does not stop the block from opening, and `fence-opener-fallback` reports it with severity error.",
+  "summary": "glued attribute after raw fence format is reported",
+  "kind": "lint",
+  "input": "```=html{.x}\nx\n```\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "fence-opener-fallback"
     }
    ]
   },
