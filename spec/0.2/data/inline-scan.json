@@ -23,6 +23,11 @@
       "text": "the angle bracket",
       "clauses": ["C2-I-073", "C2-I-096", "C2-I-119"]
     },
+    {
+      "name": "unclosed_backtick_run",
+      "text": "the backtick run, and a `!`, `$` or `$$` glued before it",
+      "clauses": ["C2-I-017", "C2-I-119"]
+    },
     { "name": "unclosed_bare_delimiter", "text": "the delimiter", "clauses": ["C2-I-054", "C2-I-119"] },
     { "name": "unclosed_braced_opener", "text": "the brace and its mark", "clauses": ["C2-I-060", "C2-I-119"] },
     {
@@ -39,6 +44,5 @@
     { "name": "unclosed_inline_footnote", "text": "^[", "clauses": ["C2-I-089", "C2-I-119"] },
     { "name": "unclosed_or_invalid_attribute_block", "text": "the whole run, when its brace opens no later braced form (C2-I-043)", "clauses": ["C2-I-034", "C2-I-043", "C2-I-119"] }
   ],
-  "never_fail": ["code_span", "math_display", "math_inline"],
   "content_end": { "closes": "every_open_form", "clauses": ["C2-I-120"] }
 }

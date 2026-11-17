@@ -248,7 +248,6 @@ for (const row of data['escape-contexts']?.no_spelling ?? []) need(codes, row.re
 for (const row of data['inline-braces']?.order ?? []) {
   if (row.name !== 'braced_opener') need(atoms, row.name, 'inline-braces.json', 'row of inline-atoms.json')
 }
-for (const atom of data['inline-scan']?.never_fail ?? []) need(atoms, atom, 'inline-scan.json never_fail', 'row of inline-atoms.json')
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
 const includeOptions = names('include-options', 'options')

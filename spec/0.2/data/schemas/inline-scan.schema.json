@@ -4,7 +4,7 @@
   "description": "The four steps of the one left-to-right scan of a content, in their fixed order of precedence, and what a form that fails leaves as text. A form with a closer opens only when its closer is found in the same content; the scan goes on directly behind a failed opener.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["$schema", "steps", "fallbacks", "never_fail", "content_end"],
+  "required": ["$schema", "steps", "fallbacks", "content_end"],
   "properties": {
     "$schema": { "const": "schemas/inline-scan.schema.json" },
     "steps": {
@@ -59,16 +59,6 @@
           }
         }
       }
-    },
-    "never_fail": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^[a-z][a-z0-9_]*$",
-        "description": "The identifier of the row, unique in its list."
-      },
-      "uniqueItems": true,
-      "description": "Rows of inline-atoms.json that have no failed form: unclosed, they run to the end of the content."
     },
     "content_end": {
       "type": "object",
