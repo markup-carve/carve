@@ -54004,7 +54004,7 @@
    "diagnostics": [
     {
      "code": "fence-title-syntax",
-     "messageWhen": "further words after a raw format, div name or sigil, a title after a label, a spaced brace block, or a character glued to a type that is no valid attribute block"
+     "messageWhen": "further words after a raw format, div name (including a tab before later words) or sigil, a title after a label, a spaced brace block, or a character glued to a type that is no valid attribute block"
     }
    ]
   },
