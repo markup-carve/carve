@@ -52,7 +52,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-022** `fallback` is mandatory for every qualified extension node. It is core content of the node's own role, block or inline: it contains no extension node and validates as core content.
 
-**C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027. A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`.
+**C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027. A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`. The source form it writes reports no loss: it reads back as that core node, which a reader with the extension claims again, and it is an exception to the equality of C2-W-002.
 
 **C2-X-024** A source transform carries a `source` record with `form`, `name`, canonical `body` text, and any quoted title or bracket label, plus the core node's attributes on the extension node.
 
@@ -214,7 +214,7 @@ Open the app.
 
 ## Writing consistency
 
-**C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`.
+**C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023.
 
 ## Carrying Carve facts through a tree that has no slot for them
 

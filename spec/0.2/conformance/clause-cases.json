@@ -49031,6 +49031,65 @@
     "html": "<pre title=\"a&quot;b\"><code class=\"language-js\">x\n</code></pre>"
    },
    "from": []
+  },
+  {
+   "id": "CC-906",
+   "clauses": [
+    "C2-X-023",
+    "C2-X-049"
+   ],
+   "why": "C2-X-023: A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`. The source form it writes reports no loss: it reads back as that core node, which a reader with the extension claims again, and it is an exception to the equality of C2-W-002. C2-X-049: The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023.",
+   "summary": "a writer without the extension writes the inline source form and reports no loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.foo",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_extension",
+        "name": "org.example.foo",
+        "version": "1",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "fallback": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ],
+        "source": {
+         "form": "inline",
+         "name": "foo",
+         "body": "x"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": ":foo[x]\n",
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
   }
  ]
 }

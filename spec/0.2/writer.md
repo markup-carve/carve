@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. The source form of an extension that a writer without the extension writes is the other exception (C2-X-023). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
