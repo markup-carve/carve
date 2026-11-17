@@ -10,7 +10,7 @@ Freeze candidate 2: `6a6596a602e30811a85083145f583d2e7acf90af` (`6a6596a6`), the
 
 Freeze candidate 2, revision 1: `679dec006fa778dd53f8e6620524040b04d0b5a1` (`679dec00`), the ruling on O11. The commit after it writes only this line.
 
-Freeze candidate 3: the commit named here by the commit after it, the fix round of the third review (F1 to F40). The commit after it writes only this line.
+Freeze candidate 3: `edebb05e78cd42e5b546045804e1bc3ca3535c39` (`edebb05e`), the fix round of the third review (F1 to F40). The commit after it writes only this line.
 
 ## Documents
 
