@@ -2437,7 +2437,7 @@
       "id": "T-011",
       "kind": "move",
       "from": "`marker.bare`, `block_quote.fenced`, `table.sourceFormat`",
-      "to": "dropped from the tree; written to a source-layout sidecar when the caller asks for one",
+      "to": "dropped from the tree; written to a source-layout sidecar when the caller asks for one and supplies the original source, and otherwise dropped",
       "migrationRule": "C2-A-178",
       "silent": false
     },

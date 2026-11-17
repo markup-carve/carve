@@ -663,7 +663,7 @@ The invariants below are written so that a test can check each one on any tree a
 | an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image |
 | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped |
 | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated |
-| `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one |
+| `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one and supplies the original source, and otherwise dropped |
 | `definition_list.spacing` | dropped |
 | the former image promotion stage | dropped; `role: "image"` stays as the tree has it |
 | the task status `cancelled`, in a draft tree or a 1.2 tree | removed; status derives from the mark |

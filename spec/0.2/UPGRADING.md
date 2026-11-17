@@ -783,7 +783,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-008 | move | an `image` in a list of blocks | a `paragraph` with `role: "image"` that holds the image | C2-A-178 |
 | T-009 | split | a `line_block` with block children | `line` children, split at the breaks of each paragraph, with an empty `line` between stanzas; `lines` is dropped | C2-A-178 |
 | T-010 | move | a heading id in `attrs.id` | kept as an authored id: the draft tree does not say which ids were generated | C2-A-178 |
-| T-011 | move | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one | C2-A-178 |
+| T-011 | move | `marker.bare`, `block_quote.fenced`, `table.sourceFormat` | dropped from the tree; written to a source-layout sidecar when the caller asks for one and supplies the original source, and otherwise dropped | C2-A-178 |
 | T-012 | drop | `definition_list.spacing` | dropped | C2-A-178 |
 | T-013 | drop | `blockImagePromotion` in `stages` | dropped; `role: "image"` stays as the tree has it | C2-A-178 |
 | T-014 | drop | the task status `cancelled`, in a draft tree or a 1.2 tree | removed; status derives from the mark | C2-A-178 |
