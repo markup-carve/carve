@@ -157,3 +157,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `table-row-cell-count`, `C2-B-178`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/table-marks.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A table without a head still has a first row.
+
+## CR9-16
+
+Search: `duplicate-id`, `C2-A-039`, `CC-997`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/writer.md`. R6 removed the obsolete message; CC-997 covers generated-id input.
