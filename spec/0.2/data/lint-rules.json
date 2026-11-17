@@ -651,9 +651,7 @@
       "status": "renamed",
       "renamed_from": "duplicate-heading-id",
       "messages": [
-        "Duplicate id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence.",
-        "Heading slug \"${base}\" collides with another heading or an explicit id; its auto id becomes \"${id}\", and ambiguous references to \"${base}\" resolve to the first occurrence."
-      ],
+        "Duplicate id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence."]
       "message_origin": "engine_0_1",
       "channel_reports": "a second node with one authored id (C2-A-039)",
       "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",

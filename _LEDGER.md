@@ -37,3 +37,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.
 Search: `C2-W-039`, `C2-X-008`, `carve.tabs`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/ast-schema.json`, `spec/0.2/data/extensions.json`, `spec/0.2/data/node-slots.json`, `spec/0.2/extensions.md`, `spec/0.2/source-layout.md`, `spec/0.2/writer.md`. A writer case supplies a core div with the tabs matcher enabled.
+
+## R6 duplicate-id message
+
+Search: `duplicate-id`, `C2-A-039`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/writer.md`. The generated-id near miss is CC-997.
