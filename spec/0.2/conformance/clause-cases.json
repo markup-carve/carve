@@ -17542,6 +17542,46 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-310",
+   "clauses": [
+    "C2-H-100",
+    "C2-H-126"
+   ],
+   "why": "C2-H-100: When `social` gives a URL for it, the element is `<a class=\"mention\" href=\"URL\">@NAME</a>` or `<a class=\"tag\" href=\"URL\">#NAME</a>`, with no `<strong>`, as in 0.1.",
+   "summary": "a linked mention and a linked tag hold their text directly, with no strong child",
+   "input": "@alice and #news",
+   "options": {
+    "social": {
+     "mentionUrl": "/u/{name}",
+     "tagUrl": "/t/{name}"
+    }
+   },
+   "expected": {
+    "html": "<p><a class=\"mention\" href=\"/u/alice\">@alice</a> and <a class=\"tag\" href=\"/t/news\">#news</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "mention",
+        "target": "alice",
+        "kind": "user"
+       },
+       {
+        "type": "text",
+        "value": " and "
+       },
+       {
+        "type": "tag",
+        "name": "news"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

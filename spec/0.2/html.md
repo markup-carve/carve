@@ -1693,7 +1693,7 @@ HTML and *HTML* and `HTML`.
 
 ## Mentions, tags and symbols
 
-**C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the outer element is `<a class="mention" href="URL">` or `<a class="tag" href="URL">`. Where a mention carries `label` (C2-A-101), the label replaces `@NAME` inside `<strong>`.
+**C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the element is `<a class="mention" href="URL">@NAME</a>` or `<a class="tag" href="URL">#NAME</a>`, with no `<strong>`, as in 0.1. Where a mention carries `label` (C2-A-101), the label replaces `@NAME`, inside `<strong>` in the span and directly inside `<a>` in the link.
 
 **C2-H-101** A symbol whose name is in the `symbols` table is written as the table's value, verbatim. A symbol with no entry is written as its source, `:NAME:`. A symbol that carries attributes is wrapped in a `<span>` that carries them, around the value or the source.
 
@@ -1722,7 +1722,23 @@ Example 35 (unverified, `--social {"mentionUrl":"https://x.org/u/{name}"}`)
 ```
 
 ```html
-<p><a class="mention" href="https://x.org/u/ann.b"><strong>@ann.b</strong></a> and <span class="tag"><strong>#topic</strong></span></p>
+<p><a class="mention" href="https://x.org/u/ann.b">@ann.b</a> and <span class="tag"><strong>#topic</strong></span></p>
+```
+
+:::
+
+A linked tag holds its text directly; the inert mention keeps its `<strong>`.
+
+Example 480 (unverified, `--social {"tagUrl":"/t/{name}"}`)
+
+::: compare
+
+```carve
+#news and @ann
+```
+
+```html
+<p><a class="tag" href="/t/news">#news</a> and <span class="mention"><strong>@ann</strong></span></p>
 ```
 
 :::
@@ -2604,13 +2620,13 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 1 |
-| Mentions, tags and symbols | 2 | 0 | 1 | 2 |
+| Mentions, tags and symbols | 2 | 0 | 1 | 3 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **194** | **6** | **35** | **43** |
+| **Total** | **194** | **6** | **35** | **44** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 78 examples, 35 generated and 43 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 79 examples, 35 generated and 44 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

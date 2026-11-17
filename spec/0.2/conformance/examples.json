@@ -71658,7 +71658,7 @@
     }
    },
    "expected": {
-    "html": "<p><a class=\"mention\" href=\"https://x.org/u/ann.b\"><strong>@ann.b</strong></a> and <span class=\"tag\"><strong>#topic</strong></span></p>",
+    "html": "<p><a class=\"mention\" href=\"https://x.org/u/ann.b\">@ann.b</a> and <span class=\"tag\"><strong>#topic</strong></span></p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -71725,14 +71725,94 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "html-36",
+   "id": "html-480",
    "document": "html.md",
-   "number": 36,
+   "number": 480,
    "section": "Mentions, tags and symbols",
    "clauses": [
     "C2-H-100",
     "C2-H-101"
    ],
+   "kind": "render",
+   "input": "#news and @ann",
+   "options": {
+    "social": {
+     "tagUrl": "/t/{name}"
+    }
+   },
+   "expected": {
+    "html": "<p><a class=\"tag\" href=\"/t/news\">#news</a> and <span class=\"mention\"><strong>@ann</strong></span></p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "tag",
+         "name": "news",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 5
+         }
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 6,
+          "endColumn": 11,
+          "startOffset": 5,
+          "endOffset": 10
+         }
+        },
+        {
+         "type": "mention",
+         "target": "ann",
+         "kind": "user",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 11,
+          "endColumn": 15,
+          "startOffset": 10,
+          "endOffset": 14
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 15,
+        "startOffset": 0,
+        "endOffset": 14
+       }
+      }
+     ],
+     "srcByteLength": 14,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "html-36",
+   "document": "html.md",
+   "number": 36,
+   "section": "news and @ann",
+   "clauses": [],
    "kind": "render",
    "input": "@ann",
    "options": {
