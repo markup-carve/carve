@@ -265,7 +265,7 @@ A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?
 
 ### Rulings of 17 November 2026, open points
 
-The maintainer decided the open points of `STATUS.md` listed here as their recommendations. Each line names the point, the ruling and the clauses that carry it; the upgrade rows it adds or withdraws are named in the line.
+The maintainer decided these open points as their recommendations: O14 to O21 of `STATUS.md`, and H1 to H4, V1, V2, V6 and V10 of the header mark and vertical alignment rulings. Each line names the point, the ruling and the clauses that carry it; the upgrade rows it adds or withdraws are named in the line. The last line labels the extension mechanism provisional.
 
 | Point | Ruling | Clauses |
 | --- | --- | --- |
@@ -285,6 +285,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | V2 | Confirmed: the character directly after the horizontal mark or `?` is the vertical mark whenever it is `^`, `~` or `v`, so `{>vx}` is right and bottom with the bare key `x`; a bare key that starts with `v` is written after a space, `{> vx}`. No 0.1 document changes meaning beyond U-304. | C2-B-182 |
 | V6 | A column's alignment from the head is, for each axis, the mark of the last header cell in the head that starts in the column and carries a mark on that axis; C2-A-089 now says the same. Both engines and 0.1 read it so (CC-246, CC-247). | C2-B-213, C2-A-089 |
 | V10 | The alignment marks stand only at the start of the first of a cell prefix's glued blocks; a later block is read by the attribute grammar alone, and the first one that is no valid attribute block ends the run and starts the cell text: `\|{>}{^} a \|` is right with the text `{^} a`. U-305 (escape) records that 0.1 read glued blocks in a cell prefix as text. | C2-B-182, C2-B-171, C2-B-093 |
+| Extensions | The extension mechanism of `extensions.md` is provisional, not frozen: its interfaces may change in a 0.2.x release together with the extension catalog, because the interface points O12, O15 and O17 belong to that work. No rule changes. | `STATUS.md`, `extensions.md` head |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

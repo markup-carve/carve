@@ -1,6 +1,6 @@
 # Carve 0.2: extensions
 
-Status: freeze candidate 4 of Carve 0.2 on `next2`: the extension mechanism is frozen with the core, and the standard extensions are not (`STATUS.md`).
+Status: provisional, not frozen with the core of Carve 0.2 on `next2`. The interfaces of this document may change in a 0.2.x release together with the extension catalog, because the interface points O12, O15 and O17 belong to that work (`STATUS.md`, "What is not frozen"). The standard extensions are not frozen either.
 
 This document defines the extension interface for Carve 0.2.0.
 

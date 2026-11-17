@@ -67,11 +67,10 @@ The gates check the text against itself. No engine runs in them; an engine runs 
 - The layout sidecar: `source-layout.md` with `data/layout-schema.json`.
 - Includes: `includes.md`.
 - HTML import: `import-html.md`.
-- The extension mechanism: `extensions.md`, every section except "Standard extension: tabs".
 
 ## What is not frozen
 
-The standard extensions. The mechanism of `extensions.md` is part of the candidate; the catalog of extensions comes after the core. Today the catalog is one extension, tabs (C2-X-039 to C2-X-048).
+The extension mechanism and the standard extensions: `extensions.md` as a whole. The mechanism is part of the candidate and is provisional: its interfaces (registration, matchers, transforms, the node fields and slots, resolution, renderers and the source record) may change in a 0.2.x release together with the extension catalog. The reason is the interface points still open for that work: O12 (a renderer returns an HTML string the host cannot inspect for C2-X-034, the slot walk order of C2-X-020, and the reader of annotation ids), and two rulings of 17 November that the catalog may revisit, the element that carries the attributes of a fallback (O15, C2-X-035) and the fallback written unresolved after a renderer throws (O17, C2-X-050). A change to the mechanism is recorded in `UPGRADING.md` with the release that makes it. Today the catalog is one extension, tabs (C2-X-039 to C2-X-048).
 
 ## What the reviews covered
 
