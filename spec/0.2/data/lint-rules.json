@@ -387,9 +387,7 @@
       "channel": "lint",
       "status": "new",
       "default": "on",
-      "messages": [
-        "The plus continuation marker was removed in 0.2 and is text here. If a block was intended, write that block after a blank line."
-      ],
+      "messages": [{"when": "the `+` is a standalone line outside a list item", "text": "The plus continuation marker was removed in 0.2 and is text here. If a block was intended, write that block after a blank line."}, {"when": "the `+` is the text of a list item marker line", "text": "The plus continuation marker was removed in 0.2 and is text here. Put the intended block after a blank line, indented past the list marker so it belongs to this item."}],
       "message_origin": "design",
       "reports": "a line whose content behind its quote marks and indentation is a single `+`, with only spaces and tabs before and after it, and a list item, with or without a task box, whose text on its marker line is a single `+`, both text in 0.2 where 0.1 read a list continuation marker (C2-B-059); `++`, `+a` and a table cell holding `+` are not reported, nor a line of a code block, raw block, comment block or frontmatter or a line inside a code span; once per line, the range is the `+` (C2-B-059)",
       "clauses": ["C2-B-059"]

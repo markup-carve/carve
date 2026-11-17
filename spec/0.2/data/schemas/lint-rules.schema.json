@@ -52,7 +52,7 @@
           "enabled_by": { "enum": ["platforms"], "description": "The option that selects the rule." },
           "messages": {
             "type": "array",
-            "items": { "type": "string", "minLength": 1 },
+            "items": { "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "object", "additionalProperties": false, "required": ["when", "text"], "properties": { "when": { "type": "string", "minLength": 1 }, "text": { "type": "string", "minLength": 1 } } }] },
             "uniqueItems": true,
             "description": "The message texts. `${...}` stands for a value the engine fills in, and a word in parentheses in a text of the design stands for one too. A rule with several messages lists all of them."
           },

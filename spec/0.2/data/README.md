@@ -2,6 +2,8 @@
 
 The rules of Carve 0.2 that have the shape of a table, as plain JSON. An engine loads these files or generates code from them, so that the rule in the spec and the rule in the engine are one text.
 
+A diagnostic message may be a string or a `{ "when": "condition", "text": "message" }` variant; the condition selects the message for a reported input.
+
 The files are normative together with the clauses they cite. Every row has a `clauses` list with the ids of the clauses it encodes. Where a row and its clause disagree, the clause wins and the row is a defect.
 
 | File | Holds |

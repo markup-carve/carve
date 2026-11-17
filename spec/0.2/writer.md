@@ -1173,7 +1173,7 @@ Reported: `deprecated-bare-underline`.
 
 ### Rules kept from 0.1
 
-The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`, `src/djot-migrate.ts`, `src/extension/accessibility.ts`). `${...}` stands for a value the engine fills in. A rule with several messages lists all of them. A message of a platform rule is put together from parts. The severity of a rule is `warning` (C2-W-105) unless the table "Severities other than warning" names it. A message that names a 0.1 form, such as a leading `#` or a bare delimiter, gets its 0.2 text with the catalog data file.
+The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`, `src/djot-migrate.ts`, `src/extension/accessibility.ts`). `${...}` stands for a value the engine fills in. A rule with several messages lists all of them; a message object gives its `when` condition and `text`, and the condition selects the variant for a reported input. A message of a platform rule is put together from parts. The severity of a rule is `warning` (C2-W-105) unless the table "Severities other than warning" names it. A message that names a 0.1 form, such as a leading `#` or a bare delimiter, gets its 0.2 text with the catalog data file.
 
 | Rule | Messages in the source | In 0.2 |
 |---|---|---|
