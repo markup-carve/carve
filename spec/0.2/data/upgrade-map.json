@@ -2462,6 +2462,26 @@
       "silent": true
     },
     {
+      "id": "U-287",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "| a | b |\n",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> With `sourceLines` on, C2-H-016 annotates `<tbody>` and `<tr>` as well as `<table>`, and annotates no bare block image, no `<p>` of a line block stanza and no `<li>` of the footnote section; the 0.1 option `sourceLine` annotated the table only and annotated those three. Readers of `data-source-line` have to expect the other elements.",
+      "toolEntry": "U-287",
+      "silent": true
+    },
+    {
+      "id": "U-288",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{data-source-line=\"99\"}\np\n",
+      "to": "",
+      "meaning02": "<p data-source-line=\"99\">p</p> With `sourceLines` on, the generated value replaces an authored `data-source-line` (C2-H-016), so the paragraph carries `data-source-line=\"1\"`; the 0.1 option `sourceLine` kept the authored 99. Without the option both write the authored value. No 0.2 source keeps an authored value under the option.",
+      "toolEntry": "U-288",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",

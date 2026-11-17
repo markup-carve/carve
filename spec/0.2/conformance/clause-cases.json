@@ -15204,6 +15204,49 @@
    "from": []
   },
   {
+   "id": "CC-216",
+   "clauses": [
+    "C2-H-016"
+   ],
+   "why": "C2-H-016: A bare block image (C2-H-020) and the `<p>` of a stanza of a line block (C2-H-043) are the element of no block node and carry none.",
+   "summary": "a bare block image and a stanza paragraph carry no source line",
+   "input": "![x](a.png)\n\n::: |\na\n:::",
+   "options": {
+    "sourceLines": true
+   },
+   "expected": {
+    "html": "<img src=\"a.png\" alt=\"x\">\n<div class=\"line-block\" data-source-line=\"3\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "a.png",
+        "alt": "x"
+       }
+      ],
+      "role": "image"
+     },
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-240",
    "clauses": [
     "C2-B-138",
