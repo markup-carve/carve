@@ -63082,7 +63082,7 @@
         "startOffset": 0,
         "endOffset": 13
        },
-       "generatedId": "hello-world"
+       "generatedId": "Hello-World"
       },
       {
        "type": "heading",
@@ -63109,7 +63109,7 @@
         "startOffset": 15,
         "endOffset": 23
        },
-       "generatedId": "api-v2"
+       "generatedId": "API-v2"
       }
      ],
      "srcByteLength": 23,
