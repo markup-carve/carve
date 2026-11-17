@@ -3648,6 +3648,31 @@
      }
     ]
    }
+  },
+  {
+   "id": "smart-punctuation-other-source",
+   "clauses": [
+    "C2-A-098"
+   ],
+   "reason": "a smart punctuation node whose source is not the source of its kind",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "--"
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }
