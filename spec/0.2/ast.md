@@ -751,7 +751,7 @@ These clauses were added after other documents began to cite this one. They stan
 {"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
 ```
 
-**C2-A-206** The three namespace schemas validate only their own values. A tree-only reader checks declaration, namespace placement, duplicate annotation ids and root metadata child slots. A reader given the tree and annotation-range sidecar also checks every annotation id against a range.
+**C2-A-206** The three namespace schemas validate only their own values. A tree-only reader checks declaration, namespace placement, duplicate annotation ids and root metadata child slots.
 
 **C2-A-207** Annotation text is the node's `value` or `alt` string, or `smart_punctuation.source`, followed by the projections of child slots in `data/node-slots.json` order, with no inserted separator; a soft or hard break contributes one LF and a nonbreaking space contributes one U+00A0, and offsets count the UTF-8 bytes of that text, as the layout sidecar does (C2-L-012), and a reader refuses an offset that falls inside the bytes of one character.
 
