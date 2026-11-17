@@ -434,7 +434,21 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012).
 
-**C2-W-098** In a table cell a pipe in text is written with a backslash, and a pipe inside a code span needs none (C2-B-169).
+**C2-W-098** In a table cell a pipe in text, or in a quoted value of the brace block of a cell prefix, is written with a backslash, and a pipe inside a code span needs none (C2-B-169). A value of a row attribute that holds a pipe has no spelling, since the closing pipe is the last pipe of the line (C2-B-166), and the writer reports `field-unspellable`.
+
+Example 15 (unverified)
+
+Input:
+
+```carve
+|{title="a\|b"} x |
+```
+
+Written:
+
+```carve
+|{title="a\|b"} x |
+```
 
 **C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
 
@@ -973,9 +987,9 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
-| Escaping | 14 | 0 | 1 | 0 |
+| Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **9** |
+| **Total** | **136** | **7** | **5** | **10** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 14 examples, 5 generated and 9 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

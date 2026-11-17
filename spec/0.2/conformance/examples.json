@@ -69870,6 +69870,138 @@
    "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
   },
   {
+   "id": "writer-15",
+   "document": "writer.md",
+   "number": 15,
+   "section": "Escaping",
+   "clauses": [
+    "C2-W-088",
+    "C2-W-089",
+    "C2-W-090",
+    "C2-W-091",
+    "C2-W-125",
+    "C2-W-121",
+    "C2-W-092",
+    "C2-W-093",
+    "C2-W-094",
+    "C2-W-095",
+    "C2-W-096",
+    "C2-W-097",
+    "C2-W-098",
+    "C2-W-099"
+   ],
+   "kind": "write",
+   "input": "|{title=\"a\\|b\"} x |",
+   "options": {},
+   "expected": {
+    "carve": "|{title=\"a\\|b\"} x |\n",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "table",
+       "columns": [
+        {
+         "type": "table_column"
+        }
+       ],
+       "children": [
+        {
+         "type": "table_body",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "x",
+                 "pos": {
+                  "startLine": 1,
+                  "endLine": 1,
+                  "startColumn": 17,
+                  "endColumn": 18,
+                  "startOffset": 16,
+                  "endOffset": 17
+                 }
+                }
+               ],
+               "pos": {
+                "startLine": 1,
+                "endLine": 1,
+                "startColumn": 17,
+                "endColumn": 18,
+                "startOffset": 16,
+                "endOffset": 17
+               }
+              }
+             ],
+             "attrs": {
+              "keyValues": [
+               [
+                "title",
+                "a|b"
+               ]
+              ]
+             },
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 2,
+              "endColumn": 19,
+              "startOffset": 1,
+              "endOffset": 18
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 1,
+            "endColumn": 20,
+            "startOffset": 0,
+            "endOffset": 19
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 20,
+          "startOffset": 0,
+          "endOffset": 19
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 20,
+        "startOffset": 0,
+        "endOffset": 19
+       }
+      }
+     ],
+     "srcByteLength": 19,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
    "id": "writer-1",
    "document": "writer.md",
    "number": 1,
