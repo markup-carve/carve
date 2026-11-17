@@ -532,7 +532,7 @@ Raw inline is no host, so the attribute block behind its marker attaches to noth
 
 **Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text. It is read only behind a pair that is a span, also behind another block of that span; behind a link, an inline footnote or an inline extension it is text.
 
-**C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-098). The written order of the parts is not kept.
+**C2-I-041** The order inside a block is fixed in the tree and in the output: the id, then the classes, then the language, then the keys, classes and keys each as written (C2-B-098). The written order of the parts is not kept, except in the text of an unresolved reference, which writes its blocks as typed (C2-I-085).
 
 **C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-099). The value of a `class` key is split at runs of spaces and tabs, each piece is one class at the place of the key, and an empty value adds none.
 
@@ -1363,7 +1363,23 @@ Example 108 (generated)
 
 **C2-I-084** The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, and folds both by C2-I-079. The target is the first heading in document order that has an id and whose folded plain text equals that of the key. The match is case-sensitive. The reference links to that heading's authored or generated id; an explicit id is a destination, not a key the lookup matches. An opener left unclosed in the key is text under the fallback rule (C2-I-119), so the lookup never fails because of markup in the key. No source text is read: a tree resolves the same with and without its source, and the formatter cannot change which heading a key finds. The `key` and the carrier `data-carve-ref` keep the folded label as written (C2-A-104, C2-H-114). A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
 
-**C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
+**C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part of the children is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. The attribute blocks glued to it are written behind it as text as they were typed, each with its braces, spaces and quotes, in source order, neither merged nor reordered: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, as in 0.1. The renderer takes that text from `rawAttrs` of the source layout (C2-L-049); for a tree without it, as a supplied tree, it writes the attributes of the node as one block in the fixed order (C2-I-041).
+
+`no` names no definition, so the reference is text, and its two attribute blocks follow as typed (C2-I-085).
+
+Example 466 (unverified)
+
+::: compare
+
+```carve
+[x][no]{.c}{#i}
+```
+
+```html
+<p>[x][no]{.c}{#i}</p>
+```
+
+:::
 
 **C2-I-086** A footnote reference and an inline footnote inside an unresolved reference are ordinary footnotes: each takes its number and makes its note.
 
@@ -2495,7 +2511,7 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 1 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 2 |
-| Reference resolution | 13 | 3 | 5 | 15 |
+| Reference resolution | 13 | 3 | 5 | 16 |
 | Footnotes | 3 | 0 | 1 | 2 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 1 |
@@ -2506,9 +2522,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **59** |
+| **Total** | **112** | **16** | **70** | **60** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 129 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 130 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

@@ -61,6 +61,9 @@
           "rawRef": {
             "type": "string"
           },
+          "rawAttrs": {
+            "type": "string"
+          },
           "markerColumn": {
             "type": "integer",
             "minimum": 0

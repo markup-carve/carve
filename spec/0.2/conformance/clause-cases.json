@@ -17442,6 +17442,46 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-308",
+   "clauses": [
+    "C2-I-085"
+   ],
+   "why": "C2-I-085: The attribute blocks glued to it are written behind it as text as they were typed, each with its braces, spaces and quotes, in source order, neither merged nor reordered: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, as in 0.1.",
+   "summary": "an unresolved image keeps its block as typed",
+   "input": "![a][nope]{ .c  k='v' }",
+   "options": {},
+   "expected": {
+    "html": "<p>![a][nope]{ .c  k='v' }</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "key": "nope",
+        "namespace": "link",
+        "refForm": "full",
+        "alt": "a",
+        "attrs": {
+         "classes": [
+          "c"
+         ],
+         "keyValues": [
+          [
+           "k",
+           "v"
+          ]
+         ]
+        }
+       }
+      ],
+      "role": "image"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

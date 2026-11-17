@@ -47390,6 +47390,93 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-inline-466",
+   "document": "syntax-inline.md",
+   "number": 466,
+   "section": "Reference resolution",
+   "clauses": [
+    "C2-I-075",
+    "C2-I-076",
+    "C2-I-077",
+    "C2-I-078",
+    "C2-I-079",
+    "C2-I-080",
+    "C2-I-081",
+    "C2-I-082",
+    "C2-I-083",
+    "C2-I-084",
+    "C2-I-085",
+    "C2-I-086",
+    "C2-I-125"
+   ],
+   "kind": "render",
+   "input": "[x][no]{.c}{#i}",
+   "options": {},
+   "expected": {
+    "html": "<p>[x][no]{.c}{#i}</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "link",
+         "key": "no",
+         "namespace": "link",
+         "refForm": "full",
+         "children": [
+          {
+           "type": "text",
+           "value": "x",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 1,
+            "endOffset": 2
+           }
+          }
+         ],
+         "attrs": {
+          "id": "i",
+          "classes": [
+           "c"
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 16,
+          "startOffset": 0,
+          "endOffset": 15
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 16,
+        "startOffset": 0,
+        "endOffset": 15
+       }
+      }
+     ],
+     "srcByteLength": 15,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-109",
    "document": "syntax-inline.md",
    "number": 109,
