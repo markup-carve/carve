@@ -17482,6 +17482,66 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-309",
+   "clauses": [
+    "C2-I-084"
+   ],
+   "why": "C2-I-084: A key whose folded plain text is empty matches no heading, also none whose plain text is empty, so `[:smile:][]` below `# :smile:` stays text, as in 0.1.",
+   "summary": "an empty key passes over every heading, empty or not",
+   "input": "> # :a:\n>\n> # b\n>\n> [:a:][]",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <h1 id=\"s\">:a:</h1>\n  <h1 id=\"b\">b</h1>\n  <p>[:a:][]</p>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "heading",
+        "level": 1,
+        "children": [
+         {
+          "type": "symbol",
+          "name": "a"
+         }
+        ],
+        "generatedId": "s"
+       },
+       {
+        "type": "heading",
+        "level": 1,
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ],
+        "generatedId": "b"
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "link",
+          "key": ":a:",
+          "namespace": "link",
+          "refForm": "collapsed",
+          "children": [
+           {
+            "type": "symbol",
+            "name": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

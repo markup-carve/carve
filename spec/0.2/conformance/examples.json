@@ -47390,9 +47390,9 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
-   "id": "syntax-inline-466",
+   "id": "syntax-inline-467",
    "document": "syntax-inline.md",
-   "number": 466,
+   "number": 467,
    "section": "Reference resolution",
    "clauses": [
     "C2-I-075",
@@ -47404,7 +47404,102 @@
     "C2-I-081",
     "C2-I-082",
     "C2-I-083",
-    "C2-I-084",
+    "C2-I-084"
+   ],
+   "kind": "render",
+   "input": "# :smile:\n\n[:smile:][]",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"s\">\n  <h1>:smile:</h1>\n  <p>[:smile:][]</p>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "heading",
+       "level": 1,
+       "children": [
+        {
+         "type": "symbol",
+         "name": "smile",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 10,
+          "startOffset": 2,
+          "endOffset": 9
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 10,
+        "startOffset": 0,
+        "endOffset": 9
+       },
+       "generatedId": "s"
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "link",
+         "key": ":smile:",
+         "namespace": "link",
+         "refForm": "collapsed",
+         "children": [
+          {
+           "type": "symbol",
+           "name": "smile",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 2,
+            "endColumn": 9,
+            "startOffset": 12,
+            "endOffset": 19
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 12,
+          "startOffset": 11,
+          "endOffset": 22
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 12,
+        "startOffset": 11,
+        "endOffset": 22
+       }
+      }
+     ],
+     "srcByteLength": 22,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "syntax-inline-466",
+   "document": "syntax-inline.md",
+   "number": 466,
+   "section": ":smile:",
+   "clauses": [
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -47480,18 +47575,8 @@
    "id": "syntax-inline-109",
    "document": "syntax-inline.md",
    "number": 109,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -47616,18 +47701,8 @@
    "id": "syntax-inline-67",
    "document": "syntax-inline.md",
    "number": 67,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -47823,18 +47898,8 @@
    "id": "syntax-inline-68",
    "document": "syntax-inline.md",
    "number": 68,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -47989,18 +48054,8 @@
    "id": "syntax-inline-69",
    "document": "syntax-inline.md",
    "number": 69,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -48161,18 +48216,8 @@
    "id": "syntax-inline-70",
    "document": "syntax-inline.md",
    "number": 70,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"
@@ -48297,18 +48342,8 @@
    "id": "syntax-inline-71",
    "document": "syntax-inline.md",
    "number": 71,
-   "section": "Reference resolution",
+   "section": ":smile:",
    "clauses": [
-    "C2-I-075",
-    "C2-I-076",
-    "C2-I-077",
-    "C2-I-078",
-    "C2-I-079",
-    "C2-I-080",
-    "C2-I-081",
-    "C2-I-082",
-    "C2-I-083",
-    "C2-I-084",
     "C2-I-085",
     "C2-I-086",
     "C2-I-125"

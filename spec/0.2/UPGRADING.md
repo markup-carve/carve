@@ -299,6 +299,10 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 - An attribute line above a lone image goes onto the bare `<img>`, as in 0.1: `{.c}` above `![a](y.png)` gives `<img src="y.png" alt="a" class="c">`, where freeze candidate 6 wrote `<p class="c">` around the image. The attributes merge before the image's own glued blocks, so U-220 is withdrawn: `{.outer k=one}` above `![a](b){.inner k=two}` gives `class="outer inner" k="two"` in both versions. The tree is unchanged: the attributes stay on the paragraph. C2-H-020, C2-H-018.
 - An unresolved reference writes the attribute blocks glued to it as typed, as in 0.1: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, where freeze candidate 6 merged and reordered them into `{#i .c}`. The spelling is the new sidecar fact `rawAttrs`; a supplied tree without it still gets one block in the fixed order. C2-I-085, C2-I-041, C2-L-049.
 
+#### Corrections (syntax)
+
+- An empty reference key matches no heading: `# :smile:` above `[:smile:][]` leaves the reference text, `<p>[:smile:][]</p>`, as in 0.1. A symbol gives no plain text, so freeze candidate 6 compared two empty texts and linked the reference to the heading. C2-I-084.
+
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
 Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.

@@ -1361,7 +1361,28 @@ Example 108 (generated)
 
 **Exception C2-I-083** The heading lookup is for link references only: an image reference that matches no definition is unresolved.
 
-**C2-I-084** The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, and folds both by C2-I-079. The target is the first heading in document order that has an id and whose folded plain text equals that of the key. The match is case-sensitive. The reference links to that heading's authored or generated id; an explicit id is a destination, not a key the lookup matches. An opener left unclosed in the key is text under the fallback rule (C2-I-119), so the lookup never fails because of markup in the key. No source text is read: a tree resolves the same with and without its source, and the formatter cannot change which heading a key finds. The `key` and the carrier `data-carve-ref` keep the folded label as written (C2-A-104, C2-H-114). A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
+**C2-I-084** The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, and folds both by C2-I-079. The target is the first heading in document order that has an id and whose folded plain text equals that of the key. The match is case-sensitive. A key whose folded plain text is empty matches no heading, also none whose plain text is empty, so `[:smile:][]` below `# :smile:` stays text, as in 0.1. The reference links to that heading's authored or generated id; an explicit id is a destination, not a key the lookup matches. An opener left unclosed in the key is text under the fallback rule (C2-I-119), so the lookup never fails because of markup in the key. No source text is read: a tree resolves the same with and without its source, and the formatter cannot change which heading a key finds. The `key` and the carrier `data-carve-ref` keep the folded label as written (C2-A-104, C2-H-114). A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
+
+A symbol gives no plain text (C2-H-143), so the key `:smile:` is empty and finds no heading (C2-I-084).
+
+Example 467 (unverified)
+
+::: compare
+
+```carve
+# :smile:
+
+[:smile:][]
+```
+
+```html
+<section id="s">
+  <h1>:smile:</h1>
+  <p>[:smile:][]</p>
+</section>
+```
+
+:::
 
 **C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part of the children is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. The attribute blocks glued to it are written behind it as text as they were typed, each with its braces, spaces and quotes, in source order, neither merged nor reordered: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, as in 0.1. The renderer takes that text from `rawAttrs` of the source layout (C2-L-049); for a tree without it, as a supplied tree, it writes the attributes of the node as one block in the fixed order (C2-I-041).
 
@@ -2511,7 +2532,7 @@ There is no fixed budget for the inline chapter.
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 1 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 2 |
-| Reference resolution | 13 | 3 | 5 | 16 |
+| Reference resolution | 13 | 3 | 5 | 17 |
 | Footnotes | 3 | 0 | 1 | 2 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 1 |
@@ -2522,9 +2543,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **60** |
+| **Total** | **112** | **16** | **70** | **61** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 130 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
