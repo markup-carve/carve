@@ -82159,7 +82159,8 @@
    "number": 8,
    "section": "The lint topics of the rulings",
    "clauses": [
-    "C2-W-137"
+    "C2-W-137",
+    "C2-W-138"
    ],
    "clauseScope": "section",
    "kind": "lint",

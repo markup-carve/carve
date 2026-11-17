@@ -1445,6 +1445,8 @@ Input:
 
 Reported: `comment-splits-table-row`, severity hint, on line 2, offsets 6 to 10.
 
+**C2-W-138** The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless the clause of the rule names another place, as C2-W-137 and C2-M-081 do. Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node. An entry of a run on source carries that range, in the render-loss channel too, and its path, where it has one, names the node that holds the construct. An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`. A finding about a whole document starts where the document starts.
+
 ## Out of scope
 
 The Markdown, plain-text and ANSI writers are not part of 0.2.0, and neither are the importers other than the HTML importer, which the HTML document defines (C2-H-120). These 0.1 clauses define only those targets and are not ported. Nobody should port them into the canonical writer.
@@ -1538,7 +1540,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 11 | 0 | 0 | 2 |
-| **Total** | **128** | **5** | **6** | **39** |
+| Diagnostics and lint | 12 | 0 | 0 | 2 |
+| **Total** | **129** | **5** | **6** | **39** |
 
-The document has 128 clauses, 5 of them marked with the word "Exception", and 45 examples, 6 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 129 clauses, 5 of them marked with the word "Exception", and 45 examples, 6 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

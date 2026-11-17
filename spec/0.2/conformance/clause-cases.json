@@ -23652,9 +23652,10 @@
    "id": "CC-454",
    "clauses": [
     "C2-X-004",
-    "C2-X-035"
+    "C2-X-035",
+    "C2-W-138"
    ],
-   "why": "C2-X-004: A reader preserves an unknown optional extension and uses its core fallback. C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. ... A node without attributes adds no element.",
+   "why": "C2-X-004: A reader preserves an unknown optional extension and uses its core fallback. C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. ... A node without attributes adds no element. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "an unknown optional block extension renders its fallback with no wrapper",
    "kind": "render",
    "tree": {
@@ -23696,6 +23697,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -23706,9 +23708,10 @@
   {
    "id": "CC-455",
    "clauses": [
-    "C2-X-035"
+    "C2-X-035",
+    "C2-W-138"
    ],
-   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014).",
+   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014). C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "the fallback of a block extension with an id and a class stands in a div that carries them",
    "kind": "render",
    "tree": {
@@ -23756,6 +23759,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -23766,9 +23770,10 @@
   {
    "id": "CC-456",
    "clauses": [
-    "C2-X-035"
+    "C2-X-035",
+    "C2-W-138"
    ],
-   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014).",
+   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014). C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "the fallback of an inline extension with an id stands in a span that carries it",
    "kind": "render",
    "tree": {
@@ -23819,6 +23824,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0/children/1",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -23829,9 +23835,10 @@
   {
    "id": "CC-457",
    "clauses": [
-    "C2-X-032"
+    "C2-X-032",
+    "C2-W-138"
    ],
-   "why": "C2-X-032: Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise.",
+   "why": "C2-X-032: Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "a heading in the slot of an extension rendered through its fallback takes no generated id from a later heading",
    "kind": "render",
    "tree": {
@@ -23897,6 +23904,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -23907,9 +23915,10 @@
   {
    "id": "CC-458",
    "clauses": [
-    "C2-X-036"
+    "C2-X-036",
+    "C2-W-138"
    ],
-   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback.",
+   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "a raw block in a fallback is degraded under the article profile",
    "kind": "render",
    "tree": {
@@ -23949,6 +23958,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      },
@@ -23964,9 +23974,10 @@
   {
    "id": "CC-459",
    "clauses": [
-    "C2-X-036"
+    "C2-X-036",
+    "C2-W-138"
    ],
-   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback.",
+   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "a denied link destination in a fallback is blanked",
    "kind": "render",
    "tree": {
@@ -24014,11 +24025,13 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      },
      {
       "code": "destination-denied",
+      "path": "/children/0/fallback/0/children/0/href",
       "channel": "render-loss",
       "severity": "error"
      }
@@ -27374,9 +27387,10 @@
   {
    "id": "CC-487",
    "clauses": [
-    "C2-N-088"
+    "C2-N-088",
+    "C2-W-138"
    ],
-   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.",
+   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "lines on a delimited table include gets the rows hint",
    "kind": "lint",
    "input": "{table}\n{{ t.csv @code:csv @lines:1-2 }}\n",
@@ -27390,6 +27404,8 @@
     "diagnostics": [
      {
       "code": "include-lines-table-rows-hint",
+      "line": 2,
+      "column": 20,
       "severity": "hint",
       "channel": "lint"
      }
@@ -41725,9 +41741,10 @@
    "id": "CC-593",
    "clauses": [
     "C2-B-180",
-    "C2-B-181"
+    "C2-B-181",
+    "C2-W-138"
    ],
-   "why": "C2-B-181: An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error",
+   "why": "C2-B-181: An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "an unclosed quote in a csv table is reported",
    "kind": "parse",
    "input": "{table}\n```csv\na,\"b\n```",
@@ -41736,6 +41753,8 @@
     "diagnostics": [
      {
       "code": "delimited-table-malformed",
+      "line": 3,
+      "column": 3,
       "channel": "parse",
       "severity": "error"
      }
@@ -41927,9 +41946,10 @@
    "id": "CC-603",
    "clauses": [
     "C2-B-105",
-    "C2-B-225"
+    "C2-B-225",
+    "C2-W-138"
    ],
-   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105)",
+   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105) C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "an attribute block glued to a fence language is reported",
    "kind": "parse",
    "input": "```js{.c}\nx\n```",
@@ -41938,6 +41958,8 @@
     "diagnostics": [
      {
       "code": "fence-opener-fallback",
+      "line": 1,
+      "column": 6,
       "channel": "parse",
       "severity": "error"
      }
@@ -41967,9 +41989,10 @@
    "id": "CC-605",
    "clauses": [
     "C2-B-117",
-    "C2-B-122"
+    "C2-B-122",
+    "C2-W-138"
    ],
-   "why": "C2-B-122: An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.",
+   "why": "C2-B-122: An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "an unquoted title after the fence language is reported",
    "kind": "parse",
    "input": "```js b\nx\n```",
@@ -41978,6 +42001,8 @@
     "diagnostics": [
      {
       "code": "fence-title-syntax",
+      "line": 1,
+      "column": 7,
       "channel": "parse",
       "severity": "warning"
      }
@@ -42974,9 +42999,10 @@
   {
    "id": "CC-645",
    "clauses": [
-    "C2-N-048"
+    "C2-N-048",
+    "C2-W-138"
    ],
-   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it.",
+   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it. C2-W-138: The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless the clause of the rule names another place",
    "summary": "a shift that would raise a heading to level 7 is reported",
    "kind": "parse",
    "input": "{{ a.crv @shift:6 }}",
@@ -42990,6 +43016,9 @@
     "diagnostics": [
      {
       "code": "include-heading-clamp",
+      "file": "a.crv",
+      "line": 1,
+      "column": 1,
       "channel": "parse",
       "severity": "warning"
      }
@@ -43090,9 +43119,10 @@
    "id": "CC-649",
    "clauses": [
     "C2-H-116",
-    "C2-H-115"
+    "C2-H-115",
+    "C2-W-138"
    ],
-   "why": "C2-H-116: An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. C2-H-115: The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.",
+   "why": "C2-H-116: An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. C2-H-115: The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node. ... An entry of a run on source carries that range, in the render-loss channel too",
    "summary": "an authored reserved carrier name on a span is dropped and reported",
    "kind": "render",
    "input": "[a]{data-carve-ref=x}",
@@ -43101,6 +43131,8 @@
     "diagnostics": [
      {
       "code": "carrier-attribute-dropped",
+      "line": 1,
+      "column": 5,
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -43130,9 +43162,10 @@
    "id": "CC-651",
    "clauses": [
     "C2-H-082",
-    "C2-H-132"
+    "C2-H-132",
+    "C2-W-138"
    ],
-   "why": "C2-H-082: A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href=\"\">`. The denial is reported as the render loss `destination-denied`.",
+   "why": "C2-H-082: A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href=\"\">`. The denial is reported as the render loss `destination-denied`. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node. ... An entry of a run on source carries that range, in the render-loss channel too",
    "summary": "a link to a scheme on the default deny list is reported",
    "kind": "render",
    "input": "[a](javascript:x)",
@@ -43141,6 +43174,8 @@
     "diagnostics": [
      {
       "code": "destination-denied",
+      "line": 1,
+      "column": 5,
       "channel": "render-loss",
       "severity": "error"
      }
@@ -43400,9 +43435,10 @@
    "clauses": [
     "C2-X-035",
     "C2-H-076",
-    "C2-X-004"
+    "C2-X-004",
+    "C2-W-138"
    ],
-   "why": "C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. C2-H-076: An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`.",
+   "why": "C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. C2-H-076: An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "an optional extension with no renderer renders its fallback and is reported",
    "kind": "render",
    "tree": {
@@ -43531,6 +43567,7 @@
     "diagnostics": [
      {
       "code": "extension-fallback-rendered",
+      "path": "/children/0",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -43771,9 +43808,10 @@
    "id": "CC-667",
    "clauses": [
     "C2-W-056",
-    "C2-W-011"
+    "C2-W-011",
+    "C2-W-138"
    ],
-   "why": "C2-W-056: A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.",
+   "why": "C2-W-056: A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "a supplied link definition with an empty destination is reported",
    "kind": "write",
    "tree": {
@@ -43802,6 +43840,7 @@
     "diagnostics": [
      {
       "code": "field-unspellable",
+      "path": "/children/1/href",
       "channel": "render-loss",
       "severity": "warning"
      }
@@ -46258,9 +46297,10 @@
   {
    "id": "CC-781",
    "clauses": [
-    "C2-N-088"
+    "C2-N-088",
+    "C2-W-138"
    ],
-   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.",
+   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "lines on a delimited table include",
    "kind": "lint",
    "input": "{table}\n{{ a.csv @code:csv @lines:2-2 }}\n",
@@ -46275,7 +46315,7 @@
      {
       "code": "include-lines-table-rows-hint",
       "line": 2,
-      "column": 1,
+      "column": 20,
       "channel": "lint",
       "severity": "hint"
      }
@@ -47348,9 +47388,10 @@
   {
    "id": "CC-833",
    "clauses": [
-    "C2-B-174"
+    "C2-B-174",
+    "C2-W-138"
    ],
-   "why": "C2-B-174: `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.",
+   "why": "C2-B-174: `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "a header mark on a joining row span mark below a data row is reported",
    "kind": "lint",
    "input": "| a |\n|= ^ |\n",
@@ -47360,7 +47401,7 @@
      {
       "code": "table-span-marker-attribute",
       "line": 2,
-      "column": 1,
+      "column": 2,
       "channel": "lint",
       "severity": "warning"
      }
