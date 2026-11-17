@@ -42089,8 +42089,7 @@
    "number": 59,
    "section": "Spans",
    "clauses": [
-    "C2-I-064",
-    "C2-I-065"
+    "C2-I-064"
    ],
    "kind": "render",
    "input": "[text]{.c} and [a /b/ c]{#i} and [text] {.c} and [text]",
@@ -42250,8 +42249,7 @@
    "number": 60,
    "section": "Spans",
    "clauses": [
-    "C2-I-064",
-    "C2-I-065"
+    "C2-I-064"
    ],
    "kind": "render",
    "input": "[*x*]{???} and [[t](/v)]{.c}",

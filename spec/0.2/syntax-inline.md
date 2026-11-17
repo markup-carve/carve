@@ -1132,8 +1132,6 @@ Example 58 (generated)
 
 **C2-I-064** A bracket pair with a valid attribute block glued to it is a span. Its content is inline content, and the block and every block glued behind it attach to it (C2-I-039, C2-I-040).
 
-**C2-I-065** A bracket pair followed by anything else that forms no link, image, span or reference is text when its folded content matches no link definition (C2-I-006, C2-I-072).
-
 Example 59 (generated)
 
 ::: compare
@@ -2380,7 +2378,7 @@ There is no fixed budget for the inline chapter.
 | The opening brace | 2 | 1 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
-| Spans | 2 | 0 | 2 | 0 |
+| Spans | 1 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 1 |
 | Reference resolution | 13 | 3 | 5 | 15 |
 | Footnotes | 3 | 0 | 1 | 1 |
@@ -2393,9 +2391,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **115** | **16** | **69** | **54** |
+| **Total** | **114** | **16** | **69** | **54** |
 
-The chapter has 115 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
+The chapter has 114 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

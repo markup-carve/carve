@@ -67,7 +67,7 @@
       "glued_after": "anything_else",
       "content": "inline",
       "host": false,
-      "clauses": ["C2-I-006", "C2-I-065", "C2-I-072", "C2-I-101"]
+      "clauses": ["C2-I-006", "C2-I-072", "C2-I-101"]
     },
     {
       "name": "shortcut_reference",
