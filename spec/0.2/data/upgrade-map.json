@@ -2482,6 +2482,46 @@
       "silent": true
     },
     {
+      "id": "U-289",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{{ a.crv @shift:1 }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @shift:1 }}</p> An unexpanded include renders the directive as text (C2-H-133, C2-N-070), so no inline form is read in it; with no resolver, or with an invalid option such as `@unknown:foo` under a resolver, 0.1 read `@shift` as a mention, `<span class=\"mention\"><strong>@shift</strong></span>`. Escaping the opening brace gives the 0.1 HTML but makes the line text that no resolver expands, so the row is a report.",
+      "toolEntry": "U-289",
+      "silent": true
+    },
+    {
+      "id": "U-290",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "x {{ a.crv @lines:0 }} y\n",
+      "to": "x {{ a.crv \\@lines:0 }} y\n",
+      "meaning02": "<p>x {{ a.crv <span class=\"mention\"><strong>@lines</strong></span>:0 }} y</p> A directive inside inline content is text whose braces are each read on their own (C2-N-002), so `@lines` is a mention; 0.1 kept a directive with an invalid option inside a sentence as opaque text. An escaped `@` keeps the 0.1 HTML.",
+      "toolEntry": "U-290",
+      "silent": true
+    },
+    {
+      "id": "U-291",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{{ a.crv@code:js }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @code:js }}</p> An unexpanded include writes the directive from the tree, each option after one space and in the order of C2-W-058 (C2-H-133, C2-H-171); 0.1 wrote the source as authored, `{{ a.crv@code:js }}`, and kept the authored order of `@code` and `@cols`. No 0.2 source writes the glued spelling.",
+      "toolEntry": "U-291",
+      "silent": true
+    },
+    {
+      "id": "U-292",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{.diff}\n{{ a.crv @code:js }}\n",
+      "to": "",
+      "meaning02": "<p>{{ a.crv @code:js }}</p> An include's own attributes are not written to HTML (C2-N-072, C2-A-181), so the fallback paragraph of an unexpanded include has none; 0.1 wrote them on it, `<p class=\"diff\">`, also the `{table}` key on a table include rejected for an invalid `@rows`. The caption of a code include is not part of this row.",
+      "toolEntry": "U-292",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
