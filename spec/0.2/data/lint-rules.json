@@ -1746,9 +1746,10 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This table-shaped line lacks a closing pipe and stays as text of its parsed owner. If a table row was intended, write a complete row where a table can start."],
+      "messages": ["This table-shaped line lacks a closing pipe and stays as ${owner} text. If a table row was intended, write a complete row where a table can start."],
       "message_origin": "engine_0_1",
       "change": "stays: a line that starts with a pipe and does not end with one is text (C2-B-168)",
+      "message_notes": ["`${owner}` is the parsed text owner of this source line: `paragraph`, `heading`, `cell`, `term`, `caption`, or `line-block line`. For `# H` followed by `  | a`, it is `heading`."],
       "reports": "a line of text that starts with a pipe after its quote marks and indent and does not end with a closing pipe as C2-B-166 and C2-B-167 say, once per line: its last pipe is escaped or stands in a code span, or something other than a row attribute, a line comment after whitespace and trailing spaces and tabs follows it; a line that is a single pipe is not reported; the range runs from the pipe to the end of the line text (C2-B-168, C2-B-166, C2-B-167)",
       "clauses": ["C2-B-168", "C2-B-166", "C2-B-167"]
     },
