@@ -545,7 +545,7 @@ after
 
 ### Region
 
-**C2-N-037** `region` selects the physical lines strictly between the opening and the closing marker of the named region; the two marker lines are not selected, and marker lines of other regions between them stay selected source. An empty region selects an empty source. Markers are found by physical line before anything else reads the file. (I1b, carried over)
+**C2-N-037** `region` selects the physical lines strictly between the opening and the closing marker of the named region; the two marker lines are not selected, and marker lines of other regions between them stay selected source. An empty region selects an empty source. Markers are found by physical line before anything else reads the file, except the record parse of a table include (C2-N-046). (I1b, carried over)
 
 **C2-N-038** An include that reads Carve recognizes only the line-comment markers of C2-B-217: `%% #region name` and `%% #endregion` with an optional name. A bare `#region` line, a `// #region` line and a braced comment are text in that mode, so a region they mark is not found.
 
