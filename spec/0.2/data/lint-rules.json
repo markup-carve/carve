@@ -946,7 +946,7 @@
       "channel": "render-loss",
       "status": "new",
       "reports": "an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces",
-      "clauses": ["C2-M-004", "C2-M-027", "C2-M-030", "C2-M-031", "C2-M-032", "C2-M-040", "C2-M-041", "C2-M-043", "C2-M-052", "C2-M-054", "C2-M-075"]
+      "clauses": ["C2-M-004", "C2-M-026", "C2-M-027", "C2-M-030", "C2-M-031", "C2-M-032", "C2-M-040", "C2-M-041", "C2-M-043", "C2-M-052", "C2-M-054", "C2-M-075"]
     },
     {
       "id": "import-carrier-ignored",
@@ -969,8 +969,8 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "reports": "an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span",
-      "clauses": ["C2-M-005", "C2-M-046", "C2-M-057", "C2-M-066"]
+      "reports": "an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span; a further task box or table caption",
+      "clauses": ["C2-M-005", "C2-M-032", "C2-M-041", "C2-M-046", "C2-M-057", "C2-M-066"]
     },
     {
       "id": "import-element-mapped",

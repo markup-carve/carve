@@ -1253,7 +1253,7 @@ Example 29 (verified)
 | `table` | map | table |  |
 | `tbody` | map | table_body |  |
 | `td` | map | table_cell |  |
-| `template` | raw | raw_block, nothing with `rawHtml` off; an abbreviation template where C2-H-187 reads it |  |
+| `template` | raw | raw_block or raw_inline, nothing with `rawHtml` off; an abbreviation template where C2-H-187 reads it |  |
 | `textarea` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
 | `tfoot` | map | table_foot |  |
 | `th` | map | table_cell |  |
@@ -1658,7 +1658,7 @@ ab
 | `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
-| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
+| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span; a further task box or table caption |
 | `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
 | `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
