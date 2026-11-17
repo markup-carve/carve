@@ -1230,7 +1230,7 @@
       "status": "new",
       "messages": ["Include \"${path}\" was not expanded: the path leads outside the include root."],
       "message_origin": "data_file",
-      "reports": "a target whose canonical path lies outside the containment root, whether or not it exists (C2-N-012, C2-N-013)",
+      "reports": "a URI-scheme path or a target whose canonical path lies outside the containment root, whether or not it exists (C2-N-012, C2-N-013)",
       "change": "0.1 reported it as include-unresolved",
       "clauses": ["C2-N-012", "C2-N-013", "C2-N-061"]
     },

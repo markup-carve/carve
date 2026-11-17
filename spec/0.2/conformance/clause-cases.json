@@ -54415,6 +54415,37 @@
     ]
   },
   "from": []
+},
+{
+ "id": "CC-1139",
+ "clauses": [
+  "C2-N-012",
+  "C2-N-061"
+ ],
+ "why": "C2-N-012: A path that starts with a URI scheme",
+ "summary": "URI scheme include is outside the command line file resolver root",
+ "kind": "cli",
+ "files": {
+  "main.crv": {
+   "text": "{{ https://example.test/x }}\n"
+  }
+ },
+ "args": [
+  "diagnostics",
+  "main.crv"
+ ],
+ "options": {},
+ "expected": {
+  "status": 0,
+  "stdoutDiagnostics": [
+   {
+    "code": "include-outside-root",
+    "file": "main.crv"
+   }
+  ],
+  "stderrCategory": null
+ },
+ "from": []
 }
  ]
 }

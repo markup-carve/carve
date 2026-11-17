@@ -64,7 +64,7 @@
       "name": "outside_root",
       "code": "include-outside-root",
       "stage": "resolver",
-      "when": "the canonical target lies outside the containment root",
+      "when": "the canonical target lies outside the containment root or the path starts with a URI scheme",
       "clauses": [
         "C2-N-007",
         "C2-N-012",
