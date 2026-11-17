@@ -232,7 +232,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-014** Interrupter (a): a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block (C2-B-108).
 
-**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost open list when its marker matches under C2-B-049 and the container that holds that list owns the line (C2-B-025); otherwise it closes the open lists and opens a new one, whatever its value, in the innermost container that owns the line (C2-B-228). A marker indented past an item's, description's or footnote body's marker opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line or directly on the marker line.
+**C2-B-015** Interrupter (b): a list marker with content at an open list's column continues that list when its marker matches under C2-B-049. A marker left of every open list continues the outermost open list when its marker matches under C2-B-049 and the container that holds that list owns the line (C2-B-025); otherwise it closes the open lists and opens a new one, whatever its value, in the innermost container that owns the line (C2-B-228). A marker indented past an item's, description's or footnote body's marker, and not between the columns of two open lists (C2-B-055), opens a nested list without a blank line only when it is a bullet, a bare dot or an ordered marker of value 1. Below `- We moved in`, `  2024. It was good` is a lazy line. A nested list starting at another number stands after a blank line or directly on the marker line.
 
 **C2-B-016** Interrupter (c): a description mark or a term mark with content at an open description list's column, or a definition line at column 0 while a definition is open.
 
@@ -1300,7 +1300,7 @@ Example 246 (unverified)
 
 **C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
 
-**Exception C2-B-055** A marker between the columns of two open lists joins the deeper list, and `list-marker-below-content-column` reports it.
+**Exception C2-B-055** A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list: it joins that list when it matches, and otherwise C2-B-050 closes that list and opens a new one, whatever its value, in the container of the closed list. `list-marker-below-content-column` reports it.
 
 Example 46 (generated)
 
@@ -1426,6 +1426,33 @@ Example 51 (unverified)
     <h1 id="a">a</h1>
   </li>
   <li>b</li>
+</ul>
+```
+
+:::
+
+A paragraph is open at the last line, and its marker stands between the columns of the two lists: it does not match the deeper list, so that list closes and a list starting at 7 opens in the item `a`, without a blank line.
+
+Example 270 (generated)
+
+::: compare
+
+```carve
+- a
+    - b
+  7. c
+```
+
+```html
+<ul>
+  <li>a
+    <ul>
+      <li>b</li>
+    </ul>
+    <ol start="7">
+      <li>c</li>
+    </ol>
+  </li>
 </ul>
 ```
 
@@ -6350,7 +6377,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
 | Task items | 4 | 0 | 1 | 5 |
-| Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 5 | 1 |
+| Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 6 | 1 |
 | Nested lists and the marker line | 6 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
@@ -6368,7 +6395,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 1 | 18 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **166** | **103** |
+| **Total** | **228** | **13** | **167** | **103** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
