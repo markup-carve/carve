@@ -2231,7 +2231,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
-**C2-H-168** Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+**C2-H-168** Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1. Core math has no build-time renderer, so no entry of `renderers` (C2-H-123) applies to it.
 
 Example 69 (unverified, `--mode static`)
 
