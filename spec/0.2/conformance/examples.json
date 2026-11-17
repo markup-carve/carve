@@ -934,9 +934,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-464",
+   "id": "syntax-blocks-288",
    "document": "syntax-blocks.md",
-   "number": 464,
+   "number": 288,
    "section": "Paragraphs and interrupters",
    "clauses": [
     "C2-B-011",
@@ -4642,9 +4642,9 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-460",
+   "id": "syntax-blocks-284",
    "document": "syntax-blocks.md",
-   "number": 460,
+   "number": 284,
    "section": "Ordered lists",
    "clauses": [
     "C2-B-036",
@@ -4776,9 +4776,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-461",
+   "id": "syntax-blocks-285",
    "document": "syntax-blocks.md",
-   "number": 461,
+   "number": 285,
    "section": "Ordered lists",
    "clauses": [
     "C2-B-036",
@@ -17678,9 +17678,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-423",
+   "id": "syntax-blocks-283",
    "document": "syntax-blocks.md",
-   "number": 423,
+   "number": 283,
    "section": "The fence opener and titles",
    "clauses": [
     "C2-B-117",
@@ -18281,9 +18281,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-462",
+   "id": "syntax-blocks-286",
    "document": "syntax-blocks.md",
-   "number": 462,
+   "number": 286,
    "section": "Sigil divs",
    "clauses": [
     "C2-B-123",
@@ -26679,9 +26679,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-blocks-463",
+   "id": "syntax-blocks-287",
    "document": "syntax-blocks.md",
-   "number": 463,
+   "number": 287,
    "section": "Frontmatter",
    "clauses": [
     "C2-B-161",
@@ -47390,9 +47390,9 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
-   "id": "syntax-inline-467",
+   "id": "syntax-inline-131",
    "document": "syntax-inline.md",
-   "number": 467,
+   "number": 131,
    "section": "Reference resolution",
    "clauses": [
     "C2-I-075",
@@ -47495,9 +47495,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-inline-466",
+   "id": "syntax-inline-130",
    "document": "syntax-inline.md",
-   "number": 466,
+   "number": 130,
    "section": ":smile:",
    "clauses": [
     "C2-I-085",
@@ -62639,9 +62639,9 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
-   "id": "html-482",
+   "id": "html-81",
    "document": "html.md",
-   "number": 482,
+   "number": 81,
    "section": "Hello-World",
    "clauses": [],
    "kind": "render",
@@ -62917,9 +62917,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "html-465",
+   "id": "html-78",
    "document": "html.md",
-   "number": 465,
+   "number": 78,
    "section": "İstanbul Straße",
    "clauses": [],
    "kind": "render",
@@ -69476,9 +69476,9 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
-   "id": "html-400",
+   "id": "html-77",
    "document": "html.md",
-   "number": 400,
+   "number": 77,
    "section": "Inline elements",
    "clauses": [
     "C2-H-072",
@@ -69602,9 +69602,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "html-481",
+   "id": "html-80",
    "document": "html.md",
-   "number": 481,
+   "number": 80,
    "section": "Inline elements",
    "clauses": [
     "C2-H-072",
@@ -71933,9 +71933,9 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "html-480",
+   "id": "html-79",
    "document": "html.md",
-   "number": 480,
+   "number": 79,
    "section": "Mentions, tags and symbols",
    "clauses": [
     "C2-H-100",
@@ -79403,9 +79403,9 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
-   "id": "includes-420",
+   "id": "includes-39",
    "document": "includes.md",
-   "number": 420,
+   "number": 39,
    "section": "Expansion",
    "clauses": [
     "C2-N-015",
@@ -80726,9 +80726,9 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
-   "id": "includes-421",
+   "id": "includes-40",
    "document": "includes.md",
-   "number": 421,
+   "number": 40,
    "section": "Region",
    "clauses": [
     "C2-N-037",
@@ -87009,9 +87009,9 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
-   "id": "import-html-422",
+   "id": "import-html-59",
    "document": "import-html.md",
-   "number": 422,
+   "number": 59,
    "section": "Footnotes",
    "clauses": [
     "C2-M-061",

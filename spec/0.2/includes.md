@@ -241,7 +241,7 @@ Top.
 }
 ```
 
-Example 420 (unverified)
+Example 39 (unverified)
 
 File `a.crv`:
 
@@ -612,7 +612,7 @@ Skip too.
 
 :::
 
-Example 421 (unverified)
+Example 40 (unverified)
 
 File `a.crv`:
 

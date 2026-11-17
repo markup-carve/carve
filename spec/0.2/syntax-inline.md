@@ -1365,7 +1365,7 @@ Example 108 (generated)
 
 A symbol gives no plain text (C2-H-143), so the key `:smile:` is empty and finds no heading (C2-I-084).
 
-Example 467 (unverified)
+Example 131 (unverified)
 
 ::: compare
 
@@ -1388,7 +1388,7 @@ Example 467 (unverified)
 
 `no` names no definition, so the reference is text, and its two attribute blocks follow as typed (C2-I-085).
 
-Example 466 (unverified)
+Example 130 (unverified)
 
 ::: compare
 

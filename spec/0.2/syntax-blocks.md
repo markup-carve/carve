@@ -252,7 +252,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 `b` is not indented, so the item does not own it, but it is a lazy line of the open stanza, and the item stays open (C2-B-024).
 
-Example 464 (unverified)
+Example 288 (unverified)
 
 ::: compare
 
@@ -978,7 +978,7 @@ Example 29 (generated)
 
 The second marker settles a one-letter first marker: `vi.` is the numeral after `v`, so both items are one roman list (C2-B-042).
 
-Example 460 (unverified)
+Example 284 (unverified)
 
 ::: compare
 
@@ -998,7 +998,7 @@ vi.  y
 
 `k` is neither the numeral after `i` nor the letter after it, so the lone `i` is roman and `k.` starts an alphabetic list (C2-B-044).
 
-Example 461 (unverified)
+Example 285 (unverified)
 
 ::: compare
 
@@ -3448,7 +3448,7 @@ n
 
 `{_a}` is no valid attribute block, so it starts further words behind the name (C2-B-225, C2-B-122).
 
-Example 423 (unverified)
+Example 283 (unverified)
 
 ::: compare
 
@@ -3617,7 +3617,7 @@ b</p>
 
 The inner `figure` stands inside a group, so it is a plain div, and its captioned image is a plain figure, no panel of the outer group (C2-B-127).
 
-Example 462 (unverified)
+Example 286 (unverified)
 
 ::: compare
 
@@ -5303,7 +5303,7 @@ b
 
 `JSON` is a format name, letters in any case, so the lines are frontmatter (C2-B-164).
 
-Example 463 (unverified)
+Example 287 (unverified)
 
 ::: compare
 

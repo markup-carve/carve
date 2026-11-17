@@ -339,7 +339,7 @@ Example 24 (generated)
 
 Under `ascii` an ASCII heading keeps its case, as under 0.1 `asciiHeadingIds: true`.
 
-Example 482 (unverified, `--heading-ids ascii`)
+Example 81 (unverified, `--heading-ids ascii`)
 
 ::: compare
 
@@ -407,7 +407,7 @@ Example 37 (unverified)
 
 In a quote and in an item the attribute line goes onto the bare `<img>` the same way (C2-H-020, C2-H-007).
 
-Example 465 (unverified)
+Example 78 (unverified)
 
 ::: compare
 
@@ -1384,7 +1384,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 :::
 
-Example 400 (unverified)
+Example 77 (unverified)
 
 ::: compare
 
@@ -1400,7 +1400,7 @@ Example 400 (unverified)
 
 A semantic key in another case is an ordinary attribute, beside a semantic key or alone.
 
-Example 481 (unverified)
+Example 80 (unverified)
 
 ::: compare
 
@@ -1768,7 +1768,7 @@ Example 35 (unverified, `--social {"mentionUrl":"https://x.org/u/{name}"}`)
 
 A linked tag holds its text directly; the inert mention keeps its `<strong>`.
 
-Example 480 (unverified, `--social {"tagUrl":"/t/{name}"}`)
+Example 79 (unverified, `--social {"tagUrl":"/t/{name}"}`)
 
 ::: compare
 
