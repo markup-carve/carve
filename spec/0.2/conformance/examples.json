@@ -78766,6 +78766,85 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-55",
+   "document": "import-html.md",
+   "number": 55,
+   "section": "Figures",
+   "clauses": [
+    "C2-M-042",
+    "C2-M-043"
+   ],
+   "kind": "import",
+   "html": "<figure class=\"wide\" id=\"f\"><table class=\"t\" id=\"t\"><tr><td>a</td></tr></table><figcaption>c</figcaption></figure>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "table",
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      },
+      "attrs": {
+       "id": "t",
+       "classes": [
+        "wide",
+        "t"
+       ]
+      }
+     }
+    ],
+    "carve": "{#t .wide .t}\n| a |\n^ c\n",
+    "diagnostics": [
+     "import-attribute-dropped"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-20",
    "document": "import-html.md",
    "number": 20,

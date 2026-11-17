@@ -664,7 +664,7 @@ Reported: `import-attribute-dropped`.
 
 **C2-M-042** A `<figure>` whose first class is `carve-figure-group` is a `figure_group` whose panels are its `<figure>` children, and whose `<figcaption>` is its caption (C2-H-063, C2-H-064).
 
-**C2-M-043** Any other `<figure>` that holds one block, which C2-A-082 lets carry a caption and which has none yet, and a `<figcaption>` is that block with the caption in its `caption` slot, and with the attributes of the `<figure>` as its attributes (C2-H-199, C2-A-183). A figure with no `<figcaption>` that holds one image paragraph is that paragraph. A figure that holds more than one block, or one block that C2-A-082 does not let carry a caption or that has a caption already, is a `figure_group`.
+**C2-M-043** Any other `<figure>` that holds one block, which C2-A-082 lets carry a caption and which has none yet, and a `<figcaption>` is that block with the caption in its `caption` slot, and with the attributes of the `<figure>` and of the block element as its attributes, merged as consecutive attribute blocks are (C2-A-035), the figure's first: classes add up, and an id, a key, a `lang` or a `dir` of the block element replaces that of the figure, which is dropped and reported with `import-attribute-dropped` (C2-H-199, C2-A-183). A figure with no `<figcaption>` that holds one image paragraph is that paragraph. A figure that holds more than one block, or one block that C2-A-082 does not let carry a caption or that has a caption already, is a `figure_group`.
 
 Example 18 (verified)
 
@@ -735,6 +735,32 @@ x
 :::
 
 A plain paragraph carries no caption (C2-A-082), so the figure is a group around it.
+
+Example 55 (unverified)
+
+::: compare
+
+```html
+<figure class="wide" id="f"><table class="t" id="t"><tr><td>a</td></tr></table><figcaption>c</figcaption></figure>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"a"}]}]}]}]}],"columns":[{"type":"table_column"}],"caption":{"type":"caption","children":[{"type":"paragraph","children":[{"type":"text","value":"c"}]}]},"attrs":{"id":"t","classes":["wide","t"]}}
+]
+```
+
+```carve
+{#t .wide .t}
+| a |
+^ c
+```
+
+:::
+
+The classes add up, the figure's first, and the table's id replaces the figure's.
+
+Reported: `import-attribute-dropped`.
 
 ## Conventions
 
@@ -1576,7 +1602,7 @@ ab
 
 | Code | Severity | Reports |
 |---|---|---|
-| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set |
+| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
 | `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
@@ -1659,4 +1685,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 54 examples: 46 verified and 8 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 55 examples: 46 verified and 9 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
