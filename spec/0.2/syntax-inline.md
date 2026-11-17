@@ -389,7 +389,7 @@ Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in 
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 
-**Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. It is not a host, and an attribute block behind it attaches to nothing. (carried over from 0.1)
+**Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. (carried over from 0.1)
 
 Example 16 (generated)
 
@@ -489,10 +489,6 @@ two %} b and *bo{% c %}ld* and a {% oops
 **C2-I-035** A valid attribute block is one atom wherever it stands. One that attaches to nothing is printed as written: nothing inside it is transformed, smart quotes included.
 
 **C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span, a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
-
-**C2-I-037** A word is not a host. Neither is a mention, a tag, a cross-reference, a comment, an editorial comment, raw inline, a quote or a typography replacement.
-
-**C2-I-038** A reference is a host whether or not its label resolves (C2-I-075).
 
 **C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, a later id or key replaces an earlier one of the same name, and a later language part replaces an earlier one. This is the inline side of C2-B-094.
 
@@ -976,7 +972,7 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-062** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
 
-**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom and not a host. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text. (carried over from 0.1)
+**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text. (carried over from 0.1)
 
 A span no longer shields its content: a delimiter inside a braced span can close a span that opened outside it. An author escapes that delimiter.
 
@@ -1315,7 +1311,7 @@ Example 108 (generated)
 
 **C2-I-084** The heading lookup reads the stored key as inline content of its own, in which no reference is resolved, and takes its plain text by C2-H-143. It takes the plain text of each heading the same way, and folds both by C2-I-079. The target is the first heading in document order that has an id and whose folded plain text equals that of the key. The match is case-sensitive. The reference links to that heading's authored or generated id; an explicit id is a destination, not a key the lookup matches. An opener left unclosed in the key is text under the fallback rule (C2-I-119), so the lookup never fails because of markup in the key. No source text is read: a tree resolves the same with and without its source, and the formatter cannot change which heading a key finds. The `key` and the carrier `data-carve-ref` keep the folded label as written (C2-A-104, C2-H-114). A heading that has no id, which is one without an authored id while `headingIds` is `off` (C2-H-022), is no target: the lookup passes over it, and a reference that finds no other heading is unresolved.
 
-**C2-I-085** An unresolved reference is still a reference node. It renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
+**C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. An attached attribute block is written behind it as text, in the fixed order (C2-I-041).
 
 **C2-I-086** A footnote reference and an inline footnote inside an unresolved reference are ordinary footnotes: each takes its number and makes its note.
 
@@ -1890,7 +1886,7 @@ Example 87 (unverified)
 
 ## Cross-references
 
-**C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom and not a host. (carried over from 0.1)
+**C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom. (carried over from 0.1)
 
 **C2-I-097** The id is matched exactly, without case folding. An unresolved cross-reference is written as the characters typed. (carried over from 0.1)
 
@@ -2374,7 +2370,7 @@ There is no fixed budget for the inline chapter.
 | Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 2 | 1 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 1 |
-| Attribute blocks | 15 | 2 | 6 | 5 |
+| Attribute blocks | 13 | 2 | 6 | 5 |
 | The opening brace | 2 | 1 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
@@ -2391,9 +2387,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **114** | **16** | **69** | **54** |
+| **Total** | **112** | **16** | **69** | **54** |
 
-The chapter has 114 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
+The chapter has 112 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

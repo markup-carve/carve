@@ -474,7 +474,7 @@
           },
           "host": {
             "type": "boolean",
-            "description": "True when an attribute block glued to the end of the form attaches to it (C2-I-036, C2-I-037)."
+            "description": "True when an attribute block glued to the end of the form attaches to it (C2-I-036)."
           },
           "transparent_to_neighbors": {
             "type": "boolean",

@@ -112,7 +112,7 @@
       "name": "inline_host",
       "where": "glued_to_end_of_formed_host",
       "otherwise": "text",
-      "clauses": ["C2-I-009", "C2-I-036", "C2-I-037"]
+      "clauses": ["C2-I-009", "C2-I-036"]
     },
     {
       "name": "link_definition",

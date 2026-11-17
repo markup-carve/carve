@@ -7,7 +7,7 @@
       "glued_after": "[]",
       "content": "inline",
       "host": true,
-      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-038", "C2-I-072", "C2-I-075"]
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-072", "C2-I-075"]
     },
     {
       "name": "footnote_reference",
@@ -24,7 +24,7 @@
       "glued_after": "[label]",
       "content": "inline",
       "host": true,
-      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-038", "C2-I-072", "C2-I-075", "C2-I-076", "C2-I-078"]
+      "clauses": ["C2-I-006", "C2-I-007", "C2-I-036", "C2-I-072", "C2-I-075", "C2-I-076", "C2-I-078"]
     },
     {
       "name": "image",
