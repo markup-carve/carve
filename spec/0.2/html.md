@@ -226,8 +226,6 @@ a[^x]
 
 **C2-H-027** The id of a heading that opens a section is written on the `<section>`. Every other attribute of that heading stays on the heading element.
 
-**C2-H-028** A heading inside a container opens no section and carries its id itself. The same holds for every heading when `sections` is off.
-
 Example 4 (generated)
 
 ::: compare
@@ -2386,7 +2384,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 3 | 1 |
-| Paragraphs, headings and sections | 17 | 1 | 5 | 1 |
+| Paragraphs, headings and sections | 16 | 1 | 5 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 0 |
@@ -2405,6 +2403,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **196** | **6** | **33** | **36** |
+| **Total** | **195** | **6** | **33** | **36** |
 
-The document has 196 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 195 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

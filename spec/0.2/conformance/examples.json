@@ -57610,8 +57610,7 @@
    "section": "fn1",
    "clauses": [
     "C2-H-026",
-    "C2-H-027",
-    "C2-H-028"
+    "C2-H-027"
    ],
    "kind": "render",
    "input": "# One\n\n## Two words\n\n# One\n\n{#mine .c k=v}\n## Three\n\n> # Quoted",
