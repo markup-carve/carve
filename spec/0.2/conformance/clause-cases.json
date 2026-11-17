@@ -7439,6 +7439,712 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-087",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a header mark glued to a letter is cell text, so the row is no head row",
+   "input": "|=a|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "=a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-088",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a tab after the header mark makes a header cell",
+   "input": "|=\ta|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-089",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a header mark at the end of its cell makes an empty header cell",
+   "input": "|=|= b |\n| x | y |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\"></th><th scope=\"col\">b</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td><td>y</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": []
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-090",
+   "clauses": [
+    "C2-B-171",
+    "C2-B-182"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a glued less-than sign keeps the header cell and stays its text",
+   "input": "|=<a|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">&lt;a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "<a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-091",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a doubled equals sign is cell text",
+   "input": "|==a|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>==a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "==a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-092",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "an empty brace pair is no brace block, so the equals sign is text",
+   "input": "|={}a|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>={}a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "={}a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-093",
+   "clauses": [
+    "C2-B-171",
+    "C2-B-172"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a header mark glued to a caret is text, not a span",
+   "input": "|= H |\n|=^|",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">H</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>=^</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "H"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "=^"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-094",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a formula cell in a body row keeps its equals sign",
+   "input": "| h |\n| y |=SUM(A1)|",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>h</td></tr>\n    <tr><td>y</td><td>=SUM(A1)</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "h"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "=SUM(A1)"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-095",
+   "clauses": [
+    "C2-B-185",
+    "C2-B-171"
+   ],
+   "why": "C2-B-185: A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.",
+   "summary": "a header mark in a continuation fragment is text, with or without a space",
+   "input": "| h | k |\n+ y |= a|",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>h y</td><td>k = a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "h y"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "k = a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

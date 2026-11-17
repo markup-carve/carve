@@ -5205,7 +5205,31 @@ title: x
 
 **C2-B-170** A table ends at the first line that is neither a row nor a continuation row.
 
-**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). The space behind it is optional: `|=a|` is a header cell that holds `a`. Spaces and tabs at the start and at the end of a cell are padding and not content.
+**C2-B-171** A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093). The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text. So `|= a|`, `|={.c}a|`, `|=|` and `|=< a|` are header cells, the last one holding `< a` (C2-B-182), while `|=a|`, `|==a|` and `|=SUM(A1)|` are data cells whose text starts with `=`. Spaces and tabs at the start and at the end of a cell are padding and not content.
+
+Example 275 (unverified)
+
+::: compare
+
+```carve
+|= Item |=|=<x|
+| tea |=SUM(A1:A3)|==2|
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col"></th><th scope="col">&lt;x</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>tea</td><td>=SUM(A1:A3)</td><td>==2</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+The first row is a head row: the header mark stands before a space, before the end of its cell and before `<`, which stays text. In the second row each `=` is glued to text, so `=SUM(A1:A3)` and `==2` are data cells that keep their equals signs, as in 0.1.
 
 **C2-B-172** A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above when that cell stands in the same group of the table (C2-B-174). A `<` in the first column, a `<` whose left cell is covered by a row span from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing (C2-B-173): in `|a|<|` above `|^|b|`, the `^` is the text of its cell.
 
@@ -6468,10 +6492,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 34 | 0 | 22 | 17 |
+| Tables | 34 | 0 | 22 | 18 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **218** | **10** | **171** | **103** |
+| **Total** | **218** | **10** | **171** | **104** |
 
 The chapter has 218 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

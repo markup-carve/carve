@@ -255,6 +255,14 @@ After, on one row:
 | `a b` | 1 2 |
 ```
 
+### Ruling of 17 November 2026
+
+This ruling changes what some documents give against freeze candidate 5 of 0.2 and against early 0.2 engines; against 0.1 it removes a difference. A header mark needs a space, a tab, a brace block, one of `<`, `>`, `~` or the end of the cell behind it (C2-B-171).
+
+| ID | What you wrote | Before | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-270 | `\|=a\|`, meant as a header cell, with the text glued to the header mark **SILENT** | 0.1: a data cell with the text `=a`. Freeze candidate 5 and early 0.2 engines: a header cell that holds `a`. | A data cell with the text `=a`, as in 0.1. Where a header cell is meant, write `\|= a \|`; rewrite |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
@@ -496,7 +504,6 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-182 | Under C2-I-119 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
 | U-183 | Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1. **SILENT** | The same 0.2 source writes a figure with the text `![a][nope]` and the caption `cap`. | Escape the image opener as `\![a][nope]`; escape |
 | U-184 | A nested list opener or pending attribute changes item ownership under C2-B-057 and C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
-| U-185 | A cell whose text starts with an equals sign directly behind its pipe becomes a header cell under C2-B-171 **SILENT** | \| total \|=SUM(A1:A3) \| | \| total \|\=SUM(A1:A3) \|; escape |
 | U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
 | U-187 | An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091 **SILENT** | [@]: y |  [@]: y; rewrite |
 | U-188 | A plus-minus shorthand is recognized inside a colon pair under C2-I-041 **SILENT** | :+-: | :\+-:; escape |
@@ -581,6 +588,8 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-269 | Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top. | The block is kept for nothing, `table-span-marker-attribute` reports it, and `b` has no alignment. This holds for both axes. | Move the marks to each cell of that column below the head that has no mark of its own on that axis, `\| a \|{>^} b \|`, and drop the block; rewrite |
 
 U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
+
+U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark before text needs a space (C2-B-171).
 
 U-260 and U-261 are withdrawn: `{valigns="top,bottom"}` above a table and the cell marks `{>^}` give the same HTML in 0.1 and 0.2, `vertical-align` styles on the cells (C2-B-182, C2-B-211, C2-B-213, C2-H-057).
 

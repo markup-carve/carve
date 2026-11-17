@@ -14,7 +14,7 @@
     ],
     "clauses": ["C2-B-093", "C2-B-171"]
   },
-  "header_cell_mark": { "mark": "|=", "head": "leading_rows_with_a_header_cell_and_no_other_cell", "clauses": ["C2-B-171", "C2-B-178"] },
+  "header_cell_mark": { "mark": "|=", "followed_by": ["<", ">", "brace_block", "cell_end", "space", "tab", "~"], "otherwise": "equals_sign_is_cell_text", "head": "leading_rows_with_a_header_cell_and_no_other_cell", "clauses": ["C2-B-171", "C2-B-178"] },
   "span_marks": [
     {
       "mark": "<",

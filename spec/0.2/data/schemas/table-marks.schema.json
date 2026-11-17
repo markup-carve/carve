@@ -57,9 +57,17 @@
     "header_cell_mark": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mark", "head", "clauses"],
+      "required": ["mark", "followed_by", "otherwise", "head", "clauses"],
       "properties": {
         "mark": { "const": "|=" },
+        "followed_by": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["<", ">", "brace_block", "cell_end", "space", "tab", "~"] },
+          "description": "What may follow the `=` for it to be the header cell mark (C2-B-171). Sorted by code point."
+        },
+        "otherwise": { "const": "equals_sign_is_cell_text", "description": "Followed by anything else, the `=` is the first character of the cell's text." },
         "head": { "type": "string", "description": "Which rows form the head." },
         "clauses": {
           "type": "array",

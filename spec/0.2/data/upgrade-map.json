@@ -1582,16 +1582,6 @@
       "silent": true
     },
     {
-      "id": "U-185",
-      "kind": "escape",
-      "group": "measured ownership and inline rewrites",
-      "from": "| total |=SUM(A1:A3) |\n",
-      "to": "| total |\\=SUM(A1:A3) |\n",
-      "meaning02": "<table>\n  <tbody>\n    <tr><td>total</td><th scope=\"row\">SUM(A1:A3)</th></tr>\n  </tbody>\n</table> A cell whose text starts with `=` directly behind its pipe is a header cell under C2-B-171, and the `=` is gone; the bare mark `|=|` behaves the same.",
-      "toolEntry": "U-185",
-      "silent": true
-    },
-    {
       "id": "U-186",
       "kind": "rewrite",
       "group": "measured ownership and inline rewrites",
@@ -2340,6 +2330,16 @@
       "meaning02": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-174: the brace block of a span mark that joins is kept for nothing, and `table-span-marker-attribute` reports it, on both axes.",
       "toolEntry": "U-269",
       "silent": false
+    },
+    {
+      "id": "U-270",
+      "kind": "rewrite",
+      "group": "rulings of 17 November",
+      "from": "|=a|\n| x |\n",
+      "to": "|= a |\n| x |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: the header mark needs a space, a tab, a brace block, `<`, `>`, `~` or the end of the cell behind it; otherwise the `=` is cell text, as in 0.1. The rewrite is for a source written for a header cell under freeze candidate 5, not for a 0.1 document.",
+      "toolEntry": "U-270",
+      "silent": true
     }
   ],
   "tree": [
