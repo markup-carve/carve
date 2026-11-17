@@ -2680,6 +2680,16 @@
       "meaning02": "0.2 reports each table-shaped paragraph line; 0.1 reported only the first line of the run. The HTML is unchanged.",
       "toolEntry": "U-373",
       "silent": false
+    },
+    {
+      "id": "U-374",
+      "kind": "report",
+      "group": "nested braced boundaries",
+      "from": "{-{_a-}_} b-}",
+      "to": "",
+      "meaning02": "At nested braced boundaries, C2-I-058 and C2-I-059 pair the first matching closer and remove later openers from the delimiter stack. The 0.1 HTML nests an underline inside deletion for this input; 0.2 does not, because the inner underline opener is removed when the outer deletion closes. The same boundary rule governs `{-a-}{+{+b~}+}+}`. No source rewrite is promised; review the nesting.",
+      "toolEntry": "U-374",
+      "silent": true
     }
   ],
   "tree": [
