@@ -17213,7 +17213,7 @@
    "clauses": [
     "C2-B-024"
    ],
-   "why": "C2-B-024: An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. C2-B-024: A lazy include directive or list marker is a line of text of the stanza (C2-B-123); a lazy `%%` line is a comment-only line (C2-B-137), no line of the stanza, and the stanza goes on below it.",
+   "why": "C2-B-024: An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. C2-B-024: A lazy include directive or list marker is a line of text of the stanza (C2-B-123).",
    "summary": "lazy lines of a quoted stanza, a list marker among them",
    "input": "> ::: |\n> a\nb\n- c",
    "options": {},
@@ -18346,6 +18346,116 @@
         "type": "link",
         "href": "/u",
         "children": []
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-331",
+   "clauses": [
+    "C2-B-024",
+    "C2-B-135"
+   ],
+   "why": "C2-B-024: A `%%` line that the container owns is a line of the body and is text (C2-B-135).",
+   "summary": "a percent line inside the body of a line block is a line of text",
+   "input": "::: |\na\n%% x\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\n%% x<br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "%% x"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-332",
+   "clauses": [
+    "C2-B-024",
+    "C2-B-137",
+    "C2-B-138"
+   ],
+   "why": "C2-B-024: A lazy `%%` line, one that the container of the line block does not own, is a comment-only line (C2-B-137) and no line of the stanza: its comment is an inline child at the end of the `line` above it, and the stanza goes on below it.",
+   "summary": "a lazy percent line below a stanza is a comment at the end of the line above",
+   "input": "- ::: |\n  a\n%% c\nb",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>a<br>\nb</p>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "line_block",
+          "children": [
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "a"
+             },
+             {
+              "type": "comment",
+              "form": "line",
+              "value": "c"
+             }
+            ]
+           },
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         }
+        ]
        }
       ]
      }
