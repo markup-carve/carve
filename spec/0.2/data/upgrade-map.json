@@ -1704,10 +1704,10 @@
     {
       "id": "U-207",
       "kind": "report",
-      "group": "rulings of 17 November, 13:55",
+      "group": "measured inline reference rewrites",
       "from": "Text[^a]{.c}{#i}.\n",
       "to": "",
-      "meaning02": "<p>Text[^a]{#i .c}.</p> An unresolved footnote reference writes its glued attribute blocks as one block in the fixed order (C2-I-088, C2-I-085, C2-H-139); 0.1 wrote them as typed, `Text[^a]{.c}{#i}.`. A single block in the fixed order, `{#i .c}`, gives the same HTML in both versions; review.",
+      "meaning02": "<p>Text[^a]{#i .c}.</p> An unresolved footnote reference writes its glued attribute blocks as one block in the fixed order (C2-I-088, C2-I-085, C2-H-139); 0.1 wrote them as typed, `Text[^a]{.c}{#i}.`. No rewrite is recorded; review.",
       "toolEntry": "U-207",
       "silent": true
     },
@@ -2657,7 +2657,7 @@
       "group": "rulings of 17 November, 13:55",
       "from": "[x][no]{.c}{#i}\n",
       "to": "",
-      "meaning02": "<p>[x][no]{#i .c}</p> An unresolved reference writes its glued attribute blocks merged, as one block in the fixed order (C2-I-085, C2-H-139), so the HTML is a function of the tree; 0.1 wrote them as typed, `<p>[x][no]{.c}{#i}</p>`. A single block in the fixed order keeps the 0.1 HTML where the reference stays unresolved; review.",
+      "meaning02": "<p>[x][no]{#i .c}</p> An unresolved reference writes its glued attribute blocks merged, as one block in the fixed order (C2-I-085, C2-H-139), so the HTML is a function of the tree; 0.1 wrote them as typed, `<p>[x][no]{.c}{#i}</p>`. No rewrite is recorded; review.",
       "toolEntry": "U-371",
       "silent": true
     }
