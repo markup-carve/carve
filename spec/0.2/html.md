@@ -54,7 +54,7 @@ Example 1 (generated)
 
 ## Attributes
 
-**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`, which takes an authored `style` behind it, C2-H-032), then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037).
+**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language and the direction, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`, which takes an authored `style` behind it, C2-H-032), then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037) and the direction as the `dir` attribute (C2-A-031).
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
@@ -62,7 +62,7 @@ Example 1 (generated)
 
 **C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068). A class that occurs more than once is written once, at its first place; the tree keeps every occurrence.
 
-**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written.
+**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written. A `dir` key beside the `dir` field of a supplied or imported tree is the same case: the field decides.
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
