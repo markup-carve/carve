@@ -1,6 +1,6 @@
 # Carve 0.2: the source-layout sidecar
 
-Status: freeze candidate 2 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 

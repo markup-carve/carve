@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: block structure
 
-Status: freeze candidate 2 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how the lines of a Carve document form blocks. Inline content, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of a block decision.
 

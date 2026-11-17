@@ -1,6 +1,6 @@
 # Carve 0.2: extensions
 
-Status: freeze candidate 2 of Carve 0.2 on `next2`: the extension mechanism is frozen with the core, and the standard extensions are not (`STATUS.md`).
+Status: freeze candidate 3 of Carve 0.2 on `next2`: the extension mechanism is frozen with the core, and the standard extensions are not (`STATUS.md`).
 
 This document defines the extension interface for Carve 0.2.0.
 
