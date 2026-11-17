@@ -18167,6 +18167,63 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-325",
+   "clauses": [
+    "C2-I-021",
+    "C2-B-225"
+   ],
+   "why": "C2-I-021: A closed code span with `{=name}` glued to it is raw inline. The name is a raw format name (C2-B-225). The content is written unescaped to the output format of that name and dropped for every other format.",
+   "summary": "a raw format name with a hyphen and a digit makes raw inline, dropped for HTML",
+   "input": "`x`{=tex-2}",
+   "options": {},
+   "expected": {
+    "html": "<p></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "raw_inline",
+        "format": "tex-2",
+        "value": "x"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-326",
+   "clauses": [
+    "C2-I-022",
+    "C2-I-043"
+   ],
+   "why": "C2-I-022: Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-043).",
+   "summary": "a raw marker after a literal-text span is text",
+   "input": "!`x`{=html}",
+   "options": {},
+   "expected": {
+    "html": "<p>x{=html}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "literal_inline",
+        "value": "x"
+       },
+       {
+        "type": "text",
+        "value": "{=html}"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
