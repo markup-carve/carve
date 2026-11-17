@@ -3106,7 +3106,7 @@
     "C2-H-019",
     "C2-B-137"
    ],
-   "why": "C2-H-019: A paragraph that holds only a braced comment is this case, and so is one of braced comments on several lines.",
+   "why": "C2-H-019: A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140).",
    "summary": "paragraph of two braced comments renders nothing",
    "input": "{%%}\n{%%}",
    "options": {},
