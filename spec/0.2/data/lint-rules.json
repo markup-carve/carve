@@ -783,8 +783,8 @@
       "status": "kept",
       "messages": ["This opener carries no inline attributes; the block opens without the glued attribute block. Put that block on its own line directly above the opener."],
       "message_origin": "data_file",
-      "channel_reports": "an attribute block after a fence language or an admonition name",
-      "change": "severity error for an attribute block after a fence language or an admonition name",
+      "channel_reports": "an attribute block after a fence language, a raw format, or any div name",
+      "change": "severity error for an attribute block after a fence language, a raw format, or any div name",
       "reports": "a valid attribute block glued to the language word of a code fence, to the format of a raw fence or to a div name, as ```` ```js{.c} ```` or `::: note{.x}`, which the block opens without, once per opener; the range is the attribute block, and a brace block after a space, or one that is no valid attribute block, starts further words that `fence-title-syntax` reports instead (C2-B-105, C2-B-225)",
       "clauses": ["C2-B-105", "C2-B-225"]
     },

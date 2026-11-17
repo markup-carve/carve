@@ -53368,6 +53368,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1088",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a raw format with a glued attribute block reports fallback",
+   "kind": "parse",
+   "input": "```=html{.x}\nx\n```",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-opener-fallback"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
