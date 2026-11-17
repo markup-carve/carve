@@ -54505,6 +54505,25 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1143",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "semantic attribute message allows value filtering",
+ "kind": "lint",
+ "input": "{kbd=\"javascript:x\"}\np\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "semantic-attribute-outside-span"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }

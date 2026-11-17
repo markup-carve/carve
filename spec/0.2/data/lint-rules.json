@@ -1574,7 +1574,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "\"${name}\" is a semantic span attribute (PART 9 §10) and only applies to an ordinary [content]{attrs} span; on ${type} it stays a raw attribute and renders as ${name}=\"${value}\"."
+        "\"${name}\" is a semantic span attribute (PART 9 §10) and only applies to an ordinary [content]{attrs} span; on ${type} it stays a raw attribute and is subject to HTML attribute filtering."
       ],
       "message_origin": "engine_0_1",
       "change": "it fires for each of the keys `abbr`, `time` and `kbd` (C2-H-075) on a node that is not a span",
