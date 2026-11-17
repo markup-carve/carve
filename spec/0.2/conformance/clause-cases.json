@@ -27050,9 +27050,10 @@
   {
    "id": "CC-477",
    "clauses": [
-    "C2-W-113"
+    "C2-W-113",
+    "C2-T-031"
    ],
-   "why": "C2-W-113: A finding that a chapter calls lint, and every other rule of this catalog, is reported in the lint channel. A code keeps its one channel in every tool.",
+   "why": "C2-W-113: A finding that a chapter calls lint, and every other rule of this catalog, is reported in the lint channel. A code keeps its one channel in every tool. C2-T-031: The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence.",
    "summary": "a lint run reports a lint rule in the lint channel and a parser finding still in the parse channel",
    "kind": "lint",
    "input": "a **b** c\n\n```\nx\n",
@@ -27753,7 +27754,7 @@
     "C2-A-213",
     "C2-H-085"
    ],
-   "why": "C2-A-213: Resolution leaves it unresolved, and rendering writes the unresolved reference as text. C2-H-085: An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: \"full\"` or `[]` for `refForm: \"collapsed\"`.",
+   "why": "C2-A-213: Resolution leaves it unresolved, and rendering writes the unresolved reference as text. C2-H-085: An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: \"full\"` or `[]` for `refForm: \"collapsed\"`. C2-H-085: an unresolved shortcut of a supplied tree (C2-A-213) renders `[`, its rendered children and `]`, with no label after them.",
    "summary": "an unresolved supplied shortcut renders as bracketed text",
    "kind": "render",
    "tree": {
@@ -28066,7 +28067,7 @@
     "C2-A-193",
     "C2-W-117"
    ],
-   "why": "C2-A-193: It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011. C2-W-117: the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field",
+   "why": "C2-A-193: It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011 as `field-unspellable` at the path of that field, as `/metadata/keywords`. C2-W-117: the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field",
    "summary": "the Carve writer reports root metadata keywords and headers at their paths",
    "kind": "write",
    "tree": {

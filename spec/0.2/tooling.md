@@ -183,7 +183,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |
 
-**C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.
+**C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.
 
 ### `carve diagnostics`
 

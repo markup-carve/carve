@@ -21,7 +21,7 @@
         "to": {"type": "string"},
         "meaning02": {"type": "string"},
         "toolEntry": {"type": "string", "pattern": "^U-[0-9]{3}$"},
-        "silent": {"type": "boolean"}
+        "silent": {"type": "boolean", "description": "True when 0.1 and 0.2 give different results for `from` and nothing in a 0.2 run reports the difference; `UPGRADING.md` marks the row SILENT."}
       }
     },
     "tree": {
@@ -34,7 +34,7 @@
         "from": {"type": "string"},
         "to": {"type": "string"},
         "migrationRule": {"type": "string"},
-        "silent": {"type": "boolean"}
+        "silent": {"type": "boolean", "description": "True when the migration changes what the tree means and reports nothing. A row of C2-A-178 changes only the form, and the migration reports nothing for spelling (C2-A-180), so such a row is false."}
       }
     }
   }

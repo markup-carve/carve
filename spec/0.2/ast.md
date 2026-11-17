@@ -621,7 +621,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-176** Trees of other contract versions are upgraded by a migration function, not by the reader: a 2.0 reader refuses a tree that holds `escaped_text`, `critic_substitution`, `cell_wrap` or `figure` (C2-A-018).
 
-**C2-A-177** A 2.0 producer writes `"2.0"`. The `next-ast2` draft never shipped. A migration function recognizes its tree or an earlier 0.2 draft tree by the retired node types and fields in the table below.
+**C2-A-177** A 2.0 producer writes `"2.0"`. The `next-ast2` draft never shipped. A migration function recognizes its tree or an earlier 0.2 draft tree by the retired node types and fields in the table below, not by `astVersion`, which a draft tree may hold as `"2.0"`.
 
 **C2-A-178** For a tree written by `next-ast2` or an earlier 0.2 draft the migration function applies the matching rows:
 
@@ -703,7 +703,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-192** The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers`, `footers`, `abstract`, `keywords` or `fields` and reports no notice.
 
-**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011. It handles `fields` under the frontmatter rule of C2-W-011.
+**C2-A-193** A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content. It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011 as `field-unspellable` at the path of that field, as `/metadata/keywords`. It handles `fields` under the frontmatter rule of C2-W-011.
 
 **C2-A-194** Equality compares all three data values under C2-A-161.
 
