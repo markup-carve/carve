@@ -5257,7 +5257,7 @@ title: x
 
 **C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` keeps its 0.1 definition, and `aligns` and `widths` keep theirs except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
 
-**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
+**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
 Line 1 ends with a tab and a space, line 2 with two spaces.
 

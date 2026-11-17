@@ -36,7 +36,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 ## Transformation and carriage
 
-**C2-X-015** A transform maps one claimed core node to one extension node of the same inline or block role.
+**C2-X-015** A transform maps one claimed core node to one extension node of the same inline or block role. It may place further extension nodes that it produces inside the slots of that node, as the tabs transform places each `carve.tab` (C2-X-039).
 
 **C2-X-016** A transform leaves every core node outside its claimed node unchanged.
 
