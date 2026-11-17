@@ -482,7 +482,29 @@ Example 15 (verified)
 
 **C2-M-037** `<table>` is a `table`. `<thead>` is a `table_head`, `<tbody>` a `table_body` and `<tfoot>` a `table_foot`. Rows that are direct children of `<table>` form one `table_body` of their own. `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false.
 
-**C2-M-038** A cell that holds no block element holds one `cell_paragraph` of its inline content. A `soft_break` or `hard_break` in it becomes one space (C2-H-195 row 7) and is reported with `import-whitespace-normalized`. A cell that holds a block element holds those blocks.
+**C2-M-038** A cell that holds no block element holds one `cell_paragraph` of its inline content. A `soft_break` or `hard_break` in it becomes one space (C2-H-195 row 7) and is reported with `import-whitespace-normalized`. A cell that holds a block element holds those blocks, and one empty `cell_paragraph` when every one of them is dropped (C2-M-069, C2-M-070, C2-A-091).
+
+Example 49 (unverified)
+
+::: compare
+
+```html
+<table><tr><td><p></p></td><td>a</td></tr></table>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[]}]},{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"a"}]}]}]}]}],"columns":[{"type":"table_column"},{"type":"table_column"}]}
+]
+```
+
+```carve
+| | a |
+```
+
+:::
+
+The empty paragraph is dropped (C2-M-069), and the cell keeps one empty `cell_paragraph`.
 
 **C2-M-039** `colspan` and `rowspan` above 1, read as HTML integers, give the spans. A `rowspan` of 0 gives no span and is reported with `import-structure-repaired`. A row span that reaches past the last row of its group is clamped to it (C2-A-093) and reported in the same way.
 
@@ -1516,4 +1538,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 48 examples: 46 verified and 2 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 49 examples: 46 verified and 3 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

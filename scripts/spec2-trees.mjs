@@ -4,11 +4,15 @@
 // --check validates every positive tree against data/ast-schema.json and the position
 // invariants of the Positions section, checks that the example trees match the examples of the
 // documents, that every node type and field occurs, and that each refused tree is refused as stated.
+// It also runs the reader checks that the script can state beyond the schema (C2-A-188, scripts/lib/spec2-reader.mjs)
+// on every positive and imported tree, which must pass them, and on every tree refused by the reader, which
+// must break one that cites a clause of its entry.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { examplesOf as extractExamples } from './lib/spec2-examples.mjs'
+import { readerChecks } from './lib/spec2-reader.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = join(root, 'spec/0.2')
@@ -245,6 +249,7 @@ function positionFailures(tree, source, files = {}) {
 
 const ajv = new Ajv2020({ strict: true, allErrors: false })
 const validate = ajv.compile(schema)
+const readerProblems = readerChecks(spec)
 const read = (name) => JSON.parse(readFileSync(join(dir, name), 'utf8'))
 const exampleFile = (chapter) => `examples-${chapter}.json`
 const INCLUDE_FILE = exampleFile('includes')
@@ -302,6 +307,7 @@ function checkPositive(entry, file) {
     return fail(`${label}: the schema refuses the tree at ${error.instancePath || '/'}: ${error.message}`)
   }
   cover(entry.tree)
+  for (const problem of readerProblems(entry.tree)) fail(`${label}: a reader refuses it at ${problem.path}: ${problem.what} (${problem.clause})`)
   if (typeof entry.source === 'string') for (const failure of positionFailures(entry.tree, entry.source, entry.files)) fail(`${label}: ${failure}`)
 }
 
@@ -425,6 +431,13 @@ for (const entry of refused) {
   if (entry.refusedBy === 'schema' && accepted) fail(`${label}: the schema accepts it, but the fixture says the schema refuses it`)
   else if (entry.refusedBy === 'reader' && !accepted) fail(`${label}: the schema refuses it, so refusedBy is schema`)
   else if (entry.refusedBy !== 'schema' && entry.refusedBy !== 'reader') fail(`${label}: refusedBy is schema or reader`)
+  if (entry.refusedBy === 'reader' && accepted) {
+    const isEnvelope = entry.tree.type === undefined && entry.tree.document
+    const found = isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)
+    if (!found.some(problem => entry.clauses.includes(problem.clause))) {
+      fail(`${label}: no reader check of the gate that cites ${entry.clauses.join(' or ')} refuses it${found.length ? ` (found: ${found.map(p => p.clause).join(', ')})` : ''}`)
+    }
+  }
 }
 
 if (failures.length) {

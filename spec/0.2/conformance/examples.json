@@ -77634,6 +77634,77 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-49",
+   "document": "import-html.md",
+   "number": 49,
+   "section": "Tables",
+   "clauses": [
+    "C2-M-037",
+    "C2-M-038",
+    "C2-M-039",
+    "C2-M-040",
+    "C2-M-041"
+   ],
+   "kind": "import",
+   "html": "<table><tr><td><p></p></td><td>a</td></tr></table>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "table",
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": []
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ]
+     }
+    ],
+    "carve": "| | a |\n"
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-48",
    "document": "import-html.md",
    "number": 48,
