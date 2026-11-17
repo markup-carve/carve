@@ -2559,9 +2559,9 @@ p $`k`
 
 Reported: `profile-construct-degraded`.
 
-**C2-H-177** Resolution does not read `profile`: a reference to a heading resolves as it does without a profile, and the tree does not change (C2-H-121). The render reads it. The one place resolution reads it is the view of an extension node (C2-X-032): a node the profile degrades is resolved in its fallback, and the tree does not change either. A heading outside the profile is degraded (C2-H-165) and writes no element and no id, so a reference link and a cross-reference that resolved to it are written in their unresolved forms (C2-H-085, C2-H-086), as if the heading did not exist. A link that is itself outside the profile is degraded and writes the plain text of its children.
+**C2-H-177** Resolution does not read `profile`: a reference to a heading resolves as it does without a profile, and the tree does not change (C2-H-121). The render reads it. The one place resolution reads it is the view of an extension node (C2-X-032): a node the profile degrades is resolved in its fallback, and the tree does not change either. A heading outside the profile is degraded (C2-H-165) and writes no element and no id, so a reference link to it is written in its unresolved form (C2-H-085), as if the heading did not exist. A cross-reference outside the profile writes its resolved link text under C2-H-165; one inside the profile follows C2-H-086 when its heading was degraded. A link that is itself outside the profile is degraded and writes the plain text of its children.
 
-The heading is outside the `comment` profile. Its reference and its cross-reference are written as unresolved text (C2-H-177).
+The heading is outside the `comment` profile. Its reference is unresolved text; its degraded cross-reference writes its resolved link text (C2-H-165, C2-H-177).
 
 Example 34 (unverified, `--profile comment`)
 
@@ -2575,7 +2575,7 @@ Example 34 (unverified, `--profile comment`)
 
 ```html
 <p>## Sub em code</p>
-<p>[Sub em code][] and &lt;/#Sub-em-code&gt;</p>
+<p>[Sub em code][] and Sub em code</p>
 ```
 
 :::

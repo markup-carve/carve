@@ -76531,7 +76531,7 @@
     "profile": "comment"
    },
    "expected": {
-    "html": "<p>## Sub em code</p>\n<p>[Sub em code][] and &lt;/#Sub-em-code&gt;</p>",
+    "html": "<p>## Sub em code</p>\n<p>[Sub em code][] and Sub em code</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",

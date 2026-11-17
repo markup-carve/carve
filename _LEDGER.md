@@ -235,3 +235,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `C2-A-035`, `C2-H-013`, `Example 80`, `html-80`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/conformance/refused-trees.json`, `spec/0.2/data/attribute-block.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/trees/examples-html.json`, `spec/0.2/trees/refused.json`, `spec/0.2/writer.md`. C2-A-035 merges the keys while C2-H-013 and Example 80 keep them separate. Park pending a 0.1 result.
+
+## G-H2 and F14 degraded cross-reference
+
+Search: `C2-H-165`, `C2-H-177`, `Example 34`, `CC-358`, `reference to a heading the profile degrades`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. CC-358 follows the 0.1 plain-text behavior; amend conflicting clause and Example 34.
