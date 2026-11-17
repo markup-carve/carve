@@ -54583,6 +54583,26 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1147",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "case-only crossref candidates bind in source order",
+ "kind": "lint",
+ "input": "{#XY}\n# A\n\n{#Xy}\n# B\n\n</#xy>\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "broken-crossref",
+    "messageWhen": "no qualifying id matches exactly, but one or more qualifying ids differ only in case"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
