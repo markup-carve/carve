@@ -15269,6 +15269,84 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-245",
+   "clauses": [
+    "C2-B-182"
+   ],
+   "why": "C2-B-182: A bare key that starts with `v` stands after a space behind the marks: `{> vx}` is right with the bare key `vx`.",
+   "summary": "a space keeps a bare key that starts with v from being the vertical mark",
+   "input": "| a |{> vx} b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td vx=\"\" style=\"text-align: right;\">b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ],
+            "align": "right",
+            "attrs": {
+             "keyValues": [
+              [
+               "vx",
+               ""
+              ]
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
