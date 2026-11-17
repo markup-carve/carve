@@ -52794,6 +52794,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1061",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "an empty footnote definition is text",
+   "kind": "lint",
+   "input": "[^a]:\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-reference-definition"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

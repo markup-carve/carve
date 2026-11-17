@@ -163,3 +163,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/cla
 Search: `duplicate-id`, `C2-A-039`, `CC-997`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/writer.md`. R6 removed the obsolete message; CC-997 covers generated-id input.
+
+## CR9-17
+
+Search: `empty-reference-definition`, `C2-B-082`, `C2-B-083`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/attribute-block.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A footnote-shaped empty definition needs content.

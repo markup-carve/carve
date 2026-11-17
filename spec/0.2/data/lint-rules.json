@@ -736,7 +736,7 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "This line is a label and a colon with nothing after it, so it is text and defines nothing. Add a destination, or remove the line."
+        "This line is a label and a colon with nothing after it, so it is text and defines nothing. Add content after the colon, or remove the line."
       ],
       "message_origin": "data_file",
       "change": "re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text",
