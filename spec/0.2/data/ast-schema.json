@@ -9067,7 +9067,9 @@
         "path"
       ],
       "additionalProperties": false,
-      "dependentRequired": { "children": ["file"] }
+      "dependentRequired": { "children": ["file"] },
+      "if": { "required": ["caption"], "properties": { "caption": {} } },
+      "then": { "required": ["options"], "properties": { "options": { "type": "object", "required": ["code"], "properties": { "code": {} } } } }
     },
     "inline_extension": {
       "type": "object",

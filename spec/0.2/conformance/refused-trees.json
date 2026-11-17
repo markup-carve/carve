@@ -3389,6 +3389,39 @@
    }
   },
   {
+   "id": "include-caption-without-code",
+   "clauses": [
+    "C2-A-181",
+    "C2-N-073"
+   ],
+   "reason": "a caption on an include whose options hold no code",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "include",
+      "path": "a.crv",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Cap"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
    "id": "head-rows-field",
    "clauses": [
     "C2-A-088"
