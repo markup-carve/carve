@@ -1796,8 +1796,8 @@
         "This braced comment is not closed before the next block starts, so it stays text. Close it inside its block, or use %% line comments."
       ],
       "message_origin": "data_file",
-      "reports": "a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141, C2-I-027)",
-      "clauses": ["C2-B-141", "C2-I-027"]
+      "reports": "a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141)",
+      "clauses": ["C2-B-141"]
     },
     {
       "id": "unclosed-code-fence",

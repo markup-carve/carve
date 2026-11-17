@@ -781,7 +781,7 @@ Eight findings of the syntax chapters, and one of the tree and writer chapters, 
 
 | Rule | Severity | Reports |
 |---|---|---|
-| `unclosed-braced-comment` | warning | a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141, C2-I-027) |
+| `unclosed-braced-comment` | warning | a braced comment whose closer stands behind an interrupter line, so that it is unclosed and stays text (C2-B-141) |
 | `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077) |
 | `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |

@@ -391,8 +391,6 @@ Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in 
 
 **Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. It is not a host, and an attribute block behind it attaches to nothing. (carried over from 0.1)
 
-**Exception C2-I-027** Block rules classify lines first: a braced comment whose closer stands behind an interrupter line is unclosed and stays text (C2-B-141). Lint reports it as `unclosed-braced-comment`.
-
 Example 16 (generated)
 
 ::: compare
@@ -2381,7 +2379,7 @@ There is no fixed budget for the inline chapter.
 | Code spans | 5 | 0 | 3 | 1 |
 | Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 2 | 1 | 2 | 1 |
-| Comments | 5 | 2 | 4 | 1 |
+| Comments | 4 | 1 | 4 | 1 |
 | Attribute blocks | 15 | 2 | 6 | 5 |
 | The opening brace | 3 | 1 | 3 | 1 |
 | Emphasis and strong | 9 | 3 | 7 | 6 |
@@ -2399,9 +2397,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **118** | **17** | **69** | **54** |
+| **Total** | **117** | **16** | **69** | **54** |
 
-The chapter has 118 clauses, 17 of them exceptions, and 123 examples. The clause count includes the exceptions.
+The chapter has 117 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
