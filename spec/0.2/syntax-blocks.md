@@ -3487,7 +3487,32 @@ Reported: `fence-title-syntax`.
 
 A *sigil div* is a div whose opener names how its body is read: `::: |` is a line block, `::: \` a hard-break block, `::: >` a quote fence (C2-B-196).
 
-**C2-B-123** The body of a line block is one leaf that recognizes only prefixes and the closer: every other line is a line of text.
+**C2-B-123** The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text. A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.
+
+The comment block hides its lines, so the stanza holds `a` and `b` (C2-B-123).
+
+Example 280 (unverified)
+
+::: compare
+
+```carve
+::: |
+a
+%%%
+hidden
+%%%
+b
+:::
+```
+
+```html
+<div class="line-block">
+  <p>a<br>
+b</p>
+</div>
+```
+
+:::
 
 **C2-B-124** A hard-break block and a quote fence are containers, and their bodies are read as blocks.
 
@@ -3825,7 +3850,7 @@ The paragraph holds a hard break and a braced comment. The comment-only line end
 
 **C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.
 
-**Exception C2-B-144** In the body of a line block `%%` is text, and `comment-line-in-line-block` reports it.
+**Exception C2-B-144** In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.
 
 **C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
@@ -6592,7 +6617,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 5 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
-| Sigil divs | 11 | 0 | 11 | 1 |
+| Sigil divs | 11 | 0 | 11 | 2 |
 | Comments | 13 | 3 | 14 | 9 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
@@ -6602,7 +6627,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 19 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **108** |
+| **Total** | **219** | **10** | **171** | **109** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

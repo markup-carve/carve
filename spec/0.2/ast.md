@@ -201,7 +201,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
 | `line` | `line_block` | inlines | none |
-| `line_block` | block | `line` | none |
+| `line_block` | block | `line`, `comment` | none |
 | `link` | inline | inlines | `href`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `refForm`? |
 | `link_reference_definition` | top level | none | `href`, `tooltip`?, `key`, `namespace` |
 | `list` | block | `list_item` | `marker`, `spacing` |
@@ -296,7 +296,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-068** A hard-break block is not a node type and not a field. It is a `div` with the class `hardbreaks` in which every line end is a `hard_break` node. The opener form adds the class after the classes the author wrote, so it comes last in `attrs.classes`; the class form has it where it was written. The two forms give the same tree when `hardbreaks` is the last class. Which form the author wrote is in the sidecar.
 
-**C2-A-069** A line block is a `line_block` whose `children` are `line` nodes, one per line of its body in order. A `line` holds inline `children`. An empty line of the body is a `line` with no children, and it ends a stanza. A line that holds only a braced comment is a `line` that holds the comment.
+**C2-A-069** A line block is a `line_block` whose `children` are `line` nodes, one per line of its body in order, and the `comment` of each comment block in it at its place (C2-B-123). A `line` holds inline `children`. An empty line of the body is a `line` with no children, and it ends a stanza. A line that holds only a braced comment is a `line` that holds the comment.
 
 ```json
 {

@@ -217,8 +217,8 @@
       "default": "on",
       "messages": ["A line comment is text inside a line block. Use the braced comment."],
       "message_origin": "design",
-      "reports": "a line of a line block that starts with `%%`",
-      "clauses": ["C2-B-144"]
+      "reports": "a line of a line block that starts with `%%` and opens no comment block (C2-B-123)",
+      "clauses": ["C2-B-123", "C2-B-144"]
     },
     {
       "id": "comment-shaped-emphasis",

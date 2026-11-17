@@ -753,7 +753,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `tight-list-item-with-blank-line` | hint, opt-in | a tight list in which an item holds a blank line and a paragraph | unchanged |
 | `deprecated-loose-attribute` | warning | a list that carries the key `loose` | unchanged |
 | `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once | unchanged |
-| `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` | unchanged |
+| `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
 | `fence-closer-indented` | hint | a closer whose indent differs from its opener's | unchanged |
 | `ordered-list-kind-split` | warning | a one-item letter list directly followed by a list of the other letter kind that continues it | unchanged |
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |

@@ -17662,6 +17662,120 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-280",
+   "document": "syntax-blocks.md",
+   "number": 280,
+   "section": "Sigil divs",
+   "clauses": [
+    "C2-B-123",
+    "C2-B-124",
+    "C2-B-125",
+    "C2-B-126",
+    "C2-B-127",
+    "C2-B-128",
+    "C2-B-129",
+    "C2-B-130",
+    "C2-B-131",
+    "C2-B-132",
+    "C2-B-196"
+   ],
+   "kind": "render",
+   "input": "::: |\na\n%%%\nhidden\n%%%\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\nb</p>\n</div>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "line_block",
+       "children": [
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "a",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 6,
+            "endOffset": 7
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 6,
+          "endOffset": 7
+         }
+        },
+        {
+         "type": "comment",
+         "form": "block",
+         "value": "hidden",
+         "pos": {
+          "startLine": 3,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 8,
+          "endOffset": 22
+         }
+        },
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "b",
+           "pos": {
+            "startLine": 6,
+            "endLine": 6,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 23,
+            "endOffset": 24
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 6,
+          "endLine": 6,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 23,
+          "endOffset": 24
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 7,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 28
+       }
+      }
+     ],
+     "srcByteLength": 28,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-130",
    "document": "syntax-blocks.md",
    "number": 130,

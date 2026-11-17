@@ -10570,6 +10570,9 @@
             "oneOf": [
               {
                 "$ref": "#/$defs/line"
+              },
+              {
+                "$ref": "#/$defs/comment"
               }
             ]
           }

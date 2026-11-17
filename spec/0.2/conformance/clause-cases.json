@@ -47,7 +47,7 @@
     "C2-B-007",
     "C2-B-123"
    ],
-   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1). C2-B-123: The body of a line block is one leaf that recognizes only prefixes and the closer: every other line is a line of text.",
+   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1). C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text.",
    "summary": "line block in quote in item keeps tab",
    "input": "- > a\n  > \t::: |\n  > \tx\n  > \t:::",
    "options": {},
@@ -10827,6 +10827,215 @@
        {
         "type": "text",
         "value": "after"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-140",
+   "clauses": [
+    "C2-B-123",
+    "C2-H-043"
+   ],
+   "why": "C2-B-123: A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.",
+   "summary": "a line block that holds only a comment block writes no stanza",
+   "input": "::: |\n%%%\nx\n%%%\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "comment",
+        "form": "block",
+        "value": "x"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-141",
+   "clauses": [
+    "C2-B-123"
+   ],
+   "why": "C2-B-123: A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.",
+   "summary": "a comment block in a quoted line block hides its lines",
+   "input": "> ::: |\n> a\n> %%%\n> h\n> %%%\n> b\n> :::",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <div class=\"line-block\">\n    <p>a<br>\nb</p>\n  </div>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "line_block",
+        "children": [
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "comment",
+          "form": "block",
+          "value": "h"
+         },
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-142",
+   "clauses": [
+    "C2-B-123"
+   ],
+   "why": "C2-B-123: A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.",
+   "summary": "an indented comment block in a line block is a comment too",
+   "input": "::: |\na\n  %%%\nhidden\n  %%%\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "comment",
+        "form": "block",
+        "value": "hidden"
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-143",
+   "clauses": [
+    "C2-B-123",
+    "C2-B-111"
+   ],
+   "why": "C2-B-123: A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.",
+   "summary": "an unclosed comment block in a line block ends with the line block",
+   "input": "::: |\na\n%%%\nhidden\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "comment",
+        "form": "block",
+        "value": "hidden"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-144",
+   "clauses": [
+    "C2-B-123",
+    "C2-B-131"
+   ],
+   "why": "C2-B-123: A comment block there is hidden (C2-B-112), adds no line and ends no stanza, as in 0.1.",
+   "summary": "a comment block between two stanzas adds none",
+   "input": "::: |\na\n\n%%%\nh\n%%%\n\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a</p>\n  <p>b</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": []
+       },
+       {
+        "type": "comment",
+        "form": "block",
+        "value": "h"
+       },
+       {
+        "type": "line",
+        "children": []
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
        }
       ]
      }

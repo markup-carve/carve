@@ -281,6 +281,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A cross-reference typed with a decomposed character, `</#Cafe` and U+0301 `>`, to `# Café` | Unresolved, written as typed. | Resolved: the id and the target ids are compared under NFC. | C2-I-097, C2-H-095 |
 | A footnote reference inside an inline footnote: `a ^[b [^1] c]` | A second note, and every later note number moved up by one. | Text inside the note; the numbers stay. An inline footnote inside one still makes a second note (U-202). | C2-I-089 |
 | A comment block in an item or a quote closed by a `%%%` line at column 0: `- %%%`, `%%%`, `x` | The closer closed the item, opened a second comment block, and every line after it to the end of the document vanished. | The closer closes the comment block and no container; `x` is a paragraph. U-224 is withdrawn. | C2-B-109 |
+| A comment block inside a line block: `::: \|`, `a`, `%%%`, `x`, `%%%`, `b`, `:::` | Three fence lines and `x` were lines of text. | The comment block hides its lines and adds no line; a `%%` line is still text (U-052). | C2-B-123 |
 
 ### Include expansion
 
