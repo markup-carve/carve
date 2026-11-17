@@ -10,7 +10,8 @@
       "messages": ["image has empty alternative text and is not marked decorative"],
       "message_origin": "engine_0_1",
       "change": "accessibility extension; severity warning, where the 0.1 source sets error",
-      "clauses": ["C2-W-106"]
+      "reports": "an image whose alt text is empty, as `![](a.png)`, once per image; an image with any alt text is not reported, and a parse of Carve source never marks an image decorative (C2-I-074, C2-A-115)",
+      "clauses": ["C2-I-074", "C2-A-115"]
     },
     {
       "id": "bare-html-tag",
@@ -20,7 +21,8 @@
       "default": "on",
       "messages": ["This bare HTML tag is escaped as text; use a raw HTML block if markup is intended."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "the first HTML tag shape on a line of a paragraph, a heading or a pipe table row outside code and raw blocks: `<`, an optional `/`, an ASCII letter, then ASCII letters, digits, `_`, `:` and `-`, optionally whitespace and characters other than `<` and `>`, an optional `/`, and `>`; text inside escapes, code spans, link destinations, autolinks, cross-references, images and inline comments is not searched; once per line (C2-I-073, C2-I-124, C2-B-116)",
+      "clauses": ["C2-I-073", "C2-I-124", "C2-B-116"]
     },
     {
       "id": "bidi-control-in-source",
@@ -32,7 +34,8 @@
         "Bidi override/isolate control U+${code} is preserved by canonical Carve but not written to the text and code of presentation output; remove it unless intentional."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each bidirectional override or isolate control, U+202A to U+202E and U+2066 to U+2069, in text and code, the only places a render drops it: the value of a text, code span, code block or math node, title and label text included; one in an attribute value, a link destination, raw content, a comment or frontmatter is not reported; one finding per code point; the marks U+200E, U+200F and U+061C are not reported (C2-H-172)",
+      "clauses": ["C2-H-172"]
     },
     {
       "id": "blank-reference-label",
@@ -56,7 +59,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "also a brace line that is not a valid one-line attribute line",
-      "clauses": ["C2-W-106"]
+      "reports": "a paragraph whose first text, after leading spaces and tabs, starts with a run of three or more colons or with `{.` or `{#`, a div opener or an attribute line that did not open, as `:::note` with the name glued to the run (C2-B-119), once per paragraph on its first line; and, by the row's change, a paragraph line that, after leading spaces and tabs, starts with `{` followed by `.`, `#`, `_` or an ASCII letter and is no valid attribute line, as `{a=}` (C2-B-090), once per line; a colon line that `fence-title-syntax` reports and a line that a list-indent rule reports are left to those rules (C2-B-119, C2-B-090)",
+      "clauses": ["C2-B-119", "C2-B-090"]
     },
     {
       "id": "block-opener-overindented",
@@ -69,7 +73,8 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["`${columns}` is `column` when `${past}` is 1 and `columns` otherwise."],
-      "clauses": ["C2-W-106"]
+      "reports": "a block opener that stands past the content column of its owner and still opens there: a quote mark, a colon fence, a code fence or line block, a definition term, a heading, a thematic break or a pipe table row, where the owner is the document (content column 0), a quote, a footnote body, a description or a div; not a list marker, not a `%%%` comment fence, not a table row directly below a row, and never inside a list item, which `list-item-block-overindented` reports; once per opener (C2-B-003, C2-B-025, C2-B-028)",
+      "clauses": ["C2-B-003", "C2-B-025", "C2-B-028"]
     },
     {
       "id": "block-opener-without-blank-line",
@@ -95,7 +100,8 @@
         "A blockquote marker must be either bare \">\" or followed by a space. This line renders as literal text; write \"> ${text}\" to quote it."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a line outside code and raw blocks whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
+      "clauses": ["C2-B-031"]
     },
     {
       "id": "braced-comment-in-a-template-source",
@@ -107,7 +113,8 @@
         "This braced comment is a template tag. Liquid, Nunjucks, or Twig source may have reached Carve as text; the tag is parsed as an invisible comment."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a braced comment whose content, trimmed, is exactly `raw`, `endraw`, `endif`, `endfor` or `endblock`, or is `if`, `for` or `block` followed by whitespace and at least one further character, as `{% if x %}`; once per comment (C2-I-025)",
+      "clauses": ["C2-I-025"]
     },
     {
       "id": "braced-span-opener-as-text",
@@ -135,7 +142,8 @@
       ],
       "message_notes": ["`${caseOnlyPhrase}` is \"the ${noun} ${id} differs only in case\" or its plural."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a cross-reference whose id, normalized to NFC, matches no heading id, authored or generated, and no id of a table, a figure or a figure group whose caption has a number mark, nor of a panel of such a group; matching is exact, so an id that differs only in case is reported; once per cross-reference, in footnote bodies too (C2-I-096, C2-I-097, C2-B-207, C2-H-022)",
+      "clauses": ["C2-I-096", "C2-I-097", "C2-B-207", "C2-H-022"]
     },
     {
       "id": "broken-fragment-link",
@@ -148,7 +156,8 @@
         "Link to \"${href}\" matches no id in this document, so the link goes nowhere."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded, is not empty, is not `top` in any letter case, and is no `id` (and no `name` of an `a` element) in the rendered HTML of the document, heading, footnote, note mark and raw HTML ids included; once per link; not reported at all while an id-generating extension is in use (C2-I-066, C2-H-022, C2-H-088, C2-H-089)",
+      "clauses": ["C2-I-066", "C2-H-022", "C2-H-088", "C2-H-089"]
     },
     {
       "id": "caption-looking-paragraph",
@@ -158,7 +167,8 @@
       "default": "on",
       "messages": ["This caption-looking paragraph sits next to a table or image; use a ^ caption line."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a paragraph line outside code and raw blocks whose text, after container prefixes and indent, starts with `Caption`, `Table`, `Tabelle`, `Figure` or `Image` in any letter case, optionally after a `*` and spaces and optionally followed by a number, then `:`, or starts with `:`, whitespace and a further character, when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line (C2-B-146, C2-B-149)",
+      "clauses": ["C2-B-146", "C2-B-149"]
     },
     {
       "id": "carrier-attribute-dropped",
@@ -183,7 +193,8 @@
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${version}` of the second message is escaped as in a JSON string."],
       "change": "it reads the frontmatter key `carve-version` of 0.1 and the key `carve`",
-      "clauses": ["C2-W-106"]
+      "reports": "a frontmatter line `carve-version:` (and, by the row's change, `carve:`), with only spaces and tabs around the key and a single value token, whose value is not dot-separated decimal digits, or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0, so `9.9`, `0.2.1` and `next` are reported and `0.1`, `0.2` and `0.2.0` are not; with no such frontmatter line, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document; once per document (C2-B-161)",
+      "clauses": ["C2-B-161"]
     },
     {
       "id": "colon-fence-length-mismatch",
@@ -195,7 +206,8 @@
         "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it ${outcome}."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div, an admonition, a figure group, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
+      "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
     },
     {
       "id": "comment-fence-closer-with-text",
@@ -242,7 +254,8 @@
       "default": "on",
       "messages": ["This emphasis looks like a C comment; use Carve comment syntax if you meant a comment."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "an emphasis span whose source starts with `/*` or ends with `*/`, or a strong span whose source starts with `*/` or ends with `/*`, as `/* foo */`; braced forms are not reported; once per span, at hint severity (C2-I-046, C2-I-052)",
+      "clauses": ["C2-I-046", "C2-I-052"]
     },
     {
       "id": "comment-splits-table-row",
@@ -264,7 +277,8 @@
       "messages": ["\"${word}\" is not a consumed key here; did you mean {${key}}?"],
       "message_origin": "engine_0_1",
       "change": "`loose` leaves the list of consumed keys",
-      "clauses": ["C2-W-106"]
+      "reports": "a bare key with an empty value in the attributes of a `csv` or `tsv` code block, captioned or not, that is not `table` but is `table` in another letter case or one edit from it (an inserted, deleted or replaced character, or two adjacent characters swapped), as `tabel`, `tables`, `Table` or `atble`; once per key; `loose` on a list is no longer a consumed key (C2-B-180, C2-B-227, C2-B-066)",
+      "clauses": ["C2-B-180", "C2-B-227", "C2-B-066"]
     },
     {
       "id": "continuation-marker-refused",
@@ -320,7 +334,8 @@
       "default": "on",
       "messages": ["A CSV/TSV record has more fields than the first record; the table keeps the extra columns."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a delimited table, a `csv` or `tsv` fence that the `table` attribute marks, in which any record has more fields than the first record; once per table (C2-B-180, C2-B-226)",
+      "clauses": ["C2-B-180", "C2-B-226"]
     },
     {
       "id": "deprecated-bare-highlight",
@@ -366,7 +381,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "the glued alignment marker is cut; the rule stays on through 0.2.x",
-      "clauses": ["C2-W-106"]
+      "reports": "a cell of a complete pipe table row, outside code and raw blocks, whose text starts directly after the pipe, behind the header mark `=` if any, with a valid 0.1.13 alignment run (a horizontal `<`, `>` or `~` with an optional vertical `^`, `~` or `v`, or `?` with a vertical mark), optionally a glued brace block, then a space; a cell that holds only `<` or `^` and a cell that starts with a brace block are not reported; once per cell (C2-B-171, C2-B-182)",
+      "clauses": ["C2-B-171", "C2-B-182"]
     },
     {
       "id": "deprecated-continuation-marker",
@@ -482,7 +498,8 @@
         "This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a line that, after quote marks and indent, starts with a description mark `:` or a term mark `::` followed by a space, a tab or the end of the line, is no term line or description line of any description list (a lazy line of a paragraph counts as none), and whose nearest line above that is not blank, at the same quote depth, lies in a description list whose first term mark stands at a greater column; continuation lines of code spans, math and raw inlines are not reported; once per line (C2-B-067, C2-B-071, C2-B-074)",
+      "clauses": ["C2-B-067", "C2-B-071", "C2-B-074"]
     },
     {
       "id": "description-term-multi-line",
@@ -514,7 +531,8 @@
       "messages": ["Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of underscores that Djot reads as emphasis and Carve as text (C2-I-046): an opening `_` not behind an odd run of backslashes, not after an ASCII letter, digit or `_` and not before whitespace, and the next `_` not after whitespace and not before an ASCII letter, digit or `_`, with at least one character and no blank line between; code spans, code fences, comment blocks and link destinations are not searched; once per pair (C2-I-046, C2-I-047)",
+      "clauses": ["C2-I-046", "C2-I-047"]
     },
     {
       "id": "djot-heading-continuation",
@@ -527,7 +545,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "clauses": ["C2-W-106"]
+      "reports": "a heading line of one to six `#` and a space, directly followed by one or more lines that Djot folds into it: a line with the same number of `#`, or a line that is not blank and opens no block (not a thematic break, `#`, `>`, `|`, a `-`, `*` or `+` bullet, an ordered or parenthesized marker, `:` or `::`, a backtick or tilde fence, `^ `, `%%%`, `{` or a definition `[label]:`); once per heading, the range covering the heading and every folded line (C2-B-152, C2-B-154)",
+      "clauses": ["C2-B-152", "C2-B-154"]
     },
     {
       "id": "djot-highlight-braces",
@@ -538,7 +557,8 @@
       "messages": ["Djot highlight `{=x=}` is also Carve highlight. The bare `=x=` is literal text in Carve."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "clauses": ["C2-W-106"]
+      "reports": "a braced highlight, `{=`, at least one character and `=}`, with the opener not escaped, no blank line and no second unescaped `{=` before the closer; code spans, code fences, comment blocks and link destinations are not searched; once per highlight; a bare `=x=` is not reported (C2-I-055, C2-I-046)",
+      "clauses": ["C2-I-055", "C2-I-046"]
     },
     {
       "id": "djot-intraword-underscore",
@@ -551,7 +571,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of underscores inside a word, which Djot reads as emphasis: an opening `_` after an ASCII letter or digit, not behind an odd run of backslashes and not before whitespace, and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between, as `snake_case_name`; code spans, code fences, comment blocks and link destinations are not searched; once per pair (C2-I-046, C2-I-047)",
+      "clauses": ["C2-I-046", "C2-I-047"]
     },
     {
       "id": "djot-plus-bullet",
@@ -562,7 +583,8 @@
       "messages": ["Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check",
-      "clauses": ["C2-W-106"]
+      "reports": "a line whose first character after optional spaces and tabs is `+`, followed by spaces or tabs and a further character, outside code fences and comment blocks, except a continuation row that the parser takes into a table (C2-B-175); once per line (C2-B-034, C2-B-175)",
+      "clauses": ["C2-B-034", "C2-B-175"]
     },
     {
       "id": "djot-subscript-tilde",
@@ -573,7 +595,8 @@
       "messages": ["Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "clauses": ["C2-W-106"]
+      "reports": "each pair of bare tildes in text, where the opening tilde is not escaped, not directly after an unescaped `{` and not followed by whitespace or `}`, the closing tilde is the next tilde of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`H~2~O` is reported), tildes in code, link destinations and reference definitions do not count, and a pair inside a `~~x~~` run is left to `markdown-strikethrough-double-tilde`; once per pair (C2-I-046)",
+      "clauses": ["C2-I-046"]
     },
     {
       "id": "djot-subscript-tilde-braced",
@@ -584,7 +607,8 @@
       "messages": ["Djot subscript `{~x~}` renders as *strikethrough* in Carve."],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "clauses": ["C2-W-106"]
+      "reports": "each braced tilde form `{~x~}` whose opening brace is not escaped, with non-empty content that holds no blank line and no further unescaped `{~`, outside code; once per form (C2-I-055, C2-I-062)",
+      "clauses": ["C2-I-055", "C2-I-062"]
     },
     {
       "id": "djot-superscript-caret",
@@ -595,7 +619,8 @@
       "messages": ["Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only."],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "clauses": ["C2-W-106"]
+      "reports": "each pair of bare carets in text, where the opening caret is not escaped, not directly after an unescaped `{` and not followed by whitespace, `}` or `[`, the closing caret is the next caret of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`x^2^` is reported), and carets in code, link destinations, footnote references `[^x]`, attribute blocks and whole-cell row span markers do not count; once per pair (C2-I-046)",
+      "clauses": ["C2-I-046"]
     },
     {
       "id": "duplicate-abbreviation-definition",
@@ -652,7 +677,8 @@
       "default": "on",
       "messages": ["This reference definition repeats an earlier URL."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each link definition whose destination is the same string as that of an earlier link definition in source order with a different label key; a repeated definition of the same label is not reported, and definitions in quotes and list items count; once per later definition (C2-B-083, C2-I-079)",
+      "clauses": ["C2-B-083", "C2-I-079"]
     },
     {
       "id": "emphasis-as-heading",
@@ -662,7 +688,8 @@
       "default": "on",
       "messages": ["This emphasized paragraph looks like a heading."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a paragraph whose content, apart from comments and text that is only whitespace, is exactly one strong or emphasis span with non-empty text, on one line or several; any other visible text, such as a trailing period, prevents it; once per paragraph (C2-I-046)",
+      "clauses": ["C2-I-046"]
     },
     {
       "id": "emphasis-marker-before-attributes",
@@ -675,7 +702,8 @@
         "This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "(1) each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text, and (2) the closing `*` or `/` of a bare strong or emphasis span that carries an attribute block, when the span's own text holds an unescaped copy of its delimiter before that closer (as in `*a * b*{.c}`); once per marker (C2-I-028, C2-I-036, C2-I-046, C2-I-048)",
+      "clauses": ["C2-I-028", "C2-I-036", "C2-I-046", "C2-I-048"]
     },
     {
       "id": "empty-include-path",
@@ -687,7 +715,8 @@
         "This \"${text}\" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each `{{` and `}}` pair in inline text with no brace between them, whose body is empty or only spaces and tabs, or holds an empty quoted path (`\"\"` or a pair of curly quotes) behind at least one space, or, behind at least one space or tab, starts with `#` or an at-sign (a section or option with no path in front), so it is no include directive and stays text; `{{#if}}` is not reported; every pair on a line and in headings counts (C2-B-201, C2-B-202)",
+      "clauses": ["C2-B-201", "C2-B-202"]
     },
     {
       "id": "empty-link-destination",
@@ -697,7 +726,8 @@
       "default": "on",
       "messages": ["This link has an empty destination."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each inline link whose destination is empty, `[a]()`; images and reference links are not reported (C2-I-066, C2-I-067)",
+      "clauses": ["C2-I-066", "C2-I-067"]
     },
     {
       "id": "empty-reference-definition",
@@ -799,7 +829,8 @@
         "This \"::: figure\" group holds no captionable panel; the panels wrapper renders around the preserved content only."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a figure group with no panel, that is with no table and no captioned image, code block, quote or math block among its children (C2-B-127, C2-A-084)",
+      "clauses": ["C2-B-127", "C2-A-084"]
     },
     {
       "id": "figure-group-nested",
@@ -823,7 +854,8 @@
         "A \"::: figure\" opener carrying a quoted title or [label] is not a figure group; it is a plain container with the class \"figure\" (C2-B-127). Drop the title or label to open a figure group, and use a caption line below it."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a `figure` div whose opener carries a quoted title or a label, which C2-B-127 makes a plain div with the class `figure`; once per div, at any depth and with any colon run (C2-B-127)",
+      "clauses": ["C2-B-127"]
     },
     {
       "id": "figure-group-panel-number",
@@ -835,7 +867,8 @@
         "A \"#\" placeholder in a panel caption stays literal: panels are not numbering units, the group caption carries the number (and panel ids resolve with its letter)."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each panel of a figure group whose caption holds a caption number mark, the first `#` of C2-B-207 (followed by whitespace, `:`, `.`, the caption end or a character that cannot start a tag name), which in a panel stays the character `#`; `#1` and `\\#` are no mark; once per panel (C2-B-207, C2-H-066, C2-A-084)",
+      "clauses": ["C2-B-207", "C2-H-066", "C2-A-084"]
     },
     {
       "id": "figure-group-single-panel",
@@ -847,7 +880,8 @@
         "This \"::: figure\" group holds a single panel; a plain captioned figure renders the same content without the group wrapper."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a figure group with exactly one panel, a table or a captioned image, code block, quote or math block among its children (C2-B-127, C2-A-084)",
+      "clauses": ["C2-B-127", "C2-A-084"]
     },
     {
       "id": "footnote-labels-differ-only-in-whitespace",
@@ -860,7 +894,8 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${key}` is escaped as in a JSON string."],
-      "clauses": ["C2-W-106"]
+      "reports": "each footnote definition whose label is spelled differently from the label of an earlier footnote definition in source order but has the same lookup key; the later definition is reported, also inside a quote or list item, once (C2-I-079, C2-B-085)",
+      "clauses": ["C2-I-079", "C2-B-085"]
     },
     {
       "id": "footnotes-placement-in-container",
@@ -872,7 +907,8 @@
         "This \"::: footnotes\" marker is inside a container, where it does not place: it renders as a plain typed div and the endnotes section goes where it would without the marker. Move the marker to document level, or delete it to accept the default position."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each `footnotes` directive that is not a top-level block of the document, such as one inside a quote, a list item or a div, where it places nothing; once per directive (C2-B-127, C2-H-158)",
+      "clauses": ["C2-B-127", "C2-H-158"]
     },
     {
       "id": "frontmatter-shaped-thematic-break",
@@ -900,7 +936,8 @@
       "default": "on",
       "messages": ["This github alert marker stays literal in a Carve quote; use an admonition fence."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "on a line whose first non-space character is a quote mark and that is a paragraph, table row or heading line, the first of `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]`, in upper case as written, outside code spans; once per line (C2-B-031, C2-I-072)",
+      "clauses": ["C2-B-031", "C2-I-072"]
     },
     {
       "id": "glob-shaped-strong",
@@ -910,7 +947,8 @@
       "default": "on",
       "messages": ["This strong span looks like a file glob; escape the asterisk if you meant a glob."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each bare strong span whose source starts with `*.` and ends with `*`, such as the span in `*.c,*.h`; a braced strong span is not reported (C2-I-046, C2-I-047, C2-I-048)",
+      "clauses": ["C2-I-046", "C2-I-047", "C2-I-048"]
     },
     {
       "id": "heading-closing-hashes",
@@ -920,7 +958,8 @@
       "default": "on",
       "messages": ["The closing \"${run}\" run is heading text in Carve, not a closing marker. Delete it."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a heading whose last line ends in a run of `#` that follows a space or tab, with heading text before that whitespace (a non-space character, or another inline node before the run); spaces after the run are allowed; `= ##`, whose only text is the run, is not reported; once per heading (C2-B-153, C2-B-151)",
+      "clauses": ["C2-B-153", "C2-B-151"]
     },
     {
       "id": "heading-level-skip",
@@ -930,7 +969,8 @@
       "default": "on",
       "messages": ["This heading skips from level ${previous} to ${level}; use the next heading level for a continuous outline."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a heading whose level is more than one above the level of the heading before it in document order, also inside quotes and list items; the first heading is never reported; once per heading (C2-B-151, C2-B-152)",
+      "clauses": ["C2-B-151", "C2-B-152"]
     },
     {
       "id": "heading-marker-mixed",
@@ -953,7 +993,8 @@
         "Trailing \"${block}\" on a heading is literal text in Carve, not an attribute block. Move it to a \"${block}\" line directly above the heading."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a heading whose last line ends in a brace block whose first character after optional spaces is `.` or `#` and that holds no other brace, such as `{.c}`, `{#i}` or `{ .c }`, after a space or tab and followed only by whitespace; it is heading text, not attributes; once per heading (C2-B-153, C2-I-036)",
+      "clauses": ["C2-B-153", "C2-I-036"]
     },
     {
       "id": "html-comment-renders-as-text",
@@ -963,7 +1004,8 @@
       "default": "on",
       "messages": ["This HTML comment renders as visible text. Use %% for one line or %%% for a comment block."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "each `<!--` on a paragraph line, outside code spans, escapes and link destinations, when `-->` follows later in the same paragraph, on that line or a later one; once per `<!--` (C2-I-124)",
+      "clauses": ["C2-I-124"]
     },
     {
       "id": "import-attribute-dropped",
@@ -1302,7 +1344,8 @@
       "default": "on",
       "messages": ["Four-space indentation does not make a code block in Carve; this renders as a paragraph. Use a ``` fence."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a top-level paragraph that starts on line 2 or later directly after a blank line, whose previous block is not a list, and whose first line starts with four or more spaces and then a non-space; only that first line is reported (C2-B-011, C2-I-002)",
+      "clauses": ["C2-B-011", "C2-I-002"]
     },
     {
       "id": "link-gap-before-destination",
@@ -1312,7 +1355,8 @@
       "default": "on",
       "messages": ["The gap after this link label keeps the link as text; write ]( with no space."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "on each paragraph, table row and heading line, outside code spans and escapes, each `[label]` with a non-empty label that is followed by one or more whitespace characters and a parenthesis group `(...)` whose first non-space character is not `)`, matched from left to right without overlap; once per match (C2-I-066, C2-I-069)",
+      "clauses": ["C2-I-066", "C2-I-069"]
     },
     {
       "id": "list-item-block-overindented",
@@ -1327,7 +1371,8 @@
         "With an attributed item the message starts \"This line uses the attributed item's former full-prefix column.\""
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a line owned by a list item, or below an ended item across blank lines only, whose content behind the quote marks starts past the item's content column with a block opener: a heading marker, a quote mark, a code fence, a term mark, a div fence, a block image line, a thematic break, an attribute line or a table row; once per line, consecutive quote or table lines of one block once, and never a list marker, a comment line, a line of a verbatim body or an escaped opener (C2-B-025, C2-B-027)",
+      "clauses": ["C2-B-025", "C2-B-027"]
     },
     {
       "id": "list-item-body-below-content-column",
@@ -1384,7 +1429,8 @@
       "default": "on",
       "messages": ["This markdown definition remains paragraph text; use a :: term line before the definition."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a paragraph line, not the first line of its paragraph, that after its container prefixes and indent starts with `:`, a space or a tab and a further character, where the paragraph line above does not start with `::` and a space; once per line (C2-B-074)",
+      "clauses": ["C2-B-074", "C2-B-067"]
     },
     {
       "id": "markdown-italic-underline",
@@ -1402,7 +1448,8 @@
       "messages": ["Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`."],
       "message_origin": "data_file",
       "change": "new message text",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of `~~` runs in inline text that encloses one or more characters other than `~`, with no whitespace directly inside either run, crossing soft line breaks but not a blank line, outside code and with an unescaped opening run, whatever stands before or after the pair; once per pair, the range is the pair with its content (C2-I-046, C2-I-062)",
+      "clauses": ["C2-I-046", "C2-I-062"]
     },
     {
       "id": "markdown-strong-double-star",
@@ -1423,7 +1470,8 @@
       "default": "on",
       "messages": ["Use descriptive link text or a specific aria-label."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a link that resolves and holds no image, whose text, with each run of ASCII whitespace folded to one space, the ends trimmed and lower-cased, is `here`, `click here` or `read more`, unless the link carries an `aria-label` key, in any letter case, whose folded value is neither empty nor one of those three; once per link (C2-I-066, C2-I-072)",
+      "clauses": ["C2-I-066", "C2-I-072"]
     },
     {
       "id": "ordered-list-kind-split",
@@ -1466,7 +1514,8 @@
         "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\"."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, on a line outside a code block, a raw block, a comment and an unreferenced footnote definition, inline code included, bare URLs and link destinations masked; once per run (C2-W-109, C2-I-092)",
+      "clauses": ["C2-W-109", "C2-I-092"]
     },
     {
       "id": "platform-mention-token",
@@ -1478,7 +1527,8 @@
         "${host} re-linkifies an at-prefixed word in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, on a line outside a code block, a raw block, a comment and an unreferenced footnote definition, inline code included, bare URLs and link destinations masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
+      "clauses": ["C2-W-109", "C2-I-090", "C2-I-092"]
     },
     {
       "id": "profile-construct-degraded",
@@ -1500,7 +1550,8 @@
         "A \"::: >\" opener at the column of the quote above it ENDS that quote and opens a sibling one; the two render as adjacent blockquotes, not one nested in the other. Write \"> ::: >\" to nest it, or leave a blank line to make two quotes deliberate."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a quote fence (`::: >`) that is the next block after a quote written with quote marks, in the same container, and whose opener stands on the line directly below that quote's last line; once per fence (C2-B-196, C2-B-032, C2-B-014)",
+      "clauses": ["C2-B-196", "C2-B-032", "C2-B-014"]
     },
     {
       "id": "raw-format-dropped",
@@ -1522,7 +1573,8 @@
         "This \"::: references\" marker is inside a container and does not place the reference list. Move it to document level, or remove it if no placement is needed."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "with the citations extension enabled, a `references` directive that is not a child of the document; once per directive (C2-B-127, C2-I-101)",
+      "clauses": ["C2-B-127", "C2-I-101"]
     },
     {
       "id": "refused-continuation-marker",
@@ -1539,7 +1591,8 @@
       "default": "on",
       "messages": ["This line renders as text and is not a region marker for a Carve include. Use \"%% #region name\"."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a line outside a code block, a raw block, a math block, a comment and frontmatter that holds, after spaces and tabs and an optional `//`, `--`, `/*` or `<!--` with spaces or tabs, `#region` or `#endregion` in any letter case not followed by an ASCII letter, digit or `_`; and a `%%` line comment whose keyword is `#region` or `#endregion` in another letter case; once per line, the range from its first character that is not a space or tab to the end of the line (C2-B-217, C2-N-038)",
+      "clauses": ["C2-B-217", "C2-N-038", "C2-N-039"]
     },
     {
       "id": "semantic-attribute-outside-span",
@@ -1564,7 +1617,8 @@
         "Value on the semantic attribute \"${name}\" is discarded: it selects the <${name}> element and reaches no output. Only abbr, dfn and time carry a value (as title or datetime)."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a span that carries the key `kbd` with a value that is not empty, and with an extension that makes `samp`, `var` or `cite` an element, also those keys; once per key on the span (C2-H-075, C2-I-064)",
+      "clauses": ["C2-H-075", "C2-I-064"]
     },
     {
       "id": "setext-heading-underline",
@@ -1575,7 +1629,8 @@
       "messages": ["Carve has no underline heading: this run of hyphens is text. Write the heading with a leading `=`."],
       "message_origin": "data_file",
       "change": "new message: a hyphen run under text is text",
-      "clauses": ["C2-W-106"]
+      "reports": "a line that after its quote marks and indent holds only a run of three or more `=` or three or more `-` and trailing spaces and tabs, where an `=` run is a later line of a paragraph and a `-` run stands directly below the last paragraph line above it; once per line, the range is the run (C2-B-160, C2-B-012, C2-B-033)",
+      "clauses": ["C2-B-160", "C2-B-012", "C2-B-033"]
     },
     {
       "id": "sigil-after-letter",
@@ -1621,7 +1676,8 @@
         "${key} supplies ${count} column entries for a ${widest}-column table; the unset tail is valid but may be accidental."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a table attribute `aligns`, `valigns` or `widths` whose value, split at commas, has fewer entries than the widest row of the table has cells; once per key, the range is the key name in the attribute line (C2-B-211, C2-B-212)",
+      "clauses": ["C2-B-211", "C2-B-212"]
     },
     {
       "id": "table-column-overlap",
@@ -1633,7 +1689,8 @@
         "Column ${n} supplies the same alignment axis both in the table and in a table attribute; the in-table marker wins."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a table column for which a header cell, in any row, carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has an entry that is not empty at that column's position; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-213, C2-B-182)",
+      "clauses": ["C2-B-213", "C2-B-182"]
     },
     {
       "id": "table-marker-run-padding",
@@ -1645,7 +1702,8 @@
         "\"${spelling}\" writes a cell's attribute block before its alignment marker, which Carve no longer reads as one. The block is part of the cell's marker run and the run ends at a space, so with the \"${marker}\" glued to it there is no run: the braces are content and the cell is neither attributed nor aligned. Write \"${marker}${block} \" to align it, or \"${block} ${marker}\" to keep the \"${marker}\" as content deliberately."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a table row cell whose text, directly behind its pipe, starts with a valid attribute block that is not empty and that `<`, `>` or `~` follows with no space between; once per cell, the range is the block and the mark (C2-B-171, C2-B-182)",
+      "clauses": ["C2-B-171", "C2-B-182"]
     },
     {
       "id": "table-row-attribute-as-cell",
@@ -1667,7 +1725,8 @@
       "default": "on",
       "messages": ["This table row has ${cells} cells; the header has ${width}. Add or remove a cell to match the table."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a pipe table row, after the first row, whose cell count differs from that of the first row, and a continuation row that adds a cell past the last column of its row; once per row, the range starts at the row's first pipe or at the `+` (C2-B-166, C2-B-175, C2-B-176)",
+      "clauses": ["C2-B-166", "C2-B-175", "C2-B-176"]
     },
     {
       "id": "table-row-count-clamped",
@@ -1745,7 +1804,8 @@
       "default": "on",
       "messages": ["The specified table column widths total more than 100%."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a table whose `widths` attribute's entries, each read as a number with entries that are no number skipped, total more than 100; once per table, the range is the key `widths` (C2-B-212)",
+      "clauses": ["C2-B-212"]
     },
     {
       "id": "thematic-break-spelling",
@@ -1783,7 +1843,8 @@
       ],
       "message_origin": "data_file",
       "change": "also an attribute line separated from its block by a blank line, which is text",
-      "clauses": ["C2-W-106"]
+      "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192)",
+      "clauses": ["C2-B-090", "C2-B-092", "C2-B-192"]
     },
     {
       "id": "unattached-caption",
@@ -1889,7 +1950,8 @@
       "messages": ["This ${span} opener is unclosed in its paragraph; add a closer."],
       "message_origin": "engine_0_1",
       "message_notes": ["`${span}` is `strong` for `*` and `emphasis` for `/`."],
-      "clauses": ["C2-W-106"]
+      "reports": "a `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind outside code spans; once per delimiter (C2-I-046, C2-I-047, C2-I-051)",
+      "clauses": ["C2-I-046", "C2-I-047", "C2-I-051"]
     },
     {
       "id": "uneven-list-indent",
@@ -1912,7 +1974,8 @@
       "default": "on",
       "messages": ["Footnote reference [^${id}] has no matching definition; it renders as literal text."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a footnote reference whose key, with each run of spaces folded to one and the ends trimmed, matches no footnote definition, case kept; once per reference (C2-I-087, C2-I-088)",
+      "clauses": ["C2-I-087", "C2-I-088"]
     },
     {
       "id": "unresolved-reference-link",
@@ -1938,7 +2001,8 @@
       "default": "on",
       "messages": ["Footnote definition [^${label}] is never referenced, so it is omitted from the rendered document."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a footnote definition whose key no footnote reference of the document uses, a reference inside another footnote definition counting; once per key, the range is `[^label]` on the definition's first line (C2-B-082, C2-H-194)",
+      "clauses": ["C2-B-082", "C2-H-194"]
     },
     {
       "id": "unused-link-reference-definition",
@@ -1948,7 +2012,8 @@
       "default": "on",
       "messages": ["This link reference definition is unused."],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "reports": "a link reference definition whose key no link or image reference that resolves uses, where a reference inside a footnote definition that nothing references, and one inside an unresolved reference, does not count; once per definition, from its opening bracket (C2-B-083, C2-I-075, C2-H-193)",
+      "clauses": ["C2-B-083", "C2-I-075", "C2-H-193"]
     },
     {
       "id": "writer-refused",

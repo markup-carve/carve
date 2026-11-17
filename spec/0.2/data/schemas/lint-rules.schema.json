@@ -24,7 +24,7 @@
             "minItems": 1,
             "uniqueItems": true,
             "items": { "type": "string", "pattern": "^C2-[ABHILMNWX]-[0-9]{3}$" },
-            "description": "The clauses that define the finding or name the code. A row that cites only C2-W-106 has no clause of its own: its finding keeps its 0.1 definition and the row stands in the catalog by that clause."
+            "description": "The clauses that define the finding or name the code. A row that cites only C2-W-106 has no clause of its own and states its trigger in `reports`."
           },
           "severity": { "enum": ["hint", "warning", "error"], "description": "The severity. Absent for a retired id." },
           "channel": {
@@ -66,7 +66,7 @@
             "enum": ["engine_0_1", "design", "data_file"],
             "description": "Where the texts come from. `engine_0_1`: the 0.1 reference engine, as the writer document copies them or as the engine reports them. `design`: the migrate and lint design, which the writer document names as the source for the new rules. `data_file`: written for this file, because the writer document asks for a 0.2 text and gives none."
           },
-          "reports": { "type": "string", "description": "What the code reports, in the words of the writer document." },
+          "reports": { "type": "string", "description": "What the code reports: its trigger, the exclusions and the count, with the clauses it rests on in parentheses (C2-W-106). The range of an entry is the span of the construct it names (C2-W-138)." },
           "channel_reports": {
             "type": "string",
             "description": "What the table of parse and render-loss codes says the code reports, where the rule also has messages."
