@@ -147,7 +147,6 @@
    "id": "unknown-core-type",
    "clauses": [
     "C2-A-018",
-    "C2-A-020",
     "C2-A-050"
    ],
    "reason": "a core type that is not in the node table",

@@ -79,8 +79,6 @@ Conventions:
 
 **C2-A-019** A reader accepts every minor version of major 2 that it can read under the additions allowed by C2-A-016.
 
-**C2-A-020** No reader has a degrade-and-report path for an unknown core node type, format bridges included: under C2-A-016 such a type can only come from a broken tree or from another major version.
-
 ## Node grammar
 
 **C2-A-021** Every node is a JSON object with a `type` that holds its node type name.
@@ -775,11 +773,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 166 | 2 |
+| Existing AST contract | 165 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **201** | **3** |
+| **Total** | **200** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-020, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
