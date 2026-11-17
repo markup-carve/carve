@@ -53031,35 +53031,12 @@
    "from": []
   },
   {
-   "id": "CC-1071",
-   "clauses": [
-    "C2-W-106"
-   ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "explicit brace range includes its braces",
-   "kind": "parse",
-   "input": "```js{.c}\nx\n```",
-   "options": {},
-   "expected": {
-    "diagnostics": [
-     {
-      "code": "fence-opener-fallback",
-      "line": 1,
-      "column": 6,
-      "endLine": 1,
-      "endColumn": 10
-     }
-    ]
-   },
-   "from": []
-  },
-  {
    "id": "CC-1072",
    "clauses": [
     "C2-W-106"
    ],
    "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "invalid whole table list reports only its invalid attribute",
+   "summary": "an invalid aligns list does not report arity",
    "kind": "lint",
    "input": "{aligns=x}\n| a | b |\n",
    "options": {},
@@ -53070,7 +53047,9 @@
      }
     ],
     "notReported": [
-     "table-column-arity"
+     "table-column-arity",
+     "table-column-overlap",
+     "table-width-total"
     ]
    },
    "from": []
@@ -53081,7 +53060,7 @@
     "C2-W-106"
    ],
    "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "invalid whole table list reports only its invalid attribute",
+   "summary": "an invalid aligns list does not report overlap",
    "kind": "lint",
    "input": "{aligns=left,x}\n|={>} A |= B |\n| a | b |\n",
    "options": {},
@@ -53092,7 +53071,9 @@
      }
     ],
     "notReported": [
-     "table-column-overlap"
+     "table-column-arity",
+     "table-column-overlap",
+     "table-width-total"
     ]
    },
    "from": []
@@ -53103,7 +53084,7 @@
     "C2-W-106"
    ],
    "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "invalid whole table list reports only its invalid attribute",
+   "summary": "an invalid widths list does not report total",
    "kind": "lint",
    "input": "{widths=60,x,50}\n| a | b | c |\n",
    "options": {},
@@ -53114,6 +53095,8 @@
      }
     ],
     "notReported": [
+     "table-column-arity",
+     "table-column-overlap",
      "table-width-total"
     ]
    },
@@ -53562,25 +53545,6 @@
    "from": []
   },
   {
-   "id": "CC-1096",
-   "clauses": [
-    "C2-W-106"
-   ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "a plain div uses the div-specific corrected opener message",
-   "kind": "parse",
-   "input": "::: foo{.x}\nx\n:::\n",
-   "options": {},
-   "expected": {
-    "diagnostics": [
-     {
-      "code": "fence-opener-fallback"
-     }
-    ]
-   },
-   "from": []
-  },
-  {
    "id": "CC-1097",
    "clauses": [
     "C2-W-106"
@@ -53714,25 +53678,6 @@
     "diagnostics": [
      {
       "code": "definition-term-block-folded"
-     }
-    ]
-   },
-   "from": []
-  },
-  {
-   "id": "CC-1104",
-   "clauses": [
-    "C2-W-106"
-   ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "further words after a raw format have a valid shorter opener",
-   "kind": "parse",
-   "input": "```=html~\nx\n```",
-   "options": {},
-   "expected": {
-    "diagnostics": [
-     {
-      "code": "fence-title-syntax"
      }
     ]
    },

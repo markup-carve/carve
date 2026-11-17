@@ -30,7 +30,7 @@ Freeze candidate 9: at `3e7b31e1`, the last fix round: the eight defects of a se
 
 Freeze candidate 10: the ten maintainer rulings, twenty findings of the third independent read, seven further catalog defects, the engine lane examples and gaps, and the final stranger read. G-H5 remains parked in the root open-points file. The extension mechanism remains provisional. The complete point and case inventory is in the root ledger and report.
 
-Freeze candidate 11: the nineteen findings of the fourth independent read, restored conditional diagnostic advice, and the 0.1 decisions on semantic key case and nested braced boundaries. The clause, rule, exception and example counts in the table remain unchanged. Clause cases rose from 1,016 to 1,051; upgrade source rows rose from 268 to 269. The positive tree, imported tree, refused tree and layout counts remain 604, 64, 79 and 19. The root ledger and report record each point and its case.
+Freeze candidate 11: the nineteen findings of the fourth independent read, restored conditional diagnostic advice, and the 0.1 decisions on semantic key case and nested braced boundaries. The clause, rule, exception and example counts in the table remain unchanged. Clause cases rose from 1,016 to 1,048; upgrade source rows rose from 268 to 269. The positive tree, imported tree, refused tree and layout counts remain 604, 64, 79 and 19. The root ledger and report record each point and its case.
 
 ## Documents
 
