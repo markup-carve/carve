@@ -632,13 +632,51 @@ b</p>
 
 **C2-H-155** An admonition carries an accessible name. With a title, the title paragraph takes a generated id (C2-H-156) and the `<aside>` carries `aria-labelledby` with that id. Without a title, the `<aside>` carries `aria-label` with the `labels` string whose key is `admonition` followed by the kind with its first letter in upper case: `admonitionNote`, whose default is `Note`. When the attribute line carries `aria-label` or `aria-labelledby`, in any ASCII letter case, the renderer writes neither attribute itself and generates no id, and the title paragraph has no id.
 
-**C2-H-156** The generated ids are `adm-1`, `adm-2` and so on. They count the titled admonitions and the titled `footnotes` directives that place the footnote section, in document order, and then those inside footnote bodies, in the order of the footnote numbers. An unused footnote definition counts none. Every authored id and every generated heading id is reserved first. An `adm-N` that is taken gets the suffix `-2`, then `-3`, until it is free.
+**C2-H-156** The generated ids are `adm-1`, `adm-2` and so on. They count the titled admonitions and the titled `footnotes` directive that places the footnote section, in document order, and then those inside footnote bodies, in the order of the footnote numbers. An unused footnote definition counts none. Every authored id and every generated heading id is reserved first. An `adm-N` that is taken gets the suffix `-2`, then `-3`, until it is free.
 
 **C2-H-157** A plain div writes its title and its label as an admonition does, and carries no name and no generated id.
 
 **C2-H-169** The blocks inside the directive that places the footnote section are written before the section, in their order. The attributes of the directive are not written, and the section is named with `aria-labelledby` also when the directive carries an authored `aria-label`: the attributes of this directive are not written, so the exception of C2-H-155 for an authored name does not apply to it.
 
-**C2-H-158** A top-level `footnotes` directive (C2-A-066) places the footnote section at its own place (C2-H-093). Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. What a directive places beyond this is left to a later extension, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
+**C2-H-158** The first top-level `footnotes` directive (C2-A-066) places the footnote section at its own place (C2-H-093); a later one places nothing. Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. What a directive places beyond this is left to a later extension, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
+
+Example 68 (generated)
+
+::: compare
+
+```carve
+a[^n]
+
+::: footnotes
+:::
+
+b
+
+::: footnotes
+:::
+
+[^n]: x
+```
+
+```html
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+<p>b</p>
+<div class="footnotes">
+
+</div>
+```
+
+:::
+
+The first directive places the section, and the second places nothing.
 
 Example 28 (generated)
 
@@ -2338,7 +2376,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Paragraphs, headings and sections | 17 | 1 | 5 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
-| Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
+| Quotes, divs and their sigil forms | 13 | 0 | 4 | 0 |
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 9 | 0 | 1 | 0 |
 | Captions and figures | 12 | 0 | 4 | 1 |
@@ -2354,6 +2392,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **32** | **35** |
+| **Total** | **199** | **7** | **33** | **35** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 67 examples, 32 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 68 examples, 33 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
