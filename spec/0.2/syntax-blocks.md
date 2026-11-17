@@ -5334,7 +5334,30 @@ The first row is a head row: the header mark stands before a space, before the e
 
 **C2-B-175** A continuation row starts with `+` and ends with a pipe and trailing spaces and tabs, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
-**C2-B-176** A fragment past the last column forms a new cell.
+**C2-B-176** A fragment past the last column forms a new cell, and each column it skips an empty cell. Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell. As in 0.1.
+
+Example 281 (unverified)
+
+::: compare
+
+```carve
+|= Name |
++ | Role |
+| Ada | Lead |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Name</th><th scope="col">Role</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Ada</td><td>Lead</td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 **C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174).
 
@@ -6624,10 +6647,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 0 | 22 | 19 |
+| Tables | 35 | 0 | 22 | 20 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **109** |
+| **Total** | **219** | **10** | **171** | **110** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

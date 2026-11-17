@@ -285,6 +285,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A line comment inside an inline footnote: `^[a %% c] d`, `^[%% c] d` | The comment took the closing bracket, so the note was text; directly after `^[` the `%%` was text inside the note. | The comment ends before the bracket that closes the note, and the start of the note counts as a line start. Link text and extension content still differ (U-146, U-149). | C2-I-023, C2-I-024 |
 | A backslash at the end of a line of a line block: `::: \|`, `a\`, `b`, `:::` | Two `<br>` between `a` and `b`, a blank line. | One `<br>`; the tree still holds the hard break, and a backslash alone on a line still gives an empty line. | C2-H-043 |
 | `align` on a line block: `{align=center}` above `::: \|` | Written as the attribute `align="center"`. | Written as `style="text-align: center;"`, as on every block that writes `<p>`, `<div>` or a heading element. A value in another case still differs (U-272). | C2-H-015 |
+| A continuation row that adds a cell to a row of header cells: `\|= a \|`, `+ \| b \|` | `b` was a data cell, `<td>` inside the head. | A header cell, as are the empty cells of columns it skips; in a row with a data cell the new cell stays a data cell. | C2-B-176 |
 
 ### Include expansion
 

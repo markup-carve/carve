@@ -12038,6 +12038,777 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-167",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: A fragment past the last column forms a new cell, and each column it skips an empty cell. Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a skipped column of a header row gets an empty header cell",
+   "input": "|= a |\n+ | | b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\"></th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": []
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-168",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a span mark that extends a header cell counts as that cell",
+   "input": "|= a | < |\n+ | | | c |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">a</th><th scope=\"col\"></th><th scope=\"col\">c</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ],
+            "colspan": 2
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "span": "colspan",
+            "children": []
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": []
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "c"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-169",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a second head row takes a header cell from its continuation",
+   "input": "|= a |\n|= x |\n+ | y |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n    <tr><th scope=\"col\">x</th><th scope=\"col\">y</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-170",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a header row in a quote takes a header cell from its continuation",
+   "input": "> |= a |\n> + | b |",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n    </thead>\n  </table>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "table",
+        "columns": [
+         {
+          "type": "table_column"
+         },
+         {
+          "type": "table_column"
+         }
+        ],
+        "children": [
+         {
+          "type": "table_head",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": true,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "table_cell",
+              "header": true,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-171",
+   "clauses": [
+    "C2-B-176",
+    "C2-H-056"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a row of header cells below the body takes a header cell with the row scope",
+   "input": "|= a |\n| 1 |\n|= x |\n+ | y |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>1</td></tr>\n    <tr><th scope=\"row\">x</th><th scope=\"row\">y</th></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "1"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-172",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a row with a data cell takes a data cell",
+   "input": "|= a | b |\n+ | | c |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><th scope=\"row\">a</th><td>b</td><td>c</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "c"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-173",
+   "clauses": [
+    "C2-B-176",
+    "C2-B-184"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a later continuation row joins the new header cell and adds another",
+   "input": "|= a |\n+ | b |\n+ | c | d |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">b c</th><th scope=\"col\">d</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b c"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "d"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-174",
+   "clauses": [
+    "C2-B-176",
+    "C2-B-185"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a caret in the new cell is text in a header cell",
+   "input": "|= a |\n+ | ^ |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th><th scope=\"col\">^</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "^"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-175",
+   "clauses": [
+    "C2-B-176"
+   ],
+   "why": "C2-B-176: Such a cell is a header cell when every other cell of its row is one, where a `<` mark counts as the cell it extends and a `^` mark as a data cell.",
+   "summary": "a row attribute does not change the new header cell",
+   "input": "|= a |{.r}\n+ | b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr class=\"r\"><th scope=\"col\">a</th><th scope=\"col\">b</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "attrs": {
+           "classes": [
+            "r"
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
