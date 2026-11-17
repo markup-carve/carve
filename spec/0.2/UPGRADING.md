@@ -431,6 +431,8 @@ A ruling of 17 November, 13:55, decides the open points of the round of candidat
 | ID | What you wrote | 0.1 | 0.2 now and tool |
 | --- | --- | --- | --- |
 | U-371 | Under C2-I-085 and C2-H-139, attribute blocks glued to an unresolved reference: `[x][no]{.c}{#i}` **SILENT** | Written as typed: `<p>[x][no]{.c}{#i}</p>`. | Merged and written as one block in the fixed order, `<p>[x][no]{#i .c}</p>`, so the HTML is a function of the tree; candidate 7 had restored the typed form from a sidecar fact, which is gone. Review; report |
+| U-372 | Consecutive marker-shaped paragraph lines: `a` then `- b` then `- c` **SILENT** | `list-marker-without-blank-line` reports the first marker-shaped line of the run. | Each marker-shaped line reports; report |
+| U-373 | Consecutive table-shaped paragraph lines: `\| a` then `\| b` **SILENT** | `table-shaped-paragraph` reports the first line of the run. | Each table-shaped line reports; report |
 
 U-207 now holds the same rule for a footnote reference, `Text[^a]{.c}{#i}.`; its old example, one block, gives the same HTML in both versions.
 
@@ -1058,10 +1060,3 @@ Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown
 - Resolve the rewrite tool's `U-114` fifth-input `upgrade-mismatch` and classify remaining corpus mismatches.
 - Align the engine's tree fields and task-item style with the current 0.2 schema and HTML rulings.
 - Finish the non-HTML renderers before those callers switch.
-
-### Lint report counts in 0.2
-
-| Input | 0.1 | 0.2 | Clause |
-|---|---|---|---|
-| Consecutive marker-shaped lines in paragraph text | `list-marker-without-blank-line` reports the first line. | It reports each line. | C2-B-022, U-372 |
-| Consecutive table-shaped paragraph lines | `table-shaped-paragraph` reports the first line. | It reports each line. | C2-B-168, U-373 |
