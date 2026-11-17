@@ -306,10 +306,8 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "This block opener is indented under a definition term, which has no content column, so it folds into the term as text (a fence line or a table row does not fold: it closes the description list). Dedent it to the container's content column to open the block, or put it in the term's \": \" description."
-      ],
-      "message_origin": "engine_0_1",
+      "messages": ["A quote mark or a list marker after the term mark is term text. Put the block in the term\u0027s description."]
+      "message_origin": "data_file",
       "change": "a block opener under a term is term text (C2-B-075)",
       "reports": "a term whose text (C2-B-069) starts with a quote mark (C2-B-031) or a list marker (C2-B-034, C2-B-036) followed by a space, which C2-B-075 makes term text; `:: >a` and a block opener on a later line of the term are not reported; once per term, the range is the quote mark or the list marker (C2-B-031, C2-B-034, C2-B-036, C2-B-069, C2-B-075)",
       "clauses": ["C2-B-075", "C2-B-069", "C2-B-031", "C2-B-034", "C2-B-036"]

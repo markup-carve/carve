@@ -25,3 +25,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-ca
 Search: `references-placement-in-container`, `C2-I-101`, `C2-H-158`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. Catalog row and CC-809/810 are the applicable result places.
+
+## R4 term-folding message
+
+Search: `definition-term-block-folded`, `C2-B-075`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. CC-697 and CC-992 exercise the trigger.
