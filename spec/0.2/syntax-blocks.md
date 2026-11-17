@@ -5525,7 +5525,7 @@ Example 281 (unverified)
 
 :::
 
-**C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174).
+**C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174). Where the source declares no grouping, the rest of the rows form one body.
 
 **C2-B-179** `header-rows` sets the number of head rows of a delimited table. C2-B-209 and C2-B-210 state its default and its value.
 

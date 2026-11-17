@@ -364,8 +364,6 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-086** A `table` carries `children` that are `table_head`, `table_body` and `table_foot` nodes, and after them the comment of a comment-only line that stands below the last row and not before a continuation of that row, with or without a caption below it (C2-A-082). The groups stand in this order: at most one `table_head`, then the `table_body` nodes, then at most one `table_foot`, and a reader refuses another order or count. Each group holds `table_row` nodes and each row holds `table_cell` nodes. There is no flat row list and no count object. The comment of a comment-only line between two rows (C2-B-137) is a `comment` node among the rows of its group, at its place in source order. It belongs to the group of the row above it, so a comment between the last head row and the first body row is the last child of the head. A `table_head` and a `table_foot` admit a `comment` among their rows as a `table_body` does. The trailing line comment of a row (C2-B-167) is a `comment` node at the place that a comment-only line directly below that row would take: among the rows of the row's group, directly after the row, or, after the last row of the table, as the comment after the groups. The row then ends at its closing pipe or its row attribute, and the comment spans from the first space before its `%%` to the line ending (C2-A-151). For `| 1 | 2 | %% note`, a line feed and `| 3 | 4 |`, the body holds the first row, the comment `note` and the second row, and the first row spans offsets 0 to 9. A comment between a row and its continuation row (C2-B-175), as a comment-only line or as the trailing comment of the row, belongs to the row's group, directly after the row, because the continuation is part of that row (C2-B-184); a continued row has no `pos` (C2-A-158), so the comment overlaps no sibling. For `| a |`, `%% x` and `+ b |` on three lines, the body holds the row `a b` and then the comment `x`, and the table holds no comment after its groups.
 
-**C2-A-087** A table whose source declares no grouping has a head made of its leading rows that have a header cell and no other cell, and one body for the rest (C2-B-178).
-
 **C2-A-088** The partition of a table into head, body and foot is held by its groups alone: the `table_head`, `table_body` and `table_foot` nodes and the rows each holds. No node carries a count of head rows. `rowHeadColumns` of a `table_body` is the number of its leading columns whose cells are row headers (C2-B-230). A `header-rows` attribute that set the partition is spelling, recorded in the layout sidecar (C2-L-057), so a pipe table and a delimited table with the same cells in the same groups are equal trees (C2-L-023).
 
 **C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign` and authored `valign` beside result `resolvedValign`; it may also hold `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the horizontal mark of the last header cell in the head that starts in that column and carries one (C2-B-182, C2-B-213), or else the authored `align` from the `aligns` attribute, and `resolvedValign` is the vertical mark of the last such cell that carries one, or else the authored `valign` from the `valigns` attribute. A cell mark overrides the resolved column alignment for that cell.
@@ -779,11 +777,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 168 | 2 |
+| Existing AST contract | 167 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **204** | **3** |
+| **Total** | **203** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 
