@@ -1521,9 +1521,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "A \"::: >\" opener at the column of the quote above it ENDS that quote and opens a sibling one; the two render as adjacent blockquotes, not one nested in the other. Write \"> ::: >\" to nest it, or leave a blank line to make two quotes deliberate."
-      ],
+      "messages": ["A \"::: >\" opener ENDS that quote and opens a sibling one; the two render as adjacent blockquotes, not one nested in the other. Write \"> ::: >\" to nest it, or leave a blank line to make two quotes deliberate."],
       "message_origin": "engine_0_1",
       "reports": "a quote fence (`::: >`) that is the next block after a quote written with quote marks, in the same container, and whose opener stands on the line directly below that quote's last line; once per fence (C2-B-196, C2-B-032, C2-B-014)",
       "clauses": ["C2-B-196", "C2-B-032", "C2-B-014"]

@@ -54067,6 +54067,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1122",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-032"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "indented quote fence still ends marked quote above",
+  "kind": "lint",
+  "input": "> a\n    ::: >\n    b\n    :::\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "quote-fence-ends-the-quote-above"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
