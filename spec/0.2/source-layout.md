@@ -159,9 +159,9 @@ These facts are ported from the draft. Columns in them are the zero-based column
 
 A writer that starts from a tree with no sidecar, or with a sidecar that lacks a fact, writes the canonical form of each spelling.
 
-**C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot on every item, the first included. A list that does not start at 1 carries its start value in a `start` attribute on the attribute line above it (C2-B-045): a number on the first marker would be read back as the numbered form.
+**C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot on every item, the first included. A list that does not start at 1 carries its start value in a `start` attribute on the attribute line above it (C2-B-045): a number on the first marker would be read back as the numbered form. The writer clause names the exceptions (C2-W-044).
 
-**C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036).
+**C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036). A first marker that would read as another style is written as C2-W-045 says.
 
 **C2-L-032** A bullet list is written with the character in `marker.char`. A writer writes `-` only where the tree says `-`, and does not change the character to separate two lists.
 
@@ -173,13 +173,13 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-036** A table is written as a pipe table. A table with no rows is written as a delimited table, because a pipe table needs a row.
 
-**C2-L-037** A code block is written with the shortest run of at least three backticks that is longer than every bare backtick run on a line of its `value`, at any indent (C2-W-038). A fenced container is written with a colon run of the smallest length that is longer than the runs of the divs inside it.
+**C2-L-037** A code block is written with the shortest run of at least three backticks that is longer than every bare backtick run on a line of its `value`, at any indent (C2-W-038). A fenced container is written with a colon run of the smallest length of at least three that is longer than the runs of the divs inside it (C2-W-039).
 
 **C2-L-038** A heading is written with `=`.
 
 **C2-L-039** A thematic break is written as `***`.
 
-**C2-L-040** A reference is written from the tree: its text, then `[key]` for the form `full` or `[]` for the form `collapsed`. The form `shortcut` writes only its text in brackets, with no label tail.
+**C2-L-040** A reference is written from the tree: its text, then `[key]` for the form `full` or `[]` for the form `collapsed`. The form `shortcut` writes only its text in brackets, with no label tail. C2-W-075 spells a key that starts with a caret or an at-sign.
 
 **C2-L-041** The remaining layout is the canonical layout of the Writer document: one blank line between blocks where the tree's `spacing` does not say otherwise, content indented to the content column, a bare `---` for YAML frontmatter, double quotes for a title.
 
