@@ -109,3 +109,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/
 Search: `footnote-labels-differ-only-in-whitespace`, `C2-B-081`, `U-213`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. U-213 records the 0.1 container-definition difference; count parsed definitions only.
+
+## CR9-08
+
+Search: `bidi-control-in-source`, `C2-H-172`, `C2-H-048`.
+
+Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A title rendered in an attribute is excluded; new code-title near miss.
