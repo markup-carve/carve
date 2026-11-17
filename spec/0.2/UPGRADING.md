@@ -262,9 +262,9 @@ Vertical alignment reads as in 0.1 (C2-B-182, C2-B-211, C2-B-213). Against candi
 
 A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?`, `~` or the end of the cell behind it (C2-B-171). Against candidate 5: `|=a|` is a data cell with the text `=a`, where it was a header cell that held `a`; write `|= a |` where a header cell is meant.
 
-### Seventeen 0.1 behaviors restored, 17 November 2026
+### 0.1 behaviors restored, 17 November 2026
 
-Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.
+Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Its seventeen points give the nineteen rows below, one per behavior. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.
 
 | What you wrote | Freeze candidate 5 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
 | --- | --- | --- | --- |
