@@ -12,7 +12,7 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 
 **C2-L-001** The sidecar is a record beside the tree. A producer returns it only when the caller asks, and never puts its content into the tree.
 
-**C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-161) does not read the sidecar.
+Two documents that differ only in sidecar content are the same document (C2-A-004): tree equality (C2-A-161) does not read the sidecar.
 
 **C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree. A render of source and a render of its tree can still differ: a render of source writes the attribute blocks of an unresolved reference as typed, read from the source (C2-I-085).
 
@@ -226,3 +226,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 ## Schema
 
 [`data/layout-schema.json`](data/layout-schema.json) defines the closed version 2 layout record.
+
+## Counts
+
+The document has 56 clauses. The reduction of 17 November 2026 deleted C2-L-002, whose rule another clause states; its id is not reused.
