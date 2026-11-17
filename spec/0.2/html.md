@@ -62,7 +62,7 @@ Example 1 (generated)
 
 **C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068). A class that occurs more than once is written once, at its first place; the tree keeps every occurrence.
 
-**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name, except a `style`, which is merged (C2-H-015, C2-H-032, C2-H-057). No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written. A `dir` key beside the `dir` field of a supplied or imported tree is the same case: the field decides.
+**C2-H-013** Attribute names compare without regard to ASCII letter case. The keys `abbr`, `time` and `kbd` that make an element (C2-H-075) are no attribute names in this sense: they match in lower case only, and a key in another case is an ordinary attribute. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name, except a `style`, which is merged (C2-H-015, C2-H-032, C2-H-057). No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written. A `dir` key beside the `dir` field of a supplied or imported tree is the same case: the field decides.
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
@@ -1336,7 +1336,7 @@ Reported: `include-unresolved`.
 
 **C2-H-074** Emphasis and strong nest in the tree order: `<strong><em>` or `<em><strong>`, as written (C2-A-096).
 
-**C2-H-075** A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`. A value of `abbr` becomes `title` and a value of `time` becomes `datetime`, each only when it is not empty, so `[x]{time}` and `[x]{time=""}` are `<time>x</time>`; a value of `kbd` is dropped. Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. An authored `title` or `datetime` wins over the derived one. As in 0.1 (CARVE-P10-003 to CARVE-P10-007).
+**C2-H-075** A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`. A value of `abbr` becomes `title` and a value of `time` becomes `datetime`, each only when it is not empty, so `[x]{time}` and `[x]{time=""}` are `<time>x</time>`; a value of `kbd` is dropped. Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. An authored `title` or `datetime` wins over the derived one. The three keys match in lower case only: a key in another case, `KBD` or `Abbr`, is an ordinary attribute, so `[x]{KBD}` is `<span KBD="">x</span>` (C2-H-013). As in 0.1 (CARVE-P10-003 to CARVE-P10-007).
 
 **C2-H-076** The names `samp`, `var`, `cite` and `dfn` are not core. Without their extension, `[x]{samp}` is a span with the attribute `samp=""`. An unqualified inline extension with no renderer is `<span class="ext-NAME">` around its content. The core never turns an extension name into an element name. In 0.2.0 an extension may give qualified `inline_extension` and `block_extension` nodes. A matching trusted renderer writes its returned HTML string unchanged under C2-X-034. An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`.
 
@@ -1371,6 +1371,22 @@ Example 400 (unverified)
 
 ```html
 <p><time>x</time> and <abbr>y</abbr></p>
+```
+
+:::
+
+A semantic key in another case is an ordinary attribute, beside a semantic key or alone.
+
+Example 481 (unverified)
+
+::: compare
+
+```carve
+[x]{KBD} and [y]{abbr="a" ABBR="b"}
+```
+
+```html
+<p><span KBD="">x</span> and <abbr title="a" ABBR="b">y</abbr></p>
 ```
 
 :::
@@ -2616,7 +2632,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 2 | 2 |
-| Inline elements | 8 | 0 | 1 | 1 |
+| Inline elements | 8 | 0 | 1 | 2 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 1 |

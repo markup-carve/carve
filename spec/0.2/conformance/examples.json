@@ -69520,6 +69520,132 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-481",
+   "document": "html.md",
+   "number": 481,
+   "section": "Inline elements",
+   "clauses": [
+    "C2-H-072",
+    "C2-H-073",
+    "C2-H-074",
+    "C2-H-075",
+    "C2-H-076",
+    "C2-H-077",
+    "C2-H-078",
+    "C2-H-142"
+   ],
+   "kind": "render",
+   "input": "[x]{KBD} and [y]{abbr=\"a\" ABBR=\"b\"}",
+   "options": {},
+   "expected": {
+    "html": "<p><span KBD=\"\">x</span> and <abbr title=\"a\" ABBR=\"b\">y</abbr></p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "x",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 1,
+            "endOffset": 2
+           }
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "KBD",
+            ""
+           ]
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 9,
+          "startOffset": 0,
+          "endOffset": 8
+         }
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 9,
+          "endColumn": 14,
+          "startOffset": 8,
+          "endOffset": 13
+         }
+        },
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "y",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 15,
+            "endColumn": 16,
+            "startOffset": 14,
+            "endOffset": 15
+           }
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "abbr",
+            "b"
+           ]
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 14,
+          "endColumn": 36,
+          "startOffset": 13,
+          "endOffset": 35
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 36,
+        "startOffset": 0,
+        "endOffset": 35
+       }
+      }
+     ],
+     "srcByteLength": 35,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-17",
    "document": "html.md",
    "number": 17,

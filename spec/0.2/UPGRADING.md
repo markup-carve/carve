@@ -311,6 +311,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | `social: {resolveMention: ({name}) => '/u/' + name}` with `@alice`, the 0.1 callback moved into `social` | The resolver received the name string, so the link went to `/u/undefined`. | The resolver receives one object with `kind` (`mention` or `tag`), `name` and `context`, the value of `social.context`, which replaces the 0.1 option `socialContext`: `<a class="mention" href="/u/alice">`. | C2-H-126 |
 | `social: {mentionUrl: '/u/{name}', resolveMention: () => null}` with `@alice`, a resolver that refuses a name | The template was used when the resolver returned nothing: `<a class="mention" href="/u/alice">`. | A resolver is final: the template of its pair is not read, and a mention or tag it returns nothing for is the inert span, `<span class="mention"><strong>@alice</strong></span>`. | C2-H-126 |
 | `@alice` with `social: {mentionUrl: '/u/{name}'}`, `#news` with `tagUrl` | The link held a `<strong>`: `<a class="mention" href="/u/alice"><strong>@alice</strong></a>`. | No `<strong>` in a link: `<a class="mention" href="/u/alice">@alice</a>`; the inert span keeps its `<strong>`. | C2-H-100 |
+| A semantic key in another case: `[x]{KBD}`, `[x]{ABBR="Hyper"}`, `[x]{TIME=12:00}` | The key matched in any case: `<kbd>x</kbd>`, `<abbr title="Hyper">x</abbr>`. | The keys `abbr`, `time` and `kbd` match in lower case only; another case is an ordinary attribute, `<span KBD="">x</span>`. | C2-H-075, C2-H-013 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

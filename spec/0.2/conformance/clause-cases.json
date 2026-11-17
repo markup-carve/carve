@@ -17582,6 +17582,70 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-311",
+   "clauses": [
+    "C2-H-075",
+    "C2-H-013"
+   ],
+   "why": "C2-H-075: The three keys match in lower case only: a key in another case, `KBD` or `Abbr`, is an ordinary attribute, so `[x]{KBD}` is `<span KBD=\"\">x</span>` (C2-H-013).",
+   "summary": "a time key in another case is an ordinary attribute, and an abbr key in another case stays one beside kbd",
+   "input": "[x]{Time=12:00} and [y]{kbd Abbr=b}",
+   "options": {},
+   "expected": {
+    "html": "<p><span Time=\"12:00\">x</span> and <kbd Abbr=\"b\">y</kbd></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "Time",
+           "12:00"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "text",
+        "value": " and "
+       },
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "kbd",
+           ""
+          ],
+          [
+           "Abbr",
+           "b"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
