@@ -53939,6 +53939,30 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1116",
+  "clauses": [
+   "C2-W-106",
+   "C2-W-138"
+  ],
+  "why": "C2-W-106: The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree.",
+  "summary": "first unsupported version declaration controls the one report",
+  "kind": "lint",
+  "input": "---\ncarve: 9.9\ncarve-version: next\n---\nx\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "carve-version-unsupported",
+     "line": 2,
+     "column": 8,
+     "endLine": 2,
+     "endColumn": 11
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
