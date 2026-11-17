@@ -86,7 +86,7 @@
         "This line looks like a (kind) but directly follows text, so it is part of the paragraph or caption above it. Add a blank line before it."
       ],
       "message_origin": "design",
-      "reports": "a line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, a definition",
+      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
       "clauses": ["C2-B-019", "C2-B-200"]
     },
@@ -294,7 +294,7 @@
         "A definition is recognized only at column 0 outside every container, so this line is text. Put it at column 0 outside every container."
       ],
       "message_origin": "design",
-      "reports": "a definition shape inside a container or indented at the top level",
+      "reports": "each definition-shaped line inside a container or indented at the top level; once per candidate line, the range is the bracketed label and colon (C2-B-081)",
       "clauses": ["C2-B-081"]
     },
     {

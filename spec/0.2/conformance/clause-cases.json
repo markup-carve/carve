@@ -53426,6 +53426,54 @@
     "html": "<p id=\"tabs-1-0\">p</p>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>"
    },
    "from": []
+  },
+  {
+   "id": "CC-1090",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "each marker-shaped line following text reports separately",
+   "kind": "lint",
+   "input": "a\n# b\n# c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 2
+     },
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1091",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "each definition-shaped line inside a quote reports separately",
+   "kind": "lint",
+   "input": "> [a]: /u\n> [b]: /v\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-in-container",
+      "line": 1
+     },
+     {
+      "code": "definition-in-container",
+      "line": 2
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
