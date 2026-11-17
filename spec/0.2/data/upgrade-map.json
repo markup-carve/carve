@@ -2324,7 +2324,7 @@
     {
       "id": "U-269",
       "kind": "rewrite",
-      "group": "third review",
+      "group": "rulings of 17 November",
       "from": "|= A |={>^} < |\n| a | b |\n",
       "to": "|= A |= < |\n| a |{>^} b |\n",
       "meaning02": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-174: the brace block of a span mark that joins is kept for nothing, and `table-span-marker-attribute` reports it, on both axes.",
@@ -2337,7 +2337,7 @@
       "group": "rulings of 17 November",
       "from": "|=a|\n| x |\n",
       "to": "|= a |\n| x |\n",
-      "meaning02": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: the header mark needs a space, a tab, a brace block, `<`, `>`, `~` or the end of the cell behind it; otherwise the `=` is cell text, as in 0.1. The rewrite is for a source written for a header cell under freeze candidate 5, not for a 0.1 document.",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: the header mark needs a space, a tab, `{`, `<`, `>`, `?`, `~` or the end of the cell behind it; otherwise the `=` is cell text, as in 0.1. The rewrite is for a source written for a header cell under freeze candidate 5, not for a 0.1 document.",
       "toolEntry": "U-270",
       "silent": true
     }

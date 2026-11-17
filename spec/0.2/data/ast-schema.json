@@ -16484,7 +16484,8 @@
           "enum": [
             "top",
             "middle",
-            "bottom"
+            "bottom",
+            "baseline"
           ],
           "$comment": "resolution result"
         },

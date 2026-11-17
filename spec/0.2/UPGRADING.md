@@ -255,9 +255,13 @@ After, on one row:
 | `a b` | 1 2 |
 ```
 
-### Ruling of 17 November 2026
+### Rulings of 17 November 2026
 
-This ruling changes what some documents give against freeze candidate 5 of 0.2 and against early 0.2 engines; against 0.1 it removes a difference. A header mark needs a space, a tab, a brace block, one of `<`, `>`, `~` or the end of the cell behind it (C2-B-171).
+These rulings change what some documents give against freeze candidate 5 of 0.2 and against early 0.2 engines; against 0.1 they remove differences.
+
+Vertical alignment reads as in 0.1 (C2-B-182, C2-B-211, C2-B-213). Against candidate 5: `{>v}` on a cell is right and bottom, where it was right and the bare key `v`; `{>^}` is a mark, where it was cell text; and `valigns` sets the columns, where it was written as an HTML attribute. U-260 and U-261 are withdrawn, U-162 is a rewrite, and U-269 records the one difference to 0.1.
+
+A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?`, `~` or the end of the cell behind it (C2-B-171).
 
 | ID | What you wrote | Before | 0.2 now and tool |
 | --- | --- | --- | --- |
@@ -589,7 +593,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 
 U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
 
-U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark before text needs a space (C2-B-171).
+U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark glued to a letter is cell text (C2-B-171).
 
 U-260 and U-261 are withdrawn: `{valigns="top,bottom"}` above a table and the cell marks `{>^}` give the same HTML in 0.1 and 0.2, `vertical-align` styles on the cells (C2-B-182, C2-B-211, C2-B-213, C2-H-057).
 

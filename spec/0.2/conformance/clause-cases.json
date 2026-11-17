@@ -7184,7 +7184,7 @@
     "C2-B-182",
     "C2-B-171"
    ],
-   "why": "C2-B-182: A vertical mark with no horizontal mark or `?` before it is no mark: `{^}` and `{?}` are no attribute block, and `{v}` holds the bare key `v`.",
+   "why": "C2-B-182: A vertical mark with no horizontal mark or `?` before it is no mark: `{^}` is no attribute block, and `{v}` holds the bare key `v`.",
    "summary": "a lone vertical mark is cell text",
    "input": "|={^} a |",
    "options": {},
@@ -7445,7 +7445,7 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a header mark glued to a letter is cell text, so the row is no head row",
    "input": "|=a|\n| x |",
    "options": {},
@@ -7516,7 +7516,7 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a tab after the header mark makes a header cell",
    "input": "|=\ta|\n| x |",
    "options": {},
@@ -7592,7 +7592,7 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a header mark at the end of its cell makes an empty header cell",
    "input": "|=|= b |\n| x | y |",
    "options": {},
@@ -7697,7 +7697,7 @@
     "C2-B-171",
     "C2-B-182"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a glued less-than sign keeps the header cell and stays its text",
    "input": "|=<a|\n| x |",
    "options": {},
@@ -7773,7 +7773,7 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a doubled equals sign is cell text",
    "input": "|==a|\n| x |",
    "options": {},
@@ -7844,12 +7844,12 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
-   "summary": "an empty brace pair is no brace block, so the equals sign is text",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "an opening brace keeps the header mark where no brace block forms, and the braces are text",
    "input": "|={}a|\n| x |",
    "options": {},
    "expected": {
-    "html": "<table>\n  <tbody>\n    <tr><td>={}a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">{}a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
     "children": [
      {
       "type": "table",
@@ -7860,28 +7860,33 @@
       ],
       "children": [
        {
-        "type": "table_body",
+        "type": "table_head",
         "children": [
          {
           "type": "table_row",
           "children": [
            {
             "type": "table_cell",
-            "header": false,
+            "header": true,
             "children": [
              {
               "type": "cell_paragraph",
               "children": [
                {
                 "type": "text",
-                "value": "={}a"
+                "value": "{}a"
                }
               ]
              }
             ]
            }
           ]
-         },
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
          {
           "type": "table_row",
           "children": [
@@ -7916,7 +7921,7 @@
     "C2-B-171",
     "C2-B-172"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a header mark glued to a caret is text, not a span",
    "input": "|= H |\n|=^|",
    "options": {},
@@ -7992,7 +7997,7 @@
    "clauses": [
     "C2-B-171"
    ],
-   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `<`, `>`, `~`, the brace block of the prefix or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
    "summary": "a formula cell in a body row keeps its equals sign",
    "input": "| h |\n| y |=SUM(A1)|",
    "options": {},
@@ -8131,6 +8136,83 @@
                {
                 "type": "text",
                 "value": "k = a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-096",
+   "clauses": [
+    "C2-B-171",
+    "C2-B-182"
+   ],
+   "why": "C2-B-171: The `=` is the header cell mark only where a space, a tab, `{`, one of the alignment marks `<`, `>`, `?` and `~`, or the end of the cell follows it; otherwise it is the first character of the cell's text.",
+   "summary": "a glued question mark keeps the header cell and stays its text",
+   "input": "|=?v a|\n| x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">?v a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "?v a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
                }
               ]
              }
