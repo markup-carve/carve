@@ -14050,7 +14050,8 @@
       "required": [
         "type",
         "kind",
-        "source"
+        "source",
+        "glyph"
       ],
       "additionalProperties": false
     },

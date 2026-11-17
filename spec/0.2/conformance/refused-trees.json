@@ -3339,6 +3339,56 @@
    }
   },
   {
+   "id": "smart-punctuation-without-glyph",
+   "clauses": [
+    "C2-A-098"
+   ],
+   "reason": "a smart_punctuation node without its glyph",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "smart-punctuation-other-glyph",
+   "clauses": [
+    "C2-A-098",
+    "C2-A-188"
+   ],
+   "reason": "a glyph that is not the glyph of its kind",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "source": "---",
+        "glyph": "X"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
    "id": "head-rows-field",
    "clauses": [
     "C2-A-088"

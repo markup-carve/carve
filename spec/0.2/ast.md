@@ -424,7 +424,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 }
 ```
 
-**C2-A-098** A `smart_punctuation` node carries `kind` and `source`, the characters as typed, and may carry `glyph`. `source` stays in the tree, because a renderer with `smartTypography` off prints it. The `kind` of a smart punctuation node is one of the kinds of `data/smart-punctuation.json`; a reader refuses any other value.
+**C2-A-098** A `smart_punctuation` node carries `kind`, `source`, the characters as typed, and `glyph`, the glyph that `data/smart-punctuation.json` gives its kind; a reader refuses another glyph. `source` stays in the tree, because a renderer with `smartTypography` off prints it. The `kind` of a smart punctuation node is one of the kinds of `data/smart-punctuation.json`; a reader refuses any other value.
 
 **C2-A-099** A line break inside a leaf is a `soft_break` or a `hard_break`. Neither has a value.
 
@@ -715,7 +715,7 @@ These clauses were added after other documents began to cite this one. They stan
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 
