@@ -73,3 +73,9 @@ Places: `spec/0.2/STATUS.md`. Four carried points have no new ruling and stay op
 Search: `C2-X-048`, `tabs-1-0`, `C2-H-024`, `C2-H-146`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/extensions.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`. Generated heading ids join authored ids in the reserved set; new render case.
+
+## CR9-02
+
+Search: `C2-T-005`, `decodeTree`, `validateTree`, `extensions`.
+
+Places: `spec/0.2/README.md`, `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/refused-trees.json`, `spec/0.2/conformance/schema.json`, `spec/0.2/data/README.md`, `spec/0.2/data/ast-schema.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/extensions.json`, `spec/0.2/data/node-slots.json`, `spec/0.2/data/options.json`, `spec/0.2/data/schemas/extensions.schema.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/trees/nodes.json`, `spec/0.2/trees/refused.json`. Tree calls now read registered extensions; CC-468 to CC-472 already require this; new near miss.

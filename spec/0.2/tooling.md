@@ -16,7 +16,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 ## Library
 
-**C2-T-005** An engine offers the calls of this table. Each reads the options of `data/options.json` whose `read_by` names a stage the call runs and refuses the others (C2-H-137).
+**C2-T-005** An engine offers the calls of this table. Each reads the options of `data/options.json` whose `read_by` names a stage the call runs and refuses the others (C2-H-137). `decodeTree` and `validateTree` read `extensions` as the registered standard extensions for their tree reader checks (C2-X-038).
 
 | Call | Takes | Returns | Clauses |
 |---|---|---|---|
@@ -34,8 +34,8 @@ This document defines what every engine offers a caller: the library calls and t
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
 | `encodeTree` | a tree | its JSON text | C2-A-012 |
 | `encodeEnvelope` | a tree | the JSON text of its envelope | C2-A-012 |
-| `decodeTree` | the JSON text of a 2.0 tree or envelope | the tree | C2-A-188 |
-| `validateTree` | a tree | nothing, or the refusal | C2-A-188 |
+| `decodeTree` | the JSON text of a 2.0 tree or envelope, `extensions` | the tree | C2-A-188 |
+| `validateTree` | a tree, `extensions` | nothing, or the refusal | C2-A-188 |
 | `migrateTree` | the JSON value of a 1.x or draft tree, bare or in an envelope | the 2.0 tree, its envelope where the input was one, and the record | C2-A-178, C2-A-180 |
 
 **C2-T-006** A call refuses with the typed error of its row in the table of C2-T-040, and with no other error; the command line turns that error into the category of the row.

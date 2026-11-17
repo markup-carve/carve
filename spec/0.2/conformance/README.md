@@ -57,7 +57,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `format` | `input` or `inputBytes` | `formatWithDiagnostics` | `carve`, diagnostics, `refusal` |
 | `layout` | `input` or `inputBytes` | `parseWithLayout` | `layout`, `layoutAbsent`, `children`, diagnostics |
 | `write` | `tree`, and `layout`, its sidecar | `writeWithDiagnostics`, and `write` for a refusal | `carve`, diagnostics (the losses), `refusal` |
-| `tree` | `tree`, a JSON value, or `json`, JSON text | `decodeTree` | `accepted`, `tree`, `refusal` |
+| `tree` | `tree`, a JSON value, or `json`, JSON text | `decodeTree` with `options.extensions` registered | `accepted`, `tree`, `refusal` |
 | `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
 | `import` | `html` | `importDocument` with `from: "html"` | `children`, `carve`, diagnostics, `refusal` |
 | `cli` | `args`, `stdin`, `files` | the program `carve` | `status`, `stdout`, `stdoutJson`, `stdoutDiagnostics`, `stderrCategory`, `stderrDiagnostics`, `filesAfter` |
@@ -145,7 +145,7 @@ The check fails an error that no category of `data/cli.json` names or that the c
 
 ## Options
 
-`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, and `renderers` maps such a name to `"standard"`, its standard renderer. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
+`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, also for `decodeTree` and `validateTree`, and `renderers` maps such a name to `"standard"`, its standard renderer. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
 
 ```json
 { "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }

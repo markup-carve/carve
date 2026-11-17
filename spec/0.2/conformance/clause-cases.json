@@ -52515,6 +52515,102 @@
     "html": "<h1 id=\"tabs-1-0\">tabs 1 0</h1>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>"
    },
    "from": []
+  },
+  {
+   "id": "CC-1049",
+   "clauses": [
+    "C2-T-005",
+    "C2-X-038"
+   ],
+   "why": "C2-T-005: `decodeTree` and `validateTree` read `extensions` as the registered standard extensions for their tree reader checks (C2-X-038).",
+   "summary": "an unregistered optional tab node is accepted by the tree reader",
+   "kind": "tree",
+   "options": {},
+   "expected": {
+    "accepted": true
+   },
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tab",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "title": [
+        {
+         "type": "text",
+         "value": "A"
+        }
+       ],
+       "body": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tab",
+       "title": "A",
+       "body": "x\n"
+      }
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

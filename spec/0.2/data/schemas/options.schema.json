@@ -25,8 +25,8 @@
           },
           "read_by": {
             "oneOf": [
-              { "enum": ["parse", "resolve", "render", "format", "lint", "import"] },
-              { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import"] } }
+              { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree"] },
+              { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree"] } }
             ],
             "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066)."
           },

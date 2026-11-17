@@ -12,11 +12,11 @@
     {
       "name": "extensions",
       "kind": "parse",
-      "read_by": ["format", "parse"],
+      "read_by": ["format", "parse", "tree"],
       "type": "list",
       "items": "extension",
       "default": [],
-      "clauses": ["C2-H-137"]
+      "clauses": ["C2-H-137", "C2-T-005", "C2-X-038"]
     },
     {
       "name": "headingIds",
