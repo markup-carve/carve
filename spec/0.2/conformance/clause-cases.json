@@ -10182,6 +10182,215 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-128",
+   "clauses": [
+    "C2-I-097",
+    "C2-H-095"
+   ],
+   "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+   "summary": "a decomposed cross-reference in a quote matches a precomposed heading",
+   "input": "# Café\n\n> See </#Café>.",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"Café\">\n  <h1>Café</h1>\n  <blockquote><p>See <a href=\"#Café\">Café</a>.</p></blockquote>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Café"
+       }
+      ],
+      "generatedId": "Café"
+     },
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "See "
+         },
+         {
+          "type": "xref",
+          "key": "Café",
+          "namespace": "heading",
+          "href": "#Café"
+         },
+         {
+          "type": "text",
+          "value": "."
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-129",
+   "clauses": [
+    "C2-I-097",
+    "C2-H-095"
+   ],
+   "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+   "summary": "a decomposed cross-reference in a table cell matches a precomposed heading",
+   "input": "# Café\n\n| </#Café> |",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"Café\">\n  <h1>Café</h1>\n  <table>\n    <tbody>\n      <tr><td><a href=\"#Café\">Café</a></td></tr>\n    </tbody>\n  </table>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Café"
+       }
+      ],
+      "generatedId": "Café"
+     },
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "xref",
+                "key": "Café",
+                "namespace": "heading",
+                "href": "#Café"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-130",
+   "clauses": [
+    "C2-I-097",
+    "C2-H-144"
+   ],
+   "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+   "summary": "a precomposed cross-reference matches a decomposed heading",
+   "input": "# Café\n\nSee </#Café>.",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"Café\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\">Café</a>.</p>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Café"
+       }
+      ],
+      "generatedId": "Café"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "Café",
+        "namespace": "heading",
+        "href": "#Café"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-131",
+   "clauses": [
+    "C2-I-097"
+   ],
+   "why": "C2-I-097: The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not.",
+   "summary": "compatibility characters do not fold, so the reference stays text",
+   "input": "# ﬁle\n\nSee </#file>.",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"ﬁle\">\n  <h1>ﬁle</h1>\n  <p>See &lt;/#file&gt;.</p>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "ﬁle"
+       }
+      ],
+      "generatedId": "ﬁle"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "file",
+        "namespace": "heading"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

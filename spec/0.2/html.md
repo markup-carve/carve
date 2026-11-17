@@ -1540,7 +1540,7 @@ Example 33 (unverified)
 
 ## Cross-references and abbreviations
 
-**C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, without case folding (C2-I-097). The id of a numbered caption is the `attrs.id` of the block that carries it.
+**C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, under NFC and without case folding (C2-I-097). The id of a numbered caption is the `attrs.id` of the block that carries it.
 
 **C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
 

@@ -49837,14 +49837,118 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
-   "id": "syntax-inline-88",
+   "id": "syntax-inline-126",
    "document": "syntax-inline.md",
-   "number": 88,
+   "number": 126,
    "section": "Cross-references",
    "clauses": [
     "C2-I-096",
     "C2-I-097"
    ],
+   "kind": "render",
+   "input": "# Café\n\nSee </#Café>.",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"Café\">\n  <h1>Café</h1>\n  <p>See <a href=\"#Café\">Café</a>.</p>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "heading",
+       "level": 1,
+       "children": [
+        {
+         "type": "text",
+         "value": "Café",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 7,
+          "startOffset": 2,
+          "endOffset": 7
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 7,
+        "startOffset": 0,
+        "endOffset": 7
+       },
+       "generatedId": "Café"
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "See ",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 9,
+          "endOffset": 13
+         }
+        },
+        {
+         "type": "xref",
+         "key": "Café",
+         "namespace": "heading",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 5,
+          "endColumn": 14,
+          "startOffset": 13,
+          "endOffset": 23
+         },
+         "href": "#Café"
+        },
+        {
+         "type": "text",
+         "value": ".",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 14,
+          "endColumn": 15,
+          "startOffset": 23,
+          "endOffset": 24
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 15,
+        "startOffset": 9,
+        "endOffset": 24
+       }
+      }
+     ],
+     "srcByteLength": 24,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "syntax-inline-88",
+   "document": "syntax-inline.md",
+   "number": 88,
+   "section": "Café",
+   "clauses": [],
    "kind": "render",
    "input": "{#intro}\n# Intro\n\nSee </#intro> and </#Intro> and </#intro>{.c}",
    "options": {},

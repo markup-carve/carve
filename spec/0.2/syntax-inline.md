@@ -1904,7 +1904,28 @@ Example 87 (unverified)
 
 **C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom. (carried over from 0.1)
 
-**C2-I-097** The id is matched exactly, without case folding. An unresolved cross-reference is written as the characters typed. (carried over from 0.1)
+**C2-I-097** The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not. An unresolved cross-reference is written as the characters typed. (carried over from 0.1)
+
+The heading id is NFC (C2-H-144), and the reference, typed with `e` and a combining acute accent, matches it under NFC (C2-I-097).
+
+Example 126 (unverified)
+
+::: compare
+
+```carve
+# Café
+
+See </#Café>.
+```
+
+```html
+<section id="Café">
+  <h1>Café</h1>
+  <p>See <a href="#Café">Café</a>.</p>
+</section>
+```
+
+:::
 
 Example 88 (generated)
 
@@ -2415,7 +2436,7 @@ There is no fixed budget for the inline chapter.
 | Reference resolution | 13 | 3 | 5 | 15 |
 | Footnotes | 3 | 0 | 1 | 1 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
-| Cross-references | 2 | 0 | 1 | 0 |
+| Cross-references | 2 | 0 | 1 | 1 |
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 1 |
@@ -2423,9 +2444,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **55** |
+| **Total** | **112** | **16** | **70** | **56** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 125 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 126 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

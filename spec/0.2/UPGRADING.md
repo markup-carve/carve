@@ -278,6 +278,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A region marker line, `%% #region x` or `%% #endregion`, below text, a quote or a list | Not seen by block structure: the text went on, and the quote or list stayed open across it. | The line ends the paragraph, closes the quote or list it is not owned by, and ends a heading or a table. | C2-B-137, C2-B-199 |
 | An authored `rowspan` or `colspan` key on a cell: `\|{colspan=3} b \|` | Written on the `<td>`, so the row looked wider than it was. | Never written; only span marks shape the grid. The key stays in the tree. | C2-H-058 |
 | A backslash and spaces or tabs at the end of a line, `a\ ` above `b` | A no-break space and a soft break. | A hard break; inside a code span the escaped space still stays in the value (the ruling of 16 November). | C2-I-011, C2-I-102 |
+| A cross-reference typed with a decomposed character, `</#Cafe` and U+0301 `>`, to `# Café` | Unresolved, written as typed. | Resolved: the id and the target ids are compared under NFC. | C2-I-097, C2-H-095 |
 
 ### Include expansion
 
