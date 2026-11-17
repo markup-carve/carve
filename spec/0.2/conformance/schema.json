@@ -62,7 +62,26 @@
         { "required": ["bytes"], "properties": { "bytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$" } }, "additionalProperties": false }
       ]
     },
-    "diagnostics": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9/-]+$" } },
+    "code": { "type": "string", "pattern": "^[a-z0-9/-]+$" },
+    "diagnostic": {
+      "type": "object",
+      "description": "An expected entry of the diagnostics record: its code, and each other field the case states. line and column are those of the start of the entry's range, counted as pos counts them (C2-A-141), in the file the entry names or the input.",
+      "required": ["code"],
+      "properties": {
+        "code": { "$ref": "#/$defs/code" },
+        "line": { "type": "integer", "minimum": 1 },
+        "column": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "endColumn": { "type": "integer", "minimum": 1 },
+        "severity": { "enum": ["hint", "warning", "error"] },
+        "channel": { "enum": ["parse", "render-loss", "lint"] },
+        "path": { "type": "string" },
+        "file": { "type": "string" }
+      },
+      "dependentRequired": { "column": ["line"], "line": ["column"], "endColumn": ["endLine"], "endLine": ["endColumn"] },
+      "additionalProperties": false
+    },
+    "diagnostics": { "type": "array", "items": { "anyOf": [{ "$ref": "#/$defs/code" }, { "$ref": "#/$defs/diagnostic" }] } },
     "example": {
       "type": "object",
       "required": ["id", "document", "number", "section", "clauses", "kind", "options", "expected", "status", "reason"],
@@ -98,26 +117,38 @@
     },
     "clauseCase": {
       "type": "object",
-      "required": ["id", "clauses", "why", "input", "options", "expected", "from"],
+      "required": ["id", "clauses", "why", "options", "expected", "from"],
       "properties": {
-        "id": { "type": "string", "pattern": "^CC-[0-9]{3}$" },
+        "id": { "type": "string", "pattern": "^CC-[0-9]{3,4}$" },
         "clauses": { "$ref": "#/$defs/clauses" },
         "why": { "type": "string", "description": "The deciding sentence, quoted from the first clause it names: CLAUSE-ID, a colon, a space, the sentence; ' ... ' joins two pieces." },
         "summary": { "type": "string" },
+        "kind": { "enum": ["render", "parse", "lint", "format"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
         "input": { "type": "string" },
+        "inputBytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$", "description": "The input as bytes in hex, for a source that is not a string." },
+        "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" }, "description": "The files a resolver serves, each under its name, which is also its id." },
         "options": { "$ref": "#/$defs/options" },
         "expected": {
           "type": "object",
-          "required": ["html", "children"],
           "properties": {
             "html": { "type": "string" },
-            "children": { "type": "array" }
+            "children": { "type": "array" },
+            "carve": { "type": "string" },
+            "diagnostics": { "$ref": "#/$defs/diagnostics" },
+            "diagnosticsComplete": { "type": "boolean", "description": "true: the record holds these entries and no other; false or absent: it holds at least these." },
+            "notReported": { "type": "array", "items": { "$ref": "#/$defs/code" }, "description": "Codes the record holds no entry of." },
+            "suppressed": { "type": "integer", "minimum": 0, "description": "suppressedDiagnostics of the result (C2-T-024)." }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "minProperties": 1
         },
         "from": { "type": "array", "items": { "type": "string", "pattern": "^(js|php|rs):.+$" } },
         "corrected": { "type": "string" }
       },
+      "allOf": [
+        { "if": { "not": { "required": ["kind"], "properties": { "kind": true } } }, "then": { "required": ["input"], "properties": { "input": true, "expected": { "type": "object", "required": ["html", "children"], "properties": { "html": true, "children": true } } } } },
+        { "if": { "required": ["kind"], "properties": { "kind": true } }, "then": { "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } }
+      ],
       "additionalProperties": false
     },
     "refusedTree": {

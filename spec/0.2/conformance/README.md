@@ -45,7 +45,38 @@ An unverified example is still the expected result: where an engine differs, the
 
 ## Clause cases
 
-Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `input`, `options`, `expected.html`, `expected.children` (the children of the document without positions), and `from`, the engine case files it was merged from (`js:ID`, `php:ID`, `rs:ID`). `why` quotes the sentence that decides the case, as `C2-B-130: ...`; several quotes follow one another, and ` ... ` joins two pieces of one clause. `corrected`, where present, says what the engine files expected before the clause corrected it.
+Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expected` and `from`, the engine case files it was merged from (`js:ID`, `php:ID`, `rs:ID`; empty for a case written from the clauses). `why` quotes the sentence that decides the case, as `C2-B-130: ...`; several quotes follow one another, and ` ... ` joins two pieces of one clause. `corrected`, where present, says what the engine files expected before the clause corrected it.
+
+`kind` names the call the case runs (`tooling.md`, C2-T-005). An entry without `kind` is a render whose `expected` states both `html` and `children`, the children of the document without positions; that is the shape of every case up to CC-359.
+
+| `kind` | Input | Call | What `expected` may state |
+|---|---|---|---|
+| `render` | `input` or `inputBytes`, `files` | `renderWithDiagnostics`, and `parse` for `children` | `html`, `children`, diagnostics |
+| `parse` | `input` or `inputBytes`, `files` | `parseWithDiagnostics` | `children`, diagnostics |
+| `lint` | `input` or `inputBytes`, `files` | `lint` | diagnostics |
+| `format` | `input` or `inputBytes` | `formatWithDiagnostics` | `carve`, diagnostics |
+
+`inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
+
+### Diagnostics
+
+`expected.diagnostics` lists entries of the record the call returns. An entry is a code, or an object with `code` and any of `line`, `column`, `endLine`, `endColumn`, `severity`, `channel`, `path` and `file`. `line` and `column` are the start of the entry's `range`, counted as `pos` counts them (C2-A-141): lines from 1 at each line feed, columns in code points from 1. They are counted in the file the entry names (`file`, C2-N-063) and in the input otherwise; the end is exclusive, as in `pos`. A field the object does not state is not compared.
+
+`expected.diagnosticsComplete` set to `true` says the record holds the listed entries and no others; otherwise it holds at least them, in any order. `expected.notReported` lists codes the record must not hold: the near miss of a rule. `expected.suppressed` is the `suppressedDiagnostics` of the result (C2-T-024).
+
+```json
+{
+  "kind": "lint",
+  "input": "a **b** c\n",
+  "options": {},
+  "expected": {
+    "diagnostics": [{ "code": "markdown-strong-double-star", "line": 1, "column": 3, "endLine": 1, "endColumn": 8, "channel": "lint" }],
+    "notReported": ["markdown-italic-underline"]
+  }
+}
+```
+
+The check fails a code that `data/lint-rules.json` does not list or lists as obsolete or void, a `channel` or `severity` that differs from the catalog, a position outside the text it is counted in, and a code that is both expected and excluded.
 
 ## Options
 

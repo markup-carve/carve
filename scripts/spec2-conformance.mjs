@@ -181,6 +181,39 @@ function badOptions(options) {
 }
 for (const entry of built['examples.json'].examples) for (const name of badOptions(entry.options)) fail(`examples.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 
+// An expected entry names an active code of the catalog, its channel and severity where stated, and a start that
+// lies in the text it is counted in: the file it names, or the input. Lines end at a line feed (C2-A-141).
+const ruleOf = new Map(rules.map(rule => [rule.id, rule]))
+const textOf = (entry, file) => {
+  const source = file === undefined ? entry.input ?? (entry.inputBytes ? Buffer.from(entry.inputBytes.replaceAll(' ', ''), 'hex').toString('utf8') : undefined) : entry.files?.[file]?.text
+  return source
+}
+function diagnosticProblems(entry) {
+  const problems = []
+  const listed = entry.expected.diagnostics ?? []
+  for (const item of listed) {
+    const diagnostic = typeof item === 'string' ? { code: item } : item
+    const rule = ruleOf.get(diagnostic.code)
+    if (!rule) { problems.push(`expects ${diagnostic.code}, which data/lint-rules.json does not list`); continue }
+    if (['obsolete', 'void'].includes(rule.status)) problems.push(`expects ${diagnostic.code}, which is ${rule.status}`)
+    if (diagnostic.channel && rule.channel !== diagnostic.channel) problems.push(`gives ${diagnostic.code} the channel ${diagnostic.channel}, the catalog ${rule.channel}`)
+    if (diagnostic.severity && (rule.severity ?? 'warning') !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, the catalog ${rule.severity ?? 'warning'}`)
+    if (diagnostic.file !== undefined && !entry.files?.[diagnostic.file]) problems.push(`names the file ${diagnostic.file}, which files does not hold`)
+    const text = textOf(entry, diagnostic.file)
+    for (const [line, column] of [[diagnostic.line, diagnostic.column], [diagnostic.endLine, diagnostic.endColumn]]) {
+      if (line === undefined || text === undefined) continue
+      const lines = text.split('\n')
+      if (line > lines.length || column > [...lines[line - 1]].length + 1) problems.push(`places ${diagnostic.code} at ${line}:${column}, outside its text`)
+    }
+  }
+  for (const code of entry.expected.notReported ?? []) {
+    if (!ruleOf.has(code)) problems.push(`notReported names ${code}, which data/lint-rules.json does not list`)
+    if (listed.some(item => (typeof item === 'string' ? item : item.code) === code)) problems.push(`both expects and excludes ${code}`)
+  }
+  if (entry.expected.diagnosticsComplete !== undefined && !entry.expected.diagnostics) problems.push('states diagnosticsComplete without diagnostics')
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -202,8 +235,9 @@ for (const entry of cases.cases) {
     if (!entry.clauses.includes(quote[1])) fail(`clause-cases.json ${entry.id}: why quotes ${quote[1]}, which clauses does not list`)
     else if (!quote[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(quote[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${quote[1]}`)
   }
-  if (!validateTree({ type: 'document', astVersion: '2.0', children: entry.expected.children })) fail(`clause-cases.json ${entry.id}: the AST schema refuses the expected children at ${validateTree.errors[0].instancePath || '/'}: ${validateTree.errors[0].message}`)
-  if (exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
+  if (entry.expected.children && !validateTree({ type: 'document', astVersion: '2.0', children: entry.expected.children })) fail(`clause-cases.json ${entry.id}: the AST schema refuses the expected children at ${validateTree.errors[0].instancePath || '/'}: ${validateTree.errors[0].message}`)
+  if ((entry.kind ?? 'render') === 'render' && !entry.files && exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
+  for (const problem of diagnosticProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }
