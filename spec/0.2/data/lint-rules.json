@@ -34,7 +34,7 @@
         "Bidi override/isolate control U+${code} is preserved by canonical Carve but not written to the text and code of presentation output; remove it unless intentional."
       ],
       "message_origin": "engine_0_1",
-      "reports": "each bidirectional override or isolate control, U+202A to U+202E and U+2066 to U+2069, in text and code, the only places a render drops it: the value of a text, code span, code block or math node, title and label text included only when written between tags; a title written in an attribute, including a code title, is excluded; one in an attribute value, a link destination, raw content, a comment or frontmatter is not reported; one finding per code point; the marks U+200E, U+200F and U+061C are not reported (C2-H-172)",
+      "reports": "each bidirectional override or isolate control, U+202A to U+202E and U+2066 to U+2069, in text and code, the only places a render drops it: the value of a text, code span, code block or math node, title and label text included only when written between tags; a title written in an attribute, including a code title, is excluded; one finding per code point; the marks U+200E, U+200F and U+061C are not reported (C2-H-172)",
       "clauses": ["C2-H-172"]
     },
     {
@@ -98,7 +98,7 @@
       "default": "on",
       "messages": [{"when": "the line is paragraph text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal paragraph text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
-      "reports": "a line of paragraph, heading, cell, term or caption text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
+      "reports": "a line of paragraph, heading, cell, term or caption text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line (C2-B-031)",
       "clauses": ["C2-B-031"]
     },
     {
@@ -332,7 +332,7 @@
       "default": "on",
       "messages": ["A bare equals pair is text in 0.2. Write the braced highlight."],
       "message_origin": "design",
-      "reports": "a pair of bare `=` in one inline content that 0.1 read as highlight, read as if `=` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `=`, is not followed by `>` and is not the `=` of `!=`, `<=` or `>=` (C2-I-117); the closer is the first later `=` that can close by C2-I-048 and is not the `=` of such a comparison, and a `=` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `=` between two word characters (C2-I-053); a `=` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053, C2-I-117)",
+      "reports": "a pair of bare `=` in one inline content that 0.1 read as highlight, read as if `=` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `=`, is not followed by `>` and is not the `=` of `!=`, `<=` or `>=` (C2-I-117); the closer is the first later `=` that can close by C2-I-048 and is not the `=` of such a comparison, and a `=` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `=` between two word characters (C2-I-053); a bare `=` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053, C2-I-117)",
       "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053", "C2-I-117"]
     },
     {
@@ -343,7 +343,7 @@
       "default": "on",
       "messages": ["A bare tilde pair is text in 0.2. Write the braced strike."],
       "message_origin": "design",
-      "reports": "a pair of bare `~` in one inline content that 0.1 read as strike, read as if `~` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `~`; the closer is the first later `~` that can close by C2-I-048, and a `~` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `~` between two word characters (C2-I-053); a `~` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
+      "reports": "a pair of bare `~` in one inline content that 0.1 read as strike, read as if `~` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `~`; the closer is the first later `~` that can close by C2-I-048, and a `~` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `~` between two word characters (C2-I-053); a bare `~` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
       "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053"]
     },
     {
@@ -354,7 +354,7 @@
       "default": "on",
       "messages": ["A bare underscore pair is text in 0.2. Write the braced underline, or the slash pair for emphasis."],
       "message_origin": "design",
-      "reports": "a pair of bare `_` in one inline content that 0.1 read as underline, read as if `_` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `_`; the closer is the first later `_` that can close by C2-I-048, and a `_` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `_` between two word characters (C2-I-053); a `_` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
+      "reports": "a pair of bare `_` in one inline content that 0.1 read as underline, read as if `_` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `_`; the closer is the first later `_` that can close by C2-I-048, and a `_` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `_` between two word characters (C2-I-053); a bare `_` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
       "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053"]
     },
     {
@@ -368,7 +368,7 @@
       ],
       "message_origin": "engine_0_1",
       "change": "the glued alignment marker is cut; the rule stays on through 0.2.x",
-      "reports": "a cell of a complete pipe table row, outside code and raw blocks, whose text starts directly after the pipe, behind the header mark `=` if any, with a valid 0.1.13 alignment run (a horizontal `<`, `>` or `~` with an optional vertical `^`, `~` or `v`, or `?` with a vertical mark), optionally a glued brace block, then a space; a cell that holds only `<` or `^` and a cell that starts with a brace block are not reported; once per cell (C2-B-171, C2-B-182)",
+      "reports": "a cell of a complete pipe table row, whose text starts directly after the pipe, behind the header mark `=` if any, with a valid 0.1.13 alignment run (a horizontal `<`, `>` or `~` with an optional vertical `^`, `~` or `v`, or `?` with a vertical mark), optionally a glued brace block, then a space; a cell that holds only `<` or `^` and a cell that starts with a brace block are not reported; once per cell (C2-B-171, C2-B-182)",
       "clauses": ["C2-B-171", "C2-B-182"]
     },
     {
@@ -446,7 +446,7 @@
         "The substitution arrow was removed in 0.2; this is a strike span. Write a deletion directly followed by an insertion."
       ],
       "message_origin": "design",
-      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash and not inside an atom (a code span, a math span, a braced or line comment), a bracket construct or a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
+      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` in the strike's own inline content, outside a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
       "clauses": ["C2-I-062"]
     },
     {
@@ -483,7 +483,7 @@
         "This ${name} starts at column ${column}, below the column ${host.column} of the definition list above, so it adds no entry to that list. Indent it to column ${host.column} to continue the list."
       ],
       "message_origin": "engine_0_1",
-      "reports": "a line that, after quote marks and indent, starts with a description mark `:` or a term mark `::` followed by a space, a tab or the end of the line, is no term line or description line of any description list (a lazy line of a paragraph counts as none), and whose nearest line above that is not blank, at the same quote depth, lies in a description list whose first term mark stands at a greater column; continuation lines of code spans, math and raw inlines are not reported; once per line (C2-B-067, C2-B-071, C2-B-074)",
+      "reports": "a line that, after quote marks and indent, starts with a description mark `:` or a term mark `::` followed by a space, a tab or the end of the line, is no term line or description line of any description list (a lazy line of a paragraph counts as none), and whose nearest line above that is not blank, at the same quote depth, lies in a description list whose first term mark stands at a greater column; once per line (C2-B-067, C2-B-071, C2-B-074)",
       "clauses": ["C2-B-067", "C2-B-071", "C2-B-074"]
     },
     {
