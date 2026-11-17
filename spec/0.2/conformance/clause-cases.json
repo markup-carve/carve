@@ -53578,6 +53578,29 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1097",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a separate line changes the generated heading id from Djot",
+   "kind": "lint",
+   "input": "# A\nB\n",
+   "options": {
+    "rules": {
+     "djot-heading-continuation": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-heading-continuation"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
