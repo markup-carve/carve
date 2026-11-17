@@ -15046,6 +15046,54 @@
    "from": []
   },
   {
+   "id": "CC-212",
+   "clauses": [
+    "C2-B-146"
+   ],
+   "why": "C2-B-146: The caption text starts at the first character behind those spaces that is not a space or a tab, and a continuation line of a caption loses its indent like every line of a content (C2-I-002).",
+   "summary": "a tab behind the caption mark and the indent of a continuation line are not caption text",
+   "input": "![a](i.png)\n^ \tsecond\n  - b",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"i.png\" alt=\"a\">\n  <figcaption>second\n- b</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "i.png",
+        "alt": "a"
+       }
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "second"
+          },
+          {
+           "type": "soft_break"
+          },
+          {
+           "type": "text",
+           "value": "- b"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-240",
    "clauses": [
     "C2-B-138",

@@ -2382,6 +2382,16 @@
       "silent": true
     },
     {
+      "id": "U-279",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "|x|\n^ a\n  - b\n",
+      "to": "",
+      "meaning02": "<table>\n  <caption>a\n- b</caption>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-146 and C2-I-002 drop the indent of a continuation line of a caption and the spaces and tabs behind the caption mark's spaces; 0.1 kept both in the caption text. Escaped spaces give no-break spaces, not the 0.1 text, and a tab has no escape.",
+      "toolEntry": "U-279",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
