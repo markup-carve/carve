@@ -357,7 +357,7 @@ HTML and CSS.
 
 ## Selection, transforms and mode
 
-The option semantics of 0.1 are carried over unchanged (I1, I1a to I1d, I8) and restated over the tree. Each option has a kind in `data/include-options.json`: `lines`, `region` and `rows` are selections, and so is the section, which is written `#name` and is no option; `cols` and `shift` are transforms; `code` is the mode.
+The option semantics of 0.1 are carried over unchanged (I1, I1a to I1d, I8) and restated over the tree: an option selects the lines it selected in 0.1. How the selected lines are parsed differs from 0.1 in two points of C2-N-020, frontmatter only from line 1 of the file and the definitions of the whole file (U-301, U-302). Each option has a kind in `data/include-options.json`: `lines`, `region` and `rows` are selections, and so is the section, which is written `#name` and is no option; `cols` and `shift` are transforms; `code` is the mode.
 
 **C2-N-024** A directive uses at most one selection. Which options exclude each other and which need a context are the rows of `conflicts` in `data/includes.json`: two selections exclude each other, a section excludes `code`, and `rows` and `cols` need a code include whose language is `csv` or `tsv` and whose attributes carry the `table` flag. A directive that breaks a row is not expanded, and `include-selection-conflict` reports it.
 
