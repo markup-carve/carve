@@ -197,7 +197,7 @@ function diagnosticProblems(entry) {
     const rule = ruleOf.get(diagnostic.code)
     if (!rule) { problems.push(`expects ${diagnostic.code}, which data/lint-rules.json does not list`); continue }
     if (['obsolete', 'void'].includes(rule.status)) problems.push(`expects ${diagnostic.code}, which is ${rule.status}`)
-    if (diagnostic.messageWhen !== undefined && !rule.messages.some(message => typeof message === 'object' && message.when === diagnostic.messageWhen)) problems.push(`expects ${diagnostic.code} message condition ${diagnostic.messageWhen}, which the catalog does not list`)
+    if (diagnostic.messageWhen !== undefined && !rule.messages?.some(message => typeof message === 'object' && message.when === diagnostic.messageWhen)) problems.push(`expects ${diagnostic.code} message condition ${diagnostic.messageWhen}, which the catalog does not list`)
     if (diagnostic.channel && rule.channel !== diagnostic.channel) problems.push(`gives ${diagnostic.code} the channel ${diagnostic.channel}, the catalog ${rule.channel}`)
     if (diagnostic.severity && (rule.severity ?? 'warning') !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, the catalog ${rule.severity ?? 'warning'}`)
     if (diagnostic.file !== undefined && !entry.files?.[diagnostic.file]) problems.push(`names the file ${diagnostic.file}, which files does not hold`)
