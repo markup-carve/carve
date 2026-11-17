@@ -107,7 +107,7 @@ The unclosed fence of `child.crv` ends at the end of that file and reports `uncl
 
 Reported: `unclosed-code-fence`.
 
-**C2-N-016** The blocks of that document, after selection (C2-N-027 to C2-N-052), become the `children` of the include node. The include node stays where the directive stood. There is no splice of source text, so a directive cannot complete or interrupt a construct of the including file.
+**C2-N-016** The blocks of that document, after selection (C2-N-027 to C2-N-052), become the `children` of the include node. The include node stays where the directive stood. There is no splice of source text, so a directive cannot complete or interrupt a construct of the including file. The root of the expanded tree declares each extension that the parse of an included file declared, a name once (C2-A-017, C2-X-002); that parse has the extensions of the top-level document (C2-N-015), so the declarations agree.
 
 **C2-N-017** An include node carries `file`, the id the resolver returned, whenever the resolver returned a text for it, and `children` exactly when it was expanded. An unexpanded include has no `children`; an include of an empty file, or of a selection that holds no block, has an empty `children` list. A node that has `children` also has `file`. Both fields are resolution results (C2-A-133): tree equality skips them.
 
