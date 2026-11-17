@@ -10,7 +10,7 @@
     "C2-B-027",
     "C2-H-043"
    ],
-   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1).",
+   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content.",
    "summary": "indented line block keeps leading space",
    "input": " ::: |\n x\n :::",
    "options": {},
@@ -47,7 +47,7 @@
     "C2-B-007",
     "C2-B-123"
    ],
-   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1). C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text.",
+   "why": "C2-B-130: A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content. C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text.",
    "summary": "line block in quote in item keeps tab",
    "input": "- > a\n  > \t::: |\n  > \tx\n  > \t:::",
    "options": {},

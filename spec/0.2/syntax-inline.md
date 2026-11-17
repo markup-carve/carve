@@ -8,7 +8,6 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-I-nnn`. The prefix is new in 0.2. No 0.1 clause id is reused. Ids of the form `C2-B-nnn` name clauses of the block chapter.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause, or a named interaction between two constructs. Exceptions are counted at the end of the chapter.
-- A clause that ends with "(carried over from 0.1)" restates a 0.1 definition that 0.2 does not change. Every other clause is a 0.2 decision.
 - Each example is a `compare` container that holds the Carve input and the expected HTML. The line above it gives its number and its status. *Generated* means the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input. *Unverified* means the HTML was written by hand from the clauses and has not been run through any engine.
 - "Lint" and "diagnostic" name reports. They never change the nodes.
 
@@ -185,13 +184,13 @@ Example 110 (unverified)
 
 ## Backslash escapes
 
-**C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
+**C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing.
 
-**C2-I-011** A backslash before a space is a no-break space, except at the end of a line, where the two are a hard break (C2-I-102). (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `a\ "b"` the first quote opens (C2-I-104), and `*\ a*` holds no strong.
+**C2-I-011** A backslash before a space is a no-break space, except at the end of a line, where the two are a hard break (C2-I-102). In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `a\ "b"` the first quote opens (C2-I-104), and `*\ a*` holds no strong.
 
-**C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
+**C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102).
 
-**C2-I-013** Escapes are not read inside a code span, an autolink, a cross-reference, a comment or an editorial comment. A link destination reads only the escaped parenthesis and the escaped backslash. A link title and a quoted attribute value read escapes. (carried over from 0.1)
+**C2-I-013** Escapes are not read inside a code span, an autolink, a cross-reference, a comment or an editorial comment. A link destination reads only the escaped parenthesis and the escaped backslash. A link title and a quoted attribute value read escapes.
 
 Example 6 (generated)
 
@@ -223,11 +222,11 @@ Example 7 (generated)
 
 ## Code spans
 
-**C2-I-014** A run of one or more backticks opens a code span. The opener is the whole run. (carried over from 0.1)
+**C2-I-014** A run of one or more backticks opens a code span. The opener is the whole run.
 
-**C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. (carried over from 0.1) The spaces and tabs at the end of each line are removed before the span is read (C2-I-002): `` `a ``, two spaces, a line break and `` b` `` give the value `a`, a line feed and `b`.
+**C2-I-015** The span closes at the next backtick run of exactly the opener's length. Everything between is code: no escape and no other form is read there, and a line break is content. The spaces and tabs at the end of each line are removed before the span is read (C2-I-002): `` `a ``, two spaces, a line break and `` b` `` give the value `a`, a line feed and `b`.
 
-**C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
+**C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is.
 
 **C2-I-017** A backtick run with no closing run of its length later in the same content opens nothing (C2-I-119): the run is text, and so is a `!`, `$` or `$$` glued before it. The scan goes on behind the run, so a shorter or longer run after it may open a span. This holds for a code span, a literal-text span and a math span alike, and in a table cell as anywhere: the cell `` | x `a | `` holds the text `` x `a ``. For this test a comment-only line ends the content (C2-B-138).
 
@@ -295,7 +294,7 @@ Example 11 (generated)
 
 ## Math spans
 
-**C2-I-019** A `$` glued before a code span makes inline math, and `$$` makes display math. The content is the span's verbatim text. A `$` with no backtick run after it is text. (carried over from 0.1)
+**C2-I-019** A `$` glued before a code span makes inline math, and `$$` makes display math. The content is the span's verbatim text. A `$` with no backtick run after it is text.
 
 Example 12 (generated)
 
@@ -407,7 +406,7 @@ a ^[see b %% check *this*] c
 
 Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-169, C2-B-135).
 
-**C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
+**C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing.
 
 **Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. For delimiter conditions this is carried over from 0.1; 0.1 read a braced comment as a boundary before a sigil and before a single quote, so `a{%%}#tag` gave a tag and `a {%%}'word` an apostrophe (U-363, U-364).
 
@@ -762,19 +761,19 @@ a {'x'} b and {"a": "b"}
 
 **C2-I-046** `/` is the emphasis delimiter and `*` is the strong delimiter. No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.
 
-**C2-I-047** A delimiter can open when the character before it is not a word character and the character after it is not whitespace. A bare underscore is ordinary punctuation for this test and for C2-I-048. (carried over from 0.1)
+**C2-I-047** A delimiter can open when the character before it is not a word character and the character after it is not whitespace. A bare underscore is ordinary punctuation for this test and for C2-I-048.
 
-**C2-I-048** A delimiter can close when the character before it is not whitespace and the character after it is not a word character. (carried over from 0.1)
+**C2-I-048** A delimiter can close when the character before it is not whitespace and the character after it is not a word character.
 
 **Exception C2-I-049** A run of two or more of one bare delimiter character is not a delimiter, for the slash as for the star: each character in it is text. `**bold**` is literal, and lint reports it as `markdown-strong-double-star`.
 
-**Exception C2-I-050** A delimiter is a whole character: a bare delimiter, or the mark of a braced opener or of a comment opener, that is followed by a combining mark (category Mn, Mc or Me), a variation selector or a zero-width joiner is text. (carried over from 0.1)
+**Exception C2-I-050** A delimiter is a whole character: a bare delimiter, or the mark of a braced opener or of a comment opener, that is followed by a combining mark (category Mn, Mc or Me), a variation selector or a zero-width joiner is text.
 
 **C2-I-051** A delimiter that can close, with an open entry of its kind on the stack, closes the nearest such entry. Every entry above it is removed, and its characters are text. Otherwise, a delimiter that can open is pushed, also while an entry of its kind is open, so a kind nests in itself. Otherwise it is text.
 
 **C2-I-052** There is no combined token for strong emphasis. Each order of the two delimiters is plain nesting, in the order written.
 
-**Exception C2-I-053** A bare span that holds its own delimiter character between two word characters does not form: its entry leaves the stack, every other entry stays, and both delimiters are text. Only the span's own content counts, not the inside of an atom, of a bracket construct or of a braced span. (carried over from 0.1)
+**Exception C2-I-053** A bare span that holds its own delimiter character between two word characters does not form: its entry leaves the stack, every other entry stays, and both delimiters are text. Only the span's own content counts, not the inside of an atom, of a bracket construct or of a braced span.
 
 Example 36 (generated)
 
@@ -1002,11 +1001,11 @@ A braced form is a mark between braces. It works inside a word. The node names a
 
 **C2-I-060** A braced opener that finds no closer, or that is removed, is text (C2-I-119), and its mark is not read again as a bare delimiter: `{*a* b` stays text.
 
-**Exception C2-I-061** A braced opener glued to its own closer forms nothing, and both tokens are text. (carried over from 0.1)
+**Exception C2-I-061** A braced opener glued to its own closer forms nothing, and both tokens are text.
 
 **C2-I-062** A replacement is a deletion with an insertion glued to it. It is two nodes. There is no arrow form: `~>` is text, and the braced tilde is always strike.
 
-**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text. (carried over from 0.1)
+**C2-I-063** `{#` opens an editorial comment that closes at the first `#}` in the content. Its content is literal: no escape and no form is read in it, and it holds at least one character. It is an atom. The first `#}` decides: where it stands directly behind `{#`, there is no comment and the opener is text.
 
 A span no longer shields its content: a delimiter inside a braced span can close a span that opened outside it. An author escapes that delimiter.
 
@@ -1196,19 +1195,19 @@ Example 60 (generated)
 
 **C2-I-067** A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty. Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace.
 
-**C2-I-068** A title follows the destination after exactly one space. It stands in double quotes, which is the canonical form, or in single quotes, which the formatter rewrites. A backslash escapes the quote in it, and spaces may follow it. (carried over from 0.1)
+**C2-I-068** A title follows the destination after exactly one space. It stands in double quotes, which is the canonical form, or in single quotes, which the formatter rewrites. A backslash escapes the quote in it, and spaces may follow it.
 
 **C2-I-069** The link tail is an atom and stands on one line. It is read only glued to the closing bracket of a pair: with no open bracket, no destination is read. A tail with a space in the destination, a broken title or a line break is no tail: the bracket pair is text and the parenthesis is text.
 
 **C2-I-070** Link text is inline content and may cross line breaks.
 
-**Exception C2-I-071** Links do not nest: a link inside link text renders as its own content, and the outer link keeps its destination. The inner link stays a node in the tree (C2-A-111). An image and a span inside link text stay. (carried over from 0.1)
+**Exception C2-I-071** Links do not nest: a link inside link text renders as its own content, and the outer link keeps its destination. The inner link stays a node in the tree (C2-A-111). An image and a span inside link text stay.
 
 **C2-I-072** A bracket pair with `[label]` glued to it is a full reference. With `[]` glued to it, it is a collapsed reference, whose label is the source of its own text. A pair without another bracket construct glued to it is a shortcut reference when the folded source of its text is a key of a link definition in the document. A shortcut has no separate label. Without a matching definition the brackets are text, and no reference node forms. A collapsed reference whose own text folds to an empty key (C2-I-079) is no reference: its brackets are text.
 
-**C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1) C2-I-122 to C2-I-124 state the characters.
+**C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. C2-I-122 to C2-I-124 state the characters.
 
-**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010). Before any other bracket pair the `!` is text. (carried over from 0.1)
+**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010). Before any other bracket pair the `!` is text.
 
 Example 129 (unverified)
 
@@ -1345,7 +1344,7 @@ Example 108 (generated)
 
 **Exception C2-I-077** Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`. Where a label fails, only the label's brackets are text; the pair before it is then tested as a shortcut (C2-I-072), so `[x][a %% b]` with a definition of `x` is a link `x` followed by the text `[a`.
 
-**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. The first character is that of the label's source, before folding: `[a][ @b]` is a reference with the key `@b`. (carried over from 0.1)
+**Exception C2-I-078** A label whose first character is an at-sign is not a reference label. The spelling is reserved for citations. A label whose first character is a caret is not a reference label either: `[^n]` behind a bracket pair is a footnote reference (C2-I-087), so `[x][^n]` is the text `[x]` and a footnote reference. The 0.1 engine read it as a full reference. The first character is that of the label's source, before folding: `[a][ @b]` is a reference with the key `@b`.
 
 **C2-I-079** The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. Case matters, and a backslash stays in the key, also one that escapes a bracket. Reference labels, footnote labels and definition labels share this rule. A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.
 
@@ -1805,7 +1804,7 @@ Example 119 (unverified)
 
 **C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085). The attribute blocks glued to it follow as C2-I-085 says, as typed: `[^x]{.c}{#i}` gives `<p>[^x]{.c}{#i}</p>`, as in 0.1.
 
-**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket. Unclosed, the two characters are text. (carried over from 0.1)
+**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket. Unclosed, the two characters are text.
 
 The note of the inline footnote holds `[^1]` as text, so the document has one note, and the definition of `1`, which nothing else uses, writes nothing (C2-I-089).
 
@@ -1899,7 +1898,7 @@ These four forms start with a sigil: the at-sign for a mention, `#` for a tag, `
 
 **C2-I-093** A symbol is `:`, a name and `:`. The name is a letter, a digit, `+` or `-`, then letters, digits, `_`, `+` and `-`. It does not end with a hyphen.
 
-**C2-I-094** An inline extension is `:`, a name, `[`, content and the matching `]`. The name is a letter or `_`, then letters, digits, `_` and `-`, and the bracket is glued to it. The content is inline content. Unclosed, the form is text. (carried over from 0.1)
+**C2-I-094** An inline extension is `:`, a name, `[`, content and the matching `]`. The name is a letter or `_`, then letters, digits, `_` and `-`, and the bracket is glued to it. The content is inline content. Unclosed, the form is text.
 
 **C2-I-095** A mention, a tag and a symbol are atoms. An inline extension is a bracket construct.
 
@@ -1997,9 +1996,9 @@ Example 87 (unverified)
 
 ## Cross-references
 
-**C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom. (carried over from 0.1)
+**C2-I-096** `</#`, an id and `>` form a cross-reference. The id is one or more characters without `>`, a space and a line break. It is an atom.
 
-**C2-I-097** The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not. An unresolved cross-reference is written as the characters typed. (carried over from 0.1)
+**C2-I-097** The id is matched exactly, without case folding, once it and the ids it is matched against are normalized to NFC, so a precomposed and a decomposed character match and `ﬁ` and `fi` do not. An unresolved cross-reference is written as the characters typed.
 
 The heading id is NFC (C2-H-144), and the reference, typed with `e` and a combining acute accent, matches it under NFC (C2-I-097).
 
@@ -2046,11 +2045,11 @@ See </#intro> and </#Intro> and </#intro>{.c}
 
 An abbreviation definition is a block line (C2-B-084). Its effect is inline.
 
-**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion. (carried over from 0.1)
+**C2-I-098** Each occurrence of a defined term in the ordinary text of the inline flow, at any depth of markup, is an abbreviation node that carries the expansion.
 
-**C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. (carried over from 0.1) An atom is a boundary, and so are the edges of an inline footnote; a braced comment is transparent (C2-I-026), so in `HTML{%x%}s` the term does not match.
+**C2-I-099** A term matches only as a whole word: the character on each side is absent or is not a word character. An element edge is no boundary of its own. An atom is a boundary, and so are the edges of an inline footnote; a braced comment is transparent (C2-I-026), so in `HTML{%x%}s` the term does not match.
 
-**Exception C2-I-100** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates. (carried over from 0.1)
+**Exception C2-I-100** A term does not match inside an atom, in a name or a target, in the source that an unresolved form renders, or in text that a resolution step generates.
 
 Example 89 (generated)
 
@@ -2090,7 +2089,7 @@ See [@doe2020] and [see @doe2020, p. 3; @roe].
 
 ## Hard break and soft break
 
-**C2-I-102** A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line. So is a backslash at the end of the content, which includes the end of a table cell. (carried over from 0.1)
+**C2-I-102** A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line. So is a backslash at the end of the content, which includes the end of a table cell.
 
 The space behind the backslash is kept by the strip (C2-I-002) and the two end the line, so they are a hard break, as is the backslash before the run of spaces and a tab on the second line (C2-I-011, C2-I-102).
 
@@ -2112,7 +2111,7 @@ sugar is sweet.</p></blockquote>
 
 :::
 
-**C2-I-103** Every other line break inside a content is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
+**C2-I-103** Every other line break inside a content is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break.
 
 Example 91 (generated)
 
@@ -2173,19 +2172,19 @@ Smart typography reads the text that the scan left as text and never reads insid
 
 **C2-I-104** A straight quote, `"` or `'`, is read from its two neighbors alone, as C2-I-117 defines them: the characters of the same text on each side of it. A mark of a delimiter, a bracket that belongs to a construct and an atom are no neighbors, and a braced comment is transparent (C2-I-026). A no-break space and a hard break are whitespace (C2-I-011, C2-I-102). A quote opens when the neighbor before it is whitespace or opening punctuation, or when it has none because the quote stands at the start of the content or directly behind an opening mark or bracket. Otherwise it closes, also directly behind a closing mark, a closing bracket or an atom. Opening punctuation is one of `(`, `[`, `{`, `=`, `:`, `“` and `‘`, or a straight quote that opens. No quote looks past its neighbors and none depends on another quote that is not its neighbor: quotes do not pair, so an opening quote without a closing quote stays an opening quote.
 
-**Exception C2-I-105** A single quote before an ASCII digit closes, also where C2-I-104 would open it. A single quote between two word characters closes by C2-I-104. Both are the apostrophe, which has the kind and the glyph of a closing single quote. (carried over from 0.1)
+**Exception C2-I-105** A single quote before an ASCII digit closes, also where C2-I-104 would open it. A single quote between two word characters closes by C2-I-104. Both are the apostrophe, which has the kind and the glyph of a closing single quote.
 
 Where the guess is wrong, the author types the curly character.
 
 **C2-I-111** A run of two or more hyphens becomes dashes: a length divisible by three gives em dashes, otherwise a length divisible by two gives en dashes, otherwise one em dash followed by the rest under the same rule. The rule has no exception for the place of the run: `run --verbose` holds an en dash, and a command-line flag in prose is written in a code span or with an escape, `-\-verbose`. In 0.1 a run after whitespace and before a letter stayed as typed, and `{--}` spelled the en dash there; both are gone, and `{--}` is now an opening brace, an en dash and a closing brace.
 
-**C2-I-114** Three dots become an ellipsis. (carried over from 0.1)
+**C2-I-114** Three dots become an ellipsis.
 
-**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1) Only replaced runs take part in the match: `->`, `<-` and `=>` take no characters, so `->=` holds the text `-` and the sign for `>=`.
+**C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. Only replaced runs take part in the match: `->`, `<-` and `=>` take no characters, so `->=` holds the text `-` and the sign for `>=`.
 
-**Exception C2-I-116** An arrow is matched before a hyphen run is split, and an arrow of hyphens needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. An arrow of equals signs needs none: `===>` is `=` and the arrow `==>`. (carried over from 0.1)
+**Exception C2-I-116** An arrow is matched before a hyphen run is split, and an arrow of hyphens needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. An arrow of equals signs needs none: `===>` is `=` and the arrow `==>`.
 
-**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow of hyphens does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1) For this test and for the exact run of an arrow of hyphens (C2-I-116), the neighbors are the characters of the same text on each side of the run: the mark of a delimiter, opening or closing, is never a neighbor, and a braced comment between two characters is transparent (C2-I-026). So `{++-+}` inserts a plus-minus sign.
+**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow of hyphens does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. For this test and for the exact run of an arrow of hyphens (C2-I-116), the neighbors are the characters of the same text on each side of the run: the mark of a delimiter, opening or closing, is never a neighbor, and a braced comment between two characters is transparent (C2-I-026). So `{++-+}` inserts a plus-minus sign.
 
 Only the hyphen arrows need their exact run.
 

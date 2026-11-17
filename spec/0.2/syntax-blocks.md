@@ -1020,7 +1020,7 @@ Reported: `ordered-list-kind-split`.
 
 **C2-B-219** A `start` value of more than nine digits is no start value, as a marker of more than nine digits is no marker (C2-B-036): the list keeps the start of its first marker and `start` stays a key.
 
-**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. The value is an unsigned decimal integer; on a list of letters or roman numerals it is at least 1. Any other value is no start value and stays an ordinary key. (carried over from 0.1)
+**C2-B-045** The `start` attribute on the attribute line of an ordered list sets the number of its first item. It is read into the start value of the list and is not kept as a key, so a list written with the attribute and a list whose first marker carries the number give the same tree. Where both are written, the attribute decides. The value is an unsigned decimal integer; on a list of letters or roman numerals it is at least 1. Any other value is no start value and stays an ordinary key.
 
 Example 30 (generated)
 
@@ -3035,7 +3035,7 @@ after
 
 **C2-B-115** The body of a div is read as blocks.
 
-**C2-B-116** A code fence whose info string is `=` directly followed by a format name is a raw block: its body goes to an output of that format as written and is not code (carried over from 0.1).
+**C2-B-116** A code fence whose info string is `=` directly followed by a format name is a raw block: its body goes to an output of that format as written and is not code.
 
 **C2-B-222** The value of a code block is its body lines, with one line feed after each line, including the last line when the end of input closes an unclosed fence. Trailing blank lines of an unclosed fence remain excluded under C2-B-113.
 
@@ -3264,7 +3264,7 @@ after
 
 **C2-B-120** The quoted title of a code fence renders like a `title` attribute, which is also accepted on an attribute line. In the tree they are two things, the `title` field and a key (C2-A-032), and where both are written the key wins in HTML (C2-H-048). The quoted title of a div, an admonition or a directive is the `title` field of that node and renders as its title paragraph (C2-H-042). Its value, the text between the quotes, is an inline content of one line, read once the opener is split into its parts, so a `%%` after whitespace in it starts a line comment that ends at the closing quote (C2-I-023).
 
-**C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core (carried over from 0.1); on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
+**C2-B-121** The label in brackets is metadata for a group extension, such as the tab label of a code group. On a code fence it renders nothing in the core; on a div, an admonition and a directive the core writes it as a label paragraph (C2-H-154). It is a string in the tree (C2-A-187).
 
 **C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text. A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported.
 
@@ -3607,7 +3607,7 @@ b</p>
 
 **C2-B-126** A colon run followed by a name or a sigil always opens a div, at any length.
 
-**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1). Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1).
+**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written. Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1).
 
 The inner `figure` stands inside a group, so it is a plain div, and its captioned image is a plain figure, no panel of the outer group (C2-B-127).
 
@@ -3650,9 +3650,9 @@ Reported: `figure-group-nested`.
 
 A hard-break block is a `div` whose last class is `hardbreaks` and whose line ends are hard breaks (C2-A-068).
 
-**C2-B-130** A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content (carried over from 0.1).
+**C2-B-130** A line of a line block keeps the spaces that lead it after the strip (C2-B-027) as content.
 
-**C2-B-131** A blank line in a line block ends a stanza, and the next line starts a new one (carried over from 0.1).
+**C2-B-131** A blank line in a line block ends a stanza, and the next line starts a new one.
 
 **C2-B-132** A stray `:::` at column 0 below an item with an unclosed div closes the item (C2-B-026) and opens an anonymous div at top level (C2-B-125), and `unclosed-container-fence` reports it with severity error.
 
@@ -3976,7 +3976,7 @@ The paragraph holds a hard break and a braced comment. The comment-only line end
 
 **C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
-**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes, and the block boundary a region marker makes (C2-B-137), keep their 0.1 definitions (carried over from 0.1). C2-B-215 to C2-B-217 state them.
+**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes, and the block boundary a region marker makes (C2-B-137), keep their 0.1 definitions. C2-B-215 to C2-B-217 state them.
 
 One paragraph, with the comment inside it:
 
@@ -5585,7 +5585,7 @@ A vertical mark without a horizontal mark or `?` before it is no mark: `{^}` is 
 
 **C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all, and `body-rows`, `body-header-rows` and `body-header-cols` keep their 0.1 definitions, applied to the rows below the 0.2 head. C2-B-210 to C2-B-214, C2-B-227 and C2-B-230 state them.
 
-**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
+**C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it.
 
 Line 1 ends with a tab and a space, line 2 with two spaces.
 
