@@ -2219,8 +2219,6 @@ x[^n]
 ]
 ```
 
-**C2-B-086** Every paragraph of a footnote body gets `<p>`, except a block image paragraph written bare (C2-H-090).
-
 **C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker. The marker line may start with any block, as the marker line of an item does (C2-B-057): `[^n]: > q` holds a quote.
 
 **C2-B-088** References resolve after block parsing, so a reference may stand before its definition.
@@ -6386,7 +6384,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
-| Definitions | 9 | 0 | 7 | 6 |
+| Definitions | 8 | 0 | 7 | 6 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
@@ -6400,9 +6398,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **168** | **103** |
+| **Total** | **218** | **10** | **168** | **103** |
 
-The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, whose general rules give the same result; their ids are not reused.
+The chapter has 218 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 
 ## Not covered
 

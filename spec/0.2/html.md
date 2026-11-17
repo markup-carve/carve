@@ -1348,7 +1348,7 @@ Example 56 (unverified)
 
 **C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
 
-**C2-H-090** Every paragraph of a footnote body gets `<p>` (C2-B-086), except a block image paragraph that C2-H-020 writes bare, as the bare `<img>`. The body of an inline footnote is one paragraph.
+**C2-H-090** The body of an inline footnote is one paragraph.
 
 Example 66 (generated)
 

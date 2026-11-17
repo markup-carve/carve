@@ -85,7 +85,7 @@
       "strip": "content_column",
       "bare_paragraph": "never",
       "counts_toward_depth": true,
-      "clauses": ["C2-B-025", "C2-B-026", "C2-B-027", "C2-B-086", "C2-B-087", "C2-B-190", "C2-B-228"]
+      "clauses": ["C2-B-025", "C2-B-026", "C2-B-027", "C2-B-087", "C2-B-190", "C2-B-228", "C2-H-018"]
     },
     {
       "name": "frontmatter",
