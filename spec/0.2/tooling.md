@@ -69,7 +69,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-013** A line or a report names a file by its path as given and standard input as `<stdin>` (C2-W-100).
 
-**C2-T-014** Standard output carries the product of the command and nothing else. The product of `lint` and `diagnostics` is their entries, as lines or as a report; every other line of a diagnostic, a note or a failure goes to standard error.
+**C2-T-014** Standard output carries the product of the command and nothing else. The product of `lint` and `diagnostics` is their entries, as lines or as a report, and that of `fmt --check` and `fmt --diff` the report of C2-W-100; every other line of a diagnostic, a note or a failure goes to standard error.
 
 **C2-T-015** A report flag takes a path, or `-` for standard error. The report is one JSON document for the whole run, followed by a line feed.
 

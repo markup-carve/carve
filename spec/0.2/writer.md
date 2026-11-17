@@ -494,7 +494,7 @@ A line.
 
 ## `carve fmt`
 
-**C2-W-100** `carve fmt` writes the canonical form of each file, and with `--normalize` the normalized one (C2-W-127). With `--check` it changes nothing, prints `path:line` for the first changed line of each file with the old and the new line, and exits with status 1 when a file would change and 0 when none would. With `--diff` it prints a unified diff under the same exit codes. The path of standard input is `<stdin>`.
+**C2-W-100** `carve fmt` writes the canonical form of each file, and with `--normalize` the normalized one (C2-W-127). With `--check` it changes nothing and exits with status 1 when a file would change and 0 when none would. For each file that would change, in the order of the files, it writes three lines on standard output, the product of the command (C2-T-014): the path, a colon and the number of the first line that differs, as `a.crv:2`; then `- ` and that line of the file; then `+ ` and the line `fmt` writes there. Where one side has no such line, its line is the prefix alone, `-` or `+`. With `--diff` it prints a unified diff under the same exit codes. The path of standard input is `<stdin>`.
 
 **C2-W-101** A command line fails with status 2 for an unknown option or a bad option value, for an input file that is missing or unreadable, for AST JSON that is not valid, and for an HTML input the importer refuses (C2-M-006). The first line on stderr starts with `carve[CATEGORY]:`, where CATEGORY is `usage`, `input-unreadable`, `ast-json-invalid` or `import-input-invalid` for these failures; the table of C2-T-040 holds every category with its status.
 
