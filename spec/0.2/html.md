@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A display math paragraph without a caption is one, and is written on one line, except in static mode (C2-H-168); a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
