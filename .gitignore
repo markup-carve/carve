@@ -6,6 +6,7 @@ docs/.vitepress/.temp/
 
 # Scratch files and working plans (underscore-prefixed) - never versioned
 _*
+/_*.md
 
 # Superpowers working docs (specs/plans) - never versioned
 docs/superpowers/
