@@ -2647,7 +2647,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 3 | 2 |
-| Paragraphs, headings and sections | 16 | 1 | 5 | 2 |
+| Paragraphs, headings and sections | 16 | 1 | 5 | 3 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
@@ -2666,6 +2666,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **194** | **6** | **35** | **45** |
+| **Total** | **194** | **6** | **35** | **46** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 80 examples, 35 generated and 45 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 81 examples, 35 generated and 46 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
