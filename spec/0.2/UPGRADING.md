@@ -348,6 +348,13 @@ Older rows that hold a point of this ruling, extended to name the new place:
 - U-170: a tag ends before a trailing hyphen as a mention does, `#x-` (C2-I-092), where 0.1 kept the hyphen in the tag; report.
 - U-280: a tab inside a heading, `# A`, a tab, `B`, folds to a space for the heading lookup (C2-I-084, C2-I-079), so `[A B][]` links to the heading where 0.1 kept it as text; rewrite `\[A B][]`.
 - U-164: an authored attribute that is no URL sink loses a scheme value hidden behind a control as a link destination does, `*x*{k="..."}` with U+202E before `javascript:x` (C2-H-161); report.
+- U-184: two include directives on adjacent lines, `{{ a.crv }}` above `{{ b.crv }}`, are two includes and two paragraphs (C2-B-156), where 0.1 wrote one paragraph, expanded or not; report. The row is corrected below.
+
+#### Corrections
+
+These rows and sentences said something false about 0.1 or about their own example; each was checked against both engines. No rule changes.
+
+- U-184: its example, `- {{ e }}`, gives the same HTML in 0.1 and 0.2, and its rule named list openers and attributes. It now holds a line below an include directive, `- {{ e }}` above `  b`, which 0.1 read as one paragraph and 0.2 as an include and a paragraph (C2-B-156), and two directives on adjacent lines. The escape keeps the 0.1 HTML only where no resolver is given, so the row is a report.
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -422,7 +429,7 @@ The Includes document (`includes.md`) defines expansion for 0.2.0. These differe
 | One footnote label in two files | The later label was renamed, and `include-footnote-rename` reported it. | Two notes; a reference reaches the note of its own file, else of the nearest including file. | C2-N-055 |
 | A footnote reference in the including document to a note that only an included file defines | Resolved, the note was numbered. | Unresolved: definitions reach outward, never inward. Define the note in the including document. | C2-N-054, C2-N-055 |
 | A directive inside a sentence, a heading or a table cell | Expanded inline. | Text; only a directive alone on its line is an include. Social tokens in that text are read (U-290). | C2-N-002 |
-| A directive with no resolver | Literal, no warning, no dependency. | Literal, with `include-no-resolver` and the render loss `include-unresolved`; the node is a dependency that was not read. The literal text differs from 0.1 in three ways: U-289, U-291 and U-292. | C2-N-003, C2-N-070, C2-N-083 |
+| A directive with no resolver | Literal, no warning, no dependency. | Literal, with `include-no-resolver` and the render loss `include-unresolved`; the node is a dependency that was not read. The literal text differs from 0.1 in three ways: U-289, U-291 and U-292; a line below the directive (U-184) and a caption below a code include (U-360) differ too. | C2-N-003, C2-N-070, C2-N-083 |
 | A missing file, a path outside the root, an unreadable file | `include-unresolved` for all three. | `include-not-found`, `include-outside-root` or `include-unreadable`, and the render loss `include-unresolved`. | C2-N-061 |
 | An option value outside its shape or a repeated key, as `@lines:5-2` or two `@code` | `include-lines-invalid`, `include-duplicate-option` and others; the directive stayed literal. | `include-option-invalid`; the directive stays literal. | C2-N-025 |
 | A large include tree | A budget of `max(1 MB, 8 x input length)` over the output and at most 1000 resolver calls. | A cap of 8388608 bytes over the texts the resolver returns, and no call bound. | C2-N-065, C2-N-067 |
@@ -652,7 +659,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-181 | A tag sigil in escaped angle text still parses under C2-I-090,C2-I-092 **SILENT** | \&lt;/#x&gt; | \&lt;/\#x&gt;; escape |
 | U-182 | Under C2-I-119 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
 | U-183 | Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1. **SILENT** | The same 0.2 source writes a figure with the text `![a][nope]` and the caption `cap`. | Escape the image opener as `\![a][nope]`; escape |
-| U-184 | A nested list opener or pending attribute changes item ownership under C2-B-057 and C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
+| U-184 | A line below an include directive starts a block of its own under C2-B-156, also a second directive **SILENT** | - {{ e }} ⏎   b | Review by hand: - \{{ e }} ⏎   b keeps the 0.1 HTML only where no resolver is given; report |
 | U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
 | U-187 | An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091 **SILENT** | [@]: y |  [@]: y; rewrite |
 | U-188 | A plus-minus shorthand is recognized inside a colon pair under C2-I-041 **SILENT** | :+-: | :\+-:; escape |

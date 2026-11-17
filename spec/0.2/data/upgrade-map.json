@@ -1563,11 +1563,11 @@
     },
     {
       "id": "U-184",
-      "kind": "escape",
+      "kind": "report",
       "group": "measured ownership and inline rewrites",
-      "from": "- {{ e }}",
-      "to": "- \\{{ e }}",
-      "meaning02": "<ul>\n  <li>\n    <p>{{ e }}</p>\n  </li>\n</ul>",
+      "from": "- {{ e }}\n  b\n",
+      "to": "- \\{{ e }}\n  b\n",
+      "meaning02": "<ul>\n  <li>{{ e }}\n    <p>b</p>\n  </li>\n</ul> An include directive alone on its line is a block of one line (C2-B-156), so the line below it starts a paragraph of its own, in an item, in a quote and at document level, and two directives on adjacent lines are two includes, `<p>{{ a.crv }}</p>` and `<p>{{ b.crv }}</p>` with no resolver. 0.1 read the directive and the line below as one paragraph, `<li>{{ e }}\nb</li>`, `<p>{{ a.crv }}\n{{ b.crv }}</p>`, and with includes expanded joined the included text and the next line in that paragraph. An escaped opening brace keeps the 0.1 HTML without a resolver but stops the include from being expanded (C2-N-002); no 0.2 source joins an expanded include with the next line.",
       "toolEntry": "U-184",
       "silent": true
     },
