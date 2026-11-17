@@ -229,7 +229,7 @@
     "C2-H-143",
     "C2-H-163"
    ],
-   "why": "C2-H-165: every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, and a `raw_inline` as its value, as in 0.1.",
+   "why": "C2-H-165: every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, a `raw_inline` as its value, a resolved `xref` as the text it writes in its link (C2-H-096) and an unresolved one as typed, and a `symbol` as `:name:`, as in 0.1.",
    "summary": "comment profile degrades inline math to its value, as in 0.1",
    "input": "the sum $`a + b`",
    "options": {
@@ -1168,7 +1168,7 @@
     "C2-H-165",
     "C2-H-143"
    ],
-   "why": "C2-H-165: Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, and a `raw_inline`, which gives its value, so a node with no children writes the same text at both levels.",
+   "why": "C2-H-165: Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, and a `raw_inline`, an `xref` and a `symbol`, which give the text of the inline forms, so a node with no children writes the same text at both levels.",
    "summary": "minimal profile degrades quote to marked plain text",
    "input": "> a <b:c> {#x#} d",
    "options": {
@@ -19474,6 +19474,90 @@
          }
         ],
         "number": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-358",
+   "clauses": [
+    "C2-H-165",
+    "C2-H-096"
+   ],
+   "why": "C2-H-165: every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, a `raw_inline` as its value, a resolved `xref` as the text it writes in its link (C2-H-096) and an unresolved one as typed, and a `symbol` as `:name:`, as in 0.1.",
+   "summary": "a degraded resolved cross-reference writes its link text, as in 0.1",
+   "input": "# H\n\nsee </#H> b",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "<p># H</p>\n<p>see H b</p>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "H"
+       }
+      ],
+      "generatedId": "H"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "see "
+       },
+       {
+        "type": "xref",
+        "key": "H",
+        "namespace": "heading",
+        "href": "#H"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-359",
+   "clauses": [
+    "C2-H-165"
+   ],
+   "why": "C2-H-165: every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, a `raw_inline` as its value, a resolved `xref` as the text it writes in its link (C2-H-096) and an unresolved one as typed, and a `symbol` as `:name:`, as in 0.1.",
+   "summary": "a degraded symbol writes its name between colons, as in 0.1",
+   "input": "a :smile: b",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "<p>a :smile: b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "symbol",
+        "name": "smile"
+       },
+       {
+        "type": "text",
+        "value": " b"
        }
       ]
      }
