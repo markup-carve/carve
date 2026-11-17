@@ -454,7 +454,7 @@ for (const [name, text] of Object.entries(texts)) {
   })
 }
 for (const id of rules.keys()) if (!named.has(id)) fail(`lint-rules.json: ${id} is named by no document`)
-// The writer's table of the parse and render-loss channels and the importer's table of codes agree with the catalog.
+// The writer's table of the parse and render-loss channels and the importer's codes in import-html.json agree with the catalog.
 const channelTable = texts.writer.split('### The codes of the parse channel and of the render-loss channel')[1]?.split(/^### /m)[0] ?? ''
 if (!channelTable) fail('writer.md: the table of the parse and render-loss channels is missing')
 for (const line of channelTable.split('\n').filter(line => /^\| `/.test(line))) {
@@ -465,14 +465,10 @@ for (const line of channelTable.split('\n').filter(line => /^\| `/.test(line))) 
     else if (rule.channel !== channel || rule.severity !== severity) fail(`writer.md channel table: ${match[1]} is ${channel} ${severity}, lint-rules.json says ${rule.channel} ${rule.severity}`)
   }
 }
-const importTable = texts['import-html'].split('**C2-M-083**')[1]?.split('\n\n')[1] ?? ''
-const importRows = new Map(importTable.split('\n').slice(2).map(line => line.split('|').slice(1, 3).map(cell => cell.trim().replaceAll('`', ''))))
 for (const code of data['import-html']?.codes ?? []) {
   const rule = rules.get(code.id)
   if (!rule || rule.channel !== code.channel || rule.severity !== code.severity) fail(`import-html.json codes: ${code.id} differs from its row in lint-rules.json`)
-  if (importRows.get(code.id) !== code.severity) fail(`import-html.md C2-M-083: ${code.id} differs from its row in import-html.json`)
 }
-if (importRows.size !== (data['import-html']?.codes ?? []).length) fail('import-html.md C2-M-083: the table and import-html.json hold different codes')
 
 // The option table of C2-H-137 lists the rows of options.json, with their kinds.
 const optionTable = texts.html.split('**C2-H-137**')[1]?.split('\n\n')[1] ?? ''

@@ -8,7 +8,7 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-M-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-H-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the HTML document, the sidecar document and the writer document.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
-- The tables of this document are also the rows of `data/import-html.json`. Where a row and its clause disagree, the clause wins.
+- `data/import-html.json` holds the rows the clauses read: `attributes`, `elements`, `conventions`, `codes` and `losses`, and the tables of this document are rows of it too. Where a row and its clause disagree, the clause wins.
 - Each example is a `compare` container that holds the HTML input, the children of the imported document as JSON without positions and provenance, and the Carve source the canonical writer gives for that tree. The line above it gives its number and status. *Verified* means the reference importer at `carve-js` `next2` commit `0266e137` gives this tree and this source, with the example's import option, and reports every code of the example's `Reported:` line. *Unverified* means the importer differs: the tree and the report were written by hand from the clauses, and the source was then produced by the 0.2 writer from that tree with no loss reported. A line below an example that starts with `Reported:` names codes the import reports; it need not name every one.
 - "Report X" means: add an entry with the code X to the diagnostics record (C2-M-080).
 
@@ -90,11 +90,11 @@ The raw span carries a carrier and is read by C2-H-186; the span beside it carri
 
 **C2-M-011** Each element is read in one of two contexts. The children of the document, of a `<div>`, `<blockquote>`, `<li>`, `<dd>`, `<figure>`, `<figcaption>`, `<caption>`, `<details>`, an admonition, a section and a cell that holds a block element are read as blocks. The children of `<p>`, `<h1>` to `<h6>`, `<dt>`, `<summary>`, a cell that holds no block element, and of every element read as an inline node are read as inline content.
 
-**C2-M-012** Among blocks, a run of adjacent text nodes, comments and elements that are no block element of the table "Elements" is one paragraph, as a render writes a bare paragraph. A run that holds only whitespace gives nothing. With the import option `rawHtml` on, a comment in a run that also holds inline content, text that is not whitespace or an element, is a `raw_inline` of that paragraph; a run that holds only comments and whitespace gives one `raw_block` per comment (C2-M-065). A run splits only at a block element.
+**C2-M-012** Among blocks, a run of adjacent text nodes, comments and elements that are no block element of `elements` is one paragraph, as a render writes a bare paragraph. A run that holds only whitespace gives nothing. With the import option `rawHtml` on, a comment in a run that also holds inline content, text that is not whitespace or an element, is a `raw_inline` of that paragraph; a run that holds only comments and whitespace gives one `raw_block` per comment (C2-M-065). A run splits only at a block element.
 
 **Exception C2-M-013** A run that holds only `<img>` elements, whitespace and comments gives one image paragraph per `<img>` (C2-H-020), not one paragraph.
 
-**C2-M-014** Inside inline content, an element that the table "Elements" maps to a block is read as a `span` of its inline content, with its attributes, and is reported with `import-element-mapped`. The HTML parser already closes a `<p>` before a block element, so this happens only inside other inline elements, as in `<em><p>x</p></em>`.
+**C2-M-014** Inside inline content, an element that `elements` maps to a block is read as a `span` of its inline content, with its attributes, and is reported with `import-element-mapped`. The HTML parser already closes a `<p>` before a block element, so this happens only inside other inline elements, as in `<em><p>x</p></em>`.
 
 **C2-M-015** Text in inline content is kept as it stands, except for the rules of the section "Whitespace". Each line feed in it is a `soft_break`. Adjacent text is joined into one `text` node (C2-A-040).
 
@@ -946,7 +946,7 @@ Example 52 (unverified)
 
 ## Inline elements
 
-**C2-M-044** The inline elements with a Carve counterpart map as the table "Elements" gives: `<em>` and `<i>` to `emphasis`, `<strong>` and `<b>` to `strong`, `<s>` and `<strike>` to `strike`, `<del>` to `delete`, `<ins>` to `insert`, `<mark>` to `highlight`, `<u>` to `underline`, `<sub>` to `subscript`, `<sup>` to `superscript`, and `<span>` to `span`. Each takes its attributes.
+**C2-M-044** The inline elements with a Carve counterpart map as `elements` gives: `<em>` and `<i>` to `emphasis`, `<strong>` and `<b>` to `strong`, `<s>` and `<strike>` to `strike`, `<del>` to `delete`, `<ins>` to `insert`, `<mark>` to `highlight`, `<u>` to `underline`, `<sub>` to `subscript`, `<sup>` to `superscript`, and `<span>` to `span`. Each takes its attributes.
 
 **C2-M-045** `<code>` is a `code` node whose value is its text, with the markup inside dropped.
 
@@ -1096,21 +1096,7 @@ Inline ![I](/i.png){width=10} and gone
 
 ## Attributes
 
-**C2-M-052** Each attribute of an element is read by the row of the table "Attributes" that matches its name: a row whose match is `name`, `prefix` or `reserved`, and only when none does, the row `*`. Where the row says `key`, the attribute is a key of `attrs` with its name and its value as they stand, in the order the parser gives.
-
-| Name | Match | On | Treatment | Note |
-|---|---|---|---|---|
-| `*` | key | any | key | a name that is a key by C2-I-030; any other name is dropped and reported |
-| `aria-label` | name | input | field | read on the task box; on an admonition `aside` it is generated and not kept; elsewhere a key |
-| `class` | name | any | classes | split at ASCII whitespace; a class a convention reads is not kept; a value that leaves no class gives no `classes` (C2-A-058) |
-| `data-carve-` | reserved | any | carrier | the 18 reserved names of C2-H-115 only |
-| `dir` | name | any | dir | `ltr`, `rtl` or `auto` in any ASCII letter case, kept in lower case; another value is dropped and reported |
-| `formaction` | name | any | drop |  |
-| `id` | name | any | id |  |
-| `lang` | name | any | lang |  |
-| `on` | prefix | any | drop | event handlers |
-| `srcdoc` | name | any | drop |  |
-| `style` | name | any | key | exact alignment declarations are read (C2-M-040, C2-M-075) |
+**C2-M-052** Each attribute of an element is read by the row of `attributes` that matches its name: a row whose match is `name`, `prefix` or `reserved`, and only when none does, the row `*`. Where the row says `key`, the attribute is a key of `attrs` with its name and its value as they stand, in the order the parser gives.
 
 **C2-M-053** The attributes that a clause of this document reads for an element, such as `href` on `<a>` or `start` on `<ol>`, are fields of its node and are not kept as keys. A `class` that a convention reads is not kept (C2-M-035).
 
@@ -1163,7 +1149,7 @@ Example 29 (verified)
 
 ## Elements without a counterpart
 
-**C2-M-056** Every element is read by its row of the table "Elements". An element with no row is read by the row `*`: an inline `span`. The treatment of a row is one of these:
+**C2-M-056** Every element is read by its row of `elements`. An element with no row is read by the row `*`: an inline `span`. The treatment of a row is one of these:
 
 - `map`: the element is the node its clauses name.
 - `div`: the element is a `div` with its attributes and its children read as blocks.
@@ -1172,128 +1158,7 @@ Example 29 (verified)
 - `raw`: the element is raw HTML (C2-M-065) when the import option `rawHtml` is on, and gives nothing when it is off (C2-M-066).
 - `drop`: the element and its content give nothing.
 
-**C2-M-057** Every treatment but `map` and `unwrap` is reported: `div` and `span` with `import-element-mapped`, `drop` with `import-element-dropped`, and `raw` as C2-M-066 states. `unwrap` is reported with `import-element-mapped` unless the row says otherwise. The choice is fixed by the table; an importer does not choose another treatment.
-
-| Element | Treatment | Node | Note |
-|---|---|---|---|
-| `*` | span | span | every element with no row, custom elements included |
-| `a` | map | link, or footnote reference |  |
-| `abbr` | map | abbreviation, or span with the key abbr |  |
-| `acronym` | span | span |  |
-| `address` | div | div |  |
-| `article` | div | div |  |
-| `aside` | map | admonition; div when it is none |  |
-| `audio` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `b` | map | strong |  |
-| `base` | drop |  | reported once with head |
-| `bdi` | span | span |  |
-| `bdo` | span | span |  |
-| `big` | span | span |  |
-| `blockquote` | map | block_quote |  |
-| `body` | unwrap |  | the document node; not reported |
-| `br` | map | hard_break |  |
-| `button` | span | span |  |
-| `canvas` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `caption` | map | caption of the table |  |
-| `center` | div | div |  |
-| `cite` | span | span |  |
-| `code` | map | code |  |
-| `col` | map | column widths |  |
-| `colgroup` | map | column widths |  |
-| `data` | span | span |  |
-| `dd` | map | definition_description |  |
-| `del` | map | delete |  |
-| `details` | div | div |  |
-| `dfn` | span | span |  |
-| `dialog` | div | div |  |
-| `div` | map | div, or a heading or convention |  |
-| `dl` | map | definition_list |  |
-| `dt` | map | definition_term |  |
-| `em` | map | emphasis |  |
-| `embed` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `fieldset` | div | div |  |
-| `figcaption` | map | caption |  |
-| `figure` | map | the captioned block, or figure_group |  |
-| `font` | span | span |  |
-| `footer` | div | div |  |
-| `form` | div | div |  |
-| `h1` | map | heading |  |
-| `h2` | map | heading |  |
-| `h3` | map | heading |  |
-| `h4` | map | heading |  |
-| `h5` | map | heading |  |
-| `h6` | map | heading |  |
-| `head` | drop |  | reported once with head |
-| `header` | div | div |  |
-| `hgroup` | div | div |  |
-| `hr` | map | thematic_break |  |
-| `html` | unwrap |  | the document node; not reported |
-| `i` | map | emphasis |  |
-| `iframe` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `img` | map | image |  |
-| `input` | map | the task box of its item; raw elsewhere, nothing with `rawHtml` off |  |
-| `ins` | map | insert |  |
-| `kbd` | map | span with the key kbd |  |
-| `label` | span | span |  |
-| `legend` | map | the first paragraph of its fieldset |  |
-| `li` | map | list_item |  |
-| `link` | drop |  | reported once with head |
-| `main` | div | div |  |
-| `map` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `mark` | map | highlight |  |
-| `math` | map | math |  |
-| `menu` | map | list, bullet |  |
-| `meta` | drop |  | reported once with head |
-| `meter` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `nav` | div | div |  |
-| `noscript` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `object` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `ol` | map | list, ordered |  |
-| `output` | span | span |  |
-| `p` | map | paragraph |  |
-| `param` | drop |  |  |
-| `picture` | unwrap |  | its img is read |
-| `pre` | map | code_block |  |
-| `progress` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `q` | span | span |  |
-| `rb` | map | ruby |  |
-| `rp` | drop |  | not reported |
-| `rt` | map | ruby |  |
-| `ruby` | map | ruby |  |
-| `s` | map | strike |  |
-| `samp` | span | span |  |
-| `script` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `search` | div | div |  |
-| `section` | map | heading and its blocks, a footnote section, or a div |  |
-| `select` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `small` | span | span |  |
-| `source` | drop |  |  |
-| `span` | map | span, or a convention |  |
-| `strike` | map | strike |  |
-| `strong` | map | strong |  |
-| `style` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `sub` | map | subscript |  |
-| `summary` | map | the first paragraph of its details |  |
-| `sup` | map | superscript, or a footnote reference |  |
-| `svg` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `table` | map | table |  |
-| `tbody` | map | table_body |  |
-| `td` | map | table_cell |  |
-| `template` | raw | raw_block or raw_inline, nothing with `rawHtml` off; an abbreviation template where C2-H-187 reads it |  |
-| `textarea` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `tfoot` | map | table_foot |  |
-| `th` | map | table_cell |  |
-| `thead` | map | table_head |  |
-| `time` | map | span with the key time |  |
-| `title` | drop |  | reported once with head |
-| `tr` | map | table_row |  |
-| `track` | drop |  |  |
-| `tt` | span | span |  |
-| `u` | map | underline |  |
-| `ul` | map | list, bullet |  |
-| `var` | span | span |  |
-| `video` | raw | raw_block or raw_inline; nothing with `rawHtml` off |  |
-| `wbr` | drop |  |  |
+**C2-M-057** Every treatment but `map` and `unwrap` is reported: `div` and `span` with `import-element-mapped`, `drop` with `import-element-dropped`, and `raw` as C2-M-066 states. `unwrap` is reported with `import-element-mapped` unless the row says otherwise. The choice is fixed by the row; an importer does not choose another treatment.
 
 **C2-M-058** An element whose counterpart needs a parent element and that stands outside it, such as an `<li>` outside a list or a `<figcaption>` outside a `<figure>`, is read with the treatment `unwrap`: its children are read in its place. These are `li`, `dt`, `dd`, `caption`, `figcaption`, `summary` and `legend`. The HTML parser already drops table parts outside a table.
 
@@ -1457,7 +1322,7 @@ a`<!--z-->`{=html}
 
 The first comment has no inline content beside it before the block element, so it is a raw block; the second stands in the run of `a` and is a raw span of that paragraph.
 
-**C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment, every element of the treatment `raw` and every `data-carve-raw` span (C2-H-186) is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of the table "Elements", every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node, so neither the written source nor a later render with any setting carries raw content of the input. With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
+**C2-M-066** The importer reads the option `rawHtml` of C2-H-137, whose default is off. With it off, every comment, every element of the treatment `raw` and every `data-carve-raw` span (C2-H-186) is dropped with its content and attributes, and each is reported with one `import-element-dropped` entry whose `foreignType` is its tag name or `#comment` (C2-M-081). Such an import loses every comment, every script and style, every embedded object, media element, canvas, image map and form control of `elements`, every `<svg>`, `<noscript>` and `<template>` that is no abbreviation template (C2-H-187), and every `<input>` that is no task box. The tree then holds no raw node, so neither the written source nor a later render with any setting carries raw content of the input. With the option on, the raw nodes of C2-M-065 are kept and are not reported, since each holds its element whole. Whether raw HTML then reaches the output is decided where the tree is rendered: with `rawHtml` off, which is the default, a raw block renders as a code block and a raw span as its escaped text (C2-H-050, C2-H-051), and the profile `article` refuses both (C2-H-129). Raw content in the tree is data and not a grant (C2-H-189).
 
 **C2-M-067** A reserved name of C2-H-115 is removed from an element before the element is serialized as raw content, as C2-H-186 requires.
 
@@ -1697,17 +1562,7 @@ ab
 
 **C2-M-082** Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported. The importer reports what it changed; the writer reports what it cannot spell (C2-M-074). `strictLosses` makes every render-loss entry an error (C2-H-130), the importer's included.
 
-**C2-M-083** The codes are the rows of `codes` in `data/import-html.json`:
-
-| Code | Severity | Reports |
-|---|---|---|
-| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` or `valign` beside a declaration of its axis, a `col` style that gives no width, a cell `scope`, `align` or `valign` outside its set, an attribute of a `figure` that the captioned block replaces |
-| `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
-| `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
-| `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span; a further task box or table caption |
-| `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
-| `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key |
-| `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
+**C2-M-083** The codes are the rows of `codes` in `data/import-html.json`, with their severity and what each reports.
 
 ## The guarantee
 
