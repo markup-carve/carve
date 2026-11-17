@@ -320,6 +320,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | ID | What you wrote | 0.1 | 0.2 now and tool |
 | --- | --- | --- | --- |
 | U-340 | Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same **SILENT** | A label: `a` with note 1 and an endnote section holding `x`; a link to `/u`. | No label: both lines are text, `<p>[^ ]: x</p>`, `<p>a[^ ]</p>`, and the note is lost. `blank-reference-label` reports it. Give the label a name the document does not use, `[^blank]`; rewrite |
+| U-341 | Under C2-H-126, the 0.1 placeholders `{user}` in `mentionUrl` and `{tag}` in `tagUrl`: `social: {mentionUrl: '/u/{user}'}` with `@alice` | Replaced by the name: `<a class="mention" href="/u/alice">@alice</a>`. | `{name}` is the only placeholder; a template that holds any other is refused with `CarveOptionError`, so no link goes to a literal `{user}`. Write `{name}`; report |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -845,7 +846,7 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `sourceLine` | `sourceLines`, default false. |
 | `allowRawHtml`, default true | `rawHtml`, default false. |
 | `sanitizeUrls`, `allowedUrlSchemes`, `deniedUrlSchemes` | `urlPolicy: {allow: [...]}` or `{deny: [...]}`. There is no disabled URL filter. |
-| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, and is final: where it returns nothing the template is not used. A linked mention or tag holds its text directly, `<a class="mention" href="URL">@NAME</a>`, as in 0.1. |
+| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, and is final: where it returns nothing the template is not used. A linked mention or tag holds its text directly, `<a class="mention" href="URL">@NAME</a>`, as in 0.1. A template takes `{name}` only: the 0.1 aliases `{user}` and `{tag}` are refused (U-341). |
 | `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. No base-host field. |
 | `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
 | `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |

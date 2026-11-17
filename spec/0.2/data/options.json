@@ -154,7 +154,7 @@
       "kind": "render",
       "read_by": "render",
       "type": "structure",
-      "holds": "mentionUrl and tagUrl, URL templates in which {name} stands for the percent-encoded name; resolveMention and resolveTag, host functions from an object with kind, name and context to a URL, which replace the template of their pair; and context, a host value passed to the resolvers unchanged",
+      "holds": "mentionUrl and tagUrl, URL templates in which {name} stands for the percent-encoded name and any other placeholder of letters, digits or underscores in braces is an option error; resolveMention and resolveTag, host functions from an object with kind, name and context to a URL, which replace the template of their pair; and context, a host value passed to the resolvers unchanged",
       "default": null,
       "clauses": ["C2-H-126", "C2-H-137"]
     },

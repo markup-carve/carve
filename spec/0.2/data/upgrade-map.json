@@ -2580,6 +2580,16 @@
       "meaning02": "<p>[^ ]: x</p>\n<p>a[^ ]</p> A label whose key is empty after folding, one of spaces, tabs or a line break, is no label (C2-I-079), so the definition and the reference are text and the note is lost; 0.1 read `[^ ]` as a footnote label, and `[t][ ]` with `[ ]: /u` as a link to `/u`. A label the document does not use, such as `blank`, in place of the blank one keeps the 0.1 HTML. The lint rule `blank-reference-label` reports the blank label.",
       "toolEntry": "U-340",
       "silent": true
+    },
+    {
+      "id": "U-341",
+      "kind": "report",
+      "group": "host options",
+      "from": "@alice and #news\n",
+      "to": "",
+      "meaning02": "With `social: {mentionUrl: '/u/{user}'}` or `{tagUrl: '/t/{tag}'}` the render is refused with an option error: `{name}` is the only placeholder of a template (C2-H-126), and any other placeholder is refused rather than written into the `href`. 0.1 replaced `{user}` in `mentionUrl` and `{tag}` in `tagUrl` by the name, `<a class=\"mention\" href=\"/u/alice\">`. Write `{name}`.",
+      "toolEntry": "U-341",
+      "silent": false
     }
   ],
   "tree": [
