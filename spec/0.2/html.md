@@ -134,9 +134,40 @@ roses
 
 **C2-H-023** A generated id is a resolution result: the `generatedId` that resolution computes (C2-A-134, C2-A-135). It is not an authored id: `attrs.id` holds only what the author wrote (C2-A-038), the writer does not write a generated id into the source (C2-W-054), and the carrier `data-carve-generated-id` marks it under `roundtrip`.
 
-**C2-H-024** Generated ids are unique in the document. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. An authored id is written as the author wrote it, also where two nodes carry the same one: the renderer does not change it, each later one is reported (C2-A-039), and a reference to that id resolves to the first node that carries it.
+**C2-H-024** Generated heading ids are unique in the document; the ids of notes and their marks are fixed (C2-H-088, C2-H-089) and take no part. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. An authored id is written as the author wrote it, also where two nodes carry the same one: the renderer does not change it, each later one is reported (C2-A-039), and a reference to that id resolves to the first node that carries it.
 
 **Exception C2-H-025** The headings of a footnote body take their generated ids after every heading of the document body, in the order of the footnote numbers. A heading in an unused footnote definition takes none.
+
+The ids `fnN` and `fnrefN` are not checked against the heading ids, so a heading `fn1` and the first note share the id, as in 0.1.
+
+Example 60 (generated)
+
+::: compare
+
+```carve
+# fn1
+
+a[^x]
+
+[^x]: n
+```
+
+```html
+<section id="fn1">
+  <h1>fn1</h1>
+  <p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+</section>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 **C2-H-026** With `sections` on, each top-level heading opens a `<section>` that holds the heading and every following top-level block up to the next heading of the same or a lower level number. Sections nest by level, and a level that is skipped makes no section of its own.
 
@@ -2125,7 +2156,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 1 | 1 |
-| Paragraphs, headings and sections | 17 | 1 | 3 | 1 |
+| Paragraphs, headings and sections | 17 | 1 | 4 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
@@ -2144,6 +2175,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **34** |
+| **Total** | **198** | **7** | **26** | **34** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 59 examples, 25 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 60 examples, 26 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
