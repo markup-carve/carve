@@ -10391,6 +10391,161 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-132",
+   "clauses": [
+    "C2-I-089",
+    "C2-H-087"
+   ],
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text.",
+   "summary": "a footnote reference inside an inline footnote takes no number, so later notes keep theirs",
+   "input": "a ^[b [^2] c] and [^1]\n\n[^1]: one\n[^2]: two",
+   "options": {},
+   "expected": {
+    "html": "<p>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> and <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>b [^2] c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>one<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "b [^2] c"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " and "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 2
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "one"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "2",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "two"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-133",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text.",
+   "summary": "a footnote reference inside an inline footnote in a table cell is text",
+   "input": "| a ^[b [^1]] |\n\n[^1]: note",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></td></tr>\n  </tbody>\n</table>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>b [^1]<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a "
+               },
+               {
+                "type": "inline_footnote",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b [^1]"
+                 }
+                ],
+                "number": 1
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "note"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

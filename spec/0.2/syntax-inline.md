@@ -1736,7 +1736,33 @@ Example 119 (unverified)
 
 **C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).
 
-**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content. Unclosed, the two characters are text. (carried over from 0.1)
+**C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text. Unclosed, the two characters are text. (carried over from 0.1)
+
+The note of the inline footnote holds `[^1]` as text, so the document has one note, and the definition of `1`, which nothing else uses, writes nothing (C2-I-089).
+
+Example 127 (unverified)
+
+::: compare
+
+```carve
+a ^[see *[^1]* there] d
+
+[^1]: note
+```
+
+```html
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> d</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see <strong>[^1]</strong> there<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 Numbering and the notes section are rendering rules.
 
@@ -2434,7 +2460,7 @@ There is no fixed budget for the inline chapter.
 | Spans | 1 | 0 | 2 | 0 |
 | Links and images | 12 | 1 | 6 | 1 |
 | Reference resolution | 13 | 3 | 5 | 15 |
-| Footnotes | 3 | 0 | 1 | 1 |
+| Footnotes | 3 | 0 | 1 | 2 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
 | Cross-references | 2 | 0 | 1 | 1 |
 | Abbreviations | 3 | 1 | 1 | 0 |
@@ -2444,9 +2470,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **56** |
+| **Total** | **112** | **16** | **70** | **57** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 126 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 127 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

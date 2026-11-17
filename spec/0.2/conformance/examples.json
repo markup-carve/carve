@@ -48862,6 +48862,176 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-inline-127",
+   "document": "syntax-inline.md",
+   "number": 127,
+   "section": "Footnotes",
+   "clauses": [
+    "C2-I-087",
+    "C2-I-088",
+    "C2-I-089"
+   ],
+   "kind": "render",
+   "input": "a ^[see *[^1]* there] d\n\n[^1]: note",
+   "options": {},
+   "expected": {
+    "html": "<p>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>see <strong>[^1]</strong> there<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 3,
+          "startOffset": 0,
+          "endOffset": 2
+         }
+        },
+        {
+         "type": "inline_footnote",
+         "children": [
+          {
+           "type": "text",
+           "value": "see ",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 5,
+            "endColumn": 9,
+            "startOffset": 4,
+            "endOffset": 8
+           }
+          },
+          {
+           "type": "strong",
+           "children": [
+            {
+             "type": "text",
+             "value": "[^1]",
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 10,
+              "endColumn": 14,
+              "startOffset": 9,
+              "endOffset": 13
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 9,
+            "endColumn": 15,
+            "startOffset": 8,
+            "endOffset": 14
+           }
+          },
+          {
+           "type": "text",
+           "value": " there",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 15,
+            "endColumn": 21,
+            "startOffset": 14,
+            "endOffset": 20
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 22,
+          "startOffset": 2,
+          "endOffset": 21
+         },
+         "number": 1
+        },
+        {
+         "type": "text",
+         "value": " d",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 22,
+          "endColumn": 24,
+          "startOffset": 21,
+          "endOffset": 23
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 24,
+        "startOffset": 0,
+        "endOffset": 23
+       }
+      },
+      {
+       "type": "footnote",
+       "key": "1",
+       "namespace": "footnote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "note",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 7,
+            "endColumn": 11,
+            "startOffset": 31,
+            "endOffset": 35
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 7,
+          "endColumn": 11,
+          "startOffset": 31,
+          "endOffset": 35
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 11,
+        "startOffset": 25,
+        "endOffset": 35
+       }
+      }
+     ],
+     "srcByteLength": 35,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-80",
    "document": "syntax-inline.md",
    "number": 80,
