@@ -109,7 +109,7 @@
       "body": "blocks",
       "counts_toward_depth": true,
       "unclosed_report": "unclosed-container-fence",
-      "clauses": ["C2-B-109", "C2-B-111", "C2-B-124", "C2-B-129", "C2-B-190", "C2-B-196"]
+      "clauses": ["C2-B-109", "C2-B-111", "C2-B-124", "C2-A-068", "C2-B-190", "C2-B-196"]
     },
     {
       "name": "line_block",

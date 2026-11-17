@@ -24,7 +24,7 @@
       "name": "hardbreak_block",
       "sigil": "\\",
       "class": "hardbreaks",
-      "clauses": ["C2-B-124", "C2-B-128", "C2-B-129", "C2-B-196"]
+      "clauses": ["C2-B-124", "C2-B-128", "C2-A-068", "C2-B-196"]
     },
     { "name": "line_block", "sigil": "|", "class": "line-block", "clauses": ["C2-B-123", "C2-B-128", "C2-B-196"] }
   ]
