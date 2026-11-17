@@ -252,11 +252,11 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-055** `marker.char` is meaning: an item with the other character starts another list (C2-B-035).
 
-**C2-A-056** An ordered marker has `kind: "ordered"` and may carry `style` (`1`, `a`, `A`, `i` or `I`), `delimiter` (`.` or `)`) and `start`. Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
+**C2-A-056** An ordered marker has `kind: "ordered"`, `style` (`1`, `a`, `A`, `i` or `I`) and `delimiter` (`.` or `)`), and may carry `start`. Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
 
 **C2-A-057** A marker that carries fields of both kinds is invalid.
 
-**C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it.
+**C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it. A default has one encoding everywhere: a reader refuses `mode: "normal"` on a citation (C2-A-120), an autolink `text` equal to its `href` (C2-A-216), and an empty `attrs`, `classes` or `keyValues`. An ordered marker always carries `style` and `delimiter` (C2-A-056).
 
 **C2-A-059** `list.spacing` is `tight` or `loose` and is set when the list closes (C2-B-062). No list attribute overrides it.
 
@@ -482,7 +482,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-119** `citation_group.raw` is the bracket text as written. It stays in the tree, because it is what renders when a key has no entry. Core has no citation spelling (C2-I-101): where no extension handles citations, HTML writes `raw` as text and a `citation_definition` writes nothing, and a Carve writer writes `raw` and reports `structure-unspellable` for a `citation_definition`.
 
-**C2-A-120** A citation item has optional `mode` from the closed set `normal`, `author-in-text` and `suppress-author`, matching the three Pandoc citation modes; absence means `normal`. A group has no mode, and an item has no separate author-suppression flag. A locator is one object with optional string `label` and required inline `children`; the earlier `locatorLabel` and `locatorValue` fields are refused.
+**C2-A-120** A citation item has optional `mode` from the closed set `normal`, `author-in-text` and `suppress-author`, matching the three Pandoc citation modes; absence means `normal`, which is never written (C2-A-058). A group has no mode, and an item has no separate author-suppression flag. A locator is one object with optional string `label` and required inline `children`; the earlier `locatorLabel` and `locatorValue` fields are refused.
 
 **C2-A-121** A `citation_definition` carries `key`, `namespace: "citation"`, inline `children` and optional typed `metadata.bibliography`, not bibliographic attributes. Bibliography may hold `title` and `containerTitle` as inline lists, `authors` as a list of strings, and `issued`, `doi` and `url` as strings; other keys are refused. This replaces the earlier draft use of `attrs` for bibliography facts.
 
@@ -715,7 +715,7 @@ These clauses were added after other documents began to cite this one. They stan
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), keys that occur once in `keyValues` (C2-A-035), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count and annotation ids against a supplied range sidecar. A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. The core walker ignores that data.
 

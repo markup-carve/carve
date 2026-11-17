@@ -3220,6 +3220,125 @@
    }
   },
   {
+   "id": "default-citation-mode",
+   "clauses": [
+    "C2-A-058",
+    "C2-A-120"
+   ],
+   "reason": "an explicit mode normal on a citation item",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "citation_group",
+        "raw": "[@k]",
+        "children": [
+         {
+          "type": "citation",
+          "key": "k",
+          "namespace": "citation",
+          "mode": "normal"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "default-autolink-text",
+   "clauses": [
+    "C2-A-058",
+    "C2-A-216"
+   ],
+   "reason": "an autolink text equal to its href",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "autolink",
+        "href": "https://x.org",
+        "text": "https://x.org"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "default-empty-attrs",
+   "clauses": [
+    "C2-A-058"
+   ],
+   "reason": "an empty attrs object",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "attrs": {},
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "ordered-marker-without-style",
+   "clauses": [
+    "C2-A-058",
+    "C2-A-056"
+   ],
+   "reason": "an ordered marker without style and delimiter",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
    "id": "head-rows-field",
    "clauses": [
     "C2-A-088"
