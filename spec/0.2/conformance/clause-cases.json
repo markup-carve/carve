@@ -24908,11 +24908,9 @@
   {
    "id": "CC-468",
    "clauses": [
-    "C2-X-046",
-    "C2-T-005",
-    "C2-X-038"
+    "C2-X-046"
    ],
-   "why": "C2-X-046: A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs` C2-T-005: `decodeTree` reads a 2.0 JSON tree, checks it as C2-A-166 to C2-A-188 state, and returns the tree. C2-X-038: A host that registers a qualified name gives its schema for `data` and slots.",
+   "why": "C2-X-046: A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs`",
    "summary": "a carve.tab at the top level is refused",
    "kind": "tree",
    "tree": {
@@ -52527,7 +52525,7 @@
    "clauses": [
     "C2-X-048"
    ],
-   "why": "C2-X-048: Where an authored or generated heading id is one of the ids of a group, that group takes the next N whose ids no authored or generated heading id takes",
+   "why": "C2-X-048: Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes",
    "summary": "tabs skip a colliding generated heading id",
    "kind": "render",
    "input": "= tabs 1 0\n\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
@@ -52643,9 +52641,9 @@
         }
        ]
       }
-     },
-     "./r.json": null
-    }
+     }
+    },
+    "stderrDiagnostics": []
    },
    "files": {
     "a.crv": {
@@ -53351,11 +53349,13 @@
     "diagnostics": [
      {
       "code": "list-marker-without-blank-line",
-      "line": 2
+      "line": 2,
+      "column": 1
      },
      {
       "code": "list-marker-without-blank-line",
-      "line": 3
+      "line": 3,
+      "column": 1
      }
     ]
    },
@@ -53375,11 +53375,13 @@
     "diagnostics": [
      {
       "code": "table-shaped-paragraph",
-      "line": 1
+      "line": 1,
+      "column": 1
      },
      {
       "code": "table-shaped-paragraph",
-      "line": 2
+      "line": 2,
+      "column": 1
      }
     ]
    },
@@ -53441,11 +53443,13 @@
     "diagnostics": [
      {
       "code": "block-opener-without-blank-line",
-      "line": 2
+      "line": 2,
+      "column": 1
      },
      {
       "code": "block-opener-without-blank-line",
-      "line": 3
+      "line": 3,
+      "column": 1
      }
     ]
    },
@@ -53465,11 +53469,13 @@
     "diagnostics": [
      {
       "code": "definition-in-container",
-      "line": 1
+      "line": 1,
+      "column": 1
      },
      {
       "code": "definition-in-container",
-      "line": 2
+      "line": 2,
+      "column": 1
      }
     ]
    },
