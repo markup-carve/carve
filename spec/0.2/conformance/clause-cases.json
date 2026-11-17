@@ -49240,6 +49240,38 @@
     "stderrCategory": "usage"
    },
    "from": []
+  },
+  {
+   "id": "CC-911",
+   "clauses": [
+    "C2-T-015"
+   ],
+   "why": "C2-T-015: Two report flags of one run whose paths resolve to the same absolute path, against the working directory and with `.` and `..` segments removed, are refused with the category `usage` before any input is read.",
+   "summary": "two report flags naming one path are a usage error and write nothing",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "x"
+    }
+   },
+   "args": [
+    "render",
+    "--report-includes",
+    "r.json",
+    "--report-losses",
+    "./r.json",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stdout": "",
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "r.json": null
+    }
+   },
+   "from": []
   }
  ]
 }

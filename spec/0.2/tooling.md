@@ -71,7 +71,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-014** Standard output carries the product of the command and nothing else. The product of `lint` and `diagnostics` is their entries, as lines or as a report, and that of `fmt --check` and `fmt --diff` the report of C2-W-100; every other line of a diagnostic, a note or a failure goes to standard error.
 
-**C2-T-015** A report flag takes a path, or `-` for standard error. The report is one JSON document for the whole run, followed by a line feed.
+**C2-T-015** A report flag takes a path, or `-` for standard error. The report is one JSON document for the whole run, followed by a line feed. Two report flags of one run whose paths resolve to the same absolute path, against the working directory and with `.` and `..` segments removed, are refused with the category `usage` before any input is read. Two report flags with `-` are not refused: both reports go to standard error at the end of the run, in the order of the flags on the command line.
 
 **C2-T-016** `--write` replaces each file whose output differs from it and leaves the others untouched. With standard input among the files it is refused with the category `usage`.
 
