@@ -30,8 +30,7 @@
       "shapes": ["abbreviation_definition", "description", "footnote_definition", "link_definition", "term"],
       "when": ["mark_at_open_description_list_column", "definition_at_column_0_while_definition_open"],
       "carries_quote_marks": true,
-      "not_when": ["term_mark_after_paragraph_text_inside_item"],
-      "clauses": ["C2-B-013", "C2-B-016", "C2-B-020", "C2-B-023"]
+      "clauses": ["C2-B-013", "C2-B-016", "C2-B-020", "C2-B-024"]
     },
     {
       "name": "d",

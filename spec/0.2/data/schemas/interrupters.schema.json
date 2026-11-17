@@ -63,8 +63,7 @@
             "type": "array",
             "items": {
               "enum": [
-                "at_description_list_column_after_term_or_description_text",
-                "term_mark_after_paragraph_text_inside_item"
+                "at_description_list_column_after_term_or_description_text"
               ]
             },
             "uniqueItems": true,

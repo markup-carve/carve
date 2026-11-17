@@ -250,8 +250,6 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
-**Exception C2-B-023** A term mark never opens a nested description list without a blank line: directly after paragraph text inside an item it is a lazy line.
-
 **C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
 
 Below an open paragraph an attribute line is a lazy line and waits for nothing, and a comment-only line below it is not seen by block structure (C2-B-137): the paragraph of the item takes both lines, and the comment is its child (C2-B-138).
@@ -2122,7 +2120,7 @@ Example 77 (unverified)
 
 :::
 
-Lines 2 and 3 are lazy lines (C2-B-023).
+Lines 2 and 3 are lazy lines: a term mark interrupts only at an open description list's column (C2-B-016, C2-B-024).
 
 Example 78 (unverified)
 
@@ -6392,7 +6390,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Preliminaries | 11 | 1 | 4 | 4 |
-| Paragraphs and interrupters | 15 | 3 | 6 | 3 |
+| Paragraphs and interrupters | 14 | 2 | 6 | 3 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
@@ -6416,9 +6414,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **227** | **12** | **168** | **103** |
+| **Total** | **226** | **11** | **168** | **103** |
 
-The chapter has 227 clauses, and 12 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 226 clauses, and 11 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
