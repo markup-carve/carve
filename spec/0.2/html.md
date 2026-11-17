@@ -1966,7 +1966,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 7 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
 | 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone |
 | 9 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
-| 10 | a span with the class `ext-NAME` | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
+| 10 | a span whose first class is `ext-NAME`, NAME an inline extension name (C2-I-094) | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
 | 11 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
 | 12 | a paragraph that holds only one display math node and has no role, in a supplied tree | the tree of `` $$`more` `` without `role` | `` $$`more` ``: a paragraph of the role `math`, which writes the same element (C2-H-077) |
 | 13 | the case of an attribute name | `[s]{Clk=v}` | `[s]{clk=v}`: the HTML parser lowers the case of attribute names (C2-H-183) |

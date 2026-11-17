@@ -698,7 +698,7 @@ A plain paragraph carries no caption (C2-A-082), so the figure is a group around
 | critic-comment | `span` | first class `critic-comment` | critic_comment |
 | directive | `div` | first class a directive kind: `bibliography`, `footnotes`, `glossary`, `index`, `references`, `toc` | directive (C2-H-195 row 9) |
 | div-label | `p` | class exactly `div-label`, after the title | groupLabel |
-| ext | `span` | first class `ext-NAME` | inline_extension NAME (C2-H-195 row 10) |
+| ext | `span` | first class `ext-NAME`, where NAME is an inline extension name (C2-I-094) | inline_extension NAME (C2-H-195 row 10) |
 | figure-group | `figure` | first class `carve-figure-group` | figure_group |
 | math | `span` | classes `math inline` or `math display`, text between `\(` and `\)` or `\[` and `\]` | math |
 | mention | `span` | first class `mention`, one `strong` child whose text starts with the sigil | mention |
@@ -767,6 +767,28 @@ x
 ```
 
 :::
+
+Example 52 (unverified)
+
+::: compare
+
+```html
+<p><span class="ext-1">x</span></p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"span","children":[{"type":"text","value":"x"}],"attrs":{"classes":["ext-1"]}}]}
+]
+```
+
+```carve
+[x]{.ext-1}
+```
+
+:::
+
+`1` is no inline extension name, so the class is an ordinary class.
 
 ## Inline elements
 
@@ -1588,4 +1610,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 51 examples: 46 verified and 5 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 52 examples: 46 verified and 6 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
