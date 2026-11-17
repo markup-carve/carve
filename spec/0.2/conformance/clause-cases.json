@@ -52493,6 +52493,28 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1048",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: Where an authored or generated heading id is one of the ids of a group, that group takes the next N whose ids no authored or generated heading id takes",
+   "summary": "tabs skip a colliding generated heading id",
+   "kind": "render",
+   "input": "= tabs 1 0\n\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<h1 id=\"tabs-1-0\">tabs 1 0</h1>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>"
+   },
+   "from": []
   }
  ]
 }

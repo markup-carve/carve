@@ -67,3 +67,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/
 Search: `O-31-7`, `O-31-8`, `O-30-3`, `O-30-5`, `O24`.
 
 Places: `spec/0.2/STATUS.md`. Four carried points have no new ruling and stay open.
+
+## CR9-01
+
+Search: `C2-X-048`, `tabs-1-0`, `C2-H-024`, `C2-H-146`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/extensions.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`. Generated heading ids join authored ids in the reserved set; new render case.
