@@ -16110,7 +16110,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count. C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count. C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
    "summary": "a next marker in the other case settles nothing",
    "input": "c.  x\n\nCI.  y",
    "options": {},
@@ -16179,7 +16179,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count. C2-B-044: Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.",
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count. C2-B-044: Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.",
    "summary": "three blank lines keep v alphabetic and vi apart",
    "input": "v.  x\n\n\n\nvi.  y",
    "options": {},
@@ -16247,7 +16247,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
    "summary": "two blank lines still let vi settle v",
    "input": "v.  x\n\n\nvi.  y",
    "options": {},
@@ -16384,7 +16384,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
    "summary": "lines indented past the marker are skipped",
    "input": "v.  x\n    - n\nvi.  y",
    "options": {},
@@ -16464,7 +16464,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
    "summary": "the delimiter of the next marker does not count",
    "input": "v.  x\nvi)  y",
    "options": {},
