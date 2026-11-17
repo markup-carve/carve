@@ -54027,6 +54027,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1120",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-146"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "caption-looking line above table needs to move below",
+  "kind": "lint",
+  "input": "Caption: x\n| a |\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "caption-looking-paragraph"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
