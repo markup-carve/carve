@@ -2352,6 +2352,36 @@
       "silent": true
     },
     {
+      "id": "U-276",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "::: note \"Title\"\t[First]\nx\n:::\n",
+      "to": "::: note\nx\n:::\n",
+      "meaning02": "<aside class=\"admonition note\" aria-labelledby=\"adm-1\">\n  <p class=\"admonition-title\" id=\"adm-1\">Title</p>\n  <p>x</p>\n</aside> Only spaces separate the parts of an opener (C2-B-119), so the title before the tab is kept and the label behind it is further words, reported by `fence-title-syntax` (C2-B-122); 0.1 dropped the title and the label when a tab stood between them. Removing both keeps the 0.1 HTML.",
+      "toolEntry": "U-276",
+      "silent": true
+    },
+    {
+      "id": "U-277",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "```js \"T\"\t[L]\nx\n```\n",
+      "to": "```js\nx\n```\n",
+      "meaning02": "<pre title=\"T\"><code class=\"language-js\">x\n</code></pre> The quoted title before a tab or before further words stays the title (C2-B-117, C2-B-120, C2-B-122); 0.1 dropped it, after a tab and after a further word, as in ```` ```js \"T\" junk ````. Removing the title keeps the 0.1 HTML.",
+      "toolEntry": "U-277",
+      "silent": true
+    },
+    {
+      "id": "U-278",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "```\tjs\nx\n```\n",
+      "to": "``\tjs\nx``\n```\n",
+      "meaning02": "<pre><code>x\n</code></pre> A backtick run of three or more opens a code fence whatever follows it (C2-B-108, C2-B-122); a tab or a second space behind the run, a brace block or a character outside the language word is reported. 0.1 read the line as paragraph text with an unclosed code span, and the closer line as an empty code block. A two-backtick span closed at the end of the paragraph keeps the 0.1 HTML.",
+      "toolEntry": "U-278",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
