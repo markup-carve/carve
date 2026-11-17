@@ -51,10 +51,12 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 
 | `kind` | Input | Call | What `expected` may state |
 |---|---|---|---|
-| `render` | `input` or `inputBytes`, `files` | `renderWithDiagnostics`, and `parse` for `children` | `html`, `children`, diagnostics |
-| `parse` | `input` or `inputBytes`, `files` | `parseWithDiagnostics` | `children`, diagnostics |
-| `lint` | `input` or `inputBytes`, `files` | `lint` | diagnostics |
-| `format` | `input` or `inputBytes` | `formatWithDiagnostics` | `carve`, diagnostics |
+| `render` | `input` or `inputBytes`, `files`; or `tree` | `renderWithDiagnostics`, and `parse` for `children` | `html`, `children`, diagnostics, `refusal` |
+| `parse` | `input` or `inputBytes`, `files` | `parseWithDiagnostics` | `children`, `tree`, diagnostics, `refusal` |
+| `lint` | `input` or `inputBytes`, `files` | `lint` | diagnostics, `refusal` |
+| `format` | `input` or `inputBytes` | `formatWithDiagnostics` | `carve`, diagnostics, `refusal` |
+| `tree` | `tree`, a JSON value, or `json`, JSON text | `decodeTree` | `accepted`, `tree`, `refusal` |
+| `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
 
 `inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
 
@@ -78,6 +80,21 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 
 The check fails a code that `data/lint-rules.json` does not list or lists as obsolete or void, a `channel` or `severity` that differs from the catalog, a position outside the text it is counted in, and a code that is both expected and excluded.
 
+### Refusals
+
+`expected.refusal` says that the call throws: `error`, the typed error of the table of C2-T-040 (`tooling.md`), and `path`, the RFC 6901 pointer of what the error names, into the tree, the sidecar or the options the call was given (C2-A-167). An error that names the node at `path` or a field below it agrees. A refusal stands alone in `expected`, except for the diagnostics a `CarveWriteError` carries (C2-W-134). `expected.accepted` says that the reader accepts the input, and `expected.tree` gives the tree the call returns, compared under C2-A-161 and with positions where the case states them.
+
+```json
+{
+  "kind": "render",
+  "input": "a",
+  "options": { "headingIds": "upper" },
+  "expected": { "refusal": { "error": "CarveOptionError", "path": "/headingIds" } }
+}
+```
+
+The check fails an error that no category of `data/cli.json` names or that the call of the case does not throw. A case whose `tree` is not refused must hold a tree the schema and the reader checks of `scripts/lib/spec2-reader.mjs` accept; one that expects `CarveTreeError` for a `tree` must hold a tree one of them refuses, at `path` where a reader check refuses it.
+
 ## Options
 
 `options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, and `renderers` maps such a name to `"standard"`, its standard renderer. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
@@ -88,7 +105,7 @@ The check fails a code that `data/lint-rules.json` does not list or lists as obs
 
 ## Refused trees
 
-Each entry has `id`, `clauses`, `reason`, `refusedBy` (`schema` when `data/ast-schema.json` refuses the tree, `reader` when only a reader check beyond the schema does) and `tree`. A 2.0 reader refuses every one.
+Each entry has `id`, `clauses`, `reason`, `refusedBy` (`schema` when `data/ast-schema.json` refuses the tree, `reader` when only a reader check beyond the schema does) and `tree`. A 2.0 reader refuses every one, with `CarveTreeError`. A tree the reader refuses has `path`, the pointer of the node its reader check refuses (C2-A-167); an error that names that node or a field below it agrees, as in `expected.refusal`.
 
 ## Reading it
 

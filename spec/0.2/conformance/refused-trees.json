@@ -57,6 +57,7 @@
    ],
    "reason": "a required extension the reader does not implement (a reader that implements org.example.unknown at version 1 accepts it)",
    "refusedBy": "reader",
+   "path": "/extensions",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -590,6 +591,7 @@
    ],
    "reason": "an envelope whose astVersion differs from its document",
    "refusedBy": "reader",
+   "path": "",
    "tree": {
     "astVersion": "2.1",
     "document": {
@@ -617,6 +619,7 @@
    ],
    "reason": "201 nested block quotes, deeper than the 200 blocks a parser produces",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -1646,6 +1649,7 @@
    ],
    "reason": "201 nested emphasis nodes, deeper than the 200 inline levels a parser produces",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -2674,6 +2678,7 @@
    ],
    "reason": "a data key that no declaration names",
    "refusedBy": "reader",
+   "path": "/children/0/data",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -2701,6 +2706,7 @@
    ],
    "reason": "a node-shaped object inside data",
    "refusedBy": "reader",
+   "path": "/children/0/data/org.example.flag",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -2817,6 +2823,7 @@
    ],
    "reason": "an include range whose first number is greater than its second",
    "refusedBy": "reader",
+   "path": "/children/0/options/lines",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -2928,6 +2935,7 @@
    ],
    "reason": "one key twice in keyValues, compared without ASCII case",
    "refusedBy": "reader",
+   "path": "/children/0/attrs/keyValues",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -2964,6 +2972,7 @@
    ],
    "reason": "one extension name declared twice in one list",
    "refusedBy": "reader",
+   "path": "/extensions",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3100,6 +3109,7 @@
    ],
    "reason": "a table_foot before a table_head, and two heads",
    "refusedBy": "reader",
+   "path": "/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3257,6 +3267,7 @@
    ],
    "reason": "an autolink text equal to its href",
    "refusedBy": "reader",
+   "path": "/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3408,6 +3419,7 @@
    ],
    "reason": "a glyph that is not the glyph of its kind",
    "refusedBy": "reader",
+   "path": "/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3517,6 +3529,7 @@
    ],
    "reason": "a table cell with no children, which an empty cell_paragraph already encodes",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3556,6 +3569,7 @@
    ],
    "reason": "a cell_paragraph that is not the only child of its cell",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3614,6 +3628,7 @@
    ],
    "reason": "a fence source record whose name is a raw format, which opens no code block",
    "refusedBy": "reader",
+   "path": "/children/0/source",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3659,6 +3674,7 @@
    ],
    "reason": "an unqualified inline extension with a fallback beside its children",
    "refusedBy": "reader",
+   "path": "/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3694,6 +3710,7 @@
    ],
    "reason": "a smart punctuation node whose source is not the source of its kind",
    "refusedBy": "reader",
+   "path": "/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3761,6 +3778,7 @@
    ],
    "reason": "a qualified extension node that the root does not declare",
    "refusedBy": "reader",
+   "path": "/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -3793,6 +3811,7 @@
    ],
    "reason": "a qualified extension node whose version differs from its declaration",
    "refusedBy": "reader",
+   "path": "/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -4178,6 +4197,7 @@
    ],
    "reason": "a rowspan cannot reach past the last row of its group",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -4256,6 +4276,7 @@
    ],
    "reason": "annotation ids are unique across the tree",
    "refusedBy": "reader",
+   "path": "/children/0/data/carve.annotation",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -4466,6 +4487,7 @@
    ],
    "reason": "a data namespace used by a tree needs a declaration",
    "refusedBy": "reader",
+   "path": "/children/0/data",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -4649,6 +4671,7 @@
    ],
    "reason": "a qualified extension node requires a matching root declaration",
    "refusedBy": "reader",
+   "path": "/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -5021,6 +5044,7 @@
    ],
    "reason": "an extension slot must be named by its declaration",
    "refusedBy": "reader",
+   "path": "/children/0/slots/legend",
    "tree": {
     "type": "document",
     "astVersion": "2.0",
@@ -5118,6 +5142,7 @@
    ],
    "reason": "the reader refuses more than 32 nested unqualified inline extensions",
    "refusedBy": "reader",
+   "path": "/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0/children/0",
    "tree": {
     "type": "document",
     "astVersion": "2.0",

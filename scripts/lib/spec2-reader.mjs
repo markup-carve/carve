@@ -245,3 +245,16 @@ export function readerChecks (spec) {
     return problems
   }
 }
+
+/**
+ * The pointer of the node a tree refused by the reader is refused at (C2-A-167): the place of the first reader
+ * problem that cites a clause of the entry. An envelope's document is under `/document`.
+ */
+export function refusedNodePath (entry, readerProblems) {
+  const isEnvelope = entry.tree.type === undefined && entry.tree.document !== undefined
+  const found = isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)
+  const problem = found.find(item => entry.clauses.includes(item.clause))
+  if (!problem) return undefined
+  const path = problem.path === '/' ? '' : problem.path
+  return isEnvelope && !['/', '/extensions'].includes(problem.path) ? `/document${path}` : path
+}

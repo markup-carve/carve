@@ -12,7 +12,7 @@ import { join, resolve, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { Ajv2020 } from 'ajv/dist/2020.js'
 import { examplesOf as extractExamples } from './lib/spec2-examples.mjs'
-import { readerChecks } from './lib/spec2-reader.mjs'
+import { readerChecks, refusedNodePath } from './lib/spec2-reader.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = join(root, 'spec/0.2')
@@ -431,9 +431,11 @@ for (const entry of refused) {
   if (entry.refusedBy === 'schema' && accepted) fail(`${label}: the schema accepts it, but the fixture says the schema refuses it`)
   else if (entry.refusedBy === 'reader' && !accepted) fail(`${label}: the schema refuses it, so refusedBy is schema`)
   else if (entry.refusedBy !== 'schema' && entry.refusedBy !== 'reader') fail(`${label}: refusedBy is schema or reader`)
+  if (entry.refusedBy === 'schema' && entry.path !== undefined) fail(`${label}: path is stated only for a tree the reader refuses`)
   if (entry.refusedBy === 'reader' && accepted) {
     const isEnvelope = entry.tree.type === undefined && entry.tree.document
     const found = isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)
+    if (entry.path !== undefined && refusedNodePath(entry, readerProblems) !== entry.path) fail(`${label}: path is ${entry.path}, but the reader check that cites its clause refuses it at ${refusedNodePath(entry, readerProblems)}`)
     if (!found.some(problem => entry.clauses.includes(problem.clause))) {
       fail(`${label}: no reader check of the gate that cites ${entry.clauses.join(' or ')} refuses it${found.length ? ` (found: ${found.map(p => p.clause).join(', ')})` : ''}`)
     }
