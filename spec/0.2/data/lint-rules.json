@@ -1466,7 +1466,7 @@
       "status": "obsolete",
       "replaced_by": "uneven-list-indent",
       "why": "lists with markers at different columns are one list (C2-B-054)",
-      "clauses": ["C2-B-054", "C2-B-030"]
+      "clauses": ["C2-B-054"]
     },
     {
       "id": "ordered-marker-right-aligned",
@@ -1934,7 +1934,7 @@
       ],
       "message_origin": "data_file",
       "reports": "a marker left of every open list that continues the list above it, except an ordered marker that `ordered-marker-right-aligned` reports (C2-B-054, C2-B-030)",
-      "clauses": ["C2-B-054"]
+      "clauses": ["C2-B-054", "C2-B-030"]
     },
     {
       "id": "unresolved-footnote",
