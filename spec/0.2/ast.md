@@ -682,7 +682,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph with a `caption`. A reader refuses `role` on a paragraph of another shape: with `image` the children are one `image`, with `math` one display `math`, each with only soft breaks and comments beside it (C2-A-136).
 
-**C2-A-185** Five facts are set when a block closes: paragraph `role` for image or math, caption attachment, list spacing and table footer rows (C2-B-191). Each is a tree fact used by equality.
+The five facts that C2-B-191 sets when a block closes are tree fields, compared by equality (C2-A-161).
 
 **C2-A-187** The bracket label of a div, an admonition, a directive and a code block is the string `groupLabel`, the text between the brackets as written, with no inline parsing: in `::: tip [Tab *x*]` it is `Tab *x*`. In 0.1 the label was inline content.
 
@@ -778,10 +778,10 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
 | Existing AST contract | 167 | 2 |
-| Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **203** | **3** |
+| Further clauses and standard data namespaces | 35 | 1 |
+| **Total** | **202** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
