@@ -86,7 +86,7 @@ The check fails a code that `data/lint-rules.json` does not list or lists as obs
 
 ### Layout and writing
 
-A `layout` case compares the sidecar that `parseWithLayout` returns with `expected.layout`. Each root field the expected sidecar states is equal, and each node entry it states is an entry of the result with the same `path` and an equal value of every field it states. Facts are optional (C2-L-014), so the result may hold more entries and more facts; `expected.layoutAbsent` names, for a path, the facts its entry must not hold. A `write` case gives the writer a `tree` and, where it has one, the sidecar `layout`, and compares the source with `expected.carve` and the losses of the record with `expected.diagnostics`.
+A `layout` case compares the sidecar that `parseWithLayout` returns with `expected.layout`. Each root field the expected sidecar states is equal, and each node entry it states is an entry of the result with the same `path`, compared as C2-L-059 says: a required fact must be present and equal, and an optional fact the case states is compared only where the result records it. The result may hold more entries and more facts; `expected.layoutAbsent` names, for a path, the facts its entry must not hold. A `write` case gives the writer a `tree` and, where it has one, the sidecar `layout`, and compares the source with `expected.carve` and the losses of the record with `expected.diagnostics`.
 
 ```json
 {

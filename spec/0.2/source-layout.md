@@ -94,7 +94,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-019** `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included.
 
-**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the text node among the children of the cell's paragraph that holds the space joining that row's fragment (C2-B-184); and `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts. A wrap falls between two fragments, so it never lies inside another node (C2-L-048). The one exception is the wrap of the row where the first fragment that is not empty stands, for a cell whose fragments before it are empty: no space joins that fragment, and its wrap has `path`, the pointer of the first inline node of the cell's paragraph, of any type, and `offset` 0 (C2-L-048). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
+**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the text node among the children of the cell's paragraph that holds the space joining that row's fragment (C2-B-184); and `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts. A wrap falls between two fragments, so it never lies inside another node (C2-L-048). The one exception is the wrap of the row where the first fragment that is not empty stands, for a cell whose fragments before it are empty: no space joins that fragment, and its wrap has `path`, the pointer of the first inline node of the cell's paragraph, of any type, and `offset` 0 (C2-L-048). A continuation row whose fragment of the cell is empty adds nothing and has no wrap for that cell (C2-B-184). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `refForm` (C2-A-105).
 
@@ -214,11 +214,13 @@ Where 0.2 has one canonical form, the formatter writes it whatever the sidecar r
 
 **C2-L-051** A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`. This is a fact of the layout record only: the marker tests of the block chapter read the text behind the marker before the box is taken out (C2-B-229).
 
-**C2-L-052** `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line. `lazy` is a later line of a paragraph inside the node, at any depth, that stands left of the content column; `indent` is a later line at or right of it.
+**C2-L-052** `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line. `lazy` is a later line of a paragraph inside the node, at any depth, that stands left of the content column; `indent` is a later line at or right of it. A parse never gives `none`, which occurs only in a supplied record, as for `attachment` (C2-L-054).
 
 **C2-L-053** A line is blank inside a quote when it carries exactly the marks of the open quotes and nothing else. Blank lines behind the last content of a quote that still carry its mark are counted as `blankLinesAfter` of the last block of the quote; a blank line without the mark is outside the quote and counts for the blocks around the quote.
 
 **C2-L-054** A `figure_group` and a delimited table have no `openerRaw` and no `closerRaw`. A parse gives every `caption` the `attachment` `preceding`; `none` occurs only in a supplied record. A comment whose line lacks the mark of its quote has no `markerColumn`. `lineEndings` reports what the source holds, a lone CR included, although a lone CR ends no line (C2-B-010).
+
+**C2-L-059** A comparison of a parse with layout against stated facts, as a test makes, holds these facts required: `source`, `lineEndings`, `bom` and the ranges of each entry; `blankLinesBefore` and `blankLinesAfter` where C2-L-047 gives them; `continuationStyle` where C2-L-052 gives it; and the `attachment` of a `caption` (C2-L-054). A required fact the producer omits fails the comparison. Every other fact is optional (C2-L-014): a stated optional fact is compared where the producer records it, and its absence passes.
 
 ## Schema
 
@@ -226,4 +228,4 @@ Where 0.2 has one canonical form, the formatter writes it whatever the sidecar r
 
 ## Counts
 
-The document has 53 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002, C2-L-043 and C2-L-044, whose rule other clauses state or give; their ids are not reused.
+The document has 54 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002, C2-L-043 and C2-L-044, whose rule other clauses state or give; their ids are not reused.

@@ -735,7 +735,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-204** A block-boundary anchor uses the containing block's path and offset zero for its start or the block's annotation-text length for its end; a boundary between two blocks uses the end of the preceding block, or the start of the following block when there is no preceding block.
 
-**C2-A-205** A sidecar range keeps its start and end paths and byte offsets through a tree round trip, while rebinding after edits remains outside this contract.
+**C2-A-205** A range of the annotation-range sidecar keeps its start and end paths and byte offsets through a tree round trip, while rebinding after edits remains outside this contract.
 
 ```json
 {"type":"paragraph","children":[{"type":"text","value":"Draft"}],"data":{"carve.annotation":{"ids":["comment-7","revision-2"]}}}
