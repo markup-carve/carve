@@ -575,13 +575,13 @@ Example 9 (generated)
 
 ## Quotes, divs and their sigil forms
 
-**C2-H-041** A quote is `<blockquote>`. The quote fence and `>` lines give the same output.
+**C2-H-041** A quote is `<blockquote>`.
 
 **C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how.
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
 
-**C2-H-044** A hard-break block is `<div class="hardbreaks">` around its blocks. The opener form and the class form (C2-A-068, C2-L-018) give the same output, and every `hard_break` inside the block is `<br>`; a soft break of a supplied tree is written by C2-H-045.
+**C2-H-044** A hard-break block is a `<div>` around its blocks, with the classes of the tree in their order (C2-A-068). Every `hard_break` inside the block is `<br>`; a soft break of a supplied tree is written by C2-H-045.
 
 **C2-H-045** A hard break is `<br>` followed by a line break. A soft break is a line break.
 
