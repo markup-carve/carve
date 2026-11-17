@@ -53387,6 +53387,29 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1089",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
+   "summary": "an authored paragraph id reserves the first tabs group input id",
+   "kind": "render",
+   "input": "{#tabs-1-0}\np\n\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "diagnostics": [],
+    "html": "<p id=\"tabs-1-0\">p</p>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>"
+   },
+   "from": []
   }
  ]
 }
