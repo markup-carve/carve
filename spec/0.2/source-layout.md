@@ -82,7 +82,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 | `fenced` | a `block_quote` | `true` for a quote fence, `false` for `>` lines | `block_quote.fenced` |
 | `hardBreakOpener` | a `div` with the class `hardbreaks` | `true` for the hard-break opener, `false` for the class form | none; the draft had no field |
 | `wraps`, `continuationLines` | a `table_cell`, a `table_row` | where continuation rows broke the cell, and how many the row has | `cell_wrap`, `cellWraps`, `table_row.continuationLines` |
-| `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the last closing bracket | `link.rawRef`, `image.rawRef` |
+| `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the bracket that closes the reference (C2-L-049) | `link.rawRef`, `image.rawRef` |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
 | `headerRows` | a delimited `table` | the effective count of its `header-rows` attribute | `table_body.headRows` |
 
@@ -210,7 +210,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.
 
-**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed, in a cell joined from continuation rows as well.
+**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed.
 
 **C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
 
