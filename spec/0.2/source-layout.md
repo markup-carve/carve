@@ -201,8 +201,6 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records (C2-W-085).
 
-**C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-W-002).
-
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 
 **C2-L-046** The writer reads ten facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows`, `rawRef`, `rawAttrs` and `optionSpelling` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
@@ -229,4 +227,4 @@ Where 0.2 has one canonical form, the formatter writes it whatever the sidecar r
 
 ## Counts
 
-The document has 54 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002 and C2-L-043, whose rule another clause states; their ids are not reused.
+The document has 53 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002, C2-L-043 and C2-L-044, whose rule another clause states; their ids are not reused.
