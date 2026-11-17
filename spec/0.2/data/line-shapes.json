@@ -74,7 +74,7 @@
       "first": ["%"],
       "role": "skipped",
       "sequence": [{ "part": "literal", "text": "%%" }, { "part": "content", "min": 0 }],
-      "clauses": ["C2-B-133", "C2-B-137", "C2-B-139"]
+      "clauses": ["C2-B-133", "C2-B-137"]
     },
     {
       "name": "abbreviation_definition",

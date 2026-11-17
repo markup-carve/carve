@@ -3739,8 +3739,6 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
-**C2-B-139** Only the line form makes a comment-only line: a line that holds only a braced comment is a paragraph.
-
 **C2-B-140** A paragraph that holds one or more comments and nothing else but the breaks between them counts as content of its container and renders nothing: no empty paragraph element is written. So does a paragraph whose content holds only comments once the breaks that C2-H-069 does not write are left out.
 
 Example 266 (unverified)
@@ -3788,8 +3786,6 @@ Example 269 (unverified)
 The paragraph holds a hard break and a braced comment. The comment-only line ends the content, so the break before it is not written (C2-H-069), and the paragraph renders nothing.
 
 **C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.
-
-**C2-B-143** A line comment is an inline token and never an interrupter.
 
 **Exception C2-B-144** In the body of a line block `%%` is text, and `comment-line-in-line-block` reports it.
 
@@ -6399,7 +6395,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 15 | 3 | 14 | 8 |
+| Comments | 13 | 3 | 14 | 8 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6408,9 +6404,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **223** | **10** | **168** | **103** |
+| **Total** | **221** | **10** | **168** | **103** |
 
-The chapter has 223 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 221 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

@@ -3104,7 +3104,7 @@
    "id": "CC-040",
    "clauses": [
     "C2-H-019",
-    "C2-B-139"
+    "C2-B-137"
    ],
    "why": "C2-H-019: A paragraph that holds only a braced comment is this case, and so is one of braced comments on several lines.",
    "summary": "paragraph of two braced comments renders nothing",
