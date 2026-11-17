@@ -2327,7 +2327,7 @@
       "group": "differences that stay",
       "from": "a {#id} b\n",
       "to": "a \\{#id} b\n",
-      "meaning02": "<p>a {#id} b</p> C2-I-035 and C2-I-036 make a valid attribute block that attaches to nothing one literal atom, so the tag inside it is text; 0.1 read `#id` inside the braces as a tag. An escaped opening brace keeps the 0.1 HTML.",
+      "meaning02": "<p>a {#id} b</p> C2-I-035 and C2-I-036 make a valid attribute block that attaches to nothing one literal atom, so the tag inside it is text; 0.1 read `#id` inside the braces as a tag. An escaped opening brace keeps the 0.1 HTML. The same atom is why `{k=\"\"}x` keeps its straight quotes, `<p>{k=\"\"}x</p>` where 0.1 wrote `{k=““}x`, and why `{title=\"[a\"}](u)` forms no link, where 0.1 paired the bracket inside the value with `](u)`, `<p>{title=“<a href=\"u\">a”}</a></p>`; the escaped opening brace keeps the 0.1 HTML of both.",
       "toolEntry": "U-275",
       "silent": true
     },
@@ -2639,6 +2639,16 @@
       "to": "",
       "meaning02": "<p>a#tag</p> C2-I-026 tests the characters on the two sides of a braced comment as if they were glued, so `#` follows the letter `a` and starts no tag (C2-I-090). 0.1 read the comment as a boundary and wrote a tag, `<p>a<span class=\"tag\"><strong>#tag</strong></span></p>`. A tag glued to a letter has no 0.2 spelling; a space before the sigil gives the tag behind a space.",
       "toolEntry": "U-364",
+      "silent": true
+    },
+    {
+      "id": "U-365",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{-{#x-}\n",
+      "to": "{-\\{#x-}\n",
+      "meaning02": "<p>{-{#x-}</p> `{#x-}` is a valid attribute block, one atom taken whole (C2-I-005, C2-I-035), so it holds the `-}` that would close the deletion, and the deletion opens no span (C2-I-119). 0.1 closed the deletion at `-}` and read `#x` as a tag, `<p><del>{<span class=\"tag\"><strong>#x</strong></span></del></p>`. An escaped inner brace keeps the 0.1 HTML. The underline form `{_{#x_}` differs the same way, and there the escape leaves `#x_` a tag, so it has no rewrite.",
+      "toolEntry": "U-365",
       "silent": true
     }
   ],
