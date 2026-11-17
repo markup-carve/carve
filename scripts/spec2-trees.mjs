@@ -375,6 +375,7 @@ for (const entry of layouts.layouts) {
   const label = `layouts.json ${entry.id}`
   if (!entry.clauses?.length) fail(`${label}: needs clauses`)
   const accepted = validateLayout(entry.layout)
+  if (entry.refused === 'reader') { if (!accepted) fail(`${label}: the layout schema refuses it, so refused is true`); continue }
   if (entry.refused) { if (accepted) fail(`${label}: the layout schema accepts it, but the fixture says it is refused`); continue }
   if (!accepted) { fail(`${label}: the layout schema refuses it at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`); continue }
   const bytes = entry.layout.encoding === 'base64' ? Buffer.from(entry.layout.source, 'base64') : Buffer.from(entry.layout.source, 'utf8')

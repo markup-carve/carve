@@ -8,7 +8,7 @@ The gate of the tree document (`ast.md`, "The tree gate"). Every file is JSON wi
 | `examples-includes.json` | the expanded tree, with positions, of every example of `includes.md`: `files` holds the files the example names, which the resolver serves under their names and returns as ids (`includes.md`, conventions), `source` the entry document, `options.includes` the include settings the example's flags set, and `tree` the tree, each `pos` local to the file it names |
 | `nodes.json` | supplied trees, without source and positions, for the node types and fields no example tree holds; each names its `clauses` |
 | `refused.json` | trees a reader refuses: `clauses`, `reason`, and `refusedBy`, which is `schema` when `data/ast-schema.json` refuses the tree and `reader` when only a reader check beyond the schema does |
-| `layouts.json` | layout sidecars (`source-layout.md`): each has `clauses`, the `layout`, and `input`, the byte input in hex where it is not a string; a sidecar marked `refused` is one `data/layout-schema.json` refuses, every other must be accepted and its ranges must lie inside the input |
+| `layouts.json` | layout sidecars (`source-layout.md`): each has `clauses`, the `layout`, and `input`, the byte input in hex where it is not a string; a sidecar marked `refused: true` is one `data/layout-schema.json` refuses, one marked `refused: "reader"` is one the schema accepts and only a reader check refuses (C2-L-058), every other must be accepted and its ranges must lie inside the input |
 
 The examples of `import-html.md` have no fixture file: the gate reads the children each example states, wraps them in a document and checks that tree against the schema, with no position.
 

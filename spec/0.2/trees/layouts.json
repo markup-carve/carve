@@ -7,6 +7,9 @@
   {"id": "declared-head-count", "clauses": ["C2-L-057", "C2-B-221"], "layout": {"version": 2, "encoding": "utf-8", "source": "{table header-rows=0}\n```csv\na,b\n1,2\n```\n", "lineEndings": "lf", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 40, "blankLinesBefore": 0, "blankLinesAfter": 0, "sourceFormat": "csv", "headerRows": 0}]}},
   {"id": "base64-not-base64", "clauses": ["C2-L-056"], "refused": true, "layout": {"version": 2, "encoding": "base64", "source": "aÿb", "lineEndings": "none", "bom": false, "nodes": []}},
   {"id": "unknown-encoding", "clauses": ["C2-L-007"], "refused": true, "layout": {"version": 2, "encoding": "latin1", "source": "ab", "lineEndings": "none", "bom": false, "nodes": []}},
-  {"id": "negative-head-count", "clauses": ["C2-L-057"], "refused": true, "layout": {"version": 2, "encoding": "utf-8", "source": "", "lineEndings": "none", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 0, "headerRows": -1}]}}
+  {"id": "negative-head-count", "clauses": ["C2-L-057"], "refused": true, "layout": {"version": 2, "encoding": "utf-8", "source": "", "lineEndings": "none", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 0, "headerRows": -1}]}},
+  {"id": "duplicate-path", "clauses": ["C2-L-011", "C2-L-058"], "refused": "reader", "layout": {"version": 2, "encoding": "utf-8", "source": "> a\n", "lineEndings": "lf", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 3, "fenced": true}, {"path": "/children/0", "startByte": 0, "endByte": 3, "fenced": false}]}},
+  {"id": "opener-raw-without-closer-raw", "clauses": ["C2-L-027", "C2-L-058"], "refused": "reader", "layout": {"version": 2, "encoding": "utf-8", "source": "```\nx\n```\n", "lineEndings": "lf", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 9, "openerRaw": "```"}]}},
+  {"id": "base64-of-utf8", "clauses": ["C2-L-056", "C2-L-058"], "refused": "reader", "layout": {"version": 2, "encoding": "base64", "source": "YQ==", "lineEndings": "none", "bom": false, "nodes": [{"path": "/children/0", "startByte": 0, "endByte": 1}]}}
  ]
 }

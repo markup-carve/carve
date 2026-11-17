@@ -39,6 +39,8 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-008** A reader refuses a sidecar version it does not implement.
 
+**C2-L-058** A reader also refuses a record that breaks C2-L-011, C2-L-012, C2-L-020, C2-L-027 or C2-L-056. A writer ignores an entry whose path names no node of the tree, and a fact that is not defined for the type of the node its entry names (C2-L-006).
+
 **C2-L-009** A node entry has `path`, `startByte` and `endByte`, and may have any of the facts below. It has no other fields.
 
 **C2-L-010** `path` is an RFC 6901 JSON Pointer into the tree. The empty string is the root, and `/children/2/children/0` is the first child of the third block. This is how every sidecar fact refers to its node.
