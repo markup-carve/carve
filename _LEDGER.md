@@ -247,3 +247,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `C2-H-195`, `KBD`, `roundtrip`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/conformance/schema.json`, `spec/0.2/data/README.md`, `spec/0.2/data/cli.json`, `spec/0.2/data/import-html.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/options.json`, `spec/0.2/data/schemas/import-html.schema.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/trees/examples-html.json`, `spec/0.2/writer.md`. Row 19 of C2-H-195 already lists the lost key case and the 0.1 limit; no text edit is needed.
+
+## G-H4 nested braced upgrade difference
+
+Search: `U-201`, `U-146`, `C2-I-024`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-atoms.json`, `spec/0.2/data/schemas/inline-atoms.schema.json`, `spec/0.2/syntax-inline.md`. The nested braced boundary changes a 0.1 render; park the upgrade classification.
