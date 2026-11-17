@@ -581,7 +581,7 @@ Example 9 (generated)
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
 
-**C2-H-044** A hard-break block is `<div class="hardbreaks">` around its blocks. The opener form and the class form (C2-A-068, C2-L-018) give the same output, and every line break inside a paragraph of the block is `<br>`.
+**C2-H-044** A hard-break block is `<div class="hardbreaks">` around its blocks. The opener form and the class form (C2-A-068, C2-L-018) give the same output, and every `hard_break` inside the block is `<br>`; a soft break of a supplied tree is written by C2-H-045.
 
 **C2-H-045** A hard break is `<br>` followed by a line break. A soft break is a line break.
 
