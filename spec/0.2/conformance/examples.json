@@ -50337,6 +50337,119 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-inline-125",
+   "document": "syntax-inline.md",
+   "number": 125,
+   "section": "Hard break and soft break",
+   "clauses": [
+    "C2-I-102",
+    "C2-I-103"
+   ],
+   "kind": "render",
+   "input": "> Roses are red,\\ \n> violets are blue,\\  \t\n> sugar is sweet.",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>Roses are red,<br>\nviolets are blue,<br>\nsugar is sweet.</p></blockquote>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "block_quote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Roses are red,",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 3,
+            "endColumn": 17,
+            "startOffset": 2,
+            "endOffset": 16
+           }
+          },
+          {
+           "type": "hard_break",
+           "pos": {
+            "startLine": 1,
+            "endLine": 2,
+            "startColumn": 17,
+            "endColumn": 3,
+            "startOffset": 16,
+            "endOffset": 21
+           }
+          },
+          {
+           "type": "text",
+           "value": "violets are blue,",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 3,
+            "endColumn": 20,
+            "startOffset": 21,
+            "endOffset": 38
+           }
+          },
+          {
+           "type": "hard_break",
+           "pos": {
+            "startLine": 2,
+            "endLine": 3,
+            "startColumn": 20,
+            "endColumn": 3,
+            "startOffset": 38,
+            "endOffset": 45
+           }
+          },
+          {
+           "type": "text",
+           "value": "sugar is sweet.",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 3,
+            "endColumn": 18,
+            "startOffset": 45,
+            "endOffset": 60
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 3,
+          "startColumn": 3,
+          "endColumn": 18,
+          "startOffset": 2,
+          "endOffset": 60
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 18,
+        "startOffset": 0,
+        "endOffset": 60
+       }
+      }
+     ],
+     "srcByteLength": 60,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-91",
    "document": "syntax-inline.md",
    "number": 91,

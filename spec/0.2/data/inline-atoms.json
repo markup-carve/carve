@@ -122,9 +122,9 @@
     {
       "name": "hard_break",
       "opener": "\\",
-      "followed_by": "line_end_or_content_end",
+      "followed_by": "optional_space_then_line_end_or_content_end",
       "result": "hard_break",
-      "clauses": ["C2-I-005", "C2-I-012", "C2-I-102"]
+      "clauses": ["C2-I-005", "C2-I-002", "C2-I-011", "C2-I-012", "C2-I-102"]
     },
     {
       "name": "line_comment",
@@ -200,7 +200,7 @@
     {
       "name": "no_break_space",
       "opener": "\\",
-      "followed_by": "space",
+      "followed_by": "space_not_at_line_end",
       "result": "no_break_space",
       "clauses": ["C2-I-005", "C2-I-011"]
     },

@@ -91,7 +91,7 @@ Written:
 
 **C2-W-021** No line of the output holds only spaces or tabs: such a line is written empty. A line of a code block, a raw block or a comment block is data and is written as it is.
 
-**C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending. The space of a no-break space, which a backslash escapes (C2-I-011), is not such a space and is written also at the end of a line.
+**C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending. A no-break space directly before a soft break has no spelling, since a backslash and a space at the end of a line are a hard break (C2-I-011): its nearest form writes the character U+00A0, and the writer reports `structure-unspellable` (C2-W-117).
 
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. A continuation line of a caption or of a term is written at the column of the first character of its text, behind the mark and its space. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 

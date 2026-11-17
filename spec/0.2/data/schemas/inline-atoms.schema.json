@@ -98,7 +98,7 @@
           },
           "requires": { "enum": ["closed_plain_code_span"], "description": "A fact that must hold for the atom to form." },
           "followed_by": {
-            "enum": ["ascii_punctuation", "space", "line_end_or_content_end", "any_other_character"],
+            "enum": ["ascii_punctuation", "space_not_at_line_end", "optional_space_then_line_end_or_content_end", "any_other_character"],
             "description": "What stands behind a backslash."
           },
           "result": {

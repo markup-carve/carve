@@ -9947,6 +9947,241 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-122",
+   "clauses": [
+    "C2-I-011",
+    "C2-I-102"
+   ],
+   "why": "C2-I-011: A backslash before a space is a no-break space, except at the end of a line, where the two are a hard break (C2-I-102).",
+   "summary": "a backslash and a space at the end of an item line are a hard break",
+   "input": "- a\\ \n  b",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a<br>\nb</li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           },
+           {
+            "type": "hard_break"
+           },
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-123",
+   "clauses": [
+    "C2-I-011",
+    "C2-I-102"
+   ],
+   "why": "C2-I-011: A backslash before a space is a no-break space, except at the end of a line, where the two are a hard break (C2-I-102).",
+   "summary": "a backslash and a space at the end of a description line are a hard break",
+   "input": ":: t\n: a\\ \n  b",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>t</dt>\n  <dd>a<br>\nb</dd>\n</dl>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       },
+       {
+        "type": "definition_description",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           },
+           {
+            "type": "hard_break"
+           },
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-124",
+   "clauses": [
+    "C2-I-102"
+   ],
+   "why": "C2-I-102: A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line.",
+   "summary": "a backslash and a space at the end of a caption line are a hard break",
+   "input": "![x](i.png)\n^ c\\ \n  d",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"i.png\" alt=\"x\">\n  <figcaption>c<br>\nd</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "i.png",
+        "alt": "x"
+       }
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "c"
+          },
+          {
+           "type": "hard_break"
+          },
+          {
+           "type": "text",
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-125",
+   "clauses": [
+    "C2-I-102"
+   ],
+   "why": "C2-I-102: So is a backslash at the end of the content, which includes the end of a table cell.",
+   "summary": "a backslash and a space at the end of the content are a hard break",
+   "input": "a\\ ",
+   "options": {},
+   "expected": {
+    "html": "<p>a<br>\n</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "hard_break"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-126",
+   "clauses": [
+    "C2-I-002",
+    "C2-I-015"
+   ],
+   "why": "C2-I-002: The test is lexical: a space behind an odd run of backslashes is kept, also inside a form that reads no escapes (C2-I-013).",
+   "summary": "inside a code span the escaped space at the end of a line stays in the value",
+   "input": "`a\\ \nb`",
+   "options": {},
+   "expected": {
+    "html": "<p><code>a\\ \nb</code></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "code",
+        "value": "a\\ \nb"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-127",
+   "clauses": [
+    "C2-I-002",
+    "C2-I-010"
+   ],
+   "why": "C2-I-002: The test is lexical: a space behind an odd run of backslashes is kept, also inside a form that reads no escapes (C2-I-013).",
+   "summary": "an escaped backslash before a trailing space leaves a soft break",
+   "input": "a\\\\ \nb",
+   "options": {},
+   "expected": {
+    "html": "<p>a\\\nb</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a\\"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

@@ -187,7 +187,7 @@ Example 110 (unverified)
 
 **C2-I-010** A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing. (carried over from 0.1)
 
-**C2-I-011** A backslash before a space is a no-break space. (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `a\ "b"` the first quote opens (C2-I-104), and `*\ a*` holds no strong.
+**C2-I-011** A backslash before a space is a no-break space, except at the end of a line, where the two are a hard break (C2-I-102). (carried over from 0.1) In every test of the character before or after a position it counts as whitespace, as U+00A0 does: in `a\ "b"` the first quote opens (C2-I-104), and `*\ a*` holds no strong.
 
 **C2-I-012** A backslash before any other character is a literal backslash, except at the end of a line, where it is a hard break (C2-I-102). (carried over from 0.1)
 
@@ -1974,7 +1974,27 @@ See [@doe2020] and [see @doe2020, p. 3; @roe].
 
 ## Hard break and soft break
 
-**C2-I-102** A backslash at the end of a line is a hard break. So is a backslash at the end of the content, which includes the end of a table cell. (carried over from 0.1)
+**C2-I-102** A backslash at the end of a line is a hard break, also where the space behind it that C2-I-002 keeps ends the line. So is a backslash at the end of the content, which includes the end of a table cell. (carried over from 0.1)
+
+The space behind the backslash is kept by the strip (C2-I-002) and the two end the line, so they are a hard break, as is the backslash before the run of spaces and a tab on the second line (C2-I-011, C2-I-102).
+
+Example 125 (unverified)
+
+::: compare
+
+```carve
+> Roses are red,\ 
+> violets are blue,\  	
+> sugar is sweet.
+```
+
+```html
+<blockquote><p>Roses are red,<br>
+violets are blue,<br>
+sugar is sweet.</p></blockquote>
+```
+
+:::
 
 **C2-I-103** Every other line break inside a content is a soft break. The spaces and tabs before it and after it are dropped, so trailing spaces on a line never make a hard break. (carried over from 0.1)
 
@@ -2398,14 +2418,14 @@ There is no fixed budget for the inline chapter.
 | Cross-references | 2 | 0 | 1 | 0 |
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 0 | 1 |
-| Hard break and soft break | 2 | 0 | 3 | 0 |
+| Hard break and soft break | 2 | 0 | 3 | 1 |
 | Smart typography | 7 | 2 | 7 | 6 |
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **54** |
+| **Total** | **112** | **16** | **70** | **55** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 124 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 125 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
