@@ -1238,8 +1238,6 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-083** A link reference resolves against the link definitions, then against the headings (C2-I-081, C2-I-084). A reference that a heading resolves is `<a href="#ID">` with the id of that heading. The first matching heading in document order wins.
 
-**Exception C2-H-084** An image reference never resolves against the headings (C2-I-083).
-
 **C2-H-085** An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: "full"` or `[]` for `refForm: "collapsed"`. An image adds `!` and uses its `alt` as text. No source form is rebuilt for the children. A footnote reference or inline footnote among them keeps its ordinary meaning. A shortcut of parsed source has a matching definition and never reaches this rule (C2-I-072).
 
 **C2-H-086** An unresolved footnote reference renders as the text `[^key]`, and an unresolved cross-reference as the text `</#key>`. A footnote reference or an inline footnote inside an unresolved reference is an ordinary one: it takes its number and makes its note.
@@ -2401,7 +2399,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Captions and figures | 12 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
-| Links, images and references | 10 | 1 | 1 | 2 |
+| Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
@@ -2411,6 +2409,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **33** | **36** |
+| **Total** | **198** | **6** | **33** | **36** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
