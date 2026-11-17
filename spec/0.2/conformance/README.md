@@ -23,7 +23,7 @@ Each entry:
 | `input` | the Carve input; absent for `import` |
 | `html` | the HTML input of an `import` example |
 | `files` | for `include`: each file the resolver serves under its name, which is also its id, as `{ "text": ... }` or as `{ "bytes": "61 FF" }` in hex |
-| `options` | the options the example's flags set, by the names of `data/options.json`; `{}` for none |
+| `options` | the options the example's flags set, by the names of `data/options.json` (see "Options"); `{}` for none |
 | `expected.html` | the expected HTML |
 | `expected.htmlIncludes` | where the example states its output in prose: a piece the HTML holds |
 | `expected.tree` | the expected tree, positions included, where the tree gate holds one (`trees/`) |
@@ -46,6 +46,14 @@ An unverified example is still the expected result: where an engine differs, the
 ## Clause cases
 
 Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `input`, `options`, `expected.html`, `expected.children` (the children of the document without positions), and `from`, the engine case files it was merged from (`js:ID`, `php:ID`, `rs:ID`). `why` quotes the sentence that decides the case, as `C2-B-130: ...`; several quotes follow one another, and ` ... ` joins two pieces of one clause. `corrected`, where present, says what the engine files expected before the clause corrected it.
+
+## Options
+
+`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, and `renderers` maps such a name to `"standard"`, its standard renderer. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
+
+```json
+{ "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }
+```
 
 ## Refused trees
 

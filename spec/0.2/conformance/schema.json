@@ -20,12 +20,39 @@
     { "if": { "properties": { "kind": { "const": "refused-trees" } } }, "then": { "required": ["trees"], "properties": { "trees": true } } }
   ],
   "$defs": {
-    "clauseId": { "type": "string", "pattern": "^C2-[ABHILMNWX]-[0-9]{3}$" },
+    "clauseId": { "type": "string", "pattern": "^C2-[ABHILMNTWX]-[0-9]{3}$" },
     "clauses": { "type": "array", "items": { "$ref": "#/$defs/clauseId" } },
     "options": {
       "type": "object",
-      "description": "Parse, render, format and import options by the names of data/options.json.",
-      "propertyNames": { "enum": ["alignTables", "headingIds", "includes", "mode", "profile", "rawHtml", "roundtrip", "social", "sourceLines", "urlPolicy"] }
+      "description": "The options of data/options.json by their names. extensions and renderers take host code, so a case names a standard extension and its standard renderer instead. scripts/spec2-conformance.mjs checks each value against data/options.json, except a value the case expects to be refused.",
+      "properties": {
+        "alignTables": { "type": "boolean" },
+        "extensions": { "type": "array", "items": { "type": "string" } },
+        "headingIds": { "type": "string" },
+        "includes": {
+          "type": "object",
+          "description": "The include settings: file, the id of the top-level document, and the lowered limits depth and bytes. A case with files is parsed with a resolver over them, and a case without files with no resolver.",
+          "properties": { "file": { "type": "string" }, "depth": { "type": "integer" }, "bytes": { "type": "integer" } },
+          "additionalProperties": false
+        },
+        "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+        "mode": { "type": "string" },
+        "normalize": { "type": "boolean" },
+        "platforms": { "type": "array", "items": { "type": "string" } },
+        "profile": { "type": "string" },
+        "rawHtml": { "type": "boolean" },
+        "renderers": { "type": "object", "additionalProperties": { "const": "standard" } },
+        "roundtrip": { "type": "boolean" },
+        "rules": { "type": "object", "additionalProperties": { "enum": ["on", "off"] } },
+        "sections": { "type": "boolean" },
+        "smartTypography": { "type": "boolean" },
+        "social": { "type": "object" },
+        "sourceLines": { "type": "boolean" },
+        "strictLosses": { "type": "boolean" },
+        "symbols": { "type": "object", "additionalProperties": { "type": "string" } },
+        "urlPolicy": { "type": "object" }
+      },
+      "additionalProperties": false
     },
     "file": {
       "type": "object",

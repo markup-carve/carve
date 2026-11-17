@@ -17,7 +17,10 @@ const failures = []
 const fail = (message) => failures.push(message)
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 
-const codes = new Set(readJson(join(spec, 'data/lint-rules.json')).rules.map(rule => rule.id))
+const rules = readJson(join(spec, 'data/lint-rules.json')).rules
+const codes = new Set(rules.map(rule => rule.id))
+const optionRows = new Map(readJson(join(spec, 'data/options.json')).options.map(row => [row.name, row]))
+const extensionRows = readJson(join(spec, 'data/extensions.json')).extensions
 const fixtureTrees = new Map()
 for (const chapter of ['syntax-blocks', 'syntax-inline', 'html', 'writer', 'includes']) {
   for (const entry of readJson(join(spec, 'trees', `examples-${chapter}.json`)).trees) fixtureTrees.set(entry.id, entry.tree)
@@ -151,6 +154,33 @@ for (const [name, value] of [...Object.entries(built), ['clause-cases.json', cas
   if (!validate(value)) fail(`${name}: the schema refuses it at ${validate.errors[0].instancePath || '/'}: ${validate.errors[0].message}`)
 }
 
+// The schema names every option of data/options.json, and each value is one the option takes.
+const schemaOptions = Object.keys(readJson(join(dir, 'schema.json')).$defs.options.properties)
+for (const name of optionRows.keys()) if (!schemaOptions.includes(name)) fail(`schema.json: options does not name ${name} of data/options.json`)
+for (const name of schemaOptions) if (!optionRows.has(name)) fail(`schema.json: options names ${name}, which data/options.json does not list`)
+const matchers = new Set(extensionRows.filter(row => row.matcher).map(row => row.name))
+const extensionNames = new Set(extensionRows.map(row => row.name))
+const OPTION_VALUE = {
+  extensions: (value) => value.every(name => matchers.has(name)),
+  includes: (value) => (value.depth === undefined || (value.depth >= 0 && value.depth <= 16)) && (value.bytes === undefined || (value.bytes >= 0 && value.bytes <= 8388608)),
+  labels: (value) => Object.keys(value).every(key => Object.hasOwn(optionRows.get('labels').default, key)),
+  platforms: (value) => value.every(name => optionRows.get('platforms').values.includes(name)),
+  renderers: (value) => Object.keys(value).every(name => extensionNames.has(name)),
+  rules: (value) => Object.keys(value).every(code => codes.has(code)),
+  social: (value) => Object.keys(value).every(key => ['mentionUrl', 'tagUrl', 'context'].includes(key)),
+  urlPolicy: (value) => Object.keys(value).every(key => ['allow', 'deny'].includes(key) && Array.isArray(value[key])) && !(value.allow && value.deny),
+}
+/** The option names of `options` whose value data/options.json does not allow. */
+function badOptions(options) {
+  return Object.entries(options).filter(([name, value]) => {
+    const row = optionRows.get(name)
+    if (!row) return true
+    if (row.type === 'enum') return !row.values.includes(value)
+    return OPTION_VALUE[name] ? !OPTION_VALUE[name](value) : false
+  }).map(([name]) => name)
+}
+for (const entry of built['examples.json'].examples) for (const name of badOptions(entry.options)) fail(`examples.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -174,6 +204,8 @@ for (const entry of cases.cases) {
   }
   if (!validateTree({ type: 'document', astVersion: '2.0', children: entry.expected.children })) fail(`clause-cases.json ${entry.id}: the AST schema refuses the expected children at ${validateTree.errors[0].instancePath || '/'}: ${validateTree.errors[0].message}`)
   if (exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
+  const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
+  for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }
 
 if (failures.length) {
