@@ -1777,7 +1777,7 @@
       "group": "measured opaque percent fence boundaries",
       "from": ":: t\n%%%\na\n%%%\n: body\n",
       "to": ":: t\n: body\n",
-      "meaning02": "C2-B-108, C2-B-110, and C2-B-114 keep the description body with its term after the invisible percent span is removed.",
+      "meaning02": "C2-B-108, C2-B-110, and C2-B-112 keep the description body with its term after the invisible percent span is removed.",
       "toolEntry": "U-215",
       "silent": true
     },
