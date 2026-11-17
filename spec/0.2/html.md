@@ -1637,8 +1637,6 @@ Reported: `carrier-attribute-dropped`.
 
 **C2-H-117** A presence carrier is written as the bare attribute name, with no value. A reader takes the name as presence and does not compare a value.
 
-**C2-H-118** `data-task-state`, `data-delim` and the `task-list` class are not carriers. Every render writes them (C2-H-031 to C2-H-033).
-
 **C2-H-119** The quote form, the form of a hard-break block, the numbering form of an ordered list, continuation rows, the table form, the declared head count of a delimited table and the verbatim text of a reference are sidecar facts (C2-L-016 to C2-L-023, C2-L-057) and have no carrier. Source that is imported back from HTML is written with the defaults of C2-L-030 to C2-L-041.
 
 **C2-H-120** The HTML importer is part of 0.2.0. It reads the 17 carriers of C2-H-115, the abbreviation template among them, and the reserved name `data-carve-src`, as the section "Import" states (CARVE-P10-017, CARVE-P10-021), and maps every other element and attribute as `import-html.md` states.
@@ -2402,11 +2400,11 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 15 | 0 | 0 | 8 |
+| Roundtrip carriers | 14 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **197** | **6** | **33** | **36** |
+| **Total** | **196** | **6** | **33** | **36** |
 
-The document has 197 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 196 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
