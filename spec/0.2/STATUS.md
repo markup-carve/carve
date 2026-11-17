@@ -1,6 +1,6 @@
 # Carve 0.2: status
 
-**Freeze candidate 6.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
+**Freeze candidate 7.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
 Commit: `37e57932e007fe912234021ea5d699bab041e51c` (`37e57932`). The commit after it writes only this line.
 
@@ -20,25 +20,27 @@ Freeze candidate 5, revision 1: `7db33836185126d9e8457e84464ca38fdb1aec3c` (`7db
 
 Freeze candidate 6: `e647035615526e037764b0b043b5093e8a431182` (`e6470356`), the ruling of 17 November 2026 that restores seventeen 0.1 behaviors that candidate 5 had changed without a decision (P1 to P3, P5 to P8, Q1 to Q7, Q10a, Q10b, A3 and A6; UPGRADING, "Seventeen 0.1 behaviors restored"), each in one commit, and the fixes of a read of the whole round. The commit after it writes only this line.
 
+Freeze candidate 7: the commit named here by the commit after it, the rulings of 17 November 2026 on the remaining points: the 0.1 differences that stay, each recorded in the upgrade map (UPGRADING, "Differences to 0.1 that stay"); the open points O14 to O21, H1 to H4, V1, V2, V6 and V10 decided as recommended, and the extension mechanism labeled provisional (UPGRADING, "Rulings of 17 November 2026, open points"); the new tenth document `tooling.md`; and the ruling of 12:30 on three further audits, which restores thirteen 0.1 behaviors, keeps and records further 0.2 behaviors and corrects rows and sentences of the guide (UPGRADING, "Rulings of 17 November 2026, 12:30"); each point in one commit, and the fixes of a read of the whole round.
+
 ## Documents
 
 Clauses are the paragraphs that start with a clause id. Rules and exceptions are counted by one rubric for all documents (an atomic normative statement that decides the tree, the output, the source written, a refusal or a report; an exception is a carve-out or a named interaction). *Labeled* is the number of clauses that start with the word "Exception", which each document counts at its end. The syntax chapters were counted construct by construct; the other documents were read more finely, so their rule counts are not comparable with the two chapters.
 
 | Document | Prefix | Clauses | Rules | Exceptions | Labeled | Examples |
 |---|---|---|---|---|---|---|
-| `syntax-blocks.md` | C2-B | 219 | 217 | 31 | 10 | 282 |
-| `syntax-inline.md` | C2-I | 112 | 136 | 30 | 16 | 129 |
+| `syntax-blocks.md` | C2-B | 219 | 217 | 31 | 10 | 288 |
+| `syntax-inline.md` | C2-I | 112 | 136 | 30 | 16 | 131 |
 | `ast.md` | C2-A | 205 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 194 | 470 | 98 | 6 | 76 |
+| `html.md` | C2-H | 194 | 470 | 98 | 6 | 81 |
 | `writer.md` | C2-W | 129 | 294 | 86 | 5 | 16 |
 | `source-layout.md` | C2-L | 57 | 95 | 23 | 0 | 0 |
-| `includes.md` | C2-N | 88 | 219 | 54 | 2 | 38 |
+| `includes.md` | C2-N | 88 | 219 | 54 | 2 | 40 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
-| `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 58 |
+| `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 59 |
 | `tooling.md` | C2-T | 40 | 103 | 8 | 0 | 0 |
-| **Total** | | **1,179** | **2,284** | **450** | **43** | **599** |
+| **Total** | | **1,179** | **2,284** | **450** | **43** | **615** |
 
-In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount.
+In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move.
 
 Retired clause ids, deleted in candidate 4 because a general rule gives the same result, are not reused: C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143, C2-B-177, C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065. Deleted in candidate 5 for the same reason: C2-A-076, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169, C2-B-086, C2-H-028, C2-H-059, C2-H-084, C2-H-097, C2-H-118, C2-H-135, C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and C2-W-132. Each chapter names them at its end.
 
@@ -54,8 +56,8 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 
 - `npm run spec2:data`: every data file against its schema and its clauses, the documents against each other (clause ids cited anywhere, example numbers, count tables and count sentences, codes against the catalog, the option table), and the two gates below.
 - `npm run spec2:unicode`: the Unicode category ranges against UnicodeData.txt of the pinned version 18.0.0.
-- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 554 positive trees with positions, 58 imported trees, 56 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
-- The corpus (`scripts/spec2-conformance.mjs`): 599 examples (328 verified) and 56 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 211 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
+- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 569 positive trees with positions, 59 imported trees, 56 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
+- The corpus (`scripts/spec2-conformance.mjs`): 615 examples (326 verified) and 56 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 262 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
@@ -86,7 +88,9 @@ The extension mechanism and the standard extensions: `extensions.md` as a whole.
 
 - The restore round of candidate 6 took each of the seventeen behaviors from the 0.1 text and the 0.1 engine (`carve-js` `next2` `d3dd135d`, `dist/cli.js`) on the audit input and at least five variations at the seams (quote, list item, table cell, attributes, limits), and changed every place in the nine documents, the data tables and the upgrade map that stated the old rule. Where a restore met a recorded decision it was done narrowly and the point was left for the maintainer. The 17 new examples and the 115 new clause cases hold the 0.1 output; the 0.2 engine of `carve-js` follows none of the restores yet, so the examples are unverified. A separate read of the whole diff found twelve points: nine are fixed, three did not hold.
 
-What stays unverified: the 271 unverified examples (written by hand from the clauses, among them every include example by the conventions of `includes.md`), the rows of the data tables beyond what `spec2:data` checks and the fourth review read, `ast-schema.json`, `node-slots.json`, `unicode-categories.json` and the element rows of `import-html.json` row by row, the standard extensions beyond their contact with the mechanism, and the PHP and Rust engines, which ran in none of the five reviews. The reader checks added in candidates 3 to 5 run in the tree gate (`scripts/lib/spec2-reader.mjs`) and in no engine yet beyond those `carve-js` already had.
+- The round of candidate 7 took each 0.1 behavior from the audit report and the 0.1 test or fixture it names, ran every input through the 0.1 engine and the 0.2 engine of `carve-js` `next2` `26901e16` at the seams (quote, list item, table cell, footnote body), and checked every rewrite row of the round: the 0.2 HTML of its `to` equals the 0.1 HTML of its `from`. Where the 0.2 engine does not follow a ruling of the round yet, the clause decides and the example or case is unverified. A separate read of the whole diff of the round, in three parts, found twenty-nine points that held; twenty-two are fixed, and seven are left as recorded choices (O23), as engine work or as written.
+
+What stays unverified: the 289 unverified examples (written by hand from the clauses, among them every include example by the conventions of `includes.md`), the rows of the data tables beyond what `spec2:data` checks and the fourth review read, `ast-schema.json`, `node-slots.json`, `unicode-categories.json` and the element rows of `import-html.json` row by row, the standard extensions beyond their contact with the mechanism, and the PHP and Rust engines, which ran in none of the five reviews. The reader checks added in candidates 3 to 5 run in the tree gate (`scripts/lib/spec2-reader.mjs`) and in no engine yet beyond those `carve-js` already had.
 
 ## Known open points
 
@@ -94,3 +98,4 @@ What stays unverified: the 271 unverified examples (written by hand from the cla
 - **O10.** Annotation ranges (C2-A-204) are anchored for an unchanged tree only; how their paths follow an edit is not part of 0.2.0.
 - **O12.** For the extension catalog work: a renderer returns an HTML string the host cannot inspect for the escaping and URL policy of C2-X-034; the slots of a supplied node of another extension are walked in the key order of its `slots` object, which can differ from the order of its declaration (C2-X-020); and the annotation ids of C2-A-203 need a reader that is given the range sidecar with the tree.
 - **O22.** Points the restore round of candidate 6 left for a ruling, each restored as narrowly as the ruling required: header rows inside a body take `scope="row"` (U-271, against T-053 and C2-A-092), and a pipe table with `body-rows` keeps its 0.2 head (C2-B-178, U-058); inside a code span a backslash and a trailing space stay (the ruling of 16 November, C2-I-002); an implicit heading reference is matched without NFC (C2-I-084), where 0.1 normalized it as it does a cross-reference; an inline footnote inside an inline footnote still makes a second note (U-202), where 0.1 kept `^[` as text there; a line comment in link text or extension content still takes the closer (U-146, U-149); the value of `align` is compared as written (U-272); and the writer half of F33 (C2-W-098) now writes a row attribute value with a pipe in quotes, which the maintainer should confirm.
+- **O23.** Points the round of candidate 7 settled by a choice the maintainer should confirm, or left open: a degraded inline node with no children writes its source spelling, `` $`x` `` and `<https://example.com>`, where a block degraded as a whole gives the plain value as 0.1 did (C2-H-165, A-20, A-21, A-32), and a paragraph left empty by a degraded node writes `<p></p>` (`[](/u)` under `minimal`; C2-H-019 could drop it); the typed attribute blocks of an unresolved reference are read from the source span the sidecar fact `rawAttrs` records (C2-I-085, C2-L-049), not from a tree field, so a render of source and a render of its tree differ there, and the writer keeps the blocks so that C2-W-004 holds (C2-W-084); a lazy `%%` line below a line block stanza has no stated place in the tree (C2-B-024, C2-B-138); an imported nested `carve-figure-group` gives a `figure_group` the writer cannot spell (C2-M-042, C2-W-117); the four ASCII values of `headingIds` (`ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower`; C2-H-147) are new names; the 0.1 resolver object also held `attrs`, which C2-H-126 does not pass, and a resolver that throws is undefined there (0.1 read it as unresolved); V6 reads "the last header cell ... that carries a mark on that axis", one step past the recommendation, because 0.1 reads it so (C2-B-213, CC-247); the cap on retained include diagnostics is fixed at 100 (`include_diagnostics`), where 0.1 let the host set it; `lint` exits 0 on hints alone (C2-T-031), where 0.1 exited 1 on any finding; the rule selection of `lint` takes JSON values only, without the 0.1 shorthands; the Rules and Exceptions of `tooling.md` are its author's count; U-248 holds U+007F, since JSON holds no raw U+000B; and O15 and O17 have no case, since no corpus option registers an extension.
