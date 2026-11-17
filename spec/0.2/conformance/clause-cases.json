@@ -45343,7 +45343,11 @@
    "summary": "two link definitions with one url",
    "kind": "lint",
    "input": "[a]: /u\n[b]: /u\n",
-   "options": {},
+   "options": {
+    "rules": {
+     "duplicate-reference-url": "on"
+    }
+   },
    "expected": {
     "diagnostics": [
      {
@@ -45385,7 +45389,11 @@
    "summary": "a paragraph that is one emphasis span",
    "kind": "lint",
    "input": "/Title/\n",
-   "options": {},
+   "options": {
+    "rules": {
+     "emphasis-as-heading": "on"
+    }
+   },
    "expected": {
     "diagnostics": [
      {
@@ -49783,7 +49791,11 @@
    "summary": "a paragraph that is one strong span",
    "kind": "lint",
    "input": "*Title*\n",
-   "options": {},
+   "options": {
+    "rules": {
+     "emphasis-as-heading": "on"
+    }
+   },
    "expected": {
     "diagnostics": [
      {
@@ -50177,7 +50189,11 @@
    "summary": "a link whose text is here is reported",
    "kind": "lint",
    "input": "[here](/u)\n",
-   "options": {},
+   "options": {
+    "rules": {
+     "non-descriptive-link-text": "on"
+    }
+   },
    "expected": {
     "diagnostics": [
      {
@@ -50221,7 +50237,11 @@
    "summary": "link text is compared with inner whitespace folded and in lower case",
    "kind": "lint",
    "input": "[Click  here](/u)\n",
-   "options": {},
+   "options": {
+    "rules": {
+     "non-descriptive-link-text": "on"
+    }
+   },
    "expected": {
     "diagnostics": [
      {
@@ -52442,6 +52462,25 @@
     "carve": "```js \"a\\\"b\"\nx\n```\n",
     "diagnostics": [],
     "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1046",
+   "clauses": [
+    "C2-W-109"
+   ],
+   "why": "C2-W-109: A rule that is off by default is turned on by its id.",
+   "summary": "three opt-in rules stay off without selection",
+   "kind": "lint",
+   "input": "/Title/\n[a]: /u\n[b]: /u\n[here](/u)\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "emphasis-as-heading",
+     "duplicate-reference-url",
+     "non-descriptive-link-text"
+    ]
    },
    "from": []
   }
