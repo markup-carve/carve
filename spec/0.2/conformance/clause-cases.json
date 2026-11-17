@@ -53898,6 +53898,24 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1114",
+  "clauses": [
+   "C2-W-107",
+   "C2-B-112"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "quote-shaped line in comment block body is not searched",
+  "kind": "lint",
+  "input": "%%%\n>a\n%%%\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "blockquote-marker-without-space"
+   ]
+  },
+  "from": []
  }
  ]
 }
