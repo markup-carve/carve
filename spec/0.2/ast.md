@@ -680,7 +680,7 @@ These clauses were added after other documents began to cite this one. They stan
 
 **C2-A-182** An `include` node has a position like any other block: it starts at its opening braces and ends after its closing braces and the spaces and tabs behind them on its line (C2-A-151). For `{{ a.crv }}` and two spaces the include spans offsets 0 to 13; indented by two spaces, with two spaces behind it, it spans 2 to 15.
 
-**C2-A-183** A captioned block carries its own `attrs`, `lang` and `dir`, as every block does: the attribute line above it applies to it (C2-B-091). HTML writes them on the `<figure>` it puts around the block (C2-H-063), and a table keeps them on `<table>`.
+**C2-A-183** A captioned block carries its own `attrs`, `lang` and `dir`, as every block does: the attribute line above it applies to it (C2-B-091).
 
 **C2-A-184** A math block is a `paragraph` containing one display `math` node and any following comment-only lines, with `role: "math"`. A parser sets the role when it closes as one display math line (C2-B-158, C2-B-198); an ordinary paragraph omits it. A captioned math block is that paragraph with a `caption`. A reader refuses `role` on a paragraph of another shape: with `image` the children are one `image`, with `math` one display `math`, each with only soft breaks and comments beside it (C2-A-136).
 
