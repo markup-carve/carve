@@ -1363,10 +1363,10 @@
     },
     {
       "id": "U-162",
-      "kind": "report",
+      "kind": "rewrite",
       "group": "measured rendering changes",
       "from": "|?v |",
-      "to": "",
+      "to": "|{?v} |",
       "meaning02": "<table>\n  <tbody>\n    <tr><td>?v</td></tr>\n  </tbody>\n</table>",
       "toolEntry": "U-162",
       "silent": true
@@ -2262,26 +2262,6 @@
       "silent": false
     },
     {
-      "id": "U-260",
-      "kind": "report",
-      "group": "third review",
-      "from": "{valigns=\"top,bottom\"}\n| a | b |\n",
-      "to": "",
-      "meaning02": "<table valigns=\"top,bottom\">\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-213: `valigns` is an ordinary key, and 0.2 has no source that sets a vertical alignment.",
-      "toolEntry": "U-260",
-      "silent": true
-    },
-    {
-      "id": "U-261",
-      "kind": "report",
-      "group": "third review",
-      "from": "|={>^} Qty |\n",
-      "to": "",
-      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">{&gt;^} Qty</th></tr>\n  </thead>\n</table> C2-B-182 and data/table-marks.json define no vertical mark, so the braced mark is cell text.",
-      "toolEntry": "U-261",
-      "silent": true
-    },
-    {
       "id": "U-262",
       "kind": "report",
       "group": "third review",
@@ -2350,6 +2330,16 @@
       "meaning02": "<p>See &lt;/#fig-x-a&gt;.</p> C2-H-095 resolves a cross-reference against headings and numbered captions only, and a panel caption takes no number (C2-H-066), so a reference to a panel is unresolved; 0.1 wrote `Figure 1a`.",
       "toolEntry": "U-268",
       "silent": true
+    },
+    {
+      "id": "U-269",
+      "kind": "rewrite",
+      "group": "third review",
+      "from": "|= A |={>^} < |\n| a | b |\n",
+      "to": "|= A |= < |\n| a |{>^} b |\n",
+      "meaning02": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table> C2-B-174: the brace block of a span mark that joins is kept for nothing, and `table-span-marker-attribute` reports it, on both axes.",
+      "toolEntry": "U-269",
+      "silent": false
     }
   ],
   "tree": [
@@ -2717,7 +2707,7 @@
       "id": "T-046",
       "kind": "add",
       "from": "resolution outputs",
-      "to": "generatedId, number, resolvedAlign, href or src, display and table span counts remain in resolved tree",
+      "to": "generatedId, number, resolvedAlign, resolvedValign, href or src, display and table span counts remain in resolved tree",
       "migrationRule": "C2-A-106 C2-A-162",
       "silent": false
     },

@@ -138,6 +138,9 @@
     "table_column": [
       {
         "field": "resolvedAlign"
+      },
+      {
+        "field": "resolvedValign"
       }
     ],
     "table_foot": [],

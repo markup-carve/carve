@@ -240,7 +240,23 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-061** A table row is written as a pipe, its cells, and a closing pipe. Every row ends with a pipe (C2-B-166).
 
-**C2-W-062** A cell is written as its prefix glued to the opening pipe, one space, its content and one space before the next pipe. The prefix is the header mark `=` when the cell is a header cell, then the brace block when the cell has alignment or attributes; in that brace block the alignment mark stands first: `|={>} Price |`.
+**C2-W-062** A cell is written as its prefix glued to the opening pipe, one space, its content and one space before the next pipe. The prefix is the header mark `=` when the cell is a header cell, then the brace block when the cell has alignment or attributes; in that brace block the alignment marks stand first, the horizontal mark and then the vertical mark, and `?` stands in place of the horizontal mark where the cell has `valign` and no `align`: `|={>} Price |`, `|={>^} Price |`, `|{?v} 2 |`. A mark is written from the cell's own `align` and `valign` only; an alignment the cell takes from its column is not written on it (C2-B-213). A `valign` of `baseline` has no mark: the writer leaves it out and reports `field-unspellable` (C2-W-117).
+
+Example 16 (generated)
+
+Input:
+
+```carve
+|={>^} A |={?v} B |
+|{~~ .c} a | b |
+```
+
+Written:
+
+```carve
+|={>^} A |={?v} B |
+|{~~ .c} a | b |
+```
 
 **C2-W-063** A span mark is written with the same padding: `| ^ |`, `| < |`. In the head it carries the header mark, `|= ^ |`, so that a row of span marks stays a head row (C2-B-174). A cell whose content is only `^` or `<` and is not a span is written with an escape.
 
@@ -321,7 +337,7 @@ Written:
 + |
 ```
 
-**C2-W-136** A key `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
+**C2-W-136** A key `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
 
 ## Canonical forms: inline
 
@@ -762,7 +778,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
 | `deprecated-separator-row` | warning | a row in which every cell holds only hyphens and colons | unchanged |
-| `deprecated-table-attribute` | warning | `header-rows` on a pipe table | only `header-rows`; `aligns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1 |
+| `deprecated-table-attribute` | warning | `header-rows` on a pipe table | only `header-rows`; `aligns`, `valigns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1 |
 | `deprecated-bare-underline` | warning | an underscore pair that 0.1 read as underline | unchanged |
 | `deprecated-bare-strike` | warning | a tilde pair that 0.1 read as strike | unchanged |
 | `deprecated-bare-highlight` | warning | an equals pair that 0.1 read as highlight | unchanged |
@@ -785,7 +801,7 @@ Eight findings of the syntax chapters, and one of the tree and writer chapters, 
 | `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077) |
 | `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
-| `table-attribute-invalid` | warning | an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
+| `table-attribute-invalid` | warning | an invalid value of `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 | `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
@@ -875,7 +891,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an unquoted fence title | `fence-title-syntax` |
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
-| an invalid `aligns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
+| an invalid `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
 | a `header-rows` or `footer-rows` count past the rows | `table-row-count-clamped` |
 | an include option that is invalid | `include-option-invalid` |
 | a comment between a table row and its continuation row | `comment-splits-table-row` |
@@ -984,12 +1000,12 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 25 | 4 | 0 | 2 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
-| Canonical forms: tables | 12 | 0 | 1 | 2 |
+| Canonical forms: tables | 12 | 0 | 2 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **10** |
+| **Total** | **136** | **7** | **6** | **10** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 16 examples, 6 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

@@ -445,7 +445,7 @@
       ],
       "message_origin": "design",
       "reports": "`header-rows` on a pipe table",
-      "change": "only `header-rows`; `aligns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1",
+      "change": "only `header-rows`; `aligns`, `valigns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1",
       "clauses": ["C2-B-186"]
     },
     {
@@ -1582,7 +1582,7 @@
         "The value of ${key} is not valid, so the table ignores the whole attribute. Correct every entry, or remove the attribute."
       ],
       "message_origin": "data_file",
-      "reports": "an invalid value of `aligns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227)",
+      "reports": "an invalid value of `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227)",
       "clauses": ["C2-B-210", "C2-B-211", "C2-B-212", "C2-B-227"]
     },
     {

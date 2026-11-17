@@ -533,7 +533,33 @@ The empty paragraph is dropped (C2-M-069), and the cell keeps one empty `cell_pa
 
 **C2-M-039** `colspan` and `rowspan` above 1, read as HTML integers, give the spans. A `rowspan` of 0 gives no span and is reported with `import-structure-repaired`. A row span that reaches past the last row of its group is clamped to it (C2-A-093) and reported in the same way.
 
-**C2-M-040** `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it. `align`, or a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;`, gives the cell's alignment; `valign` gives its vertical alignment. The values of `scope`, `align` and `valign` compare without ASCII case and are kept in lower case; a value outside the set of its field (C2-A-092) is dropped and reported with `import-attribute-dropped`. The alignments are then resolved backward by C2-B-213: a body cell that shows the mark of its column's header cell takes it from there, and in a table with no head a column whose cells all show one alignment gives it to the column.
+**C2-M-040** `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it. `align`, or a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;`, gives the cell's alignment; `valign`, or a `style` that is exactly `vertical-align: top;`, `vertical-align: middle;` or `vertical-align: bottom;`, gives its vertical alignment, and a `style` that is exactly one `text-align` declaration of that list, one space and one `vertical-align` declaration of this list, as a render writes it (C2-H-057), gives both. The values of `scope`, `align` and `valign` compare without ASCII case and are kept in lower case; a value outside the set of its field (C2-A-092) is dropped and reported with `import-attribute-dropped`. The alignments are then resolved backward by C2-B-213, each axis on its own: a body cell that shows the mark of its column's header cell takes it from there, and in a table with no head a column whose cells all show one alignment gives it to the column.
+
+Example 57 (unverified)
+
+::: compare
+
+```html
+<table>
+<thead><tr><th style="text-align: right; vertical-align: top;">Qty</th><th valign="bottom">Note</th></tr></thead>
+<tbody><tr><td style="text-align: right; vertical-align: top;">1</td><td style="vertical-align: middle;">a</td></tr></tbody>
+</table>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_head","children":[{"type":"table_row","children":[{"type":"table_cell","header":true,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"Qty"}]}],"align":"right","valign":"top"},{"type":"table_cell","header":true,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"Note"}]}],"valign":"bottom"}]}]},{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"1"}]}]},{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"a"}]}],"valign":"middle"}]}]}],"columns":[{"type":"table_column"},{"type":"table_column"}]}
+]
+```
+
+```carve
+|={>^} Qty |={?v} Note |
+| 1 |{?~} a |
+```
+
+:::
+
+The body cell `1` shows both marks of its column's header cell and takes them from there; `a` keeps the vertical alignment it shows, and its horizontal axis has none, so the writer spells it `{?~}`.
 
 Example 54 (unverified)
 
@@ -1716,4 +1742,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 56 examples: 46 verified and 10 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 57 examples: 46 verified and 11 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

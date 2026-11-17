@@ -16478,6 +16478,14 @@
           ],
           "$comment": "resolution result"
         },
+        "resolvedValign": {
+          "enum": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "$comment": "resolution result"
+        },
         "attrs": {
           "type": "object",
           "properties": {

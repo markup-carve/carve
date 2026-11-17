@@ -278,6 +278,12 @@
             "items": { "type": "string", "pattern": "^([\\s\\S]|[\\s\\S]-[\\s\\S])$" },
             "uniqueItems": true,
             "description": "Characters. An entry is one character, or a range written as two characters joined by a hyphen, both ends included."
+          },
+          "vertical_marks": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1, "maxLength": 1 },
+            "uniqueItems": true,
+            "description": "The marks that may stand directly after one of `marks` (cell_alignment)."
           }
         }
       }
