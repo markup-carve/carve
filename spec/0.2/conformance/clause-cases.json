@@ -52813,6 +52813,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1062",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "an indented top-level definition shape is text",
+   "kind": "lint",
+   "input": "  [a]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-in-container"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

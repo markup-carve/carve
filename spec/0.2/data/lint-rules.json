@@ -294,7 +294,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "A definition is recognized only at column 0 outside every container, so this line is text. Move it to the top level."
+        "A definition is recognized only at column 0 outside every container, so this line is text. Put it at column 0 outside every container."
       ],
       "message_origin": "design",
       "reports": "a definition shape inside a container or indented at the top level",
