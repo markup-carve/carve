@@ -751,6 +751,8 @@ Example 12 (generated)
 
 **C2-H-153** `aligns`, `widths`, `header-rows` and `footer-rows` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
 
+**C2-H-200** A cell whose children are not one `cell_paragraph` holds the blocks of an imported or supplied tree (C2-A-091), and each `paragraph` among them is written with `<p>`. A cell of one paragraph stays on the line of its row: `<td><p>c</p></td>`. Any other such cell is written as a list item with more blocks is (C2-H-007): a first paragraph on the line of the cell tag, every other block on its own line one level deeper than the row, and the closing cell tag on its own line at the indent of the row, after which the row goes on.
+
 ## Captions and figures
 
 **C2-H-062** An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption. The tree has no node for this `<figure>`. With `sourceLines` on it carries the line the block starts on, and the element of the block inside it the line of the block's own opening markup, after its attribute lines.
@@ -2161,7 +2163,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Description lists | 3 | 0 | 1 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 1 |
-| Tables | 8 | 0 | 1 | 0 |
+| Tables | 9 | 0 | 1 | 0 |
 | Captions and figures | 12 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 1 |
 | Inline elements | 8 | 0 | 1 | 0 |
@@ -2175,6 +2177,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **26** | **34** |
+| **Total** | **199** | **7** | **26** | **34** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 60 examples, 26 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 60 examples, 26 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

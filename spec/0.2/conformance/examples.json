@@ -60002,7 +60002,8 @@
     "C2-H-059",
     "C2-H-061",
     "C2-H-152",
-    "C2-H-153"
+    "C2-H-153",
+    "C2-H-200"
    ],
    "kind": "render",
    "input": "|= Name |={>} Price |\n| tea   | 2         |\n^ Table #: Drinks",
