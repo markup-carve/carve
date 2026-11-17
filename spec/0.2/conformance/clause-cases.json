@@ -29440,7 +29440,7 @@
     "C2-T-014",
     "C2-T-025"
    ],
-   "why": "C2-T-014: every other line of a diagnostic, a note or a failure goes to standard error C2-T-025: `render` writes each retained loss as a line on standard error.",
+   "why": "C2-T-014: every other line of a diagnostic, a note or a failure goes to standard error C2-T-025: `render` writes each retained loss as a line on standard error",
    "summary": "a render loss goes to standard error and the html alone to standard output",
    "kind": "cli",
    "files": {
@@ -52124,6 +52124,127 @@
    },
    "expected": {
     "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>y</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1035",
+   "clauses": [
+    "C2-W-100"
+   ],
+   "why": "C2-W-100: Lines are compared with their line endings, so a file that differs only in a line ending, a CRLF or a missing final line feed, names the first line whose ending differs, and both of its lines are written without their endings: `a` with no final line feed gives `a.crv:1`, `- a` and `+ a`.",
+   "summary": "fmt --check names the line whose final line feed is missing",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a"
+    }
+   },
+   "args": [
+    "fmt",
+    "--check",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "a.crv:1\n- a\n+ a\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1036",
+   "clauses": [
+    "C2-W-100"
+   ],
+   "why": "C2-W-100: Lines are compared with their line endings, so a file that differs only in a line ending, a CRLF or a missing final line feed, names the first line whose ending differs, and both of its lines are written without their endings",
+   "summary": "fmt --check names a CRLF line without its ending",
+   "kind": "cli",
+   "files": {
+    "b.crv": {
+     "text": "a\r\n"
+    }
+   },
+   "args": [
+    "fmt",
+    "--check",
+    "b.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "b.crv:1\n- a\n+ a\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1037",
+   "clauses": [
+    "C2-N-004",
+    "C2-N-003"
+   ],
+   "why": "C2-N-004: A tool that expands nothing, with expansion turned off or with standard input and no root, has no resolver, and each include is reported with `include-no-resolver` (C2-N-003).",
+   "summary": "diagnostics with expansion off reports include-no-resolver",
+   "kind": "cli",
+   "files": {
+    "x.crv": {
+     "text": "{{ b.crv }}\n"
+    }
+   },
+   "args": [
+    "diagnostics",
+    "--no-includes",
+    "x.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdoutDiagnostics": [
+     {
+      "code": "include-no-resolver",
+      "file": "x.crv",
+      "line": 1,
+      "column": 1,
+      "severity": "warning"
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1038",
+   "clauses": [
+    "C2-T-025"
+   ],
+   "why": "C2-T-025: `render` writes each retained loss as a line on standard error, and no entry of the parse or the lint channel, which `diagnostics` and `lint` write (C2-T-031, C2-T-032).",
+   "summary": "render writes the loss of a missing include and not its parse entry",
+   "kind": "cli",
+   "files": {
+    "x.crv": {
+     "text": "{{ m.crv }}\n"
+    }
+   },
+   "args": [
+    "render",
+    "x.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>{{ m.crv }}</p>\n",
+    "stderrDiagnostics": [
+     {
+      "code": "include-unresolved",
+      "file": "x.crv",
+      "line": 1,
+      "column": 1,
+      "severity": "warning"
+     }
+    ],
+    "stderrCategory": null
    },
    "from": []
   }

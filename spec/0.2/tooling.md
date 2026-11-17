@@ -83,7 +83,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-019** A diagnostic line is `FILE:LINE:COLUMN: SEVERITY CODE MESSAGE`, and an entry with no range is written `FILE: SEVERITY CODE MESSAGE`. FILE is the `file` of the entry where it has one (C2-N-063) and the input otherwise. LINE counts line feeds from 1, and COLUMN counts the code points of that line from 1, both at the start of the range.
 
-**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range.
+**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range. The `message` is the text of the engine, for which the catalog row gives the reference wording (C2-W-106); a comparison of two reports does not compare it.
 
 | Field | Value | Present | Clauses |
 |---|---|---|---|
@@ -140,7 +140,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--allow-loss` | code, repeatable | a code that is no loss (C2-T-027) |
 | `--max-render-losses` | count, 100 | the losses retained per file (C2-T-029) |
 
-**C2-T-025** A loss is a render-loss entry of a file whose code is not on the allow list. `render` writes each retained loss as a line on standard error.
+**C2-T-025** A loss is a render-loss entry of a file whose code is not on the allow list. `render` writes each retained loss as a line on standard error, and no entry of the parse or the lint channel, which `diagnostics` and `lint` write (C2-T-031, C2-T-032).
 
 **C2-T-026** With `--strict-losses` and a loss, `render` writes no HTML for that file and the file ends with status 1 and the category `render-loss` (C2-H-130). The command applies the allow list before `strictLosses`, so an allowed code alone never fails a file.
 
