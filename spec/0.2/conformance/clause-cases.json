@@ -54543,6 +54543,26 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1145",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "unfinished image marker selects honest caption advice",
+ "kind": "lint",
+ "input": "![oops\nCaption: x\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "caption-looking-paragraph",
+    "messageWhen": "no pipe table starts one or two lines below, and a pipe table row or an image marker `![` occurs in one of the two lines above"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }

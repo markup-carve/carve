@@ -155,7 +155,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [{"when": "a pipe table starts one or two lines below this paragraph line", "text": "This caption-looking paragraph is above the table. Move it directly below the table and start it with `^ ` to make a caption."}, {"when": "no pipe table starts one or two lines below, and a pipe table row or an image marker `![` occurs in one of the two lines above", "text": "This caption-looking paragraph sits next to a table or image; use a ^ caption line."}],
+      "messages": [{"when": "a pipe table starts one or two lines below this paragraph line", "text": "This caption-looking paragraph is above the table. Move it directly below the table and start it with `^ ` to make a caption."}, {"when": "no pipe table starts one or two lines below, and a pipe table row or an image marker `![` occurs in one of the two lines above", "text": "This caption-looking paragraph sits next to a table or image-looking marker; use a ^ caption line."}],
       "message_origin": "engine_0_1",
       "reports": "a paragraph line whose text, after container prefixes and indent, matches case-insensitively `^(?:\\*?\\s*(?:Caption|Table|Tabelle|Figure|Image)(?:\\s+\\d+)?\\s*:|:\\s+\\S)`; the optional number needs whitespace before its digits, so `Caption 2:` matches and `Caption2:` does not; a match reports when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line, the range is the first character of the matched line (C2-B-146, C2-B-149)",
       "clauses": ["C2-B-146", "C2-B-149"]
