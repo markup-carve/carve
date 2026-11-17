@@ -68955,6 +68955,108 @@
    "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
   },
   {
+   "id": "writer-13",
+   "document": "writer.md",
+   "number": 13,
+   "section": "Canonical forms: tables",
+   "clauses": [
+    "C2-W-061",
+    "C2-W-062",
+    "C2-W-063",
+    "C2-W-064",
+    "C2-W-065",
+    "C2-W-066",
+    "C2-W-067",
+    "C2-W-068",
+    "C2-W-118",
+    "C2-W-119",
+    "C2-W-135",
+    "C2-W-136"
+   ],
+   "kind": "write",
+   "input": "{table}\n```csv\na\n\"\"\n```",
+   "options": {},
+   "expected": {
+    "carve": "{table}\n```csv\na\n\"\"\n```\n",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "table",
+       "columns": [
+        {
+         "type": "table_column"
+        }
+       ],
+       "children": [
+        {
+         "type": "table_head",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": true,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "a"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "table_body",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": []
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 23
+       }
+      }
+     ],
+     "srcByteLength": 23,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
    "id": "writer-7",
    "document": "writer.md",
    "number": 7,

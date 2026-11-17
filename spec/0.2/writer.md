@@ -228,7 +228,29 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A delimited table is written with a `header-rows` attribute, whose value is the number of rows of its head, 0 for a table with no head, where the head is not exactly the first row, the default of the form (C2-B-209), and where the sidecar records `headerRows` with that number (C2-L-057). A pipe table never takes the attribute: its header cells make its head (C2-A-087). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled; every other cell is written bare.
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A delimited table is written with a `header-rows` attribute, whose value is the number of rows of its head, 0 for a table with no head, where the head is not exactly the first row, the default of the form (C2-B-209), and where the sidecar records `headerRows` with that number (C2-L-057). A pipe table never takes the attribute: its header cells make its head (C2-A-087). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled, and so is an empty cell that is the only cell of the last row, which an empty line would drop (C2-B-226); every other cell is written bare.
+
+Example 13 (unverified)
+
+Input:
+
+````carve
+{table}
+```csv
+a
+""
+```
+````
+
+Written:
+
+````carve
+{table}
+```csv
+a
+""
+```
+````
 
 **C2-W-067** Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020). With no fact a row is one line (C2-L-035). A node in a pipe table cell whose value holds a line feed, which only a supplied tree gives, has no spelling there: the writer writes a space in place of each line feed and reports `field-unspellable` (C2-W-117). A delimited table writes a cell that holds a line break in double quotes (C2-W-066).
 
@@ -928,12 +950,12 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 25 | 4 | 0 | 1 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
-| Canonical forms: tables | 12 | 0 | 1 | 1 |
+| Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **7** |
+| **Total** | **136** | **7** | **5** | **8** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 12 examples, 5 generated and 7 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 13 examples, 5 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
