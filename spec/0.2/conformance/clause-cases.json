@@ -49124,6 +49124,95 @@
     "carve": "[^1]: N\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-908",
+   "clauses": [
+    "C2-M-035",
+    "C2-M-064"
+   ],
+   "why": "C2-M-064: A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158). Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before the `<hr>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
+   "summary": "the title of a footnote section gives a titled footnotes directive",
+   "kind": "import",
+   "html": "<section role=\"doc-endnotes\" aria-labelledby=\"adm-1\"><p class=\"admonition-title\" id=\"adm-1\">Notes</p><hr><ol><li id=\"fn1\"><p>N</p></li></ol></section>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "directive",
+      "kind": "footnotes",
+      "children": [],
+      "title": [
+       {
+        "type": "text",
+        "value": "Notes"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "N"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-909",
+   "clauses": [
+    "C2-M-035",
+    "C2-M-064"
+   ],
+   "why": "C2-M-064: Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before the `<hr>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
+   "summary": "the label of a footnote section is the label of its directive",
+   "kind": "import",
+   "html": "<section role=\"doc-endnotes\" aria-labelledby=\"adm-1\"><p class=\"admonition-title\" id=\"adm-1\">Notes</p><p class=\"div-label\">L</p><hr><ol><li id=\"fn1\"><p>N</p></li></ol></section>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "directive",
+      "kind": "footnotes",
+      "children": [],
+      "title": [
+       {
+        "type": "text",
+        "value": "Notes"
+       }
+      ],
+      "groupLabel": "L"
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "N"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
