@@ -59247,6 +59247,114 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-63",
+   "document": "html.md",
+   "number": 63,
+   "section": "Description lists",
+   "clauses": [
+    "C2-H-038",
+    "C2-H-039",
+    "C2-H-040"
+   ],
+   "kind": "render",
+   "input": ":: T\n: ![a](x.png)",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>T</dt>\n  <dd>\n    <img src=\"x.png\" alt=\"a\">\n  </dd>\n</dl>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "definition_list",
+       "children": [
+        {
+         "type": "definition_term",
+         "children": [
+          {
+           "type": "text",
+           "value": "T",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 4,
+            "endColumn": 5,
+            "startOffset": 3,
+            "endOffset": 4
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 0,
+          "endOffset": 4
+         }
+        },
+        {
+         "type": "definition_description",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "image",
+             "src": "x.png",
+             "alt": "a",
+             "pos": {
+              "startLine": 2,
+              "endLine": 2,
+              "startColumn": 3,
+              "endColumn": 14,
+              "startOffset": 7,
+              "endOffset": 18
+             }
+            }
+           ],
+           "role": "image",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 3,
+            "endColumn": 14,
+            "startOffset": 7,
+            "endOffset": 18
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 14,
+          "startOffset": 5,
+          "endOffset": 18
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 14,
+        "startOffset": 0,
+        "endOffset": 18
+       }
+      }
+     ],
+     "srcByteLength": 18,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "html-9",
    "document": "html.md",
    "number": 9,

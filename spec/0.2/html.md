@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause and of C2-H-006: its `<img>` stands on its own line inside the item or the quote. A display math paragraph without a caption is one, and is written on one line; a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A display math paragraph without a caption is one, and is written on one line; a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
@@ -488,6 +488,28 @@ Example 40 (unverified)
 **C2-H-039** A term holds inline content and never a `<p>`.
 
 **C2-H-040** A description with one visible block writes a paragraph without a caption bare; a captioned one is its figure (C2-H-062). A description with several visible blocks gives every paragraph `<p>`, the first one included (C2-B-073, C2-B-077). The rule reads the visible blocks of the description, as C2-H-006 does for a quote: a comment and a definition are not counted. A description list has no `spacing` field.
+
+A lone block image in a description stands on its own line, as in an item (C2-H-007).
+
+Example 63 (generated)
+
+::: compare
+
+```carve
+:: T
+: ![a](x.png)
+```
+
+```html
+<dl>
+  <dt>T</dt>
+  <dd>
+    <img src="x.png" alt="a">
+  </dd>
+</dl>
+```
+
+:::
 
 Example 9 (generated)
 
@@ -2207,7 +2229,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Attributes | 9 | 1 | 2 | 1 |
 | Paragraphs, headings and sections | 17 | 1 | 4 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
-| Description lists | 3 | 0 | 1 | 0 |
+| Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 9 | 0 | 1 | 0 |
@@ -2224,6 +2246,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **28** | **34** |
+| **Total** | **199** | **7** | **29** | **34** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 62 examples, 28 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 63 examples, 29 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
