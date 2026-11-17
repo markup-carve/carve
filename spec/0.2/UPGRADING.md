@@ -267,6 +267,14 @@ A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?
 | --- | --- | --- | --- |
 | U-270 | `\|=a\|`, meant as a header cell, with the text glued to the header mark **SILENT** | 0.1: a data cell with the text `=a`. Freeze candidate 5 and early 0.2 engines: a header cell that holds `a`. | A data cell with the text `=a`, as in 0.1. Where a header cell is meant, write `\|= a \|`; rewrite |
 
+### Rulings of 17 November 2026, open points
+
+The maintainer decided the open points of `STATUS.md` listed here as their recommendations. Each line names the point, the ruling and the clauses that carry it; the upgrade rows it adds or withdraws are named in the line.
+
+| Point | Ruling | Clauses |
+| --- | --- | --- |
+| O14 | A `%%` line inside a code span, a math span, a braced comment or an editorial comment that runs over lines is a comment-only line. Its comment stands in the innermost inline node open at its place, and no atom spans it: `` `a ``, `%% b`, `` c` `` is text on both sides of the comment. The writer refuses an atom value with such a line. U-300 records the difference to 0.1. | C2-B-138, C2-A-075, C2-I-017, C2-W-016 |
+
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
 Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.
@@ -615,6 +623,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-269 | Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top. | The block is kept for nothing, `table-span-marker-attribute` reports it, and `b` has no alignment. This holds for both axes. | Move the marks to each cell of that column below the head that has no mark of its own on that axis, `\| a \|{>^} b \|`, and drop the block; rewrite |
 | U-271 | Under C2-B-230, a header row inside a body, `{body-rows=1 body-header-rows=1}` above `\| a \|` and `\| b \|`, wrote `<th scope="col">a</th>` in 0.1; and with `body-rows` a pipe table had no head unless `header-rows` gave one. **SILENT** | The cells of a body header row are header cells with `scope="row"` (C2-H-056). The head of a pipe table is its leading rows of header cells (C2-B-178), also with `body-rows`. | Review the scope; write a head with header marks in place of `header-rows` (U-058); report |
 | U-272 | Under C2-H-015, an `align` value in another case or with spaces around it, `{align=Right}` above `para`, wrote `<p style="text-align: right;">` in 0.1. **SILENT** | The value is compared as written: `<p align="Right">`. | Write the value in lower case without spaces; rewrite |
+| U-300 | Under C2-B-138, a comment-only line inside a code span, a math span or an editorial comment that closes on a later line, <code>&#96;a</code>, `%% b` and <code>c&#96;</code>, was dropped in 0.1, and the span formed: <code>&lt;code&gt;a ⏎ c&lt;/code&gt;</code>. **SILENT** | No inline atom spans a comment-only line, so the opener and the closer are text: <code>&#96;a ⏎ c&#96;</code>. | Move the comment line below the line that closes the span; rewrite |
 
 U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
 

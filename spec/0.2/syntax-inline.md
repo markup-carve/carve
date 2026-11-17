@@ -229,7 +229,7 @@ Example 7 (generated)
 
 **C2-I-016** When the content of a closed span starts and ends with a space and holds a character that is not a space, one space is removed from each end. Content of spaces only is kept as it is. (carried over from 0.1)
 
-**C2-I-017** A backtick run with no closing run of its length later in the same content opens nothing (C2-I-119): the run is text, and so is a `!`, `$` or `$$` glued before it. The scan goes on behind the run, so a shorter or longer run after it may open a span. This holds for a code span, a literal-text span and a math span alike, and in a table cell as anywhere: the cell `` | x `a | `` holds the text `` x `a ``.
+**C2-I-017** A backtick run with no closing run of its length later in the same content opens nothing (C2-I-119): the run is text, and so is a `!`, `$` or `$$` glued before it. The scan goes on behind the run, so a shorter or longer run after it may open a span. This holds for a code span, a literal-text span and a math span alike, and in a table cell as anywhere: the cell `` | x `a | `` holds the text `` x `a ``. For this test a comment-only line ends the content (C2-B-138).
 
 **C2-I-018** A `!` glued before the opening run makes a literal-text span: its content is written as escaped text with no code element. With an attribute block it is written as a span element that carries the attributes.
 

@@ -2330,6 +2330,16 @@
       "meaning02": "<p align=\"Right\">para</p> C2-H-015 compares the value of `align` as written; 0.1 trimmed it and folded its ASCII case, so `Right` and ` left ` wrote a `text-align` style.",
       "toolEntry": "U-272",
       "silent": true
+    },
+    {
+      "id": "U-300",
+      "kind": "rewrite",
+      "group": "rulings of 17 November",
+      "from": "`a\n%% b\nc`\n",
+      "to": "`a\nc`\n%% b\n",
+      "meaning02": "<p>`a\nc`</p> C2-B-138: no inline atom spans a comment-only line, so a code span, a math span or an editorial comment opened before the line and closed after it is text on both sides; 0.1 dropped the line and read <p><code>a\nc</code></p>. Moving the comment line below the closing line keeps the 0.1 output.",
+      "toolEntry": "U-300",
+      "silent": true
     }
   ],
   "tree": [

@@ -329,7 +329,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one, and without spaces and tabs at its end, also where the comment ends at the pipe of a cell (C2-B-169, C2-B-223); `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body, with a line break between two lines and none after the last.
 
-**C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, and otherwise of the innermost open container, at its place in source order (C2-B-138).
+**C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, inside the innermost inline node open at its place, and otherwise of the innermost open container, at its place in source order (C2-B-138). It is never part of the value of an atom.
 
 ### Definitions
 

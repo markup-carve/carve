@@ -15044,6 +15044,135 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-240",
+   "clauses": [
+    "C2-B-138",
+    "C2-I-017",
+    "C2-H-069"
+   ],
+   "why": "C2-B-138: Inside the leaf it stands in the innermost inline node open at its place, and no inline atom spans the line: for an atom that opens before it, such as a code span, a math span, a braced comment or an editorial comment, the content ends at the line, so an opener whose closer stands only on or after it is text (C2-I-017, C2-I-043).",
+   "summary": "a comment-only line ends a code span's content; both backticks are text",
+   "input": "`a\n%% b\nc`",
+   "options": {},
+   "expected": {
+    "html": "<p>`a\nc`</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "`a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "b"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "c`"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-241",
+   "clauses": [
+    "C2-B-138",
+    "C2-I-043"
+   ],
+   "why": "C2-B-138: Inside the leaf it stands in the innermost inline node open at its place, and no inline atom spans the line: for an atom that opens before it, such as a code span, a math span, a braced comment or an editorial comment, the content ends at the line, so an opener whose closer stands only on or after it is text (C2-I-017, C2-I-043).",
+   "summary": "a braced comment does not span a comment-only line",
+   "input": "{% a\n%% b\n%}c",
+   "options": {},
+   "expected": {
+    "html": "<p>{% a\n%}c</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "{% a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "b"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "%}c"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-242",
+   "clauses": [
+    "C2-B-138",
+    "C2-A-075"
+   ],
+   "why": "C2-B-138: Inside the leaf it stands in the innermost inline node open at its place, and no inline atom spans the line: for an atom that opens before it, such as a code span, a math span, a braced comment or an editorial comment, the content ends at the line, so an opener whose closer stands only on or after it is text (C2-I-017, C2-I-043).",
+   "summary": "the comment of a comment-only line inside a strong span is a child of the span",
+   "input": "*a\n%% c\nb*",
+   "options": {},
+   "expected": {
+    "html": "<p><strong>a\nb</strong></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "strong",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
