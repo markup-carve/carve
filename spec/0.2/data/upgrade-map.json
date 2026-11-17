@@ -2620,6 +2620,26 @@
       "meaning02": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul> A line indented short of the content column after a blank line still belongs to the item (C2-B-025, U-109), and a paragraph of comments counts as content and renders nothing (C2-B-140), so `- b` is a nested list. 0.1 closed the list at the comment line, and `- b` was a lazy line of a paragraph that started with a line feed, `<p>` then `- b</p>`. With the comment at column 0 the list closes as in 0.1, but a line that holds only comments takes its line break with it (C2-H-069), so 0.2 writes `<p>- b</p>`; no 0.2 source writes the leading line feed.",
       "toolEntry": "U-362",
       "silent": true
+    },
+    {
+      "id": "U-363",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "a {%%}'word\n",
+      "to": "a {%%}’word\n",
+      "meaning02": "<p>a ‘word</p> C2-I-026 tests the characters on the two sides of a braced comment as if they were glued, so the quote follows a space and opens (C2-I-104). 0.1 read the comment as a character before the quote and wrote an apostrophe, `<p>a ’word</p>`; `a{%%} 'word` did the same. Typing the apostrophe keeps the 0.1 HTML.",
+      "toolEntry": "U-363",
+      "silent": true
+    },
+    {
+      "id": "U-364",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "a{%%}#tag\n",
+      "to": "",
+      "meaning02": "<p>a#tag</p> C2-I-026 tests the characters on the two sides of a braced comment as if they were glued, so `#` follows the letter `a` and starts no tag (C2-I-090). 0.1 read the comment as a boundary and wrote a tag, `<p>a<span class=\"tag\"><strong>#tag</strong></span></p>`. A tag glued to a letter has no 0.2 spelling; a space before the sigil gives the tag behind a space.",
+      "toolEntry": "U-364",
+      "silent": true
     }
   ],
   "tree": [

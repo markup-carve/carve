@@ -411,7 +411,7 @@ Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in 
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 
-**Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. (carried over from 0.1)
+**Exception C2-I-026** A braced comment counts as nothing for its neighbors: the characters on its two sides are tested as if they were glued, for delimiter conditions (C2-I-047), for the sigil boundary (C2-I-090) and for typography. For delimiter conditions this is carried over from 0.1; 0.1 read a braced comment as a boundary before a sigil and before a single quote, so `a{%%}#tag` gave a tag and `a {%%}'word` an apostrophe (U-363, U-364).
 
 Example 16 (generated)
 
