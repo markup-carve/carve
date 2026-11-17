@@ -200,7 +200,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener.
 
-**C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-A-164).
+**C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-W-002).
 
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 

@@ -598,8 +598,6 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-163** Equality compares the tree only. Sidecars and the diagnostics record are not part of it, so a formatter may normalize any spelling the sidecar holds without changing the document.
 
-**C2-A-164** The round-trip gate is `parse(fmt(x)) == parse(x)` under this equality, for every document `x`. The byte check `fmt(fmt(x)) == fmt(x)` stands beside it.
-
 **C2-A-165** `parse(x)`, encoded to JSON and decoded, equals `parse(x)` in every field, positions included. An encoder that drops a field is not conformant.
 
 **C2-A-166** What a formatter has to keep therefore is what the tree holds: the bullet character, the ordered style, delimiter and start, the spacing, the task mark, the comment form, the citation text, and every other field of the node table.
@@ -793,11 +791,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 176 | 2 |
+| Existing AST contract | 175 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **212** | **3** |
+| **Total** | **211** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085 and C2-A-090 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090 and C2-A-164 are deleted.
 
 ## Schema
 

@@ -945,7 +945,7 @@ Fates: *ported* (the rule holds, restated in 0.2 terms), *simplified* (one of th
 | CARVE-P11-040 | an empty description body | removed: 0.2 has no sentinel, and an empty supplied body is unspellable | C2-W-057 |
 | CARVE-P11-041 | the task marker | simplified | C2-W-046 |
 | CARVE-P11-042 | a block that opens a tight item, after a continuation marker | removed: 0.2 has no list continuation marker; the marker-line rule is C2-W-027 | none |
-| CARVE-P11-043 | the round-trip comparison list | removed: the gate compares trees (C2-A-164); the case of its third entry is C2-W-112 | none |
+| CARVE-P11-043 | the round-trip comparison list | removed: the gate compares trees (C2-W-002); the case of its third entry is C2-W-112 | none |
 | CARVE-P11-044, 045 | Markdown escaping and delimiters | out of scope | none |
 | CARVE-P11-046 | the conversion-diagnostics channel | ported into the one record | C2-W-011, C2-W-104 |
 | CARVE-P11-047 | Markdown list tightness | out of scope | none |
