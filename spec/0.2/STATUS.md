@@ -1,6 +1,6 @@
 # Carve 0.2: status
 
-**Freeze candidate 10.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
+**Freeze candidate 12.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
 Commit: `eda35624c74b730ac3d32b5f8b7e0f931768ddee` (`eda35624`). The commit after it writes only this line and the final report.
 
@@ -31,6 +31,8 @@ Freeze candidate 9: at `3e7b31e1`, the last fix round: the eight defects of a se
 Freeze candidate 10: the ten maintainer rulings, twenty findings of the third independent read, seven further catalog defects, the engine lane examples and gaps, and the final stranger read. G-H5 remains parked in the root open-points file. The extension mechanism remains provisional. The complete point and case inventory is in the root ledger and report.
 
 Freeze candidate 11: the nineteen findings of the fourth independent read, restored conditional diagnostic advice, and the 0.1 decisions on semantic key case and nested braced boundaries. The clause, rule, exception and example counts in the table remain unchanged. Clause cases rose from 1,016 to 1,048; upgrade source rows rose from 268 to 269. The positive tree, imported tree, refused tree and layout counts remain 604, 64, 79 and 19. The root ledger and report record each point and its case.
+
+Freeze candidate 12: the parsed-document lint trigger rule, the eighteen points of the fifth independent read and the corrections found by the final read. The clause and example counts remain 1,154 and 654. Clause cases rose from 1,048 to 1,071. Positive trees, imported trees, refused trees, layout sidecars and upgrade source rows remain 604, 64, 79, 19 and 269. Rule and exception totals in the table await the recount described below. The root ledger and report record each point and its case.
 
 ## Documents
 
@@ -67,7 +69,7 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 - `npm run spec2:data`: every data file against its schema and its clauses, the documents against each other (clause ids cited anywhere, example numbers, count tables and count sentences, codes against the catalog, the option table), and the two gates below.
 - `npm run spec2:unicode`: the Unicode category ranges against UnicodeData.txt of the pinned version 18.0.0.
 - The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 604 positive trees with positions, 64 imported trees, 79 refused trees, the equal pair of blocks Examples 267 and 268, and 19 layout sidecars, five of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
-- The corpus (`scripts/spec2-conformance.mjs`): 654 examples (326 verified) and 79 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 1,016 clause cases, each with the sentence that decides it, read back from the clause; 708 of them, CC-360 to CC-1070, name their call: 344 lint, 86 parse, 82 cli, 50 write, 46 render, 37 layout, 20 tree, 20 import, 18 format, 5 migrate. Their options, diagnostics with positions, refusals, sidecars and command lines are checked against the data tables (`conformance/README.md`), and 25 of the refused trees name the node a reader check refuses them at. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
+- The corpus (`scripts/spec2-conformance.mjs`): 654 examples (326 verified) and 79 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 1,071 clause cases, each with the sentence that decides it, read back from the clause; 763 of them name their call: 391 lint, 89 parse, 83 cli, 50 write, 50 render, 37 layout, 20 tree, 20 import, 18 format, 5 migrate. Their options, diagnostics with positions, refusals, sidecars and command lines are checked against the data tables (`conformance/README.md`), and 25 of the refused trees name the node a reader check refuses them at. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
