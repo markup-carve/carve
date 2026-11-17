@@ -87,8 +87,6 @@ Written:
   - b
 ```
 
-**Exception C2-W-019** In a tight list no blank line stands between two items.
-
 **C2-W-020** A run of blank lines is written as one blank line, except the three of C2-W-028. Blank lines inside verbatim content, which is the value of a code block, a raw block, a comment block and frontmatter, are data and are written as they are.
 
 **C2-W-021** No line of the output holds only spaces or tabs: such a line is written empty. A line of a code block, a raw block or a comment block is data and is written as it is.
@@ -982,7 +980,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 25 | 4 | 0 | 2 |
+| Layout | 24 | 3 | 0 | 2 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
@@ -990,6 +988,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **10** |
+| **Total** | **135** | **6** | **5** | **10** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 135 clauses, 6 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
