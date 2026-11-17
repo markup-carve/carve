@@ -14,7 +14,7 @@ Freeze candidate 3: `edebb05e78cd42e5b546045804e1bc3ca3535c39` (`edebb05e`), the
 
 Freeze candidate 4: `20444577c5c4d9eadc29131c4e4258b9d248204b` (`20444577`), the fix round of the fourth review (F1 to F36), its list of rules that could go, and the readings the PHP and Rust engines met at stage 8. The commit after it writes only this line.
 
-Freeze candidate 5: the commit named here by the commit after it, the fix round of the fifth review (F1 to F42), its list of rules that could go with the lower-confidence list, and the open readings of the `carve-js` candidate 2 and PHP stage 9 gap lists. The commit after it writes only this line.
+Freeze candidate 5: `a835c9e636bcc0e4ada8961a9ad262ecc17931a7` (`a835c9e6`), the fix round of the fifth review (F1 to F42), its list of rules that could go with the lower-confidence list, and the open readings of the `carve-js` candidate 2 and PHP stage 9 gap lists. The commit after it writes only this line.
 
 ## Documents
 
