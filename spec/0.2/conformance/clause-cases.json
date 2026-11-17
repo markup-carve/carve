@@ -53143,6 +53143,50 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1077",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a removed tilde opener does not report Djot subscript",
+   "kind": "lint",
+   "input": "*a {~b* c~}\n",
+   "options": {
+    "lintRules": [
+     "djot-subscript-tilde-braced"
+    ]
+   },
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "djot-subscript-tilde-braced"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1078",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a removed equals opener does not report Djot highlight",
+   "kind": "lint",
+   "input": "*a {=b* c=}\n",
+   "options": {
+    "lintRules": [
+     "djot-highlight-braces"
+    ]
+   },
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "djot-highlight-braces"
+    ]
+   },
+   "from": []
   }
  ]
 }

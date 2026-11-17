@@ -557,7 +557,7 @@
       "messages": ["Djot highlight `{=x=}` is also Carve highlight. The bare `=x=` is literal text in Carve."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "reports": "a braced highlight, `{=`, at least one character and `=}`, with the opener not escaped, no blank line and no second unescaped `{=` before the closer; code spans, code fences, comment blocks and link destinations are not searched; once per highlight; a bare `=x=` is not reported (C2-I-055, C2-I-046)",
+      "reports": "each formed braced highlight node from `{=x=}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or second unescaped `{=`; code spans, code fences, comment blocks and link destinations are not searched; once per formed node; a bare `=x=` is not reported (C2-I-055, C2-I-059, C2-I-060)"
       "clauses": ["C2-I-055", "C2-I-046"]
     },
     {
@@ -607,7 +607,7 @@
       "messages": ["Djot subscript `{~x~}` renders as *strikethrough* in Carve."],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "reports": "each braced tilde form `{~x~}` whose opening brace is not escaped, with non-empty content that holds no blank line and no further unescaped `{~`, outside code; once per form (C2-I-055, C2-I-062)",
+      "reports": "each formed braced strike node from `{~x~}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or further unescaped `{~`, outside code; once per formed node (C2-I-055, C2-I-059, C2-I-060, C2-I-062)"
       "clauses": ["C2-I-055", "C2-I-062"]
     },
     {
