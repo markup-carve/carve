@@ -12809,6 +12809,576 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-176",
+   "clauses": [
+    "C2-B-166"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "a single-quoted value with several pipes",
+   "input": "| a | b |{a='x|y|z' .c}",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr class=\"c\" a=\"x|y|z\"><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "attrs": {
+           "classes": [
+            "c"
+           ],
+           "keyValues": [
+            [
+             "a",
+             "x|y|z"
+            ]
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-177",
+   "clauses": [
+    "C2-B-166"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "a value that is only a pipe on a header row",
+   "input": "|= a |{a=\"|\"}",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr a=\"|\"><th scope=\"col\">a</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "attrs": {
+           "keyValues": [
+            [
+             "a",
+             "|"
+            ]
+           ]
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-178",
+   "clauses": [
+    "C2-B-166"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "a quoted pipe in a row attribute inside a quote",
+   "input": "> | a |{a=\"x|y\"}",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <table>\n    <tbody>\n      <tr a=\"x|y\"><td>a</td></tr>\n    </tbody>\n  </table>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "table",
+        "columns": [
+         {
+          "type": "table_column"
+         }
+        ],
+        "children": [
+         {
+          "type": "table_body",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             }
+            ],
+            "attrs": {
+             "keyValues": [
+              [
+               "a",
+               "x|y"
+              ]
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-179",
+   "clauses": [
+    "C2-B-166"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "a quoted pipe in a row attribute inside a list item",
+   "input": "- | a |{a=\"x|y\"}",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr a=\"x|y\"><td>a</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "table",
+          "columns": [
+           {
+            "type": "table_column"
+           }
+          ],
+          "children": [
+           {
+            "type": "table_body",
+            "children": [
+             {
+              "type": "table_row",
+              "children": [
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "a"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ],
+              "attrs": {
+               "keyValues": [
+                [
+                 "a",
+                 "x|y"
+                ]
+               ]
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-180",
+   "clauses": [
+    "C2-B-166",
+    "C2-B-167"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "a quoted pipe and a trailing line comment",
+   "input": "| a |{a=\"x|y\"} %% c",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr a=\"x|y\"><td>a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "attrs": {
+           "keyValues": [
+            [
+             "a",
+             "x|y"
+            ]
+           ]
+          }
+         }
+        ]
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "c"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-181",
+   "clauses": [
+    "C2-B-166",
+    "C2-B-170"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "the next row continues the table",
+   "input": "| a |{a=\"x|y\"}\n| b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr a=\"x|y\"><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ],
+          "attrs": {
+           "keyValues": [
+            [
+             "a",
+             "x|y"
+            ]
+           ]
+          }
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-182",
+   "clauses": [
+    "C2-B-166",
+    "C2-I-032"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "an unquoted pipe is no value, so the line is text",
+   "input": "| a |{a=x|y}",
+   "options": {},
+   "expected": {
+    "html": "<p>| a |{a=x|y}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "| a |{a=x|y}"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-183",
+   "clauses": [
+    "C2-B-166",
+    "C2-B-168"
+   ],
+   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "summary": "an unclosed quote is no row attribute, so its pipes split cells",
+   "input": "| a |{a=\"x|y\" | b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>{a=“x</td><td>y”</td><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "{a="
+               },
+               {
+                "type": "smart_punctuation",
+                "kind": "left_double_quote",
+                "glyph": "“",
+                "source": "\""
+               },
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               },
+               {
+                "type": "smart_punctuation",
+                "kind": "right_double_quote",
+                "glyph": "”",
+                "source": "\""
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

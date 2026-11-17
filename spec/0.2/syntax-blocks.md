@@ -5286,9 +5286,27 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute, a line comment and trailing spaces and tabs may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The closing pipe is the last pipe of the line, also where a line comment stands before it: `| a | b | %% note | x` does not end with a pipe and is text (C2-B-168). The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute, a line comment and trailing spaces and tabs may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1, and also where a line comment stands before it: `| a | b | %% note | x` does not end with a pipe and is text (C2-B-168). The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
 
 **C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment. The comment stands after whitespace, as C2-B-133 requires: `| a |%% x` and `||%%` do not end with a pipe and are text (C2-B-168). The comment stands in the tree as a comment-only line directly below the row would (C2-A-086).
+
+Example 282 (unverified)
+
+::: compare
+
+```carve
+| a | b |{title="p|q" .c}
+```
+
+```html
+<table>
+  <tbody>
+    <tr class="c" title="p|q"><td>a</td><td>b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 **C2-B-168** A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.
 
@@ -6647,10 +6665,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 0 | 22 | 20 |
+| Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **110** |
+| **Total** | **219** | **10** | **171** | **111** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 
