@@ -779,7 +779,7 @@
       "severity": "error",
       "channel": "parse",
       "status": "kept",
-      "messages": ["This opener carries no inline attributes; the block opens without the glued attribute block. Put that block on its own line directly above the opener."],
+      "messages": [{"when": "a valid attribute block is glued to the language of a code fence or the format of a raw fence", "text": "A code or raw fence carries no inline attributes, so \"${attributes}\" after its language or format is not attached. The block opens without them. Put \"${attributes}\" on its own line directly above \"${opener}\"."}, {"when": "a valid attribute block is glued to an admonition name or any other div name", "text": "A div carries no inline attributes, so \"${attributes}\" after its name is not attached. The block opens without them. Put \"${attributes}\" on its own line directly above \"${opener}\"."}],
       "message_origin": "data_file",
       "channel_reports": "an attribute block after a fence language, a raw format, or any div name",
       "change": "severity error for an attribute block after a fence language, a raw format, or any div name",
