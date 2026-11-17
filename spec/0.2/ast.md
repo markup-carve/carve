@@ -526,8 +526,6 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-136** A block image is a `paragraph` containing one `image` and any following comment-only lines, with `role: "image"`. A parser sets the role on close (C2-B-157, C2-B-191), and an ordinary paragraph omits it. A wrapped reference label that covers two lines remains ordinary (C2-B-197). The `role` is a tree fact used by equality.
 
-**C2-A-137** The formatter writes the source spelling of a promoted paragraph, so promotion does not show in its output.
-
 ## Positions
 
 **C2-A-138** Every node of a tree that a parser built from source carries `pos`, except the root and the node types of C2-A-158. A parser builds positions unless the caller asks for a tree without them; a tree built that way omits `pos` on every node and is otherwise the same. Rendering from source needs no positions and builds none, unless `sourceLines` is on.
@@ -783,11 +781,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 171 | 2 |
+| Existing AST contract | 170 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **207** | **3** |
+| **Total** | **206** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 

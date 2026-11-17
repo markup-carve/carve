@@ -53,7 +53,7 @@ Conventions:
 
 **C2-W-014** The loss of such a bare wrapper is the only structural difference the gates forgive for a supplied tree. A wrapper that carries attributes, a label, a destination, a level or a kind is not bare.
 
-**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line (C2-A-137). `role: "image"` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
+**C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line. `role: "image"` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
 
 **C2-W-016** A line after the first of a code span, a raw span, a literal-text span, a math span, a braced comment or an editorial comment is a line of its leaf. Where that line would open a block (C2-B-014 to C2-B-019), no spelling keeps the value, and the writer refuses it with `field-unspellable`. A lone CR as the last character of a line is refused the same way: the writer ends every line with LF, and a CR directly before an LF is part of the line ending and no content (C2-B-010), so `a` and a CR at the end of the input has no canonical spelling.
 
