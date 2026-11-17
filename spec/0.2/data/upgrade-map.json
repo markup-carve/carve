@@ -2690,6 +2690,16 @@
       "meaning02": "<table>\n  <tbody>\n    <tr><td rowspan=\"2\">a</td></tr>\n    <tr></tr>\n  </tbody>\n</table> A span mark behind a cell prefix is still a span mark, and the prefix of a mark that joins is kept for nothing else (C2-B-174), so `^` joins the cell above. 0.1 read a `^` behind an attribute block as cell text, `<td class=\"x\">^</td>`. An escaped caret keeps the 0.1 HTML.",
       "toolEntry": "U-369",
       "silent": true
+    },
+    {
+      "id": "U-370",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "```\ncode",
+      "to": "",
+      "meaning02": "<pre><code>code\n</code></pre> C2-B-222 ends every body line of a code block with a line feed, also the last line of an unclosed fence that the end of input closes without one. 0.1 wrote the value as the input ended, `<pre><code>code</code></pre>`, also in a quote and in a list item. A code value always ends with a line feed in 0.2, so no source gives the 0.1 HTML.",
+      "toolEntry": "U-370",
+      "silent": true
     }
   ],
   "tree": [

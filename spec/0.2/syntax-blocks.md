@@ -3100,7 +3100,7 @@ code
 
 :::
 
-Example 116 (generated)
+Example 116 (unverified)
 
 ::: compare
 
@@ -3115,6 +3115,8 @@ code
 ```
 
 :::
+
+0.1 wrote no line feed after a last line that the input ended without, `<pre><code>code</code></pre>` (U-370).
 
 The fence ends with its item at line 3.
 
@@ -6804,7 +6806,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 8 | 0 | 7 | 7 |
 | Attribute lines | 20 | 1 | 12 | 11 |
-| Fences, divs and comment blocks | 11 | 0 | 7 | 5 |
+| Fences, divs and comment blocks | 11 | 0 | 6 | 6 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 11 | 0 | 11 | 3 |
 | Comments | 13 | 3 | 14 | 9 |
@@ -6816,7 +6818,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **117** |
+| **Total** | **219** | **10** | **170** | **118** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 
