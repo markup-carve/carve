@@ -200,7 +200,7 @@ Top.
 
 **C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1.
 
-**C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
+**C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: when the selection takes it, it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
 
 Example 5 (unverified)
 

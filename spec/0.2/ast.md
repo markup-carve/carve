@@ -152,7 +152,7 @@ Conventions:
 
 **C2-A-048** `raw_block.value` follows the same rules as `code_block.value`.
 
-**C2-A-049** `frontmatter` is the first child when present, of the document or of an include whose file has frontmatter (C2-N-021). It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
+**C2-A-049** `frontmatter` is the first child when present, of the document or of an include whose selection takes the frontmatter of its file (C2-N-021). It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
 
 ## Node types
 
