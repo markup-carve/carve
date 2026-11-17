@@ -123,7 +123,7 @@
   "attributes": [
     {"name": "*", "match": "key", "on": "any", "treatment": "key", "note": "a name that is a key by C2-I-030; any other name is dropped and reported", "clauses": ["C2-M-052", "C2-M-054"]},
     {"name": "aria-label", "match": "name", "on": "input", "treatment": "field", "note": "read on the task box; on an admonition `aside` it is generated and not kept; elsewhere a key", "clauses": ["C2-M-032", "C2-M-035"]},
-    {"name": "class", "match": "name", "on": "any", "treatment": "classes", "note": "split at ASCII whitespace; a class a convention reads is not kept", "clauses": ["C2-M-035", "C2-M-052", "C2-M-053"]},
+    {"name": "class", "match": "name", "on": "any", "treatment": "classes", "note": "split at ASCII whitespace; a class a convention reads is not kept; a value that leaves no class gives no `classes` (C2-A-058)", "clauses": ["C2-M-035", "C2-M-052", "C2-M-053"]},
     {"name": "data-carve-", "match": "reserved", "on": "any", "treatment": "carrier", "note": "the 18 reserved names of C2-H-115 only", "clauses": ["C2-H-186", "C2-M-007", "C2-M-009"]},
     {"name": "dir", "match": "name", "on": "any", "treatment": "dir", "note": "`ltr`, `rtl` or `auto`; another value is dropped and reported", "clauses": ["C2-M-004", "C2-M-052"]},
     {"name": "formaction", "match": "name", "on": "any", "treatment": "drop", "clauses": ["C2-H-161", "C2-M-052"]},

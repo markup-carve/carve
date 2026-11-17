@@ -793,6 +793,28 @@ x
 
 A code block can carry a caption, so the first figure is that block; the second holds no block and is a group.
 
+Example 57 (unverified)
+
+::: compare
+
+```html
+<p class="  ">x</p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"x"}]}
+]
+```
+
+```carve
+x
+```
+
+:::
+
+A `class` of spaces only leaves no class, and a tree holds no empty `classes`.
+
 ## Conventions
 
 **C2-M-035** These elements and classes are read as the Carve node a render writes them for. A class that a convention reads is not kept in `attrs.classes`.
@@ -1054,7 +1076,7 @@ Inline ![I](/i.png){width=10} and gone
 |---|---|---|---|---|
 | `*` | key | any | key | a name that is a key by C2-I-030; any other name is dropped and reported |
 | `aria-label` | name | input | field | read on the task box; on an admonition `aside` it is generated and not kept; elsewhere a key |
-| `class` | name | any | classes | split at ASCII whitespace; a class a convention reads is not kept |
+| `class` | name | any | classes | split at ASCII whitespace; a class a convention reads is not kept; a value that leaves no class gives no `classes` (C2-A-058) |
 | `data-carve-` | reserved | any | carrier | the 18 reserved names of C2-H-115 only |
 | `dir` | name | any | dir | `ltr`, `rtl` or `auto`; another value is dropped and reported |
 | `formaction` | name | any | drop |  |
@@ -1716,4 +1738,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 56 examples: 46 verified and 10 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 57 examples: 46 verified and 11 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.

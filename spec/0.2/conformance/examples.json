@@ -78892,6 +78892,35 @@
    "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
   },
   {
+   "id": "import-html-57",
+   "document": "import-html.md",
+   "number": 57,
+   "section": "Figures",
+   "clauses": [
+    "C2-M-042",
+    "C2-M-043"
+   ],
+   "kind": "import",
+   "html": "<p class=\"  \">x</p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     }
+    ],
+    "carve": "x\n"
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-20",
    "document": "import-html.md",
    "number": 20,
