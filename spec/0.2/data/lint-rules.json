@@ -1578,13 +1578,13 @@
       "id": "references-placement-in-container",
       "severity": "warning",
       "channel": "lint",
-      "status": "kept",
+      "status": "void",
       "default": "on",
       "messages": [
         "This \"::: references\" marker is inside a container and does not place the reference list. Move it to document level, or remove it if no placement is needed."
       ],
       "message_origin": "engine_0_1",
-      "reports": "with the citations extension enabled, a `references` directive that is not a child of the document; once per directive (C2-B-127, C2-I-101)",
+      "reports": "no core input; reserved until a registered extension places references",
       "clauses": ["C2-B-127", "C2-I-101"]
     },
     {

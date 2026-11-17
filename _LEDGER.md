@@ -13,3 +13,15 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.
 Search: `C2-X-023`, `C2-X-049`, `O24`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/extensions.md`, `spec/0.2/writer.md`. CC-906 holds the source-form result. The status point is removed in the final status update.
+
+## R3 references placement void
+
+Search: `references-placement-in-container`, `C2-I-101`, `C2-H-158`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. Catalog row and CC-809/810 are the applicable result places.
+
+## R3 references placement void
+
+Search: `references-placement-in-container`, `C2-I-101`, `C2-H-158`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. Catalog row and CC-809/810 are the applicable result places.

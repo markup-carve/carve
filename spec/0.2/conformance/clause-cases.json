@@ -46915,40 +46915,6 @@
    "from": []
   },
   {
-   "id": "CC-809",
-   "clauses": [
-    "C2-W-106"
-   ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "a references directive inside an admonition is not reported without the citations extension",
-   "kind": "lint",
-   "input": ":::: note\n::: references\n:::\n::::\n",
-   "options": {},
-   "expected": {
-    "notReported": [
-     "references-placement-in-container"
-    ]
-   },
-   "from": []
-  },
-  {
-   "id": "CC-810",
-   "clauses": [
-    "C2-W-106"
-   ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "a references directive at document level is not reported",
-   "kind": "lint",
-   "input": "::: references\n:::\n",
-   "options": {},
-   "expected": {
-    "notReported": [
-     "references-placement-in-container"
-    ]
-   },
-   "from": []
-  },
-  {
    "id": "CC-811",
    "clauses": [
     "C2-W-106",
