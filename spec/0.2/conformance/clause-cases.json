@@ -41974,7 +41974,9 @@
       "line": 1,
       "column": 6,
       "channel": "parse",
-      "severity": "error"
+      "severity": "error",
+      "endLine": 1,
+      "endColumn": 10
      }
     ]
    },
@@ -47143,7 +47145,9 @@
       "line": 1,
       "column": 2,
       "channel": "lint",
-      "severity": "warning"
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 8
      }
     ]
    },
@@ -47682,7 +47686,9 @@
       "line": 1,
       "column": 5,
       "channel": "lint",
-      "severity": "hint"
+      "severity": "hint",
+      "endLine": 1,
+      "endColumn": 9
      }
     ]
    },
@@ -53004,6 +53010,29 @@
     "diagnostics": [
      {
       "code": "duplicate-id"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1071",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "explicit brace range includes its braces",
+   "kind": "parse",
+   "input": "```js{.c}\nx\n```",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-opener-fallback",
+      "line": 1,
+      "column": 6,
+      "endLine": 1,
+      "endColumn": 10
      }
     ]
    },
