@@ -1021,7 +1021,7 @@ Back to </#tip>.
 
 Reported: `duplicate-id`.
 
-**C2-N-059** Caption numbers and equation numbers are counted once, over the expanded tree, in document order (C2-H-170).
+**C2-N-059** Caption numbers and equation numbers are counted once, over the expanded tree, in the order of C2-H-170.
 
 **C2-N-060** Within one file a second definition of a key is a duplicate (C2-B-085). A key that two files each define once is no duplicate and reports nothing.
 

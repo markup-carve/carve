@@ -925,11 +925,11 @@ Example 14 (generated)
 
 **C2-H-135** The label word of a caption selects its number sequence, as in 0.1 (C2-B-208, C2-H-149).
 
-**C2-H-149** Each sequence key (C2-B-208) has its own count, from 1, in document order. Each caption with a mark takes the next number of the sequence of its key. The label words are not a closed list: `Figure`, `Table`, `Listing` and `Equation` have no special meaning, the block under the caption does not select the sequence, and `Fig.`, `figure` and `Figure` count apart. The number is written in place of the mark as a decimal number, and the rest of the caption is written as it stands. A caption without a mark is written as it stands and takes no number.
+**C2-H-149** Each sequence key (C2-B-208) has its own count, from 1, in the order of C2-H-170. Each caption with a mark takes the next number of the sequence of its key. The label words are not a closed list: `Figure`, `Table`, `Listing` and `Equation` have no special meaning, the block under the caption does not select the sequence, and `Fig.`, `figure` and `Figure` count apart. The number is written in place of the mark as a decimal number, and the rest of the caption is written as it stands. A caption without a mark is written as it stands and takes no number.
 
-**C2-H-150** The captions of footnote bodies take their numbers after every caption of the document body, in the order of the footnote numbers. A caption in an unused footnote definition takes none.
+**C2-H-150** The captions and numbered equations of footnote bodies take their numbers after those of the document body, in the order of the footnote numbers. One in an unused footnote definition takes none.
 
-**C2-H-170** Captions and numbered equations of one key are counted in document order, a node before the nodes inside it: the caption of a table takes its number before an equation in a cell of that table.
+**C2-H-170** Captions and numbered equations of one key are counted in document order, a node before the nodes inside it, the document body first and then the footnote bodies (C2-H-150): the caption of a table takes its number before an equation in a cell of that table.
 
 **C2-H-151** In a supplied tree, a display `math` node that carries `numberPrefix` takes the next number of the sequence whose key is its `numberPrefix`, counted together with the captions of that key. The number is written after the math element as ` <span class="equation-number">PREFIX N</span>`. Inline math takes no number. A display math node inside a block or a `figure_group` whose caption has a mark takes no number of its own: the nearest such caption around it owns the number. `numberPrefix` has no source spelling, so a parsed tree holds no numbered equation, and `^ Equation #` numbers a caption.
 

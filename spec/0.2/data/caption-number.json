@@ -14,6 +14,6 @@
     "start": 1,
     "order": "body_then_footnote_bodies",
     "assigned_in": "resolution",
-    "clauses": ["C2-B-150", "C2-B-208", "C2-H-149", "C2-H-150"]
+    "clauses": ["C2-B-150", "C2-B-208", "C2-H-149", "C2-H-150", "C2-H-170"]
   }
 }
