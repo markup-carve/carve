@@ -97,12 +97,13 @@ export function readerChecks (spec) {
           }
         }
       }
-      // C2-A-035: one key once in keyValues, compared without ASCII case.
+      // C2-A-035: semantic lowercase keys stay distinct from ordinary case variants.
       const pairs = node.attrs?.keyValues
       if (Array.isArray(pairs)) {
         const names = new Set()
         for (const [name] of pairs) {
-          const folded = name.replace(/[A-Z]/g, c => c.toLowerCase())
+          const asciiLower = name.replace(/[A-Z]/g, c => c.toLowerCase())
+          const folded = ['abbr', 'time', 'kbd'].includes(asciiLower) && name === asciiLower ? `semantic:${asciiLower}` : `ordinary:${asciiLower}`
           if (names.has(folded)) add(`${path}/attrs/keyValues`, 'C2-A-035', `the key ${name} occurs twice`)
           names.add(folded)
         }
