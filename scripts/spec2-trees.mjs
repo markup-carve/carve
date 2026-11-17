@@ -371,17 +371,36 @@ for (const [a, b] of EQUAL_TREES) {
 const layoutSchema = JSON.parse(readFileSync(join(spec, 'data/layout-schema.json'), 'utf8'))
 const validateLayout = new Ajv2020({ strict: true, allErrors: false }).compile(layoutSchema)
 const layouts = existsSync(join(dir, 'layouts.json')) ? read('layouts.json') : (fail('layouts.json: missing'), { layouts: [] })
+// The reader checks of C2-L-058 that the schema cannot express.
+function layoutProblems (layout) {
+  const problems = []
+  const bytes = layout.encoding === 'base64' ? Buffer.from(layout.source, 'base64') : Buffer.from(layout.source, 'utf8')
+  if (layout.encoding === 'base64' && Buffer.from(bytes.toString('utf8'), 'utf8').equals(bytes)) problems.push('base64 holds well-formed UTF-8, which C2-L-056 writes as utf-8')
+  const paths = new Set()
+  for (const node of layout.nodes) {
+    if (paths.has(node.path)) problems.push(`${node.path} has two entries (C2-L-011)`)
+    paths.add(node.path)
+    if (node.startByte > node.endByte || node.endByte > bytes.length) problems.push(`${node.path} has a range outside the input (C2-L-012)`)
+    if (('openerRaw' in node) !== ('closerRaw' in node) || node.openerRaw === '') problems.push(`${node.path} breaks the delimiter pair (C2-L-027)`)
+    const lines = (node.wraps ?? []).map(wrap => wrap.line)
+    if (lines.some((line, i) => i > 0 && line < lines[i - 1])) problems.push(`${node.path} has unsorted wraps (C2-L-020)`)
+  }
+  return { problems, bytes }
+}
 for (const entry of layouts.layouts) {
   const label = `layouts.json ${entry.id}`
   if (!entry.clauses?.length) fail(`${label}: needs clauses`)
   const accepted = validateLayout(entry.layout)
-  if (entry.refused === 'reader') { if (!accepted) fail(`${label}: the layout schema refuses it, so refused is true`); continue }
+  if (entry.refused === 'reader') {
+    if (!accepted) fail(`${label}: the layout schema refuses it, so refused is true`)
+    else if (!layoutProblems(entry.layout).problems.length) fail(`${label}: no reader check of C2-L-058 refuses it`)
+    continue
+  }
   if (entry.refused) { if (accepted) fail(`${label}: the layout schema accepts it, but the fixture says it is refused`); continue }
   if (!accepted) { fail(`${label}: the layout schema refuses it at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`); continue }
-  const bytes = entry.layout.encoding === 'base64' ? Buffer.from(entry.layout.source, 'base64') : Buffer.from(entry.layout.source, 'utf8')
-  if (entry.layout.encoding === 'base64' && Buffer.from(bytes.toString('utf8'), 'utf8').equals(bytes)) fail(`${label}: base64 holds well-formed UTF-8, which C2-L-056 writes as utf-8`)
+  const { problems, bytes } = layoutProblems(entry.layout)
+  for (const problem of problems) fail(`${label}: ${problem}`)
   if (entry.input !== undefined && !Buffer.from(entry.input.replaceAll(' ', ''), 'hex').equals(bytes)) fail(`${label}: source is not the input bytes`)
-  for (const node of entry.layout.nodes) if (node.startByte > node.endByte || node.endByte > bytes.length) fail(`${label}: ${node.path} has a range outside the input (C2-L-012)`)
 }
 
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])
