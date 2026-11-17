@@ -39,7 +39,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-008** A reader refuses a sidecar version it does not implement.
 
-**C2-L-058** A reader also refuses a record that breaks C2-L-011, C2-L-012, C2-L-020, C2-L-027 or C2-L-056, judging a fact only on an entry whose node type defines it. A writer ignores an entry whose path names no node of the tree, and a fact that is not defined for the type of the node its entry names (C2-L-006).
+**C2-L-058** A reader also refuses a record that breaks C2-L-011, C2-L-012, C2-L-020, C2-L-027 or C2-L-056, judging a fact only on an entry whose node type defines it. The first-fragment wrap of C2-L-048 meets C2-L-020. A writer ignores an entry whose path names no node of the tree, and a fact that is not defined for the type of the node its entry names (C2-L-006).
 
 **C2-L-009** A node entry has `path`, `startByte` and `endByte`, and may have any of the facts below. It has no other fields.
 
@@ -94,7 +94,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 
 **C2-L-019** `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included.
 
-**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the text node among the children of the cell's paragraph that holds the space joining that row's fragment (C2-B-184); and `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts. A wrap falls between two fragments, so it never lies inside another node (C2-L-048). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
+**C2-L-020** `wraps` on a cell entry is a list of objects, sorted by `line`. Each has `line`, the number of the continuation row counted from 1; `path`, the pointer of the text node among the children of the cell's paragraph that holds the space joining that row's fragment (C2-B-184); and `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts. A wrap falls between two fragments, so it never lies inside another node (C2-L-048). The one exception is the wrap of the row where the first fragment that is not empty stands, for a cell whose fragments before it are empty: no space joins that fragment, and its wrap has `path`, the pointer of the first inline node of the cell's paragraph, of any type, and `offset` 0 (C2-L-048). A wrap in a cell that spans rows also has `row`, the number of rows below the cell's own row.
 
 **C2-L-022** `rawRef` is the only place that holds a reference label as typed. The tree holds the folded `key` and the `refForm` (C2-A-105).
 

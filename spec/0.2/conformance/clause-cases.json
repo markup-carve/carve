@@ -48814,6 +48814,191 @@
     "html": "<table>\n  <tbody>\n    <tr><td>[x][no]{#i .c}</td></tr>\n  </tbody>\n</table>"
    },
    "from": []
+  },
+  {
+   "id": "CC-902",
+   "clauses": [
+    "C2-L-020",
+    "C2-L-048"
+   ],
+   "why": "C2-L-020: The one exception is the wrap of the row where the first fragment that is not empty stands, for a cell whose fragments before it are empty: no space joins that fragment, and its wrap has `path`, the pointer of the first inline node of the cell's paragraph, of any type, and `offset` 0 (C2-L-048).",
+   "summary": "a cell first filled in a continuation row has a first-fragment wrap",
+   "kind": "layout",
+   "input": "| x | y |\n+ p | q | r |",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0/children/0/children/2",
+       "startByte": 19,
+       "endByte": 22,
+       "wraps": [
+        {
+         "line": 1,
+         "path": "/children/0/children/0/children/0/children/2/children/0/children/0",
+         "offset": 0
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-903",
+   "clauses": [
+    "C2-L-020",
+    "C2-L-058",
+    "C2-W-067"
+   ],
+   "why": "C2-L-020: The one exception is the wrap of the row where the first fragment that is not empty stands, for a cell whose fragments before it are empty: no space joins that fragment, and its wrap has `path`, the pointer of the first inline node of the cell's paragraph, of any type, and `offset` 0 (C2-L-048). C2-L-058: The first-fragment wrap of C2-L-048 meets C2-L-020. C2-W-067: Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020).",
+   "summary": "a sidecar with a first-fragment wrap is read and the cell keeps its content on the continuation row",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x p"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y q"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "r"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "stages": [
+     "referenceResolution",
+     "tableAlignment"
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "| x | y |\n+ p | q | r |",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 23,
+      "sourceFormat": "pipe"
+     },
+     {
+      "path": "/children/0/children/0/children/0",
+      "startByte": 0,
+      "endByte": 23,
+      "continuationLines": 1
+     },
+     {
+      "path": "/children/0/children/0/children/0/children/0",
+      "startByte": 1,
+      "endByte": 14,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 2
+       }
+      ]
+     },
+     {
+      "path": "/children/0/children/0/children/0/children/1",
+      "startByte": 5,
+      "endByte": 18,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/1/children/0/children/0",
+        "offset": 2
+       }
+      ]
+     },
+     {
+      "path": "/children/0/children/0/children/0/children/2",
+      "startByte": 19,
+      "endByte": 22,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/2/children/0/children/0",
+        "offset": 0
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "| x | y | |\n+ p | q | r |\n"
+   },
+   "from": []
   }
  ]
 }
