@@ -3673,6 +3673,47 @@
      }
     ]
    }
+  },
+  {
+   "id": "marker-start-out-of-range",
+   "clauses": [
+    "C2-A-056",
+    "C2-B-219"
+   ],
+   "reason": "an ordered start of more than nine digits, which no source has",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": ".",
+       "start": 1234567890
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }

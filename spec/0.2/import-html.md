@@ -313,7 +313,7 @@ let a = 1
 
 ## Lists
 
-**C2-M-031** `<ul>` and `<menu>` are a bullet `list` with the marker `-`, and `<ol>` is an ordered `list`. `<li>` is a `list_item`. The `type` of `<ol>` gives the style when it is `a`, `A`, `i` or `I`, and decimal otherwise. Its `start`, read as an HTML integer, gives `start` when it is not 1. `data-delim=")"`, which every render writes (C2-H-031), gives the delimiter `)`; otherwise the delimiter is `.`.
+**C2-M-031** `<ul>` and `<menu>` are a bullet `list` with the marker `-`, and `<ol>` is an ordered `list`. `<li>` is a `list_item`. The `type` of `<ol>` gives the style when it is `a`, `A`, `i` or `I`, and decimal otherwise. Its `start`, read as an HTML integer, gives `start` when it is not 1 and lies between 0 and 999999999 (C2-B-219); another value is dropped and reported with `import-attribute-dropped`. `data-delim=")"`, which every render writes (C2-H-031), gives the delimiter `)`; otherwise the delimiter is `.`.
 
 **C2-M-032** The first `<input type="checkbox">` that is a child of `<li>` is the task box; each further one is dropped and reported with `import-element-dropped`, also with `rawHtml` on. The item has a `task` whose mark is the value of `data-task-state` when that value is the state attribute of a row of `task-states.json`, and otherwise `x` when the box carries `checked` and a space when it does not. A `data-task-state` with another value is ignored and reported with `import-attribute-dropped`. One space directly after the box is removed. `type`, `checked`, `disabled` and `aria-label` of the box are read; any other attribute of it is dropped and reported. The class `task` and the declaration `list-style: none` that a render gives a task item (C2-H-032), and the class `task-list` of its list, are not kept.
 

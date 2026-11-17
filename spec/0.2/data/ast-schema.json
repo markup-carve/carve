@@ -11284,6 +11284,8 @@
                 },
                 "start": {
                   "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999,
                   "not": {
                     "const": 1
                   }
