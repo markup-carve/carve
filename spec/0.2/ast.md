@@ -333,8 +333,6 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 ### Definitions
 
-**C2-A-076** A definition is a child of the document and nothing else: a definition-shaped line inside a container is text (C2-B-081), so no definition is moved out of a container and no position rule covers that case.
-
 **C2-A-077** A `link_reference_definition` carries a folded `key` (C2-A-104), `namespace: "link"`, `href` and optional `tooltip`. A parsed tree never holds an empty `href`; a supplied one is unspellable and the Carve writer reports it.
 
 **C2-A-078** A `footnote` carries `key`, `namespace: "footnote"` and block `children`.
@@ -795,11 +793,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 177 | 2 |
+| Existing AST contract | 176 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **213** | **3** |
+| **Total** | **212** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-083, C2-A-085 and C2-A-090 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085 and C2-A-090 are deleted.
 
 ## Schema
 
