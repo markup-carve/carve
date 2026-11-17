@@ -1587,7 +1587,7 @@
       ],
       "message_origin": "engine_0_1",
       "change": "it fires for each of the keys `abbr`, `time` and `kbd` (C2-H-075) on a node that is not a span",
-      "reports": "a key `abbr`, `time` or `kbd`, in lower case, in the attributes of a node that is not a span, as a heading, a paragraph, a list, a quote, a table, a code span, a link or an image, which stays an ordinary attribute there, once per key; a key in another case is not reported; the range is the key (C2-H-075)",
+      "reports": "an authored key `abbr`, `time` or `kbd`, in lower case before attribute merging, in the attributes of a node that is not a span, as a heading, a paragraph, a list, a quote, a table, a code span, a link or an image, which stays an ordinary attribute there, once per key; a key in another case is not reported; the range is the key (C2-H-075)",
       "clauses": ["C2-H-075"]
     },
     {
