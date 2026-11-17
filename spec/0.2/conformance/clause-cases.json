@@ -19564,6 +19564,2811 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-360",
+   "clauses": [
+    "C2-L-003"
+   ],
+   "why": "C2-L-003: An AST reader does not accept a sidecar as a tree.",
+   "summary": "a sidecar given as a tree is refused",
+   "kind": "tree",
+   "tree": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "> a\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 3,
+      "fenced": false
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-361",
+   "clauses": [
+    "C2-L-003",
+    "C2-L-017"
+   ],
+   "why": "C2-L-003: Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. C2-L-017: Both give the same `block_quote`.",
+   "summary": "a parse with layout returns the same tree as a parse without it",
+   "kind": "layout",
+   "input": "::: >\na\n:::\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 11,
+       "fenced": true
+      }
+     ]
+    },
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-362",
+   "clauses": [
+    "C2-A-003"
+   ],
+   "why": "C2-A-003: Source layout, node identity, annotation ranges and provenance are sidecars ... and is never placed inside the tree.",
+   "summary": "a document that carries a sidecar inside the tree is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ],
+    "layout": {
+     "version": 2,
+     "encoding": "utf-8",
+     "source": "a\n",
+     "lineEndings": "lf",
+     "bom": false,
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 1
+      }
+     ]
+    }
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-363",
+   "clauses": [
+    "C2-A-002",
+    "C2-L-016"
+   ],
+   "why": "C2-A-002: Spelling that changes neither is not in the tree. C2-L-016: The tree holds only the start value (C2-A-056).",
+   "summary": "the bare dot leaves no trace in the tree",
+   "kind": "parse",
+   "input": ". a\n. b\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-364",
+   "clauses": [
+    "C2-A-004",
+    "C2-L-017"
+   ],
+   "why": "C2-A-004: Two documents that differ only in sidecar content are the same document. C2-L-017: Both give the same `block_quote`.",
+   "summary": "a quote fence gives the tree of a quote written with marks",
+   "kind": "parse",
+   "input": "::: >\na\n:::\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-365",
+   "clauses": [
+    "C2-L-006",
+    "C2-W-086",
+    "C2-W-044"
+   ],
+   "why": "C2-L-006: The tree wins. A writer ignores a sidecar fact that contradicts the tree C2-W-044: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker",
+   "summary": "a bare fact on a list with the parenthesis delimiter is ignored",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": ")"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "1) a\n2) b\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 9,
+      "bare": true
+     },
+     {
+      "path": "/children/0/children/0",
+      "startByte": 0,
+      "endByte": 4
+     },
+     {
+      "path": "/children/0/children/1",
+      "startByte": 5,
+      "endByte": 9
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "1) a\n2) b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-366",
+   "clauses": [
+    "C2-L-013",
+    "C2-L-020"
+   ],
+   "why": "C2-L-013: A node whose source is not one contiguous range, such as a cell joined from continuation rows, has an entry whose range runs from the start of its first piece to the end of its last. C2-L-020: `offset`, the UTF-8 byte offset behind that space in the node's value, where the fragment starts.",
+   "summary": "a joined cell spans its pieces and records its wrap",
+   "kind": "layout",
+   "input": "| a |\n+ b |\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0/children/0",
+       "startByte": 0,
+       "endByte": 11,
+       "continuationLines": 1
+      },
+      {
+       "path": "/children/0/children/0/children/0/children/0",
+       "startByte": 1,
+       "endByte": 10,
+       "wraps": [
+        {
+         "line": 1,
+         "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+         "offset": 2
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-367",
+   "clauses": [
+    "C2-L-019",
+    "C2-L-020"
+   ],
+   "why": "C2-L-019: `continuationLines` on a row entry is the number of continuation rows below that row, the ones with only empty fragments included. C2-L-020: Each has `line`, the number of the continuation row counted from 1",
+   "summary": "a continuation row with an empty fragment is counted",
+   "kind": "layout",
+   "input": "| a |\n+ |\n+ b |\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0/children/0",
+       "startByte": 0,
+       "endByte": 15,
+       "continuationLines": 2
+      },
+      {
+       "path": "/children/0/children/0/children/0/children/0",
+       "startByte": 1,
+       "endByte": 14,
+       "wraps": [
+        {
+         "line": 2,
+         "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+         "offset": 2
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-368",
+   "clauses": [
+    "C2-L-048"
+   ],
+   "why": "C2-L-048: A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.",
+   "summary": "a cell that starts in a continuation row has a wrap at offset 0",
+   "kind": "layout",
+   "input": "| |\n+ b |\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0/children/0",
+       "startByte": 0,
+       "endByte": 9,
+       "continuationLines": 1
+      },
+      {
+       "path": "/children/0/children/0/children/0/children/0",
+       "startByte": 1,
+       "endByte": 8,
+       "wraps": [
+        {
+         "line": 1,
+         "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+         "offset": 0
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-369",
+   "clauses": [
+    "C2-L-015",
+    "C2-L-030"
+   ],
+   "why": "C2-L-015: A writer that finds no fact uses the default of the section \"Defaults\". C2-L-030: A decimal ordered list whose delimiter is the period is written with the bare dot on every item, the first included.",
+   "summary": "a sidecar without the bare fact gives the default numbering",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "1. a\n2. b\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 9,
+      "blankLinesBefore": 0,
+      "blankLinesAfter": 0
+     },
+     {
+      "path": "/children/0/children/0",
+      "startByte": 0,
+      "endByte": 4
+     },
+     {
+      "path": "/children/0/children/1",
+      "startByte": 5,
+      "endByte": 9
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": ". a\n. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-370",
+   "clauses": [
+    "C2-L-016"
+   ],
+   "why": "C2-L-016: `bare` says whether an ordered list was numbered with the bare dot or with written numbers.",
+   "summary": "written numbers record bare false",
+   "kind": "layout",
+   "input": "1. a\n2. b\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 9,
+       "bare": false
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-371",
+   "clauses": [
+    "C2-L-016"
+   ],
+   "why": "C2-L-016: A list that mixes both (C2-B-043) records the form of its first marker",
+   "summary": "a mixed list starting with the bare dot records bare true",
+   "kind": "layout",
+   "input": ". a\n2. b\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 8,
+       "bare": true
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-372",
+   "clauses": [
+    "C2-L-016"
+   ],
+   "why": "C2-L-016: A list that mixes both (C2-B-043) records the form of its first marker, and the formatter writes the whole list in that form.",
+   "summary": "a mixed list starting with a number is formatted with numbers",
+   "kind": "format",
+   "input": "1. a\n. b\n",
+   "options": {},
+   "expected": {
+    "carve": "1. a\n2. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-373",
+   "clauses": [
+    "C2-L-016"
+   ],
+   "why": "C2-L-016: A list that mixes both (C2-B-043) records the form of its first marker, and the formatter writes the whole list in that form.",
+   "summary": "a mixed list starting with the bare dot is formatted bare",
+   "kind": "format",
+   "input": ". a\n2. b\n",
+   "options": {},
+   "expected": {
+    "carve": ". a\n. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-374",
+   "clauses": [
+    "C2-L-016",
+    "C2-W-044"
+   ],
+   "why": "C2-W-044: A decimal list is written with the numbering form the sidecar records (C2-L-016) C2-L-016: `bare` says whether an ordered list was numbered with the bare dot or with written numbers.",
+   "summary": "the writer keeps written numbers the sidecar records",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "1. a\n2. b\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 9,
+      "bare": false
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "1. a\n2. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-375",
+   "clauses": [
+    "C2-L-017"
+   ],
+   "why": "C2-L-017: `fenced` says which of the two quote forms the author wrote.",
+   "summary": "a quote fence records fenced true",
+   "kind": "layout",
+   "input": "::: >\na\n:::\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 11,
+       "fenced": true
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-376",
+   "clauses": [
+    "C2-L-018"
+   ],
+   "why": "C2-L-018: `hardBreakOpener` says which of the two forms of a hard-break block the author wrote.",
+   "summary": "the hard-break opener records hardBreakOpener true",
+   "kind": "layout",
+   "input": "::: \\\na\nb\n:::\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 13,
+       "hardBreakOpener": true
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-377",
+   "clauses": [
+    "C2-L-018"
+   ],
+   "why": "C2-L-018: `hardBreakOpener` says which of the two forms of a hard-break block the author wrote. Both give the same `div` (C2-A-068).",
+   "summary": "the class form records hardBreakOpener false",
+   "kind": "layout",
+   "input": "{.hardbreaks}\n:::\na\\\nb\n:::\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 26,
+       "hardBreakOpener": false
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-378",
+   "clauses": [
+    "C2-L-022",
+    "C2-L-049"
+   ],
+   "why": "C2-L-022: `rawRef` is the only place that holds a reference label as typed. C2-L-049: In the full and collapsed forms this is the label's closing bracket",
+   "summary": "a full reference records its label as typed",
+   "kind": "layout",
+   "input": "[a][Foo  Bar]\n\n[Foo Bar]: u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 13,
+       "rawRef": "[a][Foo  Bar]"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-379",
+   "clauses": [
+    "C2-L-049"
+   ],
+   "why": "C2-L-049: in the shortcut form it is the text pair's closing bracket.",
+   "summary": "a shortcut reference records its text pair",
+   "kind": "layout",
+   "input": "[Foo]\n\n[Foo]: u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 5,
+       "rawRef": "[Foo]"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-380",
+   "clauses": [
+    "C2-L-049"
+   ],
+   "why": "C2-L-049: `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block.",
+   "summary": "an image reference records rawRef without the bang",
+   "kind": "layout",
+   "input": "![a][b]\n\n[b]: u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "rawRef": "[a][b]"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-381",
+   "clauses": [
+    "C2-L-049"
+   ],
+   "why": "C2-L-049: ends at the bracket that closes the reference, without an attribute block.",
+   "summary": "the attribute block of a reference is not in rawRef",
+   "kind": "layout",
+   "input": "[a][b]{.c}\n\n[b]: u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 10,
+       "rawRef": "[a][b]"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-382",
+   "clauses": [
+    "C2-L-049"
+   ],
+   "why": "C2-L-049: It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed.",
+   "summary": "a reference across quote lines drops the marks in rawRef",
+   "kind": "layout",
+   "input": "> [a][Foo\n> Bar]\n\n[Foo Bar]: u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0/children/0",
+       "startByte": 2,
+       "endByte": 16,
+       "rawRef": "[a][Foo\nBar]"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-383",
+   "clauses": [
+    "C2-L-022",
+    "C2-W-075"
+   ],
+   "why": "C2-W-075: A reference is written with the verbatim text the sidecar records (C2-L-022) C2-L-022: `rawRef` is the only place that holds a reference label as typed.",
+   "summary": "the writer spells a reference from rawRef",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "Foo Bar",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "u"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "Foo Bar",
+      "namespace": "link",
+      "href": "u"
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "[a][Foo  Bar]\n\n[Foo Bar]: u\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 13
+     },
+     {
+      "path": "/children/0/children/0",
+      "startByte": 0,
+      "endByte": 13,
+      "rawRef": "[a][Foo  Bar]"
+     },
+     {
+      "path": "/children/1",
+      "startByte": 15,
+      "endByte": 27
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "[a][Foo  Bar]\n\n[Foo Bar]: u\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-384",
+   "clauses": [
+    "C2-L-024"
+   ],
+   "why": "C2-L-024: `markerRaw` is the exact source text of the marker that opened the node. For a heading it tells `#` from `=`",
+   "summary": "a hash heading records its marker",
+   "kind": "layout",
+   "input": "## A\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 4,
+       "markerRaw": "##"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-385",
+   "clauses": [
+    "C2-L-024"
+   ],
+   "why": "C2-L-024: and for a fence `openerRaw` gives the length of the run.",
+   "summary": "a code fence records its run",
+   "kind": "layout",
+   "input": "````\nx\n````\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 11,
+       "openerRaw": "````",
+       "closerRaw": "````"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-386",
+   "clauses": [
+    "C2-L-025",
+    "C2-L-052"
+   ],
+   "why": "C2-L-025: `lazy` when a paragraph line stands left of the content column",
+   "summary": "a lazy line gives continuationStyle lazy",
+   "kind": "layout",
+   "input": "- a\nb\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 5,
+       "continuationStyle": "lazy"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-387",
+   "clauses": [
+    "C2-L-025",
+    "C2-L-052"
+   ],
+   "why": "C2-L-025: else `indent` when a later line reaches the content column",
+   "summary": "an indented line gives continuationStyle indent",
+   "kind": "layout",
+   "input": "- a\n  b\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "continuationStyle": "indent"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-388",
+   "clauses": [
+    "C2-L-025"
+   ],
+   "why": "C2-L-025: `continuationStyle` has one value, chosen in this order: `lazy` when a paragraph line stands left of the content column, else `indent`",
+   "summary": "a lazy line wins over a later indented block",
+   "kind": "layout",
+   "input": "- a\nb\n\n  c\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 10,
+       "continuationStyle": "lazy"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-389",
+   "clauses": [
+    "C2-L-052"
+   ],
+   "why": "C2-L-052: `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line.",
+   "summary": "an item with no later line has continuationStyle marker_line",
+   "kind": "layout",
+   "input": "- a\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 3,
+       "continuationStyle": "marker_line"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-390",
+   "clauses": [
+    "C2-L-052"
+   ],
+   "why": "C2-L-052: `continuationStyle` stands on every `list_item`, `definition_description` and `footnote`, with `marker_line` when the node has no later line.",
+   "summary": "a footnote and a description on one line have continuationStyle marker_line",
+   "kind": "layout",
+   "input": "[^1]: a\n\n:: t\n: d\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "continuationStyle": "marker_line"
+      },
+      {
+       "path": "/children/1/children/1",
+       "startByte": 14,
+       "endByte": 17,
+       "continuationStyle": "marker_line"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-391",
+   "clauses": [
+    "C2-L-052"
+   ],
+   "why": "C2-L-052: `lazy` is a later line of a paragraph inside the node, at any depth, that stands left of the content column",
+   "summary": "a lazy line of a nested quote paragraph makes the item lazy",
+   "kind": "layout",
+   "input": "- > a\nb\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "continuationStyle": "lazy"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-392",
+   "clauses": [
+    "C2-L-026"
+   ],
+   "why": "C2-L-026: `blankLinesBefore` and `blankLinesAfter` are the authored counts, not a normalized 0 or 1.",
+   "summary": "two blank lines are counted as two",
+   "kind": "layout",
+   "input": "a\n\n\nb\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 1,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 2
+      },
+      {
+       "path": "/children/1",
+       "startByte": 4,
+       "endByte": 5,
+       "blankLinesBefore": 2,
+       "blankLinesAfter": 0
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-393",
+   "clauses": [
+    "C2-L-047"
+   ],
+   "why": "C2-L-047: and every `list_item`, `definition_term`, `definition_description` and `caption` has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown.",
+   "summary": "list items carry blank line counts, 0 included",
+   "kind": "layout",
+   "input": "- a\n\n- b\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 8,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      },
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 3,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 1
+      },
+      {
+       "path": "/children/0/children/1",
+       "startByte": 5,
+       "endByte": 8,
+       "blankLinesBefore": 1,
+       "blankLinesAfter": 0
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-394",
+   "clauses": [
+    "C2-L-047"
+   ],
+   "why": "C2-L-047: and every `list_item`, `definition_term`, `definition_description` and `caption` has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included",
+   "summary": "terms and descriptions carry blank line counts",
+   "kind": "layout",
+   "input": ":: t\n: d\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 8,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      },
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 4,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      },
+      {
+       "path": "/children/0/children/1",
+       "startByte": 5,
+       "endByte": 8,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-395",
+   "clauses": [
+    "C2-L-047",
+    "C2-L-054"
+   ],
+   "why": "C2-L-047: Table groups, rows and cells, the blocks inside a cell, the lines of a line block and the blocks inside a caption have no such facts C2-L-054: A parse gives every `caption` the `attachment` `preceding`",
+   "summary": "a caption has counts and attachment, rows and cells have no counts",
+   "kind": "layout",
+   "input": "| a |\n^ Table\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 13,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      },
+      {
+       "path": "/children/0/caption",
+       "startByte": 6,
+       "endByte": 13,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0,
+       "attachment": "preceding"
+      }
+     ]
+    },
+    "layoutAbsent": {
+     "/children/0/children/0/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ],
+     "/children/0/children/0/children/0/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ],
+     "/children/0/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ],
+     "/children/0/children/0/children/0/children/0/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ],
+     "/children/0/caption/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-396",
+   "clauses": [
+    "C2-N-082",
+    "C2-L-047"
+   ],
+   "why": "C2-N-082: The nodes in the children of an include have no entries, and the include node has its own entry like any block C2-L-047: The blocks in the children of an expanded include have no entries (C2-N-082).",
+   "summary": "an expanded include has an entry and its children have none",
+   "kind": "layout",
+   "input": "{{ a.crv }}\n",
+   "files": {
+    "a.crv": {
+     "text": "b\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 11,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      }
+     ]
+    },
+    "layoutAbsent": {
+     "/children/0/children/0": [
+      "blankLinesBefore",
+      "blankLinesAfter"
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-397",
+   "clauses": [
+    "C2-N-082",
+    "C2-L-055"
+   ],
+   "why": "C2-N-082: and the include node has its own entry like any block, `optionSpelling` included (C2-L-055).",
+   "summary": "an include entry records a quoted option spelling",
+   "kind": "layout",
+   "input": "{{ a.crv @lines:\"1-2\" }}\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 24,
+       "optionSpelling": {
+        "lines": "\"1-2\""
+       }
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-398",
+   "clauses": [
+    "C2-L-030"
+   ],
+   "why": "C2-L-030: A list that does not start at 1 carries its start value in a `start` attribute on the attribute line above it (C2-B-045)",
+   "summary": "a bare list that starts at 3 gets a start attribute",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": ".",
+       "start": 3
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{start=3}\n. a\n. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-399",
+   "clauses": [
+    "C2-L-031"
+   ],
+   "why": "C2-L-031: Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`",
+   "summary": "an alphabetic list is written with letters in sequence",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a. x\nb. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-400",
+   "clauses": [
+    "C2-L-031"
+   ],
+   "why": "C2-L-031: and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036).",
+   "summary": "a decimal list with the parenthesis is written with numbers",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": ")",
+       "start": 3
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "3) x\n4) y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-401",
+   "clauses": [
+    "C2-L-031",
+    "C2-W-045"
+   ],
+   "why": "C2-L-031: A first marker that could read as another style is written as C2-W-045 says. C2-W-045: the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045)",
+   "summary": "an alphabetic list from i is written from a under a start attribute",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 9
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{start=9}\na. x\nb. y\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-402",
+   "clauses": [
+    "C2-L-032"
+   ],
+   "why": "C2-L-032: A bullet list is written with the character in `marker.char`.",
+   "summary": "a star bullet list keeps the star",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "* a\n* b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-403",
+   "clauses": [
+    "C2-L-032",
+    "C2-W-028"
+   ],
+   "why": "C2-L-032: and does not change the character to separate two lists. C2-W-028: Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052).",
+   "summary": "two adjacent dash lists stay dash lists",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n\n\n- b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-404",
+   "clauses": [
+    "C2-L-033"
+   ],
+   "why": "C2-L-033: A quote is written with `>` lines.",
+   "summary": "a quote with no sidecar is written with marks",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "> a\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-405",
+   "clauses": [
+    "C2-L-034",
+    "C2-W-080"
+   ],
+   "why": "C2-L-034: A div with the class `hardbreaks` is written with the hard-break opener when every line break inside it is a `hard_break` and `hardbreaks` is the last of its classes C2-W-080: inside a hard-break block written with its opener, a hard break is written as the bare line ending",
+   "summary": "a hard-break div with no sidecar is written with the opener",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "div",
+      "attrs": {
+       "classes": [
+        "hardbreaks"
+       ]
+      },
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "hard_break"
+         },
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "::: \\\na\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-406",
+   "clauses": [
+    "C2-L-035",
+    "C2-L-036"
+   ],
+   "why": "C2-L-035: A table row is written on one line, with no continuation rows. C2-L-036: A table is written as a pipe table.",
+   "summary": "a table with no sidecar is a pipe table of one-line rows",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "| a b |\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-407",
+   "clauses": [
+    "C2-L-037"
+   ],
+   "why": "C2-L-037: A code block is written with the shortest run of at least three backticks that is longer than every bare backtick run on a line of its `value`",
+   "summary": "a code block holding a triple run gets a four backtick fence",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a\n```\nb\n"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "````\na\n```\nb\n````\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-408",
+   "clauses": [
+    "C2-L-037"
+   ],
+   "why": "C2-L-037: A fenced container is written with a colon run of the smallest length of at least three that is longer than the runs of the divs inside it (C2-W-039).",
+   "summary": "a div holding a div gets a longer colon run",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "div",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "::::\n:::\na\n:::\n::::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-409",
+   "clauses": [
+    "C2-L-038"
+   ],
+   "why": "C2-L-038: A heading is written with `=`.",
+   "summary": "a heading with no sidecar is written with equals signs",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "heading",
+      "level": 2,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "== A\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-410",
+   "clauses": [
+    "C2-L-039"
+   ],
+   "why": "C2-L-039: A thematic break is written as `***`.",
+   "summary": "a thematic break is written as three stars",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "thematic_break"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "***\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-411",
+   "clauses": [
+    "C2-L-040"
+   ],
+   "why": "C2-L-040: A reference is written from the tree: its text, then `[key]` for the form `full` or `[]` for the form `collapsed`. The form `shortcut` writes only its text in brackets, with no label tail.",
+   "summary": "references are written from their key and form",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "b",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": "u"
+       },
+       {
+        "type": "text",
+        "value": " "
+       },
+       {
+        "type": "link",
+        "key": "b",
+        "namespace": "link",
+        "refForm": "collapsed",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ],
+        "href": "u"
+       },
+       {
+        "type": "text",
+        "value": " "
+       },
+       {
+        "type": "link",
+        "key": "b",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ],
+        "href": "u"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "b",
+      "namespace": "link",
+      "href": "u"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "[a][b] [b][] [b]\n\n[b]: u\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-412",
+   "clauses": [
+    "C2-L-041"
+   ],
+   "why": "C2-L-041: one blank line between blocks where the tree's `spacing` does not say otherwise, content indented to the content column",
+   "summary": "blocks are separated by one blank line and item content is indented",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         },
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "c"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n\n- b\n\n  c\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-413",
+   "clauses": [
+    "C2-L-041"
+   ],
+   "why": "C2-L-041: a bare `---` for YAML frontmatter",
+   "summary": "yaml frontmatter is written with the bare opener",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "x: 1\n"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "---\nx: 1\n---\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-414",
+   "clauses": [
+    "C2-L-041"
+   ],
+   "why": "C2-L-041: double quotes for a title.",
+   "summary": "a link title is written in double quotes",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "u",
+        "tooltip": "t",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "[a](u \"t\")\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-415",
+   "clauses": [
+    "C2-L-042"
+   ],
+   "why": "C2-L-042: Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering, the quote form, the hard-break form, the table form",
+   "summary": "the formatter keeps a delimited table",
+   "kind": "format",
+   "input": "{table}\n```csv\na,b\n1,2\n```\n",
+   "options": {},
+   "expected": {
+    "carve": "{table}\n```csv\na,b\n1,2\n```\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-416",
+   "clauses": [
+    "C2-L-042"
+   ],
+   "why": "C2-L-042: the formatter keeps the form the sidecar records ... a declared head count and continuation rows.",
+   "summary": "the formatter keeps continuation rows",
+   "kind": "format",
+   "input": "| a |\n+ b |\n",
+   "options": {},
+   "expected": {
+    "carve": "| a |\n+ b |\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-417",
+   "clauses": [
+    "C2-L-042",
+    "C2-W-087"
+   ],
+   "why": "C2-L-042: Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering C2-W-087: `fmt` reads the sidecar of its own parse",
+   "summary": "the formatter keeps written numbers",
+   "kind": "format",
+   "input": "1. a\n2. b\n",
+   "options": {},
+   "expected": {
+    "carve": "1. a\n2. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-418",
+   "clauses": [
+    "C2-W-087",
+    "C2-L-042"
+   ],
+   "why": "C2-W-087: Both gates hold with and without a sidecar. `fmt` reads the sidecar of its own parse, so C2-W-003 is tested on that path. C2-L-042: the formatter keeps the form the sidecar records ... the quote form",
+   "summary": "a quote fence is a fixed point of fmt",
+   "kind": "format",
+   "input": "::: >\na\n:::\n",
+   "options": {},
+   "expected": {
+    "carve": "::: >\na\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-419",
+   "clauses": [
+    "C2-L-042"
+   ],
+   "why": "C2-L-042: Where 0.2 has two equal forms, the formatter keeps the form the sidecar records ... the hard-break form",
+   "summary": "the formatter keeps the hard-break opener",
+   "kind": "format",
+   "input": "::: \\\na\nb\n:::\n",
+   "options": {},
+   "expected": {
+    "carve": "::: \\\na\nb\n:::\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-420",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: So a quote fence becomes `>` lines",
+   "summary": "normalize writes a quote fence as marks",
+   "kind": "format",
+   "input": "::: >\na\n:::\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "> a\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-421",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: written numbers the bare dot",
+   "summary": "normalize writes numbers as the bare dot",
+   "kind": "format",
+   "input": "1. a\n2. b\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": ". a\n. b\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-422",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: and a continuation row joins its row",
+   "summary": "normalize joins a continuation row",
+   "kind": "format",
+   "input": "| a |\n+ b |\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "| a b |\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-423",
+   "clauses": [
+    "C2-W-127",
+    "C2-W-062"
+   ],
+   "why": "C2-W-127: a delimited table a pipe table C2-W-062: The prefix is the header mark `=` when the cell is a header cell",
+   "summary": "normalize writes a delimited table as a pipe table",
+   "kind": "format",
+   "input": "{table}\n```csv\na,b\n1,2\n```\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "|= a |= b |\n| 1 | 2 |\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-424",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: a reference is written from its key and not from `rawRef`",
+   "summary": "normalize writes a reference label from its key",
+   "kind": "format",
+   "input": "[a][Foo  Bar]\n\n[Foo Bar]: u\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "[a][Foo Bar]\n\n[Foo Bar]: u\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-425",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: It keeps the reference form, including `shortcut`.",
+   "summary": "normalize keeps a shortcut reference",
+   "kind": "format",
+   "input": "[Foo]\n\n[Foo]: u\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "[Foo]\n\n[Foo]: u\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-426",
+   "clauses": [
+    "C2-W-127"
+   ],
+   "why": "C2-W-127: and an include option from its value and not from `optionSpelling` (C2-W-084).",
+   "summary": "normalize writes an include option from its value",
+   "kind": "format",
+   "input": "{{ a.crv @lines:\"1-2\" }}\n",
+   "options": {
+    "normalize": true
+   },
+   "expected": {
+    "carve": "{{ a.crv @lines:1-2 }}\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-427",
+   "clauses": [
+    "C2-L-045"
+   ],
+   "why": "C2-L-045: `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line.",
+   "summary": "a comment line in a quote records the column of the quote mark",
+   "kind": "layout",
+   "input": " > a\n >\n > %% c",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/1",
+       "startByte": 11,
+       "endByte": 15,
+       "markerColumn": 1
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-428",
+   "clauses": [
+    "C2-L-054"
+   ],
+   "why": "C2-L-054: A comment whose line lacks the mark of its quote has no `markerColumn`.",
+   "summary": "a comment line without the quote mark has no markerColumn",
+   "kind": "layout",
+   "input": "> {.a}\n%% x",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/1",
+       "startByte": 7,
+       "endByte": 11
+      }
+     ]
+    },
+    "layoutAbsent": {
+     "/children/0/children/1": [
+      "markerColumn"
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-429",
+   "clauses": [
+    "C2-L-054"
+   ],
+   "why": "C2-L-054: A `figure_group` and a delimited table have no `openerRaw` and no `closerRaw`.",
+   "summary": "a delimited table has no opener and closer facts",
+   "kind": "layout",
+   "input": "{table}\n```csv\na,b\n1,2\n```\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 26
+      }
+     ]
+    },
+    "layoutAbsent": {
+     "/children/0": [
+      "openerRaw",
+      "closerRaw"
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-430",
+   "clauses": [
+    "C2-L-054"
+   ],
+   "why": "C2-L-054: `lineEndings` reports what the source holds, a lone CR included, although a lone CR ends no line (C2-B-010).",
+   "summary": "a lone carriage return is reported as cr",
+   "kind": "layout",
+   "input": "a\rb",
+   "options": {},
+   "expected": {
+    "layout": {
+     "lineEndings": "cr"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-431",
+   "clauses": [
+    "C2-L-050"
+   ],
+   "why": "C2-L-050: `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both.",
+   "summary": "a link definition records its label and separator",
+   "kind": "layout",
+   "input": "[r]:  u\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "markerRaw": "[r]:",
+       "metadataSeparatorRaw": ":  "
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-432",
+   "clauses": [
+    "C2-L-050"
+   ],
+   "why": "C2-L-050: For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.",
+   "summary": "a term records its mark and separator",
+   "kind": "layout",
+   "input": "::  t\n: d\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 5,
+       "markerRaw": "::",
+       "metadataSeparatorRaw": "  "
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-433",
+   "clauses": [
+    "C2-L-051"
+   ],
+   "why": "C2-L-051: A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`.",
+   "summary": "the content column of a task item lies behind the box",
+   "kind": "layout",
+   "input": "- [x] a\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0/children/0",
+       "startByte": 0,
+       "endByte": 7,
+       "contentColumn": 6
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-434",
+   "clauses": [
+    "C2-L-053"
+   ],
+   "why": "C2-L-053: Blank lines behind the last content of a quote that still carry its mark are counted as `blankLinesAfter` of the last block of the quote; a blank line without the mark is outside the quote and counts for the blocks around the quote.",
+   "summary": "marked blank lines count inside the quote and unmarked ones outside",
+   "kind": "layout",
+   "input": "> a\n>\n> b\n>\n\nc\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 9,
+       "blankLinesAfter": 1
+      },
+      {
+       "path": "/children/0/children/0",
+       "startByte": 2,
+       "endByte": 3,
+       "blankLinesAfter": 1
+      },
+      {
+       "path": "/children/0/children/1",
+       "startByte": 8,
+       "endByte": 9,
+       "blankLinesBefore": 1,
+       "blankLinesAfter": 1
+      },
+      {
+       "path": "/children/1",
+       "startByte": 13,
+       "endByte": 14,
+       "blankLinesBefore": 1
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-435",
+   "clauses": [
+    "C2-L-046"
+   ],
+   "why": "C2-L-046: The measured facts of the section \"Measured facts carried over\" have no reader in the 0.2 documents.",
+   "summary": "the writer ignores a recorded hash marker",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "# A\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 3,
+      "markerRaw": "#",
+      "markerColumn": 0
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "= A\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-436",
+   "clauses": [
+    "C2-L-046",
+    "C2-L-026"
+   ],
+   "why": "C2-L-046: The measured facts of the section \"Measured facts carried over\" have no reader in the 0.2 documents.",
+   "summary": "the writer ignores recorded blank line counts",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "a\n\n\n\nb\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 1,
+      "blankLinesBefore": 0,
+      "blankLinesAfter": 3
+     },
+     {
+      "path": "/children/1",
+      "startByte": 5,
+      "endByte": 6,
+      "blankLinesBefore": 3,
+      "blankLinesAfter": 0
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n\nb\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-437",
+   "clauses": [
+    "C2-L-046",
+    "C2-L-037"
+   ],
+   "why": "C2-L-046: The measured facts of the section \"Measured facts carried over\" have no reader in the 0.2 documents. C2-L-037: A code block is written with the shortest run of at least three backticks",
+   "summary": "the writer ignores a recorded fence length",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "x\n"
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "````\nx\n````\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 11,
+      "openerRaw": "````",
+      "closerRaw": "````"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "```\nx\n```\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-438",
+   "clauses": [
+    "C2-L-019",
+    "C2-L-020",
+    "C2-W-067"
+   ],
+   "why": "C2-W-067: Continuation rows are written at the places the sidecar records (C2-L-019, C2-L-020).",
+   "summary": "the writer breaks a row at the recorded wrap",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "layout": {
+    "version": 2,
+    "encoding": "utf-8",
+    "source": "| a |\n+ b |\n",
+    "lineEndings": "lf",
+    "bom": false,
+    "nodes": [
+     {
+      "path": "/children/0",
+      "startByte": 0,
+      "endByte": 11,
+      "sourceFormat": "pipe"
+     },
+     {
+      "path": "/children/0/children/0/children/0",
+      "startByte": 0,
+      "endByte": 11,
+      "continuationLines": 1
+     },
+     {
+      "path": "/children/0/children/0/children/0/children/0",
+      "startByte": 1,
+      "endByte": 10,
+      "wraps": [
+       {
+        "line": 1,
+        "path": "/children/0/children/0/children/0/children/0/children/0/children/0",
+        "offset": 2
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "| a |\n+ b |\n"
+   },
+   "from": []
   }
  ]
 }

@@ -310,6 +310,7 @@ function commandProblems(entry) {
     }
   }
   for (const list of [entry.expected.stdoutDiagnostics ?? [], entry.expected.stderrDiagnostics ?? []]) {
+    for (const item of list) if (typeof item === 'object' && item.channel) problems.push(`states the channel of the line of ${item.code}, which a diagnostic line does not carry (C2-T-019)`)
     for (const item of list) if (!codes.has(typeof item === 'string' ? item : item.code)) problems.push(`expects the line of ${typeof item === 'string' ? item : item.code}, which data/lint-rules.json does not list`)
   }
   return problems
@@ -337,7 +338,7 @@ for (const entry of cases.cases) {
     else if (!quote[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(quote[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${quote[1]}`)
   }
   if (entry.expected.children && !validateTree({ type: 'document', astVersion: '2.0', children: entry.expected.children })) fail(`clause-cases.json ${entry.id}: the AST schema refuses the expected children at ${validateTree.errors[0].instancePath || '/'}: ${validateTree.errors[0].message}`)
-  if ((entry.kind ?? 'render') === 'render' && !entry.files && exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
+  if ((entry.kind ?? 'render') === 'render' && entry.input !== undefined && !entry.files && exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
   for (const problem of diagnosticProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of refusalProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
