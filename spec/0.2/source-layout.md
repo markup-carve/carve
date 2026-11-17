@@ -199,7 +199,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-042** Where 0.2 has two equal forms, the formatter keeps the form the sidecar records: ordered numbering, the quote form, the hard-break form, the table form, a declared head count and continuation rows.
 
-**C2-L-043** Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records: the heading marker, the thematic break, the fence character and length, the frontmatter opener.
+Where 0.2 has one canonical form, the formatter writes it whatever the sidecar records (C2-W-085).
 
 **C2-L-044** Neither choice changes the tree, so both pass the round-trip gate (C2-W-002).
 
@@ -229,4 +229,4 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 ## Counts
 
-The document has 55 clauses. The reduction of 17 November 2026 deleted C2-L-001 and C2-L-002, whose rule another clause states; their ids are not reused.
+The document has 54 clauses. The reduction of 17 November 2026 deleted C2-L-001, C2-L-002 and C2-L-043, whose rule another clause states; their ids are not reused.

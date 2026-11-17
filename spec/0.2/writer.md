@@ -390,7 +390,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-084** The writer also takes `rawRef` (C2-W-075) and `optionSpelling` (C2-W-058), and, for a reference that stays unresolved, `rawAttrs`: it writes the recorded blocks in place of the block of C2-W-048 when reading them gives the attributes the tree holds (C2-L-006), so `[x][no]{.c}{#i}` stays as it is.
 
-**C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records (C2-L-043). The other facts of the sidecar are for editors and other tools (C2-L-046).
+**C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records. The other facts of the sidecar are for editors and other tools (C2-L-046).
 
 **C2-W-086** The tree wins: a fact that contradicts the tree is ignored (C2-L-006).
 
