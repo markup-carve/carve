@@ -192,10 +192,6 @@ a```b
 
 **C2-W-041** The title of a code block is written in the info string, in double quotes.
 
-**C2-W-042** A bullet item is written with the character in `marker.char`. `-` and `*` make different lists (C2-B-035), and the writer changes neither.
-
-**C2-W-043** An ordered list keeps its style, its delimiter and its start value.
-
 **C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036) and cannot be a `start` attribute (C2-B-219), and a reader refuses it (C2-A-056). A list of repeated `1.` markers is renumbered to sequential digits. A later marker whose number would have more than nine digits is written as `1`: only the first marker carries a value (C2-B-041). With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031). A bare dot is not written directly behind a bare-dot marker on the marker line, where it would read as text (C2-B-043): there the inner list is written with digits, as in `. 1. a`.
 
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
@@ -973,13 +969,13 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 23 | 2 | 0 | 2 |
-| Canonical forms: blocks | 26 | 0 | 0 | 1 |
+| Canonical forms: blocks | 24 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **131** | **5** | **5** | **10** |
+| **Total** | **129** | **5** | **5** | **10** |
 
-The document has 131 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 129 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
