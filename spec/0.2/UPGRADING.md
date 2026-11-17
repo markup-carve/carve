@@ -308,6 +308,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | What you wrote | Freeze candidate 6 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
 | --- | --- | --- | --- |
 | A large abbreviation expansion or a long heading used very often: `*[HT]: ` and 10,000 `X`, then `HT` 150 times; `# A` and 9,999 `!`, then `</#A>` 150 times | Every use was expanded: about 1.5 MB of HTML from 11 KB of source. | Abbreviations and cross-reference labels share a budget of 1,000,000 bytes or 8 times the source bytes; a use past it is written as its term, `HT`, or its key, `<a href="#A">A</a>`, and the render reports `derived-text-budget` once (0.1 reported nothing). | C2-H-201 |
+| `social: {resolveMention: ({name}) => '/u/' + name}` with `@alice`, the 0.1 callback moved into `social` | The resolver received the name string, so the link went to `/u/undefined`. | The resolver receives one object with `kind` (`mention` or `tag`), `name` and `context`, the value of `social.context`, which replaces the 0.1 option `socialContext`: `<a class="mention" href="/u/alice">`. | C2-H-126 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -833,7 +834,7 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `sourceLine` | `sourceLines`, default false. |
 | `allowRawHtml`, default true | `rawHtml`, default false. |
 | `sanitizeUrls`, `allowedUrlSchemes`, `deniedUrlSchemes` | `urlPolicy: {allow: [...]}` or `{deny: [...]}`. There is no disabled URL filter. |
-| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` | `social` object with the same named members; default null. |
+| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`. |
 | `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. No base-host field. |
 | `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
 | `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |
@@ -841,7 +842,7 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `positions` | Parse option, default true. |
 | `extensions`, `includes`, `renderers` | `includes` holds a resolver and two limits (C2-N-003). `extensions` and `renderers` follow the [extension interface](extensions.md). |
 | `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
-| `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `socialContext`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
+| `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
 | 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
 | 0.1 lint options | `lint` reads `rules` and `platforms`; `carve lint` takes them as `--rules` and `--platforms` with JSON values (C2-T-010). |
 

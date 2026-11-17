@@ -2200,7 +2200,7 @@ Example 69 (unverified, `--mode static`)
 
 **C2-H-125** `labels` replaces the strings the engine writes itself, such as the label of the footnote section and of a backlink. A label is text and is escaped where it is written. A key left out keeps its English default. The core writes no string of the keys `indexBackref`, `codeGroup` and `tocNav`, which are kept for extensions.
 
-**C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans. It has four fields, each optional, and no other: `mentionUrl` and `tagUrl` are strings, and `resolveMention` and `resolveTag` are functions of the host. A template gives its string with each `{name}` replaced by the name, percent-encoded as UTF-8 with every character encoded except ASCII letters, digits and `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(` and `)`; no other part of the template is read. A resolver takes the name as written and returns a URL, or nothing. For a mention the resolver is asked first and the template is used when it returns nothing; a tag works the same with its own pair. An empty URL is no URL. The URL is a sink of the URL policy (C2-H-159).
+**C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans. It has five fields, each optional, and no other: `mentionUrl` and `tagUrl` are strings, `resolveMention` and `resolveTag` are functions of the host, and `context` is a value of the host that the renderer passes on and never reads. A template gives its string with each `{name}` replaced by the name, percent-encoded as UTF-8 with every character encoded except ASCII letters, digits and `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(` and `)`; no other part of the template is read. A resolver is called with one object and returns a URL, or nothing. The object has `kind`, the string `mention` or `tag` (not the `kind` of a mention node, C2-A-101), `name`, the name as written without its sigil, and `context`, the value of the field `context` unchanged, absent where `social` has none; as in 0.1, where `context` was the option `socialContext`. For a mention the resolver is asked first and the template is used when it returns nothing; a tag works the same with its own pair. An empty URL is no URL. The URL is a sink of the URL policy (C2-H-159).
 
 **C2-H-127** `sourceLines` adds `data-source-line` (C2-H-016). Default off. `sections` turns section wrapping on or off (C2-H-026). Default on. `smartTypography` selects glyph or source for smart punctuation (C2-H-078). Default on. `roundtrip` adds the carriers (C2-H-112). Default off. `rawHtml` passes raw HTML through (C2-H-053). Default off. The HTML importer reads the same option: off, it drops comments and raw elements (C2-M-066).
 
@@ -2538,7 +2538,7 @@ Reported: `profile-construct-degraded`.
 | `renderers` | render | map from extension name to renderer | empty | C2-H-123 |
 | `symbols` | render | map from symbol name to output | empty | C2-H-124 |
 | `labels` | render | map from label key to text | the English strings | C2-H-125 |
-| `social` | render | URL templates and resolvers for mentions and tags | none | C2-H-126 |
+| `social` | render | URL templates, resolvers and a resolver context for mentions and tags | none | C2-H-126 |
 | `sourceLines` | render | boolean | off | C2-H-127 |
 | `sections` | render | boolean | on | C2-H-127 |
 | `smartTypography` | render | boolean | on | C2-H-127 |
