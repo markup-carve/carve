@@ -1897,7 +1897,7 @@
       "group": "div boundary at owning column",
       "from": "- one\n ::: note\n b\n :::\n",
       "to": "- one\n::: note\n b\n :::\n",
-      "meaning02": "C2-B-015 and C2-B-076 place the div or follower outside its preceding item or description when written at column zero.",
+      "meaning02": "C2-B-014, C2-B-025 and C2-B-076 place the div or follower outside its preceding item or description when written at column zero.",
       "toolEntry": "U-222",
       "silent": true
     },
