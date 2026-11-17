@@ -29,7 +29,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `formatWithDiagnostics` | as `format` | Carve source and the record | C2-W-134 |
 | `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
-| `lint` | Carve source, `rules`, `platforms`, `includes` | the record | C2-W-103, C2-W-109, C2-N-085 |
+| `lint` | Carve source, `rules`, `platforms`, `includes`, `extensions` | the record | C2-W-103, C2-W-109, C2-N-085 |
 | `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
 | `encodeTree` | a tree | its JSON text | C2-A-012 |

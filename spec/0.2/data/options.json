@@ -12,7 +12,7 @@
     {
       "name": "extensions",
       "kind": "parse",
-      "read_by": ["format", "parse", "tree"],
+      "read_by": ["format", "lint", "parse", "tree"],
       "type": "list",
       "items": "extension",
       "default": [],
