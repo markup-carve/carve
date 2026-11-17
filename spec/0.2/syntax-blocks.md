@@ -1162,9 +1162,7 @@ mmmmmmmmmm) a
 
 ## Task items
 
-**C2-B-046** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after the required space of a bullet or ordered marker and followed by one space and at least one further character. Every ordered style and delimiter takes a box under the same conditions.
-
-**C2-B-047** In every other case the brackets are inline content: `- [ ]` and `1. [ ]` with nothing after the box are plain items with that text, and a description mark takes no box.
+**C2-B-046** A task box is `[`, one of the nine characters space, `x`, `X`, `_`, `/`, `!`, `-`, `>` and `?`, and `]`, directly after the required space of a bullet or ordered marker and followed by one space and at least one further character.
 
 **C2-B-048** The box character `X` is read as `x`.
 
@@ -6383,7 +6381,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
 | Ordered lists | 11 | 1 | 10 | 2 |
-| Task items | 4 | 0 | 1 | 5 |
+| Task items | 3 | 0 | 1 | 5 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 6 | 1 |
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
@@ -6402,9 +6400,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **220** | **10** | **168** | **103** |
+| **Total** | **219** | **10** | **168** | **103** |
 
-The chapter has 220 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
