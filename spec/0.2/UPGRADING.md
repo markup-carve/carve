@@ -437,7 +437,7 @@ This preserves two lists, but the 0.2 engine adds `class="task"` on the boxed it
 
 In 0.1, `1. [ ] x` is an ordered item whose text starts with `[ ] x`. In 0.2 the box is a task field and the ordered number stays visible. The tool writes `1. \[ ] x` to keep the old text (`U-120`). In 0.1, `[text]` and `![text]` remain text even when `[text]: /u` is defined. In 0.2 both are shortcut references. The tool escapes their opening brackets to keep the old text (`U-121`).
 
-A 0.2 heading may start with `=` and continue on indented lines. For example, `= Heading` followed by two spaces and `continued` makes one heading. The 0.1 engine treats those lines as a paragraph. The 0.2 formatter accepts `normalize: true` to choose its canonical spelling when the source layout offered alternatives; `carve fmt --normalize` is a specified command, but a 0.2 CLI is not shipped yet.
+A 0.2 heading may start with `=` and continue on indented lines. For example, `= Heading` followed by two spaces and `continued` makes one heading. The 0.1 engine treats those lines as a paragraph. The 0.2 formatter accepts `normalize: true` to choose its canonical spelling when the source layout offered alternatives; `carve fmt --normalize` sets it on the command line ([tooling](tooling.md)).
 
 ### Running the rewrite tool
 
@@ -449,11 +449,11 @@ node upgrade/src/cli.ts --json docs/intro.crv
 node upgrade/src/cli.ts --write docs/intro.crv
 ```
 
-Use the real path to each file. Without `--write`, one file's upgraded source goes to stdout and the report goes to stderr. `--json` puts the report on stdout. `--check` writes nothing and exits 1 if a change or human review is needed. Exit 2 is a usage error. This is a separate tool in `upgrade/`; it is not a 0.2 engine CLI.
+Use the real path to each file. Without `--write`, one file's upgraded source goes to stdout and the report goes to stderr. `--json` puts the report on stdout. `--check` writes nothing and exits 1 if a change or human review is needed. Exit 2 is a usage error. This is a separate tool in `upgrade/`. The 0.2 program of the JavaScript engine runs the same tool as `carve2 upgrade`; that command is part of the JavaScript engine only and outside the specification (C2-T-003).
 
 For the first heading example, `--json` returns a file record with `changed: true`, `check: "pass"`, and a record with `entry: "U-001"`, `class: "rewrite"`, `line: 2`, and `lint: "block-opener-without-blank-line"`. The full report also names the pinned 0.1 engine, currently `0.1.17`. `report` and `escape` records need the same review as rewrites. `U-019` summarizes extra list paragraph elements once per file. `U-079` reminds you to migrate host render options.
 
-The tool renders the old input in 0.1 and the proposed output in 0.2. It compares after sorting attributes, ignoring whitespace between tags, and ignoring the new `task` class. `upgrade-mismatch` means an HTML difference is not explained by a contract entry. Without `--force`, `--write` leaves that file alone. `--force` writes the proposed text despite the difference; inspect the HTML before using it. Two edits on the same span produce `upgrade-conflict`; the lower entry ID wins. The tool reads only 0.1 source. **Run it once per file. It is not idempotent.** A second run can change already upgraded list text.
+The tool renders the old input in 0.1 and the proposed output in 0.2. It compares after sorting attributes, ignoring whitespace between tags, and ignoring the new `task` class. `upgrade-mismatch` means an HTML difference is not explained by a contract entry. `--write` leaves that file alone, and `--force` does not override the HTML check: both upgrade programs then print `carve[upgrade-force-ignored]` and write nothing. Two edits on the same span produce `upgrade-conflict`; the lower entry ID wins. The tool reads only 0.1 source. **Run it once per file. It is not idempotent.** A second run can change already upgraded list text.
 
 ### Repository checklist
 
@@ -697,8 +697,8 @@ U-260 and U-261 are withdrawn: `{valigns="top,bottom"}` above a table and the ce
 | --- | --- | --- |
 | JavaScript | One large package API with parse, resolve, render, import, lint, and extension helpers. | Port to `v2/src/index.ts` functions. The `v2/` engine is not the package root yet. |
 | HTML | Existing section, list, table, footnote, and raw HTML conventions. | Compare rendered pages and update CSS and scripts. The source rewrite check hides some HTML changes. |
-| CLI | `dist/cli.js` offers render, fmt, lint, flatten, fix, diff, merge, portability, trace, and migrate. | There is no 0.2 CLI yet. The upgrade tool has its own CLI. |
-| Missing runtime features | Lint, extension pipeline, include expansion, importers, and other output formats work in 0.1. | Keep the 0.1 path or postpone switching those callers. |
+| CLI | `dist/cli.js` offers render, fmt, lint, flatten, fix, diff, merge, portability, trace, and migrate. | [Tooling](tooling.md) specifies the 0.2 commands `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import` and `migrate-ast`. The reference engine ships them as `carve2`, all but `lint` so far, and adds `upgrade`. |
+| Missing runtime features | Lint, extension pipeline, include expansion, importers, and other output formats work in 0.1. | 0.2 has lint, include expansion and the HTML importer. For Markdown, plain text and ANSI output keep the 0.1 path or postpone switching those callers. |
 
 ### JavaScript API
 
@@ -721,10 +721,10 @@ The 0.2 entry point is `carve-js/v2/src/index.ts` in this checkout. The current 
 | `carveToMarkdown`, `carveToPlainText`, `carveToAnsi` and report variants | No 0.2 counterpart. |
 | `parseWithProvenance`, `createEditorSession`, `astNodePaths`, node identity, provenance and annotation-range helpers | No 0.2 counterpart. `parseWithLayout` covers source layout only. |
 | `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | No 0.2 counterpart. |
-| `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | No 0.2 lint runner yet. `parseWithDiagnostics` reports parser and resolution findings. |
-| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The `v2/` engine has no importer yet. |
-| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | No 0.2 importer. |
-| `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | No include expansion in the 0.2 engine yet; `includes.md` specifies it. Until then an `include` node remains unexpanded in the tree. |
+| `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
+| `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve2 import --from html`. |
+| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve2 import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). BBCode has no 0.2 importer. |
+| `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
 | `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | No 0.2 counterpart. |
@@ -818,11 +818,11 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |
 | `labels`, `symbols` | Same names; labels are escaped text, symbols are host-supplied output. |
 | `positions` | Parse option, default true. |
-| `extensions`, `includes`, `renderers` | Declared but nonempty values are refused by this engine. |
+| `extensions`, `includes`, `renderers` | `includes` holds a resolver and two limits (C2-N-003). `extensions` and `renderers` follow the [extension interface](extensions.md). |
 | `strictLosses` | Same name, default false. `renderWithDiagnostics` returns empty HTML on a render loss when true. |
 | `defaultFrontmatterFormat`, parser callbacks, `semanticSpanNames`, `socialContext`, `codeBlockTabWidth` | No 0.2 option. An unknown option throws `CarveOptionError`. |
-| 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default. The 0.2 CLI for them is pending. |
-| 0.1 lint options | `rules` and `platforms` are specified for 0.2 lint, but the runner is pending. |
+| 0.1 formatter flags | `format` accepts `alignTables` and `normalize`, both false by default; `carve fmt --align-tables` and `--normalize` set them. |
+| 0.1 lint options | `lint` reads `rules` and `platforms`; `carve lint` takes them as `--rules` and `--platforms` with JSON values (C2-T-010). |
 
 0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
 
@@ -861,9 +861,9 @@ A direct top-level heading and a direct footnote, by contrast, produced the same
 
 ### Command line and missing features
 
-The 0.1 CLI at `dist/cli.js` exists and accepts a file or stdin. It has render targets for HTML, Markdown, plain text, ANSI, Carve, and AST JSON; `fmt`, `flatten`, `fix`, `lint`, `diff`, `merge`, `portability`, `trace`, and `migrate --from html|markdown|djot|bbcode`. It can expand includes. The 0.2 engine has **no command line program yet**. It has JavaScript `render`, `parse`, `format`, and `write` functions. The specified `carve fmt --normalize` command is therefore future work. `node upgrade/src/cli.ts` is the separate rewrite program described in Part 1.
+The 0.1 CLI at `dist/cli.js` exists and accepts a file or stdin. It has render targets for HTML, Markdown, plain text, ANSI, Carve, and AST JSON; `fmt`, `flatten`, `fix`, `lint`, `diff`, `merge`, `portability`, `trace`, and `migrate --from html|markdown|djot|bbcode`. It can expand includes. The 0.2 command line is specified in [tooling](tooling.md): `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import` and `migrate-ast`, with their flags, exit codes and reports. The reference engine ships it as `carve2`, so far without `lint` and without the reports that `tooling.md` adds; its `upgrade` command and `node upgrade/src/cli.ts` are the rewrite program described in Part 1.
 
-The 0.2 engine currently lacks a lint runner, an extension registration and transform pipeline, include expansion, importers, Markdown/plain/ANSI renderers, patch and editor APIs, and a 0.2 CLI. Nonempty `extensions`, `includes`, and `renderers` are rejected. Do not switch a caller that depends on these features without another implementation.
+The 0.2 engine lacks Markdown, plain text and ANSI renderers and patch and editor APIs. Do not switch a caller that depends on these features without another implementation.
 
 ## Part 3. Tree consumers: AST 1.x to 2.0
 
@@ -943,14 +943,13 @@ The tree holds meaning. The source-layout record holds spelling. Call `parseWith
 
 A resolution result is computed beside authored content. In the 0.2 schema, examples are `heading.generatedId`, `footnote_ref.number`, `inline_footnote.number`, `link.href` or `image.src` for a reference, `table_column.resolvedAlign`, `table_column.resolvedValign`, and some table span counts. The [result-field list](data/ast-results.json) identifies them. They stay in the resolved tree but are excluded from semantic equality as specified. Authored heading ids stay in `attrs.id`. The 0.1 and 0.2 engines were both run on the same heading, list, table, link, and footnote sources to check the shapes in the table. For `# A & B`, 0.1 put the generated `A-B` in `heading.attrs.id`; 0.2 put it in `heading.generatedId`.
 
-For stored 1.x JSON, first identify the producer's exact contract version. Map old fields and node types using the table, preserve the order of authored children, and add `astVersion: "2.0"` to the root and envelope. Turn `list.items`, `table.rows` and `table_row.cells` into typed `children`; derive list `marker` and `spacing`; fold definition and reference labels into `key` and `namespace`; convert retired nodes; move only known spelling into a layout record if the original source is available. Keep `pos` byte offsets only if they still match the original source. Then validate against [the 2.0 schema](data/ast-schema.json) and decode with `decodeTree`. A 1.2 tree takes the earlier draft migration first, then the rows under `C2-A-178`. Record losses where a construct has no 2.0 representation. **The current 0.2 engine has no migration function for stored 1.x or draft JSON.** `decodeTree` validates and refuses them.
+For stored 1.x JSON, first identify the producer's exact contract version. Map old fields and node types using the table, preserve the order of authored children, and add `astVersion: "2.0"` to the root and envelope. Turn `list.items`, `table.rows` and `table_row.cells` into typed `children`; derive list `marker` and `spacing`; fold definition and reference labels into `key` and `namespace`; convert retired nodes; move only known spelling into a layout record if the original source is available. Keep `pos` byte offsets only if they still match the original source. Then validate against [the 2.0 schema](data/ast-schema.json) and decode with `decodeTree`. A 1.2 tree takes the earlier draft migration first, then the rows under `C2-A-178`. Record losses where a construct has no 2.0 representation. `migrateTree` migrates a stored 1.x or draft tree and reports what it loses (C2-A-178 to C2-A-180), and `carve migrate-ast` does the same on the command line (C2-T-036). `decodeTree` validates a 2.0 tree and refuses the older shapes.
 
 Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown optional data. Walk only declared child slots, including root metadata `headers`, `footers`, `abstract` and nested `fields` values. A metadata value tags a string, boolean, number, inline list, block list, ordered value list or named value map. The core HTML renderer ignores root metadata; the Carve writer reports `fields` when no frontmatter node preserves the raw source. The [0.2 extension interface](extensions.md) lets a registered matcher claim a core inline, div, or code-block node and transform it into a declared `inline_extension` or `block_extension`. Both need a valid same-role fallback containing only core nodes; qualified forms may carry a typed `source` record for the writer. Declarations on the root or envelope carry slot names in walk order. A tree-only reader checks annotation id shape and duplicates; a reader with the range sidecar also checks each referenced range. `carve.tabs` is the specified standard extension. An extension renderer is trusted host code and returns HTML unchanged; hosts use trusted renderers for untrusted documents. The interface is specified but is not built in the current engine. For unknown required extensions, refuse the tree; for unknown optional ones, use the valid fallback as the spec directs. Do not silently discard an extension's payload or `data` on storage round trips.
 
 ## Tooling not yet shipped
 
-- Build and publish a 0.2 CLI, including `fmt --normalize`.
-- Add a versioned migration function for stored AST 1.x and earlier 0.2 draft JSON, with loss reports.
+- Add the `lint` command, the loss and include reports, the include diagnostics cap and the categories of [tooling](tooling.md) that `carve2` lacks.
 - Resolve the rewrite tool's `U-114` fifth-input `upgrade-mismatch` and classify remaining corpus mismatches.
 - Align the engine's tree fields and task-item style with the current 0.2 schema and HTML rulings.
-- Finish the 0.2 lint runner, extension API, include expansion, importers, and non-HTML renderers before those callers switch.
+- Finish the non-HTML renderers before those callers switch.
