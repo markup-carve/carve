@@ -18290,6 +18290,68 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-329",
+   "clauses": [
+    "C2-H-019",
+    "C2-H-165"
+   ],
+   "why": "C2-H-019: A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well, and so does a paragraph whose content writes nothing once the profile has degraded it (C2-H-165).",
+   "summary": "a paragraph left empty by a degraded link renders nothing",
+   "input": "[](/u)",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "/u",
+        "children": []
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-330",
+   "clauses": [
+    "C2-H-019",
+    "C2-H-165"
+   ],
+   "why": "C2-H-019: A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well, and so does a paragraph whose content writes nothing once the profile has degraded it (C2-H-165).",
+   "summary": "a paragraph with text beside a degraded empty link keeps its element",
+   "input": "x [](/u)",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "<p>x </p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x "
+       },
+       {
+        "type": "link",
+        "href": "/u",
+        "children": []
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

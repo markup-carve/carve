@@ -183,7 +183,7 @@ roses
 
 **C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them. A block image is no such paragraph: its `<img>` carries them (C2-H-020).
 
-**C2-H-019** A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph of breaks alone holds no comment and is written with `<p>`. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well.
+**C2-H-019** A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph of breaks alone holds no comment and is written with `<p>`. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well, and so does a paragraph whose content writes nothing once the profile has degraded it (C2-H-165).
 
 Example 67 (generated)
 
