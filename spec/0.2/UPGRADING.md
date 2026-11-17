@@ -498,7 +498,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 | U-182 | Under C2-I-044 and C2-I-050, `[{*a]*}` writes literal text in 0.1. **SILENT** | The same 0.2 source writes a strong span that crosses the bracket boundary. | Escape the star after the opening brace to retain the literal text; escape |
 | U-183 | Under C2-B-147 and C2-B-197, an unresolved image reference with a label, `![a][nope]`, followed by `^ cap` stays paragraph text in 0.1. **SILENT** | The same 0.2 source writes a figure with the text `![a][nope]` and the caption `cap`. | Escape the image opener as `\![a][nope]`; escape |
 | U-184 | A nested list opener or pending attribute changes item ownership under C2-B-056,C2-B-091 **SILENT** | - {{ e }} | - \{{ e }}; escape |
-| U-185 | An equals marker alone in a table row starts a header section under C2-B-179,C2-B-182 **SILENT** | \|=\| | \|\=\|; escape |
+| U-185 | A cell whose text starts with an equals sign directly behind its pipe becomes a header cell under C2-B-171 **SILENT** | \| total \|=SUM(A1:A3) \| | \| total \|\=SUM(A1:A3) \|; escape |
 | U-186 | An empty div label needs a space after the colon fence under C2-B-119 **SILENT** | :::[] | ::: []; rewrite |
 | U-187 | An at-sign bracket definition is a definition under 0.2 under C2-B-083,C2-I-091 **SILENT** | [@]: y |  [@]: y; rewrite |
 | U-188 | A plus-minus shorthand is recognized inside a colon pair under C2-I-041 **SILENT** | :+-: | :\+-:; escape |

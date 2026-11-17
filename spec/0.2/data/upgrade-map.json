@@ -1585,9 +1585,9 @@
       "id": "U-185",
       "kind": "escape",
       "group": "measured ownership and inline rewrites",
-      "from": "|=|",
-      "to": "|\\=|",
-      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\"></th></tr>\n  </thead>\n</table>",
+      "from": "| total |=SUM(A1:A3) |\n",
+      "to": "| total |\\=SUM(A1:A3) |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td>total</td><th scope=\"row\">SUM(A1:A3)</th></tr>\n  </tbody>\n</table> A cell whose text starts with `=` directly behind its pipe is a header cell under C2-B-171, and the `=` is gone; the bare mark `|=|` behaves the same.",
       "toolEntry": "U-185",
       "silent": true
     },
