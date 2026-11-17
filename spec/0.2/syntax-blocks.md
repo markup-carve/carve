@@ -2562,7 +2562,7 @@ A key named `id` or `class` in any ASCII letter case folds into the id or the cl
 
 **C2-B-102** Consecutive attribute lines merge into one.
 
-**C2-B-103** The language part of a brace block, as in `{:en}`, is shorthand for the node's language field and is not a key.
+The language part, as in `{:en}`, sets the node's `lang` and is not a key (C2-A-037).
 
 **C2-B-104** When a brace block or a merged run of them holds several ids, the last id written wins.
 
@@ -6801,7 +6801,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tightness | 3 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 8 | 0 | 7 | 7 |
-| Attribute lines | 19 | 1 | 12 | 11 |
+| Attribute lines | 18 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 10 | 0 | 6 | 6 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 11 | 0 | 11 | 3 |
@@ -6814,9 +6814,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **215** | **10** | **170** | **118** |
+| **Total** | **214** | **10** | **170** | **118** |
 
-The chapter has 215 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063, C2-B-064, C2-B-099 and C2-B-114, whose rule another clause states; their ids are not reused.
+The chapter has 214 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063, C2-B-064, C2-B-099, C2-B-103 and C2-B-114, whose rule another clause states; their ids are not reused.
 
 ## Not covered
 

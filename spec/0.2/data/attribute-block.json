@@ -34,7 +34,7 @@
       "sigil": ":",
       "value": "language_tag",
       "target": "lang",
-      "clauses": ["C2-I-029", "C2-B-103", "C2-A-037"]
+      "clauses": ["C2-I-029", "C2-A-037"]
     }
   ],
   "shapes": [

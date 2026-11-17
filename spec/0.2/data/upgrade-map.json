@@ -1607,7 +1607,7 @@
       "group": "measured ownership and inline rewrites",
       "from": "[]{:r lang}\n",
       "to": "[]{lang}\n",
-      "meaning02": "C2-B-103 removes the shorthand so the explicit empty lang key wins. A separate language shorthand before a later lang attribute can likewise be removed when 0.1 selected the later attribute.",
+      "meaning02": "C2-A-037 removes the shorthand so the explicit empty lang key wins. A separate language shorthand before a later lang attribute can likewise be removed when 0.1 selected the later attribute.",
       "toolEntry": "U-192",
       "silent": true
     },
