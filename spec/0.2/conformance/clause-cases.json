@@ -53601,6 +53601,44 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1098",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "empty link definition needs a destination",
+   "kind": "lint",
+   "input": "[a]:\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-reference-definition"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1099",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "empty footnote definition needs body content",
+   "kind": "lint",
+   "input": "[^a]:\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-reference-definition"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

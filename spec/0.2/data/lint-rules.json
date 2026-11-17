@@ -725,9 +725,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "This line is a label and a colon with nothing after it, so it is text and defines nothing. Add content after the colon, or remove the line."
-      ],
+      "messages": [{"when": "the empty definition has a link label without a leading `^`", "text": "This line is a label and colon with no destination, so it is text and defines no link. Add a destination after the colon, or remove the line."}, {"when": "the empty definition has a footnote label beginning with `^`", "text": "This line is a footnote label and colon with no body, so it is text and defines no footnote. Add body content after the colon, or remove the line."}],
       "message_origin": "data_file",
       "change": "re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text",
       "reports": "a line of text that holds, after its quote marks and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts too, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
