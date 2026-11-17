@@ -596,8 +596,6 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-162** Equality skips `pos`, `segments`, `srcByteLength`, and exactly the resolution fields listed in `spec/0.2/data/ast-results.json`; a span count is skipped only when derived from an authored mark. `paragraph.role` is compared (C2-A-136).
 
-**C2-A-163** Equality compares the tree only. Sidecars and the diagnostics record are not part of it, so a formatter may normalize any spelling the sidecar holds without changing the document.
-
 **C2-A-165** `parse(x)`, encoded to JSON and decoded, equals `parse(x)` in every field, positions included. An encoder that drops a field is not conformant.
 
 ## Reading a tree
@@ -789,11 +787,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 174 | 2 |
+| Existing AST contract | 173 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **210** | **3** |
+| **Total** | **209** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-164 and C2-A-166 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-163, C2-A-164 and C2-A-166 are deleted.
 
 ## Schema
 

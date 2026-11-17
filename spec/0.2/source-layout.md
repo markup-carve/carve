@@ -12,7 +12,7 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 
 **C2-L-001** The sidecar is a record beside the tree. A producer returns it only when the caller asks, and never puts its content into the tree.
 
-**C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-163) does not read the sidecar.
+**C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-161) does not read the sidecar.
 
 **C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree.
 
