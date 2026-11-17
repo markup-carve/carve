@@ -216,8 +216,6 @@ a```b
 
 **C2-W-053** A caption is written directly below its block, with no blank line (C2-B-146), as `^`, one space and its content. This is part of requirement W7.
 
-**C2-W-054** The writer writes an id on a heading exactly when `attrs.id` holds one (C2-A-038). A generated id is in `generatedId` (C2-A-134) and is never written.
-
 **C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-052). A footnote definition is `[^key]:`, one space and its first block on the marker line, with its later blocks at the content column (C2-W-024, C2-W-027). An abbreviation definition is `*[key]:`, one space and the expansion, whose leading spaces and tabs are written after that space. An expansion of a supplied tree that holds a line break has no spelling: its nearest form writes one space in place of each line break, so the definition stays one line, and the writer reports `field-unspellable` (C2-W-117). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
 
 A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line feed and `B` is written `*[A]: A B`, and `field-unspellable` reports the expansion. Under `roundtrip` its template holds the same line: `<template data-carve-abbreviations>*[A]: A B</template>` (C2-H-181).
@@ -975,13 +973,13 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
 | Layout | 23 | 2 | 0 | 2 |
-| Canonical forms: blocks | 27 | 0 | 0 | 1 |
+| Canonical forms: blocks | 26 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **132** | **5** | **5** | **10** |
+| **Total** | **131** | **5** | **5** | **10** |
 
-The document has 132 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 131 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
