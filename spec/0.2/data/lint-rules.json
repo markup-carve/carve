@@ -167,7 +167,7 @@
       "default": "on",
       "messages": ["This caption-looking paragraph sits next to a table or image; use a ^ caption line."],
       "message_origin": "engine_0_1",
-      "reports": "a paragraph line outside code and raw blocks whose text, after container prefixes and indent, starts with `Caption`, `Table`, `Tabelle`, `Figure` or `Image` in any letter case, optionally after a `*` and spaces and optionally followed by a number, then `:`, or starts with `:`, whitespace and a further character, when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line (C2-B-146, C2-B-149)",
+      "reports": "a paragraph line outside code and raw blocks whose text, after container prefixes and indent, matches case-insensitively `^(?:\\*?\\s*(?:Caption|Table|Tabelle|Figure|Image)(?:\\s+\\d+)?\\s*:|:\\s+\\S)`; the optional number needs whitespace before its digits, so `Caption 2:` matches and `Caption2:` does not; a match reports when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line, the range is the first character of the matched line (C2-B-146, C2-B-149)",
       "clauses": ["C2-B-146", "C2-B-149"]
     },
     {

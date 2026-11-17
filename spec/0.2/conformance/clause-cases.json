@@ -53474,6 +53474,47 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1092",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a caption number without a separating space is no caption-looking paragraph",
+   "kind": "lint",
+   "input": "| a |\nCaption2: x\n",
+   "options": {
+    "rules": {
+     "caption-looking-paragraph": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "caption-looking-paragraph"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1093",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a caption number with a separating space reports",
+   "kind": "lint",
+   "input": "| a |\nCaption 2: x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "caption-looking-paragraph"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
