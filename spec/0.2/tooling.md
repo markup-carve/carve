@@ -16,14 +16,14 @@ This document defines what every engine offers a caller: the library calls and t
 
 ## Library
 
-**C2-T-005** An engine offers the calls of this table. Each reads the options of `data/options.json` whose `read_by` names its stage and refuses the others (C2-H-137).
+**C2-T-005** An engine offers the calls of this table. Each reads the options of `data/options.json` whose `read_by` names a stage the call runs and refuses the others (C2-H-137).
 
 | Call | Takes | Returns | Clauses |
 |---|---|---|---|
 | `parse` | Carve source as text or bytes, the parse and resolution options, `positions` (default on) | the resolved tree | C2-A-106, C2-B-218 |
 | `parseWithDiagnostics` | as `parse` | the tree, the diagnostics record and `suppressedDiagnostics` | C2-A-172, C2-T-024 |
 | `parseWithLayout` | as `parse` | the tree, the layout sidecar and the record | C2-L-001 |
-| `render` | Carve source or a tree, the render options | HTML | C2-H-137 |
+| `render` | Carve source or a tree, the parse, resolution and render options | HTML | C2-H-137 |
 | `renderWithDiagnostics` | as `render` | HTML, the record and `suppressedDiagnostics` | C2-A-172, C2-H-130 |
 | `format` | Carve source, `alignTables`, `normalize` | Carve source | C2-W-001, C2-W-134 |
 | `formatWithDiagnostics` | as `format` | Carve source and the record | C2-W-134 |
@@ -69,7 +69,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-013** A line or a report names a file by its path as given and standard input as `<stdin>` (C2-W-100).
 
-**C2-T-014** Standard output carries the product of the command and nothing else. Lines of diagnostics, notes and failures go to standard error. The product of `lint` and `diagnostics` is their entries.
+**C2-T-014** Standard output carries the product of the command and nothing else. The product of `lint` and `diagnostics` is their entries, as lines or as a report; every other line of a diagnostic, a note or a failure goes to standard error.
 
 **C2-T-015** A report flag takes a path, or `-` for standard error. The report is one JSON document for the whole run, followed by a line feed.
 
