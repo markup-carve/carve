@@ -274,6 +274,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | Point | Ruling | Clauses |
 | --- | --- | --- |
 | O14 | A `%%` line inside a code span, a math span, a braced comment or an editorial comment that runs over lines is a comment-only line. Its comment stands in the innermost inline node open at its place, and no atom spans it: `` `a ``, `%% b`, `` c` `` is text on both sides of the comment. The writer refuses an atom value with such a line. U-300 records the difference to 0.1. | C2-B-138, C2-A-075, C2-I-017, C2-W-016 |
+| O15 | Where the fallback of an extension node is written, attributes of the node wrap it in a `<div>` (block) or a `<span>` (inline) that carries them; a node without attributes adds no element. No 0.1 document changes meaning. | C2-X-035, C2-H-076 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

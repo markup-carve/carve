@@ -82,7 +82,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-051** If the engine cannot prepare a claim's canonical source record because the writer reports a loss (C2-W-134) or refuses a repair (C2-W-133), the engine retains the core node and reports `extension-transform-failed` naming the extension. Parsing and rendering continue with that core node.
 
-**C2-X-035** With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`.
+**C2-X-035** With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. Where the HTML renderer writes the fallback of an extension node that carries attributes (an `id`, a class or a pair, C2-A-032), here or after a renderer fails (C2-X-050), it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014). A node without attributes adds no element.
 
 **C2-X-036** Every profile restriction and URL policy check applies inside slots and fallback.
 
