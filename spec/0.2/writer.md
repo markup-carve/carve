@@ -314,7 +314,7 @@ a```b
 ```
 ````
 
-**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
+**C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. A writer with an enabled extension matcher keeps the first class on the attribute line when that matcher would claim a div named by it (C2-X-008). The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
 
 The div holds no div, so its run is the shortest, three colons (C2-W-039).
 

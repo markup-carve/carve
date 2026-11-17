@@ -31,3 +31,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-ca
 Search: `definition-term-block-folded`, `C2-B-075`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. CC-697 and CC-992 exercise the trigger.
+
+## R5 preserve a div class claimed by a matcher
+
+Search: `C2-W-039`, `C2-X-008`, `carve.tabs`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/ast-schema.json`, `spec/0.2/data/extensions.json`, `spec/0.2/data/node-slots.json`, `spec/0.2/extensions.md`, `spec/0.2/source-layout.md`, `spec/0.2/writer.md`. A writer case supplies a core div with the tabs matcher enabled.

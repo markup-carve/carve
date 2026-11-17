@@ -52449,6 +52449,50 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1047",
+   "clauses": [
+    "C2-W-039",
+    "C2-X-008"
+   ],
+   "why": "C2-W-039: A writer with an enabled extension matcher keeps the first class on the attribute line when that matcher would claim a div named by it (C2-X-008).",
+   "summary": "an enabled matcher does not claim a written core div",
+   "kind": "write",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "carve": "{.tabs}\n:::\nx\n:::\n"
+   },
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "div",
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      },
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
