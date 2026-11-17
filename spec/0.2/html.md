@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020), and in static mode a display math paragraph (C2-H-168), is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` or `<pre>` stands on its own lines inside the item, the description or the quote. A captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own lines inside the item, the description or the quote. A captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
@@ -2094,9 +2094,9 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-121** Fourteen of the 20 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
 
-**C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram or an equation without a build-time renderer falls back to its source as a code block. An unknown value is refused.
+**C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
-**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source and one line feed, as a code block writes its value (C2-A-045), with the attributes of the paragraph on `<pre>`. That `<pre>` stands on its own lines wherever it is, as a code block does, also as the only block of a tight item, a quote or a description (C2-H-006, C2-H-007, C2-H-040). A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+**C2-H-168** Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
 
 Example 69 (unverified, `--mode static`)
 
@@ -2108,10 +2108,7 @@ Example 69 (unverified, `--mode static`)
 
 ```html
 <ul>
-  <li>
-    <pre><code class="language-math">x
-</code></pre>
-  </li>
+  <li><span class="math display" role="math">\[x\]</span></li>
 </ul>
 ```
 
@@ -2205,7 +2202,7 @@ Hello
 
 :::
 
-**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096), static math (C2-H-168) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
+**C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
 

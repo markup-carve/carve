@@ -13379,6 +13379,221 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-184",
+   "clauses": [
+    "C2-H-168"
+   ],
+   "why": "C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "static mode keeps inline math as a math span",
+   "input": "a $`x<y` b",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<p>a <span class=\"math inline\" role=\"math\">\\(x&lt;y\\)</span> b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "math",
+        "display": false,
+        "value": "x<y"
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-185",
+   "clauses": [
+    "C2-H-168",
+    "C2-H-077"
+   ],
+   "why": "C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "static mode keeps a math block as a paragraph with a display span",
+   "input": "{.m}\n$$`x`",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<p class=\"m\"><span class=\"math display\" role=\"math\">\\[x\\]</span></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "math",
+        "display": true,
+        "value": "x"
+       }
+      ],
+      "role": "math",
+      "attrs": {
+       "classes": [
+        "m"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-186",
+   "clauses": [
+    "C2-H-168"
+   ],
+   "why": "C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "static mode keeps inline math in a quote",
+   "input": "> $`x`",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<blockquote><p><span class=\"math inline\" role=\"math\">\\(x\\)</span></p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "math",
+          "display": false,
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-187",
+   "clauses": [
+    "C2-H-168"
+   ],
+   "why": "C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "static mode keeps inline math in a table cell",
+   "input": "| $`x` |",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td><span class=\"math inline\" role=\"math\">\\(x\\)</span></td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "math",
+                "display": false,
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-188",
+   "clauses": [
+    "C2-H-168"
+   ],
+   "why": "C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "static mode keeps the attributes on the math span",
+   "input": "$`x`{.c}",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<p><span class=\"math inline c\" role=\"math\">\\(x\\)</span></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "math",
+        "display": false,
+        "value": "x",
+        "attrs": {
+         "classes": [
+          "c"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-189",
+   "clauses": [
+    "C2-H-122",
+    "C2-H-168"
+   ],
+   "why": "C2-H-122: Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. C2-H-168: Static mode writes core math as interactive mode does: an inline math node and a math block keep the `math` span with the TeX delimiters (C2-H-072, C2-H-077), as in 0.1.",
+   "summary": "a code block of the language math is a code block in both modes",
+   "input": "``` math\nx^2\n```",
+   "options": {
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<pre><code class=\"language-math\">x^2\n</code></pre>",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "x^2\n",
+      "syntax": "math"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

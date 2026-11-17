@@ -71946,7 +71946,7 @@
     "mode": "static"
    },
    "expected": {
-    "html": "<ul>\n  <li>\n    <pre><code class=\"language-math\">x\n</code></pre>\n  </li>\n</ul>",
+    "html": "<ul>\n  <li><span class=\"math display\" role=\"math\">\\[x\\]</span></li>\n</ul>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",

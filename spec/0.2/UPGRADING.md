@@ -287,6 +287,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | `align` on a line block: `{align=center}` above `::: \|` | Written as the attribute `align="center"`. | Written as `style="text-align: center;"`, as on every block that writes `<p>`, `<div>` or a heading element. A value in another case still differs (U-272). | C2-H-015 |
 | A continuation row that adds a cell to a row of header cells: `\|= a \|`, `+ \| b \|` | `b` was a data cell, `<td>` inside the head. | A header cell, as are the empty cells of columns it skips; in a row with a data cell the new cell stays a data cell. | C2-B-176 |
 | A pipe inside a quoted value of a row attribute: `\| a \|{title="p\|q"}` | The line was text, and the table ended above it. | A row whose `<tr>` carries `title="p\|q"`; the writer writes such a value in quotes, where it reported `field-unspellable`. | C2-B-166, C2-W-098 |
+| Core math rendered with `mode: "static"`: `` $`x` ``, `` $$`x` `` | `<code class="language-math">` and `<pre><code class="language-math">` around the source. | The math span with the TeX delimiters, as in interactive mode: `<span class="math inline" role="math">\(x\)</span>`. | C2-H-122, C2-H-168 |
 
 ### Include expansion
 
