@@ -11796,6 +11796,248 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-161",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style=\"text-align: VALUE;\"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "summary": "align on a line block inside a quote writes the style",
+   "input": "> {align=center}\n> ::: |\n> a\n> :::",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <div class=\"line-block\" style=\"text-align: center;\">\n    <p>a</p>\n  </div>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "line_block",
+        "children": [
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "align",
+           "center"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-162",
+   "clauses": [
+    "C2-H-015",
+    "C2-H-009"
+   ],
+   "why": "C2-H-015: An authored `style` on the same element keeps its value and takes the declaration after it.",
+   "summary": "a line block merges the declaration into its authored style",
+   "input": "{style=\"color:red\" align=right}\n::: |\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\" style=\"color:red; text-align: right;\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "style",
+         "color:red"
+        ],
+        [
+         "align",
+         "right"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-163",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: On every other element `align` stays an ordinary attribute.",
+   "summary": "a value outside the three stays an attribute on a line block",
+   "input": "{align=justify}\n::: |\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\" align=\"justify\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "align",
+         "justify"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-164",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: On every other element `align` stays an ordinary attribute.",
+   "summary": "align on a quote stays an attribute",
+   "input": "{align=left}\n> a",
+   "options": {},
+   "expected": {
+    "html": "<blockquote align=\"left\"><p>a</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "align",
+         "left"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-165",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: On every other element `align` stays an ordinary attribute.",
+   "summary": "align on an admonition stays an attribute",
+   "input": "{align=center}\n::: note\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<aside class=\"admonition note\" align=\"center\" aria-label=\"Note\">\n  <p>a</p>\n</aside>",
+    "children": [
+     {
+      "type": "admonition",
+      "kind": "note",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "align",
+         "center"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-166",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style=\"text-align: VALUE;\"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "summary": "align on a hard-break block writes the style",
+   "input": "{align=right}\n::: \\\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"hardbreaks\" style=\"text-align: right;\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "hardbreaks"
+       ],
+       "keyValues": [
+        [
+         "align",
+         "right"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

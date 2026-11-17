@@ -59889,6 +59889,113 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-74",
+   "document": "html.md",
+   "number": 74,
+   "section": "Attributes",
+   "clauses": [
+    "C2-H-009",
+    "C2-H-010",
+    "C2-H-011",
+    "C2-H-012",
+    "C2-H-013",
+    "C2-H-014",
+    "C2-H-015",
+    "C2-H-016",
+    "C2-H-017"
+   ],
+   "kind": "render",
+   "input": "{align=center}\n::: |\nRoses are red,\nviolets are blue.\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\" style=\"text-align: center;\">\n  <p>Roses are red,<br>\nviolets are blue.</p>\n</div>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "line_block",
+       "children": [
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "Roses are red,",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 1,
+            "endColumn": 15,
+            "startOffset": 21,
+            "endOffset": 35
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 15,
+          "startOffset": 21,
+          "endOffset": 35
+         }
+        },
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "violets are blue.",
+           "pos": {
+            "startLine": 4,
+            "endLine": 4,
+            "startColumn": 1,
+            "endColumn": 18,
+            "startOffset": 36,
+            "endOffset": 53
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 4,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 18,
+          "startOffset": 36,
+          "endOffset": 53
+         }
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "center"
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 57
+       }
+      }
+     ],
+     "srcByteLength": 57,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-62",
    "document": "html.md",
    "number": 62,

@@ -66,7 +66,28 @@ Example 1 (generated)
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
-**C2-H-015** An authored `align` key with the value `left`, `right` or `center` on a paragraph, a div or a heading is written as `style="text-align: VALUE;"`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
+**C2-H-015** An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style="text-align: VALUE;"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1, except that the value is compared as written (U-272).
+
+Example 74 (unverified)
+
+::: compare
+
+```carve
+{align=center}
+::: |
+Roses are red,
+violets are blue.
+:::
+```
+
+```html
+<div class="line-block" style="text-align: center;">
+  <p>Roses are red,<br>
+violets are blue.</p>
+</div>
+```
+
+:::
 
 Example 62 (generated)
 
@@ -2475,7 +2496,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
-| Attributes | 9 | 1 | 3 | 1 |
+| Attributes | 9 | 1 | 3 | 2 |
 | Paragraphs, headings and sections | 16 | 1 | 5 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
@@ -2495,6 +2516,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **38** |
+| **Total** | **193** | **6** | **35** | **39** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 73 examples, 35 generated and 38 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 74 examples, 35 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
