@@ -1,6 +1,6 @@
 # Carve 0.2: extensions
 
-Status: provisional, not frozen with the core of Carve 0.2 on `next2`. The interfaces of this document may change in a 0.2.x release together with the extension catalog, because the interface points O12, O15 and O17 belong to that work (`STATUS.md`, "What is not frozen"). The standard extensions are not frozen either.
+Status: provisional, not frozen with the core of Carve 0.2 on `next2`. The interfaces of this document may change in a 0.2.x release together with the extension catalog, because that work holds the open interface point O12 and may revisit two rulings of 17 November, the element around an attributed fallback (O15, C2-X-035) and the unresolved fallback after a renderer fails (O17, C2-X-050); see `STATUS.md`, "What is not frozen". The standard extensions are not frozen either.
 
 This document defines the extension interface for Carve 0.2.0.
 
@@ -92,7 +92,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 ## Standard extension: tabs
 
-The standard extensions are a catalog that follows the core: this section is not part of the freeze candidate, and the clauses of the sections before and after it are.
+The standard extensions are a catalog that follows the core: this section is not part of the freeze candidate, and the clauses of the sections before and after it are, with the provisional status of the head of this document.
 
 **C2-X-039** The core provides optional `carve.tabs` and `carve.tab` extensions at version `1`. The `tabs` div matcher produces `carve.tabs`; the nested `tab` div produces `carve.tab` only inside its `tabs` slot. A `tab` div elsewhere stays a core div.
 
