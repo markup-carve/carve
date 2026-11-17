@@ -53963,6 +53963,30 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1117",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-059"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "standalone plus line inside list item has its own advice",
+  "kind": "lint",
+  "input": "- a\n  +\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "deprecated-continuation-marker",
+     "line": 2,
+     "column": 3,
+     "endLine": 2,
+     "endColumn": 4
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
