@@ -259,3 +259,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `C2-I-089`, `inline footnote`, `a^^[`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/inline-scan.json`, `spec/0.2/html.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. The note-closing rule has a cyclic reading; park until the 0.1 result is established.
+
+## F11 CC-287 list style
+
+Search: `CC-287`, `C2-B-042`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/ordered-styles.json`, `spec/0.2/data/schemas/ordered-styles.schema.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. The stored second list uses roman style while its HTML and clause choose alphabetic.

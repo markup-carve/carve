@@ -16334,9 +16334,9 @@
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 100
+       "start": 3
       },
       "spacing": "tight",
       "children": [
