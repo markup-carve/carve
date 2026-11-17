@@ -52621,17 +52621,31 @@
   {
    "id": "CC-1051",
    "clauses": [
-    "C2-T-009",
-    "C2-T-015"
+    "C2-T-015",
+    "C2-T-009"
    ],
-   "why": "C2-T-015: After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply.",
+   "why": "C2-T-015: After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply. C2-T-009: A flag given twice takes its last value, except `--allow-loss`, which collects every value.",
    "summary": "repeated loss report flags take the last path",
    "kind": "cli",
    "options": {},
    "expected": {
     "status": 0,
     "stdout": "<p>a</p>\n",
-    "stderrCategory": null
+    "stderrCategory": null,
+    "filesAfter": {
+     "r.json": {
+      "json": {
+       "files": [
+        {
+         "file": "a.crv",
+         "diagnostics": [],
+         "suppressed": 0
+        }
+       ]
+      }
+     },
+     "./r.json": null
+    }
    },
    "files": {
     "a.crv": {
