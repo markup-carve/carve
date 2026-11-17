@@ -77,7 +77,7 @@
       "properties": {
         "key": { "const": "plain_text_of_label" },
         "start": { "type": "integer", "minimum": 0, "description": "The first number of a sequence." },
-        "order": { "const": "document" },
+        "order": { "const": "body_then_footnote_bodies", "description": "Captions of the document body in document order, then those of footnote bodies in the order of the footnote numbers (C2-H-150)." },
         "assigned_in": { "const": "resolution" },
         "clauses": {
           "type": "array",

@@ -12,7 +12,7 @@
   "sequence": {
     "key": "plain_text_of_label",
     "start": 1,
-    "order": "document",
+    "order": "body_then_footnote_bodies",
     "assigned_in": "resolution",
     "clauses": ["C2-B-150", "C2-B-208", "C2-H-149", "C2-H-150"]
   }
