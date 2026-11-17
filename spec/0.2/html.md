@@ -1985,6 +1985,8 @@ Example 55 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
 
 :::
 
+Reported: `destination-denied`.
+
 A browser loads the `background` of a table cell as an image, so it is on the list as well.
 
 Example 58 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
@@ -2004,6 +2006,8 @@ Example 58 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
 ```
 
 :::
+
+Reported: `destination-denied`.
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 

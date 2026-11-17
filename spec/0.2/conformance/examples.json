@@ -67549,7 +67549,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "destination-denied"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -67697,7 +67700,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "destination-denied"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
