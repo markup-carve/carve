@@ -2601,13 +2601,13 @@ Reported: `profile-construct-degraded`.
 | `rawHtml` | render, import | boolean | off | C2-H-127, C2-M-066 |
 | `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list, listed in `data/options.json` | C2-H-128 |
 | `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
-| `strictLosses` | render | boolean | off | C2-H-130 |
+| `strictLosses` | render, import | boolean | off | C2-H-130, C2-M-082 |
 | `alignTables` | format | boolean | off | C2-W-068 |
 | `normalize` | format | boolean | off | C2-W-127 |
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 
-Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml` is read by the HTML importer as well (C2-M-066).
+Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml` and `strictLosses` are read by the HTML importer as well (C2-M-066, C2-M-082).
 
 ## The clauses of PART 10
 

@@ -169,10 +169,10 @@
     {
       "name": "strictLosses",
       "kind": "render",
-      "read_by": "render",
+      "read_by": ["import", "render"],
       "type": "boolean",
       "default": false,
-      "clauses": ["C2-H-130", "C2-H-137"]
+      "clauses": ["C2-H-130", "C2-H-137", "C2-M-082"]
     },
     {
       "name": "symbols",

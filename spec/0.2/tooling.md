@@ -59,7 +59,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value.
 
-**C2-T-010** Each option a command reads is a flag named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. A value the option refuses is refused with the category `usage`. An option the command line does not set has its default.
+**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
 
 ## Input and output
 
