@@ -171,7 +171,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--align-tables` | switch | the option `alignTables` |
 | `--from-ast` | switch | writes each file read as a tree in JSON (C2-W-102) |
 
-**C2-T-030** `fmt` refuses `--write` with `--check` or with `--diff`, and `--normalize` with `--from-ast`, with the category `usage`. Without one of `--check`, `--diff` and `--write` it writes the output on standard output. A writer loss of C2-W-134 ends the file with status 1 and the category `writer-refused`.
+**C2-T-030** `fmt` refuses `--write` with `--check` or with `--diff`, `--check` with `--diff`, and `--normalize` with `--from-ast`, with the category `usage`. Without one of `--check`, `--diff` and `--write` it writes the output on standard output. A writer loss of C2-W-134 ends the file with status 1 and the category `writer-refused`.
 
 ### `carve lint`
 

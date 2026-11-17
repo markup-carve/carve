@@ -49213,6 +49213,33 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-910",
+   "clauses": [
+    "C2-T-030"
+   ],
+   "why": "C2-T-030: `fmt` refuses `--write` with `--check` or with `--diff`, `--check` with `--diff`, and `--normalize` with `--from-ast`, with the category `usage`.",
+   "summary": "fmt refuses check with diff",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "# H\n"
+    }
+   },
+   "args": [
+    "fmt",
+    "--check",
+    "--diff",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stdout": "",
+    "stderrCategory": "usage"
+   },
+   "from": []
   }
  ]
 }
