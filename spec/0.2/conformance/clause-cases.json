@@ -53103,6 +53103,24 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1075",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a star inside a multiline code span is no emphasis opener",
+   "kind": "lint",
+   "input": "`x\n*b`\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "unclosed-inline-emphasis"
+    ]
+   },
+   "from": []
   }
  ]
 }
