@@ -2252,16 +2252,6 @@
       "silent": true
     },
     {
-      "id": "U-272",
-      "kind": "rewrite",
-      "group": "rulings of 17 November",
-      "from": "{align=Right}\npara\n",
-      "to": "{align=right}\npara\n",
-      "meaning02": "<p align=\"Right\">para</p> C2-H-015 compares the value of `align` as written; 0.1 trimmed it and folded its ASCII case, so `Right` and ` left ` wrote a `text-align` style.",
-      "toolEntry": "U-272",
-      "silent": true
-    },
-    {
       "id": "U-273",
       "kind": "rewrite",
       "group": "differences that stay",

@@ -11784,7 +11784,7 @@
    "clauses": [
     "C2-H-015"
    ],
-   "why": "C2-H-015: An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style=\"text-align: VALUE;\"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "why": "C2-H-015: An authored `align` key whose value is `left`, `right` or `center` once ASCII whitespace at its ends is removed and its ASCII letters are folded to lower case, on an element `<p>`, `<div>` or `<h1>` to `<h6>`, is written as `style=\"text-align: VALUE;\"` with that folded value: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
    "summary": "align on a line block inside a quote writes the style",
    "input": "> {align=center}\n> ::: |\n> a\n> :::",
    "options": {},
@@ -11985,7 +11985,7 @@
    "clauses": [
     "C2-H-015"
    ],
-   "why": "C2-H-015: An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style=\"text-align: VALUE;\"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "why": "C2-H-015: An authored `align` key whose value is `left`, `right` or `center` once ASCII whitespace at its ends is removed and its ASCII letters are folded to lower case, on an element `<p>`, `<div>` or `<h1>` to `<h6>`, is written as `style=\"text-align: VALUE;\"` with that folded value: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
    "summary": "align on a hard-break block writes the style",
    "input": "{align=right}\n::: \\\na\n:::",
    "options": {},
@@ -18098,6 +18098,72 @@
         "number": 1
        }
       ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-323",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: An authored `align` key whose value is `left`, `right` or `center` once ASCII whitespace at its ends is removed and its ASCII letters are folded to lower case, on an element `<p>`, `<div>` or `<h1>` to `<h6>`, is written as `style=\"text-align: VALUE;\"` with that folded value: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "summary": "an align value in another case is folded, as in 0.1",
+   "input": "{align=Right}\npara",
+   "options": {},
+   "expected": {
+    "html": "<p style=\"text-align: right;\">para</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "para"
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "align",
+         "Right"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-324",
+   "clauses": [
+    "C2-H-015"
+   ],
+   "why": "C2-H-015: An authored `align` key whose value is `left`, `right` or `center` once ASCII whitespace at its ends is removed and its ASCII letters are folded to lower case, on an element `<p>`, `<div>` or `<h1>` to `<h6>`, is written as `style=\"text-align: VALUE;\"` with that folded value: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`.",
+   "summary": "an align value with spaces around it is trimmed, as in 0.1",
+   "input": "{align=\" CENTER \"}\npara",
+   "options": {},
+   "expected": {
+    "html": "<p style=\"text-align: center;\">para</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "para"
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "align",
+         " CENTER "
+        ]
+       ]
+      }
      }
     ]
    },

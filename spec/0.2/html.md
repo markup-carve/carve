@@ -66,7 +66,7 @@ Example 1 (generated)
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
-**C2-H-015** An authored `align` key with the value `left`, `right` or `center` on an element `<p>`, `<div>` or `<h1>` to `<h6>` is written as `style="text-align: VALUE;"`: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1, except that the value is compared as written (U-272).
+**C2-H-015** An authored `align` key whose value is `left`, `right` or `center` once ASCII whitespace at its ends is removed and its ASCII letters are folded to lower case, on an element `<p>`, `<div>` or `<h1>` to `<h6>`, is written as `style="text-align: VALUE;"` with that folded value: on a paragraph, a heading, a div, a line block, a hard-break block and a directive that writes a `<div>`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
 
 Example 74 (unverified)
 

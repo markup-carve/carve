@@ -1579,7 +1579,7 @@ Reported: `import-element-dropped`.
 
 **C2-M-074** A tree that holds a fact the writer has no spelling for in that place, such as blocks in a table cell, a row span the source cannot express or a `dir`, is returned as it stands. The writer reports it with `field-unspellable` or `structure-unspellable` (C2-W-117), in the same record.
 
-**C2-M-075** On a `<p>`, a `<div>` and a heading element, a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;` is the key `align` with that value, as a render writes it (C2-H-015). An `align` attribute of the same element is then dropped, since the declaration wins in a browser, and reported with `import-attribute-dropped`.
+**C2-M-075** On a `<p>`, a `<div>` and a heading element, a `style` that is exactly `text-align: VALUE;`, as a render writes it, with a VALUE that C2-H-015 reads as `left`, `right` or `center`, is the key `align` with the value C2-H-015 reads. An `align` attribute of the same element is then dropped, since the declaration wins in a browser, and reported with `import-attribute-dropped`.
 
 Example 51 (unverified)
 
