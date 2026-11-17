@@ -198,7 +198,7 @@ Top.
 }
 ```
 
-**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1. Frontmatter belongs to the file, so a selection opens frontmatter (C2-B-161) only when it starts at line 1 of the file; in a selection that starts later, a `---` line and the lines after it are ordinary content.
+**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1. Frontmatter belongs to the file, so a selection opens frontmatter (C2-B-161) only when it starts at line 1 of the file; in a selection that starts later, a `---` line and the lines after it are ordinary content. Its children are the blocks of the selected lines and then, as under a section (C2-N-031), in source order, every definition of the file that the selection did not take: each link reference, footnote, abbreviation and citation definition of the file parsed whole whose first line is not selected. Its references therefore resolve against the definitions of their whole file (C2-N-054).
 
 **C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: when the selection takes it, which a selection by lines or region does only from line 1 of the file (C2-N-020), it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
 
@@ -612,6 +612,33 @@ Skip too.
 
 :::
 
+Example 421 (unverified)
+
+File `a.crv`:
+
+```carve
+%% #region k
+See [s][] and HTML.
+%% #endregion k
+
+[s]: /u
+*[HTML]: Hyper
+```
+
+::: compare
+
+```carve
+{{ a.crv @region:k }}
+```
+
+```html
+<p>See <a href="/u">s</a> and <abbr title="Hyper">HTML</abbr>.</p>
+```
+
+:::
+
+The region selects line 2 only. The two definitions below it are appended to the include's children, so the reference and the abbreviation resolve as in the whole file (C2-N-020, C2-N-054).
+
 ### Code
 
 **C2-N-042** With `code` the include has one child: the node that a fenced code block would give whose attribute line is the attribute line of the include, whose language is the value of `code`, and whose content is the selected source. A bare `code` gives no language; none is inferred from the file name. The payload is not read as Carve: no construct is recognized in it, and a directive in it is text that is never expanded. (I1c, carried over)
@@ -909,7 +936,7 @@ File `grand.crv`:
 
 **C2-N-053** The file of a node is the file whose parse produced it: the top-level document, or the included file of the nearest expanded include around the node. The including file of an include is the file of the include node.
 
-**C2-N-054** A link reference is looked up in the link definitions of its own file first, then in those of the including file, then in those of each file further out, up to the top-level document, and only then in the headings of the whole tree (C2-A-109, C2-H-083). The first file that defines the key decides. A definition never reaches inward: a reference in an including file does not see a definition of the file it includes.
+**C2-N-054** A link reference is looked up in the link definitions of its own file first, which for a selection are those of the whole file (C2-N-020, C2-N-031), then in those of the including file, then in those of each file further out, up to the top-level document, and only then in the headings of the whole tree (C2-A-109, C2-H-083). The first file that defines the key decides. A definition never reaches inward: a reference in an including file does not see a definition of the file it includes.
 
 Example 19 (unverified)
 
@@ -1435,7 +1462,7 @@ I13 and I14 were unassigned in 0.1.
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
 | Expansion | 9 | 0 | 8 |
-| Selection, transforms and mode | 29 | 0 | 16 |
+| Selection, transforms and mode | 29 | 0 | 17 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
 | Attributes and captions | 4 | 2 | 3 |
@@ -1443,6 +1470,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **39** |
+| **Total** | **88** | **2** | **40** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 39 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 40 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

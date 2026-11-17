@@ -2350,6 +2350,16 @@
       "meaning02": "<p>—\nt: 1\n—</p>\n<p>para</p> for an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`. C2-N-020: a selection opens frontmatter only when it starts at line 1 of the file; 0.1 read the selected `---` lines as frontmatter and wrote <p>para</p>. Start the selection below the closing `---` line where the lines are meant as frontmatter.",
       "toolEntry": "U-301",
       "silent": true
+    },
+    {
+      "id": "U-302",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{{ a.crv @region:k }}\n",
+      "to": "",
+      "meaning02": "<p>See <a href=\"/u\">s</a> and <abbr title=\"Hyper\">HTML</abbr>.</p> for an `a.crv` of `%% #region k`, `See [s][] and HTML.`, `%% #endregion k`, a blank line, `[s]: /u` and `*[HTML]: Hyper`. C2-N-020, C2-N-054: a line or region selection sees every definition of its file, as a section does (C2-N-031); 0.1 resolved only against the selected lines and wrote <p>See [s][] and HTML.</p>.",
+      "toolEntry": "U-302",
+      "silent": true
     }
   ],
   "tree": [
