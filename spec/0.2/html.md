@@ -1078,7 +1078,29 @@ a
 
 :::
 
-**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text: `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. An include is unexpanded when no resolver was given or when its expansion failed (C2-N-061); an expanded include writes its children and nothing else (C2-N-075).
+**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text, written bare or with `<p>` as a `paragraph` node at its place would be (C2-H-006, C2-H-007, C2-H-034, C2-H-040): `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. An include is unexpanded when no resolver was given or when its expansion failed (C2-N-061); an expanded include writes its children and nothing else (C2-N-075).
+
+An unexpanded include that is the first block of a tight item is written bare, as a paragraph there is.
+
+Example 64 (unverified)
+
+::: compare
+
+```carve
+- {{ a.crv }}
+- b
+```
+
+```html
+<ul>
+  <li>{{ a.crv }}</li>
+  <li>b</li>
+</ul>
+```
+
+:::
+
+Reported: `include-unresolved`.
 
 **C2-H-171** When an unexpanded include is written, a path that holds a space, a tab, `#`, `@`, `}`, `"` or `“` stands in double quotes, with a backslash before each `"` and `\` in it, as the writer writes it (C2-B-202, C2-W-058), so the text reads back as the same directive. An option value that holds a space, a tab, `@` or `}` stands in double quotes, and every other value stands bare. The value is the one the tree holds. An invalid option is written as the source spelled it (C2-A-181), so `@cols:"a,,b"`, which is no list of names (C2-B-205), stays `@cols:"a,,b"`. A `cols` list of names is written as its names joined by commas in one pair of double quotes; the tree keeps no quotes (C2-A-181). The writer does the same (C2-W-058). A value that starts with a double or a single quote is written in double quotes too, since bare it would read as the start of a quoted value (C2-B-204).
 
@@ -2234,7 +2256,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 9 | 0 | 1 | 0 |
 | Captions and figures | 12 | 0 | 4 | 1 |
-| Comments, frontmatter and definitions | 5 | 0 | 1 | 1 |
+| Comments, frontmatter and definitions | 5 | 0 | 1 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
 | Footnotes | 8 | 0 | 2 | 2 |
@@ -2246,6 +2268,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **29** | **34** |
+| **Total** | **199** | **7** | **29** | **35** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 63 examples, 29 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 64 examples, 29 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

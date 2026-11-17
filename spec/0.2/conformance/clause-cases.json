@@ -2464,7 +2464,7 @@
     "C2-A-181",
     "C2-B-206"
    ],
-   "why": "C2-H-133: It renders as a paragraph that holds the directive as text: `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`.",
+   "why": "C2-H-133: It renders as a paragraph that holds the directive as text, written bare or with `<p>` as a `paragraph` node at its place would be (C2-H-006, C2-H-007, C2-H-034, C2-H-040): `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`.",
    "summary": "unexpanded include keeps invalid options as written",
    "input": "{{ t.csv @rows:9-1 @cols:\"a,,b\" @rows }}",
    "options": {},
