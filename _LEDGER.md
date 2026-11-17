@@ -103,3 +103,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `duplicate-reference-url`, `C2-B-081`, `U-210`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. U-210 records the 0.1 container-definition difference; count parsed definitions only.
+
+## CR9-07
+
+Search: `footnote-labels-differ-only-in-whitespace`, `C2-B-081`, `U-213`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. U-213 records the 0.1 container-definition difference; count parsed definitions only.

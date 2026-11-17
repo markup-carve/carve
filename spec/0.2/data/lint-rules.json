@@ -898,7 +898,7 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${key}` is escaped as in a JSON string."],
-      "reports": "each footnote definition whose label is spelled differently from the label of an earlier footnote definition in source order but has the same lookup key; the later definition is reported, also inside a quote or list item, once (C2-I-079, C2-B-085)",
+      "reports": "each footnote definition whose label is spelled differently from the label of an earlier footnote definition in source order but has the same lookup key; the later parsed definition is reported once; definition-shaped container text is not counted (C2-I-079, C2-B-085)",
       "clauses": ["C2-I-079", "C2-B-085"]
     },
     {

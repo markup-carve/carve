@@ -52753,6 +52753,23 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1054",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "definition-shaped quote text is not a footnote key collision",
+   "kind": "lint",
+   "input": "[^a b]: x\n> [^a  b]: y\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "footnote-labels-differ-only-in-whitespace"
+    ]
+   },
+   "from": []
   }
  ]
 }
