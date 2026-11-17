@@ -58,7 +58,7 @@ Example 1 (generated)
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
-**Exception C2-H-011** On a footnote reference the `id` stands before `href`. On a mention or a tag the class stands first.
+**Exception C2-H-011** On a footnote reference the `id` stands before `href`, and on the `<li>` of a note before the carriers. On a mention or a tag the class stands first, and on the title paragraph of an admonition the class stands before the `id`. On a link `rel` stands directly behind `href` and `title`, before the carriers (C2-H-167).
 
 **C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068). A class that occurs more than once is written once, at its first place; the tree keeps every occurrence.
 
