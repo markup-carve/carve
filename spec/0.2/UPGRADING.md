@@ -309,6 +309,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | --- | --- | --- | --- |
 | A large abbreviation expansion or a long heading used very often: `*[HT]: ` and 10,000 `X`, then `HT` 150 times; `# A` and 9,999 `!`, then `</#A>` 150 times | Every use was expanded: about 1.5 MB of HTML from 11 KB of source. | Abbreviations and cross-reference labels share a budget of 1,000,000 bytes or 8 times the source bytes; a use past it is written as its term, `HT`, or its key, `<a href="#A">A</a>`, and the render reports `derived-text-budget` once (0.1 reported nothing). | C2-H-201 |
 | `social: {resolveMention: ({name}) => '/u/' + name}` with `@alice`, the 0.1 callback moved into `social` | The resolver received the name string, so the link went to `/u/undefined`. | The resolver receives one object with `kind` (`mention` or `tag`), `name` and `context`, the value of `social.context`, which replaces the 0.1 option `socialContext`: `<a class="mention" href="/u/alice">`. | C2-H-126 |
+| `social: {mentionUrl: '/u/{name}', resolveMention: () => null}` with `@alice`, a resolver that refuses a name | The template was used when the resolver returned nothing: `<a class="mention" href="/u/alice">`. | A resolver is final: the template of its pair is not read, and a mention or tag it returns nothing for is the inert span, `<span class="mention"><strong>@alice</strong></span>`. | C2-H-126 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -834,7 +835,7 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `sourceLine` | `sourceLines`, default false. |
 | `allowRawHtml`, default true | `rawHtml`, default false. |
 | `sanitizeUrls`, `allowedUrlSchemes`, `deniedUrlSchemes` | `urlPolicy: {allow: [...]}` or `{deny: [...]}`. There is no disabled URL filter. |
-| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`. |
+| `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag`, `socialContext` | `social` object with the members `mentionUrl`, `tagUrl`, `resolveMention`, `resolveTag` and `context` (for `socialContext`); default null. A resolver receives the 0.1 object of `kind`, `name` and `context`, and is final: where it returns nothing the template is not used. |
 | `profile` object and `profileBaseHost` | `profile` string: `full`, `article`, `comment`, or `minimal`; default `full`. No base-host field. |
 | `mode`, `sections`, `roundtrip` | Same names and defaults: `interactive`, true, false. Review changed HTML semantics. |
 | `smartTypography` | Boolean, default true; 0.1 accepted a richer option shape. |
