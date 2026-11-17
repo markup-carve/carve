@@ -1678,7 +1678,7 @@
         "${key} supplies ${count} column entries for a ${widest}-column table; the unset tail is valid but may be accidental."
       ],
       "message_origin": "engine_0_1",
-      "reports": "a table attribute `aligns`, `valigns` or `widths` whose value, split at commas, has fewer entries than the widest row of the table has cells; once per key, the range is the key name in the attribute line (C2-B-211, C2-B-212)",
+      "reports": "a table attribute `aligns`, `valigns` or `widths` whose whole comma-separated value is valid under C2-B-211 or C2-B-212 and has fewer entries than the widest row of the table has cells; an invalid list reports only `table-attribute-invalid`; once per key, the range is the key name in the attribute line (C2-B-211, C2-B-212)"
       "clauses": ["C2-B-211", "C2-B-212"]
     },
     {
@@ -1691,7 +1691,7 @@
         "Column ${n} supplies the same alignment axis both in the table and in a table attribute; the in-table marker wins."
       ],
       "message_origin": "engine_0_1",
-      "reports": "a table column for which a header cell in the head carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has an entry that is not empty at that column's position; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-213, C2-B-182)",
+      "reports": "a table column for which a header cell in the head carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has a valid whole list under C2-B-211 with an entry at that column; an invalid list reports only `table-attribute-invalid`; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-211, C2-B-213, C2-B-182)"
       "clauses": ["C2-B-213", "C2-B-182"]
     },
     {
@@ -1808,7 +1808,7 @@
       "default": "on",
       "messages": ["The specified table column widths total more than 100%."],
       "message_origin": "engine_0_1",
-      "reports": "a table whose `widths` attribute's entries, each read as a number with entries that are no number skipped, total more than 100; once per table, the range is the key `widths` (C2-B-212)",
+      "reports": "a table whose `widths` attribute has a valid whole list under C2-B-212 and whose entries total more than 100; an invalid list reports only `table-attribute-invalid`; once per table, the range is the key `widths` (C2-B-212)"
       "clauses": ["C2-B-212"]
     },
     {
