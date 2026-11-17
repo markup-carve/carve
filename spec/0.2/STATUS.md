@@ -16,7 +16,7 @@ Freeze candidate 4: `20444577c5c4d9eadc29131c4e4258b9d248204b` (`20444577`), the
 
 Freeze candidate 5: `a835c9e636bcc0e4ada8961a9ad262ecc17931a7` (`a835c9e6`), the fix round of the fifth review (F1 to F42), its list of rules that could go with the lower-confidence list, and the open readings of the `carve-js` candidate 2 and PHP stage 9 gap lists. The commit after it writes only this line.
 
-Freeze candidate 5, revision 1: the commit named here by the commit after it, the two rulings of 17 November 2026: vertical alignment of table cells as in 0.1 (C2-B-182, C2-B-211, C2-B-213; O13 is settled by it), and a header mark glued to a letter, a digit or `=` is cell text (C2-B-171). The commit after it writes only this line.
+Freeze candidate 5, revision 1: `7db33836185126d9e8457e84464ca38fdb1aec3c` (`7db33836`), the two rulings of 17 November 2026: vertical alignment of table cells as in 0.1 (C2-B-182, C2-B-211, C2-B-213; O13 is settled by it), and a header mark glued to a letter, a digit or `=` is cell text (C2-B-171). The commit after it writes only this line.
 
 ## Documents
 
