@@ -54703,6 +54703,26 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1153",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "percent-decoded fragment selects case-only advice",
+ "kind": "lint",
+ "input": "{#Ab}\n# H\n\n[x](#%61b)\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "broken-fragment-link",
+    "messageWhen": "a rendered id differs only in case from the fragment as written or percent-decoded"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
