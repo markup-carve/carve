@@ -96,9 +96,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "A blockquote marker must be either bare \">\" or followed by a space. This spelling does not open a quote; in frontmatter it stays frontmatter content."
-      ],
+      "messages": [{"when": "the line is paragraph text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal paragraph text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
       "reports": "a line outside code and raw blocks whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
       "clauses": ["C2-B-031"]

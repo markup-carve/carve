@@ -53521,6 +53521,44 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1094",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a malformed quote marker in a paragraph has a corrected line",
+   "kind": "lint",
+   "input": ">a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1095",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a malformed quote marker in frontmatter stays frontmatter content",
+   "kind": "lint",
+   "input": "---\na: b\n>a\n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
