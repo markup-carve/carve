@@ -289,3 +289,7 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `CC-005`, `C2-H-165`, `C2-H-166`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`. A code node gives its value under the nesting bound.
+
+## Stranger read fixes
+
+Search: `C2-W-039`, `C2-X-040`, `CC-1047`, `unattached-caption`, `C2-A-180`, `migrateTree` over all of `spec/0.2/`. Places: `writer.md`, `extensions.md`, `conformance/clause-cases.json`, `data/lint-rules.json`, `ast.md`, `tooling.md`, `UPGRADING.md`. The writer case now has a tab child so the matcher would actually claim a named tabs div; the catalog count and migration guide no longer make stale claims.

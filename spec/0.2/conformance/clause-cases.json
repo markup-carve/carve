@@ -52469,7 +52469,7 @@
     ]
    },
    "expected": {
-    "carve": "{.tabs}\n:::\nx\n:::\n"
+    "carve": "{.tabs}\n::::\n::: tab \"A\"\nx\n:::\n::::\n"
    },
    "tree": {
     "type": "document",
@@ -52484,11 +52484,27 @@
       },
       "children": [
        {
-        "type": "paragraph",
-        "children": [
+        "type": "div",
+        "attrs": {
+         "classes": [
+          "tab"
+         ]
+        },
+        "title": [
          {
           "type": "text",
-          "value": "x"
+          "value": "A"
+         }
+        ],
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
          }
         ]
        }

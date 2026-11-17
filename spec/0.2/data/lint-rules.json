@@ -1862,7 +1862,7 @@
       ],
       "message_origin": "data_file",
       "reports": "a caption line that is not directly below an image, table, code block, quote, math block, figure group or valid code include, a caption after a blank line among them",
-      "change": "the target list has six kinds, the figure group included",
+      "change": "the target list has seven kinds, the figure group and code include included",
       "clauses": ["C2-B-149", "C2-N-073"]
     },
     {
