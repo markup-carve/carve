@@ -327,8 +327,6 @@ Written:
 
 **C2-W-071** Underline, strike and highlight are written in their braced forms, `{_text_}`, `{~text~}` and `{=text=}`. They have no bare form in 0.2 (C2-I-046).
 
-**C2-W-072** A replacement is written as a deletion directly followed by an insertion: `{-old-}{+new+}`. There is no arrow form (C2-A-097).
-
 **C2-W-073** A link title is written in double quotes. Single quotes are rewritten to that form. A `title` key in an attribute block stays a key: it is a different tree (C2-A-032).
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
@@ -979,11 +977,11 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Layout | 23 | 2 | 0 | 2 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
-| Canonical forms: inline | 15 | 1 | 0 | 1 |
+| Canonical forms: inline | 14 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **133** | **5** | **5** | **10** |
+| **Total** | **132** | **5** | **5** | **10** |
 
-The document has 133 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 132 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
