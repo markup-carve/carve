@@ -2392,6 +2392,16 @@
       "silent": true
     },
     {
+      "id": "U-280",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[t][a\tb]\n\n[a b]: /u\n",
+      "to": "[t]\\[a\tb]\n\n[a b]: /u\n",
+      "meaning02": "<p><a href=\"/u\">t</a></p> C2-I-079 folds every run of spaces, tabs and one line break in a label to one space, so a tab inside a reference label finds the definition with a space; 0.1 folded only spaces, so the reference stayed text. An escaped opening bracket of the label keeps the 0.1 HTML. U-160 records the same for a footnote label.",
+      "toolEntry": "U-280",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
