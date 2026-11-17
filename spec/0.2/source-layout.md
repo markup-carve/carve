@@ -43,7 +43,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-010** `path` is an RFC 6901 JSON Pointer into the tree. The empty string is the root, and `/children/2/children/0` is the first child of the third block. This is how every sidecar fact refers to its node.
 
-**C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. The slots of one node are visited in the order `title`, `children`, `caption`. No two entries have the same path.
+**C2-L-011** Entries stand in document order, a node before the nodes inside it, which compares each index of a `path` as a number: `/children/2` stands before `/children/10`. The slots of one node are visited in the order `title`, `children`, `caption`, and its other slots after them in the order of `data/node-slots.json`, the named slots of an extension node in the order of its declaration (C2-X-020). The nodes in a `fallback` have no entry. No two entries have the same path.
 
 **C2-L-012** `startByte` and `endByte` are a range in bytes of the original input, start inclusive and end exclusive: its UTF-8 bytes, or under `"base64"` the bytes as given (C2-L-056). For a node that has `pos` they equal `pos.startOffset` and `pos.endOffset` (C2-A-141): a byte-order mark and every CR are counted as they stand. A range never exceeds the byte length of the input. An offset into a node value, as in `wraps` (C2-L-020), counts the UTF-8 bytes of that value.
 
