@@ -49,3 +49,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `C2-B-180`, `C2-B-181`, `delimited-table-malformed`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/table-marks.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Existing malformed-table cases exercise an unclosed quote.
+
+## R8 per-line lint change from 0.1
+
+Search: `list-marker-without-blank-line`, `table-shaped-paragraph`, `C2-B-022`, `C2-B-168`.
+
+Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/interrupters.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/schemas/interrupters.schema.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Clauses and cases report each line; add upgrade rows U-372 and U-373.

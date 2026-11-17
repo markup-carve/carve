@@ -1058,3 +1058,10 @@ Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown
 - Resolve the rewrite tool's `U-114` fifth-input `upgrade-mismatch` and classify remaining corpus mismatches.
 - Align the engine's tree fields and task-item style with the current 0.2 schema and HTML rulings.
 - Finish the non-HTML renderers before those callers switch.
+
+### Lint report counts in 0.2
+
+| Input | 0.1 | 0.2 | Clause |
+|---|---|---|---|
+| Consecutive marker-shaped lines in paragraph text | `list-marker-without-blank-line` reports the first line. | It reports each line. | C2-B-022, U-372 |
+| Consecutive table-shaped paragraph lines | `table-shaped-paragraph` reports the first line. | It reports each line. | C2-B-168, U-373 |
