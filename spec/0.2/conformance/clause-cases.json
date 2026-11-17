@@ -13594,6 +13594,588 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-190",
+   "clauses": [
+    "C2-H-094"
+   ],
+   "why": "C2-H-094: A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.",
+   "summary": "under minimal a note reached only through a degraded note writes no section",
+   "input": "a [^1] b\n\n[^1]: see [^2]\n\n[^2]: two",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "<p>a [^1] b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " b"
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "see "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "2",
+          "namespace": "footnote",
+          "number": 2
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "2",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "two"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-191",
+   "clauses": [
+    "C2-H-094"
+   ],
+   "why": "C2-H-094: A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.",
+   "summary": "a note referenced from the body and from a note that is not written, both degraded",
+   "input": "a [^1] b [^2]\n\n[^1]: see [^2]\n\n[^2]: two",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>a [^1] b [^2]</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " b "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "2",
+        "namespace": "footnote",
+        "number": 2
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "see "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "2",
+          "namespace": "footnote",
+          "number": 2
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "2",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "two"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-192",
+   "clauses": [
+    "C2-H-094"
+   ],
+   "why": "C2-H-094: A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.",
+   "summary": "a chain of three notes writes none",
+   "input": "a [^1]\n\n[^1]: see [^2]\n\n[^2]: two [^3]\n\n[^3]: three",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>a [^1]</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "see "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "2",
+          "namespace": "footnote",
+          "number": 2
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "2",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "two "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "3",
+          "namespace": "footnote",
+          "number": 3
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "3",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "three"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-193",
+   "clauses": [
+    "C2-H-094"
+   ],
+   "why": "C2-H-094: A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.",
+   "summary": "an inline footnote inside a note that is not written is not written",
+   "input": "a [^1]\n\n[^1]: see ^[inner]",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>a [^1]</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote",
+        "number": 1
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "see "
+         },
+         {
+          "type": "inline_footnote",
+          "children": [
+           {
+            "type": "text",
+            "value": "inner"
+           }
+          ],
+          "number": 2
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-194",
+   "clauses": [
+    "C2-H-094"
+   ],
+   "why": "C2-H-094: A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.",
+   "summary": "a degraded reference in a quote reaches no nested note",
+   "input": "> a [^1]\n\n[^1]: see [^2]\n\n[^2]: two",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<blockquote><p>a [^1]</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "1",
+          "namespace": "footnote",
+          "number": 1
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "see "
+         },
+         {
+          "type": "footnote_ref",
+          "key": "2",
+          "namespace": "footnote",
+          "number": 2
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "2",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "two"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-195",
+   "clauses": [
+    "C2-H-163",
+    "C2-H-165"
+   ],
+   "why": "C2-H-163: Under `comment` a link or an autolink whose destination fails (C2-H-160) is written as its text with no `<a>`, as in 0.1: a link as the plain text of its children (C2-H-165), an autolink as its visible text.",
+   "summary": "a denied link with attributes and strong text is its plain text",
+   "input": "[x *y*](javascript:a){.c}",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>x y</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "javascript:a",
+        "children": [
+         {
+          "type": "text",
+          "value": "x "
+         },
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "c"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-196",
+   "clauses": [
+    "C2-H-163"
+   ],
+   "why": "C2-H-163: Under `comment` a link or an autolink whose destination fails (C2-H-160) is written as its text with no `<a>`, as in 0.1: a link as the plain text of its children (C2-H-165), an autolink as its visible text.",
+   "summary": "a denied reference link is its text",
+   "input": "[x][r]\n\n[r]: javascript:a",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>x</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "r",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "javascript:a"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "r",
+      "namespace": "link",
+      "href": "javascript:a"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-197",
+   "clauses": [
+    "C2-H-163"
+   ],
+   "why": "C2-H-163: Under `comment` a link or an autolink whose destination fails (C2-H-160) is written as its text with no `<a>`, as in 0.1: a link as the plain text of its children (C2-H-165), an autolink as its visible text.",
+   "summary": "a denied link in a quote is its text",
+   "input": "> [x](javascript:a) b",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<blockquote><p>x b</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "link",
+          "href": "javascript:a",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "value": " b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-198",
+   "clauses": [
+    "C2-H-163"
+   ],
+   "why": "C2-H-163: Under `comment` a link or an autolink whose destination fails (C2-H-160) is written as its text with no `<a>`, as in 0.1: a link as the plain text of its children (C2-H-165), an autolink as its visible text.",
+   "summary": "an allowed link keeps its anchor and rel",
+   "input": "[x](https://ok.org)",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p><a href=\"https://ok.org\" rel=\"nofollow ugc\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "https://ok.org",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-199",
+   "clauses": [
+    "C2-H-160"
+   ],
+   "why": "C2-H-160: A failed destination is written as the empty value, `href=\"\"` or `src=\"\"` (under `comment` a link has no `<a>`, C2-H-163), and is reported with `destination-denied` once per destination.",
+   "summary": "under article a denied link keeps its inert anchor",
+   "input": "[x](javascript:a)",
+   "options": {
+    "profile": "article"
+   },
+   "expected": {
+    "html": "<p><a href=\"\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "javascript:a",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

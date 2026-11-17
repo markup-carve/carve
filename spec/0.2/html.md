@@ -1519,7 +1519,7 @@ a[^n]
 
 **C2-H-093** The section stands at the end of the document, after the last block, unless a `footnotes` directive places it (C2-H-158). As in 0.1 (CARVE-P9-073).
 
-**C2-H-094** With no numbered footnote in the document, no section is written. A note whose every reference is degraded (C2-H-165) is not written, and with no note left no section is written.
+**C2-H-094** With no numbered footnote in the document, no section is written. A note whose every reference is degraded (C2-H-165) or stands in a note that is not written is not written, and with no note left no section is written, as in 0.1.
 
 Example 20 (generated)
 
@@ -2136,7 +2136,7 @@ Example 69 (unverified, `--mode static`)
 
 **C2-H-159** The URL sinks are the `href` of a link and of an autolink, the `src` of an image, each token of an authored attribute of the list `url_list_attributes` (C2-H-161), and a URL that a `social` template gives (C2-H-126). A destination is tested on a copy: first every character of the list `probe_removes` of `data/url-policy.json` is removed from it, anywhere in the value, so `java` U+0001 `script:` tests as `javascript:`. U+FFFD is on the list because a U+0000 of the source is read as U+FFFD (C2-B-218) before the test. When the rest starts with an ASCII letter, then ASCII letters, digits, `+`, `-` and `.`, and then a colon, that run is the scheme, compared without ASCII case. A destination with no scheme, such as a relative path or a fragment, passes under a deny list and under an allow list. A network-path reference such as `//x.org/p` is one: it takes the scheme of the page, as a relative path does. The `default` of `urlPolicy` in `data/options.json` is the default deny list.
 
-**C2-H-160** Under a deny list a destination fails when its scheme is on the list, and under an allow list when it is not. A failed destination is written as the empty value, `href=""` or `src=""`, and is reported with `destination-denied` once per destination. The link text, the alt text and the visible text of an autolink stay. An authored `href` on a link and an authored `src` on an image are not written: the destination stands, so an attribute block cannot bring back a failed one.
+**C2-H-160** Under a deny list a destination fails when its scheme is on the list, and under an allow list when it is not. A failed destination is written as the empty value, `href=""` or `src=""` (under `comment` a link has no `<a>`, C2-H-163), and is reported with `destination-denied` once per destination. The link text, the alt text and the visible text of an autolink stay. An authored `href` on a link and an authored `src` on an image are not written: the destination stands, so an attribute block cannot bring back a failed one.
 
 **C2-H-161** On every element, an extension's included, an attribute whose name is in the list `dropped_attributes` of `data/url-policy.json`, compared without ASCII case, is not written: every name that starts with `on`, `srcdoc` and `formaction`. An authored value is written empty when its text before the first colon, with the characters of `probe_removes` removed and in ASCII lower case, is a scheme of the default deny list, whatever `urlPolicy` holds: `{title="Shell: bash"}` gives `title=""`. A value that holds no colon is not tested. An attribute of the list `url_list_attributes` is split at its separators, and the whole value is written empty when any token fails this test or the policy of C2-H-160, or when the unsplit value fails this test: `ping="java script:x"` gives `ping=""`, and so does an `https` URL in `srcset` under an allow list without `https`. An authored value is one written in an attribute block or copied by an extension onto its element. `id` is not tested, and neither is a value the renderer takes from text: a link title, alt text and the label of a task box stay as written. Three places need a word. Classes are tested one by one: an authored class that fails is left out and the others stay, the element's own classes among them. The `lang` field of a supplied tree is tested like an authored value. The expansion of an abbreviation definition is text and is not tested, while `abbr` and `time` written in an attribute block are authored values and are. The default deny list applies to authored values under every policy by intent: such a value is no URL sink that `urlPolicy` governs (C2-H-159), a script or a later tool may still read it as a URL, and the option has no value that turns the filter off (C2-H-128).
 
@@ -2204,7 +2204,25 @@ Hello
 
 **C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
 
-**C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
+**C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. Under `comment` a link or an autolink whose destination fails (C2-H-160) is written as its text with no `<a>`, as in 0.1: a link as the plain text of its children (C2-H-165), an autolink as its visible text. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
+
+Example 75 (unverified, `--profile comment`)
+
+::: compare
+
+```carve
+See [x](javascript:a) and <javascript:b>[^1].
+
+[^1]: more [^2]
+
+[^2]: two
+```
+
+```html
+<p>See x and javascript:b[^1].</p>
+```
+
+:::
 
 **C2-H-165** The degraded form of a node outside the profile is its plain text. An inline node is written as the plain text of its children; an image as `[img: ALT]`; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays, and for every node inside it at any depth. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description, and a block extension the blocks of its fallback. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
@@ -2510,9 +2528,9 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 10 |
+| Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **39** |
+| **Total** | **193** | **6** | **35** | **40** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 74 examples, 35 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 75 examples, 35 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

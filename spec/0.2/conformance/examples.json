@@ -72396,6 +72396,254 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-75",
+   "document": "html.md",
+   "number": 75,
+   "section": "Options",
+   "clauses": [
+    "C2-H-121",
+    "C2-H-122",
+    "C2-H-168",
+    "C2-H-123",
+    "C2-H-124",
+    "C2-H-125",
+    "C2-H-126",
+    "C2-H-127",
+    "C2-H-128",
+    "C2-H-129",
+    "C2-H-130",
+    "C2-H-131",
+    "C2-H-132",
+    "C2-H-159",
+    "C2-H-160",
+    "C2-H-161",
+    "C2-H-162",
+    "C2-H-172",
+    "C2-H-163",
+    "C2-H-165",
+    "C2-H-166",
+    "C2-H-167",
+    "C2-H-164",
+    "C2-H-177"
+   ],
+   "kind": "render",
+   "input": "See [x](javascript:a) and <javascript:b>[^1].\n\n[^1]: more [^2]\n\n[^2]: two",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>See x and javascript:b[^1].</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "See ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 0,
+          "endOffset": 4
+         }
+        },
+        {
+         "type": "link",
+         "href": "javascript:a",
+         "children": [
+          {
+           "type": "text",
+           "value": "x",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 6,
+            "endColumn": 7,
+            "startOffset": 5,
+            "endOffset": 6
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 5,
+          "endColumn": 22,
+          "startOffset": 4,
+          "endOffset": 21
+         }
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 22,
+          "endColumn": 27,
+          "startOffset": 21,
+          "endOffset": 26
+         }
+        },
+        {
+         "type": "autolink",
+         "href": "javascript:b",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 27,
+          "endColumn": 41,
+          "startOffset": 26,
+          "endOffset": 40
+         }
+        },
+        {
+         "type": "footnote_ref",
+         "key": "1",
+         "namespace": "footnote",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 41,
+          "endColumn": 45,
+          "startOffset": 40,
+          "endOffset": 44
+         },
+         "number": 1
+        },
+        {
+         "type": "text",
+         "value": ".",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 45,
+          "endColumn": 46,
+          "startOffset": 44,
+          "endOffset": 45
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 46,
+        "startOffset": 0,
+        "endOffset": 45
+       }
+      },
+      {
+       "type": "footnote",
+       "key": "1",
+       "namespace": "footnote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "more ",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 7,
+            "endColumn": 12,
+            "startOffset": 53,
+            "endOffset": 58
+           }
+          },
+          {
+           "type": "footnote_ref",
+           "key": "2",
+           "namespace": "footnote",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 12,
+            "endColumn": 16,
+            "startOffset": 58,
+            "endOffset": 62
+           },
+           "number": 2
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 7,
+          "endColumn": 16,
+          "startOffset": 53,
+          "endOffset": 62
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 16,
+        "startOffset": 47,
+        "endOffset": 62
+       }
+      },
+      {
+       "type": "footnote",
+       "key": "2",
+       "namespace": "footnote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "two",
+           "pos": {
+            "startLine": 5,
+            "endLine": 5,
+            "startColumn": 7,
+            "endColumn": 10,
+            "startOffset": 70,
+            "endOffset": 73
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 7,
+          "endColumn": 10,
+          "startOffset": 70,
+          "endOffset": 73
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 5,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 10,
+        "startOffset": 64,
+        "endOffset": 73
+       }
+      }
+     ],
+     "srcByteLength": 73,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-48",
    "document": "html.md",
    "number": 48,

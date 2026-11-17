@@ -288,6 +288,8 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A continuation row that adds a cell to a row of header cells: `\|= a \|`, `+ \| b \|` | `b` was a data cell, `<td>` inside the head. | A header cell, as are the empty cells of columns it skips; in a row with a data cell the new cell stays a data cell. | C2-B-176 |
 | A pipe inside a quoted value of a row attribute: `\| a \|{title="p\|q"}` | The line was text, and the table ended above it. | A row whose `<tr>` carries `title="p\|q"`; the writer writes such a value in quotes, where it reported `field-unspellable`. | C2-B-166, C2-W-098 |
 | Core math rendered with `mode: "static"`: `` $`x` ``, `` $$`x` `` | `<code class="language-math">` and `<pre><code class="language-math">` around the source. | The math span with the TeX delimiters, as in interactive mode: `<span class="math inline" role="math">\(x\)</span>`. | C2-H-122, C2-H-168 |
+| A note referenced only from another note, under `comment` or `minimal`: `a [^1]`, `[^1]: see [^2]`, `[^2]: two` | A footnote section with the second note, reached through a reference that was degraded. | No section: a note whose references stand in notes that are not written is not written. | C2-H-094 |
+| A link or an autolink whose destination the policy denies, under `comment`: `[x](javascript:a)` | `<a href="" rel="nofollow ugc">x</a>`. | The text with no `<a>`: `x`, and for an autolink its visible text. Other profiles keep the empty `href`. | C2-H-160, C2-H-163 |
 
 ### Include expansion
 
