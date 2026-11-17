@@ -1215,9 +1215,36 @@ Example 56 (unverified)
 
 **C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
 
-**C2-H-090** Every paragraph of a footnote body gets `<p>` (C2-B-086). The body of an inline footnote is one paragraph.
+**C2-H-090** Every paragraph of a footnote body gets `<p>` (C2-B-086), except a block image paragraph, which is the bare `<img>` (C2-H-020). The body of an inline footnote is one paragraph.
 
-**C2-H-091** The backlinks are appended to the last paragraph of the note, or stand in a paragraph of their own when the note does not end with a paragraph. A note with one reference has one backlink, `<a href="#fnrefN" role="doc-backlink" aria-label="LABEL">↩</a>`. A note with several has one per reference, each with `<sup>K</sup>` after the glyph and `LABEL K` as its label, joined by one space.
+**C2-H-091** The backlinks are appended to the last block of the note that renders something when that block is written as `<p>`, and otherwise stand in a paragraph of their own. A note with one reference has one backlink, `<a href="#fnrefN" role="doc-backlink" aria-label="LABEL">↩</a>`. A note with several has one per reference, each with `<sup>K</sup>` after the glyph and `LABEL K` as its label, joined by one space.
+
+A comment after the last paragraph renders nothing and does not move the backlinks; a block image is no `<p>`, so they take a paragraph of their own.
+
+Example 61 (generated)
+
+::: compare
+
+```carve
+a[^n]
+
+[^n]: ![a](x.png)
+```
+
+```html
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <img src="x.png" alt="a">
+      <p><a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 **C2-H-092** A footnote definition that no reference uses is not written.
 
@@ -2168,7 +2195,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 1 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
-| Footnotes | 8 | 0 | 1 | 2 |
+| Footnotes | 8 | 0 | 2 | 2 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
@@ -2177,6 +2204,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **26** | **34** |
+| **Total** | **199** | **7** | **27** | **34** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 60 examples, 26 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 61 examples, 27 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

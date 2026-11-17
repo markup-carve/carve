@@ -63757,6 +63757,122 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-61",
+   "document": "html.md",
+   "number": 61,
+   "section": "Footnotes",
+   "clauses": [
+    "C2-H-087",
+    "C2-H-088",
+    "C2-H-089",
+    "C2-H-090",
+    "C2-H-091",
+    "C2-H-092",
+    "C2-H-093",
+    "C2-H-094"
+   ],
+   "kind": "render",
+   "input": "a[^n]\n\n[^n]: ![a](x.png)",
+   "options": {},
+   "expected": {
+    "html": "<p>a<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <img src=\"x.png\" alt=\"a\">\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 0,
+          "endOffset": 1
+         }
+        },
+        {
+         "type": "footnote_ref",
+         "key": "n",
+         "namespace": "footnote",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 2,
+          "endColumn": 6,
+          "startOffset": 1,
+          "endOffset": 5
+         },
+         "number": 1
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 5
+       }
+      },
+      {
+       "type": "footnote",
+       "key": "n",
+       "namespace": "footnote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "x.png",
+           "alt": "a",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 7,
+            "endColumn": 18,
+            "startOffset": 13,
+            "endOffset": 24
+           }
+          }
+         ],
+         "role": "image",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 7,
+          "endColumn": 18,
+          "startOffset": 13,
+          "endOffset": 24
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 18,
+        "startOffset": 7,
+        "endOffset": 24
+       }
+      }
+     ],
+     "srcByteLength": 24,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "html-20",
    "document": "html.md",
    "number": 20,
