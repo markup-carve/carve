@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 paragraph interrupters",
-  "description": "The five line kinds that end an open paragraph without a blank line. Every other line that is not blank is a lazy line of the paragraph.",
+  "description": "The six line kinds that end an open paragraph without a blank line. Every other line that is not blank is a lazy line of the paragraph.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "interrupters", "lazy_shapes"],
@@ -37,7 +37,7 @@
                 "always",
                 "at_open_list_column",
                 "between_columns_of_two_open_lists",
-                "indented_past_enclosing_marker",
+                "indented_past_enclosing_marker_as_bullet_bare_dot_or_one",
                 "left_of_every_open_list",
                 "mark_at_open_description_list_column",
                 "definition_at_column_0_while_definition_open",
@@ -63,11 +63,12 @@
             "type": "array",
             "items": {
               "enum": [
-                "at_description_list_column_after_term_or_description_text"
+                "at_description_list_column_after_term_or_description_text",
+                "not_owned_by_container_of_captioned_block"
               ]
             },
             "uniqueItems": true,
-            "description": "Cases the exceptions take out: the line is a lazy line."
+            "description": "Cases in which the line is a lazy line even where a condition of `when` holds: the exception of C2-B-022 and the ownership test of C2-B-017 and C2-B-146."
           }
         }
       },
@@ -76,7 +77,7 @@
     },
     "lazy_shapes": {
       "type": "array",
-      "description": "The shapes of line-shapes.json that C2-B-024 names as lazy lines of an open paragraph. A bullet or an ordered marker is lazy only where no list is open.",
+      "description": "The shapes of line-shapes.json that C2-B-024 names as lazy lines of an open paragraph. A bullet or an ordered marker is lazy where row b does not make it an interrupter (C2-B-015).",
       "items": {
         "type": "object",
         "additionalProperties": false,
