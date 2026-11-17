@@ -28,7 +28,9 @@ Freeze candidate 8: `69f260332101ea1e08108d5e57041bfcc548c366` (`69f26033`), the
 
 Freeze candidate 9: at `3e7b31e1`, the last fix round: the eight defects of a second independent read of candidate 8 (CR8-01 to CR8-08); what writing the clause cases showed, with one rule for where an entry's range starts (C2-W-138), a trigger for every active row of the code catalog taken from the 0.1 lint source, the comparison of layout facts (C2-L-059) and the open points of the conformance lane decided as recommended or parked; the gaps of the engine lane (G-G1 to G-G8); and the fixes of a read of the whole round; each point in one commit.
 
-Freeze candidate 10: the ten maintainer rulings, twenty findings of the third independent read, seven further catalog defects, the engine lane examples and gaps, and the final stranger read. G-H1, G-H4 and G-H5 remain parked in the root open-points file. The extension mechanism remains provisional. The complete point and case inventory is in the root ledger and report.
+Freeze candidate 10: the ten maintainer rulings, twenty findings of the third independent read, seven further catalog defects, the engine lane examples and gaps, and the final stranger read. G-H5 remains parked in the root open-points file. The extension mechanism remains provisional. The complete point and case inventory is in the root ledger and report.
+
+Freeze candidate 11: the nineteen findings of the fourth independent read, restored conditional diagnostic advice, and the 0.1 decisions on semantic key case and nested braced boundaries. The clause, rule, exception and example counts in the table remain unchanged. Clause cases rose from 1,016 to 1,051; upgrade source rows rose from 268 to 269. The positive tree, imported tree, refused tree and layout counts remain 604, 64, 79 and 19. The root ledger and report record each point and its case.
 
 ## Documents
 
