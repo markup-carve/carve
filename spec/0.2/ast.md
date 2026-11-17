@@ -562,8 +562,6 @@ The invariants below are written so that a test can check each one on any tree a
 
 **Exception C2-A-146** Two breaks that meet at one line ending share it, against C2-A-145.
 
-**C2-A-147** A comment that came from a comment-only line satisfies C2-A-144 and C2-A-145 in the node list C2-A-075 puts it in: the open leaf, or else the innermost open container.
-
 **C2-A-148** A span starts at the markup that opens the construct: the quote mark, the heading marker, the list marker, the colon run of a div, the opening bracket of a link, the backtick run of a fence. Leading indent on the opening line is outside the span, of a container as of a leaf: in ` > a` the quote starts at its mark, offset 1. A block that took attribute lines (C2-B-091) starts at the first of them.
 
 **Exception C2-A-149** A table cell does not start at its opening markup, against C2-A-148: it spans the text between its pipes.
@@ -785,11 +783,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 172 | 2 |
+| Existing AST contract | 171 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **208** | **3** |
+| **Total** | **207** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 
