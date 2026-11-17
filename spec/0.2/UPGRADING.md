@@ -329,11 +329,14 @@ A ruling of 17 November, 12:30, keeps these 0.2 behaviors, found by replaying a 
 | ID | What you wrote | 0.1 | 0.2 now and tool |
 | --- | --- | --- | --- |
 | U-360 | Under C2-B-147, C2-N-073 and C2-N-074, a caption line directly below an unexpanded code include: `{{ a.txt @code }}`, `^ cap`, also in a quote or a list item **SILENT** | The caret line is text: `<p>{{ a.txt @code }}</p>` and `<p>^ cap</p>`. | The caption attaches to the include and follows it as one more paragraph, `<p>cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote; in a list item 0.1 also made the list loose, so add a blank line between the items too, and an item alone in its list stays tight (C2-B-062); rewrite |
+| U-361 | Under C2-B-025, C2-B-026 and C2-B-108, a comment block at column 0 inside a description list or a list: `:: t`, `: d`, `%%%`, `%%%`, `: d2`; `- a`, `%%%`, `%%%`, `  b` **SILENT** | The list stayed open across the comment block: two descriptions, `<dd>d</dd>` and `<dd>d2</dd>`; `b` in the item. | The opener at column 0 is owned by no description or item, so the list closes and `: d2` is a paragraph. Indent the comment block into the description, `  %%%`; below an item that keeps `b` in it as `<p>b</p>`, where 0.1 wrote it bare (U-019); rewrite |
+| U-362 | Under C2-B-025, C2-B-140 and C2-H-069, a line of braced comments indented short of the content column after a blank line, with a list marker below it: `- a`, a blank line, ` {%%}`, `  - b` **SILENT** | The comment line closed the list, and `- b` was text of a paragraph that started with a line feed, `<p>` then `- b</p>`. | The comment line belongs to the item (U-109) and renders nothing, so `- b` is a nested list. With the comment at column 0 the list closes, but a comment line takes its line break with it, so no source writes the leading line feed; report |
 
 Older rows that hold a point of this ruling, extended to name the new place:
 
 - U-213: a footnote definition indented into a note body, `[^a]: first` above `  [^b]: second`, is text of note `a` in 0.2 (C2-B-081), where 0.1 made a second note; rewrite with a blank line and the definition at column 0.
 - U-210: a definition indented below a description term, `:: t` above `  [r]: /u`, continues the term in 0.2 (C2-B-069, C2-B-081), where 0.1 defined `r`; rewrite with a blank line and the definition at column 0.
+- U-109: a comment-only line before the blank line, `- a`, ` %% c`, a blank line, ` b`, changes nothing: `b` stays in the item (C2-B-137, C2-B-025), where 0.1 closed the list; the rewrite to column 0 is the same.
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

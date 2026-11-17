@@ -847,7 +847,7 @@
       "group": "new block shapes",
       "from": "- item\n\n second paragraph\n",
       "to": "- item\n\nsecond paragraph\n",
-      "meaning02": "<ul>\n  <li>item\n    <p>second paragraph</p>\n  </li>\n</ul>",
+      "meaning02": "<ul>\n  <li>item\n    <p>second paragraph</p>\n  </li>\n</ul> A comment-only line before or after the blank line changes nothing: `- a`, ` %% c`, a blank line, ` b` keeps `b` in the item too (C2-B-137), where 0.1 closed the list; the same rewrite to column 0 keeps the 0.1 HTML.",
       "toolEntry": "U-109",
       "silent": true
     },
@@ -2599,6 +2599,26 @@
       "to": "{{ a.txt @code }}\n\n^ cap\n",
       "meaning02": "<p>{{ a.txt @code }}</p>\n<p>cap</p> C2-B-147 and C2-N-073 attach a caption line directly below a code include to the include, also when it is not expanded, and C2-N-074 writes that caption after the directive's paragraph as one more paragraph; 0.1 kept the caret line as text, `<p>^ cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote. In a list item 0.1 also made the list loose: with a blank line before the caret and one between the items the 0.1 HTML comes back, but an item alone in its list is tight (C2-B-062, C2-B-063), so its first paragraph stays bare.",
       "toolEntry": "U-360",
+      "silent": true
+    },
+    {
+      "id": "U-361",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": ":: t\n: d\n%%%\n%%%\n: d2\n",
+      "to": ":: t\n: d\n  %%%\n  %%%\n: d2\n",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>: d2</p> A comment block opener is a block line (C2-B-108); at column 0 below a description it is not indented past the mark, so the description and its list close (C2-B-025, C2-B-026, C2-B-076), and `: d2` has no term left. 0.1 kept the description list open across a comment block at column 0. Indenting the comment block into the description keeps the 0.1 HTML. Below an item, `- a`, `%%%`, `%%%`, `  b`, 0.2 closes the list the same way and `b` is a paragraph after it; indented to the content column the block keeps `b` in the item as `<p>b</p>`, where 0.1 wrote it bare (C2-B-063, U-019).",
+      "toolEntry": "U-361",
+      "silent": true
+    },
+    {
+      "id": "U-362",
+      "kind": "report",
+      "group": "kept and recorded",
+      "from": "- a\n\n {%%}\n  - b\n",
+      "to": "- a\n\n{%%}\n  - b\n",
+      "meaning02": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul> A line indented short of the content column after a blank line still belongs to the item (C2-B-025, U-109), and a paragraph of comments counts as content and renders nothing (C2-B-140), so `- b` is a nested list. 0.1 closed the list at the comment line, and `- b` was a lazy line of a paragraph that started with a line feed, `<p>` then `- b</p>`. With the comment at column 0 the list closes as in 0.1, but a line that holds only comments takes its line break with it (C2-H-069), so 0.2 writes `<p>- b</p>`; no 0.2 source writes the leading line feed.",
+      "toolEntry": "U-362",
       "silent": true
     }
   ],
