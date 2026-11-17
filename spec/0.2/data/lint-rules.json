@@ -54,9 +54,10 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "This ${kind} is indented ${past} column(s) past the content column of ${owner}, and it still opens a ${kind}, measured from its own line. Remove the indentation to make the structure explicit, or escape the opener to keep the line as text."
+        "This ${kind} is indented ${past} ${columns} past the content column of ${owner}, and it still opens a ${kind}, measured from its own line. Remove the indentation to make the structure explicit, or escape the opener to keep the line as text."
       ],
       "message_origin": "engine_0_1",
+      "message_notes": ["`${columns}` is `column` when `${past}` is 1 and `columns` otherwise."],
       "clauses": ["C2-W-106"]
     },
     {
@@ -166,9 +167,11 @@
       "default": "on",
       "messages": [
         "document declares Carve ${version}; this engine implements ${SPEC_VERSION}, so constructs added after that version will not render as intended",
-        "document declares an unrecognized Carve version ${version}; this engine implements ${SPEC_VERSION}"
+        "document declares an unrecognized Carve version \"${version}\"; this engine implements ${SPEC_VERSION}"
       ],
       "message_origin": "engine_0_1",
+      "message_notes": ["A quote or a backslash in `${version}` of the second message is escaped as in a JSON string."],
+      "change": "it reads the frontmatter key `carve-version` of 0.1 and the key `carve`",
       "clauses": ["C2-W-106"]
     },
     {
@@ -842,9 +845,10 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "Footnote definition [^${label}] normalizes to the same key as [^${twin}]; the first definition wins. Normalized key: ${key}."
+        "Footnote definition [^${label}] normalizes to the same key as [^${twin}]; the first definition wins. Normalized key: \"${key}\"."
       ],
       "message_origin": "engine_0_1",
+      "message_notes": ["A quote or a backslash in `${key}` is escaped as in a JSON string."],
       "clauses": ["C2-W-106"]
     },
     {
@@ -1448,7 +1452,7 @@
       "status": "kept",
       "enabled_by": "platforms",
       "messages": [
-        "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\""
+        "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\"."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]
@@ -1460,7 +1464,7 @@
       "status": "kept",
       "enabled_by": "platforms",
       "messages": [
-        "${host} re-linkifies ${what} in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase"
+        "${host} re-linkifies an at-prefixed word in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase."
       ],
       "message_origin": "engine_0_1",
       "clauses": ["C2-W-106"]
@@ -1536,7 +1540,8 @@
         "\"${name}\" is a semantic span attribute (PART 9 §10) and only applies to an ordinary [content]{attrs} span; on ${type} it stays a raw attribute and renders as ${name}=\"${value}\"."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "change": "it fires for each of the keys `abbr`, `time` and `kbd` (C2-H-075) on a node that is not a span",
+      "clauses": ["C2-W-106", "C2-H-075"]
     },
     {
       "id": "semantic-attribute-value-ignored",
@@ -1870,8 +1875,9 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This strong (or: emphasis) opener is unclosed in its paragraph; add a closer."],
+      "messages": ["This ${span} opener is unclosed in its paragraph; add a closer."],
       "message_origin": "engine_0_1",
+      "message_notes": ["`${span}` is `strong` for `*` and `emphasis` for `/`."],
       "clauses": ["C2-W-106"]
     },
     {
