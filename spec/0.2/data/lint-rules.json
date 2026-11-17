@@ -35,6 +35,17 @@
       "clauses": ["C2-W-106"]
     },
     {
+      "id": "blank-reference-label",
+      "severity": "warning",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["This label holds only spaces, tabs or a line break, so it is no label and \"${text}\" stays text; 0.1 read it as a label. Give the label a character that is not whitespace."],
+      "message_origin": "data_file",
+      "reports": "a footnote or link reference or definition whose label is empty after folding, which is text in 0.2 and was a label in 0.1 (C2-I-079, U-340)",
+      "clauses": ["C2-I-079"]
+    },
+    {
       "id": "block-marker-as-text",
       "severity": "warning",
       "channel": "lint",

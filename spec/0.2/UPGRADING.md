@@ -315,6 +315,12 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | `# Hello World` and `# Café 日本語` with `headingIds: 'ascii'`, the 0.2 value for 0.1 `asciiHeadingIds: true` | `hello-world` and `cafe`: lowered, and what the table could not map dropped. | `Hello-World` and `Cafe-日本語`, case and unmapped characters kept, as 0.1 `asciiHeadingIds: true` gave. The candidate 6 behavior is now `ascii-strict-lower`; `ascii-strict` and `ascii-lower` give the other two 0.1 combinations. | C2-H-022, C2-H-147, C2-H-131 |
 | Lint input: `{kbd}` above `# H`; frontmatter `carve-version: 9.9`; and the messages of `figure-group-nested`, `footnote-labels-differ-only-in-whitespace`, `unclosed-inline-emphasis`, `block-opener-overindented`, `platform-issue-reference` and `platform-mention-token` | `semantic-attribute-outside-span` fired for `abbr` and `time` only, and `carve-version-unsupported` read only the key `carve`; the six messages had new wording (`column(s)`, `strong (or: emphasis)`, `a mention token`, no final period, the key unquoted). | Both rules fire as in 0.1, `kbd` and `carve-version` included, and the six messages are the 0.1 texts. | `writer.md` C2-W-106 (catalog table), `data/lint-rules.json` |
 
+#### Kept and recorded (options, HTML, lint)
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-340 | Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same **SILENT** | A label: `a` with note 1 and an endnote section holding `x`; a link to `/u`. | No label: both lines are text, `<p>[^ ]: x</p>`, `<p>a[^ ]</p>`, and the note is lost. `blank-reference-label` reports it. Give the label a name the document does not use, `[^blank]`; rewrite |
+
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
 Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.

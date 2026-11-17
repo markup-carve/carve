@@ -779,7 +779,7 @@ Of the 29, 28 stay and one is void.
 
 ### Rules added for findings the syntax chapters promise
 
-Eight findings of the syntax chapters, and one of the tree and writer chapters, had no rule. Their ids are new in this document.
+Eight findings of the syntax chapters, one of the tree and writer chapters, and one difference to 0.1 that stays (U-340) had no rule. Their ids are new in this document.
 
 | Rule | Severity | Reports |
 |---|---|---|
@@ -792,6 +792,7 @@ Eight findings of the syntax chapters, and one of the tree and writer chapters, 
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 | `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
 | `table-span-marker-attribute` | warning | a brace block in the cell prefix of a span mark that joins a cell, which is kept nowhere (C2-B-174) |
+| `blank-reference-label` | warning | a footnote or link reference or definition whose label holds only spaces, tabs or a line break, `[^ ]: x` and `a[^ ]`: it is no label and stays text, where 0.1 read it as a label (C2-I-079, U-340) |
 
 A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes one block, and the tree is the same.
 

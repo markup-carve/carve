@@ -2570,6 +2570,16 @@
       "meaning02": "<table>\n  <tbody>\n    <tr><td style=\"text-align: right;\">{^} a</td></tr>\n  </tbody>\n</table> C2-B-171, C2-B-182: a cell prefix takes a run of glued brace blocks, with the marks only at the start of the first; 0.1 read every glued run in a cell prefix, such as `{>}{^}` or `{.a}{.b}`, as cell text.",
       "toolEntry": "U-305",
       "silent": true
+    },
+    {
+      "id": "U-340",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[^ ]: x\n\na[^ ]\n",
+      "to": "[^blank]: x\n\na[^blank]\n",
+      "meaning02": "<p>[^ ]: x</p>\n<p>a[^ ]</p> A label whose key is empty after folding, one of spaces, tabs or a line break, is no label (C2-I-079), so the definition and the reference are text and the note is lost; 0.1 read `[^ ]` as a footnote label, and `[t][ ]` with `[ ]: /u` as a link to `/u`. A label the document does not use, such as `blank`, in place of the blank one keeps the 0.1 HTML. The lint rule `blank-reference-label` reports the blank label.",
+      "toolEntry": "U-340",
+      "silent": true
     }
   ],
   "tree": [
