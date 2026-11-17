@@ -54215,6 +54215,202 @@
    ]
   },
   "from": []
- }
+ },
+{
+  "id": "CC-1129",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "line block text reports Markdown strong",
+  "kind": "lint",
+  "input": "::: |\n**b**\n:::\n",
+  "options": {},
+  "expected": {
+    "diagnostics": [
+      {
+        "code": "markdown-strong-double-star"
+      }
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1130",
+  "clauses": [
+    "C2-W-107",
+    "C2-I-010"
+  ],
+  "why": "C2-I-010: A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing.",
+  "summary": "escaped mark starts no bare-html-tag shape",
+  "kind": "lint",
+  "input": "\\<b>\n",
+  "options": {},
+  "expected": {
+    "notReported": [
+      "bare-html-tag"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1131",
+  "clauses": [
+    "C2-W-107",
+    "C2-I-010"
+  ],
+  "why": "C2-I-010: A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing.",
+  "summary": "escaped mark starts no html-comment-renders-as-text shape",
+  "kind": "lint",
+  "input": "\\<!--x-->\n",
+  "options": {},
+  "expected": {
+    "notReported": [
+      "html-comment-renders-as-text"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1132",
+  "clauses": [
+    "C2-W-107",
+    "C2-I-010"
+  ],
+  "why": "C2-I-010: A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing.",
+  "summary": "escaped mark starts no link-gap-before-destination shape",
+  "kind": "lint",
+  "input": "\\[x] (/u)\n",
+  "options": {},
+  "expected": {
+    "notReported": [
+      "link-gap-before-destination"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1133",
+  "clauses": [
+    "C2-W-107",
+    "C2-I-010"
+  ],
+  "why": "C2-I-010: A backslash before an ASCII punctuation character makes that character literal text: it opens, closes and starts nothing.",
+  "summary": "escaped mark starts no markdown-strikethrough-double-tilde shape",
+  "kind": "lint",
+  "input": "\\~~x~~\n",
+  "options": {},
+  "expected": {
+    "notReported": [
+      "markdown-strikethrough-double-tilde"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1134",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "unused footnote excludes platform-issue-reference",
+  "kind": "lint",
+  "input": "[^n]: #12\n",
+  "options": {
+    "platforms": [
+      "github"
+    ]
+  },
+  "expected": {
+    "notReported": [
+      "platform-issue-reference"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1135",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "line block text reports platform-issue-reference",
+  "kind": "lint",
+  "input": "::: |\n#12\n:::\n",
+  "options": {
+    "platforms": [
+      "github"
+    ]
+  },
+  "expected": {
+    "diagnostics": [
+      {
+        "code": "platform-issue-reference"
+      }
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1136",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "unused footnote excludes platform-mention-token",
+  "kind": "lint",
+  "input": "[^n]: @bob\n",
+  "options": {
+    "platforms": [
+      "github"
+    ]
+  },
+  "expected": {
+    "notReported": [
+      "platform-mention-token"
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1137",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "line block text reports platform-mention-token",
+  "kind": "lint",
+  "input": "::: |\n@bob\n:::\n",
+  "options": {
+    "platforms": [
+      "github"
+    ]
+  },
+  "expected": {
+    "diagnostics": [
+      {
+        "code": "platform-mention-token"
+      }
+    ]
+  },
+  "from": []
+},
+{
+  "id": "CC-1138",
+  "clauses": [
+    "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "bracket child excludes substitution arrow",
+  "kind": "lint",
+  "input": "{~[a~>b](/u)~}\n",
+  "options": {},
+  "expected": {
+    "notReported": [
+      "deprecated-substitution-arrow"
+    ]
+  },
+  "from": []
+}
  ]
 }

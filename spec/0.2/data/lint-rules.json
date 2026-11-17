@@ -98,7 +98,7 @@
       "default": "on",
       "messages": [{"when": "the line is paragraph text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal paragraph text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
-      "reports": "a line of paragraph, heading, cell, term or caption text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line (C2-B-031)",
+      "reports": "a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line (C2-B-031)",
       "clauses": ["C2-B-031"]
     },
     {
@@ -446,7 +446,7 @@
         "The substitution arrow was removed in 0.2; this is a strike span. Write a deletion directly followed by an insertion."
       ],
       "message_origin": "design",
-      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash in the strike's own inline content, outside a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
+      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash in the strike's own inline content, outside a nested braced span or bracket construct, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
       "clauses": ["C2-I-062"]
     },
     {
@@ -1489,7 +1489,7 @@
         "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\"."
       ],
       "message_origin": "engine_0_1",
-      "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, in paragraph, heading, cell, term or caption text, with inline code expressly included; bare URLs are masked; once per run (C2-W-109, C2-I-092)",
+      "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, in paragraph, heading, cell, term, caption or line of a line block text, with inline code expressly included; bare URLs and unreferenced footnote definitions are masked; once per run (C2-W-109, C2-I-092)",
       "clauses": ["C2-W-109", "C2-I-092"]
     },
     {
@@ -1502,7 +1502,7 @@
         "${host} re-linkifies an at-prefixed word in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase."
       ],
       "message_origin": "engine_0_1",
-      "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, in paragraph, heading, cell, term or caption text, with inline code expressly included; bare URLs are masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
+      "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, in paragraph, heading, cell, term, caption or line of a line block text, with inline code expressly included; bare URLs and unreferenced footnote definitions are masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
       "clauses": ["C2-W-109", "C2-I-090", "C2-I-092"]
     },
     {
