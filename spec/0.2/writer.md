@@ -93,8 +93,6 @@ Written:
 
 **C2-W-022** No space or tab is written at the end of a line outside verbatim content, and the output ends with one line ending. The space of a no-break space, which a backslash escapes (C2-I-011), is not such a space and is written also at the end of a line.
 
-**Exception C2-W-132** A space or tab inside an image's `alt` value is verbatim content, including one before a line break. The writer keeps it when removing it would change the value.
-
 **C2-W-024** Every block of an item, a description or a footnote body after the marker line is written at the content column, and every continuation line of a paragraph in it is written at that column too. A continuation line of a caption or of a term is written at the column of the first character of its text, behind the mark and its space. The markers of one list stand at one column. This is requirement W3, and it replaces the lazy and the indented continuation styles of the source.
 
 **C2-W-128** Continuation lines of an ordered item with a task box are indented to the width of its marker and marker padding, as for every other item. The task box does not increase that indent.
@@ -978,7 +976,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 24 | 3 | 0 | 2 |
+| Layout | 23 | 2 | 0 | 2 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
@@ -986,6 +984,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **134** | **6** | **5** | **10** |
+| **Total** | **133** | **5** | **5** | **10** |
 
-The document has 134 clauses, 6 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 133 clauses, 5 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
