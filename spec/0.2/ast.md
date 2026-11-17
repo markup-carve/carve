@@ -248,8 +248,6 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-054** A bullet marker is `{"kind": "bullet", "char": c}` where `c` is `-` or `*`.
 
-**C2-A-055** `marker.char` is meaning: an item with the other character starts another list (C2-B-035).
-
 **C2-A-056** An ordered marker has `kind: "ordered"`, `style` (`1`, `a`, `A`, `i` or `I`) and `delimiter` (`.` or `)`), and may carry `start`, an integer from 0 to 999999999 (C2-B-219); a reader refuses another value. Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
 
 **C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it. A default has one encoding everywhere: a reader refuses `mode: "normal"` on a citation (C2-A-120), an autolink `text` equal to its `href` (C2-A-216), and an empty `attrs`, `classes` or `keyValues`, and an empty `props`, `slots`, `payload` or `resourceIds` of an extension node (C2-X-037). An ordered marker always carries `style` and `delimiter` (C2-A-056).
@@ -771,11 +769,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 164 | 2 |
+| Existing AST contract | 163 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **199** | **3** |
+| **Total** | **198** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-020, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
