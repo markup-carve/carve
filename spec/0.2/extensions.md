@@ -72,13 +72,13 @@ This document defines the extension interface for Carve 0.2.0.
 
 ## Resolution, rendering and equality
 
-**C2-X-032** Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and its fallback otherwise. Validation and the limits visit all of them. Resolution does not execute or inspect props, payload or source text.
+**C2-X-032** Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise. So a node the profile degrades is resolved in its fallback, which its degraded form writes (C2-H-165). Validation and the limits visit all of them. Resolution does not execute or inspect props, payload or source text.
 
 **C2-X-033** A host registers a renderer by qualified name and version. The renderer receives the node, resolved child lists, fallback, rendering profile, URL policy and host helpers for escaped text, attributes, child lists and generated ids.
 
 **C2-X-034** An extension renderer is trusted host code. It returns an HTML string, which the host writes unchanged. The renderer uses the host helpers of C2-X-033 to apply escaping, the URL policy and the profile to its output. A host that renders untrusted documents registers only renderers it trusts. A structured output interface is left to a later version.
 
-**C2-X-050** A host transform or renderer exception does not escape the engine. When a transform throws, the engine retains the claimed core node and reports a diagnostic that names the extension. When a renderer throws or returns a value that is not a string, the engine renders the extension fallback and reports a diagnostic that names the extension. The size of a renderer's HTML string is the host's responsibility.
+**C2-X-050** A host transform or renderer exception does not escape the engine. When a transform throws, the engine retains the claimed core node and reports a diagnostic that names the extension. When a renderer throws or returns a value that is not a string, the engine renders the extension fallback and reports a diagnostic that names the extension. That fallback is written unresolved, since resolution visited the slots (C2-X-032): its references, footnote references and cross-references render as unresolved text (C2-H-085, C2-H-086) and its headings carry no generated id, and the diagnostic says that the fallback was written unresolved. The size of a renderer's HTML string is the host's responsibility.
 
 **C2-X-051** If the engine cannot prepare a claim's canonical source record because the writer reports a loss (C2-W-134) or refuses a repair (C2-W-133), the engine retains the core node and reports `extension-transform-failed` naming the extension. Parsing and rendering continue with that core node.
 
