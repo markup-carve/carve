@@ -53454,12 +53454,16 @@
      {
       "code": "definition-in-container",
       "line": 1,
-      "column": 1
+      "column": 3,
+      "endLine": 1,
+      "endColumn": 7
      },
      {
       "code": "definition-in-container",
       "line": 2,
-      "column": 1
+      "column": 3,
+      "endLine": 2,
+      "endColumn": 7
      }
     ]
    },
