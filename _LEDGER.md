@@ -205,3 +205,9 @@ Places: `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.jso
 Search: `fence-opener-fallback`, `C2-B-105`, `C2-B-225`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. A plain div name also reaches the row; make its message name any opener.
+
+## Catalog audit: fence-title-syntax
+
+Search: `fence-title-syntax`, `C2-B-122`, `C2-B-225`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. Raw fences and sigil divs have further words but no title; use one neutral message.

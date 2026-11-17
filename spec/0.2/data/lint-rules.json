@@ -799,11 +799,7 @@
       "severity": "warning",
       "channel": "parse",
       "status": "kept",
-      "messages": [
-        "The title after \"${type}\" uses typographic quotes - usually a CMS \"smart quote\" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} \"${title}\"${label}.",
-        "Text after the \"${type}\" fence type must be a quoted \"title\" or a [label]; unquoted it is not read as a title, and the block opens. Did you mean ${fence} ${type} \"${title}\"${label}?",
-        "The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. The block opens with no language (use: \"${respaced}\")."
-      ],
+      "messages": ["This opener has further words that are not a valid title or label here; the block still opens without them."]
       "message_origin": "data_file",
       "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
       "reports": "the further words of a code fence or div opener, once per opener: what follows the run and the optional language word, raw format, div name or sigil and is not a title in straight double quotes and then a label in brackets, in that order, such as an unquoted or typographically quoted title, a title after the label, a brace block after a space, a character glued to the word that starts no valid attribute block, any text after the format of a raw fence or after a sigil, and the text after a second space behind a backtick run; the range runs from the first character of the further words to the end of the opener line text (C2-B-122, C2-B-117, C2-B-225)",
