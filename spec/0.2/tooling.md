@@ -22,7 +22,7 @@ This document defines what every engine offers a caller: the library calls and t
 |---|---|---|---|
 | `parse` | Carve source as text or bytes, the parse and resolution options, `positions` (default on) | the resolved tree | C2-A-106, C2-B-218 |
 | `parseWithDiagnostics` | as `parse` | the tree, the diagnostics record and `suppressedDiagnostics` | C2-A-172, C2-T-024 |
-| `parseWithLayout` | as `parse` | the tree, the layout sidecar and the record | C2-L-001 |
+| `parseWithLayout` | as `parse` | the tree, the layout sidecar and the record | C2-A-003 |
 | `render` | Carve source or a tree, the parse, resolution and render options | HTML | C2-H-137 |
 | `renderWithDiagnostics` | as `render` | HTML, the record and `suppressedDiagnostics` | C2-A-172, C2-H-130 |
 | `format` | Carve source, `alignTables`, `normalize` | Carve source | C2-W-001, C2-W-134 |

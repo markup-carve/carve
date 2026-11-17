@@ -10,7 +10,7 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 
 ## What the sidecar is
 
-**C2-L-001** The sidecar is a record beside the tree. A producer returns it only when the caller asks, and never puts its content into the tree.
+The sidecar is a record beside the tree, returned only when the caller asks and never placed inside the tree (C2-A-003).
 
 Two documents that differ only in sidecar content are the same document (C2-A-004): tree equality (C2-A-161) does not read the sidecar.
 
@@ -229,4 +229,4 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 ## Counts
 
-The document has 56 clauses. The reduction of 17 November 2026 deleted C2-L-002, whose rule another clause states; its id is not reused.
+The document has 55 clauses. The reduction of 17 November 2026 deleted C2-L-001 and C2-L-002, whose rule another clause states; their ids are not reused.
