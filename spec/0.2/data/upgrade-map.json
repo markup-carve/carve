@@ -2402,6 +2402,16 @@
       "silent": true
     },
     {
+      "id": "U-281",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "> # Quoted\n\n[Quoted][]\n",
+      "to": "> # Quoted\n\n\\[Quoted][]\n",
+      "meaning02": "<blockquote>\n  <h1 id=\"Quoted\">Quoted</h1>\n</blockquote>\n<p><a href=\"#Quoted\">Quoted</a></p> The heading lookup takes the first heading in document order with an id (C2-I-084), a heading inside a quote included; 0.1 left out every heading with a quote ancestor, so the reference stayed text. An escaped opening bracket keeps the 0.1 HTML. A cross-reference `</#Quoted>` resolved in both.",
+      "toolEntry": "U-281",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
