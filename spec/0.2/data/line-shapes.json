@@ -467,7 +467,7 @@
       "clauses": ["C2-B-119", "C2-B-127", "C2-B-225"]
     },
     { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
-    { "name": "format_name", "forms": ["a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens"], "clauses": ["C2-B-164"] },
+    { "name": "format_name", "forms": ["one or more ASCII letters and digits, in any case"], "clauses": ["C2-B-164"] },
     { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]", "![alt][]"], "clauses": ["C2-B-197"] },
     {
       "name": "include_options",

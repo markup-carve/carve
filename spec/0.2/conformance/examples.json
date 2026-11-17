@@ -26544,6 +26544,76 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-463",
+   "document": "syntax-blocks.md",
+   "number": 463,
+   "section": "Frontmatter",
+   "clauses": [
+    "C2-B-161",
+    "C2-B-162",
+    "C2-B-163",
+    "C2-B-164",
+    "C2-B-165"
+   ],
+   "kind": "render",
+   "input": "---JSON\n{\"a\": 1}\n---\n\ntext",
+   "options": {},
+   "expected": {
+    "html": "<p>text</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "frontmatter",
+       "format": "JSON",
+       "value": "{\"a\": 1}\n",
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 20
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "text",
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 22,
+          "endOffset": 26
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 5,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 5,
+        "startOffset": 22,
+        "endOffset": 26
+       }
+      }
+     ],
+     "srcByteLength": 26,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-193",
    "document": "syntax-blocks.md",
    "number": 193,

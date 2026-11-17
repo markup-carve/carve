@@ -17098,6 +17098,120 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-301",
+   "clauses": [
+    "C2-B-164"
+   ],
+   "why": "C2-B-164: The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none.",
+   "summary": "a digit is a format name",
+   "input": "---1\nx\n---\n\ntext",
+   "options": {},
+   "expected": {
+    "html": "<p>text</p>",
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "1",
+      "value": "x\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-302",
+   "clauses": [
+    "C2-B-164"
+   ],
+   "why": "C2-B-164: The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none. C2-B-164: The name is kept as written, so `---JSON` has the format `JSON`, which is not `json`.",
+   "summary": "a mixed-case name after a space is kept as written",
+   "input": "--- Yaml\nx: 1\n---\n\ntext",
+   "options": {},
+   "expected": {
+    "html": "<p>text</p>",
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "Yaml",
+      "value": "x: 1\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "text"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-303",
+   "clauses": [
+    "C2-B-164"
+   ],
+   "why": "C2-B-164: The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none.",
+   "summary": "a hyphen in the name leaves line 1 text",
+   "input": "---x-y\na: b\n---\nafter",
+   "options": {},
+   "expected": {
+    "html": "<p>—x-y\na: b\n—\nafter</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "x-y"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "a: b"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "after"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

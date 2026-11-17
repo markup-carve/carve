@@ -5272,7 +5272,27 @@ b
 
 **C2-B-163** An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.
 
-**C2-B-164** The format name is one word: a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, an uppercase letter or two spaces leave the line text. Without a name the format is YAML, for which the bare opener is the canonical form. As in 0.1.
+**C2-B-164** The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, another character or two spaces leave the line text. The name is kept as written, so `---JSON` has the format `JSON`, which is not `json`. Without a name the format is YAML, for which the bare opener is the canonical form. As in 0.1.
+
+`JSON` is a format name, letters in any case, so the lines are frontmatter (C2-B-164).
+
+Example 463 (unverified)
+
+::: compare
+
+```carve
+---JSON
+{"a": 1}
+---
+
+text
+```
+
+```html
+<p>text</p>
+```
+
+:::
 
 **C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141). It is no code point of line 1, so the first character behind it has the column it would have without the mark.
 
@@ -6767,11 +6787,11 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
-| Frontmatter | 5 | 0 | 5 | 1 |
+| Frontmatter | 5 | 0 | 5 | 2 |
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **115** |
+| **Total** | **219** | **10** | **171** | **116** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

@@ -208,7 +208,7 @@ a```b
 
 **C2-W-051** The attributes of a list item and of a table cell are written glued to the marker (C2-B-101).
 
-**C2-W-052** YAML frontmatter is written with the bare opener `---`, also when the source named the format. Every other format keeps its format name glued to the opener: `---toml`, `---json` (C2-B-164). The form with a space before the name, `--- toml`, is read too (C2-B-164) and is written glued. The body is written as it is.
+**C2-W-052** Frontmatter whose format is `yaml` is written with the bare opener `---`, also when the source named the format. Every other format, `YAML` included, keeps its format name glued to the opener: `---toml`, `---json` (C2-B-164). The form with a space before the name, `--- toml`, is read too (C2-B-164) and is written glued. The body is written as it is.
 
 **C2-W-053** A caption is written directly below its block, with no blank line (C2-B-146), as `^`, one space and its content. This is part of requirement W7.
 
