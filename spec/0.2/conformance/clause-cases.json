@@ -41720,6 +41720,2430 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-593",
+   "clauses": [
+    "C2-B-180",
+    "C2-B-181"
+   ],
+   "why": "C2-B-181: An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error",
+   "summary": "an unclosed quote in a csv table is reported",
+   "kind": "parse",
+   "input": "{table}\n```csv\na,\"b\n```",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "delimited-table-malformed",
+      "channel": "parse",
+      "severity": "error"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-594",
+   "clauses": [
+    "C2-B-180",
+    "C2-B-181"
+   ],
+   "why": "C2-B-181: An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error",
+   "summary": "a closed quote in a csv table is not reported",
+   "kind": "parse",
+   "input": "{table}\n```csv\na,\"b\"\n```",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "delimited-table-malformed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-595",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "a second abbreviation definition of one label is reported at the later one",
+   "kind": "parse",
+   "input": "*[A]: x\n\n*[A]: y",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-abbreviation-definition",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 3,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-596",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "two abbreviation definitions of different labels are not duplicates",
+   "kind": "parse",
+   "input": "*[A]: x\n\n*[B]: y",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "duplicate-abbreviation-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-597",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "a second footnote definition of one label is reported at the later one",
+   "kind": "parse",
+   "input": "[^a]: x\n\n[^a]: y",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-footnote-definition",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 3,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-598",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "two footnote definitions of different labels are not duplicates",
+   "kind": "parse",
+   "input": "[^a]: x\n\n[^b]: y",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "duplicate-footnote-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-599",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "a second link definition of one label is reported at the later one",
+   "kind": "parse",
+   "input": "[a]: /u\n\n[a]: /v",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-link-reference-definition",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 3,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-600",
+   "clauses": [
+    "C2-B-085"
+   ],
+   "why": "C2-B-085: For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.",
+   "summary": "two link definitions of different labels are not duplicates",
+   "kind": "parse",
+   "input": "[a]: /u\n\n[b]: /v",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "duplicate-link-reference-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-601",
+   "clauses": [
+    "C2-A-039",
+    "C2-A-148"
+   ],
+   "why": "C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. C2-A-148: the opening bracket of a link",
+   "summary": "a second span with the same authored id is reported at the later span",
+   "kind": "parse",
+   "input": "[x]{#a} [y]{#a}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-id",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 9
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-602",
+   "clauses": [
+    "C2-A-039",
+    "C2-A-148"
+   ],
+   "why": "C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. C2-A-148: the opening bracket of a link",
+   "summary": "two spans with different ids are not reported",
+   "kind": "parse",
+   "input": "[x]{#a} [y]{#b}",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "duplicate-id"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-603",
+   "clauses": [
+    "C2-B-105",
+    "C2-B-225"
+   ],
+   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105)",
+   "summary": "an attribute block glued to a fence language is reported",
+   "kind": "parse",
+   "input": "```js{.c}\nx\n```",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-opener-fallback",
+      "channel": "parse",
+      "severity": "error"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-604",
+   "clauses": [
+    "C2-B-105",
+    "C2-B-225"
+   ],
+   "why": "C2-B-105: An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error. C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105)",
+   "summary": "the attribute line above a fence is not reported",
+   "kind": "parse",
+   "input": "{.c}\n```js\nx\n```",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "fence-opener-fallback"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-605",
+   "clauses": [
+    "C2-B-117",
+    "C2-B-122"
+   ],
+   "why": "C2-B-122: An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.",
+   "summary": "an unquoted title after the fence language is reported",
+   "kind": "parse",
+   "input": "```js b\nx\n```",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-title-syntax",
+      "channel": "parse",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-606",
+   "clauses": [
+    "C2-B-117",
+    "C2-B-122"
+   ],
+   "why": "C2-B-122: An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them.",
+   "summary": "a quoted title after the fence language is not reported",
+   "kind": "parse",
+   "input": "```js \"b\"\nx\n```",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "fence-title-syntax"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-607",
+   "clauses": [
+    "C2-B-111",
+    "C2-A-148"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error. C2-A-148: the backtick run of a fence",
+   "summary": "a code fence with no closer is reported at its opener",
+   "kind": "parse",
+   "input": "```\nx",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-code-fence",
+      "channel": "parse",
+      "severity": "error",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-608",
+   "clauses": [
+    "C2-B-111",
+    "C2-A-148"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error. C2-A-148: the backtick run of a fence",
+   "summary": "a closed code fence is not reported",
+   "kind": "parse",
+   "input": "```\nx\n```",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-code-fence"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-609",
+   "clauses": [
+    "C2-B-111"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error.",
+   "summary": "a comment block with no closer is reported at its opener",
+   "kind": "parse",
+   "input": "%%%\nx",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-comment-fence",
+      "channel": "parse",
+      "severity": "error",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-610",
+   "clauses": [
+    "C2-B-111"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error.",
+   "summary": "a closed comment block is not reported",
+   "kind": "parse",
+   "input": "%%%\nx\n%%%",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-comment-fence"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-611",
+   "clauses": [
+    "C2-B-111",
+    "C2-A-148"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error. C2-A-148: the colon run of a div",
+   "summary": "a div with no closer is reported at its opener",
+   "kind": "parse",
+   "input": "::: a\nx",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-container-fence",
+      "channel": "parse",
+      "severity": "error",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-612",
+   "clauses": [
+    "C2-B-111",
+    "C2-A-148"
+   ],
+   "why": "C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text, and `unclosed-code-fence`, `unclosed-container-fence` or `unclosed-comment-fence` reports it with severity error. C2-A-148: the colon run of a div",
+   "summary": "a closed div is not reported",
+   "kind": "parse",
+   "input": "::: a\nx\n:::",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-container-fence"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-613",
+   "clauses": [
+    "C2-B-163",
+    "C2-B-162"
+   ],
+   "why": "C2-B-163: An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
+   "summary": "frontmatter with no closer is reported",
+   "kind": "parse",
+   "input": "---\na: 1",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-frontmatter",
+      "channel": "parse",
+      "severity": "error",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-614",
+   "clauses": [
+    "C2-B-163",
+    "C2-B-162"
+   ],
+   "why": "C2-B-163: An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
+   "summary": "frontmatter with a closer is not reported",
+   "kind": "parse",
+   "input": "---\na: 1\n---",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-frontmatter"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-615",
+   "clauses": [
+    "C2-N-003",
+    "C2-N-061"
+   ],
+   "why": "C2-N-003: A library call that gives no resolver expands nothing: every include stays unexpanded and is reported with `include-no-resolver` (C2-N-061). C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an include in a parse with no resolver is reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-no-resolver",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-616",
+   "clauses": [
+    "C2-N-003",
+    "C2-N-061"
+   ],
+   "why": "C2-N-003: A library call that gives no resolver expands nothing: every include stays unexpanded and is reported with `include-no-resolver` (C2-N-061). C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an include that the resolver serves is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-no-resolver"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-617",
+   "clauses": [
+    "C2-T-024",
+    "C2-N-003"
+   ],
+   "why": "C2-T-024: An expansion retains at most `include_diagnostics` of `data/limits.json`, 100, entries whose code is the code of a cause in `data/includes.json`, the first in the order the failures occur. The result of a call that returns a record gives the number of the others as `suppressedDiagnostics`, 0 where there are none",
+   "summary": "the 101st include failure is counted and not listed",
+   "kind": "parse",
+   "input": "{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-no-resolver",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ],
+    "suppressed": 1
+   },
+   "from": []
+  },
+  {
+   "id": "CC-618",
+   "clauses": [
+    "C2-T-024",
+    "C2-N-003"
+   ],
+   "why": "C2-T-024: An expansion retains at most `include_diagnostics` of `data/limits.json`, 100, entries whose code is the code of a cause in `data/includes.json`, the first in the order the failures occur. The result of a call that returns a record gives the number of the others as `suppressedDiagnostics`, 0 where there are none",
+   "summary": "100 include failures are all listed and none suppressed",
+   "kind": "parse",
+   "input": "{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}\n\n{{ a.crv }}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-no-resolver",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 199,
+      "column": 1
+     }
+    ],
+    "suppressed": 0
+   },
+   "from": []
+  },
+  {
+   "id": "CC-619",
+   "clauses": [
+    "C2-N-025",
+    "C2-B-205",
+    "C2-B-206"
+   ],
+   "why": "C2-N-025: An include that holds an invalid option (C2-B-206) is not expanded, and `include-option-invalid` reports it C2-B-205: `shift` takes `auto` or a decimal integer of one to nine digits with an optional `+` or `-`",
+   "summary": "a shift value outside its shape is reported",
+   "kind": "parse",
+   "input": "{{ a.crv @shift:x }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-option-invalid",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-620",
+   "clauses": [
+    "C2-N-025",
+    "C2-B-205",
+    "C2-B-206"
+   ],
+   "why": "C2-N-025: An include that holds an invalid option (C2-B-206) is not expanded, and `include-option-invalid` reports it C2-B-205: `shift` takes `auto` or a decimal integer of one to nine digits with an optional `+` or `-`",
+   "summary": "a valid shift value is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv @shift:1 }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-option-invalid"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-621",
+   "clauses": [
+    "C2-N-024",
+    "C2-N-061"
+   ],
+   "why": "C2-N-024: A directive uses at most one selection. ... A directive that breaks a row is not expanded, and `include-selection-conflict` reports it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a section and a line range in one directive are reported",
+   "kind": "parse",
+   "input": "{{ a.crv #s @lines:1-1 }}",
+   "files": {
+    "a.crv": {
+     "text": "{#s}\n# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-selection-conflict",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-622",
+   "clauses": [
+    "C2-N-024",
+    "C2-N-061"
+   ],
+   "why": "C2-N-024: A directive uses at most one selection. ... A directive that breaks a row is not expanded, and `include-selection-conflict` reports it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a line range alone is not a conflict",
+   "kind": "parse",
+   "input": "{{ a.crv @lines:1-1 }}",
+   "files": {
+    "a.crv": {
+     "text": "{#s}\n# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-selection-conflict"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-623",
+   "clauses": [
+    "C2-N-064",
+    "C2-N-063"
+   ],
+   "why": "C2-N-064: A directive whose file would stand deeper than the limit `include_depth` of `data/limits.json`, 16, is not resolved and reports `include-depth`. A host may lower the limit and may not raise it. C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a file at depth 2 under a lowered depth limit of 1 is reported in the including file",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n"
+    },
+    "b.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {
+    "includes": {
+     "depth": 1
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-depth",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1,
+      "file": "a.crv"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-624",
+   "clauses": [
+    "C2-N-064",
+    "C2-N-063"
+   ],
+   "why": "C2-N-064: A directive whose file would stand deeper than the limit `include_depth` of `data/limits.json`, 16, is not resolved and reports `include-depth`. A host may lower the limit and may not raise it. C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a file at depth 2 under a depth limit of 2 is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n"
+    },
+    "b.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {
+    "includes": {
+     "depth": 2
+    }
+   },
+   "expected": {
+    "notReported": [
+     "include-depth"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-625",
+   "clauses": [
+    "C2-N-065",
+    "C2-N-061"
+   ],
+   "why": "C2-N-065: A text that would carry the sum past the cap is refused with `include-budget` (`size_exceeded`) and does not count toward the sum ... A host may lower the cap and may not raise it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a 5-byte text under a lowered cap of 4 bytes is reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "abcd\n"
+    }
+   },
+   "options": {
+    "includes": {
+     "bytes": 4
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-budget",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-626",
+   "clauses": [
+    "C2-N-065",
+    "C2-N-061"
+   ],
+   "why": "C2-N-065: A text that would carry the sum past the cap is refused with `include-budget` (`size_exceeded`) and does not count toward the sum ... A host may lower the cap and may not raise it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a 5-byte text under a cap of 5 bytes does not carry the sum past it",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "abcd\n"
+    }
+   },
+   "options": {
+    "includes": {
+     "bytes": 5
+    }
+   },
+   "expected": {
+    "notReported": [
+     "include-budget"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-627",
+   "clauses": [
+    "C2-N-066",
+    "C2-N-063"
+   ],
+   "why": "C2-N-066: A cycle is an include whose returned id is the id of the top-level document or the `file` of an include around it. It is refused with `include-cycle` C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a file that includes itself is reported at its own include",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "{{ a.crv }}\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-cycle",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1,
+      "file": "a.crv"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-628",
+   "clauses": [
+    "C2-N-066",
+    "C2-N-063"
+   ],
+   "why": "C2-N-066: A cycle is an include whose returned id is the id of the top-level document or the `file` of an include around it. It is refused with `include-cycle` C2-N-063: A failure in an included file is reported at the include node in that file.",
+   "summary": "a file that includes another file is no cycle",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n"
+    },
+    "b.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-cycle"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-629",
+   "clauses": [
+    "C2-N-013",
+    "C2-N-061"
+   ],
+   "why": "C2-N-013: Inside the root, a missing target is `not_found` C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an include of a file the resolver does not serve is reported",
+   "kind": "parse",
+   "input": "{{ b.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-not-found",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-630",
+   "clauses": [
+    "C2-N-013",
+    "C2-N-061"
+   ],
+   "why": "C2-N-013: Inside the root, a missing target is `not_found` C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an include of a served file is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-not-found"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-631",
+   "clauses": [
+    "C2-N-011",
+    "C2-N-061"
+   ],
+   "why": "C2-N-011: Content is text when it is well-formed UTF-8 and holds no U+0000. A resolver reports any other content as `non_text` C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an included file that is not well-formed UTF-8 is reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "bytes": "61 FF"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-non-text",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-632",
+   "clauses": [
+    "C2-N-011",
+    "C2-N-061"
+   ],
+   "why": "C2-N-011: Content is text when it is well-formed UTF-8 and holds no U+0000. A resolver reports any other content as `non_text` C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "an included file of well-formed UTF-8 is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "bytes": "61 C3 BF"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-non-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-633",
+   "clauses": [
+    "C2-N-030",
+    "C2-N-061"
+   ],
+   "why": "C2-N-030: A section that selects nothing leaves the include unexpanded, and `include-section` reports it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a section that no heading of the file carries is reported",
+   "kind": "parse",
+   "input": "{{ a.crv #zz }}",
+   "files": {
+    "a.crv": {
+     "text": "{#s}\n# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-section",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-634",
+   "clauses": [
+    "C2-N-030",
+    "C2-N-061"
+   ],
+   "why": "C2-N-030: A section that selects nothing leaves the include unexpanded, and `include-section` reports it. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a section that a heading carries is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv #s }}",
+   "files": {
+    "a.crv": {
+     "text": "{#s}\n# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-section"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-635",
+   "clauses": [
+    "C2-N-041",
+    "C2-N-061"
+   ],
+   "why": "C2-N-041: A malformed, unmatched, mismatched, unclosed or repeated marker, an opener without a name, and a name the file does not open leave the include unexpanded, and `include-region-invalid` reports it C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a region the file does not open is reported",
+   "kind": "parse",
+   "input": "{{ a.crv @region:r }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-region-invalid",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-636",
+   "clauses": [
+    "C2-N-041",
+    "C2-N-061"
+   ],
+   "why": "C2-N-041: A malformed, unmatched, mismatched, unclosed or repeated marker, an opener without a name, and a name the file does not open leave the include unexpanded, and `include-region-invalid` reports it C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a region the file opens and closes is not reported",
+   "kind": "parse",
+   "input": "{{ a.crv @region:r }}",
+   "files": {
+    "a.crv": {
+     "text": "%% #region r\nx\n%% #endregion\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-region-invalid"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-637",
+   "clauses": [
+    "C2-N-035",
+    "C2-N-061"
+   ],
+   "why": "C2-N-035: A range that starts past the last line leaves the include unexpanded, and `include-lines-out-of-range` reports it; the node keeps `file`. A range that starts on or before the last line and ends past it selects through the last line. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a line range that starts past the last of two lines is reported",
+   "kind": "parse",
+   "input": "{{ a.crv @lines:3-4 }}",
+   "files": {
+    "a.crv": {
+     "text": "x\ny\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-lines-out-of-range",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-638",
+   "clauses": [
+    "C2-N-035",
+    "C2-N-061"
+   ],
+   "why": "C2-N-035: A range that starts past the last line leaves the include unexpanded, and `include-lines-out-of-range` reports it; the node keeps `file`. A range that starts on or before the last line and ends past it selects through the last line. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a line range that starts on the last line is clipped and not reported",
+   "kind": "parse",
+   "input": "{{ a.crv @lines:2-4 }}",
+   "files": {
+    "a.crv": {
+     "text": "x\ny\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-lines-out-of-range"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-639",
+   "clauses": [
+    "C2-N-046",
+    "C2-A-148"
+   ],
+   "why": "C2-N-046: A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "a row range that starts past the last of two records is reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @rows:3-3 @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "H\na\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-rows-out-of-range",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-640",
+   "clauses": [
+    "C2-N-046",
+    "C2-A-148"
+   ],
+   "why": "C2-N-046: A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "a row range that starts on the last record is clipped and not reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @rows:2-3 @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "H\na\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-rows-out-of-range"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-641",
+   "clauses": [
+    "C2-N-047",
+    "C2-A-148"
+   ],
+   "why": "C2-N-047: A requested name that the first head record lacks or holds twice leaves the include unexpanded with `include-cols-invalid` C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "a column name the head lacks is reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @cols:\"Z\" @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "Name,Price\nA,1\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-cols-invalid",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-642",
+   "clauses": [
+    "C2-N-047",
+    "C2-A-148"
+   ],
+   "why": "C2-N-047: A requested name that the first head record lacks or holds twice leaves the include unexpanded with `include-cols-invalid` C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "a column name the head holds once is not reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @cols:\"Price\" @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "Name,Price\nA,1\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-cols-invalid"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-643",
+   "clauses": [
+    "C2-N-047",
+    "C2-A-148"
+   ],
+   "why": "C2-N-047: and a name requested twice with `include-cols-duplicate` C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "a column name requested twice is reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @cols:\"Price,Price\" @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "Name,Price\nA,1\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-cols-duplicate",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-644",
+   "clauses": [
+    "C2-N-047",
+    "C2-A-148"
+   ],
+   "why": "C2-N-047: and a name requested twice with `include-cols-duplicate` C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "two different column names are not reported",
+   "kind": "parse",
+   "input": "{table}\n{{ a.csv @cols:\"Price,Name\" @code:csv }}",
+   "files": {
+    "a.csv": {
+     "text": "Name,Price\nA,1\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-cols-duplicate"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-645",
+   "clauses": [
+    "C2-N-048"
+   ],
+   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it.",
+   "summary": "a shift that would raise a heading to level 7 is reported",
+   "kind": "parse",
+   "input": "{{ a.crv @shift:6 }}",
+   "files": {
+    "a.crv": {
+     "text": "# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-heading-clamp",
+      "channel": "parse",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-646",
+   "clauses": [
+    "C2-N-048"
+   ],
+   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it.",
+   "summary": "a shift to level 6 is not clamped",
+   "kind": "parse",
+   "input": "{{ a.crv @shift:5 }}",
+   "files": {
+    "a.crv": {
+     "text": "# T\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-heading-clamp"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-647",
+   "clauses": [
+    "C2-N-012",
+    "C2-N-004",
+    "C2-T-032",
+    "C2-N-013"
+   ],
+   "why": "C2-N-012: returns `outside_root` unless that form lies inside the canonical root C2-N-004: It uses the resolver of C2-N-012 with the containment root set to the directory of the entry file C2-T-032: `diagnostics` writes the entries of the parse channel and ends with status 0 whatever they report.",
+   "summary": "an include path that leaves the directory of the entry file is outside the root",
+   "kind": "cli",
+   "files": {
+    "main.crv": {
+     "text": "{{ ../a.crv }}\n"
+    }
+   },
+   "args": [
+    "diagnostics",
+    "main.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdoutDiagnostics": [
+     {
+      "code": "include-outside-root",
+      "severity": "warning",
+      "line": 1,
+      "column": 1,
+      "file": "main.crv"
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-648",
+   "clauses": [
+    "C2-N-012",
+    "C2-N-004",
+    "C2-T-032",
+    "C2-N-013"
+   ],
+   "why": "C2-N-012: returns `outside_root` unless that form lies inside the canonical root C2-N-004: It uses the resolver of C2-N-012 with the containment root set to the directory of the entry file C2-T-032: `diagnostics` writes the entries of the parse channel and ends with status 0 whatever they report.",
+   "summary": "an include path inside the directory of the entry file is not outside the root",
+   "kind": "cli",
+   "files": {
+    "main.crv": {
+     "text": "{{ a.crv }}\n"
+    },
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "args": [
+    "diagnostics",
+    "main.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdoutDiagnostics": [],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-649",
+   "clauses": [
+    "C2-H-116",
+    "C2-H-115"
+   ],
+   "why": "C2-H-116: An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. C2-H-115: The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.",
+   "summary": "an authored reserved carrier name on a span is dropped and reported",
+   "kind": "render",
+   "input": "[a]{data-carve-ref=x}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "carrier-attribute-dropped",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-650",
+   "clauses": [
+    "C2-H-116",
+    "C2-H-115"
+   ],
+   "why": "C2-H-116: An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. C2-H-115: The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.",
+   "summary": "a data-carve- name outside the reserved list is an ordinary attribute and not reported",
+   "kind": "render",
+   "input": "[a]{data-carve-x=x}",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carrier-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-651",
+   "clauses": [
+    "C2-H-082",
+    "C2-H-132"
+   ],
+   "why": "C2-H-082: A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href=\"\">`. The denial is reported as the render loss `destination-denied`.",
+   "summary": "a link to a scheme on the default deny list is reported",
+   "kind": "render",
+   "input": "[a](javascript:x)",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "destination-denied",
+      "channel": "render-loss",
+      "severity": "error"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-652",
+   "clauses": [
+    "C2-H-082",
+    "C2-H-132"
+   ],
+   "why": "C2-H-082: A destination that `urlPolicy` denies is written as the empty string, and the element stays: `<a href=\"\">`. The denial is reported as the render loss `destination-denied`.",
+   "summary": "a link to a scheme off the deny list is not reported",
+   "kind": "render",
+   "input": "[a](https:x)",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "destination-denied"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-653",
+   "clauses": [
+    "C2-H-054",
+    "C2-H-052"
+   ],
+   "why": "C2-H-054: Raw content in any other format renders nothing in HTML and is reported as the render loss `raw-format-dropped`. C2-H-052: The escaped form is not a render loss.",
+   "summary": "a raw span in the latex format is dropped and reported",
+   "kind": "render",
+   "input": "`x`{=latex}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "raw-format-dropped",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-654",
+   "clauses": [
+    "C2-H-054",
+    "C2-H-052"
+   ],
+   "why": "C2-H-054: Raw content in any other format renders nothing in HTML and is reported as the render loss `raw-format-dropped`. C2-H-052: The escaped form is not a render loss.",
+   "summary": "a raw html span is escaped with rawHtml off and is no render loss",
+   "kind": "render",
+   "input": "`x`{=html}",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "raw-format-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-655",
+   "clauses": [
+    "C2-H-129",
+    "C2-H-163"
+   ],
+   "why": "C2-H-129: A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`. C2-H-163: `comment` and `minimal` the listed types",
+   "summary": "a quote under the minimal profile, whose block list lacks block_quote, is reported",
+   "kind": "render",
+   "input": "> a",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "profile-construct-degraded",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-656",
+   "clauses": [
+    "C2-H-129",
+    "C2-H-163"
+   ],
+   "why": "C2-H-129: A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`. C2-H-163: `comment` and `minimal` the listed types",
+   "summary": "a quote under the comment profile, whose block list names block_quote, is not reported",
+   "kind": "render",
+   "input": "> a",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "notReported": [
+     "profile-construct-degraded"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-657",
+   "clauses": [
+    "C2-N-070",
+    "C2-H-133"
+   ],
+   "why": "C2-N-070: An unexpanded include renders as C2-H-133 states, the directive as text in a paragraph, and the render reports `include-unresolved` in the render-loss channel, whatever the cause.",
+   "summary": "an include rendered with no resolver is reported as a render loss",
+   "kind": "render",
+   "input": "{{ b.crv }}",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-unresolved",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-658",
+   "clauses": [
+    "C2-N-070",
+    "C2-H-133"
+   ],
+   "why": "C2-N-070: An unexpanded include renders as C2-H-133 states, the directive as text in a paragraph, and the render reports `include-unresolved` in the render-loss channel, whatever the cause.",
+   "summary": "an expanded include is not reported as unresolved",
+   "kind": "render",
+   "input": "{{ b.crv }}",
+   "files": {
+    "b.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-unresolved"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-659",
+   "clauses": [
+    "C2-N-079"
+   ],
+   "why": "C2-N-079: With `roundtrip` on, an expanded include still writes only its children, so an import of that HTML gives the included blocks in place of the directive. The render reports this as the render loss `include-expanded-roundtrip`, once for each expanded include that no expanded include holds.",
+   "summary": "an expanded include under roundtrip is reported",
+   "kind": "render",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {
+    "roundtrip": true
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-expanded-roundtrip",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-660",
+   "clauses": [
+    "C2-N-079"
+   ],
+   "why": "C2-N-079: With `roundtrip` on, an expanded include still writes only its children, so an import of that HTML gives the included blocks in place of the directive. The render reports this as the render loss `include-expanded-roundtrip`, once for each expanded include that no expanded include holds.",
+   "summary": "an expanded include without roundtrip is not reported",
+   "kind": "render",
+   "input": "{{ a.crv }}",
+   "files": {
+    "a.crv": {
+     "text": "x\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-expanded-roundtrip"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-661",
+   "clauses": [
+    "C2-H-201",
+    "C2-H-098"
+   ],
+   "why": "C2-H-201: One render has a budget for derived text: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the source length in UTF-8 bytes, whichever is more. ... An abbreviation costs the UTF-8 byte length of its expansion as the definition holds it, before escaping; ... A node whose cost is more than what remains draws nothing and is written in its plain form ... The first node of a render that does not fit reports `derived-text-budget` in the render-loss channel, once per render.",
+   "summary": "the 1001st use of a 1000-byte expansion does not fit the budget and is reported",
+   "kind": "render",
+   "input": "*[A]: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\nA A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "derived-text-budget",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 3,
+      "column": 2001
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-662",
+   "clauses": [
+    "C2-H-201",
+    "C2-H-098"
+   ],
+   "why": "C2-H-201: One render has a budget for derived text: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the source length in UTF-8 bytes, whichever is more. ... An abbreviation costs the UTF-8 byte length of its expansion as the definition holds it, before escaping; ... A node whose cost is more than what remains draws nothing and is written in its plain form ... The first node of a render that does not fit reports `derived-text-budget` in the render-loss channel, once per render.",
+   "summary": "1000 uses of a 1000-byte expansion fill the budget exactly and are not reported",
+   "kind": "render",
+   "input": "*[A]: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\nA A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A A",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "derived-text-budget"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-663",
+   "clauses": [
+    "C2-X-035",
+    "C2-H-076",
+    "C2-X-004"
+   ],
+   "why": "C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. C2-H-076: An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`.",
+   "summary": "an optional extension with no renderer renders its fallback and is reported",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "b"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "b\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nb\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-664",
+   "clauses": [
+    "C2-X-035",
+    "C2-H-076",
+    "C2-X-004"
+   ],
+   "why": "C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. C2-H-076: An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`.",
+   "summary": "the same extension with its standard renderer is not reported",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "b"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "b\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nb\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-665",
+   "clauses": [
+    "C2-W-112",
+    "C2-W-011",
+    "C2-W-103"
+   ],
+   "why": "C2-W-112: Two code spans with nothing between them have no spelling: written together, the two runs read as one span. ... For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first. C2-W-103: a finding of the writer on a supplied tree has the path alone.",
+   "summary": "two adjacent code spans are reported at the second span",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "code",
+        "value": "a"
+       },
+       {
+        "type": "code",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0/children/1"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-666",
+   "clauses": [
+    "C2-W-112",
+    "C2-W-011",
+    "C2-W-103"
+   ],
+   "why": "C2-W-112: Two code spans with nothing between them have no spelling: written together, the two runs read as one span. ... For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first. C2-W-103: a finding of the writer on a supplied tree has the path alone.",
+   "summary": "two code spans with a space between them are spellable",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "code",
+        "value": "a"
+       },
+       {
+        "type": "text",
+        "value": " "
+       },
+       {
+        "type": "code",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-667",
+   "clauses": [
+    "C2-W-056",
+    "C2-W-011"
+   ],
+   "why": "C2-W-056: A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.",
+   "summary": "a supplied link definition with an empty destination is reported",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": ""
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-668",
+   "clauses": [
+    "C2-W-056",
+    "C2-W-011"
+   ],
+   "why": "C2-W-056: A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.",
+   "summary": "a link definition with a destination is spellable",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-669",
+   "clauses": [
+    "C2-M-004",
+    "C2-M-081"
+   ],
+   "why": "C2-M-004: Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a class on the body is dropped and reported at the body",
+   "kind": "import",
+   "html": "<body class=\"page\"><p>a</p></body>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-attribute-dropped",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-670",
+   "clauses": [
+    "C2-M-004",
+    "C2-M-081"
+   ],
+   "why": "C2-M-004: Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "the lang of the body is kept and not reported",
+   "kind": "import",
+   "html": "<body lang=\"de\"><p>a</p></body>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-671",
+   "clauses": [
+    "C2-M-009",
+    "C2-H-186",
+    "C2-H-185"
+   ],
+   "why": "C2-M-009: A carrier that `html.md` ignores is reported with `import-carrier-ignored`, with the element as the locator. C2-H-185: A carrier whose value is malformed, which contradicts the HTML around it or which contradicts another carrier of its element is ignored. The column \"Ignored when\" of C2-H-186 lists these cases for each name.",
+   "summary": "a list marker carrier with a value other than - or * is ignored and reported",
+   "kind": "import",
+   "html": "<ul data-marker=\"+\"><li>a</li></ul>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-carrier-ignored",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-672",
+   "clauses": [
+    "C2-M-009",
+    "C2-H-186",
+    "C2-H-185"
+   ],
+   "why": "C2-M-009: A carrier that `html.md` ignores is reported with `import-carrier-ignored`, with the element as the locator. C2-H-185: A carrier whose value is malformed, which contradicts the HTML around it or which contradicts another carrier of its element is ignored. The column \"Ignored when\" of C2-H-186 lists these cases for each name.",
+   "summary": "a list marker carrier with the value * is read and not reported",
+   "kind": "import",
+   "html": "<ul data-marker=\"*\"><li>a</li></ul>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-carrier-ignored"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-673",
+   "clauses": [
+    "C2-M-051",
+    "C2-M-081"
+   ],
+   "why": "C2-M-051: A link whose `href` fails is its content, in a span when it has attributes ... Each failure is reported with `import-destination-denied`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a link to a denied scheme is reported at the link",
+   "kind": "import",
+   "html": "<p><a href=\"javascript:x()\">a</a></p>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-destination-denied",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 4
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-674",
+   "clauses": [
+    "C2-M-051",
+    "C2-M-081"
+   ],
+   "why": "C2-M-051: A link whose `href` fails is its content, in a span when it has attributes ... Each failure is reported with `import-destination-denied`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a link to a relative destination is not reported",
+   "kind": "import",
+   "html": "<p><a href=\"/u\">a</a></p>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-destination-denied"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-675",
+   "clauses": [
+    "C2-M-005",
+    "C2-M-081"
+   ],
+   "why": "C2-M-005: The doctype is dropped and reported in the same way. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a doctype is dropped and reported",
+   "kind": "import",
+   "html": "<!DOCTYPE html><p>a</p>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-element-dropped",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-676",
+   "clauses": [
+    "C2-M-005",
+    "C2-M-081"
+   ],
+   "why": "C2-M-005: The doctype is dropped and reported in the same way. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a paragraph alone drops nothing",
+   "kind": "import",
+   "html": "<p>a</p>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-element-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-677",
+   "clauses": [
+    "C2-M-014",
+    "C2-M-081"
+   ],
+   "why": "C2-M-014: Inside inline content, an element that `elements` maps to a block is read as a `span` of its inline content, with its attributes, and is reported with `import-element-mapped`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a paragraph inside strong is read as a span and reported at the paragraph",
+   "kind": "import",
+   "html": "<strong><p>x</p></strong>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-element-mapped",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 9
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-678",
+   "clauses": [
+    "C2-M-014",
+    "C2-M-081"
+   ],
+   "why": "C2-M-014: Inside inline content, an element that `elements` maps to a block is read as a `span` of its inline content, with its attributes, and is reported with `import-element-mapped`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "strong inside a paragraph maps nothing",
+   "kind": "import",
+   "html": "<p><strong>x</strong></p>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-element-mapped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-679",
+   "clauses": [
+    "C2-M-034",
+    "C2-M-081"
+   ],
+   "why": "C2-M-034: A child of a list that is no `<li>` is dropped with its content and reported with `import-structure-repaired`. Text that holds only whitespace is not such a child. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a paragraph as a child of a list is dropped and reported at the paragraph",
+   "kind": "import",
+   "html": "<ul><p>a</p><li>b</li></ul>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-structure-repaired",
+      "channel": "render-loss",
+      "severity": "warning",
+      "line": 1,
+      "column": 5
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-680",
+   "clauses": [
+    "C2-M-034",
+    "C2-M-081"
+   ],
+   "why": "C2-M-034: A child of a list that is no `<li>` is dropped with its content and reported with `import-structure-repaired`. Text that holds only whitespace is not such a child. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "whitespace text in a list is no foreign child",
+   "kind": "import",
+   "html": "<ul> <li>b</li></ul>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-structure-repaired"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-681",
+   "clauses": [
+    "C2-M-018",
+    "C2-M-020",
+    "C2-M-081"
+   ],
+   "why": "C2-M-018: At the start and at the end of the inline content of a block, whitespace of every kind is removed C2-M-020: Each application is reported with `import-whitespace-normalized`, whose severity is `hint`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a leading space of a paragraph is removed and reported at its text node",
+   "kind": "import",
+   "html": "<p> a</p>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-whitespace-normalized",
+      "channel": "render-loss",
+      "severity": "hint",
+      "line": 1,
+      "column": 4
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-682",
+   "clauses": [
+    "C2-M-018",
+    "C2-M-020",
+    "C2-M-081"
+   ],
+   "why": "C2-M-018: At the start and at the end of the inline content of a block, whitespace of every kind is removed C2-M-020: Each application is reported with `import-whitespace-normalized`, whose severity is `hint`. C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "a paragraph with no edge whitespace is not reported",
+   "kind": "import",
+   "html": "<p>a</p>",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "import-whitespace-normalized"
+    ]
+   },
+   "from": []
   }
  ]
 }
