@@ -2105,9 +2105,9 @@
       "id": "U-248",
       "kind": "report",
       "group": "rejected HTML control character is replaced",
-      "from": "c followed by U+000B and d",
+      "from": "cd\n",
       "to": "",
-      "meaning02": "C2-H-176 replaces a rejected control character such as U+000B, U+0085, or U+007F with U+FFFD in HTML text.",
+      "meaning02": "<p>c�d</p> C2-H-176 replaces a rejected control character such as U+007F, U+000B, or U+0085 with U+FFFD in HTML text; 0.1 wrote the character itself, `<p>c` U+007F `d</p>`. The example holds U+007F, since the map holds no escaped character and JSON has no unescaped U+000B.",
       "toolEntry": "U-248",
       "silent": true
     },
