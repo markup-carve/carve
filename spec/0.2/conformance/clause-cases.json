@@ -52787,6 +52787,23 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1056",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "body header mark does not overlap a column attribute",
+   "kind": "lint",
+   "input": "{aligns=right}\n|= h |\n| x |\n|={~} b |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-column-overlap"
+    ]
+   },
+   "from": []
   }
  ]
 }

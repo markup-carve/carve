@@ -1698,7 +1698,7 @@
         "Column ${n} supplies the same alignment axis both in the table and in a table attribute; the in-table marker wins."
       ],
       "message_origin": "engine_0_1",
-      "reports": "a table column for which a header cell, in any row, carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has an entry that is not empty at that column's position; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-213, C2-B-182)",
+      "reports": "a table column for which a header cell in the head carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has an entry that is not empty at that column's position; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-213, C2-B-182)",
       "clauses": ["C2-B-213", "C2-B-182"]
     },
     {
