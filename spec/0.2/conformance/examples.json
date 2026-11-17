@@ -19,6 +19,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n\tb",
    "options": {},
@@ -136,6 +137,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "-\ta",
    "options": {},
@@ -197,6 +199,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > a\n  > b",
    "options": {},
@@ -325,6 +328,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n\n\n  b",
    "options": {},
@@ -442,6 +446,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n```\n- b\n```",
    "options": {},
@@ -546,6 +551,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> - a\n>   - b",
    "options": {},
@@ -707,6 +713,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> - a\n>   - b\n>\n> \tc",
    "options": {},
@@ -893,6 +900,7 @@
     "C2-B-218",
     "C2-B-010"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "  ```\n\tcode\n  ```",
    "options": {},
@@ -946,6 +954,7 @@
     "C2-B-022",
     "C2-B-024"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ::: |\n  a\nb",
    "options": {},
@@ -1081,6 +1090,7 @@
     "C2-B-022",
     "C2-B-024"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ". a\n{c}\n%%",
    "options": {},
@@ -1226,6 +1236,7 @@
     "C2-B-022",
     "C2-B-024"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Some text\n= not a heading\n- not a list",
    "options": {},
@@ -1338,6 +1349,7 @@
     "C2-B-022",
     "C2-B-024"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Some text\n# not a heading\n> not a quote\n{.x}",
    "options": {},
@@ -1458,6 +1470,7 @@
    "number": 11,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n  b\n c\nd",
    "options": {},
@@ -1609,6 +1622,7 @@
    "number": 12,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n```\ncode\n```",
    "options": {},
@@ -1672,6 +1686,7 @@
    "number": 13,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n| a | b |",
    "options": {},
@@ -1848,6 +1863,7 @@
    "number": 14,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> - a\n- b",
    "options": {},
@@ -1966,6 +1982,7 @@
    "number": 15,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > q\n  - child",
    "options": {},
@@ -2117,6 +2134,7 @@
    "number": 16,
    "section": "not a heading",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > q\n- b",
    "options": {},
@@ -2258,6 +2276,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n  b\n\nc",
    "options": {},
@@ -2398,6 +2417,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n b",
    "options": {},
@@ -2513,6 +2533,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": " 9. a\n10. b",
    "options": {},
@@ -2643,6 +2664,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "  ```\n  a\n    b\n c\n  ```",
    "options": {},
@@ -2689,6 +2711,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "-   ```\n    x\n     y\n    ```",
    "options": {},
@@ -2766,6 +2789,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^n].\n\n[^n]: note\n  - one\n- x",
    "options": {},
@@ -3003,6 +3027,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^n].\n\n[^n]: note\n  1. one\n2. x",
    "options": {},
@@ -3243,6 +3268,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n  - one\n- x",
    "options": {},
@@ -3465,6 +3491,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^n].\n\n[^n]: note\n  - one\nx",
    "options": {},
@@ -3669,6 +3696,7 @@
     "C2-B-030",
     "C2-B-228"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[^1]: - a\n- x",
    "options": {},
@@ -3825,6 +3853,7 @@
     "C2-B-031",
     "C2-B-032"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> a\nb",
    "options": {},
@@ -3915,6 +3944,7 @@
     "C2-B-031",
     "C2-B-032"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> a\n>\n> b",
    "options": {},
@@ -4007,6 +4037,7 @@
     "C2-B-031",
     "C2-B-032"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> a\n\n> b",
    "options": {},
@@ -4112,6 +4143,7 @@
     "C2-B-031",
     "C2-B-032"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> > a",
    "options": {},
@@ -4192,6 +4224,7 @@
     "C2-B-031",
     "C2-B-032"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ">a",
    "options": {},
@@ -4247,6 +4280,7 @@
     "C2-B-034",
     "C2-B-035"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "* a\n* b",
    "options": {},
@@ -4371,6 +4405,7 @@
     "C2-B-034",
     "C2-B-035"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n* b",
    "options": {},
@@ -4513,6 +4548,7 @@
     "C2-B-034",
     "C2-B-035"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "-a\n\n-\n\n1.\n\n*",
    "options": {},
@@ -4651,6 +4687,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "v.  x\nvi.  y",
    "options": {},
@@ -4785,6 +4822,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "i.  a\nk.  b",
    "options": {},
@@ -4941,6 +4979,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ". a\n. b",
    "options": {},
@@ -5074,6 +5113,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "1. a\n. b",
    "options": {},
@@ -5207,6 +5247,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ") a",
    "options": {},
@@ -5270,6 +5311,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "3. a\n4. b",
    "options": {},
@@ -5404,6 +5446,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "i.  a\nii.  b",
    "options": {},
@@ -5537,6 +5580,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "h.  x\ni.  y",
    "options": {},
@@ -5671,6 +5715,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "A. Smith",
    "options": {},
@@ -5734,6 +5779,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "1. a\n2) b",
    "options": {},
@@ -5887,6 +5933,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "1234567890. a",
    "options": {},
@@ -5950,6 +5997,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "iv.  a\nv.  b",
    "options": {},
@@ -6084,6 +6132,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{start=5}\n. a\n. b",
    "options": {},
@@ -6218,6 +6267,7 @@
     "C2-B-219",
     "C2-B-045"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "mmmmmmmmmm) a",
    "options": {},
@@ -6273,6 +6323,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [ ] a\n- [x] b\n- [X] c\n- [_] d",
    "options": {},
@@ -6485,6 +6536,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [ ]",
    "options": {},
@@ -6571,6 +6623,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "1. [x] a",
    "options": {},
@@ -6661,6 +6714,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "II) [x] a\nIII) b",
    "options": {},
@@ -6790,6 +6844,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [ ] a\n- b",
    "options": {},
@@ -6917,6 +6972,7 @@
     "C2-B-048",
     "C2-B-229"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ". [x] . x",
    "options": {},
@@ -7043,6 +7099,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n\n- b",
    "options": {},
@@ -7171,6 +7228,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n\n\n- b",
    "options": {},
@@ -7317,6 +7375,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n1. b",
    "options": {},
@@ -7464,6 +7523,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n    - b\n  - c",
    "options": {},
@@ -7648,6 +7708,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "  - a\n\n- b",
    "options": {},
@@ -7776,6 +7837,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "  - = a\n- b",
    "options": {},
@@ -7906,6 +7968,7 @@
     "C2-B-054",
     "C2-B-055"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n    - b\n  7. c",
    "options": {},
@@ -8108,6 +8171,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- item text\n  - child\n  3. also a child list",
    "options": {},
@@ -8310,6 +8374,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > quote in the item\n\n  second block of the item",
    "options": {},
@@ -8436,6 +8501,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- - a",
    "options": {},
@@ -8555,6 +8621,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n-\n- c",
    "options": {},
@@ -8704,6 +8771,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- - -",
    "options": {},
@@ -8826,6 +8894,7 @@
     "C2-B-060",
     "C2-B-061"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "+ a",
    "options": {},
@@ -8881,6 +8950,7 @@
     "C2-B-065",
     "C2-B-066"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n  - b\n\n- c",
    "options": {},
@@ -9061,6 +9131,7 @@
     "C2-B-065",
     "C2-B-066"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n  b\n- c",
    "options": {},
@@ -9210,6 +9281,7 @@
     "C2-B-065",
     "C2-B-066"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- one\n- two\n\n  ```\n  code\n  ```",
    "options": {},
@@ -9346,6 +9418,7 @@
     "C2-B-065",
     "C2-B-066"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > q\n\n  p\n- ```\n  code\n  ```\n  p2",
    "options": {},
@@ -9520,6 +9593,7 @@
     "C2-B-065",
     "C2-B-066"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{loose}\n- a\n- b",
    "options": {},
@@ -9663,6 +9737,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: \tx\n: d",
    "options": {},
@@ -9780,6 +9855,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: term\nmore term text\n: first description\n\n: second description",
    "options": {},
@@ -9958,6 +10034,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: term\n   indented line\n: desc",
    "options": {},
@@ -10098,6 +10175,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n:: u\n: d",
    "options": {},
@@ -10240,6 +10318,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ": x",
    "options": {},
@@ -10306,6 +10385,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: > quote",
    "options": {},
@@ -10436,6 +10516,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n\n  second paragraph",
    "options": {},
@@ -10578,6 +10659,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n\nnot indented",
    "options": {},
@@ -10720,6 +10802,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: term\n```\ncode\n```",
    "options": {},
@@ -10811,6 +10894,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n| a |",
    "options": {},
@@ -11011,6 +11095,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n  ```\n  code\n  ```",
    "options": {},
@@ -11140,6 +11225,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n\n  x",
    "options": {},
@@ -11244,6 +11330,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n\n: d\n\n: d2",
    "options": {},
@@ -11399,6 +11486,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: > q\n: d",
    "options": {},
@@ -11516,6 +11604,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: :: inner\n  : innerd",
    "options": {},
@@ -11684,6 +11773,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: t\n: d\n- x",
    "options": {},
@@ -11824,6 +11914,7 @@
     "C2-B-079",
     "C2-B-080"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n  :: term\n  : def",
    "options": {},
@@ -11961,6 +12052,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[HTML]:  Hyper Text\n\nHTML",
    "options": {},
@@ -12037,6 +12129,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "x[^n]\n\n[^n]: a\n[^n]: [x][d]\n\n[d]: /u",
    "options": {},
@@ -12222,6 +12315,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^n] here.\n\n[^n]: The note.",
    "options": {},
@@ -12348,6 +12442,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^n].\n\n[^n]: note\n  - one",
    "options": {},
@@ -12530,6 +12625,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "One[^a] two[^b].\n\n[^a]: first\n[^b]: second",
    "options": {},
@@ -12722,6 +12818,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[^a]:\n  body",
    "options": {},
@@ -12818,6 +12915,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[HTML]: Hyper Text Markup Language\n\nHTML is plain.",
    "options": {},
@@ -12906,6 +13004,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[a-b]: x",
    "options": {},
@@ -12966,6 +13065,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[l]: /one\n[l]: /two\n\n[x][l]",
    "options": {},
@@ -13071,6 +13171,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a]:\n\n[x][a]",
    "options": {},
@@ -13172,6 +13273,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n[a]: /u\n\n[x][a]",
    "options": {},
@@ -13296,6 +13398,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [a]: /u\n\n[x][a]",
    "options": {},
@@ -13428,6 +13531,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a]: /u extra\n\n[x][a]",
    "options": {},
@@ -13529,6 +13633,7 @@
     "C2-B-088",
     "C2-B-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [Example][ex] and ![logo][ex]{.wide}.\n\n[ex]: /a.png \"Home\" {.external}",
    "options": {},
@@ -13692,6 +13797,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.x}\npara",
    "options": {},
@@ -13766,6 +13872,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#a}{.b}\npara",
    "options": {},
@@ -13841,6 +13948,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.a}\n{.b}\npara",
    "options": {},
@@ -13916,6 +14024,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n{.x}\n- b",
    "options": {},
@@ -14077,6 +14186,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "-{.i} b",
    "options": {},
@@ -14182,6 +14292,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n{.x}",
    "options": {},
@@ -14277,6 +14388,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n  {.x}\nb",
    "options": {},
@@ -14427,6 +14539,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.x}\n\npara",
    "options": {},
@@ -14521,6 +14634,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.a}\n{.b}\n\npara",
    "options": {},
@@ -14638,6 +14752,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{}\npara",
    "options": {},
@@ -14730,6 +14845,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::{.c} t\n: d",
    "options": {},
@@ -14822,6 +14938,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.c}\n%%%\nhidden\n%%%\npara",
    "options": {},
@@ -14909,6 +15026,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{k=v .c #i}\npara",
    "options": {},
@@ -14990,6 +15108,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{k=v :en .c #i}\npara",
    "options": {},
@@ -15072,6 +15191,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{Class=x #a #b}\npara",
    "options": {},
@@ -15147,6 +15267,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.c}\n[b]: /u\n\n[x][b]",
    "options": {},
@@ -15252,6 +15373,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[span]{.a}{#i}",
    "options": {},
@@ -15340,6 +15462,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n{.x}\n^ cap",
    "options": {},
@@ -15517,6 +15640,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- {.c}\n  para",
    "options": {},
@@ -15622,6 +15746,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- {.c\n  x}",
    "options": {},
@@ -15745,6 +15870,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#f .c}\n| a |\n^ cap",
    "options": {},
@@ -15916,6 +16042,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#f .c}\n```\ncode\n```\n^ cap",
    "options": {},
@@ -16016,6 +16143,7 @@
     "C2-B-193",
     "C2-B-194"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```js {.x}\ncode\n```",
    "options": {},
@@ -16066,6 +16194,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n  %%%\n  hidden\n%%%\n- b\n\nafter",
    "options": {},
@@ -16235,6 +16364,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\ncode\n`````",
    "options": {},
@@ -16284,6 +16414,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "````\n```\n````",
    "options": {},
@@ -16333,6 +16464,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\ncode\n``` not a closer\n```",
    "options": {},
@@ -16382,6 +16514,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\ncode",
    "options": {},
@@ -16431,6 +16564,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ```\n  code\nafter",
    "options": {},
@@ -16536,6 +16670,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ```\n  code\n\nafter",
    "options": {},
@@ -16641,6 +16776,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\ncode\n  ```",
    "options": {},
@@ -16690,6 +16826,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note\ntext\n:::",
    "options": {},
@@ -16766,6 +16903,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "%%%\nhidden\n%%%\nafter",
    "options": {},
@@ -16841,6 +16979,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```=html\n<b>x</b>\n```",
    "options": {},
@@ -16891,6 +17030,7 @@
     "C2-B-222",
     "C2-B-195"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "%%%\nx\n%%% not a closer\n%%%\nafter",
    "options": {},
@@ -16963,6 +17103,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```js\t\"T\"\nx\n```",
    "options": {},
@@ -17010,6 +17151,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```python \"src/app.py\"\ncode\n```",
    "options": {},
@@ -17071,6 +17213,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "~~~\ncode\n~~~",
    "options": {},
@@ -17176,6 +17319,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note \"Title\"\ntext\n:::",
    "options": {},
@@ -17263,6 +17407,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```a`b\nx",
    "options": {},
@@ -17345,6 +17490,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```php \"t\" [Composer]\ncode\n```",
    "options": {},
@@ -17407,6 +17553,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```js title\ncode\n```",
    "options": {},
@@ -17454,6 +17601,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: glossary>\nq\n:::\n\n```js}\ncode\n```\n\n```=html~\n<b>x</b>\n```\n\n::: note{.x}\nn\n:::",
    "options": {},
@@ -17592,6 +17740,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: e{_a} y\nx\n:::",
    "options": {},
@@ -17672,6 +17821,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note \"a %% b\"\nc\n:::",
    "options": {},
@@ -17772,6 +17922,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```  b\ntext\n```",
    "options": {},
@@ -17818,6 +17969,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":::  \"T\"\nx\n:::\n\n::: [l]\nz\n:::\n\n:::[x] y",
    "options": {},
@@ -17968,6 +18120,7 @@
     "C2-B-122",
     "C2-B-225"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: >a\nx\n:::\n\n::: *\ny\n:::",
    "options": {},
@@ -18084,6 +18237,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\na\n%%%\nhidden\n%%%\nb\n:::",
    "options": {},
@@ -18197,6 +18351,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: figure\n![b](b.png)\n^ (b) B\n\n:::: figure\n![a](a.png)\n^ (a) A\n::::\n:::",
    "options": {},
@@ -18398,6 +18553,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\n- not a list\n%% text, not a comment\n:::",
    "options": {},
@@ -18498,6 +18654,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\nRoses are red\n  Violets are blue\n:::",
    "options": {},
@@ -18598,6 +18755,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: \\\none\ntwo\n:::",
    "options": {},
@@ -18701,6 +18859,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: >\nquoted\n\nsecond\n:::",
    "options": {},
@@ -18801,6 +18960,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":::: note\n::: tip\ninner\n:::\nouter\n::::",
    "options": {},
@@ -18916,6 +19076,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::::\n:::\nx\n:::\n::::",
    "options": {},
@@ -19004,6 +19165,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ::: note\n  text\n:::\nafter",
    "options": {},
@@ -19149,6 +19311,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: spoiler\nx\n:::",
    "options": {},
@@ -19229,6 +19392,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.x}\n::: spoiler\nx\n:::",
    "options": {},
@@ -19310,6 +19474,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.x}\n::: \\\na\nb\n:::",
    "options": {},
@@ -19414,6 +19579,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\none\n  two\n\nthree\n:::",
    "options": {},
@@ -19543,6 +19709,7 @@
     "C2-B-132",
     "C2-B-196"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":::|\na",
    "options": {},
@@ -19630,6 +19797,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\na\n%% note\nb\n:::",
    "options": {},
@@ -19760,6 +19928,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\n\n{%%}\n{%%}\n\nb",
    "options": {},
@@ -19899,6 +20068,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\\\n{% c %}\n| b |",
    "options": {},
@@ -20058,6 +20228,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- one\n  %% todo\n  two",
    "options": {},
@@ -20200,6 +20371,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text %% trailing\nmore",
    "options": {},
@@ -20300,6 +20472,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a%% b",
    "options": {},
@@ -20364,6 +20537,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n%% c\n- b",
    "options": {},
@@ -20521,6 +20695,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- %% empty",
    "options": {},
@@ -20604,6 +20779,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> %% c",
    "options": {},
@@ -20669,6 +20845,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: %% c\n: d",
    "options": {},
@@ -20785,6 +20962,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- one\n\n%% c\n- two",
    "options": {},
@@ -20931,6 +21109,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> a\n>\n> %% c",
    "options": {},
@@ -21021,6 +21200,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\n%% not a comment\n```",
    "options": {},
@@ -21072,6 +21252,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ```\n  code\n  %% c\nafter",
    "options": {},
@@ -21179,6 +21360,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ```\n  code\n%% c\n  more",
    "options": {},
@@ -21302,6 +21484,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a {% c\n- b %}",
    "options": {},
@@ -21435,6 +21618,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n%%%\nx\n%%%\n- b",
    "options": {},
@@ -21599,6 +21783,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- {% c %}",
    "options": {},
@@ -21695,6 +21880,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n\n  {% c %}\n- b",
    "options": {},
@@ -21854,6 +22040,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n{% c %}\n| b |",
    "options": {},
@@ -22085,6 +22272,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "%% #region intro\n%% carve-lint-disable-next-line empty-link-destination\nSee [a]().\n\nSee [b](). %% carve-lint-disable-line\n\nSee [c]().\n%% #endregion intro",
    "options": {},
@@ -22376,6 +22564,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> Intro text\n%% #region steps\n- one\n%% #endregion steps\n- two",
    "options": {},
@@ -22592,6 +22781,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ```\n  a\n%% c\n  b",
    "options": {},
@@ -22712,6 +22902,7 @@
     "C2-B-216",
     "C2-B-217"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> {.a}\n%% x",
    "options": {},
@@ -22796,6 +22987,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```=html\n<b>x</b>\n```\n^ cap",
    "options": {},
@@ -22867,6 +23059,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![alt](a.png)\n^ Cap",
    "options": {},
@@ -22965,6 +23158,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n^ Table",
    "options": {},
@@ -23119,6 +23313,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```\ncode\n```\n^ Listing",
    "options": {},
@@ -23202,6 +23397,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: >\nq\n:::\n^ Attr",
    "options": {},
@@ -23311,6 +23507,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> q\n^ Attr",
    "options": {},
@@ -23420,6 +23617,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> - a\n^ cap",
    "options": {},
@@ -23560,6 +23758,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "$$`x^2`\n^ Equation",
    "options": {},
@@ -23658,6 +23857,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: figure\n![a](a.png)\n![b](b.png)\n:::\n^ Two images",
    "options": {},
@@ -23792,6 +23992,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n^ not a caption",
    "options": {},
@@ -23873,6 +24074,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n^ one\n^ two",
    "options": {},
@@ -24050,6 +24252,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![a](a.png)\n\n^ cap",
    "options": {},
@@ -24135,6 +24338,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- | a |\n  ^ in the item",
    "options": {},
@@ -24320,6 +24524,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n  ^ indented caption",
    "options": {},
@@ -24474,6 +24679,7 @@
     "C2-B-207",
     "C2-B-208"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n^ Table #: one",
    "options": {},
@@ -24651,6 +24857,7 @@
     "C2-B-154",
     "C2-B-155"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "== A long heading that\n   continues here\nand a paragraph",
    "options": {},
@@ -24758,6 +24965,7 @@
     "C2-B-154",
     "C2-B-155"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "= Title\n%% note\n  continues",
    "options": {},
@@ -24864,6 +25072,7 @@
     "C2-B-154",
     "C2-B-155"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "= Title\ntext",
    "options": {},
@@ -24948,6 +25157,7 @@
     "C2-B-154",
     "C2-B-155"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Title\ntext",
    "options": {},
@@ -25026,6 +25236,7 @@
    "number": 175,
    "section": "Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "==== Title ==",
    "options": {},
@@ -25079,6 +25290,7 @@
    "number": 176,
    "section": "Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# A {.c}",
    "options": {},
@@ -25132,6 +25344,7 @@
    "number": 177,
    "section": "A {.c}",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "=\n\n======= seven",
    "options": {},
@@ -25208,6 +25421,7 @@
    "number": 178,
    "section": "A {.c}",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#top .big}\n== Section",
    "options": {},
@@ -25266,6 +25480,7 @@
    "number": 179,
    "section": "A {.c}",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- # In an item",
    "options": {},
@@ -25362,6 +25577,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{{ data.csv @code:csv }}\nnext line",
    "options": {},
@@ -25440,6 +25656,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n{{ part.crv }}",
    "options": {},
@@ -25526,6 +25743,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![alt](a.png)",
    "options": {},
@@ -25591,6 +25809,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![alt](a.png)\nnext line",
    "options": {},
@@ -25678,6 +25897,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![a](a.png){.c}",
    "options": {},
@@ -25748,6 +25968,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![a](a.png) ![b](b.png)",
    "options": {},
@@ -25837,6 +26058,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "$$`x^2`",
    "options": {},
@@ -25902,6 +26124,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "$$`x^2`\nmore",
    "options": {},
@@ -25989,6 +26212,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{{ \"my file.crv\"   #Intro @shift:1 @lines:1-5 }}",
    "options": {},
@@ -26044,6 +26268,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{{ a.crv @shift:x @size:2 }}",
    "options": {},
@@ -26098,6 +26323,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{{ a.crv @shift:-123456789 }}\n\n{{ a.crv @shift:1234567890 }}",
    "options": {},
@@ -26166,6 +26392,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![ ][]\n^ cap",
    "options": {},
@@ -26252,6 +26479,7 @@
     "C2-B-205",
     "C2-B-206"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{{ a.crv @code:\"\" }}",
    "options": {},
@@ -26296,6 +26524,7 @@
     "C2-B-159",
     "C2-B-160"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\n\n***\n\nb",
    "options": {},
@@ -26386,6 +26615,7 @@
     "C2-B-159",
     "C2-B-160"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "  *****",
    "options": {},
@@ -26426,6 +26656,7 @@
     "C2-B-159",
     "C2-B-160"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- ***",
    "options": {},
@@ -26497,6 +26728,7 @@
     "C2-B-159",
     "C2-B-160"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "text\n***",
    "options": {},
@@ -26562,6 +26794,7 @@
     "C2-B-159",
     "C2-B-160"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\n\n___\n\nb",
    "options": {},
@@ -26669,6 +26902,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---JSON\n{\"a\": 1}\n---\n\ntext",
    "options": {},
@@ -26739,6 +26973,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---\ntitle: x\n---\n\ntext",
    "options": {},
@@ -26809,6 +27044,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---\n---\n\ntext",
    "options": {},
@@ -26879,6 +27115,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---\ntitle: x\n\ntext",
    "options": {},
@@ -26924,6 +27161,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---toml\na = 1\n---\n\ntext",
    "options": {},
@@ -26994,6 +27232,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "---\ntitle: x\n---\n\ntext",
    "options": {},
@@ -27064,6 +27303,7 @@
     "C2-B-164",
     "C2-B-165"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "----\ntitle: x\n----",
    "options": {},
@@ -27229,6 +27469,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | b |{title=\"p|q\" .c}",
    "options": {},
@@ -27428,6 +27669,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= Item |=|=<x|\n| tea |=SUM(A1:A3)|==2|",
    "options": {},
@@ -27779,6 +28021,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= Name |\n+ | Role |\n| Ada | Lead |",
    "options": {},
@@ -28046,6 +28289,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|={>^} Qty |={?v} Note |\n| 1 |{<~} a |\n| 2 | b |",
    "options": {},
@@ -28436,6 +28680,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|{^} a |{v} b |{>^^} c |",
    "options": {},
@@ -28673,6 +28918,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\t \n+ b |  \n| c |",
    "options": {},
@@ -28838,6 +29084,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= A |= B |\n| 1 | 2 |",
    "options": {},
@@ -29129,6 +29376,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |{.r}",
    "options": {},
@@ -29321,6 +29569,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 | {.r} %% note",
    "options": {},
@@ -29526,6 +29775,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | b |\n| c | d\n| e | f |",
    "options": {},
@@ -29863,6 +30113,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n|\n| b |",
    "options": {},
@@ -30116,6 +30367,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| `a | b` | c |",
    "options": {},
@@ -30303,6 +30555,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a %% c | b |",
    "options": {},
@@ -30503,6 +30756,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a |\n%% c\n| b |",
    "options": {},
@@ -30713,6 +30967,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|={>} A |={.x} B |\n|{<} 1 | 2 |",
    "options": {},
@@ -31012,6 +31267,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | < |\n| b | c |\n| ^ | d |",
    "options": {},
@@ -31333,6 +31589,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | b |\n| < | c |",
    "options": {},
@@ -31611,6 +31868,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | b |\n| ^ | < |",
    "options": {},
@@ -31865,6 +32123,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= H |\n| ^ |\n| a |",
    "options": {},
@@ -32127,6 +32386,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{footer-rows=1}\n|= ^ |= A |\n| 1 | 2 |\n| ^ | 3 |",
    "options": {},
@@ -32522,6 +32782,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|=|^|",
    "options": {},
@@ -32688,6 +32949,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= H |\n|= ^ |\n| a |",
    "options": {},
@@ -32926,6 +33188,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= H |\n|={.x} ^ |\n| a |",
    "options": {},
@@ -33167,6 +33430,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= A |= B |\n| 1 | 2 |\n+ a | b |",
    "options": {},
@@ -33402,6 +33666,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |\n+ a | b | c |",
    "options": {},
@@ -33559,6 +33824,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |\n+ note",
    "options": {},
@@ -33771,6 +34037,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table}\n```csv\na,b\n1,2\n```",
    "options": {},
@@ -33934,6 +34201,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |\n+ | b |",
    "options": {},
@@ -34089,6 +34357,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| `a | 1 |\n+ b` | 2 |",
    "options": {},
@@ -34220,6 +34489,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a \\| b | c |",
    "options": {},
@@ -34407,6 +34677,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table header-rows=2}\n```csv\na,b\nc,d\n1,2\n```",
    "options": {},
@@ -34605,6 +34876,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |\n+ ^ | < |",
    "options": {},
@@ -34736,6 +35008,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{header-rows=1}\n| a |\n| b |",
    "options": {},
@@ -34941,6 +35214,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table}\n```csv\na,b\n1,\"2\n3,4\n```",
    "options": {},
@@ -35104,6 +35378,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{valigns=\"top,bottom\" aligns=\"left,right\"}\n|= A |={?^} B |\n| a | b |",
    "options": {},
@@ -35407,6 +35682,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{body-rows=1,1 body-header-rows=0,1 body-header-cols=1,0 footer-rows=1}\n|= Item |= Qty |\n| tea | 2 |\n| Later | |\n| milk | 1 |\n| Total | 3 |",
    "options": {},
@@ -35978,6 +36254,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{aligns=\"left,left,center\" widths=\"25,25\"}\n|={>} Name |={<} Qty |= Note |\n| tea |{~} 2 | hot |\n| milk | 3 | cold |",
    "options": {},
@@ -36491,6 +36768,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{aligns=right,x widths=25,,25 footer-rows=two .t}\n| a | b |\n| c | d |",
    "options": {},
@@ -36788,6 +37066,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table}\n```csv\nName,Price\ntea,2\n```\n\n{table header-rows=0}\n```csv\na,b\n```\n\n{table header-rows=5}\n```csv\na,b\nc,d\n```",
    "options": {},
@@ -37108,6 +37387,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a | b |\n| 1 | 2 |",
    "options": {},
@@ -37386,6 +37666,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table header-rows=0}\n```csv\na,b\n1,2\n```",
    "options": {},
@@ -37544,6 +37825,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{table}\n```csv\na,\"b \"\"q\"\" c\", d\n*x*,\n\n\"m\nn\"x,y\n\n```\n\n{table}\n```CSV\na,b\n```\n\n{table}\n```tsv\na\tb,c\n```",
    "options": {},
@@ -37852,6 +38134,7 @@
     "C2-B-230",
     "C2-B-226"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| 1 | 2 |{.r} %% note\n| 3 | 4 | %% n2",
    "options": {},
@@ -38128,6 +38411,7 @@
     "C2-B-189",
     "C2-B-190"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > x",
    "options": {},
@@ -38147,6 +38431,7 @@
     "C2-B-189",
     "C2-B-190"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "-a\n\n>c\n\n:d\n\n=======",
    "options": {},
@@ -38276,6 +38561,7 @@
     "C2-B-189",
     "C2-B-190"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note\ntext",
    "options": {},
@@ -38344,6 +38630,7 @@
     "C2-B-189",
     "C2-B-190"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "%%%\nhidden",
    "options": {},
@@ -38385,6 +38672,7 @@
    "clauses": [
     "C2-B-191"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{footer-rows=1}\n| a |\n| b |\n| c |",
    "options": {},
@@ -38613,6 +38901,7 @@
    "clauses": [
     "C2-B-191"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- one\n- two\n\n- three",
    "options": {},
@@ -38782,6 +39071,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a\\  |",
    "options": {},
@@ -38913,6 +39203,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a\n\nb* and `c\n\nd`",
    "options": {},
@@ -39025,6 +39316,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> *a\n> b* c",
    "options": {},
@@ -39148,6 +39440,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a `b* c`",
    "options": {},
@@ -39222,6 +39515,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a [b* c](/u)",
    "options": {},
@@ -39310,6 +39604,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a [b* c] d",
    "options": {},
@@ -39397,6 +39692,7 @@
     "C2-I-009",
     "C2-I-127"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "𽀀*𰨌*",
    "options": {},
@@ -39453,6 +39749,7 @@
     "C2-I-012",
     "C2-I-013"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\\*not strong\\* and \\# and a\\ b and \\a and C:\\dir",
    "options": {},
@@ -39532,6 +39829,7 @@
     "C2-I-012",
     "C2-I-013"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`a\\*b` and [x](/a\\(b) and \\[not a span]{.c}",
    "options": {},
@@ -39639,6 +39937,7 @@
     "C2-I-017",
     "C2-I-018"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`code` and `` a ` b `` and ` x ` and `*a*`",
    "options": {},
@@ -39768,6 +40067,7 @@
     "C2-I-017",
     "C2-I-018"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a `b\nc` d",
    "options": {},
@@ -39849,6 +40149,7 @@
     "C2-I-017",
     "C2-I-018"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "see `unclosed *x* and [y](/u)",
    "options": {},
@@ -39969,6 +40270,7 @@
     "C2-I-017",
     "C2-I-018"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "!`/kaet/` and !`a<b>`{.ipa} and \\!`x`",
    "options": {},
@@ -40075,6 +40377,7 @@
    "clauses": [
     "C2-I-019"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "$`x^2` and $$`E = mc^2` and $5 and $`x`{.c}",
    "options": {},
@@ -40184,6 +40487,7 @@
    "clauses": [
     "C2-I-019"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "the sum $`a + b",
    "options": {},
@@ -40237,6 +40541,7 @@
    "clauses": [
     "C2-I-021"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`x`{=_a}",
    "options": {},
@@ -40302,6 +40607,7 @@
    "clauses": [
     "C2-I-021"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a `<br>`{=html} b",
    "options": {},
@@ -40380,6 +40686,7 @@
    "clauses": [
     "C2-I-021"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`<br>`{=html .c} and [s]{=html} and $`x`{=html}",
    "options": {},
@@ -40473,6 +40780,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a ^[see b %% check *this*] c",
    "options": {},
@@ -40580,6 +40888,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a %% comment\nb and 50%% and a%%b",
    "options": {},
@@ -40672,6 +40981,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a %% b*\nc* d",
    "options": {},
@@ -40789,6 +41099,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a %% b](/u) c",
    "options": {},
@@ -40884,6 +41195,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`a %% b` and [a](/u%%20c) and [a]{k=\"a %% b\"}",
    "options": {},
@@ -41023,6 +41335,7 @@
     "C2-I-025",
     "C2-I-026"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a {% one\ntwo %} b and *bo{% c %}ld* and a {% oops",
    "options": {},
@@ -41174,6 +41487,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`x`{=html}{.c}",
    "options": {},
@@ -41251,6 +41565,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{#a .b k=v} [s]{k=\"v w\" k2='x'} [s]{:en} [s]{ .a } [s]{open}",
    "options": {},
@@ -41514,6 +41829,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{.a.b} [s]{k=} [s]{1=2} [s]{#} word{.c} a {.b} c",
    "options": {},
@@ -41578,6 +41894,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*bold*{.c} `code`{.c} <https://a.b>{.c} :note[x]{.c}",
    "options": {},
@@ -41761,6 +42078,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "@user{.c} and #tag{.c}",
    "options": {},
@@ -41862,6 +42180,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a {k=*} b*",
    "options": {},
@@ -41939,6 +42258,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a*{#b} c #}",
    "options": {},
@@ -42003,6 +42323,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "word{k=\"v\"} and \"v\"",
    "options": {},
@@ -42107,6 +42428,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x]{#i}{.a}{.b} and [s]{#a #b} and [s]{k=1 k=2}",
    "options": {},
@@ -42276,6 +42598,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{.a #b k=v .c} and *a*{.c}{#d}",
    "options": {},
@@ -42409,6 +42732,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{ID=x Class=y .z} and [s]{k=v :en}",
    "options": {},
@@ -42539,6 +42863,7 @@
     "C2-I-040",
     "C2-I-042"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{} and [s]{}{.b} and *a*{} and a {} b",
    "options": {},
@@ -42696,6 +43021,7 @@
    "clauses": [
     "C2-I-043"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[s]{#id} and [s]{#id#} and [s]{#id k=v#}",
    "options": {},
@@ -42835,6 +43161,7 @@
    "clauses": [
     "C2-I-043"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a {=a}b=} c and {---} and [s]{=x=}",
    "options": {},
@@ -42987,6 +43314,7 @@
    "clauses": [
     "C2-I-043"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a {_k=v_} b and {_a_}",
    "options": {},
@@ -43065,6 +43393,7 @@
    "clauses": [
     "C2-I-043"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a {'x'} b and {\"a\": \"b\"}",
    "options": {},
@@ -43281,6 +43610,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "/emphasis/ and *strong* and *a\nb* and * a* and *a *",
    "options": {},
@@ -43463,6 +43793,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*́a* and *a*",
    "options": {},
@@ -43548,6 +43879,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "/a /b/ c/",
    "options": {},
@@ -43658,6 +43990,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a_*x* and _*x*_",
    "options": {},
@@ -43792,6 +44125,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "/*both*/ and */both/*",
    "options": {},
@@ -43928,6 +44262,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "**bold** and *a** and ***x*** and /b// and //x//",
    "options": {},
@@ -43988,6 +44323,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a/b testing, 2 * 3 * 4, a*b*c, x^2, $5, 50%, a = b = c",
    "options": {},
@@ -44048,6 +44384,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "x =1, y= 2 and ~/config and _id",
    "options": {},
@@ -44108,6 +44445,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "snake_case_name and _private and __init__ and ~5 minutes~ and a == b",
    "options": {},
@@ -44168,6 +44506,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "the /etc/ dir and /usr/local/ and /etc/hosts/ file",
    "options": {},
@@ -44265,6 +44604,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "cd /tmp/ && ls /var/",
    "options": {},
@@ -44387,6 +44727,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "glob *.js or src/* and 5 *3 and 4* 2",
    "options": {},
@@ -44521,6 +44862,7 @@
     "C2-I-052",
     "C2-I-053"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*a /b* c/",
    "options": {},
@@ -44607,6 +44949,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{/x/} {*x*} {_x_} {~x~} {=x=} H{,2,}O mc{^2^} {+new+} {-old-}",
    "options": {},
@@ -44977,6 +45320,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "foo{*bar*}baz and {*a {/b/} c*} and {/a/b/} and {*a*}{.c}",
    "options": {},
@@ -45216,6 +45560,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*bold {/note*/} more*",
    "options": {},
@@ -45302,6 +45647,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*bold {/note\\*/} more*",
    "options": {},
@@ -45413,6 +45759,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "/a/} and *a*}",
    "options": {},
@@ -45536,6 +45883,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{+a {*b+} c*}",
    "options": {},
@@ -45622,6 +45970,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{*unclosed and *x*",
    "options": {},
@@ -45708,6 +46057,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{-old-}{+new+} and {-old-}{+new+}{.k}",
    "options": {},
@@ -45874,6 +46224,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{~a~>b~}",
    "options": {},
@@ -45948,6 +46299,7 @@
     "C2-I-062",
     "C2-I-063"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{# note *x* #} and {**} and {==}",
    "options": {},
@@ -46013,6 +46365,7 @@
    "clauses": [
     "C2-I-064"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[text]{.c} and [a /b/ c]{#i} and [text] {.c} and [text]",
    "options": {},
@@ -46173,6 +46526,7 @@
    "clauses": [
     "C2-I-064"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[*x*]{???} and [[t](/v)]{.c}",
    "options": {},
@@ -46318,6 +46672,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![5 \\* 3 \\[draft\\]](/i.png)",
    "options": {},
@@ -46384,6 +46739,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a](/u) [a](/u \"T\") [a](/u 'T') [a]() [a](/u(1)) [*b*](/u)",
    "options": {},
@@ -46667,6 +47023,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a](/u v) and [a](/u \"T) and [a](/u\nv)",
    "options": {},
@@ -46780,6 +47137,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a\nb](/u) and [[x](/y)](/z)",
    "options": {},
@@ -46933,6 +47291,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a](b *c) d*",
    "options": {},
@@ -47022,6 +47381,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "<https://example.com/a_b?c=*d*> and <a@b.com> and <a@b> and <not a link>",
    "options": {},
@@ -47123,6 +47483,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![alt](/i.png) and ![*alt*](/i.png \"T\"){.c} and a ![x] b",
    "options": {},
@@ -47231,6 +47592,7 @@
     "C2-I-123",
     "C2-I-124"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "<https://例え.jp/パス?q=1#f> <h:x> <a@b.co.uk> <x+y@b-c.de>\n\n<1a:x> <http://a b> <http://a|b> <a@b.c1> <a_b@c_d.e-f>",
    "options": {},
@@ -47392,6 +47754,7 @@
     "C2-I-083",
     "C2-I-084"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# :smile:\n\n[:smile:][]",
    "options": {},
@@ -47490,6 +47853,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x][no]{.c}{#i}",
    "options": {},
@@ -47567,6 +47931,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[later] and ![later] and [missing]\n\n[later]: /u",
    "options": {},
@@ -47693,6 +48058,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[text][ref] and [ref][] and [ref] and ![img][ref]\n\n[ref]: /u \"T\"",
    "options": {},
@@ -47890,6 +48256,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[text][nope] and [nope][] and [a][nope]{.c}",
    "options": {},
@@ -48046,6 +48413,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[*a*][nope] and [a ^[n] b][nope]",
    "options": {},
@@ -48208,6 +48576,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x][foo  bar] and [x][Foo]\n\n[foo bar]: /u",
    "options": {},
@@ -48334,6 +48703,7 @@
     "C2-I-086",
     "C2-I-125"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# The Title\n\n[The Title][] and [the title][]",
    "options": {},
@@ -48469,6 +48839,7 @@
    "number": 72,
    "section": "The Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# The Title\n\n[go][The Title]",
    "options": {},
@@ -48564,6 +48935,7 @@
    "number": 73,
    "section": "The Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# The Title\n\n![x][The Title]",
    "options": {},
@@ -48646,6 +49018,7 @@
    "number": 74,
    "section": "The Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a][r] and [b][r]{.own k=2}\n\n{.def k=1}\n[r]: /u",
    "options": {},
@@ -48791,6 +49164,7 @@
    "number": 75,
    "section": "The Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a][no\npe]{.c #i}",
    "options": {},
@@ -48864,6 +49238,7 @@
    "number": 76,
    "section": "The Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# A *bold* title\n\n[A *bold* title][] and [A bold title][]",
    "options": {},
@@ -49074,6 +49449,7 @@
    "number": 77,
    "section": "A *bold* title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[*foo*\nbar][] and [x][foo\nbar]\n\n[*foo* bar]: /u\n\n[foo bar]: /v",
    "options": {},
@@ -49247,6 +49623,7 @@
    "number": 78,
    "section": "A *bold* title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x][a %% b]",
    "options": {},
@@ -49311,6 +49688,7 @@
    "number": 79,
    "section": "A *bold* title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x][a\\]b]\n\n[a\\]b]: /u",
    "options": {},
@@ -49393,6 +49771,7 @@
    "number": 114,
    "section": "A *bold* title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# A bold title\n\n[A *bold* title][] and [x][A {*bold*} title]",
    "options": {},
@@ -49566,6 +49945,7 @@
    "number": 115,
    "section": "A bold title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# A {*bold*} title\n\n[A *bold* title][] and [A bold title][]",
    "options": {},
@@ -49776,6 +50156,7 @@
    "number": 116,
    "section": "A {*bold*} title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# The `x` value and $`r^2`\n\n[go][The x value and r^2] and [The `x` value and $`r^2`][]",
    "options": {},
@@ -49986,6 +50367,7 @@
    "number": 117,
    "section": "The `x` value and $`r^2`",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# It's a\\*b\n\n[It's a\\*b][] and [go][It’s a*b] and [go][It\\'s a\\*b]",
    "options": {},
@@ -50214,6 +50596,7 @@
    "number": 118,
    "section": "It's a\\*b",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# A *b*\n\n# A b\n\n# A *c\n\n[A b][] and [x][A *c]",
    "options": {},
@@ -50429,6 +50812,7 @@
    "number": 119,
    "section": "A *c",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#manual}\n# Intro\n\n[Intro][] and [manual][] and ![x][Intro] and [Intro] and [Setup][]\n\n# Setup\n\n[Setup]: /setup",
    "options": {},
@@ -50679,6 +51063,7 @@
     "C2-I-088",
     "C2-I-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a ^[see *[^1]* there] d\n\n[^1]: note",
    "options": {},
@@ -50849,6 +51234,7 @@
     "C2-I-088",
     "C2-I-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^n] and b[^missing] and c^[inline *note*] and d^[unclosed\n\n[^n]: The note.",
    "options": {},
@@ -51058,6 +51444,7 @@
     "C2-I-088",
     "C2-I-089"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^my\nnote] b\n\n[^my note]: Text.",
    "options": {},
@@ -51182,6 +51569,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "@user and (@user.name). and mail a@b.com and x@user",
    "options": {},
@@ -51278,6 +51666,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "color #fff, issue #123, C# and #tag/sub and #release-1.0.",
    "options": {},
@@ -51408,6 +51797,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "at 10:30:00 and :+1: and :-: and :a b: and :note[a *b* c] and :1note[t] and :note[a",
    "options": {},
@@ -51565,6 +51955,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{-@user-} and @user-name and #tag- x",
    "options": {},
@@ -51698,6 +52089,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "see config:items[0]",
    "options": {},
@@ -51756,6 +52148,7 @@
     "C2-I-094",
     "C2-I-095"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "é@user and _@user",
    "options": {},
@@ -51823,6 +52216,7 @@
     "C2-I-096",
     "C2-I-097"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Café\n\nSee </#Café>.",
    "options": {},
@@ -51927,6 +52321,7 @@
    "number": 88,
    "section": "Café",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#intro}\n# Intro\n\nSee </#intro> and </#Intro> and </#intro>{.c}",
    "options": {},
@@ -52088,6 +52483,7 @@
     "C2-I-099",
     "C2-I-100"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "The HTML spec and HTMLs and XHTML and *HTML* and `HTML` and [HTML](/u).\n\n*[HTML]: Hypertext Markup Language",
    "options": {},
@@ -52284,6 +52680,7 @@
    "clauses": [
     "C2-I-101"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [@doe2020] and [see @doe2020, p. 3; @roe].\n\n[@doe2020]: /u",
    "options": {},
@@ -52427,6 +52824,7 @@
     "C2-I-102",
     "C2-I-103"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> Roses are red,\\ \n> violets are blue,\\  \t\n> sugar is sweet.",
    "options": {},
@@ -52540,6 +52938,7 @@
     "C2-I-102",
     "C2-I-103"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\\\nb",
    "options": {},
@@ -52617,6 +53016,7 @@
     "C2-I-102",
     "C2-I-103"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "line one\n  line two\nline three",
    "options": {},
@@ -52717,6 +53117,7 @@
     "C2-I-102",
     "C2-I-103"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "| a\\ | b |",
    "options": {},
@@ -52887,6 +53288,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a ===> b <==> c",
    "options": {},
@@ -52998,6 +53400,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\"double\" and 'single' and it's and '90s and \"'nested'\"",
    "options": {},
@@ -53269,6 +53672,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "'tis the season and 'em' and rock 'n' roll and 'I told 'em so,' he said, and ’tis.",
    "options": {},
@@ -53524,6 +53928,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\"Wait---\" he said and he said---\"Go\" and \"app/config/\". and and/\"or\"",
    "options": {},
@@ -53795,6 +54200,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "'I said 'yes' twice' and 'one' 'two'",
    "options": {},
@@ -54038,6 +54444,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "say 'word",
    "options": {},
@@ -54123,6 +54530,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "pages 1--10 and a---b and a----b and `git log --oneline` and x --- y",
    "options": {},
@@ -54324,6 +54732,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a--->b and a<---b and a --> b",
    "options": {},
@@ -54461,6 +54870,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "x -- y and wait... really and a --> b <-- c <--> d ==> e <== f <=> g",
    "options": {},
@@ -54728,6 +55138,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a != b, a <= b, a >= b, 5 +- 1, Carve(tm), (c), x -> y, k => v",
    "options": {},
@@ -54917,6 +55328,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\\\"straight\\\" and `\"code\"` and [a](/u \"it's\")",
    "options": {},
@@ -55027,6 +55439,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{--->-} and {-<---} and {++-1+} and {++-+} and C++-style and a{%x%}+-b",
    "options": {},
@@ -55281,6 +55694,7 @@
     "C2-I-116",
     "C2-I-117"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*'a'* and `x`'s and [b](/u)'s and {%c%}'d' and x{%c%}'s",
    "options": {},
@@ -55581,6 +55995,7 @@
    "clauses": [
     "C2-I-118"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> {^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^x^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}",
    "options": {},
@@ -58259,6 +58674,7 @@
    "clauses": [
     "C2-I-118"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^{^*[x](u) ![y](v)^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}",
    "options": {},
@@ -60899,6 +61315,7 @@
    "clauses": [
     "C2-I-118"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[:n[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]",
    "options": {},
@@ -60991,6 +61408,7 @@
     "C2-I-119",
     "C2-I-120"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[open and (x and {*y and {% z and ^[w and :ext[v and <http://u",
    "options": {},
@@ -61045,6 +61463,7 @@
     "C2-I-119",
     "C2-I-120"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "later markup still works: [a and *b* and {=c and `d`",
    "options": {},
@@ -61147,6 +61566,7 @@
    "clauses": [
     "C2-I-121"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "$$`E = mc^2`\n\ntext $$`E = mc^2`",
    "options": {},
@@ -61247,6 +61667,7 @@
     "C2-H-007",
     "C2-H-008"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":::\n:::\n\n> %% note",
    "options": {},
@@ -61321,6 +61742,7 @@
     "C2-H-016",
     "C2-H-017"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{align=center}\n::: |\nRoses are red,\nviolets are blue.\n:::",
    "options": {},
@@ -61428,6 +61850,7 @@
     "C2-H-016",
     "C2-H-017"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{style=\"color:red\" align=center k=v}\nText.\n\n{k=v align=center}\nText.",
    "options": {},
@@ -61542,6 +61965,7 @@
     "C2-H-016",
     "C2-H-017"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{style=\"color: red; \" align=center}\nT\n\n{style=\"url(x)\" align=center}\nU",
    "options": {},
@@ -61652,6 +62076,7 @@
     "C2-H-016",
     "C2-H-017"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.c k=v #i}\n- a\n\n[t]{z=1 .x #y}",
    "options": {},
@@ -61806,6 +62231,7 @@
     "C2-H-016",
     "C2-H-017"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.verse}\n::: |\nroses\n:::\n\n1) one\n2) two",
    "options": {},
@@ -61978,6 +62404,7 @@
     "C2-H-024",
     "C2-H-025"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "\\",
    "options": {},
@@ -62036,6 +62463,7 @@
     "C2-H-024",
     "C2-H-025"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# fn1\n\na[^x]\n\n[^x]: n",
    "options": {},
@@ -62171,6 +62599,7 @@
     "C2-H-026",
     "C2-H-027"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# One\n\n## Two words\n\n# One\n\n{#mine .c k=v}\n## Three\n\n> # Quoted",
    "options": {},
@@ -62363,6 +62792,7 @@
     "C2-H-147",
     "C2-H-148"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Hello, World!\n\n# Don't stop -- go\n\n# Café 日本語\n\n# 2nd *try*\n\n# ***\n\n# Hello-World",
    "options": {},
@@ -62628,6 +63058,7 @@
    "number": 81,
    "section": "Hello-World",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Hello World\n\n# API v2",
    "options": {
@@ -62710,6 +63141,7 @@
    "number": 25,
    "section": "API v2",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Ärger mit ΣΑΣ\n\n# İstanbul Straße",
    "options": {
@@ -62792,6 +63224,7 @@
    "number": 37,
    "section": "İstanbul Straße",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{.c #i}\n![a](x.png)\n\n{:de}\n![b](y.png)\n\n![c](z.png)",
    "options": {},
@@ -62906,6 +63339,7 @@
    "number": 78,
    "section": "İstanbul Straße",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "> {.c}\n> ![a](y.png)\n\n- {#i}\n  ![b](z.png)",
    "options": {},
@@ -63048,6 +63482,7 @@
     "C2-H-036",
     "C2-H-037"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "1) a\n2) b\n\n- [ ] open\n- [x] done\n- [-] dropped\n- [_] kept\n- [/] half\n- [!] urgent\n- [>] moved\n- [?] unsure\n- [X] Done",
    "options": {},
@@ -63566,6 +64001,7 @@
     "C2-H-036",
     "C2-H-037"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- one\n- two\n\n- three",
    "options": {},
@@ -63734,6 +64170,7 @@
     "C2-H-036",
     "C2-H-037"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- a\n- b\n\n  c\n- d",
    "options": {},
@@ -63927,6 +64364,7 @@
     "C2-H-036",
     "C2-H-037"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- > quote\n\n  after",
    "options": {},
@@ -64057,6 +64495,7 @@
     "C2-H-036",
     "C2-H-037"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [ ] first *a*\n\n  second\n\n  > quote",
    "options": {},
@@ -64234,6 +64673,7 @@
     "C2-H-039",
     "C2-H-040"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: T\n: ![a](x.png)",
    "options": {},
@@ -64342,6 +64782,7 @@
     "C2-H-039",
     "C2-H-040"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":: Term\n: one\n\n:: Other\n: one\n\n  two",
    "options": {},
@@ -64546,6 +64987,7 @@
     "C2-H-169",
     "C2-H-158"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\na\\\n\\\nb\n\nc\\\n:::",
    "options": {},
@@ -64724,6 +65166,7 @@
     "C2-H-169",
     "C2-H-158"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: |\nroses are red\n  violets\n:::\n\n::: \\\na\nb\n:::\n\n{.hardbreaks}\n:::\na\\\nb\n:::",
    "options": {},
@@ -64959,6 +65402,7 @@
     "C2-H-169",
     "C2-H-158"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^n]\n\n::: footnotes\n:::\n\nb\n\n::: footnotes\n:::\n\n[^n]: x",
    "options": {},
@@ -65129,6 +65573,7 @@
     "C2-H-169",
     "C2-H-158"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note\nPlain.\n:::\n\n::: warning \"Be careful\"\nBody.\n:::\n\n::: tip [Tab]\nLabeled.\n:::\n\n::: custom \"Title\"\nc\n:::\n\n::: toc \"Contents\"\n:::\n\n::: index\n:::",
    "options": {},
@@ -65398,6 +65843,7 @@
     "C2-H-169",
     "C2-H-158"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Text[^1].\n\n::: footnotes \"Notes\"\n:::\n\n[^1]: A note.\n\n::: footnotes\n:::",
    "options": {},
@@ -65565,6 +66011,7 @@
     "C2-H-054",
     "C2-H-134"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "```=html\n<b>x</b>\n```\n\na `<i>y</i>`{=html} b",
    "options": {
@@ -65666,6 +66113,7 @@
     "C2-H-054",
     "C2-H-134"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "`<b>x</b>`{=html}",
    "options": {
@@ -65729,6 +66177,7 @@
     "C2-H-153",
     "C2-H-200"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{valigns=\"middle\"}\n| a |\n|{?v style=\"color: red;\"} b |",
    "options": {},
@@ -65910,6 +66359,7 @@
     "C2-H-153",
     "C2-H-200"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|{rowspan=2} a |{ColSpan=3 .wide} b |\n| c | d |",
    "options": {},
@@ -66180,6 +66630,7 @@
     "C2-H-153",
     "C2-H-200"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|= Name |={>} Price |\n| tea   | 2         |\n^ Table #: Drinks",
    "options": {},
@@ -66511,6 +66962,7 @@
     "C2-H-170",
     "C2-H-151"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#fig-sun}\n![a](x.png)\n^ Figure #: The sun\n\n{#l1}\n```js\nx\n```\n^ Listing #: Code\n\n> q\n^ Someone\n\n{#e1}\n$$`E=mc^2`\n^ Equation #: Mass\n\nSee </#fig-sun>, </#l1>, </#e1> and </#none>.",
    "options": {},
@@ -67015,6 +67467,7 @@
     "C2-H-170",
     "C2-H-151"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: figure\n![a](a.png)\n^ (a) First\n\n![b](b.png)\n^ (b) Second\n:::\n^ Figure #: Both",
    "options": {},
@@ -67258,6 +67711,7 @@
     "C2-H-170",
     "C2-H-151"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![a](a.png)\n^ Figure #: One\n\n![b](b.png)\n^ *Figure* #. Two # more\n\n![c](c.png)\n^ Fig. # Three\n\n![d](d.png)\n^ figure #: Four\n\n![e](e.png)\n^ Figure \\#5",
    "options": {},
@@ -67742,6 +68196,7 @@
     "C2-H-170",
     "C2-H-151"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See[^a].\n\n![a](a.png)\n^ Table #: Body\n\n[^a]: Note.\n\n    | x |\n    ^ Table #: In the note\n\n[^b]: Unused.\n\n    | y |\n    ^ Table #: Never",
    "options": {},
@@ -68289,6 +68744,7 @@
     "C2-H-170",
     "C2-H-151"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": ":::: figure\n![a](a.png)\n^ First\n\n| t |\n^ Second\n::::",
    "options": {},
@@ -68520,6 +68976,7 @@
     "C2-H-133",
     "C2-H-171"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a %% c\n\n{% only %}\n\n%%%\nblock\n%%%\n\nb {% mid %} c",
    "options": {},
@@ -68679,6 +69136,7 @@
     "C2-H-133",
     "C2-H-171"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\n{*x\n%% c\n*} b",
    "options": {},
@@ -68819,6 +69277,7 @@
     "C2-H-133",
     "C2-H-171"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- {{ a.crv }}\n- b",
    "options": {},
@@ -68935,6 +69394,7 @@
     "C2-H-133",
     "C2-H-171"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- {{ a.txt @code }}\n  ^ cap\n- b",
    "options": {},
@@ -69095,6 +69555,7 @@
     "C2-H-078",
     "C2-H-142"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Press [Tab]{kbd} for [HTML]{abbr=\"HyperText Markup Language\"} at [noon]{time=\"12:00\" #t}.\n\n\"q\" -- a --- b ... --> (tm)",
    "options": {},
@@ -69474,6 +69935,7 @@
     "C2-H-078",
     "C2-H-142"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x]{time} and [y]{abbr=\"\"}",
    "options": {},
@@ -69600,6 +70062,7 @@
     "C2-H-078",
     "C2-H-142"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[x]{KBD} and [y]{abbr=\"a\" ABBR=\"b\"}",
    "options": {},
@@ -69725,6 +70188,7 @@
     "C2-H-085",
     "C2-H-086"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Intro\n\nSee [Intro][] and [x][nope] and ![i][nope] and [^zz].\n\n[a](javascript:alert(1)) and <https://example.org>",
    "options": {},
@@ -70002,6 +70466,7 @@
    "number": 18,
    "section": "Intro",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# Intro\n\nSee [the intro][Intro].",
    "options": {},
@@ -70124,6 +70589,7 @@
     "C2-H-139",
     "C2-H-141"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [*a*][nope]{.c #i} and [/b/][].",
    "options": {},
@@ -70296,6 +70762,7 @@
     "C2-H-093",
     "C2-H-094"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "::: note \"[^a]\"\n[^b]\n:::\n\n[^a]: A\n[^b]: B",
    "options": {},
@@ -70468,6 +70935,7 @@
     "C2-H-093",
     "C2-H-094"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^n]\n\n[^n]: ![a][nope]",
    "options": {},
@@ -70586,6 +71054,7 @@
     "C2-H-093",
     "C2-H-094"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^n]\n\n[^n]: ![a](x.png)",
    "options": {},
@@ -70702,6 +71171,7 @@
     "C2-H-093",
     "C2-H-094"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a[^n] b^[inline *x*] c[^n]\n\nAfter.\n\n[^n]: Note.\n\n    More.",
    "options": {},
@@ -70955,6 +71425,7 @@
     "C2-H-093",
     "C2-H-094"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[see *this[^a]* and ^[inline] page[^b]](/u)\n\n[^a]: A\n[^b]: B",
    "options": {},
@@ -71209,6 +71680,7 @@
     "C2-H-099",
     "C2-H-201"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ Before\n\n{#fig-x-b}\n![b](b.png)\n^ After\n:::\n^ Figure #: Both\n\nSee </#fig-x-b> and </#fig-x>.",
    "options": {},
@@ -71532,6 +72004,7 @@
     "C2-H-099",
     "C2-H-201"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[HTML]: HyperText Markup Language\n\nHTML and *HTML* and `HTML`.",
    "options": {},
@@ -71677,6 +72150,7 @@
     "C2-H-100",
     "C2-H-101"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "Hi @ann and #tag and :smile: and :kbd[Tab].",
    "options": {},
@@ -71842,6 +72316,7 @@
     "C2-H-100",
     "C2-H-101"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "@ann.b and #topic",
    "options": {
@@ -71925,6 +72400,7 @@
     "C2-H-100",
     "C2-H-101"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "#news and @ann",
    "options": {
@@ -72005,6 +72481,7 @@
    "number": 36,
    "section": "news and @ann",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "@ann",
    "options": {
@@ -72071,6 +72548,7 @@
     "C2-H-119",
     "C2-H-120"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[<img src=x onerror=alert(1)>]{data-carve-raw=html}",
    "options": {},
@@ -72155,6 +72633,7 @@
     "C2-H-119",
     "C2-H-120"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "# H\n\n[x][r] </#H> <https://example.org> a[^n] ^[inl]\n\n:::\nin\n:::\n\n[r]: /u\n[^n]: N.",
    "options": {
@@ -72465,6 +72944,7 @@
     "C2-H-180",
     "C2-H-181"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[HTML]: HyperText Markup Language\n*[CSS]: Cascading Style Sheets\n\nHTML and CSS.",
    "options": {
@@ -72593,6 +73073,7 @@
     "C2-H-180",
     "C2-H-181"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[A]: Alpha\n\n# H\n\nA and B.\n\n*[B]: Beta",
    "options": {
@@ -72741,6 +73222,7 @@
    "number": 44,
    "section": "H",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{#x .c}\n*[A]: Alpha\n\nA.",
    "options": {
@@ -72828,6 +73310,7 @@
    "number": 45,
    "section": "H",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[A]: First\n*[A]: Second\n*[U]: Unused\n\nA.",
    "options": {
@@ -72940,6 +73423,7 @@
    "number": 46,
    "section": "H",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[RnD]: R&D <research> \"and\" development\n\nRnD.",
    "options": {
@@ -73021,6 +73505,7 @@
    "number": 50,
    "section": "H",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "render",
    "input": "*[A]: Able\n\nA b",
    "options": {
@@ -73125,6 +73610,7 @@
     "C2-H-190",
     "C2-H-199"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a][r] and [b][r], [r][] and [r].\n\n[u]: /unused\n\n[r]: /dest \"Title\"\n\nTail.\n\n[r]: /later",
    "options": {
@@ -73420,6 +73906,7 @@
     "C2-H-190",
     "C2-H-199"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "A[^n], B[^m] and ^[inline] C[^n].\n\n[^u]: Unused.\n\n[^m]: M.\n\nMiddle.\n\n[^n]: N.",
    "options": {
@@ -73759,6 +74246,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- $$`x`",
    "options": {
@@ -73870,6 +74358,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![x](/i.png){srcset=\"https://x.org/i.png 1x\"}\n\n[x](//x.org/p)",
    "options": {
@@ -74004,6 +74493,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "|{background=\"https://x.org/b.png\"} a |",
    "options": {
@@ -74155,6 +74645,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "{style=\"background:image-set(\\\"https://x.org/a.png\\\" 1x)\"}\nHello",
    "options": {
@@ -74245,6 +74736,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [x](javascript:a) and <javascript:b>[^1].\n\n[^1]: more [^2]\n\n[^2]: two",
    "options": {
@@ -74493,6 +74985,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a {#c#} b $`m`",
    "options": {
@@ -74611,6 +75104,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a `<br>`{=html}](u) b\n\n[<a:b>](u)",
    "options": {
@@ -74770,6 +75264,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- # H",
    "options": {
@@ -74884,6 +75379,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[bad](javascript:alert(1)) <JavaScript:x> [ok](/a#b) ![p](data:image/png;base64,AA)\n\n{title=\"Shell: bash\" onclick=\"x()\" style=\"color: u\\72l(a)\"}\nText.",
    "options": {},
@@ -75105,6 +75601,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [docs](https://x.org) and *bold*.",
    "options": {
@@ -75258,6 +75755,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "See [docs](https://x.org) and *bold*.",
    "options": {
@@ -75414,6 +75912,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![i](a.png)\n^ Figure #: cap\n\n| t |\n^ Table #: tc\n\n:::: figure\n::::\n^ Empty #",
    "options": {
@@ -75766,6 +76265,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "![i](a.png)\n^ a `x` b $`m`\n\n> q `c` $`n`\n\np $`k`",
    "options": {
@@ -76037,6 +76537,7 @@
     "C2-H-164",
     "C2-H-177"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "## Sub *em* `code`\n\n[Sub em code][] and </#Sub-em-code>",
    "options": {
@@ -76217,6 +76718,7 @@
     "C2-H-173",
     "C2-H-176"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "- [x] %% hidden",
    "options": {},
@@ -76295,6 +76797,7 @@
     "C2-H-173",
     "C2-H-176"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "[a]{abbr}",
    "options": {},
@@ -76372,6 +76875,7 @@
     "C2-H-173",
     "C2-H-176"
    ],
+   "clauseScope": "section",
    "kind": "render",
    "input": "a\u0001b",
    "options": {},
@@ -76437,6 +76941,7 @@
     "C2-W-009",
     "C2-W-010"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": ":: t\n: d\n\n\\: x",
    "options": {},
@@ -76578,6 +77083,7 @@
     "C2-W-009",
     "C2-W-010"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "a\nb",
    "options": {},
@@ -76663,6 +77169,7 @@
     "C2-W-112",
     "C2-W-115"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "![a](u)",
    "options": {},
@@ -76727,6 +77234,7 @@
     "C2-W-112",
     "C2-W-115"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "$$`x`",
    "options": {},
@@ -76803,6 +77311,7 @@
     "C2-W-034",
     "C2-W-114"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "- a\n\n  2. b",
    "options": {},
@@ -76966,6 +77475,7 @@
     "C2-W-034",
     "C2-W-114"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "- a\n\n  {.c}\n  - b",
    "options": {},
@@ -77132,6 +77642,7 @@
     "C2-W-034",
     "C2-W-114"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "- a\n\n\n{.c}\n%% x\n- b",
    "options": {},
@@ -77290,6 +77801,7 @@
    "clauses": [
     "C2-W-035"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "## A",
    "options": {},
@@ -77367,6 +77879,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "a\n\n*****",
    "options": {},
@@ -77429,30 +77942,10 @@
    "number": 9,
    "section": "A",
    "clauses": [
-    "C2-W-036",
     "C2-W-037",
-    "C2-W-038",
-    "C2-W-039",
-    "C2-W-120",
-    "C2-W-040",
-    "C2-W-041",
-    "C2-W-044",
-    "C2-W-045",
-    "C2-W-046",
-    "C2-W-047",
-    "C2-W-048",
-    "C2-W-049",
-    "C2-W-050",
-    "C2-W-051",
-    "C2-W-052",
-    "C2-W-053",
-    "C2-W-055",
-    "C2-W-056",
-    "C2-W-057",
-    "C2-W-058",
-    "C2-W-059",
-    "C2-W-060"
+    "C2-W-038"
    ],
+   "clauseScope": "example",
    "kind": "write",
    "input": "````\na```b\n````",
    "options": {},
@@ -77515,6 +78008,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": ":::: note\na\n::::",
    "options": {},
@@ -77604,6 +78098,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{class=\"a.b\"}\n:::\nc\n:::",
    "options": {},
@@ -77697,6 +78192,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "```php  \"f\"  [L]\nx\n```",
    "options": {},
@@ -77775,6 +78271,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "``` php \"x\"\ny\n```",
    "options": {},
@@ -77852,6 +78349,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "1. a\n1. b",
    "options": {},
@@ -77997,6 +78495,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "a. x\na. y",
    "options": {},
@@ -78142,6 +78641,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "- [X] a",
    "options": {},
@@ -78251,6 +78751,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{.a}\n{.b}\npara",
    "options": {},
@@ -78332,6 +78833,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{k=v #i .c}\npara",
    "options": {},
@@ -78419,6 +78921,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "[a]{kbd=\"\"}",
    "options": {},
@@ -78515,6 +79018,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "[a]{k=\"v\"}",
    "options": {},
@@ -78611,6 +79115,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "-{.c} a",
    "options": {},
@@ -78722,6 +79227,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "---yaml\na: 1\n---",
    "options": {},
@@ -78785,6 +79291,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "![a](u)\n^   cap",
    "options": {},
@@ -78900,6 +79407,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "x[^a]\n\n[^a]:   note",
    "options": {},
@@ -79029,6 +79537,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "[r]:   /u 't'\n\n[x][r]",
    "options": {},
@@ -79136,6 +79645,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "-  %%",
    "options": {},
@@ -79230,6 +79740,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{{ a.crv @code @lines:1-2 }}",
    "options": {},
@@ -79296,6 +79807,7 @@
     "C2-W-059",
     "C2-W-060"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{{ x.crv }}",
    "options": {},
@@ -79347,6 +79859,7 @@
     "C2-W-135",
     "C2-W-136"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "|={>^} A |={?v} B |\n|{~~ .c} a | b |",
    "options": {},
@@ -79628,6 +80141,7 @@
     "C2-W-135",
     "C2-W-136"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{table}\n```csv\na\n\"\"\n```",
    "options": {},
@@ -79730,6 +80244,7 @@
     "C2-W-135",
     "C2-W-136"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "|= Name |={>} 価格 | Note |\n| tea | 2 | < |\n+ green tea | | |\n| café | 12.5 | hot |",
    "options": {
@@ -80143,6 +80658,7 @@
     "C2-W-135",
     "C2-W-136"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "| a |\n+ |\n%% x\n+ |",
    "options": {},
@@ -80272,6 +80788,7 @@
     "C2-W-081",
     "C2-W-082"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "Mail <a@b.org> or <mailto:a@b.org>",
    "options": {},
@@ -80375,6 +80892,7 @@
     "C2-W-081",
     "C2-W-082"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "::: >\na\n:::",
    "options": {},
@@ -80443,6 +80961,7 @@
     "C2-W-084",
     "C2-W-085"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "# A",
    "options": {},
@@ -80510,6 +81029,7 @@
     "C2-W-098",
     "C2-W-099"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "|{title=\"a\\|b\"} x |",
    "options": {},
@@ -80641,6 +81161,7 @@
     "C2-W-098",
     "C2-W-099"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "A line.\n\n\\# not a heading\n\n\\- not a list",
    "options": {},
@@ -80746,6 +81267,7 @@
     "C2-W-101",
     "C2-W-102"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "````js\na\n```\nb\n````",
    "options": {},
@@ -80789,6 +81311,7 @@
     "C2-W-101",
     "C2-W-102"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "1. a\n1. b\n1. c\n\n\n\n\n\n1. d",
    "options": {},
@@ -81009,6 +81532,7 @@
     "C2-W-101",
     "C2-W-102"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "[a](/u 'T') and [x]{kbd=\"\"}\n\n- [X] done\n- [ ] open\n   continued",
    "options": {},
@@ -81247,6 +81771,7 @@
     "C2-W-101",
     "C2-W-102"
    ],
+   "clauseScope": "section",
    "kind": "write",
    "input": "{.a}{k=v}{#b}\n# Title\n\n- one\n\n  two\n- three",
    "options": {},
@@ -81430,6 +81955,7 @@
    "number": 6,
    "section": "Title",
    "clauses": [],
+   "clauseScope": "section",
    "kind": "write",
    "input": "- ```js\n  x\n  ```\n\n- * inner",
    "options": {},
@@ -81579,6 +82105,7 @@
     "C2-W-110",
     "C2-W-111"
    ],
+   "clauseScope": "section",
    "kind": "lint",
    "input": "_a_",
    "options": {},
@@ -81634,6 +82161,7 @@
    "clauses": [
     "C2-W-137"
    ],
+   "clauseScope": "section",
    "kind": "lint",
    "input": "| a |\n%% x\n+ b |",
    "options": {},
@@ -81733,6 +82261,7 @@
     "C2-N-005",
     "C2-N-006"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "part.crv": {
@@ -81847,6 +82376,7 @@
     "C2-N-013",
     "C2-N-014"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "bad.crv": {
@@ -81905,6 +82435,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -82029,6 +82560,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82138,6 +82670,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82247,6 +82780,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -82370,6 +82904,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82538,6 +83073,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82611,6 +83147,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82819,6 +83356,7 @@
     "C2-N-022",
     "C2-N-023"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -82983,6 +83521,7 @@
     "C2-N-025",
     "C2-N-026"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83035,6 +83574,7 @@
     "C2-N-025",
     "C2-N-026"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83090,6 +83630,7 @@
     "C2-N-032",
     "C2-N-033"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -83260,6 +83801,7 @@
     "C2-N-032",
     "C2-N-033"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83317,6 +83859,7 @@
     "C2-N-032",
     "C2-N-033"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83371,6 +83914,7 @@
     "C2-N-032",
     "C2-N-033"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83512,6 +84056,7 @@
     "C2-N-035",
     "C2-N-036"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83606,6 +84151,7 @@
     "C2-N-040",
     "C2-N-041"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83689,6 +84235,7 @@
     "C2-N-040",
     "C2-N-041"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -83874,6 +84421,7 @@
     "C2-N-045",
     "C2-N-046"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "src/server.js": {
@@ -83967,6 +84515,7 @@
     "C2-N-045",
     "C2-N-046"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.txt": {
@@ -84036,6 +84585,7 @@
     "C2-N-045",
     "C2-N-046"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "data/plans.csv": {
@@ -84285,6 +84835,7 @@
     "C2-N-045",
     "C2-N-046"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.csv": {
@@ -84414,6 +84965,7 @@
    "clauses": [
     "C2-N-047"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "t.csv": {
@@ -84593,6 +85145,7 @@
    "clauses": [
     "C2-N-047"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.csv": {
@@ -84730,6 +85283,7 @@
     "C2-N-051",
     "C2-N-052"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -84844,6 +85398,7 @@
     "C2-N-051",
     "C2-N-052"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -84981,6 +85536,7 @@
     "C2-N-059",
     "C2-N-060"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -85261,6 +85817,7 @@
     "C2-N-059",
     "C2-N-060"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "c.crv": {
@@ -85574,6 +86131,7 @@
     "C2-N-059",
     "C2-N-060"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -85686,6 +86244,7 @@
     "C2-N-059",
     "C2-N-060"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "child.crv": {
@@ -85862,6 +86421,7 @@
     "C2-N-069",
     "C2-N-070"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -85940,6 +86500,7 @@
     "C2-N-069",
     "C2-N-070"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -86058,6 +86619,7 @@
     "C2-N-069",
     "C2-N-070"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {},
    "input": "{{ missing.crv #part @shift:1 }}",
@@ -86111,6 +86673,7 @@
     "C2-N-073",
     "C2-N-074"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -86196,6 +86759,7 @@
     "C2-N-073",
     "C2-N-074"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "data/plans.csv": {
@@ -86444,6 +87008,7 @@
     "C2-N-073",
     "C2-N-074"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.txt": {
@@ -86686,6 +87251,7 @@
     "C2-N-078",
     "C2-N-079"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -86896,6 +87462,7 @@
     "C2-N-078",
     "C2-N-079"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -87003,6 +87570,7 @@
     "C2-N-078",
     "C2-N-079"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -87082,6 +87650,7 @@
     "C2-N-083",
     "C2-N-084"
    ],
+   "clauseScope": "section",
    "kind": "include",
    "files": {
     "a.crv": {
@@ -87237,6 +87806,7 @@
     "C2-M-005",
     "C2-M-006"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<!DOCTYPE html>\n<html lang=\"de\">\n<head><title>T</title><script>x()</script></head>\n<body class=\"page\"><p>Hallo</p></body>\n</html>",
    "options": {},
@@ -87272,6 +87842,7 @@
     "C2-M-009",
     "C2-M-010"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><span data-carve-raw=\"html\">&lt;b&gt;</span> and <span class=\"c\">x</span></p>",
    "options": {
@@ -87325,6 +87896,7 @@
     "C2-M-014",
     "C2-M-015"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<div><p>a</p></div>",
    "options": {},
@@ -87362,6 +87934,7 @@
     "C2-M-014",
     "C2-M-015"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "a <em>b</em> c<p>d</p>",
    "options": {},
@@ -87416,6 +87989,7 @@
     "C2-M-014",
     "C2-M-015"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<img src=\"a.png\" alt=\"a\"><img src=\"b.png\" alt=\"b\">",
    "options": {},
@@ -87461,6 +88035,7 @@
     "C2-M-014",
     "C2-M-015"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<em><p>x</p></em>",
    "options": {},
@@ -87506,6 +88081,7 @@
     "C2-M-014",
     "C2-M-015"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>a\nb</p>",
    "options": {},
@@ -87547,6 +88123,7 @@
     "C2-M-021",
     "C2-M-022"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>\n  one\n  two  \n</p>",
    "options": {},
@@ -87588,6 +88165,7 @@
     "C2-M-021",
     "C2-M-022"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>  lead <b>x</b> </p>",
    "options": {},
@@ -87631,6 +88209,7 @@
     "C2-M-021",
     "C2-M-022"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>a<br></p>",
    "options": {},
@@ -87665,6 +88244,7 @@
     "C2-M-021",
     "C2-M-022"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>a&amp;b &copy; &#x41;&nbsp;c</p>",
    "options": {},
@@ -87700,6 +88280,7 @@
     "C2-M-029",
     "C2-M-030"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<section id=\"outer\"><h1 id=\"inner\">H</h1></section>",
    "options": {},
@@ -87742,6 +88323,7 @@
     "C2-M-029",
     "C2-M-030"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<section class=\"c\" id=\"s\"><h2>T</h2></section>",
    "options": {},
@@ -87781,6 +88363,7 @@
     "C2-M-029",
     "C2-M-030"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<section><p>no heading</p></section>",
    "options": {},
@@ -87821,6 +88404,7 @@
     "C2-M-029",
     "C2-M-030"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<pre title=\"Example\"><code class=\"language-js\">let a = 1\n</code></pre>",
    "options": {},
@@ -87855,6 +88439,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<ul><li><input type=\"checkbox\"><input type=\"checkbox\" checked> x</li></ul>",
    "options": {},
@@ -87909,6 +88494,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<ol start=\"3\" type=\"a\" data-delim=\")\">\n  <li>three</li>\n  <li><input type=\"checkbox\" checked disabled> done</li>\n</ol>",
    "options": {},
@@ -87975,6 +88561,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<ul><li><p>a</p></li><li><p>b</p></li></ul>",
    "options": {},
@@ -88036,6 +88623,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<ul><li><p>only</p></li></ul>",
    "options": {},
@@ -88083,6 +88671,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<ul><li>a</li>stray<p>p</p></ul>",
    "options": {},
@@ -88130,6 +88719,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<dl><dt>Term</dt><dd>One</dd><dd><p>Two</p><p>Three</p></dd></dl>",
    "options": {},
@@ -88204,6 +88794,7 @@
     "C2-M-034",
     "C2-M-036"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<dl><div><dt>a</dt><dd>b</dd></div></dl>",
    "options": {},
@@ -88255,6 +88846,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><thead><tr><th>h</th></tr></thead><tfoot><tr><td>f</td></tr></tfoot><tbody><tr><td>b</td></tr></tbody></table>",
    "options": {},
@@ -88363,6 +88955,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><tr><td><p></p></td><td>a</td></tr></table>",
    "options": {},
@@ -88434,6 +89027,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table>\n<thead><tr><th style=\"text-align: right; vertical-align: top;\">Qty</th><th valign=\"bottom\">Note</th></tr></thead>\n<tbody><tr><td style=\"text-align: right; vertical-align: top;\">1</td><td style=\"vertical-align: middle;\">a</td></tr></tbody>\n</table>",
    "options": {},
@@ -88554,6 +89148,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><tr><td ALIGN=\"CENTER\" valign=\"center\">a</td></tr></table>",
    "options": {},
@@ -88616,6 +89211,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><caption>A</caption><caption>B</caption><tr><td>x</td></tr></table>",
    "options": {},
@@ -88691,6 +89287,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table>\n<caption>Prices</caption>\n<thead><tr><th>Item</th><th style=\"text-align: right;\">Cost</th></tr></thead>\n<tbody><tr><td>tea</td><td style=\"text-align: right;\">2</td></tr></tbody>\n<tfoot><tr><td>all</td><td>2</td></tr></tfoot>\n</table>",
    "options": {},
@@ -88862,6 +89459,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><tr><td>a<br>b</td></tr></table>",
    "options": {},
@@ -88920,6 +89518,7 @@
     "C2-M-040",
     "C2-M-041"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<table><colgroup><col style=\"width: 150%;\"></colgroup><tr><td>a</td></tr></table>",
    "options": {},
@@ -88978,6 +89577,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<figure class=\"wide\"><img src=\"/cat.png\" alt=\"Cat\"><figcaption>A cat</figcaption></figure>",
    "options": {},
@@ -89028,6 +89628,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<figure><table><tr><td>a</td></tr></table><figcaption>T</figcaption></figure>",
    "options": {},
@@ -89097,6 +89698,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<figure><p>x</p><figcaption>y</figcaption></figure>",
    "options": {},
@@ -89145,6 +89747,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<figure class=\"wide\" id=\"f\"><table class=\"t\" id=\"t\"><tr><td>a</td></tr></table><figcaption>c</figcaption></figure>",
    "options": {},
@@ -89224,6 +89827,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<figure class=\"k\"><pre>x</pre></figure><figure><figcaption>c</figcaption></figure>",
    "options": {},
@@ -89271,6 +89875,7 @@
     "C2-M-042",
     "C2-M-043"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p class=\"  \">x</p>",
    "options": {},
@@ -89299,6 +89904,7 @@
    "clauses": [
     "C2-M-035"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<aside class=\"admonition warning\" aria-label=\"Warning\"><p class=\"admonition-title\">Careful</p><p>Hot.</p></aside>",
    "options": {},
@@ -89339,6 +89945,7 @@
    "clauses": [
     "C2-M-035"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><span class=\"ext-x\">e</span> <span class=\"mention\"><strong>@ann</strong></span> <span class=\"critic-comment\">c</span></p>",
    "options": {},
@@ -89390,6 +89997,7 @@
    "clauses": [
     "C2-M-035"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<div class=\"toc\">x</div>",
    "options": {},
@@ -89424,6 +90032,7 @@
    "clauses": [
     "C2-M-035"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><span class=\"ext-1\">x</span></p>",
    "options": {},
@@ -89467,6 +90076,7 @@
     "C2-M-048",
     "C2-M-049"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><time>today</time> <abbr>HTML</abbr></p>",
    "options": {},
@@ -89534,6 +90144,7 @@
     "C2-M-048",
     "C2-M-049"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>A <em>b</em> and <strong>c</strong>.</p>",
    "options": {},
@@ -89593,6 +90204,7 @@
     "C2-M-048",
     "C2-M-049"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>H<sub>2</sub>O, x<sup>2</sup>, <mark>m</mark>, <del>d</del>, <ins>i</ins>, <kbd>Ctrl</kbd>, <abbr title=\"HyperText\">HTML</abbr>, <time datetime=\"2026-11-16\">today</time></p>",
    "options": {},
@@ -89750,6 +90362,7 @@
     "C2-M-048",
     "C2-M-049"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><math display=\"block\"><semantics><mi>x</mi><annotation encoding=\"application/x-tex\">x^2</annotation></semantics></math></p>\n<p><span class=\"math inline\">\\(y\\)</span></p>",
    "options": {},
@@ -89791,6 +90404,7 @@
     "C2-M-050",
     "C2-M-051"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><a href=\"/u\" title=\"T\">ok</a> <a href=\"javascript:alert(1)\">bad</a> <a>plain</a></p>",
    "options": {},
@@ -89831,6 +90445,7 @@
     "C2-M-050",
     "C2-M-051"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><img src=\"/a.png\" alt=\"A\"></p>\n<p>Inline <img src=\"/i.png\" alt=\"I\" width=\"10\"> and <img src=\"javascript:x\" alt=\"gone\"></p>",
    "options": {},
@@ -89890,6 +90505,7 @@
     "C2-M-054",
     "C2-M-055"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p id=\"p1\" class=\"lead note\" lang=\"de\" data-id=\"7\" style=\"color: red\" onclick=\"go()\">Text</p>",
    "options": {},
@@ -89939,6 +90555,7 @@
     "C2-M-054",
     "C2-M-055"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><span x:y=\"1\" data-k=\"2\">t</span></p>",
    "options": {},
@@ -89984,6 +90601,7 @@
     "C2-M-059",
     "C2-M-060"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<details><summary>More</summary><p>Body</p></details>",
    "options": {},
@@ -90030,6 +90648,7 @@
     "C2-M-059",
     "C2-M-060"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<header class=\"top\"><h1>Site</h1></header>",
    "options": {},
@@ -90073,6 +90692,7 @@
     "C2-M-059",
     "C2-M-060"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>A <small>fine</small> <cite>print</cite> <my-tag>x</my-tag></p>",
    "options": {},
@@ -90139,6 +90759,7 @@
     "C2-M-063",
     "C2-M-064"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>x<sup><a href=\"#fn-1\" id=\"fnref-1\" data-footnote-ref>1</a></sup></p>\n<section class=\"footnotes\"><ol><li id=\"fn-1\"><p>Note <a href=\"#fnref-1\" data-footnote-backref class=\"footnote-backref\">↩</a></p></li></ol></section>",
    "options": {},
@@ -90191,6 +90812,7 @@
     "C2-M-063",
     "C2-M-064"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><a href=\"/u\" role=\"doc-noteref\">x</a> and <a href=\"#fn\" role=\"doc-noteref\">y</a></p>",
    "options": {},
@@ -90257,6 +90879,7 @@
     "C2-M-066",
     "C2-M-067"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<div><!--x--><p>y</p>a<!--z--></div>",
    "options": {
@@ -90313,6 +90936,7 @@
     "C2-M-066",
     "C2-M-067"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<!-- note --><p>a<!-- inline -->b</p><script>run()</script>",
    "options": {
@@ -90364,6 +90988,7 @@
     "C2-M-066",
     "C2-M-067"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>Video: <iframe src=\"/v\"></iframe></p>",
    "options": {
@@ -90401,6 +91026,7 @@
     "C2-M-066",
     "C2-M-067"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<!-- note --><p>a<!-- inline -->b</p><script>run()</script>\n<p>Video: <iframe src=\"/v\"></iframe></p>",
    "options": {},
@@ -90444,6 +91070,7 @@
     "C2-M-066",
     "C2-M-067"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>a<span data-carve-raw=\"html\">&lt;script&gt;x()&lt;/script&gt;</span>b</p>",
    "options": {},
@@ -90481,6 +91108,7 @@
     "C2-M-074",
     "C2-M-075"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p align=\"right\" style=\"text-align: left;\">x</p>",
    "options": {},
@@ -90526,6 +91154,7 @@
     "C2-M-074",
     "C2-M-075"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p></p><p><b></b>x<span id=\"a\"></span></p>",
    "options": {},
@@ -90567,6 +91196,7 @@
     "C2-M-074",
     "C2-M-075"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p><a href=\"/x\">a <a href=\"/y\">b</a></a></p>",
    "options": {},
@@ -90617,6 +91247,7 @@
     "C2-M-074",
     "C2-M-075"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<h2 id=\"a\">A</h2><h2 id=\"a\">B</h2>",
    "options": {},
@@ -90668,6 +91299,7 @@
     "C2-M-074",
     "C2-M-075"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<p>a<wbr>b</p>",
    "options": {},
@@ -90699,6 +91331,7 @@
     "C2-M-092",
     "C2-M-093"
    ],
+   "clauseScope": "section",
    "kind": "import",
    "html": "<section id=\"Intro\">\n  <h1>Intro</h1>\n  <p>See <a href=\"/guide\" title=\"Guide\">the guide</a> and <a href=\"https://example.com\">https://example.com</a>.</p>\n  <ul>\n    <li>one\n      <p>more</p>\n    </li>\n    <li>two</li>\n  </ul>\n</section>",
    "options": {},

@@ -15,6 +15,8 @@ const FILE_BYTES = /^File `([^`]+)` holds the (?:\w+ )?bytes `([0-9A-F]{2}(?: [0
 // The end of an example: the next example, clause or heading.
 const endsExample = (line) => HEADER.test(line) || /^(\*\*|#)/.test(line)
 export const flagsOf = (text) => text.split(',').map(flag => flag.replaceAll('`', '').trim()).filter(Boolean)
+// A clause id among the flags names a clause the example exercises; such ids replace the clauses of its section.
+const NAMED = /^C2-[A-Z]-\d{3}$/
 
 /** The fence that starts at `line`: its language, its body and the line after its closer. */
 export function fenceAt(lines, line) {
@@ -40,7 +42,8 @@ function sectionClauses(lines, line) {
 }
 
 /**
- * Every example of one document. Each has `document`, `number`, `status`, `flags`, `section`, `clauses`, the
+ * Every example of one document. Each has `document`, `number`, `status`, `flags`, `section`, `clauses` (the
+ * clause ids its heading names, or else those of its section) and `clauseScope` (`example` or `section`), the
  * fences in order (`lang`, `body`, `label`: the line of text above the fence inside the example), `files` of an
  * include example (a `File` line and its fence, or its bytes), and `reported`, the `Reported:` lines of the example.
  */
@@ -82,13 +85,15 @@ export function examplesOf(spec, document) {
       line++
     }
     const { heading, clauses } = sectionClauses(lines, at)
+    const named = flagsOf(header[3]).filter(flag => NAMED.test(flag))
     out.push({
       document,
       number: Number(header[1]),
       status: header[2],
-      flags: flagsOf(header[3]),
+      flags: flagsOf(header[3]).filter(flag => !NAMED.test(flag)),
       section: heading,
-      clauses,
+      clauses: named.length ? named : clauses,
+      clauseScope: named.length ? 'example' : 'section',
       fences,
       files,
       reported,

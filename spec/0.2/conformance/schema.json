@@ -84,13 +84,14 @@
     "diagnostics": { "type": "array", "items": { "anyOf": [{ "$ref": "#/$defs/code" }, { "$ref": "#/$defs/diagnostic" }] } },
     "example": {
       "type": "object",
-      "required": ["id", "document", "number", "section", "clauses", "kind", "options", "expected", "status", "reason"],
+      "required": ["id", "document", "number", "section", "clauses", "clauseScope", "kind", "options", "expected", "status", "reason"],
       "properties": {
         "id": { "type": "string" },
         "document": { "enum": ["syntax-blocks.md", "syntax-inline.md", "ast.md", "html.md", "writer.md", "source-layout.md", "includes.md", "extensions.md", "import-html.md"] },
         "number": { "type": "integer", "minimum": 1 },
         "section": { "type": "string" },
         "clauses": { "$ref": "#/$defs/clauses" },
+        "clauseScope": { "enum": ["example", "section"], "description": "example: the heading of the example names these clauses; section: they are the clauses of its section, which is no claim that the example exercises each." },
         "kind": { "enum": ["render", "write", "lint", "include", "import"] },
         "input": { "type": "string" },
         "html": { "type": "string" },

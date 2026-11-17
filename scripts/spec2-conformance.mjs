@@ -86,7 +86,7 @@ const DESCRIBED = { 'syntax-blocks-247': { input: `${'> '.repeat(201)}x`, htmlIn
 
 function entryOf(example) {
   const id = `${example.document}-${example.number}`
-  const entry = { id, document: `${example.document}.md`, number: example.number, section: example.section, clauses: example.clauses, kind: null }
+  const entry = { id, document: `${example.document}.md`, number: example.number, section: example.section, clauses: example.clauses, clauseScope: example.clauseScope, kind: null }
   const options = optionsOf(example)
   const expected = {}
   const fences = example.fences

@@ -18,7 +18,7 @@ Each entry:
 |---|---|
 | `id` | the document stem and the example number, as `syntax-blocks-12` |
 | `document`, `number` | the document file and the number the example has there |
-| `section`, `clauses` | the heading of the section the example stands in, and the clause ids that section defines |
+| `section`, `clauses`, `clauseScope` | the heading of the section the example stands in; the clause ids the heading of the example names after its status, as `Example 9 (unverified, C2-W-037, C2-W-038)`, with `clauseScope` `example`, or else the clause ids that section defines, with `clauseScope` `section`. A section list is no claim that the example exercises each of its clauses. |
 | `kind` | `render`: Carve input to HTML; `write`: Carve input to canonical Carve; `lint`: Carve input to the codes lint reports; `include`: an entry document and the files a resolver serves; `import`: HTML input to a tree and canonical Carve |
 | `input` | the Carve input; absent for `import` |
 | `html` | the HTML input of an `import` example |

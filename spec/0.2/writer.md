@@ -8,7 +8,7 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-W-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-H-nnn` name clauses of the AST document, the block and inline chapters, the sidecar document and the HTML document. `CARVE-P11-nnn` names a 0.1 clause.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
-- An example shows an input and what the writer returns for it, in two fenced blocks. *Generated* means the output was produced by `carve fmt` of the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input. *Unverified* means it was written by hand from the clauses. These examples are not `compare` pairs, because they hold no HTML.
+- An example shows an input and what the writer returns for it, in two fenced blocks. *Generated* means the output was produced by `carve fmt` of the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input. *Unverified* means it was written by hand from the clauses. Clause ids after the status, as in `(unverified, C2-W-037, C2-W-038)`, name the clauses the example exercises. These examples are not `compare` pairs, because they hold no HTML.
 - Where a clause says "as in 0.1", the 0.1 definition holds unchanged and is not restated here.
 
 ## The writer and its two gates
@@ -296,7 +296,7 @@ a
 
 A backtick run that is followed by other text on its line closes no fence, so it does not lengthen the fence (C2-B-110, C2-W-038).
 
-Example 9 (unverified)
+Example 9 (unverified, C2-W-037, C2-W-038)
 
 Input:
 
