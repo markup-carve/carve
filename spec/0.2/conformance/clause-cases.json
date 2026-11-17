@@ -54745,6 +54745,72 @@
    ]
   },
   "from": []
- }
+ },
+{
+ "id": "CC-1155",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "referenced footnote body reports platform-issue-reference",
+ "kind": "lint",
+ "input": "[^n]: #12\n\n[^n]\n",
+ "options": {
+  "platforms": [
+   "github"
+  ]
+ },
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "platform-issue-reference"
+   }
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1156",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "referenced footnote body reports platform-mention-token",
+ "kind": "lint",
+ "input": "[^n]: @bob\n\n[^n]\n",
+ "options": {
+  "platforms": [
+   "github"
+  ]
+ },
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "platform-mention-token"
+   }
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1157",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "line block blockquote-like text reports",
+ "kind": "lint",
+ "input": "::: |\n>a\n:::\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "blockquote-marker-without-space",
+    "messageWhen": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter"
+   }
+  ]
+ },
+ "from": []
+}
  ]
 }
