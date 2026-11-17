@@ -327,7 +327,23 @@ the sum $`a + b
 
 ## Raw inline
 
-**C2-I-021** A closed code span with `{=name}` glued to it is raw inline. The name is a letter or `_`, then letters, digits, `_` and `-`. The content is written unescaped to the output format of that name and dropped for every other format. (carried over from 0.1)
+**C2-I-021** A closed code span with `{=name}` glued to it is raw inline. The name is a raw format name (C2-B-225). The content is written unescaped to the output format of that name and dropped for every other format. (carried over from 0.1)
+
+A raw format name starts with an ASCII letter, so `{=_a}` makes no raw span.
+
+Example 123 (generated)
+
+::: compare
+
+```carve
+`x`{=_a}
+```
+
+```html
+<p><code>x</code>{=_a}</p>
+```
+
+:::
 
 **Exception C2-I-022** Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-043).
 
@@ -2364,7 +2380,7 @@ There is no fixed budget for the inline chapter.
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 0 | 3 | 1 |
 | Math spans | 1 | 0 | 1 | 1 |
-| Raw inline | 2 | 1 | 1 | 1 |
+| Raw inline | 2 | 1 | 2 | 1 |
 | Comments | 5 | 2 | 4 | 1 |
 | Attribute blocks | 15 | 2 | 6 | 5 |
 | The opening brace | 3 | 1 | 3 | 1 |
@@ -2383,9 +2399,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **118** | **17** | **68** | **54** |
+| **Total** | **118** | **17** | **69** | **54** |
 
-The chapter has 118 clauses, 17 of them exceptions, and 122 examples. The clause count includes the exceptions.
+The chapter has 118 clauses, 17 of them exceptions, and 123 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

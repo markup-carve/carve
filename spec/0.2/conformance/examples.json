@@ -36460,6 +36460,61 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-inline-123",
+   "document": "syntax-inline.md",
+   "number": 123,
+   "section": "Raw inline",
+   "clauses": [
+    "C2-I-021",
+    "C2-I-022"
+   ],
+   "kind": "render",
+   "input": "`x`{=_a}",
+   "options": {},
+   "expected": {
+    "html": "<p><code>x</code>{=_a}</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "raw_inline",
+         "format": "_a",
+         "value": "x",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 9,
+          "startOffset": 0,
+          "endOffset": 8
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 9,
+        "startOffset": 0,
+        "endOffset": 8
+       }
+      }
+     ],
+     "srcByteLength": 8,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-14",
    "document": "syntax-inline.md",
    "number": 14,
