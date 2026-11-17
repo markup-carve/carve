@@ -65,7 +65,25 @@ Conventions:
 
 **C2-W-017** One blank line stands between two sibling blocks. This is requirement W1 of the migrate design.
 
-**Exception C2-W-018** No blank line stands before a nested list that follows the first paragraph of its item in a tight list. A nested ordered list that does not start at 1 (C2-W-126) and a nested list with an attribute line, which directly below the paragraph would be a lazy line (C2-B-024), are the cases with a blank line there.
+**Exception C2-W-018** No blank line stands before a nested list that follows the first paragraph of its item in a tight list, unless the list's first line would be a lazy line directly below the paragraph: a nested ordered list whose first marker has another value than 1 (C2-B-015), and a nested list with an attribute line (C2-B-024). There one blank line stands inside the item, and it does not make the list loose (C2-W-030).
+
+Example 17 (unverified)
+
+Input:
+
+```carve
+- a
+
+  2. b
+```
+
+Written:
+
+```carve
+- a
+
+  2. b
+```
 
 Example 14 (unverified)
 
@@ -139,26 +157,6 @@ One blank line ends the first list; the attribute line of the second list then s
 **C2-W-029** Two lists are adjacent for C2-W-028 also when every block between them writes nothing.
 
 **C2-W-030** A loose list is written with one blank line between all of its items. A tight list is written with none, also when an item holds several blocks: the blank line then stands inside the item, before its later block. This is requirement W5.
-
-**C2-W-126** A nested ordered list whose first marker has another value than 1, and that follows a paragraph of its item, is written after one blank line: directly below the paragraph its marker line would be a lazy line (C2-B-015). The blank line stands inside the item and does not make the list loose (C2-W-030).
-
-Example 17 (unverified)
-
-Input:
-
-```carve
-- a
-
-  2. b
-```
-
-Written:
-
-```carve
-- a
-
-  2. b
-```
 
 **C2-W-031** A quote written with `>` lines carries `> ` on every line of its content and a bare `>` on a blank line inside it.
 
@@ -1004,7 +1002,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 23 | 2 | 0 | 3 |
+| Layout | 22 | 2 | 0 | 3 |
 | Canonical forms: blocks | 24 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 1 |
@@ -1012,6 +1010,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **129** | **5** | **6** | **11** |
+| **Total** | **128** | **5** | **6** | **11** |
 
-The document has 129 clauses, 5 of them marked with the word "Exception", and 17 examples, 6 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused.
+The document has 128 clauses, 5 of them marked with the word "Exception", and 17 examples, 6 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule another clause states; its id is not reused.
