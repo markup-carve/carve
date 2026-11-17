@@ -53660,6 +53660,44 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1101",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a bare region marker is text rather than an include marker",
+   "kind": "lint",
+   "input": "#region x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "region-marker-renders-as-text"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1102",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a wrong-case comment keyword is no include marker",
+   "kind": "lint",
+   "input": "%% #REGION x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "region-marker-renders-as-text"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
