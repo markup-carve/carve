@@ -44144,6 +44144,3827 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-683",
+   "clauses": [
+    "C2-I-079"
+   ],
+   "why": "C2-I-079: A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.",
+   "summary": "a footnote reference whose label is one space is reported",
+   "kind": "lint",
+   "input": "a[^ ]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blank-reference-label",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-684",
+   "clauses": [
+    "C2-I-079"
+   ],
+   "why": "C2-I-079: A label whose key is empty after folding, one that holds only spaces, tabs or a line break, is no label: the brackets are text.",
+   "summary": "a footnote reference with a one-letter label is not reported as blank",
+   "kind": "lint",
+   "input": "a[^b]\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "blank-reference-label"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-685",
+   "clauses": [
+    "C2-B-012",
+    "C2-B-019"
+   ],
+   "why": "C2-B-012: An open paragraph takes every line that is not blank, whatever its indent or prefix, and such a line is a *lazy line*. C2-B-019: Interrupter (e): a table row (C2-B-166).",
+   "summary": "a heading line directly after a paragraph line is reported",
+   "kind": "lint",
+   "input": "a\n# b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-686",
+   "clauses": [
+    "C2-B-012",
+    "C2-B-019"
+   ],
+   "why": "C2-B-012: An open paragraph takes every line that is not blank, whatever its indent or prefix, and such a line is a *lazy line*. C2-B-019: Interrupter (e): a table row (C2-B-166).",
+   "summary": "a heading line after a blank line is not reported",
+   "kind": "lint",
+   "input": "a\n\n# b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "block-opener-without-blank-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-687",
+   "clauses": [
+    "C2-B-110",
+    "C2-B-195"
+   ],
+   "why": "C2-B-110: The closer of a code fence and of a comment block is a bare run: a run followed by other text is content of the body. C2-B-195: `comment-fence-closer-with-text` reports a percent run followed by other text in the body of a comment block.",
+   "summary": "a percent run with text behind it inside a comment block is reported",
+   "kind": "lint",
+   "input": "%%%\n%%% x\n%%%\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "comment-fence-closer-with-text",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-688",
+   "clauses": [
+    "C2-B-110",
+    "C2-B-195"
+   ],
+   "why": "C2-B-110: The closer of a code fence and of a comment block is a bare run: a run followed by other text is content of the body. C2-B-195: `comment-fence-closer-with-text` reports a percent run followed by other text in the body of a comment block.",
+   "summary": "a percent run at the end of a body line, with no text behind it, is not reported",
+   "kind": "lint",
+   "input": "%%%\nx %%%\n%%%\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "comment-fence-closer-with-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-689",
+   "clauses": [
+    "C2-I-077"
+   ],
+   "why": "C2-I-077: Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.",
+   "summary": "a line comment that starts inside the label of a full reference is reported",
+   "kind": "lint",
+   "input": "[x][a %% b]\n\n[x]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "comment-in-reference-label",
+      "line": 1,
+      "column": 6,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-690",
+   "clauses": [
+    "C2-I-077"
+   ],
+   "why": "C2-I-077: Atoms are read first, so a line comment that starts inside a label takes the rest of its line (C2-I-024): the label is unclosed and the brackets are text. Lint reports it as `comment-in-reference-label`.",
+   "summary": "a single percent sign inside a reference label is no comment and is not reported",
+   "kind": "lint",
+   "input": "[x][a % b]\n\n[x]: /u\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "comment-in-reference-label"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-691",
+   "clauses": [
+    "C2-B-123",
+    "C2-B-135"
+   ],
+   "why": "C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text. C2-B-135: In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.",
+   "summary": "a line comment as the only line of a line block is reported",
+   "kind": "lint",
+   "input": "::: |\n%% a\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "comment-line-in-line-block",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-692",
+   "clauses": [
+    "C2-B-123",
+    "C2-B-135"
+   ],
+   "why": "C2-B-123: The body of a line block is one leaf that recognizes only prefixes, the closer and a comment block (C2-B-108): every other line is a line of text. C2-B-135: In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.",
+   "summary": "a line of a line block that starts with one percent sign is not reported",
+   "kind": "lint",
+   "input": "::: |\n% a\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "comment-line-in-line-block"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-693",
+   "clauses": [
+    "C2-W-137",
+    "C2-A-086"
+   ],
+   "why": "C2-W-137: `comment-splits-table-row` reports a comment between a table row and its continuation row (C2-B-175), as a comment-only line or as the trailing comment of the row, at the comment. C2-A-086: The row then ends at its closing pipe or its row attribute, and the comment spans from the first space before its `%%` to the line ending (C2-A-151).",
+   "summary": "the trailing comment of a row that has a continuation row is reported at the comment",
+   "kind": "lint",
+   "input": "| a | %% x\n+ b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "comment-splits-table-row",
+      "line": 1,
+      "column": 6,
+      "channel": "lint",
+      "severity": "hint",
+      "endLine": 1,
+      "endColumn": 11
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-694",
+   "clauses": [
+    "C2-W-137",
+    "C2-A-086"
+   ],
+   "why": "C2-W-137: `comment-splits-table-row` reports a comment between a table row and its continuation row (C2-B-175), as a comment-only line or as the trailing comment of the row, at the comment. C2-A-086: The row then ends at its closing pipe or its row attribute, and the comment spans from the first space before its `%%` to the line ending (C2-A-151).",
+   "summary": "the trailing comment of a row followed by another row, not a continuation, is not reported",
+   "kind": "lint",
+   "input": "| a | %% x\n| b |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "comment-splits-table-row"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-695",
+   "clauses": [
+    "C2-B-081"
+   ],
+   "why": "C2-B-081: A definition stands at column 0 outside every container, so a definition-shaped line inside a container is text, and `definition-in-container` reports it.",
+   "summary": "a link definition shape inside a quote is reported",
+   "kind": "lint",
+   "input": "> [a]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-in-container",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-696",
+   "clauses": [
+    "C2-B-081"
+   ],
+   "why": "C2-B-081: A definition stands at column 0 outside every container, so a definition-shaped line inside a container is text, and `definition-in-container` reports it.",
+   "summary": "the same link definition at column 0 outside every container is not reported",
+   "kind": "lint",
+   "input": "[a]: /u\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "definition-in-container"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-697",
+   "clauses": [
+    "C2-B-075"
+   ],
+   "why": "C2-B-075: A term takes no block opener: a quote mark or a list marker after the term mark is term text.",
+   "summary": "a quote mark after the term mark is reported",
+   "kind": "lint",
+   "input": ":: > a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "definition-term-block-folded",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-698",
+   "clauses": [
+    "C2-B-075"
+   ],
+   "why": "C2-B-075: A term takes no block opener: a quote mark or a list marker after the term mark is term text.",
+   "summary": "a greater-than sign glued to text after the term mark is no quote mark and is not reported",
+   "kind": "lint",
+   "input": ":: >a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "definition-term-block-folded"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-699",
+   "clauses": [
+    "C2-B-154"
+   ],
+   "why": "C2-B-154: A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break ... In 0.1 a heading was one line and an indented line below it was a paragraph.",
+   "summary": "a line indented one space directly below a heading is reported",
+   "kind": "lint",
+   "input": "# a\n b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-indented-line-under-heading",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-700",
+   "clauses": [
+    "C2-B-154"
+   ],
+   "why": "C2-B-154: A heading holds its marker line and every line directly below it that is indented past the column of its marker, each joined by a soft break ... In 0.1 a heading was one line and an indented line below it was a paragraph.",
+   "summary": "an unindented line directly below a heading is not reported",
+   "kind": "lint",
+   "input": "# a\nb\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-indented-line-under-heading"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-701",
+   "clauses": [
+    "C2-B-066",
+    "C2-A-148"
+   ],
+   "why": "C2-B-066: There is no `{loose}` attribute: the key `loose` on a list has no effect on tightness, and `deprecated-loose-attribute` reports it. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "the bare key loose on a list is reported at the list",
+   "kind": "lint",
+   "input": "{loose}\n- a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-loose-attribute",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-702",
+   "clauses": [
+    "C2-B-066",
+    "C2-A-148"
+   ],
+   "why": "C2-B-066: There is no `{loose}` attribute: the key `loose` on a list has no effect on tightness, and `deprecated-loose-attribute` reports it. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "the class loose on a list is no key and is not reported",
+   "kind": "lint",
+   "input": "{.loose}\n- a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-loose-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-703",
+   "clauses": [
+    "C2-B-160"
+   ],
+   "why": "C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.",
+   "summary": "three underscores with spaces between them are reported",
+   "kind": "lint",
+   "input": "_ _ _\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-spaced-thematic-break",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-704",
+   "clauses": [
+    "C2-B-160"
+   ],
+   "why": "C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.",
+   "summary": "two underscores and a letter with spaces between them are not reported",
+   "kind": "lint",
+   "input": "_ _ a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-spaced-thematic-break"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-705",
+   "clauses": [
+    "C2-B-186",
+    "C2-A-148"
+   ],
+   "why": "C2-B-186: On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "header-rows on a pipe table is reported at the table",
+   "kind": "lint",
+   "input": "{header-rows=1}\n| a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-table-attribute",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-706",
+   "clauses": [
+    "C2-B-186",
+    "C2-A-148"
+   ],
+   "why": "C2-B-186: On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "summary": "header-cols on a pipe table is not reported by this rule",
+   "kind": "lint",
+   "input": "{header-cols=1}\n| a |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-table-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-707",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-059"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-059: when a pair closes, every entry opened after its opener is removed, bare or braced, and is text (C2-I-051).",
+   "summary": "a braced emphasis opener removed when a bare star inside it closes the outer strong span is reported",
+   "kind": "lint",
+   "input": "*a {/b*/}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "braced-span-opener-as-text",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-708",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-059"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-059: when a pair closes, every entry opened after its opener is removed, bare or braced, and is text (C2-I-051).",
+   "summary": "an escaped star inside the braced span closes nothing and is not reported",
+   "kind": "lint",
+   "input": "*a {/b\\*/}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "braced-span-opener-as-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-709",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a bare equals pair is reported",
+   "kind": "lint",
+   "input": "a =b=\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-highlight",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-710",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a single equals sign before a word is no pair and is not reported",
+   "kind": "lint",
+   "input": "a =b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-highlight"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-711",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a bare tilde pair is reported",
+   "kind": "lint",
+   "input": "a ~b~\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-strike",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-712",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a single tilde before a word is no pair and is not reported",
+   "kind": "lint",
+   "input": "a ~b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-strike"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-713",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a bare underscore pair after a word is reported",
+   "kind": "lint",
+   "input": "a _b_\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-bare-underline",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-714",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a single underscore before a word is no pair and is not reported",
+   "kind": "lint",
+   "input": "a _b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-bare-underline"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-715",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a line that holds only a plus sign is reported",
+   "kind": "lint",
+   "input": "+\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-continuation-marker",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-716",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else.",
+   "summary": "a plus sign glued to a letter is not reported",
+   "kind": "lint",
+   "input": "+a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-continuation-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-717",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110",
+    "C2-B-166"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. C2-B-166: A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).",
+   "summary": "a row whose one cell holds only hyphens is reported",
+   "kind": "lint",
+   "input": "| a |\n|---|\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-separator-row",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-718",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110",
+    "C2-B-166"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. C2-B-166: A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).",
+   "summary": "a row whose cell holds a letter between hyphens is not reported",
+   "kind": "lint",
+   "input": "| a |\n|-a-|\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-separator-row"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-719",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110",
+    "C2-I-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. C2-I-062: There is no arrow form: `~>` is text, and the braced tilde is always strike.",
+   "summary": "a braced strike span that holds a tilde arrow is reported",
+   "kind": "lint",
+   "input": "{~a~>b~}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-substitution-arrow",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-720",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-110",
+    "C2-I-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-110: A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. C2-I-062: There is no arrow form: `~>` is text, and the braced tilde is always strike.",
+   "summary": "a braced strike span that holds a greater-than sign without the tilde is not reported",
+   "kind": "lint",
+   "input": "{~a>b~}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "deprecated-substitution-arrow"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-721",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-069"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.",
+   "summary": "a term whose text continues on a second line is reported at the term",
+   "kind": "lint",
+   "input": ":: a\nb\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "description-term-multi-line",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-722",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-069"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-069: A term is one inline leaf: its text starts at the content column of its mark, so spaces and tabs behind the mark's one space are not part of it, and continues like paragraph text.",
+   "summary": "a term followed by a description line is not reported",
+   "kind": "lint",
+   "input": ":: a\n: b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "description-term-multi-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-723",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-154"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-154: A line that is not indented past the marker starts a new block",
+   "summary": "a plain line below a hash heading",
+   "kind": "lint",
+   "input": "# a\nb\n",
+   "options": {
+    "rules": {
+     "djot-heading-continuation": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-heading-continuation",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-724",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-154"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-154: A line that is not indented past the marker starts a new block",
+   "summary": "near miss: a blank line before the line",
+   "kind": "lint",
+   "input": "# a\n\nb\n",
+   "options": {
+    "rules": {
+     "djot-heading-continuation": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-heading-continuation"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-725",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "an intraword underscore pair",
+   "kind": "lint",
+   "input": "a_b_c\n",
+   "options": {
+    "rules": {
+     "djot-intraword-underscore": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-intraword-underscore",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-726",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "near miss: a single intraword underscore",
+   "kind": "lint",
+   "input": "a_b-c\n",
+   "options": {
+    "rules": {
+     "djot-intraword-underscore": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-intraword-underscore"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-727",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-034",
+    "C2-B-059"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-034: A bullet marker is `-` or `*`. C2-B-059: A line that starts with `+` is text unless it is a table continuation row (C2-B-175).",
+   "summary": "a plus bullet line",
+   "kind": "lint",
+   "input": "+ a\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-728",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-034",
+    "C2-B-059"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-034: A bullet marker is `-` or `*`. C2-B-059: A line that starts with `+` is text unless it is a table continuation row (C2-B-175).",
+   "summary": "near miss: a hyphen bullet",
+   "kind": "lint",
+   "input": "- a\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-plus-bullet"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-729",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "a bare tilde pair",
+   "kind": "lint",
+   "input": "~x~\n",
+   "options": {
+    "rules": {
+     "djot-subscript-tilde": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-730",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "near miss: a single bare tilde",
+   "kind": "lint",
+   "input": "~x\n",
+   "options": {
+    "rules": {
+     "djot-subscript-tilde": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-subscript-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-731",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-062: There is no arrow form: `~>` is text, and the braced tilde is always strike.",
+   "summary": "a braced tilde span",
+   "kind": "lint",
+   "input": "{~x~}\n",
+   "options": {
+    "rules": {
+     "djot-subscript-tilde-braced": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-subscript-tilde-braced",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-732",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-062: There is no arrow form: `~>` is text, and the braced tilde is always strike.",
+   "summary": "near miss: a braced comma span",
+   "kind": "lint",
+   "input": "{,x,}\n",
+   "options": {
+    "rules": {
+     "djot-subscript-tilde-braced": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-subscript-tilde-braced"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-733",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "a bare caret pair",
+   "kind": "lint",
+   "input": "a ^x^\n",
+   "options": {
+    "rules": {
+     "djot-superscript-caret": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-superscript-caret",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-734",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: No other character is a bare delimiter: a bare `_`, `~`, `=`, `^` or `,` is text.",
+   "summary": "near miss: a single bare caret",
+   "kind": "lint",
+   "input": "a ^x\n",
+   "options": {
+    "rules": {
+     "djot-superscript-caret": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-superscript-caret"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-735",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-083"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "summary": "two link definitions with one url",
+   "kind": "lint",
+   "input": "[a]: /u\n[b]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-reference-url",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-736",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-083"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "summary": "near miss: two link definitions with different urls",
+   "kind": "lint",
+   "input": "[a]: /u\n[b]: /v\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "duplicate-reference-url"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-737",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: `/` is the emphasis delimiter and `*` is the strong delimiter.",
+   "summary": "a paragraph that is one emphasis span",
+   "kind": "lint",
+   "input": "/Title/\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "emphasis-as-heading",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-738",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-046"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-046: `/` is the emphasis delimiter and `*` is the strong delimiter.",
+   "summary": "near miss: an emphasis span followed by text",
+   "kind": "lint",
+   "input": "/Title/ a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "emphasis-as-heading"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-739",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-036",
+    "C2-I-048"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. C2-I-048: A delimiter can close when the character before it is not whitespace and the character after it is not a word character.",
+   "summary": "a star that closes nothing before an attribute block",
+   "kind": "lint",
+   "input": "b*{.c}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "emphasis-marker-before-attributes",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-740",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-036",
+    "C2-I-048"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. C2-I-048: A delimiter can close when the character before it is not whitespace and the character after it is not a word character.",
+   "summary": "near miss: a closed strong span with an attribute block",
+   "kind": "lint",
+   "input": "*b*{.c}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "emphasis-marker-before-attributes"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-741",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-202"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
+   "summary": "an include directive with an empty quoted path",
+   "kind": "lint",
+   "input": "{{ \"\" }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-include-path",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-742",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-202"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-202: An empty path in any form makes the line text (`empty-include-path`).",
+   "summary": "near miss: an include directive with a quoted path",
+   "kind": "lint",
+   "input": "{{ \"a\" }}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "empty-include-path"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-743",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-067"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-067: A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty.",
+   "summary": "an inline link with an empty destination",
+   "kind": "lint",
+   "input": "[a]()\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-link-destination",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-744",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-067"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-067: A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty.",
+   "summary": "near miss: an inline link with a destination",
+   "kind": "lint",
+   "input": "[a](b)\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "empty-link-destination"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-745",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a label and a colon followed by nothing or only spaces is text.",
+   "summary": "a label and a colon with nothing after it",
+   "kind": "lint",
+   "input": "[a]:\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-reference-definition",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-746",
+   "clauses": [
+    "C2-B-083"
+   ],
+   "why": "C2-B-083: so a label and a colon followed by nothing or only spaces is text.",
+   "summary": "near miss: a link definition with a destination",
+   "kind": "lint",
+   "input": "[a]: /u\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "empty-reference-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-747",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "a code fence closer indented one space",
+   "kind": "lint",
+   "input": "```\na\n ```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "fence-closer-indented",
+      "line": 3,
+      "column": 2,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-748",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-109: The closer of a code fence or a div has the opener's character and at least its length, on a line owned by the same container, with no further column test.",
+   "summary": "near miss: a closer at the opener's indent",
+   "kind": "lint",
+   "input": "```\na\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "fence-closer-indented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-749",
+   "clauses": [
+    "C2-W-106",
+    "C2-A-084"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-084: Its panels are the tables among its children, and the image paragraphs, code blocks, quotes and math blocks among them that carry a caption",
+   "summary": "a figure group with an uncaptioned image",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "figure-group-empty",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-750",
+   "clauses": [
+    "C2-W-106",
+    "C2-A-084"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-084: Its panels are the tables among its children, and the image paragraphs, code blocks, quotes and math blocks among them that carry a caption",
+   "summary": "near miss: the image carries a caption",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n^ A\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "figure-group-empty"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-751",
+   "clauses": [
+    "C2-B-127"
+   ],
+   "why": "C2-B-127: Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1).",
+   "summary": "a figure div in a quote inside a figure group",
+   "kind": "lint",
+   "input": "::: figure\n> ::: figure\n> :::\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "figure-group-nested",
+      "line": 2,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-752",
+   "clauses": [
+    "C2-B-127"
+   ],
+   "why": "C2-B-127: Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1).",
+   "summary": "near miss: the outer div is a note",
+   "kind": "lint",
+   "input": "::: note\n> ::: figure\n> :::\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "figure-group-nested"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-753",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-127"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-127: `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`",
+   "summary": "a figure opener with a title",
+   "kind": "lint",
+   "input": "::: figure \"T\"\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "figure-group-opener-metadata",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-754",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-127"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-127: `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`",
+   "summary": "near miss: a figure opener without a title",
+   "kind": "lint",
+   "input": "::: figure\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "figure-group-opener-metadata"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-755",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-066"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-066: A panel caption takes no number. The number mark of a caption that takes no number, such as the caption of a panel, is written as the character `#`.",
+   "summary": "a number mark in a panel caption",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n^ A #\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "figure-group-panel-number",
+      "line": 3,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-756",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-066"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-066: A panel caption takes no number. The number mark of a caption that takes no number, such as the caption of a panel, is written as the character `#`.",
+   "summary": "near miss: an escaped number mark in a panel caption",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n^ A \\#\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "figure-group-panel-number"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-757",
+   "clauses": [
+    "C2-W-106",
+    "C2-A-084"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-084: Its panels are the tables among its children, and the image paragraphs, code blocks, quotes and math blocks among them that carry a caption",
+   "summary": "a figure group with one panel",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n^ A\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "figure-group-single-panel",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-758",
+   "clauses": [
+    "C2-W-106",
+    "C2-A-084"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-084: Its panels are the tables among its children, and the image paragraphs, code blocks, quotes and math blocks among them that carry a caption",
+   "summary": "near miss: a figure group with two panels",
+   "kind": "lint",
+   "input": "::: figure\n![a](a.png)\n^ A\n\n![b](b.png)\n^ B\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "figure-group-single-panel"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-759",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-079"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-079: The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. ... Reference labels, footnote labels and definition labels share this rule.",
+   "summary": "two footnote labels that differ in a space",
+   "kind": "lint",
+   "input": "[^a b]: x\n[^a  b]: y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "footnote-labels-differ-only-in-whitespace",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-760",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-079"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-079: The lookup key of a label is its source text with every run of spaces, tabs and one line break folded to one space and with the ends trimmed. ... Reference labels, footnote labels and definition labels share this rule.",
+   "summary": "near miss: two identical footnote labels",
+   "kind": "lint",
+   "input": "[^a b]: x\n[^a b]: y\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "footnote-labels-differ-only-in-whitespace"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-761",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-158"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-158: The first top-level `footnotes` directive (C2-A-066) places the footnote section at its own place (C2-H-093)",
+   "summary": "a footnotes directive in a quote",
+   "kind": "lint",
+   "input": "> ::: footnotes\n> :::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "footnotes-placement-in-container",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-762",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-158"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-158: The first top-level `footnotes` directive (C2-A-066) places the footnote section at its own place (C2-H-093)",
+   "summary": "near miss: a footnotes directive at top level",
+   "kind": "lint",
+   "input": "::: footnotes\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "footnotes-placement-in-container"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-763",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-161"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-161: Line 1 opens frontmatter when it is exactly three hyphens at column 0",
+   "summary": "frontmatter whose first line is blank",
+   "kind": "lint",
+   "input": "---\n\n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "frontmatter-shaped-thematic-break",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-764",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-161"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-161: Line 1 opens frontmatter when it is exactly three hyphens at column 0",
+   "summary": "near miss: frontmatter with a key line",
+   "kind": "lint",
+   "input": "---\na: b\n---\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "frontmatter-shaped-thematic-break"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-765",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-072"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-072: Without a matching definition the brackets are text, and no reference node forms.",
+   "summary": "a github alert marker in a quote",
+   "kind": "lint",
+   "input": "> [!NOTE]\n> a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "github-alert-marker",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-766",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-072"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-072: Without a matching definition the brackets are text, and no reference node forms.",
+   "summary": "near miss: a bracketed word without the exclamation mark",
+   "kind": "lint",
+   "input": "> [NOTE]\n> a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "github-alert-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-767",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-047",
+    "C2-I-048"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-047: A delimiter can open when the character before it is not a word character and the character after it is not whitespace. C2-I-048: A delimiter can close when the character before it is not whitespace and the character after it is not a word character.",
+   "summary": "a strong span over a glob",
+   "kind": "lint",
+   "input": "*.c,*.h\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "glob-shaped-strong",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-768",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-047",
+    "C2-I-048"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-047: A delimiter can open when the character before it is not a word character and the character after it is not whitespace. C2-I-048: A delimiter can close when the character before it is not whitespace and the character after it is not a word character.",
+   "summary": "near miss: a space keeps the second star from closing",
+   "kind": "lint",
+   "input": "*.c, *.h\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "glob-shaped-strong"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-769",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-153"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-153: Everything after that space is inline content: trailing marker characters and a brace block are heading text.",
+   "summary": "a closing hash run on a heading",
+   "kind": "lint",
+   "input": "# a #\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-closing-hashes",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-770",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-153"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-153: Everything after that space is inline content: trailing marker characters and a brace block are heading text.",
+   "summary": "near miss: a heading without a closing run",
+   "kind": "lint",
+   "input": "# a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-closing-hashes"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-771",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-154"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-154: So text directly below a heading is a paragraph and two headings need no blank line between them.",
+   "summary": "a level three heading after level one",
+   "kind": "lint",
+   "input": "= a\n=== b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-level-skip",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-772",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-154"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-154: So text directly below a heading is a paragraph and two headings need no blank line between them.",
+   "summary": "near miss: a level two heading after level one",
+   "kind": "lint",
+   "input": "= a\n== b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-level-skip"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-773",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "an equals heading and a hash heading",
+   "kind": "lint",
+   "input": "= a\n# b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-774",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "near miss: two equals headings",
+   "kind": "lint",
+   "input": "= a\n= b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-marker-mixed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-775",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-153"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-153: Everything after that space is inline content: trailing marker characters and a brace block are heading text.",
+   "summary": "a brace block at the end of a heading",
+   "kind": "lint",
+   "input": "= a {.c}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-trailing-attribute",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-776",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-153"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-153: Everything after that space is inline content: trailing marker characters and a brace block are heading text.",
+   "summary": "near miss: the attribute line above the heading",
+   "kind": "lint",
+   "input": "{.c}\n= a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "heading-trailing-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-777",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-124"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-124: otherwise `<`, the body and `>` are text, read as any other inline content.",
+   "summary": "an html comment in a paragraph",
+   "kind": "lint",
+   "input": "<!-- a -->\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "html-comment-renders-as-text",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-778",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-124"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-124: otherwise `<`, the body and `>` are text, read as any other inline content.",
+   "summary": "near miss: the exclamation mark is missing",
+   "kind": "lint",
+   "input": "<-- a -->\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "html-comment-renders-as-text"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-779",
+   "clauses": [
+    "C2-N-071",
+    "C2-N-072"
+   ],
+   "why": "C2-N-071: The attribute line above a directive attaches to the include node (C2-B-095) C2-N-072: On an include without `code`, `include-attributes-unused` reports them.",
+   "summary": "an attribute line on a carve include",
+   "kind": "lint",
+   "input": "{.c}\n{{ a.crv }}\n",
+   "files": {
+    "a.crv": {
+     "text": "b\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-attributes-unused",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-780",
+   "clauses": [
+    "C2-N-071",
+    "C2-N-072"
+   ],
+   "why": "C2-N-071: The attribute line above a directive attaches to the include node (C2-B-095) C2-N-072: On an include without `code`, `include-attributes-unused` reports them.",
+   "summary": "near miss: an attribute line on a code include",
+   "kind": "lint",
+   "input": "{.c}\n{{ a.crv @code }}\n",
+   "files": {
+    "a.crv": {
+     "text": "b\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-attributes-unused"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-781",
+   "clauses": [
+    "C2-N-088"
+   ],
+   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.",
+   "summary": "lines on a delimited table include",
+   "kind": "lint",
+   "input": "{table}\n{{ a.csv @code:csv @lines:2-2 }}\n",
+   "files": {
+    "a.csv": {
+     "text": "a,b\nc,d\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-lines-table-rows-hint",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-782",
+   "clauses": [
+    "C2-N-088"
+   ],
+   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.",
+   "summary": "near miss: rows on a delimited table include",
+   "kind": "lint",
+   "input": "{table}\n{{ a.csv @code:csv @rows:2-2 }}\n",
+   "files": {
+    "a.csv": {
+     "text": "a,b\nc,d\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "notReported": [
+     "include-lines-table-rows-hint"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-783",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-011"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-011: A line that opens no other block opens a paragraph.",
+   "summary": "a line indented four spaces",
+   "kind": "lint",
+   "input": "    a\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "indented-code-block",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-784",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-011"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-011: A line that opens no other block opens a paragraph.",
+   "summary": "near miss: a line indented three spaces",
+   "kind": "lint",
+   "input": "   a\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "indented-code-block"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-785",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-069"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-069: It is read only glued to the closing bracket of a pair",
+   "summary": "a space between label and destination",
+   "kind": "lint",
+   "input": "[a] (b)\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "link-gap-before-destination",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-786",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-069"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-069: It is read only glued to the closing bracket of a pair",
+   "summary": "near miss: the destination glued to the label",
+   "kind": "lint",
+   "input": "[a](b)\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "link-gap-before-destination"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-787",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-025"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-025: With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past",
+   "summary": "an item block one column past the marker",
+   "kind": "lint",
+   "input": "- a\n\n b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-item-body-below-content-column",
+      "line": 3,
+      "column": 2,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-788",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-025"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-025: With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past",
+   "summary": "near miss: the block at the content column",
+   "kind": "lint",
+   "input": "- a\n\n  b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-item-body-below-content-column"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-789",
+   "clauses": [
+    "C2-B-055"
+   ],
+   "why": "C2-B-055: A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list ... `list-marker-below-content-column` reports it.",
+   "summary": "a marker between two list columns",
+   "kind": "lint",
+   "input": "- a\n  - b\n - c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-marker-below-content-column",
+      "line": 3,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-790",
+   "clauses": [
+    "C2-B-055"
+   ],
+   "why": "C2-B-055: A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list ... `list-marker-below-content-column` reports it.",
+   "summary": "near miss: the marker at the deeper column",
+   "kind": "lint",
+   "input": "- a\n  - b\n  - c\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-marker-below-content-column"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-791",
+   "clauses": [
+    "C2-B-022"
+   ],
+   "why": "C2-B-022: a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.",
+   "summary": "a list marker directly after a term",
+   "kind": "lint",
+   "input": ":: a\n- b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-marker-without-blank-line",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-792",
+   "clauses": [
+    "C2-B-022"
+   ],
+   "why": "C2-B-022: a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.",
+   "summary": "near miss: a blank line before the marker",
+   "kind": "lint",
+   "input": ":: a\n\n- b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-marker-without-blank-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-793",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-016"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-016: Interrupter (c): a description mark or a term mark with content at an open description list's column",
+   "summary": "a markdown definition line under a paragraph",
+   "kind": "lint",
+   "input": "a\n: b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "markdown-definition-paragraph",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-794",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-016"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-016: Interrupter (c): a description mark or a term mark with content at an open description list's column",
+   "summary": "near miss: a term line above the description",
+   "kind": "lint",
+   "input": ":: a\n: b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "markdown-definition-paragraph"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-795",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a doubled tilde pair is reported as markdown strikethrough",
+   "kind": "lint",
+   "input": "a ~~b~~ c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "markdown-strikethrough-double-tilde",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-796",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a single tilde pair is not markdown strikethrough",
+   "kind": "lint",
+   "input": "a ~b~ c\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "markdown-strikethrough-double-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-797",
+   "clauses": [
+    "C2-I-049"
+   ],
+   "why": "C2-I-049: `**bold**` is literal, and lint reports it as `markdown-strong-double-star`.",
+   "summary": "a doubled star pair at the start of a line is reported",
+   "kind": "lint",
+   "input": "**b**\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "markdown-strong-double-star",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-798",
+   "clauses": [
+    "C2-I-049"
+   ],
+   "why": "C2-I-049: A run of two or more of one bare delimiter character is not a delimiter",
+   "summary": "a single star pair is strong, not a doubled run",
+   "kind": "lint",
+   "input": "*b*\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "markdown-strong-double-star"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-799",
+   "clauses": [
+    "C2-B-044"
+   ],
+   "why": "C2-B-044: `v.` then `vii.` an alphabetic list of one item and a roman list ... `ordered-list-kind-split` reports both lists.",
+   "summary": "v then vii splits into an alphabetic and a roman list",
+   "kind": "lint",
+   "input": "v. a\nvii. b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "ordered-list-kind-split",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-800",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`",
+   "summary": "v then vi is one roman list and does not split",
+   "kind": "lint",
+   "input": "v. a\nvi. b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "ordered-list-kind-split"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-801",
+   "clauses": [
+    "C2-B-030"
+   ],
+   "why": "C2-B-030: A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list.",
+   "summary": "a right-aligned ordered marker left of its list is reported",
+   "kind": "lint",
+   "input": " 9. a\n10. b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "ordered-marker-right-aligned",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-802",
+   "clauses": [
+    "C2-B-030"
+   ],
+   "why": "C2-B-030: A marker left of the list's column, directly after item text, is a sibling item (C2-B-015, C2-B-054), so markers that are right-aligned, as ` 9.` above `10.`, form one list.",
+   "summary": "left-aligned ordered markers are not reported",
+   "kind": "lint",
+   "input": "9. a\n10. b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "ordered-marker-right-aligned"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-803",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: `platforms` selects the platform rules.",
+   "summary": "a hash-number is reported under the github platform",
+   "kind": "lint",
+   "input": "see #12\n",
+   "options": {
+    "platforms": [
+     "github"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "platform-issue-reference",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-804",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: `platforms` selects the platform rules.",
+   "summary": "a number without the hash is not an issue reference",
+   "kind": "lint",
+   "input": "see 12\n",
+   "options": {
+    "platforms": [
+     "github"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "platform-issue-reference"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-805",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: `platforms` selects the platform rules.",
+   "summary": "an at-prefixed word is reported under the github platform",
+   "kind": "lint",
+   "input": "ask @bob\n",
+   "options": {
+    "platforms": [
+     "github"
+    ]
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "platform-mention-token",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-806",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: `platforms` selects the platform rules.",
+   "summary": "a word without the at-sign is not a mention token",
+   "kind": "lint",
+   "input": "ask bob\n",
+   "options": {
+    "platforms": [
+     "github"
+    ]
+   },
+   "expected": {
+    "notReported": [
+     "platform-mention-token"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-807",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a quote fence directly below a quote at its column is reported",
+   "kind": "lint",
+   "input": "> a\n::: >\nb\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "quote-fence-ends-the-quote-above",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-808",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a blank line between the quote and the quote fence is not reported",
+   "kind": "lint",
+   "input": "> a\n\n::: >\nb\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "quote-fence-ends-the-quote-above"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-809",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a references directive inside an admonition is reported",
+   "kind": "lint",
+   "input": ":::: note\n::: references\n:::\n::::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "references-placement-in-container",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-810",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a references directive at document level is not reported",
+   "kind": "lint",
+   "input": "::: references\n:::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "references-placement-in-container"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-811",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-075"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`.",
+   "summary": "kbd on a heading attribute line is reported",
+   "kind": "lint",
+   "input": "{kbd}\n# H\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "semantic-attribute-outside-span",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-812",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-075"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: The three keys match in lower case only: a key in another case, `KBD` or `Abbr`, is an ordinary attribute",
+   "summary": "kbd in upper case is an ordinary attribute and is not reported",
+   "kind": "lint",
+   "input": "{KBD}\n# H\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "semantic-attribute-outside-span"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-813",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-075"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped.",
+   "summary": "a value on kbd is reported as discarded",
+   "kind": "lint",
+   "input": "[x]{kbd=a}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "semantic-attribute-value-ignored",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-814",
+   "clauses": [
+    "C2-W-106",
+    "C2-H-075"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped.",
+   "summary": "kbd with no value is not reported",
+   "kind": "lint",
+   "input": "[x]{kbd}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "semantic-attribute-value-ignored"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-815",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-160"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks",
+   "summary": "a hyphen run directly under text is reported",
+   "kind": "lint",
+   "input": "a\n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "setext-heading-underline",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-816",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-160"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks",
+   "summary": "a hyphen run after a blank line is not an underline",
+   "kind": "lint",
+   "input": "a\n\n---\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "setext-heading-underline"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-817",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-090"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-090: A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class.",
+   "summary": "a mention shape glued to a non-ascii letter is reported",
+   "kind": "lint",
+   "input": "ü@bob\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "sigil-after-letter",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-818",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-090"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-090: A sigil starts a form only at the start of the content or after a character outside the Unicode letter-or-number class.",
+   "summary": "a space before the at-sign makes a mention and is not reported",
+   "kind": "lint",
+   "input": "ü @bob\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "sigil-after-letter"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-819",
+   "clauses": [
+    "C2-B-211",
+    "C2-B-227"
+   ],
+   "why": "C2-B-211: an empty or malformed entry makes the whole value invalid, so that it sets no column. C2-B-227: Lint reports a kept invalid value as `table-attribute-invalid`",
+   "summary": "a malformed aligns entry is reported",
+   "kind": "lint",
+   "input": "{aligns=x}\n| a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-attribute-invalid",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-820",
+   "clauses": [
+    "C2-B-211",
+    "C2-B-227"
+   ],
+   "why": "C2-B-211: an empty or malformed entry makes the whole value invalid, so that it sets no column. C2-B-227: Lint reports a kept invalid value as `table-attribute-invalid`",
+   "summary": "a valid aligns entry is not reported",
+   "kind": "lint",
+   "input": "{aligns=left}\n| a |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-attribute-invalid"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-821",
+   "clauses": [
+    "C2-B-211"
+   ],
+   "why": "C2-B-211: Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.",
+   "summary": "aligns with fewer entries than columns is reported",
+   "kind": "lint",
+   "input": "{aligns=left}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-column-arity",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-822",
+   "clauses": [
+    "C2-B-211"
+   ],
+   "why": "C2-B-211: Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.",
+   "summary": "aligns with one entry per column is not reported",
+   "kind": "lint",
+   "input": "{aligns=left,left}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-column-arity"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-823",
+   "clauses": [
+    "C2-B-213"
+   ],
+   "why": "C2-B-213: Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it.",
+   "summary": "a head mark and an aligns entry on one axis are reported",
+   "kind": "lint",
+   "input": "{aligns=left}\n|={>} A |\n| a |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-column-overlap",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-824",
+   "clauses": [
+    "C2-B-213"
+   ],
+   "why": "C2-B-213: The alignment of a cell is resolved for each axis on its own.",
+   "summary": "a horizontal head mark and a valigns entry set different axes",
+   "kind": "lint",
+   "input": "{valigns=top}\n|={>} A |\n| a |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-column-overlap"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-825",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-167"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-167: After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it",
+   "summary": "a last cell that holds only an attribute block is reported",
+   "kind": "lint",
+   "input": "| a | {.x} |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-row-attribute-as-cell",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-826",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-167"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-167: After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it",
+   "summary": "a brace block one space after the closing pipe is a row attribute",
+   "kind": "lint",
+   "input": "| a | {.x}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-attribute-as-cell"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-827",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a body row with fewer cells than the header is reported",
+   "kind": "lint",
+   "input": "|= a |= b |\n| c |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-row-cell-count",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-828",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a body row with as many cells as the header is not reported",
+   "kind": "lint",
+   "input": "|= a |= b |\n| c | d |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-cell-count"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-829",
+   "clauses": [
+    "C2-B-209"
+   ],
+   "why": "C2-B-209: A count larger than the number of rows is the number of rows, so every row is in the head, and `table-row-count-clamped` reports the count.",
+   "summary": "header-rows larger than the rows of a delimited table is reported",
+   "kind": "lint",
+   "input": "{table header-rows=3}\n```csv\na\nb\n```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-row-count-clamped",
+      "line": 1,
+      "column": 8,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-830",
+   "clauses": [
+    "C2-B-209"
+   ],
+   "why": "C2-B-209: A count N makes the first N rows the head",
+   "summary": "header-rows equal to the rows is not clamped",
+   "kind": "lint",
+   "input": "{table header-rows=2}\n```csv\na\nb\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-row-count-clamped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-831",
+   "clauses": [
+    "C2-B-168"
+   ],
+   "why": "C2-B-168: A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.",
+   "summary": "a pipe line without a closing pipe is reported",
+   "kind": "lint",
+   "input": "| a | b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-shaped-paragraph",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-832",
+   "clauses": [
+    "C2-B-168"
+   ],
+   "why": "C2-B-168: A line that starts with a pipe and does not end as C2-B-166 says is text: the table ends there, the next row starts a new table, and `table-shaped-paragraph` reports the line.",
+   "summary": "a row with a closing pipe is not reported",
+   "kind": "lint",
+   "input": "| a | b |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-shaped-paragraph"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-833",
+   "clauses": [
+    "C2-B-174"
+   ],
+   "why": "C2-B-174: `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.",
+   "summary": "a header mark on a joining row span mark below a data row is reported",
+   "kind": "lint",
+   "input": "| a |\n|= ^ |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-span-marker-attribute",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-834",
+   "clauses": [
+    "C2-B-174"
+   ],
+   "why": "C2-B-174: `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.",
+   "summary": "a row span mark with no prefix is not reported",
+   "kind": "lint",
+   "input": "| a |\n| ^ |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-span-marker-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-835",
+   "clauses": [
+    "C2-B-172",
+    "C2-B-173"
+   ],
+   "why": "C2-B-172: A `<` in the first column, a `<` whose left cell is covered by a row span from above, a `^` in the first row of its group and a `^` below a cell that spans more than one column join nothing (C2-B-173) C2-B-173: A span mark that joins nothing is an ordinary cell that holds the mark as text, and `table-span-marker-blocked` reports it.",
+   "summary": "a column span mark in the first column is reported",
+   "kind": "lint",
+   "input": "| < |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-span-marker-blocked",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-836",
+   "clauses": [
+    "C2-B-172"
+   ],
+   "why": "C2-B-172: A cell that holds only a span mark, `<` or `^`, joins the cell to its left or the cell above when that cell stands in the same group of the table (C2-B-174).",
+   "summary": "a column span mark with a cell to its left joins and is not reported",
+   "kind": "lint",
+   "input": "| a | < |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-span-marker-blocked"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-837",
+   "clauses": [
+    "C2-B-212"
+   ],
+   "why": "C2-B-212: The widths need not total 100; `table-width-total` reports a total above 100.",
+   "summary": "widths that total more than 100 are reported",
+   "kind": "lint",
+   "input": "{widths=60,50}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-width-total",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-838",
+   "clauses": [
+    "C2-B-212"
+   ],
+   "why": "C2-B-212: The widths need not total 100; `table-width-total` reports a total above 100.",
+   "summary": "widths that total exactly 100 are not reported",
+   "kind": "lint",
+   "input": "{widths=50,50}\n| a | b |\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "table-width-total"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-839",
+   "clauses": [
+    "C2-B-160"
+   ],
+   "why": "C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.",
+   "summary": "an underscore run alone on a line is reported",
+   "kind": "lint",
+   "input": "___\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "thematic-break-spelling",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-840",
+   "clauses": [
+    "C2-B-160"
+   ],
+   "why": "C2-B-160: A run of hyphens or underscores and the spaced forms are not thematic breaks: they are text, or nested markers for `- - -` (C2-B-058), and `thematic-break-spelling` or `deprecated-spaced-thematic-break` reports them.",
+   "summary": "a star run is a thematic break and is not reported",
+   "kind": "lint",
+   "input": "***\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "thematic-break-spelling"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-841",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109",
+    "C2-B-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: A rule that is off by default is turned on by its id. C2-B-062: A list is loose only when a blank line stands between two of its items",
+   "summary": "a tight list whose item holds a blank line and a paragraph is reported when turned on",
+   "kind": "lint",
+   "input": "- a\n\n  b\n- c\n",
+   "options": {
+    "rules": {
+     "tight-list-item-with-blank-line": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "tight-list-item-with-blank-line",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-842",
+   "clauses": [
+    "C2-W-106",
+    "C2-W-109",
+    "C2-B-062"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-W-109: A rule that is off by default is turned on by its id. C2-B-062: A list is loose only when a blank line stands between two of its items",
+   "summary": "a blank line between the items makes the list loose and is not reported",
+   "kind": "lint",
+   "input": "- a\n\n  b\n\n- c\n",
+   "options": {
+    "rules": {
+     "tight-list-item-with-blank-line": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "tight-list-item-with-blank-line"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-843",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-192"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-192: Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.",
+   "summary": "an attribute line at the end of the document is reported",
+   "kind": "lint",
+   "input": "a\n\n{.x}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-block-attribute",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-844",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-192"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-192: Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.",
+   "summary": "an attribute line directly above a paragraph is not reported",
+   "kind": "lint",
+   "input": "{.x}\na\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-block-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-845",
+   "clauses": [
+    "C2-B-149"
+   ],
+   "why": "C2-B-149: After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.",
+   "summary": "a caption line after a blank line below a quote is reported",
+   "kind": "lint",
+   "input": "> a\n\n^ b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-caption",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-846",
+   "clauses": [
+    "C2-B-147"
+   ],
+   "why": "C2-B-147: A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group.",
+   "summary": "a caption line directly below a quote attaches and is not reported",
+   "kind": "lint",
+   "input": "> a\n^ b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-caption"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-847",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-036"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise.",
+   "summary": "an attribute block one space after a code span is reported",
+   "kind": "lint",
+   "input": "`a` {.x}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-848",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-036"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-036: A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise.",
+   "summary": "an attribute block glued to a code span is not reported",
+   "kind": "lint",
+   "input": "`a`{.x}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-inline-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-849",
+   "clauses": [
+    "C2-B-141"
+   ],
+   "why": "C2-B-141: Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.",
+   "summary": "a braced comment whose closer stands behind a fence line is reported",
+   "kind": "lint",
+   "input": "a {% b\n```\nc %}\n```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-braced-comment",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-850",
+   "clauses": [
+    "C2-I-025"
+   ],
+   "why": "C2-I-025: `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks",
+   "summary": "a braced comment closed on a plain continuation line is not reported",
+   "kind": "lint",
+   "input": "a {% b\nc %}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-braced-comment"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-851",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a star opener with no closer in its paragraph is reported",
+   "kind": "lint",
+   "input": "a *b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-inline-emphasis",
+      "line": 1,
+      "column": 3,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-852",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a closed strong span is not reported",
+   "kind": "lint",
+   "input": "a *b*\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unclosed-inline-emphasis"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-853",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-088"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-088: A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).",
+   "summary": "a footnote reference with no definition is reported",
+   "kind": "lint",
+   "input": "a[^x]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unresolved-footnote",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-854",
+   "clauses": [
+    "C2-W-106",
+    "C2-I-088"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-I-088: A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).",
+   "summary": "a footnote reference with a definition is not reported",
+   "kind": "lint",
+   "input": "a[^x]\n\n[^x]: y\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unresolved-footnote"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-855",
+   "clauses": [
+    "C2-I-081",
+    "C2-I-085"
+   ],
+   "why": "C2-I-081: The stored key of a full or collapsed link reference is looked up first in the link definitions, where it matches a key that is the same string. Only where no definition matches is it looked up in the headings (C2-I-084). C2-I-085: An unresolved reference renders its brackets and its label as literal text",
+   "summary": "a full reference with no definition and no heading is reported",
+   "kind": "lint",
+   "input": "[a][b]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unresolved-reference-link",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-856",
+   "clauses": [
+    "C2-I-081",
+    "C2-I-085"
+   ],
+   "why": "C2-I-081: The stored key of a full or collapsed link reference is looked up first in the link definitions, where it matches a key that is the same string. Only where no definition matches is it looked up in the headings (C2-I-084). C2-I-085: An unresolved reference renders its brackets and its label as literal text",
+   "summary": "a full reference with a matching definition is not reported",
+   "kind": "lint",
+   "input": "[a][b]\n\n[b]: /u\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unresolved-reference-link"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-857",
+   "clauses": [
+    "C2-H-194"
+   ],
+   "why": "C2-H-194: `unused-footnote-definition` (C2-W-106) and `duplicate-footnote-definition` report the first two in the source.",
+   "summary": "a footnote definition that no reference uses is reported",
+   "kind": "lint",
+   "input": "b\n\n[^x]: y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unused-footnote-definition",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-858",
+   "clauses": [
+    "C2-H-194"
+   ],
+   "why": "C2-H-194: `unused-footnote-definition` (C2-W-106) and `duplicate-footnote-definition` report the first two in the source.",
+   "summary": "a used footnote definition is not reported",
+   "kind": "lint",
+   "input": "b[^x]\n\n[^x]: y\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unused-footnote-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-859",
+   "clauses": [
+    "C2-H-193"
+   ],
+   "why": "C2-H-193: HTML holds no trace of three facts of link definitions, so they do not survive: a definition that no reference uses, a later definition of a key that an earlier one holds (C2-B-085), and the place of a definition among the blocks. In the source, `unused-link-reference-definition` (C2-W-106) reports the first",
+   "summary": "a link definition that no reference uses is reported",
+   "kind": "lint",
+   "input": "a\n\n[b]: /u\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unused-link-reference-definition",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-860",
+   "clauses": [
+    "C2-H-193"
+   ],
+   "why": "C2-H-193: HTML holds no trace of three facts of link definitions, so they do not survive: a definition that no reference uses, a later definition of a key that an earlier one holds (C2-B-085), and the place of a definition among the blocks. In the source, `unused-link-reference-definition` (C2-W-106) reports the first",
+   "summary": "a link definition used by a shortcut reference is not reported",
+   "kind": "lint",
+   "input": "[b]\n\n[b]: /u\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unused-link-reference-definition"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-861",
+   "clauses": [
+    "C2-B-054"
+   ],
+   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it.",
+   "summary": "a bullet marker left of the open list after a blank line is reported",
+   "kind": "lint",
+   "input": "  - a\n\n- b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "uneven-list-indent",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-862",
+   "clauses": [
+    "C2-B-054"
+   ],
+   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it.",
+   "summary": "bullet markers at one column are not reported",
+   "kind": "lint",
+   "input": "- a\n\n- b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "uneven-list-indent"
+    ]
+   },
+   "from": []
   }
  ]
 }
