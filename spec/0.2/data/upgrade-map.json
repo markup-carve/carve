@@ -2152,16 +2152,6 @@
       "silent": true
     },
     {
-      "id": "U-257",
-      "kind": "rewrite",
-      "group": "nested bracket text in an inline note",
-      "from": "^[/[^[g]/] b/]\n",
-      "to": "^[{/\\[\\^[g]\\/\\] b/}]\n",
-      "meaning02": "C2-I-119 and C2-I-047 preserve the old note text when its bracket run is escaped inside a braced emphasis span.",
-      "toolEntry": "U-257",
-      "silent": true
-    },
-    {
       "id": "U-258",
       "kind": "rewrite",
       "group": "rulings of 16 November",
