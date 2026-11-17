@@ -4,7 +4,7 @@ Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the 
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 
-The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Seven facts are new here: they were tree fields in that draft or in an earlier 0.2 draft and moved out of the tree.
+The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Seven facts are new here: they were tree fields in that draft or in an earlier 0.2 draft and moved out of the tree. `rawAttrs` is new as well and was never a tree field.
 
 Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nnn`. `C2-A-nnn`, `C2-B-nnn` and `C2-I-nnn` name clauses of the AST document and of the block and inline chapters.
 
@@ -14,7 +14,7 @@ Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nn
 
 **C2-L-002** Two documents that differ only in sidecar content are the same document: tree equality (C2-A-161) does not read the sidecar.
 
-**C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree.
+**C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree. A render of source and a render of its tree can still differ: a render of source writes the attribute blocks of an unresolved reference as typed, read from the source (C2-I-085).
 
 **C2-L-004** A sidecar belongs to the one tree it was returned with. Its paths do not hold after that tree is edited.
 
@@ -162,7 +162,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-030** A decimal ordered list whose delimiter is the period is written with the bare dot on every item, the first included. A list that does not start at 1 carries its start value in a `start` attribute on the attribute line above it (C2-B-045): a number on the first marker would be read back as the numbered form. The writer clause names the exceptions (C2-W-044).
 
-**C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036). A first marker that would read as another style is written as C2-W-045 says.
+**C2-L-031** Every other ordered list is written with its numbers, letters or numerals in sequence from the start value: a list whose `marker.style` is not `1`, and a list with the `)` delimiter, since a bare `)` is not a marker (C2-B-036). A first marker that could read as another style is written as C2-W-045 says.
 
 **C2-L-032** A bullet list is written with the character in `marker.char`. A writer writes `-` only where the tree says `-`, and does not change the character to separate two lists.
 
@@ -211,7 +211,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.
 
-**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed. `rawAttrs` starts at the first brace behind that bracket and ends at the brace that closes the last glued attribute block; it is read the same way. The HTML renderer reads it for an unresolved reference (C2-I-085); no writer rule reads it.
+**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed. `rawAttrs` starts at the first brace behind that bracket and ends at the brace that closes the last glued attribute block; it is read the same way. No writer rule reads it, and no renderer reads the sidecar: a render of source writes this span of the source for an unresolved reference (C2-I-085).
 
 **C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
 
