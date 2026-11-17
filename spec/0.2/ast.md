@@ -676,9 +676,9 @@ The invariants below are written so that a test can check each one on any tree a
 | `citation_group.mode` | removed; every item carries its own mode. |
 | `citation.locatorLabel` and `citation.locatorValue` | `locator` object with label and inline children; its parts cannot disagree. |
 | the former stored task state | removed; the state derives from `task.mark`. |
-| `include.options` string pairs | decoded typed option object; source quoting moves to layout. |
+| `include.options` string pairs | decoded typed option object; source quoting is written to a source-layout sidecar as `optionSpelling` when the caller asks for one and supplies the original source, and otherwise dropped. |
 | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped |
-| `table_body.headRows` | dropped; the groups hold the partition, and the count goes to a source-layout sidecar as `headerRows` when the caller asks for one |
+| `table_body.headRows` | dropped; the groups hold the partition, and the count is written to a source-layout sidecar as `headerRows` when the caller asks for one and supplies the original source, and otherwise dropped |
 | a definition inside a container | not produced by the draft, which moves it to the document; no change |
 | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class |
 | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, which takes the `caption` and the `attrs` of the figure; the comments go where C2-A-082 places them; `kind` is dropped |

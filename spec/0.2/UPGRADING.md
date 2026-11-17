@@ -796,7 +796,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-021 | drop | `citation_group.mode` | removed; every item carries its own mode. | C2-A-178 |
 | T-022 | merge | `citation.locatorLabel` and `citation.locatorValue` | `locator` object with label and inline children; its parts cannot disagree. | C2-A-178 |
 | T-023 | drop | `task.status` | removed; the state derives from `task.mark`. | C2-A-178 |
-| T-024 | rename | `include.options` string pairs | decoded typed option object; source quoting moves to layout. | C2-A-178 |
+| T-024 | rename | `include.options` string pairs | decoded typed option object; source quoting is written to a source-layout sidecar as `optionSpelling` when the caller asks for one and supplies the original source, and otherwise dropped. | C2-A-178 |
 | T-025 | drop | `thematic_break.marker`, `table.separatorWidths`, `table_row.continuationLines`, `table_cell.sourceContent`, `strong.boldItalic` | dropped | C2-A-178 |
 | T-026 | move | a definition inside a container | not produced by the draft, which moves it to the document; no change | C2-A-178 |
 | T-027 | move | a named `admonition` whose `kind` is not one of the eight admonition names | a `div` with the name as its first class | C2-A-178 |
@@ -825,7 +825,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-050 | add | no extension source record; block extension deferred in an earlier draft | qualified `block_extension` and `inline_extension` may carry a typed `source` record; a block extension has a required core fallback | C2-A-122 C2-A-125 C2-X-024 |
 | T-051 | merge | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, with the `caption` and the `attrs` of the figure in its own fields; the comments go where C2-A-082 places them; `kind` is dropped | C2-A-082 C2-A-178 |
 | T-052 | move | any other `figure` | a `figure_group` with the same children, `caption` and `attrs`; `kind` is dropped | C2-A-084 C2-A-178 |
-| T-053 | move | `table_body.headRows` | dropped; the groups hold the partition, and the count goes to a source-layout sidecar as `headerRows` when the caller asks for one | C2-A-088 C2-A-178 |
+| T-053 | move | `table_body.headRows` | dropped; the groups hold the partition, and the count is written to a source-layout sidecar as `headerRows` when the caller asks for one and supplies the original source, and otherwise dropped | C2-A-088 C2-A-178 |
 
 ### Reading and storing 2.0 trees
 

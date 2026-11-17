@@ -2541,7 +2541,7 @@
       "id": "T-024",
       "kind": "rename",
       "from": "`include.options` string pairs",
-      "to": "decoded typed option object; source quoting moves to layout.",
+      "to": "decoded typed option object; source quoting is written to a source-layout sidecar as optionSpelling when the caller asks for one and supplies the original source, and otherwise dropped.",
       "migrationRule": "C2-A-178",
       "silent": false
     },
@@ -2773,7 +2773,7 @@
       "id": "T-053",
       "kind": "move",
       "from": "table_body.headRows",
-      "to": "dropped; the groups hold the partition, and the count goes to a source-layout sidecar as headerRows when the caller asks for one",
+      "to": "dropped; the groups hold the partition, and the count is written to a source-layout sidecar as headerRows when the caller asks for one and supplies the original source, and otherwise dropped",
       "migrationRule": "C2-A-088 C2-A-178",
       "silent": false
     }
