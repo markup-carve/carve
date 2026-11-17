@@ -2227,7 +2227,7 @@ x[^n]
 ]
 ```
 
-**C2-B-086** Every paragraph of a footnote body gets `<p>`.
+**C2-B-086** Every paragraph of a footnote body gets `<p>`, except a block image paragraph written bare (C2-H-090).
 
 **C2-B-087** The body of a footnote definition is the content on its marker line and the blocks indented past its marker. The marker line may start with any block, as the marker line of an item does (C2-B-057): `[^n]: > q` holds a quote.
 

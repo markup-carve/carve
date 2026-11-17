@@ -1299,7 +1299,31 @@ Example 56 (unverified)
 
 **C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
 
-**C2-H-090** Every paragraph of a footnote body gets `<p>` (C2-B-086), except a block image paragraph, which is the bare `<img>` (C2-H-020). The body of an inline footnote is one paragraph.
+**C2-H-090** Every paragraph of a footnote body gets `<p>` (C2-B-086), except a block image paragraph that C2-H-020 writes bare, as the bare `<img>`. The body of an inline footnote is one paragraph.
+
+Example 66 (generated)
+
+::: compare
+
+```carve
+a[^n]
+
+[^n]: ![a][nope]
+```
+
+```html
+<p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>![a][nope]<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 **C2-H-091** The backlinks are appended to the last block of the note that renders something when that block is written as `<p>`, and otherwise stand in a paragraph of their own. A note with one reference has one backlink, `<a href="#fnrefN" role="doc-backlink" aria-label="LABEL">↩</a>`. A note with several has one per reference, each with `<sup>K</sup>` after the glyph and `LABEL K` as its label, joined by one space.
 
@@ -2302,7 +2326,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 10 | 1 | 1 | 2 |
-| Footnotes | 8 | 0 | 2 | 2 |
+| Footnotes | 8 | 0 | 3 | 2 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
@@ -2311,6 +2335,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **30** | **35** |
+| **Total** | **199** | **7** | **31** | **35** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 65 examples, 30 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 66 examples, 31 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
