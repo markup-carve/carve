@@ -63809,7 +63809,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "destination-denied"
+    ]
    },
    "status": "verified",
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
@@ -66225,7 +66228,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "duplicate-abbreviation-definition"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -66388,7 +66394,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -66680,7 +66689,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "duplicate-link-reference-definition"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -67497,7 +67509,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -67653,7 +67668,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -67764,7 +67782,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -67982,7 +68003,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "destination-denied"
+    ]
    },
    "status": "verified",
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
@@ -68288,7 +68312,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "verified",
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
@@ -68637,7 +68664,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -68905,7 +68935,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
@@ -69102,7 +69135,10 @@
       "referenceResolution",
       "tableAlignment"
      ]
-    }
+    },
+    "diagnostics": [
+     "profile-construct-degraded"
+    ]
    },
    "status": "unverified",
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"

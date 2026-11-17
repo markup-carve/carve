@@ -1194,6 +1194,8 @@ See [Intro][] and [x][nope] and ![i][nope] and [^zz].
 
 :::
 
+Reported: `destination-denied`.
+
 In 0.1 the full form did not reach the heading lookup and stayed text.
 
 Example 18 (unverified)
@@ -1698,6 +1700,8 @@ A.
 
 :::
 
+Reported: `duplicate-abbreviation-definition`.
+
 The text is escaped as text content: `&`, `<` and `>` are escaped, and a quotation mark is not.
 
 Example 46 (unverified, `--roundtrip`)
@@ -1735,6 +1739,8 @@ A b
 ```
 
 :::
+
+Reported: `profile-construct-degraded`.
 
 ## Import
 
@@ -1805,6 +1811,8 @@ Tail.
 ```
 
 :::
+
+Reported: `duplicate-link-reference-definition`.
 
 Importing this HTML gives the four references with their forms and one definition of `r` after the last block, `[r]: /dest "Title"`. The unused definition of `u`, the later definition of `r` and the place of the first one are gone.
 
@@ -1995,6 +2003,8 @@ a {#c#} b $`m`
 
 :::
 
+Reported: `profile-construct-degraded`.
+
 The children of a degraded link take the inline forms too, at every depth: the raw span and the autolink give their spellings, as they would outside the link (C2-H-165).
 
 Example 53 (unverified, `--profile minimal`)
@@ -2013,6 +2023,8 @@ Example 53 (unverified, `--profile minimal`)
 ```
 
 :::
+
+Reported: `profile-construct-degraded`.
 
 ```json
 [
@@ -2055,6 +2067,8 @@ Example 54 (unverified, `--profile minimal`)
 
 :::
 
+Reported: `profile-construct-degraded`.
+
 No built-in profile keeps some footnote references and degrades others: `full` and `article` keep every `footnote_ref` and `inline_footnote`, and `comment` and `minimal` keep none, so the note numbers have no gap under any of them.
 
 **C2-H-166** For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded. A `list_item` counts a level but is never degraded on its own: it keeps its `<li>`, and its blocks are degraded. Degradation comes before C2-H-069: a node at the bound writes its children in their degraded forms, so a soft break beside a comment line among them (C2-H-069) is one space.
@@ -2080,6 +2094,8 @@ Text.
 ```
 
 :::
+
+Reported: `destination-denied`.
 
 Example 31 (generated, `--profile comment`)
 
@@ -2109,6 +2125,8 @@ See [docs](https://x.org) and *bold*.
 
 :::
 
+Reported: `profile-construct-degraded`.
+
 A degraded captioned block and a degraded table keep their captions as paragraphs, with their numbers (C2-H-165).
 
 Example 39 (unverified, `--profile comment`)
@@ -2137,6 +2155,8 @@ Example 39 (unverified, `--profile comment`)
 
 :::
 
+Reported: `profile-construct-degraded`.
+
 Inside a degraded captioned image and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its spelling (C2-H-165).
 
 Example 41 (unverified, `--profile minimal`)
@@ -2161,6 +2181,8 @@ p $`k`
 
 :::
 
+Reported: `profile-construct-degraded`.
+
 **C2-H-177** Resolution does not read `profile`: a reference to a heading resolves as it does without a profile, and the tree does not change (C2-H-121). The render reads it. A heading outside the profile is degraded (C2-H-165) and writes no element and no id, so a reference link and a cross-reference that resolved to it are written in their unresolved forms (C2-H-085, C2-H-086), as if the heading did not exist. A link that is itself outside the profile is degraded and writes the plain text of its children.
 
 The heading is outside the `comment` profile. Its reference and its cross-reference are written as unresolved text (C2-H-177).
@@ -2181,6 +2203,8 @@ Example 34 (unverified, `--profile comment`)
 ```
 
 :::
+
+Reported: `profile-construct-degraded`.
 
 ## The option list
 
