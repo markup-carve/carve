@@ -1842,6 +1842,16 @@
       "silent": true
     },
     {
+      "id": "U-224",
+      "kind": "report",
+      "group": "percent fence at a container boundary",
+      "from": "- ::: box\n  %%%%\n%% j\n  x\n",
+      "to": "- ::: box\n  %%%%\n%% j\n  x\n",
+      "meaning02": "<ul>\n  <li>\n    <div class=\"box\">\n\n    </div>\n  </li>\n</ul>\n<p>x</p> A comment block in a container ends where a line falls outside that container (C2-B-111), so `%% j` at column 0 is a line comment of the document and `x` a paragraph after the list; 0.1 kept the later lines in the block and hid `x`. ` : d2` below a comment block in a description and `tail` below one in a note differ the same way. No rewrite is recorded; review.",
+      "toolEntry": "U-224",
+      "silent": true
+    },
+    {
       "id": "U-225",
       "kind": "escape",
       "group": "caption caret followed by an empty comment",
