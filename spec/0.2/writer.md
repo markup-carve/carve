@@ -67,6 +67,26 @@ Conventions:
 
 **Exception C2-W-018** No blank line stands before a nested list that follows the first paragraph of its item in a tight list, and none before a caption line. A nested ordered list that starts above 1 (C2-W-126) and a nested list with an attribute line, which directly below the paragraph would be a lazy line (C2-B-024), are the cases with a blank line there.
 
+Example 14 (unverified)
+
+Input:
+
+```carve
+- a
+
+  {.c}
+  - b
+```
+
+Written:
+
+```carve
+- a
+
+  {.c}
+  - b
+```
+
 **Exception C2-W-019** In a tight list no blank line stands between two items.
 
 **C2-W-020** A run of blank lines is written as one blank line, except the three of C2-W-028. Blank lines inside verbatim content, which is the value of a code block, a raw block, a comment block and frontmatter, are data and are written as they are.
@@ -948,7 +968,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 25 | 4 | 0 | 1 |
+| Layout | 25 | 4 | 0 | 2 |
 | Canonical forms: blocks | 27 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
@@ -956,6 +976,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 14 | 0 | 1 | 0 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **136** | **7** | **5** | **8** |
+| **Total** | **136** | **7** | **5** | **9** |
 
-The document has 136 clauses, 7 of them marked with the word "Exception", and 13 examples, 5 generated and 8 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 136 clauses, 7 of them marked with the word "Exception", and 14 examples, 5 generated and 9 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

@@ -68707,6 +68707,175 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "writer-14",
+   "document": "writer.md",
+   "number": 14,
+   "section": "Layout",
+   "clauses": [
+    "C2-W-017",
+    "C2-W-018",
+    "C2-W-019",
+    "C2-W-020",
+    "C2-W-021",
+    "C2-W-022",
+    "C2-W-132",
+    "C2-W-024",
+    "C2-W-128",
+    "C2-W-129",
+    "C2-W-130",
+    "C2-W-025",
+    "C2-W-026",
+    "C2-W-027",
+    "C2-W-028",
+    "C2-W-122",
+    "C2-W-029",
+    "C2-W-030",
+    "C2-W-126",
+    "C2-W-031",
+    "C2-W-032",
+    "C2-W-033",
+    "C2-W-123",
+    "C2-W-034",
+    "C2-W-114"
+   ],
+   "kind": "write",
+   "input": "- a\n\n  {.c}\n  - b",
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  {.c}\n  - b\n",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "a",
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 3,
+              "endColumn": 4,
+              "startOffset": 2,
+              "endOffset": 3
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 3,
+            "endColumn": 4,
+            "startOffset": 2,
+            "endOffset": 3
+           }
+          },
+          {
+           "type": "list",
+           "marker": {
+            "kind": "bullet",
+            "char": "-"
+           },
+           "spacing": "tight",
+           "children": [
+            {
+             "type": "list_item",
+             "children": [
+              {
+               "type": "paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "b",
+                 "pos": {
+                  "startLine": 4,
+                  "endLine": 4,
+                  "startColumn": 5,
+                  "endColumn": 6,
+                  "startOffset": 16,
+                  "endOffset": 17
+                 }
+                }
+               ],
+               "pos": {
+                "startLine": 4,
+                "endLine": 4,
+                "startColumn": 5,
+                "endColumn": 6,
+                "startOffset": 16,
+                "endOffset": 17
+               }
+              }
+             ],
+             "pos": {
+              "startLine": 4,
+              "endLine": 4,
+              "startColumn": 3,
+              "endColumn": 6,
+              "startOffset": 14,
+              "endOffset": 17
+             }
+            }
+           ],
+           "attrs": {
+            "classes": [
+             "c"
+            ]
+           },
+           "pos": {
+            "startLine": 3,
+            "endLine": 4,
+            "startColumn": 3,
+            "endColumn": 6,
+            "startOffset": 7,
+            "endOffset": 17
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 17
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 4,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 17
+       }
+      }
+     ],
+     "srcByteLength": 17,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
    "id": "writer-12",
    "document": "writer.md",
    "number": 12,
