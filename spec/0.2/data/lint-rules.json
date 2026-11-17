@@ -1535,7 +1535,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "messages": ["Degraded a construct the profile \"${profile}\" does not allow: ${construct}"],
+      "messages": ["Degraded a construct under profile \"${profile}\": ${construct}"],
       "message_origin": "data_file",
       "reports": "a construct outside the active `profile` (C2-H-129)",
       "clauses": ["C2-H-129"]

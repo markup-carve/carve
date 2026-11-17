@@ -52950,6 +52950,27 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1069",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a nesting limit degrades an allowed code span",
+   "kind": "render",
+   "input": "> > > > `x`\n",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "profile-construct-degraded"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

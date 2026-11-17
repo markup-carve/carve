@@ -217,3 +217,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `github-alert-marker`, `C2-B-031`, `C2-I-072`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/containers.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. A malformed quote marker leaves the alert in paragraph text; avoid calling it a quote.
+
+## Catalog audit: profile-construct-degraded
+
+Search: `profile-construct-degraded`, `C2-H-129`, `C2-H-163`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/options.json`, `spec/0.2/data/url-policy.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/writer.md`. Nesting depth can degrade an otherwise allowed type.
