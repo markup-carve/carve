@@ -18,7 +18,7 @@ Freeze candidate 5: `a835c9e636bcc0e4ada8961a9ad262ecc17931a7` (`a835c9e6`), the
 
 Freeze candidate 5, revision 1: `7db33836185126d9e8457e84464ca38fdb1aec3c` (`7db33836`), the two rulings of 17 November 2026: vertical alignment of table cells as in 0.1 (C2-B-182, C2-B-211, C2-B-213; O13 is settled by it), and a header mark glued to a letter, a digit or `=` is cell text (C2-B-171). The commit after it writes only this line.
 
-Freeze candidate 6: the commit named here by the commit after it, the ruling of 17 November 2026 that restores seventeen 0.1 behaviors that candidate 5 had changed without a decision (P1 to P3, P5 to P8, Q1 to Q7, Q10a, Q10b, A3 and A6; UPGRADING, "Seventeen 0.1 behaviors restored"), each in one commit, and the fixes of a read of the whole round. The commit after it writes only this line.
+Freeze candidate 6: `e647035615526e037764b0b043b5093e8a431182` (`e6470356`), the ruling of 17 November 2026 that restores seventeen 0.1 behaviors that candidate 5 had changed without a decision (P1 to P3, P5 to P8, Q1 to Q7, Q10a, Q10b, A3 and A6; UPGRADING, "Seventeen 0.1 behaviors restored"), each in one commit, and the fixes of a read of the whole round. The commit after it writes only this line.
 
 ## Documents
 
