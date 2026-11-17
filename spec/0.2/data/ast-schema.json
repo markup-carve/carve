@@ -99,7 +99,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -270,7 +270,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -624,7 +624,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -792,7 +792,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -1298,7 +1298,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -1870,7 +1870,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -2207,7 +2207,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -2373,7 +2373,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -2648,7 +2648,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -3188,7 +3188,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -3471,7 +3471,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -3647,7 +3647,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -3812,7 +3812,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -4100,7 +4100,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -4271,7 +4271,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -4436,7 +4436,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -4658,7 +4658,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -4835,7 +4835,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -5111,7 +5111,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -5387,7 +5387,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -5745,7 +5745,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -6086,7 +6086,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -6407,7 +6407,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -6684,7 +6684,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -6909,7 +6909,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -7137,7 +7137,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -7311,7 +7311,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -7479,7 +7479,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -7641,7 +7641,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -7924,7 +7924,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -8201,7 +8201,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -8392,7 +8392,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -8835,7 +8835,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -9384,7 +9384,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -9749,7 +9749,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -10025,7 +10025,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -10301,7 +10301,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -10472,7 +10472,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -10769,7 +10769,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -10960,7 +10960,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -11198,7 +11198,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -11443,7 +11443,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -11607,7 +11607,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -11782,7 +11782,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -11999,7 +11999,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -12161,7 +12161,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -12439,7 +12439,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -12619,7 +12619,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -12787,7 +12787,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -12955,7 +12955,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -13181,7 +13181,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -13457,7 +13457,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -13646,7 +13646,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -13808,7 +13808,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -14083,7 +14083,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -14359,7 +14359,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -14635,7 +14635,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -14911,7 +14911,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -15187,7 +15187,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -15351,7 +15351,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -15540,7 +15540,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -15719,7 +15719,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -15978,7 +15978,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -16182,7 +16182,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -16355,7 +16355,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -16529,7 +16529,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -16700,7 +16700,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -16864,7 +16864,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -17028,7 +17028,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -17189,7 +17189,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -17464,7 +17464,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -17641,7 +17641,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"
@@ -18041,7 +18041,7 @@
                 "prefixItems": [
                   {
                     "type": "string",
-                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$).*$"
+                    "pattern": "^(?![iI][dD]$|[cC][lL][aA][sS][sS]$)[A-Za-z_][A-Za-z0-9_-]*$"
                   },
                   {
                     "type": "string"

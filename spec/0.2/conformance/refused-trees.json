@@ -3012,6 +3012,38 @@
    }
   },
   {
+   "id": "attribute-key-not-a-key",
+   "clauses": [
+    "C2-A-035",
+    "C2-I-030"
+   ],
+   "reason": "a keyValues key that is no key: a space and an event handler name in it",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "attrs": {
+       "keyValues": [
+        [
+         "x onclick",
+         "alert(1)"
+        ]
+       ]
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
    "id": "head-rows-field",
    "clauses": [
     "C2-A-088"
