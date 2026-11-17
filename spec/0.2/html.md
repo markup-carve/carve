@@ -54,7 +54,7 @@ Example 1 (generated)
 
 ## Attributes
 
-**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language and the direction, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`, which takes an authored `style` behind it, C2-H-032), then the render annotation of C2-H-016. The language is written as the `lang` attribute (C2-A-037) and the direction as the `dir` attribute (C2-A-031).
+**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language and the direction, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`), then the render annotation of C2-H-016. A generated `style` merged with an authored `style` stands at the place of the authored key, and the `style` of an `align` key at the place of the first of the two keys (C2-H-015, C2-H-032, C2-H-057). The language is written as the `lang` attribute (C2-A-037) and the direction as the `dir` attribute (C2-A-031).
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
@@ -67,6 +67,25 @@ Example 1 (generated)
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
 **C2-H-015** An authored `align` key with the value `left`, `right` or `center` on a paragraph, a div or a heading is written as `style="text-align: VALUE;"`. An authored `style` on the same element keeps its value and takes the declaration after it. On every other element `align` stays an ordinary attribute. As in 0.1.
+
+Example 62 (generated)
+
+::: compare
+
+```carve
+{style="color:red" align=center k=v}
+Text.
+
+{k=v align=center}
+Text.
+```
+
+```html
+<p style="color:red; text-align: center;" k="v">Text.</p>
+<p k="v" style="text-align: center;">Text.</p>
+```
+
+:::
 
 **C2-H-016** With `sourceLines` on, each block element carries `data-source-line`, the number of the source line it starts on, counted from 1, as its last attribute. It is structural (C2-H-010): the generated value replaces an authored key of that name. Block elements here are the element of each block node, the `<figure>` around a captioned block (C2-H-062), and `<li>`, `<dt>`, `<dd>`, `<thead>`, `<tbody>`, `<tfoot>` and `<tr>`; not `<section>`, `<caption>`, `<figcaption>`, `<th>`, `<td>`, nor the `<hr>` and the `<li>` of the footnote section.
 
@@ -2184,7 +2203,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
-| Attributes | 9 | 1 | 1 | 1 |
+| Attributes | 9 | 1 | 2 | 1 |
 | Paragraphs, headings and sections | 17 | 1 | 4 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 1 | 0 |
@@ -2204,6 +2223,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **27** | **34** |
+| **Total** | **199** | **7** | **28** | **34** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 61 examples, 27 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 62 examples, 28 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
