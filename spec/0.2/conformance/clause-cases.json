@@ -26990,6 +26990,1468 @@
     "accepted": true
    },
    "from": []
+  },
+  {
+   "id": "CC-476",
+   "clauses": [
+    "C2-W-113",
+    "C2-A-172",
+    "C2-A-173"
+   ],
+   "why": "C2-W-113: A finding that a syntax chapter calls a diagnostic or a warning is reported by the parser, in the parse channel. C2-A-172: Nothing in the tree marks a node as diagnosed. C2-A-173: Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103).",
+   "summary": "an unclosed fence is reported by the parser in the parse channel, beside an unmarked tree",
+   "kind": "parse",
+   "input": "```\na\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a\n"
+     }
+    ],
+    "diagnostics": [
+     {
+      "code": "unclosed-code-fence",
+      "line": 1,
+      "column": 1,
+      "severity": "error",
+      "channel": "parse"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-477",
+   "clauses": [
+    "C2-W-113"
+   ],
+   "why": "C2-W-113: A finding that a chapter calls lint, and every other rule of this catalog, is reported in the lint channel. A code keeps its one channel in every tool.",
+   "summary": "a lint run reports a lint rule in the lint channel and a parser finding still in the parse channel",
+   "kind": "lint",
+   "input": "a **b** c\n\n```\nx\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "markdown-strong-double-star",
+      "line": 1,
+      "column": 3,
+      "severity": "warning",
+      "channel": "lint"
+     },
+     {
+      "code": "unclosed-code-fence",
+      "line": 3,
+      "column": 1,
+      "severity": "error",
+      "channel": "parse"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-478",
+   "clauses": [
+    "C2-A-173",
+    "C2-W-011"
+   ],
+   "why": "C2-A-173: The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone. C2-W-011: A Carve writer reports every supplied node or field that source cannot spell with `structure-unspellable` or `field-unspellable`, naming its JSON path (C2-A-175). This includes `scope`, `headerIds`, `longDescription`, `decorative`, `xref.display` and root `metadata.fields`.",
+   "summary": "a writer loss on a supplied tree is positioned by its path",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "see "
+       },
+       {
+        "type": "xref",
+        "key": "h",
+        "namespace": "heading",
+        "display": "number"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/1/display",
+      "severity": "warning",
+      "channel": "render-loss"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-479",
+   "clauses": [
+    "C2-A-129",
+    "C2-W-011"
+   ],
+   "why": "C2-A-129: A writer that cannot carry it reports the loss with its JSON path. C2-W-011: This includes `scope`, `headerIds`, `longDescription`, `decorative`, `xref.display` and root `metadata.fields`.",
+   "summary": "the imported decorative flag of an image is reported at its path by the writer",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "role": "image",
+      "children": [
+       {
+        "type": "image",
+        "src": "x.png",
+        "decorative": true
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/0/decorative",
+      "severity": "warning",
+      "channel": "render-loss"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-480",
+   "clauses": [
+    "C2-M-081"
+   ],
+   "why": "C2-M-081: The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them.",
+   "summary": "an importer entry for a dropped attribute starts at its owner element in the HTML input",
+   "kind": "import",
+   "html": "<p>é</p>\n<p onclick=\"go()\">b</p>",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "import-attribute-dropped",
+      "line": 2,
+      "column": 1,
+      "severity": "warning",
+      "channel": "render-loss"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-481",
+   "clauses": [
+    "C2-N-080"
+   ],
+   "why": "C2-N-080: A Carve writer writes an include as its directive (C2-W-058), with its attribute line above it and its caption below it. It never writes the children and never writes `file`, and it reports no loss for either: both are resolution results (C2-N-017).",
+   "summary": "an expanded code include is written as its directive with attributes and caption, without its children or file and with no loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "include",
+      "path": "a.py",
+      "options": {
+       "code": true
+      },
+      "attrs": {
+       "classes": [
+        "wide"
+       ]
+      },
+      "file": "a.py",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Code"
+          }
+         ]
+        }
+       ]
+      },
+      "children": [
+       {
+        "type": "code_block",
+        "value": "x\n",
+        "attrs": {
+         "classes": [
+          "wide"
+         ]
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "Code"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{.wide}\n{{ a.py @code }}\n^ Code\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-482",
+   "clauses": [
+    "C2-N-081"
+   ],
+   "why": "C2-N-081: Because tree equality skips `children` and `file`, `parse(fmt(x)) == parse(x)` holds for a document with includes whether or not either side was expanded (C2-W-002).",
+   "summary": "an expanded include equals the unexpanded directive under tree equality",
+   "kind": "parse",
+   "input": "{{ a.crv }}\n",
+   "files": {
+    "a.crv": {
+     "text": "A.\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "include",
+      "path": "a.crv"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-483",
+   "clauses": [
+    "C2-N-081",
+    "C2-N-080"
+   ],
+   "why": "C2-N-081: `parse(fmt(x)) == parse(x)` holds for a document with includes whether or not either side was expanded (C2-W-002). C2-N-080: A Carve writer writes an include as its directive (C2-W-058)",
+   "summary": "fmt writes an unexpanded include back as its directive",
+   "kind": "format",
+   "input": "{{ a.crv }}",
+   "options": {},
+   "expected": {
+    "carve": "{{ a.crv }}\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-484",
+   "clauses": [
+    "C2-N-085"
+   ],
+   "why": "C2-N-085: Without one it reads no include target, and each include reports `include-no-resolver` as in any parse.",
+   "summary": "lint with no resolver reports each include as unexpanded",
+   "kind": "lint",
+   "input": "{{ a.crv }}\n\n{{ b.crv }}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-no-resolver",
+      "line": 1,
+      "column": 1,
+      "severity": "warning",
+      "channel": "parse"
+     },
+     {
+      "code": "include-no-resolver",
+      "line": 3,
+      "column": 1,
+      "severity": "warning",
+      "channel": "parse"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-485",
+   "clauses": [
+    "C2-N-085",
+    "C2-N-086",
+    "C2-N-087"
+   ],
+   "why": "C2-N-085: A linter expands includes when its caller gives a resolver or a root, by the rules of this document and with the same limits. C2-N-086: Every Carve include that the expansion accepted is linted with every rule and with the options of the top-level document, over the source the expansion parsed C2-N-087: A finding in included content names its file by id, with a line and a column counted in that file, and its tree path, which leads through the includes that reached it. A finding is reported once for each distinct file, line, column and rule; where one position is reached more than once, the first reach in document order supplies the path.",
+   "summary": "a lint finding in a file included twice is reported once, in its own file, with the path of its first reach",
+   "kind": "lint",
+   "input": "{{ b.crv }}\n\n{{ b.crv }}\n",
+   "files": {
+    "b.crv": {
+     "text": "{.x}\n{{ c.crv }}\n"
+    },
+    "c.crv": {
+     "text": "C.\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-attributes-unused",
+      "file": "b.crv",
+      "line": 1,
+      "column": 1,
+      "path": "/children/0/children/0",
+      "severity": "warning",
+      "channel": "lint"
+     }
+    ],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-486",
+   "clauses": [
+    "C2-N-086",
+    "C2-N-087"
+   ],
+   "why": "C2-N-086: For a section the whole file is linted, and only the findings from the first line of the selected heading or block through the last line of the last selected block are kept. C2-N-087: A finding in included content names its file by id, with a line and a column counted in that file",
+   "summary": "lint of a section include keeps only the findings inside the selected section",
+   "kind": "lint",
+   "input": "{{ b.crv #K }}\n",
+   "files": {
+    "b.crv": {
+     "text": "a ~~b~~ c\n\n= K\n\nd **e** f\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "markdown-strong-double-star",
+      "file": "b.crv",
+      "line": 5,
+      "column": 3,
+      "severity": "warning",
+      "channel": "lint"
+     }
+    ],
+    "notReported": [
+     "markdown-strikethrough-double-tilde"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-487",
+   "clauses": [
+    "C2-N-088"
+   ],
+   "why": "C2-N-088: On a delimited table include, `lines` is valid and counts physical lines, and lint adds the hint `include-lines-table-rows-hint`, which suggests `rows`.",
+   "summary": "lines on a delimited table include gets the rows hint",
+   "kind": "lint",
+   "input": "{table}\n{{ t.csv @code:csv @lines:1-2 }}\n",
+   "files": {
+    "t.csv": {
+     "text": "a,b\n1,2\n3,4\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-lines-table-rows-hint",
+      "severity": "hint",
+      "channel": "lint"
+     }
+    ],
+    "notReported": [
+     "include-option-invalid",
+     "include-selection-conflict"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-488",
+   "clauses": [
+    "C2-A-019"
+   ],
+   "why": "C2-A-019: A reader accepts every minor version of major 2 that it can read under the additions allowed by C2-A-016.",
+   "summary": "a reader accepts a later minor version of major 2",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.3",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "accepted": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-489",
+   "clauses": [
+    "C2-A-044"
+   ],
+   "why": "C2-A-044: A reader replaces every U+0000 in an ingested string with U+FFFD before it uses the value.",
+   "summary": "a reader replaces U+0000 in a string with U+FFFD",
+   "kind": "tree",
+   "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[{\"type\":\"paragraph\",\"children\":[{\"type\":\"text\",\"value\":\"a\\u0000b\"}]}]}",
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a�b"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-490",
+   "clauses": [
+    "C2-A-047"
+   ],
+   "why": "C2-A-047: A built or imported code block may hold `\"a\"` with no final break, which is a different value from `\"a\\n\"`. A reader does not append a break.",
+   "summary": "a reader keeps a code block value with no final break",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a"
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "code_block",
+       "value": "a"
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-491",
+   "clauses": [
+    "C2-A-128"
+   ],
+   "why": "C2-A-128: Reading a tree never runs anything in `payload`, `props` or `data`.",
+   "summary": "a reader accepts an extension whose payload and props hold script text, without running them",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.run",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.run",
+      "version": "1",
+      "props": {
+       "onload": "alert(1)"
+      },
+      "payload": [
+       {
+        "format": "application/javascript",
+        "value": "throw new Error('ran')"
+       }
+      ],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "children": []
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "extensions": [
+      {
+       "name": "org.example.run",
+       "version": "1",
+       "required": false,
+       "slots": []
+      }
+     ],
+     "children": [
+      {
+       "type": "block_extension",
+       "name": "org.example.run",
+       "version": "1",
+       "props": {
+        "onload": "alert(1)"
+       },
+       "payload": [
+        {
+         "format": "application/javascript",
+         "value": "throw new Error('ran')"
+        }
+       ],
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        }
+       ],
+       "children": []
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-492",
+   "clauses": [
+    "C2-A-165"
+   ],
+   "why": "C2-A-165: `parse(x)`, encoded to JSON and decoded, equals `parse(x)` in every field, positions included. An encoder that drops a field is not conformant.",
+   "summary": "decoding an encoded parse keeps every position field",
+   "kind": "tree",
+   "json": "{\"type\": \"document\", \"astVersion\": \"2.0\", \"srcByteLength\": 3, \"children\": [{\"type\": \"paragraph\", \"pos\": {\"startLine\": 1, \"endLine\": 1, \"startColumn\": 1, \"endColumn\": 3, \"startOffset\": 0, \"endOffset\": 3}, \"children\": [{\"type\": \"text\", \"value\": \"é!\", \"pos\": {\"startLine\": 1, \"endLine\": 1, \"startColumn\": 1, \"endColumn\": 3, \"startOffset\": 0, \"endOffset\": 3}}]}]}",
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "srcByteLength": 3,
+     "children": [
+      {
+       "type": "paragraph",
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 3,
+        "startOffset": 0,
+        "endOffset": 3
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "é!",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 3,
+          "startOffset": 0,
+          "endOffset": 3
+         }
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-493",
+   "clauses": [
+    "C2-A-167",
+    "C2-A-058"
+   ],
+   "why": "C2-A-167: Where this document says a reader refuses, it fails with a typed, documented error that names what was wrong and the path of the node. C2-A-058: a reader refuses `mode: \"normal\"` on a citation (C2-A-120), an autolink `text` equal to its `href` (C2-A-216)",
+   "summary": "a reader check refuses with a typed error at the path of the node",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "autolink",
+        "href": "https://x.org",
+        "text": "https://x.org"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/children/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-494",
+   "clauses": [
+    "C2-A-167"
+   ],
+   "why": "C2-A-167: It does not truncate, repair, drop or crash, and it does not surface the error of a JSON library.",
+   "summary": "JSON text that does not parse is refused with the typed tree error",
+   "kind": "tree",
+   "json": "{\"type\":\"document\",\"astVersion\":\"2.0\",\"children\":[",
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-495",
+   "clauses": [
+    "C2-A-213"
+   ],
+   "why": "C2-A-213: A supplied `link` or `image` with `refForm` equal to `shortcut` and a key with no definition is valid.",
+   "summary": "a reader accepts a shortcut reference with no definition",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "x",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "accepted": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-496",
+   "clauses": [
+    "C2-A-213",
+    "C2-H-085"
+   ],
+   "why": "C2-A-213: Resolution leaves it unresolved, and rendering writes the unresolved reference as text. C2-H-085: An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: \"full\"` or `[]` for `refForm: \"collapsed\"`.",
+   "summary": "an unresolved supplied shortcut renders as bracketed text",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "x",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>[x]</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-497",
+   "clauses": [
+    "C2-A-194",
+    "C2-A-161"
+   ],
+   "why": "C2-A-194: Equality compares all three data values under C2-A-161. C2-A-161: Two trees are equal when their node types, fields, node-list order, `attrs`, typed `metadata` and opaque `data` agree",
+   "summary": "a decoded tree keeps a standard data value, which equality compares",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.source",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "data": {
+       "carve.source": {
+        "format": "docx",
+        "locator": {
+         "part": "word/document.xml",
+         "path": "/document/body/p[1]"
+        },
+        "importer": {
+         "name": "pandoc-carve",
+         "version": "2.0"
+        }
+       }
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "Hello"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "extensions": [
+      {
+       "name": "carve.source",
+       "version": "1",
+       "required": false,
+       "slots": []
+      }
+     ],
+     "children": [
+      {
+       "type": "paragraph",
+       "data": {
+        "carve.source": {
+         "format": "docx",
+         "locator": {
+          "part": "word/document.xml",
+          "path": "/document/body/p[1]"
+         },
+         "importer": {
+          "name": "pandoc-carve",
+          "version": "2.0"
+         }
+        }
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "Hello"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-498",
+   "clauses": [
+    "C2-A-192"
+   ],
+   "why": "C2-A-192: The core HTML renderer ignores all three namespaces. It writes nothing for root metadata `headers`, `footers`, `abstract`, `keywords` or `fields` and reports no notice.",
+   "summary": "the HTML renderer writes nothing for root metadata and data namespaces and reports nothing",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.source",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "carve.style",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "data": {
+     "carve.style": {
+      "namedStyles": {
+       "Body": {
+        "alignment": "start",
+        "spacingAfterPt": 6
+       }
+      }
+     }
+    },
+    "metadata": {
+     "headers": [
+      {
+       "placement": "default",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Report"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "footers": [
+      {
+       "placement": "first",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Page"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "abstract": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "Sum"
+        }
+       ]
+      }
+     ],
+     "keywords": [
+      "k"
+     ],
+     "fields": {
+      "n": {
+       "kind": "number",
+       "value": 1
+      }
+     }
+    },
+    "children": [
+     {
+      "type": "paragraph",
+      "data": {
+       "carve.source": {
+        "format": "docx",
+        "locator": {
+         "part": "word/document.xml",
+         "path": "/document/body/p[1]"
+        },
+        "importer": {
+         "name": "pandoc-carve",
+         "version": "2.0"
+        }
+       }
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-499",
+   "clauses": [
+    "C2-A-193"
+   ],
+   "why": "C2-A-193: A Carve source writer ignores all three namespaces and reports no loss for them, because data is not content.",
+   "summary": "the Carve writer ignores standard data namespaces with no loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.source",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "carve.style",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "data": {
+     "carve.style": {
+      "namedStyles": {
+       "Body": {
+        "alignment": "start"
+       }
+      }
+     }
+    },
+    "children": [
+     {
+      "type": "paragraph",
+      "data": {
+       "carve.source": {
+        "format": "docx",
+        "locator": {
+         "part": "word/document.xml",
+         "path": "/document/body/p[1]"
+        },
+        "importer": {
+         "name": "pandoc-carve",
+         "version": "2.0"
+        }
+       }
+      },
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-500",
+   "clauses": [
+    "C2-A-193",
+    "C2-W-117"
+   ],
+   "why": "C2-A-193: It cannot spell root metadata `headers`, `footers`, `abstract` or `keywords` and reports each under C2-W-011. C2-W-117: the writer writes the nearest form it can spell, or leaves the node or field out, and reports the loss: `field-unspellable` for a field",
+   "summary": "the Carve writer reports root metadata keywords and headers at their paths",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "metadata": {
+     "keywords": [
+      "k"
+     ],
+     "headers": [
+      {
+       "placement": "default",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Report"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n",
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/metadata/keywords",
+      "channel": "render-loss"
+     },
+     {
+      "code": "field-unspellable",
+      "path": "/metadata/headers",
+      "channel": "render-loss"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-501",
+   "clauses": [
+    "C2-A-193",
+    "C2-W-011"
+   ],
+   "why": "C2-A-193: It handles `fields` under the frontmatter rule of C2-W-011. C2-W-011: When a document has a frontmatter node, the writer writes that node unchanged and reports no separate loss for `fields`",
+   "summary": "root metadata fields beside a frontmatter node are no loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "metadata": {
+     "fields": {
+      "a": {
+       "kind": "number",
+       "value": 1
+      }
+     }
+    },
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "a: 1\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "---\na: 1\n---\n\nb\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-502",
+   "clauses": [
+    "C2-A-178"
+   ],
+   "why": "C2-A-178: For a tree written by `next-ast2` or an earlier 0.2 draft the migration function applies the matching rows:",
+   "summary": "a draft critic substitution migrates to a deletion followed by an insertion",
+   "kind": "migrate",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "critic_substitution",
+        "old": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "new": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "delete",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "type": "insert",
+         "children": [
+          {
+           "type": "text",
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-503",
+   "clauses": [
+    "C2-A-178"
+   ],
+   "why": "C2-A-178: For a tree written by `next-ast2` or an earlier 0.2 draft the migration function applies the matching rows:",
+   "summary": "a draft admonition with an unknown kind migrates to a div with the name as first class",
+   "kind": "migrate",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "admonition",
+      "kind": "aside",
+      "attrs": {
+       "classes": [
+        "wide"
+       ]
+      },
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "div",
+       "attrs": {
+        "classes": [
+         "aside",
+         "wide"
+        ]
+       },
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-504",
+   "clauses": [
+    "C2-A-180",
+    "C2-A-178"
+   ],
+   "why": "C2-A-180: The migration is lossy for spelling by design and reports nothing for it. C2-A-178: For a tree written by `next-ast2` or an earlier 0.2 draft the migration function applies the matching rows:",
+   "summary": "migrating escaped text and a bare marker drops spelling and reports nothing",
+   "kind": "migrate",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "escaped_text",
+        "value": "*"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "1",
+       "delimiter": ".",
+       "bare": true
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "c"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a*b"
+        }
+       ]
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "ordered",
+        "style": "1",
+        "delimiter": "."
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "c"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-505",
+   "clauses": [
+    "C2-A-179"
+   ],
+   "why": "C2-A-179: A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on) and then migrated as above.",
+   "summary": "a 1.2 task list migrates to a 2.0 list with a marker object, children and a task",
+   "kind": "migrate",
+   "tree": {
+    "type": "document",
+    "astVersion": "1.2",
+    "srcByteLength": 8,
+    "children": [
+     {
+      "type": "list",
+      "ordered": false,
+      "tight": true,
+      "items": [
+       {
+        "type": "list_item",
+        "checked": true,
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "task": {
+          "mark": "x"
+         },
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "a"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
   }
  ]
 }
