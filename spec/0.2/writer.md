@@ -142,6 +142,24 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **C2-W-126** A nested ordered list whose first marker has another value than 1, and that follows a paragraph of its item, is written after one blank line: directly below the paragraph its marker line would be a lazy line (C2-B-015). The blank line stands inside the item and does not make the list loose (C2-W-030).
 
+Example 17 (unverified)
+
+Input:
+
+```carve
+- a
+
+  2. b
+```
+
+Written:
+
+```carve
+- a
+
+  2. b
+```
+
 **C2-W-031** A quote written with `>` lines carries `> ` on every line of its content and a bare `>` on a blank line inside it.
 
 **C2-W-032** A div, an admonition or a hard-break block with an empty body is written with one blank line between opener and closer. An empty line block is written with its closer directly below its opener, because a blank line in it is a `line` (C2-A-069).
@@ -986,7 +1004,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 0 |
 | What the writer cannot spell | 10 | 0 | 0 | 0 |
-| Layout | 23 | 2 | 0 | 2 |
+| Layout | 23 | 2 | 0 | 3 |
 | Canonical forms: blocks | 24 | 0 | 0 | 1 |
 | Canonical forms: tables | 12 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 1 |
@@ -994,6 +1012,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **129** | **5** | **6** | **10** |
+| **Total** | **129** | **5** | **6** | **11** |
 
-The document has 129 clauses, 5 of them marked with the word "Exception", and 16 examples, 6 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused.
+The document has 129 clauses, 5 of them marked with the word "Exception", and 17 examples, 6 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused.

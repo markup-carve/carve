@@ -32,13 +32,13 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 198 | 422 | 65 | 3 | 0 |
 | `html.md` | C2-H | 193 | 470 | 98 | 6 | 81 |
-| `writer.md` | C2-W | 129 | 294 | 86 | 5 | 16 |
+| `writer.md` | C2-W | 129 | 294 | 86 | 5 | 17 |
 | `source-layout.md` | C2-L | 53 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 40 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 83 | 239 | 46 | 1 | 59 |
 | `tooling.md` | C2-T | 40 | 103 | 8 | 0 | 0 |
-| **Total** | | **1,153** | **2,284** | **450** | **39** | **615** |
+| **Total** | | **1,153** | **2,284** | **450** | **39** | **616** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule another clause states; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay.
 
@@ -56,8 +56,8 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 
 - `npm run spec2:data`: every data file against its schema and its clauses, the documents against each other (clause ids cited anywhere, example numbers, count tables and count sentences, codes against the catalog, the option table), and the two gates below.
 - `npm run spec2:unicode`: the Unicode category ranges against UnicodeData.txt of the pinned version 18.0.0.
-- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 569 positive trees with positions, 59 imported trees, 57 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
-- The corpus (`scripts/spec2-conformance.mjs`): 615 examples (326 verified) and 57 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 277 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
+- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 570 positive trees with positions, 59 imported trees, 57 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
+- The corpus (`scripts/spec2-conformance.mjs`): 616 examples (326 verified) and 57 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 277 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
