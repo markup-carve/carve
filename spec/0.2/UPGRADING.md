@@ -337,6 +337,7 @@ Older rows that hold a point of this ruling, extended where they held only part 
 
 - U-145: `/a /b/` is one shape of U-273 (C2-I-051); the row now names U-273 and U-274.
 - U-160: a tab inside a footnote label, `x[^a` tab `b]` with `[^a b]: note`, resolves in 0.2 and was text in 0.1 (C2-I-079); the row now names U-280, the reference-label half.
+- U-264 and U-265, extended into U-130: each line of a line block is its own inline content, so `*Roses are red` above `Violets are blue*` keeps both stars as text where 0.1 wrote one `<strong>` across the `<br>` (inline Preliminaries, C2-A-069; report); `Roses  are red` keeps its inner spaces as spaces where 0.1 wrote `&nbsp;&nbsp;` (C2-H-043; rewrite `Roses\ \ are red`). U-130, the line block row, now names both.
 
 ### Include expansion
 
@@ -501,7 +502,7 @@ The following changes are specified by the cited 0.2 clauses and require review 
 
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
-| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1. **SILENT** | The line block keeps the tab as text before `x`. In 0.2, the fence ends at the line block boundary and the following text becomes a separate paragraph. | The tool checks removal of trailing no-break spaces in plain line-block lines under C2-H-043. Other ownership differences need review; report |
+| U-130 | Under C2-B-123 and C2-B-130, `::: \|` followed by a tab and `x` writes `&amp;nbsp;` spaces before `x`. An unclosed code fence inside a quoted line block also keeps the following lazy line as code in 0.1. **SILENT** | The line block keeps the tab as text before `x`. In 0.2, the fence ends at the line block boundary and the following text becomes a separate paragraph. Emphasis across two lines of a line block is U-264, a run of spaces inside a line is U-265. | The tool checks removal of trailing no-break spaces in plain line-block lines under C2-H-043. Other ownership differences need review; report |
 | U-131 | Under C2-B-081 and C2-B-083, `* [d]:` writes an empty list item. A nested item with a definition can also leave a following colon line outside the list. **SILENT** | The item contains the definition text, and the following line can stay inside it. | The tool replaces a consumed definition with `{% %}` and releases a following colon when the complete HTML check passes. Review other shapes; report |
 | U-132 | Under C2-B-081 and C2-B-083, `[r]:` writes no HTML. **SILENT** | The line writes a paragraph containing `[r]:`. | Review the definition; report |
 | U-133 | Under C2-H-032, `- [ ] +` writes a task item with an unlabeled checkbox and no item class or generated style. For `-{#k} [x] bare` followed by `  # inside`, 0.1 uses `aria-label="bare"`. **SILENT** | The item has class `task`, generated bullet suppression style, and a checkbox with `aria-label="+"`; the plus is item text. The following heading makes the second example use `aria-label="bare inside"`. | Review task HTML; report |
