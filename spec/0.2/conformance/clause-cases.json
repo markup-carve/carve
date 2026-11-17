@@ -54446,6 +54446,46 @@
   "stderrCategory": null
  },
  "from": []
+},
+{
+ "id": "CC-1140",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "anonymous div further words select advice",
+ "kind": "lint",
+ "input": "::: *\n:::\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "fence-title-syntax",
+    "messageWhen": "an anonymous div opener has further words after its sigil"
+   }
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1141",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "code title followed by junk selects advice",
+ "kind": "lint",
+ "input": "```js \"T\" junk\nx\n```\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "fence-title-syntax",
+    "messageWhen": "a code fence has a valid quoted title followed by further words"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
