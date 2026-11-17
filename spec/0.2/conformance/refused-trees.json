@@ -3714,6 +3714,78 @@
      }
     ]
    }
+  },
+  {
+   "id": "extension-undeclared",
+   "clauses": [
+    "C2-A-123",
+    "C2-A-188"
+   ],
+   "reason": "a qualified extension node that the root does not declare",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.n",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "extension-version-differs",
+   "clauses": [
+    "C2-X-018",
+    "C2-A-188"
+   ],
+   "reason": "a qualified extension node whose version differs from its declaration",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.n",
+      "version": "2",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.n",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }
