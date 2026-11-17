@@ -54087,6 +54087,24 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1123",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-082"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "bare caret label is not an empty footnote definition",
+  "kind": "lint",
+  "input": "[^]:\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "empty-reference-definition"
+   ]
+  },
+  "from": []
  }
  ]
 }
