@@ -192,7 +192,7 @@
         "clauses": { "$ref": "#/$defs/clauses" },
         "reason": { "type": "string" },
         "refusedBy": { "enum": ["schema", "reader"] },
-        "path": { "type": "string", "description": "The RFC 6901 pointer of the node the refusal names (C2-A-167)." },
+        "path": { "type": "string", "description": "The RFC 6901 pointer of the node or field the refusal names (C2-A-167)." },
         "tree": { "type": "object" }
       },
       "additionalProperties": false

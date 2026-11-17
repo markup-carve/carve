@@ -362,7 +362,7 @@ c
 ```
 
 
-**C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
+**C2-W-040** A title is written with a backslash before each double quote and before each backslash that stands before ASCII punctuation or at its end, since the title reads escapes (C2-I-033, C2-A-073). A title that holds a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
 The opener puts one space before the title and one before the label (C2-W-040).
 
@@ -748,7 +748,7 @@ Written:
 
 **C2-W-065** A row attribute is written glued to the closing pipe (C2-B-167).
 
-**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A delimited table is written with a `header-rows` attribute, whose value is the number of rows of its head, 0 for a table with no head, where the head is not exactly the first row, the default of the form (C2-B-209), and where the sidecar records `headerRows` with that number (C2-L-057). A table with no rows has an empty head, which is the default, and takes no `header-rows`. A pipe table never takes the attribute: its header cells make its head (C2-B-178). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled, and so is an empty cell that is the only cell of the last row, which an empty line would drop (C2-B-226); every other cell is written bare.
+**C2-W-066** A table is written in the form the sidecar records, pipe or delimited (C2-L-023), when the tree allows it. With no fact it is a pipe table, and a table with no rows is a delimited table (C2-L-036). Where a delimited table is written and no fact names its format, the format is `csv`. A delimited table is written with a `header-rows` attribute, whose value is the number of rows of its head, 0 for a table with rows and no head, where the head is not exactly the first row, the default of the form (C2-B-209), and where the sidecar records `headerRows` with that number (C2-L-057). A table with no rows has an empty head, which is the default, and takes no `header-rows`. A pipe table never takes the attribute: its header cells make its head (C2-B-178). In a delimited table a cell that holds the separator, a double quote or a line break is written in double quotes with each double quote doubled, and so is an empty cell that is the only cell of the last row, which an empty line would drop (C2-B-226); every other cell is written bare.
 
 Example 13 (unverified)
 
@@ -1146,7 +1146,7 @@ Written:
 
 **C2-W-105** The severity is one of `hint`, `warning` and `error`, in lower case. The 0.1 engine source writes the first with a capital, `Hint`. The default is `warning`: a rule has that severity unless the catalog names another.
 
-**C2-W-106** Every code is an entry of one catalog, `data/lint-rules.json`. A code is a contract: it is not renamed and not reused. The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine, stated on the 0.2 tokens and tree.
+**C2-W-106** Every code is an entry of one catalog, `data/lint-rules.json`. A code is a contract: it is not renamed and not reused. The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree.
 
 **C2-W-107** Lint is computed from the tokens and the tree of the parse. It never reads the raw text with patterns of its own, so it cannot disagree with the parser about what a line is.
 

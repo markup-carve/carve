@@ -1359,7 +1359,7 @@ Example 246 (unverified)
 
 **C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart, a `%%%` block at column 0 among them, which sits at top level (C2-B-014, C2-B-228).
 
-**C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
+**C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it, except the right-aligned ordered marker that C2-B-030 leaves to `ordered-marker-right-aligned`. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
 
 **Exception C2-B-055** A marker between the columns of two open lists, with a paragraph open or not, is read at the column of the deeper list: it joins that list when it matches, and otherwise C2-B-050 closes that list and opens a new one, whatever its value, in the container of the closed list. `list-marker-below-content-column` reports it.
 

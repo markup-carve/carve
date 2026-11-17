@@ -77,7 +77,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
   "options": {},
   "expected": {
     "diagnostics": [{ "code": "markdown-strong-double-star", "line": 1, "column": 3, "endLine": 1, "endColumn": 8, "channel": "lint" }],
-    "notReported": ["markdown-italic-underline"]
+    "notReported": ["markdown-strikethrough-double-tilde"]
   }
 }
 ```
@@ -153,7 +153,7 @@ The check fails an error that no category of `data/cli.json` names or that the c
 
 ## Refused trees
 
-Each entry has `id`, `clauses`, `reason`, `refusedBy` (`schema` when `data/ast-schema.json` refuses the tree, `reader` when only a reader check beyond the schema does) and `tree`. A 2.0 reader refuses every one, with `CarveTreeError`. A tree the reader refuses has `path`, the pointer of the node its reader check refuses (C2-A-167); an error that names that node or a field below it agrees, as in `expected.refusal`.
+Each entry has `id`, `clauses`, `reason`, `refusedBy` (`schema` when `data/ast-schema.json` refuses the tree, `reader` when only a reader check beyond the schema does) and `tree`. A 2.0 reader refuses every one, with `CarveTreeError`. A tree the reader refuses has `path`, the pointer of the node or field its reader check refuses (C2-A-167); an error that names that pointer, a field below it, or the node that holds a field it names agrees, as in `expected.refusal`.
 
 ## Reading it
 

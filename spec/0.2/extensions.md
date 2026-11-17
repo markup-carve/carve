@@ -112,7 +112,7 @@ The standard extensions are a catalog that follows the core: this section is not
 
 **C2-X-047** The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title, or, when the title is absent, `Tab`, one space and its position counted from 1, as `Tab 1`. Without a stylesheet every panel stays visible.
 
-**C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id. The groups are counted in document order from 1: group N has the input name `tabs-N`, and its inputs the ids `tabs-N-0`, `tabs-N-1` and so on, counted from 0. A group whose ids an authored id already takes moves on to the next N, as the generated ids of C2-H-156 do.
+**C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id. The groups are counted in document order from 1: group N has the input name `tabs-N`, and its inputs the ids `tabs-N-0`, `tabs-N-1` and so on, counted from 0. Where an authored id is one of the ids of a group, that group takes the next N whose ids no authored id takes, and later groups count on from it.
 
 Input:
 

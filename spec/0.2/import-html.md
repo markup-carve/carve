@@ -1367,7 +1367,7 @@ A [fine]{} [print]{} [x]{}
 
 **C2-M-063** A backlink of a note, an `<a>` with `role="doc-backlink"`, with the attribute `data-footnote-backref` or with the class `footnote-backref`, is dropped without a report, with the spaces before it. A paragraph that held only backlinks is dropped.
 
-**C2-M-064** The footnote definitions stand after the blocks of the document and after the rebuilt link definitions (C2-H-194), in the order of the notes. A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158). Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before the `<hr>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.
+**C2-M-064** The footnote definitions stand after the blocks of the document and after the rebuilt link definitions (C2-H-194), in the order of the notes. A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158). Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before its first `<ol>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.
 
 Example 33 (verified)
 

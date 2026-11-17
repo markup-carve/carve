@@ -47979,7 +47979,7 @@
    "clauses": [
     "C2-B-054"
    ],
-   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it.",
+   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it",
    "summary": "a bullet marker left of the open list after a blank line is reported",
    "kind": "lint",
    "input": "  - a\n\n- b\n",
@@ -48002,7 +48002,7 @@
    "clauses": [
     "C2-B-054"
    ],
-   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it.",
+   "why": "C2-B-054: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it",
    "summary": "bullet markers at one column are not reported",
    "kind": "lint",
    "input": "- a\n\n- b\n",
@@ -49180,7 +49180,7 @@
     "C2-M-035",
     "C2-M-064"
    ],
-   "why": "C2-M-064: A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158). Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before the `<hr>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
+   "why": "C2-M-064: A footnote section with a title or a label, or with blocks after it, gives a `footnotes` directive at its place (C2-H-158). Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before its first `<ol>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
    "summary": "the title of a footnote section gives a titled footnotes directive",
    "kind": "import",
    "html": "<section role=\"doc-endnotes\" aria-labelledby=\"adm-1\"><p class=\"admonition-title\" id=\"adm-1\">Notes</p><hr><ol><li id=\"fn1\"><p>N</p></li></ol></section>",
@@ -49224,7 +49224,7 @@
     "C2-M-035",
     "C2-M-064"
    ],
-   "why": "C2-M-064: Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before the `<hr>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
+   "why": "C2-M-064: Its title and its label are the `admonition-title` and `div-label` paragraphs of C2-M-035 among its children before its first `<ol>`; the generated `id` of the title and the `aria-labelledby` of the section are not kept.",
    "summary": "the label of a footnote section is the label of its directive",
    "kind": "import",
    "html": "<section role=\"doc-endnotes\" aria-labelledby=\"adm-1\"><p class=\"admonition-title\" id=\"adm-1\">Notes</p><p class=\"div-label\">L</p><hr><ol><li id=\"fn1\"><p>N</p></li></ol></section>",
@@ -52424,6 +52424,24 @@
    "options": {},
    "expected": {
     "carve": "{body-rows=1,1}\n| a |\n| b |\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1045",
+   "clauses": [
+    "C2-W-040",
+    "C2-I-033"
+   ],
+   "why": "C2-W-040: A title is written with a backslash before each double quote and before each backslash that stands before ASCII punctuation or at its end, since the title reads escapes (C2-I-033, C2-A-073).",
+   "summary": "a code fence title with an escaped double quote keeps its title",
+   "kind": "format",
+   "input": "```js \"a\\\"b\"\nx\n```\n",
+   "options": {},
+   "expected": {
+    "carve": "```js \"a\\\"b\"\nx\n```\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
    },
    "from": []
   }

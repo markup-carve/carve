@@ -1439,7 +1439,7 @@
       "default": "on",
       "messages": ["This markdown definition remains paragraph text; use a :: term line before the definition."],
       "message_origin": "engine_0_1",
-      "reports": "a paragraph line, not the first line of its paragraph, that after its container prefixes and indent starts with `:`, a space or a tab and a further character, where the paragraph line above does not start with `::` and a space; once per line (C2-B-074)",
+      "reports": "a paragraph line, not the first line of its paragraph, that after its container prefixes and indent starts with `:`, a space or a tab and a further character, where the paragraph line above does not start with `::` and a space; a line that `description-separator-below-content-column` reports is left to that rule; once per line (C2-B-074)",
       "clauses": ["C2-B-074", "C2-B-067"]
     },
     {
@@ -1886,7 +1886,7 @@
         "This attribute block is attached to nothing and renders as text. Glue it to a span, link or code span, or escape the brace."
       ],
       "message_origin": "design",
-      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a block inside an atom and a line that holds nothing but blocks, an attribute line, are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
+      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a block inside an atom, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
       "clauses": ["C2-I-028", "C2-I-035", "C2-I-036"]
     },
     {
@@ -1982,7 +1982,7 @@
         "This marker stands left of every open list and continues the list above it. Align it with the markers of that list."
       ],
       "message_origin": "data_file",
-      "reports": "a marker left of every open list that continues the list above it (C2-B-054)",
+      "reports": "a marker left of every open list that continues the list above it, except an ordered marker that `ordered-marker-right-aligned` reports (C2-B-054, C2-B-030)",
       "clauses": ["C2-B-054"]
     },
     {

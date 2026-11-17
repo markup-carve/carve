@@ -24,7 +24,7 @@
             "minItems": 1,
             "uniqueItems": true,
             "items": { "type": "string", "pattern": "^C2-[ABHILMNWX]-[0-9]{3}$" },
-            "description": "The clauses that define the finding or name the code. A row that cites only C2-W-106 has no clause of its own and states its trigger in `reports`."
+            "description": "The clauses that define the finding or name the code. An active row that cites only C2-W-106 has no clause of its own and states its trigger in `reports`; an obsolete row has none."
           },
           "severity": { "enum": ["hint", "warning", "error"], "description": "The severity. Absent for a retired id." },
           "channel": {

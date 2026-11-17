@@ -25,9 +25,9 @@ This document defines what every engine offers a caller: the library calls and t
 | `parseWithLayout` | as `parse` | the tree, the layout sidecar and the record | C2-A-003 |
 | `render` | Carve source or a tree, the parse, resolution and render options | HTML | C2-H-137 |
 | `renderWithDiagnostics` | as `render` | HTML, the record and `suppressedDiagnostics` | C2-A-172, C2-H-130 |
-| `format` | Carve source, `alignTables`, `normalize` | Carve source | C2-W-001, C2-W-134 |
+| `format` | Carve source, `alignTables`, `normalize`, `extensions` | Carve source | C2-W-001, C2-W-134 |
 | `formatWithDiagnostics` | as `format` | Carve source and the record | C2-W-134 |
-| `write` | a tree, optionally its sidecar, `alignTables` | Carve source | C2-W-001, C2-W-102 |
+| `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
 | `lint` | Carve source, `rules`, `platforms`, `includes` | the record | C2-W-103, C2-W-109, C2-N-085 |
 | `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082 |
