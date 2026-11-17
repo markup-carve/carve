@@ -3920,6 +3920,33 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item. In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.
 
+Inside the body of a line block the `%%` line is a line of text, and lint reports it (C2-B-135).
+
+Example 289 (unverified)
+
+::: compare
+
+```carve
+::: |
+a
+%% note
+b
+:::
+```
+
+```html
+<div class="line-block">
+  <p>a<br>
+%% note<br>
+b</p>
+</div>
+```
+
+:::
+
+Reported: `comment-line-in-line-block`.
+
+
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
 **Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first, after the closer of a comment block (C2-B-109): where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138. A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block. So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line. Its comment is a comment node of that container.
@@ -6801,7 +6828,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 10 | 0 | 6 | 6 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 10 | 0 | 11 | 3 |
-| Comments | 12 | 2 | 14 | 9 |
+| Comments | 12 | 2 | 14 | 10 |
 | Captions | 6 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6810,7 +6837,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **209** | **8** | **170** | **118** |
+| **Total** | **209** | **8** | **170** | **119** |
 
 The chapter has 209 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 

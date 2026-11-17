@@ -90,13 +90,140 @@ The raw span carries a carrier and is read by C2-H-186; the span beside it carri
 
 **C2-M-011** Each element is read in one of two contexts. The children of the document, of a `<div>`, `<blockquote>`, `<li>`, `<dd>`, `<figure>`, `<figcaption>`, `<caption>`, `<details>`, an admonition, a section and a cell that holds a block element are read as blocks. The children of `<p>`, `<h1>` to `<h6>`, `<dt>`, `<summary>`, a cell that holds no block element, and of every element read as an inline node are read as inline content.
 
+The `<div>` reads its children as blocks, and the `<p>` its children as inline content (C2-M-011).
+
+Example 60 (unverified)
+
+::: compare
+
+```html
+<div><p>a</p></div>
+```
+
+```json
+[
+  {"type":"div","children":[{"type":"paragraph","children":[{"type":"text","value":"a"}]}]}
+]
+```
+
+```carve
+:::
+a
+:::
+```
+
+:::
+
+
 **C2-M-012** Among blocks, a run of adjacent text nodes, comments and elements that are no block element of `elements` is one paragraph, as a render writes a bare paragraph. A run that holds only whitespace gives nothing. With the import option `rawHtml` on, a comment in a run that also holds inline content, text that is not whitespace or an element, is a `raw_inline` of that paragraph; a run that holds only comments and whitespace gives one `raw_block` per comment (C2-M-065). A run splits only at a block element.
+
+The text, the `<em>` and the text before the `<p>` are one run, so one paragraph (C2-M-012).
+
+Example 61 (unverified)
+
+::: compare
+
+```html
+a <em>b</em> c<p>d</p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"a "},{"type":"emphasis","children":[{"type":"text","value":"b"}]},{"type":"text","value":" c"}]},
+  {"type":"paragraph","children":[{"type":"text","value":"d"}]}
+]
+```
+
+```carve
+a /b/ c
+
+d
+```
+
+:::
+
 
 **Exception C2-M-013** A run that holds only `<img>` elements, whitespace and comments gives one image paragraph per `<img>` (C2-H-020), not one paragraph.
 
+A run of two images gives two image paragraphs (C2-M-013).
+
+Example 63 (unverified)
+
+::: compare
+
+```html
+<img src="a.png" alt="a"><img src="b.png" alt="b">
+```
+
+```json
+[
+  {"type":"paragraph","role":"image","children":[{"type":"image","src":"a.png","alt":"a"}]},
+  {"type":"paragraph","role":"image","children":[{"type":"image","src":"b.png","alt":"b"}]}
+]
+```
+
+```carve
+![a](a.png)
+
+![b](b.png)
+```
+
+:::
+
+
 **C2-M-014** Inside inline content, an element that `elements` maps to a block is read as a `span` of its inline content, with its attributes, and is reported with `import-element-mapped`. The HTML parser already closes a `<p>` before a block element, so this happens only inside other inline elements, as in `<em><p>x</p></em>`.
 
+The `<p>` inside the `<em>` is read as a span of its inline content (C2-M-014).
+
+Example 64 (unverified)
+
+::: compare
+
+```html
+<em><p>x</p></em>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"emphasis","children":[{"type":"span","children":[{"type":"text","value":"x"}]}]}]}
+]
+```
+
+```carve
+/[x]{}/
+```
+
+:::
+
+Reported: `import-element-mapped`.
+
+
 **C2-M-015** Text in inline content is kept as it stands, except for the rules of the section "Whitespace". Each line feed in it is a `soft_break`. Adjacent text is joined into one `text` node (C2-A-040).
+
+The line feed in the text is a soft break (C2-M-015).
+
+Example 62 (unverified)
+
+::: compare
+
+```html
+<p>a
+b</p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"a"},{"type":"soft_break"},{"type":"text","value":"b"}]}
+]
+```
+
+```carve
+a
+b
+```
+
+:::
+
 
 ## Whitespace
 
@@ -1639,6 +1766,6 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 83 clauses: 82 rules and 1 exception. It holds 59 examples: 46 verified and 13 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 83 clauses: 82 rules and 1 exception. It holds 64 examples: 46 verified and 18 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.

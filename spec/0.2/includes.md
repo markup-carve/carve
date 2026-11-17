@@ -63,6 +63,27 @@ Text
 
 **C2-N-011** Content is text when it is well-formed UTF-8 and holds no U+0000. A resolver reports any other content as `non_text` and does not replace a byte: the replacement rule for the top-level input does not apply to an included file. A leading U+FEFF of a returned text is not content.
 
+The file holds U+0000, so it is no text: the include stays unexpanded (C2-N-011).
+
+Example 41 (unverified)
+
+File `bad.crv` holds the three bytes `61 00 62`: `a`, U+0000 and `b`.
+
+::: compare
+
+```carve
+{{ bad.crv }}
+```
+
+```html
+<p>{{ bad.crv }}</p>
+```
+
+:::
+
+Reported: `include-non-text`, `include-unresolved`.
+
+
 **C2-N-012** The resolver of a command-line tool reads files. It resolves the path against the directory of the including file, takes the canonical form of the result with every symbolic link resolved, and returns `outside_root` unless that form lies inside the canonical root. A `..` segment is allowed when the canonical result stays inside the root, and an absolute path is allowed only when it canonicalizes inside the root. A path that starts with a URI scheme, letters and `:` before any `/`, gives `outside_root`: the resolver fetches nothing remote.
 
 **C2-N-013** The containment test comes before any test of existence. For a target that does not exist, the resolver canonicalizes the longest prefix that exists and appends the rest normalized; a result outside the root is `outside_root` whether or not the target exists, so the cause never reveals the existence of a file outside the root. Inside the root, a missing target is `not_found` and a file that cannot be read is `unreadable`. The file the resolver reads is the file it tested: no change of the file system between the test and the read, such as a symbolic link turned to a directory outside the root, makes it read a file outside the root, so a resolver that tests a path and then opens that path again does not meet this clause. A resolver meets it by testing what it opened: it opens the file, then compares the identity of the open handle, its device and file number, with that of the canonical path it tested inside the root, or it opens each segment of the path from a handle of the root without following a link out of it. A host whose platform offers neither does not give the resolver of C2-N-012 a file system that untrusted documents or other processes can change during the expansion: it serves the files from a store that does not change between the test and the read, such as a snapshot or a set of files read into memory before the expansion, or from a directory that the platform confines, such as a preopened directory of WASI.
@@ -1460,7 +1481,7 @@ I13 and I14 were unassigned in 0.1.
 | Section | Clauses | Exceptions | Examples |
 | --- | --- | --- | --- |
 | Scope and defaults | 6 | 0 | 1 |
-| The resolver | 8 | 0 | 0 |
+| The resolver | 8 | 0 | 1 |
 | Expansion | 9 | 0 | 8 |
 | Selection, transforms and mode | 29 | 0 | 17 |
 | References across files | 8 | 0 | 4 |
@@ -1470,6 +1491,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **40** |
+| **Total** | **88** | **2** | **41** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 40 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 41 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.

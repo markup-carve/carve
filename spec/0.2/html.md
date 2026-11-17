@@ -2634,11 +2634,64 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 
 **C2-H-174** A task box whose item has no plain text in its direct paragraph or heading children writes no `aria-label` attribute on its checkbox.
 
+The item holds only a line comment, so its checkbox has no `aria-label` (C2-H-174).
+
+Example 84 (unverified)
+
+::: compare
+
+```carve
+- [x] %% hidden
+```
+
+```html
+<ul class="task-list">
+  <li data-task-state="x" class="task" style="list-style: none"><input type="checkbox" checked disabled> </li>
+</ul>
+```
+
+:::
+
+
 **C2-H-175** An `abbr` span with neither an authored `title` nor a nonempty derived abbreviation value writes no `title` attribute. The test is made on the value as written, before the filter of C2-H-161: an authored `abbr` that the filter empties gives `title=""`.
+
+An `abbr` key with no value and no abbreviation definition writes no `title` (C2-H-175).
+
+Example 82 (unverified)
+
+::: compare
+
+```carve
+[a]{abbr}
+```
+
+```html
+<p><abbr>a</abbr></p>
+```
+
+:::
+
 
 **C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list, the `default` of `urlPolicy` in `data/options.json`, as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
 
 **C2-H-176** In text content and attribute values, the renderer replaces a character that the HTML input stream rejects with U+FFFD. This includes U+0000, C0 controls other than tab, line feed, form feed and carriage return, U+007F, C1 controls, unpaired surrogates and Unicode noncharacters. A surrogate pair that spells a noncharacter is replaced once. Raw HTML and HTML returned by a host extension renderer remain the host's responsibility.
+
+The control character U+0001 between `a` and `b` is written as U+FFFD (C2-H-176).
+
+Example 83 (unverified)
+
+::: compare
+
+```carve
+ab
+```
+
+```html
+<p>a�b</p>
+```
+
+:::
+
 
 ## Counts
 
@@ -2664,7 +2717,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
-| Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **34** | **47** |
+| Further clauses | 4 | 0 | 0 | 3 |
+| **Total** | **193** | **6** | **34** | **50** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 81 examples, 34 generated and 47 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 84 examples, 34 generated and 50 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.

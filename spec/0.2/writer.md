@@ -31,7 +31,49 @@ Conventions:
 
 **C2-W-006** The test is made on the emitted bytes of the whole output. A construct is not tested alone, because an opener depends on the lines before it.
 
+The escape before the colon is tested on the whole output: after the description list, `: x` at column 0 would continue it, so the backslash stays (C2-W-006).
+
+Example 23 (unverified)
+
+Input:
+
+```carve
+:: t
+: d
+
+\: x
+```
+
+Written:
+
+```carve
+:: t
+: d
+
+\: x
+```
+
+
 **C2-W-007** The writer does not replace one construct by another that renders alike. It does not drop content, move content or re-wrap prose: a soft break stays where the tree has it.
+
+The soft break stays where the tree has it: the writer does not join the lines (C2-W-007).
+
+Example 20 (unverified)
+
+Input:
+
+```carve
+a
+b
+```
+
+Written:
+
+```carve
+a
+b
+```
+
 
 **C2-W-008** A backslash escape is not a node (C2-A-041), so an escape that the writer adds or removes never changes the tree.
 
@@ -55,11 +97,45 @@ Conventions:
 
 **C2-W-015** A paragraph promoted to a block image is written as its source spelling, the image alone on its line. `role: "image"` is a fact of the tree (C2-A-136), and the written line gives it back when it is parsed.
 
+The block image is written as the image alone on its line (C2-W-015).
+
+Example 21 (unverified)
+
+Input:
+
+```carve
+![a](u)
+```
+
+Written:
+
+```carve
+![a](u)
+```
+
+
 **C2-W-016** A line after the first of a code span, a raw span, a literal-text span, a math span, a braced comment or an editorial comment is a line of its leaf. Where that line would open a block (C2-B-014 to C2-B-019), or would be a comment-only line because it starts with `%%` after its spaces and tabs (C2-B-137, C2-B-138), no spelling keeps the value, and the writer refuses it with `field-unspellable`. A lone CR as the last character of a line is refused the same way: the writer ends every line with LF, and a CR directly before an LF is part of the line ending and no content (C2-B-010), so `a` and a CR at the end of the input has no canonical spelling.
 
 **C2-W-112** Two code spans with nothing between them have no spelling: written together, the two runs read as one span. A parse never gives that pair. For a supplied tree the writer reports `structure-unspellable` for the second span and writes its content into the first.
 
 **C2-W-115** A math block is written as its display math span alone on its line, with an attached attribute block glued to the span (C2-B-198). The mark `role: "math"` is a fact of the tree (C2-A-184), and the written line gives it back when it is parsed.
+
+The math block is written as its display math span alone on its line (C2-W-115).
+
+Example 22 (unverified)
+
+Input:
+
+```carve
+$$`x`
+```
+
+Written:
+
+```carve
+$$`x`
+```
+
 
 ## Layout
 
@@ -238,6 +314,23 @@ A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line fee
 
 **C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117). The writer never writes the `children` or the `file` of an expanded include, and reports no loss for them (C2-N-080).
 
+An include is written as its directive, with no children and no `file` (C2-N-080).
+
+Example 25 (unverified)
+
+Input:
+
+```carve
+{{ x.crv }}
+```
+
+Written:
+
+```carve
+{{ x.crv }}
+```
+
+
 **C2-W-059** A comment is written in its `form` (C2-A-074): `%% text` for a line comment, with the one space the reader removes again (C2-A-074) and with no space when the value is empty, a `%%%` block for a block comment, whose opener and closer are the shortest run of at least three percent signs that is longer than every bare percent run in its body (C2-B-110), `{% text %}` for a braced comment, and `{%%}` when its value is empty. A comment-only line is written at the column of the leaf or container that holds its node (C2-B-138). A comment that a container holds is written after one blank line when the block before it ends in a paragraph, a heading, a term or a caption, because without the blank line the comment would be a lazy line or a child of that leaf and move into it (C2-B-024, C2-B-138), and when the block before it is a table, because the comment would become a child of the table (C2-A-086); a comment that stands between a figure group and its caption is written between the closer of the group and the caption line, and so is a comment that is the sibling after a code block with a caption (C2-A-082); in every other place it stands directly below the block before it. Where a block of the same item follows the comment, that blank line stands inside the item and does not make the list loose (C2-W-030).
 
 **C2-W-060** A term is written as `::`, one space and its content. A description is written as `:`, one space and its first block, and its later blocks at the content column.
@@ -391,6 +484,27 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-082** A quote is written in the form the sidecar records, `>` lines or a quote fence (C2-L-017). With no fact it is written with `>` lines (C2-L-033). A quote with no children is written as one line that holds only `>`, or as a quote fence with no body where the sidecar records that form. A sigil div is written with one space between the colon run and its sigil: `::: >`, `::: |`, and the backslash for a hard-break block (C2-B-196).
 
+The sidecar of the source records the quote fence, so the writer keeps it (C2-W-082, C2-W-083).
+
+Example 18 (unverified)
+
+Input:
+
+```carve
+::: >
+a
+:::
+```
+
+Written:
+
+```carve
+::: >
+a
+:::
+```
+
+
 ## The sidecar
 
 **C2-W-083** The writer takes six spellings from the sidecar when the fact is present and the tree allows the form (C2-L-042):
@@ -407,6 +521,23 @@ Mail <a@b.org> or <mailto:a@b.org>
 **C2-W-084** The writer also takes `rawRef` (C2-W-075) and `optionSpelling` (C2-W-058).
 
 **C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records. The other facts of the sidecar are for editors and other tools (C2-L-046).
+
+The heading marker is written in its canonical form whatever the sidecar records (C2-W-085).
+
+Example 19 (unverified)
+
+Input:
+
+```carve
+# A
+```
+
+Written:
+
+```carve
+= A
+```
+
 
 **C2-W-086** The tree wins: a fact that contradicts the tree is ignored (C2-L-006).
 
@@ -639,6 +770,19 @@ Written:
 **C2-W-109** The option `rules` turns single rules on and off, and `platforms` selects the platform rules. A rule can be suppressed in the source by the control comments of 0.1 (C2-B-215, C2-B-216). A rule that is off by default is turned on by its id. There is no named group of rules.
 
 **C2-W-110** A rule whose id starts with `deprecated-` reports a spelling that 0.2 removed and that now reads as something else. These rules are on by default through 0.2.x.
+
+`_a_` was underline in 0.1 and is a deprecated spelling in 0.2 (C2-W-110).
+
+Example 24 (unverified)
+
+Input:
+
+```carve
+_a_
+```
+
+Reported: `deprecated-bare-underline`.
+
 
 **C2-W-111** Each `deprecated-` rule states its trigger on the 0.2 tokens and tree. The 0.2 engine holds no 0.1 parsing code for them.
 
@@ -1000,16 +1144,16 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| The writer and its two gates | 13 | 2 | 0 | 0 |
-| What the writer cannot spell | 10 | 0 | 0 | 0 |
+| The writer and its two gates | 13 | 2 | 0 | 2 |
+| What the writer cannot spell | 10 | 0 | 0 | 2 |
 | Layout | 22 | 2 | 0 | 3 |
-| Canonical forms: blocks | 24 | 0 | 0 | 1 |
+| Canonical forms: blocks | 24 | 0 | 0 | 2 |
 | Canonical forms: tables | 12 | 0 | 2 | 2 |
-| Canonical forms: inline | 14 | 1 | 0 | 1 |
-| The sidecar | 6 | 0 | 0 | 0 |
+| Canonical forms: inline | 14 | 1 | 0 | 2 |
+| The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **128** | **5** | **6** | **11** |
+| Diagnostics and lint | 11 | 0 | 0 | 2 |
+| **Total** | **128** | **5** | **6** | **19** |
 
-The document has 128 clauses, 5 of them marked with the word "Exception", and 17 examples, 6 generated and 11 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 128 clauses, 5 of them marked with the word "Exception", and 25 examples, 6 generated and 19 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
