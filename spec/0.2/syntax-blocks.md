@@ -5550,7 +5550,7 @@ Example 281 (unverified)
 
 **C2-B-179** `header-rows` sets the number of head rows of a delimited table. C2-B-209 and C2-B-210 state its default and its value.
 
-**C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports bad quoting with severity error.
+**C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports an unclosed quote as C2-B-181 states, with severity error.
 
 **C2-B-181** An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error: its cell holds everything after the quote character, line breaks and separators included, without the final line ending.
 

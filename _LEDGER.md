@@ -43,3 +43,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/
 Search: `duplicate-id`, `C2-A-039`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/writer.md`. The generated-id near miss is CC-997.
+
+## R7 narrow malformed table wording
+
+Search: `C2-B-180`, `C2-B-181`, `delimited-table-malformed`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/table-marks.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Existing malformed-table cases exercise an unclosed quote.
