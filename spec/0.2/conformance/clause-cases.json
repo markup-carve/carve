@@ -54047,6 +54047,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1121",
+  "clauses": [
+   "C2-A-039",
+   "C2-T-005"
+  ],
+  "why": "C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type.",
+  "summary": "duplicate id parse diagnostic needs no render profile",
+  "kind": "parse",
+  "input": "{#x}\n# A\n\n{#x}\n# B\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "duplicate-id"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }

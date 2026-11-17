@@ -633,7 +633,7 @@
       "channel": "parse",
       "status": "renamed",
       "renamed_from": "duplicate-heading-id",
-      "messages": [{"when": "both nodes with the authored id render an HTML id", "text": "Duplicate id \"${explicit}\": both nodes render this HTML id, which is invalid; cross-references resolve to the first node in document order. Change one id."}, {"when": "one or both nodes with the authored id do not render an HTML id under the active profile", "text": "Duplicate authored id \"${explicit}\": the first node in document order wins id lookup. Change one id even if this profile omits an HTML id."}],
+      "messages": ["Duplicate authored id \"${explicit}\": the first node in document order wins id lookup. Change one id."],
       "message_origin": "data_file",
       "channel_reports": "a second node with one authored id (C2-A-039)",
       "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",
