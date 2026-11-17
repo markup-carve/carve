@@ -238,7 +238,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **C2-B-017** Interrupter (d): a caption line (C2-B-146), only when the paragraph so far is exactly one block image line (C2-B-197) or one display math line (C2-B-198). A caret line that the container of the paragraph does not own is no caption line and is a lazy line, in an item as in a quote (C2-B-018): below `- ![](a.png)`, a line `^ cap` at column 0 is text of the item's paragraph.
 
-**Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, and owned by the container that holds the quote (C2-B-146), closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph. A caret line that the quote's container does not own, as at column 0 below a quote that sits in a list item, is a lazy line.
+**Exception C2-B-018** A caption line that does not carry the mark of an open quote, directly below a line of that quote, and owned by the container that holds the quote (C2-B-146), closes the quote and captions it, whatever the quote's last block is, and it is an interrupter when that block is an open paragraph.
 
 **C2-B-019** Interrupter (e): a table row (C2-B-166).
 
