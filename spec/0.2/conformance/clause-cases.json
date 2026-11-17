@@ -22369,6 +22369,4627 @@
     "carve": "| a |\n+ b |\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-439",
+   "clauses": [
+    "C2-X-008",
+    "C2-X-015",
+    "C2-X-042",
+    "C2-X-045"
+   ],
+   "why": "C2-X-008: A block div matcher claims a `div` by the name after its opener run under C2-B-119. C2-X-015: A transform maps one claimed core node to one extension node of the same inline or block role. It may place further extension nodes that it produces inside the slots of that node, as the tabs transform places each `carve.tab` (C2-X-039). C2-X-042: The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order. C2-X-045: The tabs transform keeps the nested `tab` div spelling in the outer `source.body`.",
+   "summary": "the tabs div becomes one carve.tabs block extension with a carve.tab per tab and the concatenated fallback",
+   "kind": "parse",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "Install"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "Run setup."
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "Install"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "Run setup."
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "Install",
+          "body": "Run setup.\n"
+         }
+        },
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "Use"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "Open the app."
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "Use"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "Open the app."
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "Use",
+          "body": "Open the app.\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "Install"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Run setup."
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "Use"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Open the app."
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n"
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-440",
+   "clauses": [
+    "C2-X-009",
+    "C2-X-024"
+   ],
+   "why": "C2-X-009: The div matcher receives that name, the quoted title, the bracket label, parsed attributes and parsed body blocks. C2-X-024: A source transform carries a `source` record with `form`, `name`, canonical `body` text, and any quoted title or bracket label, plus the core node's attributes on the extension node.",
+   "summary": "the attributes of the claimed tabs div move to the extension node and stay out of the source body",
+   "kind": "parse",
+   "input": "{#t}\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      },
+      "attrs": {
+       "id": "t"
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-441",
+   "clauses": [
+    "C2-X-026"
+   ],
+   "why": "C2-X-026: `source.body` is the canonical Carve spelling of the claimed node's content, without its opener, closer or attached outer attributes.",
+   "summary": "the source body respells longer colon runs and a doubled blank line canonically",
+   "kind": "parse",
+   "input": "::::: tabs\n:::: tab \"A\"\nx\n::::\n\n\n:::: tab \"B\"\ny\n::::\n:::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        },
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "B"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "y"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "B"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "y"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "B",
+          "body": "y\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "B"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n\n::: tab \"B\"\ny\n:::\n"
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-442",
+   "clauses": [
+    "C2-X-016"
+   ],
+   "why": "C2-X-016: A transform leaves every core node outside its claimed node unchanged.",
+   "summary": "paragraphs around a claimed tabs div stay core paragraphs",
+   "kind": "parse",
+   "input": "a\n\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n\nb\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-443",
+   "clauses": [
+    "C2-X-029"
+   ],
+   "why": "C2-X-029: A transform gives the same node for the same claimed core node, extension version and configuration.",
+   "summary": "two equal tabs divs give two equal extension nodes",
+   "kind": "parse",
+   "input": ":::: tabs\n::: tab \"A\"\nx\n:::\n::::\n\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     },
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-444",
+   "clauses": [
+    "C2-X-005"
+   ],
+   "why": "C2-X-005: The matcher claims only an existing core node after core source parsing has finished.",
+   "summary": "a tabs div spelled inside a code block is code text, which no matcher claims",
+   "kind": "parse",
+   "input": "```\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n```\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "code_block",
+      "value": ":::: tabs\n::: tab \"A\"\nx\n:::\n::::\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-445",
+   "clauses": [
+    "C2-X-008"
+   ],
+   "why": "C2-X-008: A block div matcher claims a `div` by the name after its opener run under C2-B-119.",
+   "summary": "a div with the class tabs from an attribute line and no name is not claimed",
+   "kind": "parse",
+   "input": "{.tabs}\n::::\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "div",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "tab"
+         ]
+        },
+        "title": [
+         {
+          "type": "text",
+          "value": "A"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-446",
+   "clauses": [
+    "C2-X-012"
+   ],
+   "why": "C2-X-012: A name without a declared and enabled matcher stays the core node that the parser built: an inline source extension, a div with its first class, or a code block.",
+   "summary": "with only the tabs extension enabled, an inline tabs extension, a tabs code block and a top-level tab div stay core nodes",
+   "kind": "parse",
+   "input": ":tabs[x]\n\n```tabs\ny\n```\n\n::: tab \"A\"\nz\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_extension",
+        "name": "tabs",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "code_block",
+      "value": "y\n",
+      "syntax": "tabs"
+     },
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "z"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tab"
+       ]
+      },
+      "title": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-447",
+   "clauses": [
+    "C2-X-012"
+   ],
+   "why": "C2-X-012: A name without a declared and enabled matcher stays the core node that the parser built: an inline source extension, a div with its first class, or a code block.",
+   "summary": "without the extension option a tabs div stays a core div",
+   "kind": "parse",
+   "input": ":::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "div",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "tab"
+         ]
+        },
+        "title": [
+         {
+          "type": "text",
+          "value": "A"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-448",
+   "clauses": [
+    "C2-X-040"
+   ],
+   "why": "C2-X-040: The `tabs` matcher claims a div only when its body has one or more `tab` divs and no other blocks, and each `tab` div has a nonempty quoted title.",
+   "summary": "a tabs div that also holds a paragraph is not claimed",
+   "kind": "parse",
+   "input": ":::: tabs\n::: tab \"A\"\nx\n:::\n\ny\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "div",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "tab"
+         ]
+        },
+        "title": [
+         {
+          "type": "text",
+          "value": "A"
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-449",
+   "clauses": [
+    "C2-X-040"
+   ],
+   "why": "C2-X-040: The `tabs` matcher claims a div only when its body has one or more `tab` divs and no other blocks, and each `tab` div has a nonempty quoted title.",
+   "summary": "a tabs div whose tab has no quoted title is not claimed",
+   "kind": "parse",
+   "input": ":::: tabs\n::: tab\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "div",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "tab"
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-450",
+   "clauses": [
+    "C2-X-040"
+   ],
+   "why": "C2-X-040: The `tabs` matcher claims a div only when its body has one or more `tab` divs and no other blocks, and each `tab` div has a nonempty quoted title.",
+   "summary": "a tabs div with no tab div is not claimed",
+   "kind": "parse",
+   "input": "::: tabs\nx\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "tabs"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-451",
+   "clauses": [
+    "C2-X-033",
+    "C2-X-043",
+    "C2-X-048"
+   ],
+   "why": "C2-X-033: A host registers a renderer by qualified name and version. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked. C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
+   "summary": "the standard tabs renderer writes inputs, linked labels and panels",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Install</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\"><label for=\"tabs-1-1\">Use</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Install\"><p>Run setup.</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"Use\"><p>Open the app.</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-452",
+   "clauses": [
+    "C2-X-044"
+   ],
+   "why": "C2-X-044: The tabs renderer renders each label from the tab's `title` slot and each panel from its `body` slot. It escapes text and attributes through the host renderer.",
+   "summary": "the tabs renderer escapes an ampersand in the label, the panel name and the panel body",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A & B\"\nx & y\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A &amp; B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A &amp; B\"><p>x &amp; y</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-453",
+   "clauses": [
+    "C2-X-047",
+    "C2-X-044"
+   ],
+   "why": "C2-X-047: The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title C2-X-044: The tabs renderer renders each label from the tab's `title` slot",
+   "summary": "the group label comes from tabsGroup and the panel name is the plain text of an emphasized title",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"/A/ b\"\nx\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    },
+    "labels": {
+     "tabsGroup": "Reiter"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Reiter\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\"><em>A</em> b</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A b\"><p>x</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-454",
+   "clauses": [
+    "C2-X-004",
+    "C2-X-035"
+   ],
+   "why": "C2-X-004: A reader preserves an unknown optional extension and uses its core fallback. C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. ... A node without attributes adds no element.",
+   "summary": "an unknown optional block extension renders its fallback with no wrapper",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>f</p>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-455",
+   "clauses": [
+    "C2-X-035"
+   ],
+   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014).",
+   "summary": "the fallback of a block extension with an id and a class stands in a div that carries them",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "id": "b",
+       "classes": [
+        "c"
+       ]
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<div id=\"b\" class=\"c\">\n  <p>f</p>\n</div>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-456",
+   "clauses": [
+    "C2-X-035"
+   ],
+   "why": "C2-X-035: it writes the fallback inside a `<div>` for a block extension and a `<span>` for an inline extension, and that element carries the attributes by the rules of every element (C2-H-010 to C2-H-014).",
+   "summary": "the fallback of an inline extension with an id stands in a span that carries it",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.k",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "inline_extension",
+        "name": "ex.k",
+        "version": "1",
+        "children": [],
+        "fallback": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ],
+        "attrs": {
+         "id": "b"
+        }
+       },
+       {
+        "type": "text",
+        "value": " c"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>a <span id=\"b\">f</span> c</p>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-457",
+   "clauses": [
+    "C2-X-032"
+   ],
+   "why": "C2-X-032: Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise.",
+   "summary": "a heading in the slot of an extension rendered through its fallback takes no generated id from a later heading",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "slots": {
+       "s": [
+        {
+         "type": "heading",
+         "level": 1,
+         "children": [
+          {
+           "type": "text",
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>f</p>\n<section id=\"A\">\n  <h1>A</h1>\n</section>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-458",
+   "clauses": [
+    "C2-X-036"
+   ],
+   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback.",
+   "summary": "a raw block in a fallback is degraded under the article profile",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "raw_block",
+        "format": "html",
+        "value": "<b>x</b>\n"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {
+    "profile": "article"
+   },
+   "expected": {
+    "html": "<p>&lt;b&gt;x&lt;/b&gt;</p>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     },
+     {
+      "code": "profile-construct-degraded",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-459",
+   "clauses": [
+    "C2-X-036"
+   ],
+   "why": "C2-X-036: Every profile restriction and URL policy check applies inside slots and fallback.",
+   "summary": "a denied link destination in a fallback is blanked",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "link",
+          "href": "javascript:x",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"\">a</a></p>",
+    "diagnostics": [
+     {
+      "code": "extension-fallback-rendered",
+      "channel": "render-loss",
+      "severity": "warning"
+     },
+     {
+      "code": "destination-denied",
+      "channel": "render-loss",
+      "severity": "error"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-460",
+   "clauses": [
+    "C2-X-027"
+   ],
+   "why": "C2-X-027: A Carve writer with a source record writes the canonical `:name[body]`, colon-run div or fenced code block form under C2-W-039 and C2-W-040",
+   "summary": "the tabs tree is written back as the colon-run div of its source record",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "Install"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "Run setup."
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "Install"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "Run setup."
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "Install",
+          "body": "Run setup.\n"
+         }
+        },
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "Use"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "Open the app."
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "Use"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "Open the app."
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "Use",
+          "body": "Open the app.\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "Install"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Run setup."
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "Use"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Open the app."
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "carve": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-461",
+   "clauses": [
+    "C2-X-027"
+   ],
+   "why": "C2-X-027: writes the extension node's attributes in the core attribute form.",
+   "summary": "the id of a tabs node is written as an attribute line above the div",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      },
+      "attrs": {
+       "id": "t"
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "carve": "{#t}\n:::: tabs\n::: tab \"A\"\nx\n:::\n::::\n",
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-462",
+   "clauses": [
+    "C2-X-028"
+   ],
+   "why": "C2-X-028: A Carve writer without a source record writes the fallback and reports `structure-unspellable` at the extension node.",
+   "summary": "an extension node without a source record is written as its fallback with a loss",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "f\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-463",
+   "clauses": [
+    "C2-X-023"
+   ],
+   "why": "C2-X-023: A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`",
+   "summary": "a writer without the extension writes the div source form of an unknown extension",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "box",
+       "body": "x\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "::: box\nx\n:::\n",
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-464",
+   "clauses": [
+    "C2-X-023"
+   ],
+   "why": "C2-X-023: A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`",
+   "summary": "a writer without the extension writes the fence source form of an unknown extension",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "fence",
+       "name": "py",
+       "body": "x\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "```py\nx\n```\n",
+    "notReported": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-465",
+   "clauses": [
+    "C2-X-023"
+   ],
+   "why": "C2-X-023: and otherwise writes the fallback and reports `structure-unspellable`.",
+   "summary": "a source body that is not canonical content is not written and the fallback stands",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "box",
+       "body": "a\n\n\nb\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "f\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-466",
+   "clauses": [
+    "C2-X-049"
+   ],
+   "why": "C2-X-049: A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`.",
+   "summary": "a tabs source record whose tab title disagrees with the slots is not written",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"B\"\nx\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "carve": "*A*\n\nx\n",
+    "diagnostics": [
+     {
+      "code": "structure-unspellable",
+      "channel": "render-loss",
+      "severity": "warning",
+      "path": "/children/0"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-467",
+   "clauses": [
+    "C2-X-004"
+   ],
+   "why": "C2-X-004: A reader preserves an unknown optional extension and uses its core fallback.",
+   "summary": "a reader accepts and keeps an unknown optional extension with its slots, props and payload",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "props": {
+       "k": 1
+      },
+      "slots": {
+       "s": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      },
+      "payload": [
+       {
+        "format": "ex/json",
+        "value": {
+         "a": 1
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "accepted": true,
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "extensions": [
+      {
+       "name": "ex.box",
+       "version": "1",
+       "required": false,
+       "slots": [
+        "s"
+       ]
+      }
+     ],
+     "children": [
+      {
+       "type": "block_extension",
+       "name": "ex.box",
+       "version": "1",
+       "children": [],
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "f"
+          }
+         ]
+        }
+       ],
+       "props": {
+        "k": 1
+       },
+       "slots": {
+        "s": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       "payload": [
+        {
+         "format": "ex/json",
+         "value": {
+          "a": 1
+         }
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-468",
+   "clauses": [
+    "C2-X-046"
+   ],
+   "why": "C2-X-046: A reader refuses a `carve.tab` outside `carve.tabs.slots.tabs`",
+   "summary": "a carve.tab at the top level is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tab",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "title": [
+        {
+         "type": "text",
+         "value": "A"
+        }
+       ],
+       "body": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tab",
+       "title": "A",
+       "body": "x\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-469",
+   "clauses": [
+    "C2-X-046"
+   ],
+   "why": "C2-X-046: an item of that slot that is not `carve.tab`",
+   "summary": "an item of the tabs slot that is another extension is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     },
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "ex.box",
+         "version": "1",
+         "children": [],
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "f"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/slots/tabs/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-470",
+   "clauses": [
+    "C2-X-046"
+   ],
+   "why": "C2-X-046: or a tab without its `body` slot.",
+   "summary": "a tab without its body slot is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/slots/tabs/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-471",
+   "clauses": [
+    "C2-X-019",
+    "C2-X-038"
+   ],
+   "why": "C2-X-019: `props` is a JSON object whose keys and value types are defined by the extension's registered schema. C2-X-038: A reader validates extension props and slot content kinds against its registered extension schema when it knows the extension.",
+   "summary": "a prop that the carve.tabs schema does not define is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      },
+      "props": {
+       "a": 1
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/props"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-472",
+   "clauses": [
+    "C2-X-038"
+   ],
+   "why": "C2-X-038: A reader validates extension props and slot content kinds against its registered extension schema when it knows the extension.",
+   "summary": "an inline node in the block body slot of a tab is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "title": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ],
+          "body": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "strong",
+             "children": [
+              {
+               "type": "text",
+               "value": "A"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "title": "A",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "strong",
+          "children": [
+           {
+            "type": "text",
+            "value": "A"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     }
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/slots/tabs/0/slots/body/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-473",
+   "clauses": [
+    "C2-X-038",
+    "C2-X-020"
+   ],
+   "why": "C2-X-020: A validator refuses a slot the declaration does not name. C2-X-038: It validates slot names against the tree declaration even without a registry.",
+   "summary": "a slot of an unknown extension that its declaration does not name is refused",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "slots": {
+       "b": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/slots/b"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-474",
+   "clauses": [
+    "C2-X-031"
+   ],
+   "why": "C2-X-031: A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and a qualified extension nesting depth greater than 32 through slots or children.",
+   "summary": "33 qualified extension nodes nested through slots are refused at the innermost",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "slots": {
+       "s": [
+        {
+         "type": "block_extension",
+         "name": "ex.box",
+         "version": "1",
+         "children": [],
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "f"
+            }
+           ]
+          }
+         ],
+         "slots": {
+          "s": [
+           {
+            "type": "block_extension",
+            "name": "ex.box",
+            "version": "1",
+            "children": [],
+            "fallback": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "f"
+               }
+              ]
+             }
+            ],
+            "slots": {
+             "s": [
+              {
+               "type": "block_extension",
+               "name": "ex.box",
+               "version": "1",
+               "children": [],
+               "fallback": [
+                {
+                 "type": "paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "f"
+                  }
+                 ]
+                }
+               ],
+               "slots": {
+                "s": [
+                 {
+                  "type": "block_extension",
+                  "name": "ex.box",
+                  "version": "1",
+                  "children": [],
+                  "fallback": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "f"
+                     }
+                    ]
+                   }
+                  ],
+                  "slots": {
+                   "s": [
+                    {
+                     "type": "block_extension",
+                     "name": "ex.box",
+                     "version": "1",
+                     "children": [],
+                     "fallback": [
+                      {
+                       "type": "paragraph",
+                       "children": [
+                        {
+                         "type": "text",
+                         "value": "f"
+                        }
+                       ]
+                      }
+                     ],
+                     "slots": {
+                      "s": [
+                       {
+                        "type": "block_extension",
+                        "name": "ex.box",
+                        "version": "1",
+                        "children": [],
+                        "fallback": [
+                         {
+                          "type": "paragraph",
+                          "children": [
+                           {
+                            "type": "text",
+                            "value": "f"
+                           }
+                          ]
+                         }
+                        ],
+                        "slots": {
+                         "s": [
+                          {
+                           "type": "block_extension",
+                           "name": "ex.box",
+                           "version": "1",
+                           "children": [],
+                           "fallback": [
+                            {
+                             "type": "paragraph",
+                             "children": [
+                              {
+                               "type": "text",
+                               "value": "f"
+                              }
+                             ]
+                            }
+                           ],
+                           "slots": {
+                            "s": [
+                             {
+                              "type": "block_extension",
+                              "name": "ex.box",
+                              "version": "1",
+                              "children": [],
+                              "fallback": [
+                               {
+                                "type": "paragraph",
+                                "children": [
+                                 {
+                                  "type": "text",
+                                  "value": "f"
+                                 }
+                                ]
+                               }
+                              ],
+                              "slots": {
+                               "s": [
+                                {
+                                 "type": "block_extension",
+                                 "name": "ex.box",
+                                 "version": "1",
+                                 "children": [],
+                                 "fallback": [
+                                  {
+                                   "type": "paragraph",
+                                   "children": [
+                                    {
+                                     "type": "text",
+                                     "value": "f"
+                                    }
+                                   ]
+                                  }
+                                 ],
+                                 "slots": {
+                                  "s": [
+                                   {
+                                    "type": "block_extension",
+                                    "name": "ex.box",
+                                    "version": "1",
+                                    "children": [],
+                                    "fallback": [
+                                     {
+                                      "type": "paragraph",
+                                      "children": [
+                                       {
+                                        "type": "text",
+                                        "value": "f"
+                                       }
+                                      ]
+                                     }
+                                    ],
+                                    "slots": {
+                                     "s": [
+                                      {
+                                       "type": "block_extension",
+                                       "name": "ex.box",
+                                       "version": "1",
+                                       "children": [],
+                                       "fallback": [
+                                        {
+                                         "type": "paragraph",
+                                         "children": [
+                                          {
+                                           "type": "text",
+                                           "value": "f"
+                                          }
+                                         ]
+                                        }
+                                       ],
+                                       "slots": {
+                                        "s": [
+                                         {
+                                          "type": "block_extension",
+                                          "name": "ex.box",
+                                          "version": "1",
+                                          "children": [],
+                                          "fallback": [
+                                           {
+                                            "type": "paragraph",
+                                            "children": [
+                                             {
+                                              "type": "text",
+                                              "value": "f"
+                                             }
+                                            ]
+                                           }
+                                          ],
+                                          "slots": {
+                                           "s": [
+                                            {
+                                             "type": "block_extension",
+                                             "name": "ex.box",
+                                             "version": "1",
+                                             "children": [],
+                                             "fallback": [
+                                              {
+                                               "type": "paragraph",
+                                               "children": [
+                                                {
+                                                 "type": "text",
+                                                 "value": "f"
+                                                }
+                                               ]
+                                              }
+                                             ],
+                                             "slots": {
+                                              "s": [
+                                               {
+                                                "type": "block_extension",
+                                                "name": "ex.box",
+                                                "version": "1",
+                                                "children": [],
+                                                "fallback": [
+                                                 {
+                                                  "type": "paragraph",
+                                                  "children": [
+                                                   {
+                                                    "type": "text",
+                                                    "value": "f"
+                                                   }
+                                                  ]
+                                                 }
+                                                ],
+                                                "slots": {
+                                                 "s": [
+                                                  {
+                                                   "type": "block_extension",
+                                                   "name": "ex.box",
+                                                   "version": "1",
+                                                   "children": [],
+                                                   "fallback": [
+                                                    {
+                                                     "type": "paragraph",
+                                                     "children": [
+                                                      {
+                                                       "type": "text",
+                                                       "value": "f"
+                                                      }
+                                                     ]
+                                                    }
+                                                   ],
+                                                   "slots": {
+                                                    "s": [
+                                                     {
+                                                      "type": "block_extension",
+                                                      "name": "ex.box",
+                                                      "version": "1",
+                                                      "children": [],
+                                                      "fallback": [
+                                                       {
+                                                        "type": "paragraph",
+                                                        "children": [
+                                                         {
+                                                          "type": "text",
+                                                          "value": "f"
+                                                         }
+                                                        ]
+                                                       }
+                                                      ],
+                                                      "slots": {
+                                                       "s": [
+                                                        {
+                                                         "type": "block_extension",
+                                                         "name": "ex.box",
+                                                         "version": "1",
+                                                         "children": [],
+                                                         "fallback": [
+                                                          {
+                                                           "type": "paragraph",
+                                                           "children": [
+                                                            {
+                                                             "type": "text",
+                                                             "value": "f"
+                                                            }
+                                                           ]
+                                                          }
+                                                         ],
+                                                         "slots": {
+                                                          "s": [
+                                                           {
+                                                            "type": "block_extension",
+                                                            "name": "ex.box",
+                                                            "version": "1",
+                                                            "children": [],
+                                                            "fallback": [
+                                                             {
+                                                              "type": "paragraph",
+                                                              "children": [
+                                                               {
+                                                                "type": "text",
+                                                                "value": "f"
+                                                               }
+                                                              ]
+                                                             }
+                                                            ],
+                                                            "slots": {
+                                                             "s": [
+                                                              {
+                                                               "type": "block_extension",
+                                                               "name": "ex.box",
+                                                               "version": "1",
+                                                               "children": [],
+                                                               "fallback": [
+                                                                {
+                                                                 "type": "paragraph",
+                                                                 "children": [
+                                                                  {
+                                                                   "type": "text",
+                                                                   "value": "f"
+                                                                  }
+                                                                 ]
+                                                                }
+                                                               ],
+                                                               "slots": {
+                                                                "s": [
+                                                                 {
+                                                                  "type": "block_extension",
+                                                                  "name": "ex.box",
+                                                                  "version": "1",
+                                                                  "children": [],
+                                                                  "fallback": [
+                                                                   {
+                                                                    "type": "paragraph",
+                                                                    "children": [
+                                                                     {
+                                                                      "type": "text",
+                                                                      "value": "f"
+                                                                     }
+                                                                    ]
+                                                                   }
+                                                                  ],
+                                                                  "slots": {
+                                                                   "s": [
+                                                                    {
+                                                                     "type": "block_extension",
+                                                                     "name": "ex.box",
+                                                                     "version": "1",
+                                                                     "children": [],
+                                                                     "fallback": [
+                                                                      {
+                                                                       "type": "paragraph",
+                                                                       "children": [
+                                                                        {
+                                                                         "type": "text",
+                                                                         "value": "f"
+                                                                        }
+                                                                       ]
+                                                                      }
+                                                                     ],
+                                                                     "slots": {
+                                                                      "s": [
+                                                                       {
+                                                                        "type": "block_extension",
+                                                                        "name": "ex.box",
+                                                                        "version": "1",
+                                                                        "children": [],
+                                                                        "fallback": [
+                                                                         {
+                                                                          "type": "paragraph",
+                                                                          "children": [
+                                                                           {
+                                                                            "type": "text",
+                                                                            "value": "f"
+                                                                           }
+                                                                          ]
+                                                                         }
+                                                                        ],
+                                                                        "slots": {
+                                                                         "s": [
+                                                                          {
+                                                                           "type": "block_extension",
+                                                                           "name": "ex.box",
+                                                                           "version": "1",
+                                                                           "children": [],
+                                                                           "fallback": [
+                                                                            {
+                                                                             "type": "paragraph",
+                                                                             "children": [
+                                                                              {
+                                                                               "type": "text",
+                                                                               "value": "f"
+                                                                              }
+                                                                             ]
+                                                                            }
+                                                                           ],
+                                                                           "slots": {
+                                                                            "s": [
+                                                                             {
+                                                                              "type": "block_extension",
+                                                                              "name": "ex.box",
+                                                                              "version": "1",
+                                                                              "children": [],
+                                                                              "fallback": [
+                                                                               {
+                                                                                "type": "paragraph",
+                                                                                "children": [
+                                                                                 {
+                                                                                  "type": "text",
+                                                                                  "value": "f"
+                                                                                 }
+                                                                                ]
+                                                                               }
+                                                                              ],
+                                                                              "slots": {
+                                                                               "s": [
+                                                                                {
+                                                                                 "type": "block_extension",
+                                                                                 "name": "ex.box",
+                                                                                 "version": "1",
+                                                                                 "children": [],
+                                                                                 "fallback": [
+                                                                                  {
+                                                                                   "type": "paragraph",
+                                                                                   "children": [
+                                                                                    {
+                                                                                     "type": "text",
+                                                                                     "value": "f"
+                                                                                    }
+                                                                                   ]
+                                                                                  }
+                                                                                 ],
+                                                                                 "slots": {
+                                                                                  "s": [
+                                                                                   {
+                                                                                    "type": "block_extension",
+                                                                                    "name": "ex.box",
+                                                                                    "version": "1",
+                                                                                    "children": [],
+                                                                                    "fallback": [
+                                                                                     {
+                                                                                      "type": "paragraph",
+                                                                                      "children": [
+                                                                                       {
+                                                                                        "type": "text",
+                                                                                        "value": "f"
+                                                                                       }
+                                                                                      ]
+                                                                                     }
+                                                                                    ],
+                                                                                    "slots": {
+                                                                                     "s": [
+                                                                                      {
+                                                                                       "type": "block_extension",
+                                                                                       "name": "ex.box",
+                                                                                       "version": "1",
+                                                                                       "children": [],
+                                                                                       "fallback": [
+                                                                                        {
+                                                                                         "type": "paragraph",
+                                                                                         "children": [
+                                                                                          {
+                                                                                           "type": "text",
+                                                                                           "value": "f"
+                                                                                          }
+                                                                                         ]
+                                                                                        }
+                                                                                       ],
+                                                                                       "slots": {
+                                                                                        "s": [
+                                                                                         {
+                                                                                          "type": "block_extension",
+                                                                                          "name": "ex.box",
+                                                                                          "version": "1",
+                                                                                          "children": [],
+                                                                                          "fallback": [
+                                                                                           {
+                                                                                            "type": "paragraph",
+                                                                                            "children": [
+                                                                                             {
+                                                                                              "type": "text",
+                                                                                              "value": "f"
+                                                                                             }
+                                                                                            ]
+                                                                                           }
+                                                                                          ],
+                                                                                          "slots": {
+                                                                                           "s": [
+                                                                                            {
+                                                                                             "type": "block_extension",
+                                                                                             "name": "ex.box",
+                                                                                             "version": "1",
+                                                                                             "children": [],
+                                                                                             "fallback": [
+                                                                                              {
+                                                                                               "type": "paragraph",
+                                                                                               "children": [
+                                                                                                {
+                                                                                                 "type": "text",
+                                                                                                 "value": "f"
+                                                                                                }
+                                                                                               ]
+                                                                                              }
+                                                                                             ],
+                                                                                             "slots": {
+                                                                                              "s": [
+                                                                                               {
+                                                                                                "type": "block_extension",
+                                                                                                "name": "ex.box",
+                                                                                                "version": "1",
+                                                                                                "children": [],
+                                                                                                "fallback": [
+                                                                                                 {
+                                                                                                  "type": "paragraph",
+                                                                                                  "children": [
+                                                                                                   {
+                                                                                                    "type": "text",
+                                                                                                    "value": "f"
+                                                                                                   }
+                                                                                                  ]
+                                                                                                 }
+                                                                                                ],
+                                                                                                "slots": {
+                                                                                                 "s": [
+                                                                                                  {
+                                                                                                   "type": "block_extension",
+                                                                                                   "name": "ex.box",
+                                                                                                   "version": "1",
+                                                                                                   "children": [],
+                                                                                                   "fallback": [
+                                                                                                    {
+                                                                                                     "type": "paragraph",
+                                                                                                     "children": [
+                                                                                                      {
+                                                                                                       "type": "text",
+                                                                                                       "value": "f"
+                                                                                                      }
+                                                                                                     ]
+                                                                                                    }
+                                                                                                   ],
+                                                                                                   "slots": {
+                                                                                                    "s": [
+                                                                                                     {
+                                                                                                      "type": "block_extension",
+                                                                                                      "name": "ex.box",
+                                                                                                      "version": "1",
+                                                                                                      "children": [],
+                                                                                                      "fallback": [
+                                                                                                       {
+                                                                                                        "type": "paragraph",
+                                                                                                        "children": [
+                                                                                                         {
+                                                                                                          "type": "text",
+                                                                                                          "value": "f"
+                                                                                                         }
+                                                                                                        ]
+                                                                                                       }
+                                                                                                      ]
+                                                                                                     }
+                                                                                                    ]
+                                                                                                   }
+                                                                                                  }
+                                                                                                 ]
+                                                                                                }
+                                                                                               }
+                                                                                              ]
+                                                                                             }
+                                                                                            }
+                                                                                           ]
+                                                                                          }
+                                                                                         }
+                                                                                        ]
+                                                                                       }
+                                                                                      }
+                                                                                     ]
+                                                                                    }
+                                                                                   }
+                                                                                  ]
+                                                                                 }
+                                                                                }
+                                                                               ]
+                                                                              }
+                                                                             }
+                                                                            ]
+                                                                           }
+                                                                          }
+                                                                         ]
+                                                                        }
+                                                                       }
+                                                                      ]
+                                                                     }
+                                                                    }
+                                                                   ]
+                                                                  }
+                                                                 }
+                                                                ]
+                                                               }
+                                                              }
+                                                             ]
+                                                            }
+                                                           }
+                                                          ]
+                                                         }
+                                                        }
+                                                       ]
+                                                      }
+                                                     }
+                                                    ]
+                                                   }
+                                                  }
+                                                 ]
+                                                }
+                                               }
+                                              ]
+                                             }
+                                            }
+                                           ]
+                                          }
+                                         }
+                                        ]
+                                       }
+                                      }
+                                     ]
+                                    }
+                                   }
+                                  ]
+                                 }
+                                }
+                               ]
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         ]
+                        }
+                       }
+                      ]
+                     }
+                    }
+                   ]
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           }
+          ]
+         }
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarveTreeError",
+     "path": "/children/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0/slots/s/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-475",
+   "clauses": [
+    "C2-X-031"
+   ],
+   "why": "C2-X-031: A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and a qualified extension nesting depth greater than 32 through slots or children.",
+   "summary": "32 qualified extension nodes nested through slots are accepted",
+   "kind": "tree",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "ex.box",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "s"
+      ]
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "ex.box",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "f"
+         }
+        ]
+       }
+      ],
+      "slots": {
+       "s": [
+        {
+         "type": "block_extension",
+         "name": "ex.box",
+         "version": "1",
+         "children": [],
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "f"
+            }
+           ]
+          }
+         ],
+         "slots": {
+          "s": [
+           {
+            "type": "block_extension",
+            "name": "ex.box",
+            "version": "1",
+            "children": [],
+            "fallback": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "f"
+               }
+              ]
+             }
+            ],
+            "slots": {
+             "s": [
+              {
+               "type": "block_extension",
+               "name": "ex.box",
+               "version": "1",
+               "children": [],
+               "fallback": [
+                {
+                 "type": "paragraph",
+                 "children": [
+                  {
+                   "type": "text",
+                   "value": "f"
+                  }
+                 ]
+                }
+               ],
+               "slots": {
+                "s": [
+                 {
+                  "type": "block_extension",
+                  "name": "ex.box",
+                  "version": "1",
+                  "children": [],
+                  "fallback": [
+                   {
+                    "type": "paragraph",
+                    "children": [
+                     {
+                      "type": "text",
+                      "value": "f"
+                     }
+                    ]
+                   }
+                  ],
+                  "slots": {
+                   "s": [
+                    {
+                     "type": "block_extension",
+                     "name": "ex.box",
+                     "version": "1",
+                     "children": [],
+                     "fallback": [
+                      {
+                       "type": "paragraph",
+                       "children": [
+                        {
+                         "type": "text",
+                         "value": "f"
+                        }
+                       ]
+                      }
+                     ],
+                     "slots": {
+                      "s": [
+                       {
+                        "type": "block_extension",
+                        "name": "ex.box",
+                        "version": "1",
+                        "children": [],
+                        "fallback": [
+                         {
+                          "type": "paragraph",
+                          "children": [
+                           {
+                            "type": "text",
+                            "value": "f"
+                           }
+                          ]
+                         }
+                        ],
+                        "slots": {
+                         "s": [
+                          {
+                           "type": "block_extension",
+                           "name": "ex.box",
+                           "version": "1",
+                           "children": [],
+                           "fallback": [
+                            {
+                             "type": "paragraph",
+                             "children": [
+                              {
+                               "type": "text",
+                               "value": "f"
+                              }
+                             ]
+                            }
+                           ],
+                           "slots": {
+                            "s": [
+                             {
+                              "type": "block_extension",
+                              "name": "ex.box",
+                              "version": "1",
+                              "children": [],
+                              "fallback": [
+                               {
+                                "type": "paragraph",
+                                "children": [
+                                 {
+                                  "type": "text",
+                                  "value": "f"
+                                 }
+                                ]
+                               }
+                              ],
+                              "slots": {
+                               "s": [
+                                {
+                                 "type": "block_extension",
+                                 "name": "ex.box",
+                                 "version": "1",
+                                 "children": [],
+                                 "fallback": [
+                                  {
+                                   "type": "paragraph",
+                                   "children": [
+                                    {
+                                     "type": "text",
+                                     "value": "f"
+                                    }
+                                   ]
+                                  }
+                                 ],
+                                 "slots": {
+                                  "s": [
+                                   {
+                                    "type": "block_extension",
+                                    "name": "ex.box",
+                                    "version": "1",
+                                    "children": [],
+                                    "fallback": [
+                                     {
+                                      "type": "paragraph",
+                                      "children": [
+                                       {
+                                        "type": "text",
+                                        "value": "f"
+                                       }
+                                      ]
+                                     }
+                                    ],
+                                    "slots": {
+                                     "s": [
+                                      {
+                                       "type": "block_extension",
+                                       "name": "ex.box",
+                                       "version": "1",
+                                       "children": [],
+                                       "fallback": [
+                                        {
+                                         "type": "paragraph",
+                                         "children": [
+                                          {
+                                           "type": "text",
+                                           "value": "f"
+                                          }
+                                         ]
+                                        }
+                                       ],
+                                       "slots": {
+                                        "s": [
+                                         {
+                                          "type": "block_extension",
+                                          "name": "ex.box",
+                                          "version": "1",
+                                          "children": [],
+                                          "fallback": [
+                                           {
+                                            "type": "paragraph",
+                                            "children": [
+                                             {
+                                              "type": "text",
+                                              "value": "f"
+                                             }
+                                            ]
+                                           }
+                                          ],
+                                          "slots": {
+                                           "s": [
+                                            {
+                                             "type": "block_extension",
+                                             "name": "ex.box",
+                                             "version": "1",
+                                             "children": [],
+                                             "fallback": [
+                                              {
+                                               "type": "paragraph",
+                                               "children": [
+                                                {
+                                                 "type": "text",
+                                                 "value": "f"
+                                                }
+                                               ]
+                                              }
+                                             ],
+                                             "slots": {
+                                              "s": [
+                                               {
+                                                "type": "block_extension",
+                                                "name": "ex.box",
+                                                "version": "1",
+                                                "children": [],
+                                                "fallback": [
+                                                 {
+                                                  "type": "paragraph",
+                                                  "children": [
+                                                   {
+                                                    "type": "text",
+                                                    "value": "f"
+                                                   }
+                                                  ]
+                                                 }
+                                                ],
+                                                "slots": {
+                                                 "s": [
+                                                  {
+                                                   "type": "block_extension",
+                                                   "name": "ex.box",
+                                                   "version": "1",
+                                                   "children": [],
+                                                   "fallback": [
+                                                    {
+                                                     "type": "paragraph",
+                                                     "children": [
+                                                      {
+                                                       "type": "text",
+                                                       "value": "f"
+                                                      }
+                                                     ]
+                                                    }
+                                                   ],
+                                                   "slots": {
+                                                    "s": [
+                                                     {
+                                                      "type": "block_extension",
+                                                      "name": "ex.box",
+                                                      "version": "1",
+                                                      "children": [],
+                                                      "fallback": [
+                                                       {
+                                                        "type": "paragraph",
+                                                        "children": [
+                                                         {
+                                                          "type": "text",
+                                                          "value": "f"
+                                                         }
+                                                        ]
+                                                       }
+                                                      ],
+                                                      "slots": {
+                                                       "s": [
+                                                        {
+                                                         "type": "block_extension",
+                                                         "name": "ex.box",
+                                                         "version": "1",
+                                                         "children": [],
+                                                         "fallback": [
+                                                          {
+                                                           "type": "paragraph",
+                                                           "children": [
+                                                            {
+                                                             "type": "text",
+                                                             "value": "f"
+                                                            }
+                                                           ]
+                                                          }
+                                                         ],
+                                                         "slots": {
+                                                          "s": [
+                                                           {
+                                                            "type": "block_extension",
+                                                            "name": "ex.box",
+                                                            "version": "1",
+                                                            "children": [],
+                                                            "fallback": [
+                                                             {
+                                                              "type": "paragraph",
+                                                              "children": [
+                                                               {
+                                                                "type": "text",
+                                                                "value": "f"
+                                                               }
+                                                              ]
+                                                             }
+                                                            ],
+                                                            "slots": {
+                                                             "s": [
+                                                              {
+                                                               "type": "block_extension",
+                                                               "name": "ex.box",
+                                                               "version": "1",
+                                                               "children": [],
+                                                               "fallback": [
+                                                                {
+                                                                 "type": "paragraph",
+                                                                 "children": [
+                                                                  {
+                                                                   "type": "text",
+                                                                   "value": "f"
+                                                                  }
+                                                                 ]
+                                                                }
+                                                               ],
+                                                               "slots": {
+                                                                "s": [
+                                                                 {
+                                                                  "type": "block_extension",
+                                                                  "name": "ex.box",
+                                                                  "version": "1",
+                                                                  "children": [],
+                                                                  "fallback": [
+                                                                   {
+                                                                    "type": "paragraph",
+                                                                    "children": [
+                                                                     {
+                                                                      "type": "text",
+                                                                      "value": "f"
+                                                                     }
+                                                                    ]
+                                                                   }
+                                                                  ],
+                                                                  "slots": {
+                                                                   "s": [
+                                                                    {
+                                                                     "type": "block_extension",
+                                                                     "name": "ex.box",
+                                                                     "version": "1",
+                                                                     "children": [],
+                                                                     "fallback": [
+                                                                      {
+                                                                       "type": "paragraph",
+                                                                       "children": [
+                                                                        {
+                                                                         "type": "text",
+                                                                         "value": "f"
+                                                                        }
+                                                                       ]
+                                                                      }
+                                                                     ],
+                                                                     "slots": {
+                                                                      "s": [
+                                                                       {
+                                                                        "type": "block_extension",
+                                                                        "name": "ex.box",
+                                                                        "version": "1",
+                                                                        "children": [],
+                                                                        "fallback": [
+                                                                         {
+                                                                          "type": "paragraph",
+                                                                          "children": [
+                                                                           {
+                                                                            "type": "text",
+                                                                            "value": "f"
+                                                                           }
+                                                                          ]
+                                                                         }
+                                                                        ],
+                                                                        "slots": {
+                                                                         "s": [
+                                                                          {
+                                                                           "type": "block_extension",
+                                                                           "name": "ex.box",
+                                                                           "version": "1",
+                                                                           "children": [],
+                                                                           "fallback": [
+                                                                            {
+                                                                             "type": "paragraph",
+                                                                             "children": [
+                                                                              {
+                                                                               "type": "text",
+                                                                               "value": "f"
+                                                                              }
+                                                                             ]
+                                                                            }
+                                                                           ],
+                                                                           "slots": {
+                                                                            "s": [
+                                                                             {
+                                                                              "type": "block_extension",
+                                                                              "name": "ex.box",
+                                                                              "version": "1",
+                                                                              "children": [],
+                                                                              "fallback": [
+                                                                               {
+                                                                                "type": "paragraph",
+                                                                                "children": [
+                                                                                 {
+                                                                                  "type": "text",
+                                                                                  "value": "f"
+                                                                                 }
+                                                                                ]
+                                                                               }
+                                                                              ],
+                                                                              "slots": {
+                                                                               "s": [
+                                                                                {
+                                                                                 "type": "block_extension",
+                                                                                 "name": "ex.box",
+                                                                                 "version": "1",
+                                                                                 "children": [],
+                                                                                 "fallback": [
+                                                                                  {
+                                                                                   "type": "paragraph",
+                                                                                   "children": [
+                                                                                    {
+                                                                                     "type": "text",
+                                                                                     "value": "f"
+                                                                                    }
+                                                                                   ]
+                                                                                  }
+                                                                                 ],
+                                                                                 "slots": {
+                                                                                  "s": [
+                                                                                   {
+                                                                                    "type": "block_extension",
+                                                                                    "name": "ex.box",
+                                                                                    "version": "1",
+                                                                                    "children": [],
+                                                                                    "fallback": [
+                                                                                     {
+                                                                                      "type": "paragraph",
+                                                                                      "children": [
+                                                                                       {
+                                                                                        "type": "text",
+                                                                                        "value": "f"
+                                                                                       }
+                                                                                      ]
+                                                                                     }
+                                                                                    ],
+                                                                                    "slots": {
+                                                                                     "s": [
+                                                                                      {
+                                                                                       "type": "block_extension",
+                                                                                       "name": "ex.box",
+                                                                                       "version": "1",
+                                                                                       "children": [],
+                                                                                       "fallback": [
+                                                                                        {
+                                                                                         "type": "paragraph",
+                                                                                         "children": [
+                                                                                          {
+                                                                                           "type": "text",
+                                                                                           "value": "f"
+                                                                                          }
+                                                                                         ]
+                                                                                        }
+                                                                                       ],
+                                                                                       "slots": {
+                                                                                        "s": [
+                                                                                         {
+                                                                                          "type": "block_extension",
+                                                                                          "name": "ex.box",
+                                                                                          "version": "1",
+                                                                                          "children": [],
+                                                                                          "fallback": [
+                                                                                           {
+                                                                                            "type": "paragraph",
+                                                                                            "children": [
+                                                                                             {
+                                                                                              "type": "text",
+                                                                                              "value": "f"
+                                                                                             }
+                                                                                            ]
+                                                                                           }
+                                                                                          ],
+                                                                                          "slots": {
+                                                                                           "s": [
+                                                                                            {
+                                                                                             "type": "block_extension",
+                                                                                             "name": "ex.box",
+                                                                                             "version": "1",
+                                                                                             "children": [],
+                                                                                             "fallback": [
+                                                                                              {
+                                                                                               "type": "paragraph",
+                                                                                               "children": [
+                                                                                                {
+                                                                                                 "type": "text",
+                                                                                                 "value": "f"
+                                                                                                }
+                                                                                               ]
+                                                                                              }
+                                                                                             ],
+                                                                                             "slots": {
+                                                                                              "s": [
+                                                                                               {
+                                                                                                "type": "block_extension",
+                                                                                                "name": "ex.box",
+                                                                                                "version": "1",
+                                                                                                "children": [],
+                                                                                                "fallback": [
+                                                                                                 {
+                                                                                                  "type": "paragraph",
+                                                                                                  "children": [
+                                                                                                   {
+                                                                                                    "type": "text",
+                                                                                                    "value": "f"
+                                                                                                   }
+                                                                                                  ]
+                                                                                                 }
+                                                                                                ],
+                                                                                                "slots": {
+                                                                                                 "s": [
+                                                                                                  {
+                                                                                                   "type": "block_extension",
+                                                                                                   "name": "ex.box",
+                                                                                                   "version": "1",
+                                                                                                   "children": [],
+                                                                                                   "fallback": [
+                                                                                                    {
+                                                                                                     "type": "paragraph",
+                                                                                                     "children": [
+                                                                                                      {
+                                                                                                       "type": "text",
+                                                                                                       "value": "f"
+                                                                                                      }
+                                                                                                     ]
+                                                                                                    }
+                                                                                                   ]
+                                                                                                  }
+                                                                                                 ]
+                                                                                                }
+                                                                                               }
+                                                                                              ]
+                                                                                             }
+                                                                                            }
+                                                                                           ]
+                                                                                          }
+                                                                                         }
+                                                                                        ]
+                                                                                       }
+                                                                                      }
+                                                                                     ]
+                                                                                    }
+                                                                                   }
+                                                                                  ]
+                                                                                 }
+                                                                                }
+                                                                               ]
+                                                                              }
+                                                                             }
+                                                                            ]
+                                                                           }
+                                                                          }
+                                                                         ]
+                                                                        }
+                                                                       }
+                                                                      ]
+                                                                     }
+                                                                    }
+                                                                   ]
+                                                                  }
+                                                                 }
+                                                                ]
+                                                               }
+                                                              }
+                                                             ]
+                                                            }
+                                                           }
+                                                          ]
+                                                         }
+                                                        }
+                                                       ]
+                                                      }
+                                                     }
+                                                    ]
+                                                   }
+                                                  }
+                                                 ]
+                                                }
+                                               }
+                                              ]
+                                             }
+                                            }
+                                           ]
+                                          }
+                                         }
+                                        ]
+                                       }
+                                      }
+                                     ]
+                                    }
+                                   }
+                                  ]
+                                 }
+                                }
+                               ]
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         ]
+                        }
+                       }
+                      ]
+                     }
+                    }
+                   ]
+                  }
+                 }
+                ]
+               }
+              }
+             ]
+            }
+           }
+          ]
+         }
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "accepted": true
+   },
+   "from": []
   }
  ]
 }
