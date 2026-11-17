@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: inline content
 
-Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how inline content becomes inline nodes. Block structure, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of an inline decision.
 
@@ -2389,7 +2389,7 @@ There is no fixed budget for the inline chapter.
 | The display math line | 1 | 0 | 1 | 0 |
 | **Total** | **112** | **16** | **69** | **54** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions.
+The chapter has 112 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

@@ -1,6 +1,6 @@
 # Carve 0.2 Syntax: block structure
 
-Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This chapter defines how the lines of a Carve document form blocks. Inline content, HTML rendering, the tree and the writer have their own documents. Where a clause states rendered output, it does so because the output is the only visible sign of a block decision.
 
@@ -6402,7 +6402,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Facts set at close | 1 | 0 | 2 | 0 |
 | **Total** | **219** | **10** | **168** | **103** |
 
-The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, whose general rules give the same result; their ids are not reused.
 
 ## Not covered
 

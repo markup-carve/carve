@@ -1,6 +1,6 @@
 # Carve 0.2: importing HTML
 
-Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`); the examples are verified against the reference importer (`import/` of `carve-js`).
+Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`); the examples are verified against the reference importer (`import/` of `carve-js`).
 
 This document defines how an HTML importer turns HTML into a 0.2 tree. `html.md` defines how a tree becomes HTML and, in its section "Import", how the carriers of a render with `roundtrip` are read back (C2-H-182 to C2-H-199). This document covers everything else: HTML from any other tool, Carve HTML rendered without `roundtrip`, and every element and attribute that carries no carrier. The mapping is the one the reference importer follows. No carrier is added: a fact that HTML cannot hold is a loss, and the importer reports it.
 

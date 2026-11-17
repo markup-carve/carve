@@ -1,6 +1,6 @@
 # Carve 0.2: the canonical writer, `carve fmt` and lint
 
-Status: freeze candidate 3 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
 
 This document defines the canonical writer, which turns a tree into Carve source, the formatter `carve fmt` built on it, and lint. It ports the clauses of PART 11 of the 0.1 grammar that 0.2 keeps and adds the 0.2 decisions. The Markdown, plain-text and ANSI writers are not part of 0.2.0 (section "Out of scope").
 
