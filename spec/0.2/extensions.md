@@ -50,7 +50,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-021** `payload` is an optional list of alternatives with a nonempty format and a non-null JSON value under C2-A-122.
 
-**C2-X-022** `fallback` is mandatory for every qualified extension node and contains only core nodes of the extension's role.
+**C2-X-022** `fallback` is mandatory for every qualified extension node. It is core content of the node's own role, block or inline: it contains no extension node and validates as core content.
 
 **C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027. A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`.
 
@@ -66,7 +66,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-029** A transform gives the same node for the same claimed core node, extension version and configuration.
 
-**C2-X-030** A reader refuses more than 32 nested unqualified inline extension nodes along `children` used as fallback under C2-A-124, or more than 8 MiB of decoded payload on one extension node under C2-A-132. The nesting bound counts only that path, the `children` of unqualified inline extension nodes: a qualified fallback holds no extension node (C2-X-022, C2-A-126), so it nests none.
+**C2-X-030** A reader refuses more than 32 nested unqualified inline extension nodes along `children` used as fallback under C2-A-124, or more than 8 MiB of decoded payload on one extension node under C2-A-132. The nesting bound counts only that path, the `children` of unqualified inline extension nodes: a qualified fallback holds no extension node (C2-X-022), so it nests none.
 
 **C2-X-031** A reader refuses a `source.body` longer than 8 MiB in UTF-8 bytes and a qualified extension nesting depth greater than 32 through slots or children.
 

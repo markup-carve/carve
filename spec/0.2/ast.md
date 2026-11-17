@@ -492,8 +492,6 @@ The comment of a comment-only line belongs to the open leaf, if any, or else to 
 
 **C2-A-125** A `block_extension` has a qualified name and a mandatory fallback. A 0.2.0 transform may produce one from a core div or code block under C2-X-008 to C2-X-011. This replaces the earlier phase 6 deferral and the prohibition on produced block extensions.
 
-**C2-A-126** A qualified extension fallback is core content of the node's own role, block or inline. It contains no extension node and validates as core content.
-
 **C2-A-128** Reading a tree never runs anything in `payload`, `props` or `data`. An application enables active content only through a separate capability outside this contract.
 
 ```json
@@ -697,7 +695,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter that is not the first child (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-A-126), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018). A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter that is not the first child (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-X-022), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018). A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. A node-shaped object is an object whose `type` is the name of a core node type; the rest of the object is not validated. The core walker ignores that data.
 
@@ -777,11 +775,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 167 | 2 |
+| Existing AST contract | 166 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **202** | **3** |
+| **Total** | **201** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
