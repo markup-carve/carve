@@ -1203,7 +1203,7 @@ The ids and the messages are copied from the 0.1 reference engine (`src/lint.ts`
 | `empty-include-path` | `This "${text}" looks like an include directive with no path, so it renders as literal text. Add a path (for example {{ chapter.crv }}) or remove the braces.` | unchanged |
 | `empty-link-destination` | `This link has an empty destination.` | unchanged |
 | `empty-reference-definition` | `This line is a label and a colon with nothing after it, so it is text and defines nothing. Add a destination, or remove the line.` | re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text |
-| `fence-opener-fallback` | `A code fence carries no inline attributes, so "${attributes}" after the info string is not valid. ${effect} (use: "${attributes}" on its own line directly above the fence, then "${opener}").`<br>`This line starts like a fenced code block, but "${info}" is not a valid info string (a language, then an optional "title", then an optional [label]). ${effect}` `${effect}` says that the fence does not open and that the block renders as a paragraph; for a valid attribute block glued to a div name, code fence language or raw fence format it says that the block opens and the attribute block is not applied (C2-B-105). | severity error for a valid attribute block glued to a div name, code fence language or raw fence format |
+| `fence-opener-fallback` | `A code or raw fence carries no inline attributes, so "${attributes}" after its language or format is not attached. The block opens without them. Put "${attributes}" on its own line directly above "${opener}".`<br>`A div carries no inline attributes, so "${attributes}" after its name is not attached. The block opens without them. Put "${attributes}" on its own line directly above "${opener}".` | The valid glued attribute block is not attached (C2-B-105). | severity error for a valid attribute block glued to a div name, code fence language or raw fence format |
 | `fence-title-syntax` | `The title after "${type}" uses typographic quotes - usually a CMS "smart quote" filter rewrote the source before Carve parsed it. A fence title needs straight double quotes: ${fence} ${type} "${title}"${label}.`<br>`A "{…}" on the fence line is not an attribute block and is not applied; the block still opens. Put attributes on their own line directly above the ":::" opener.`<br>`Text after the "${type}" fence type must be a quoted "title" or a [label]; unquoted it is not read as a title, and the block opens. Did you mean ${fence} ${type} "${title}"${label}?`<br>`Invalid container metadata was dropped; the container and its children are preserved. ${hint}`<br>`The whitespace in this fence opener is not valid: at most one space follows the fence, and the parts of the info string are separated by spaces, never tabs. The block opens with no language (use: "${respaced}").` | new message for the whitespace variant, which `fence-opener-fallback` had: the block opens with no language and the word is reported (C2-B-122) |
 | `figure-group-empty` | `This "::: figure" group holds no captionable panel; the panels wrapper renders around the preserved content only.` | unchanged |
 | `figure-group-nested` | `A "::: figure" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group.` | unchanged |
@@ -1352,7 +1352,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `unclosed-code-fence` | parse | error | a code fence that runs to the end of its container (C2-B-111) |
 | `unclosed-comment-fence` | parse | error | a comment block that runs to the end of its container (C2-B-111) |
 | `unclosed-container-fence` | parse | error | a div that runs to the end of its container (C2-B-111, C2-B-125) |
-| `fence-opener-fallback` | parse | error | an attribute block after a fence language or an admonition name |
+| `fence-opener-fallback` | parse | error | a valid attribute block glued to a div name, code fence language or raw fence format |
 | `fence-title-syntax` | parse | warning | an unquoted title or further words in an info string (C2-B-117) |
 | `duplicate-footnote-definition` | parse | warning | a second footnote definition for a key (C2-B-085) |
 | `duplicate-link-reference-definition` | parse | warning | a second link definition for a key (C2-B-085) |
@@ -1422,7 +1422,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | a line comment inside a reference label | `comment-in-reference-label` |
 | a duplicate label | `duplicate-footnote-definition`, `duplicate-link-reference-definition`, `duplicate-abbreviation-definition` |
 | an unquoted fence title | `fence-title-syntax` |
-| an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
+| a valid attribute block glued to a div name, code fence language or raw fence format | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
 | an invalid `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` or `body-header-cols` value | `table-attribute-invalid` |
 | a `header-rows` or `footer-rows` count past the rows | `table-row-count-clamped` |
