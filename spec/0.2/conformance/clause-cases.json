@@ -49090,6 +49090,40 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-907",
+   "clauses": [
+    "C2-M-026",
+    "C2-M-061"
+   ],
+   "why": "C2-M-026: A `<section>` whose first child element is a heading element, with only whitespace before it, is the section a render opens at a heading (C2-H-026), unless it is a footnote section (C2-M-061), which this clause does not read. C2-M-061: A heading element among the children of the section before that `<ol>`, the label other renderers write for their notes, gives no node and is dropped without a report.",
+   "summary": "a footnote section that starts with a heading is read as a footnote section",
+   "kind": "import",
+   "html": "<section role=\"doc-endnotes\"><h2>Notes</h2><ol><li id=\"fn1\">N</li></ol></section>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "N"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "[^1]: N\n"
+   },
+   "from": []
   }
  ]
 }

@@ -335,7 +335,7 @@ The no-break space before `c` is the character U+00A0 in the text (C2-H-195 row 
 
 **C2-M-025** The `id` of a heading element is its authored `attrs.id`. Without the carrier `data-carve-generated-id` the importer cannot tell a generated id from an authored one, so every id is authored (C2-M-091).
 
-**C2-M-026** A `<section>` whose first child element is a heading element, with only whitespace before it, is the section a render opens at a heading (C2-H-026). It gives the heading and then the blocks that follow it in the section; the `<section>` itself gives no node. Its `id` is the heading's id (C2-H-027). Where the heading element carries an `id` of its own that differs, that `id` wins, and the `id` of the `<section>` is dropped and reported with `import-attribute-dropped`.
+**C2-M-026** A `<section>` whose first child element is a heading element, with only whitespace before it, is the section a render opens at a heading (C2-H-026), unless it is a footnote section (C2-M-061), which this clause does not read. It gives the heading and then the blocks that follow it in the section; the `<section>` itself gives no node. Its `id` is the heading's id (C2-H-027). Where the heading element carries an `id` of its own that differs, that `id` wins, and the `id` of the `<section>` is dropped and reported with `import-attribute-dropped`.
 
 **C2-M-027** Every other attribute of such a section is dropped and reported with `import-attribute-dropped`. A render writes no other attribute on it.
 
@@ -1361,7 +1361,7 @@ A [fine]{} [print]{} [x]{}
 
 ## Footnotes
 
-**C2-M-061** A `<section>` with `role="doc-endnotes"`, or whose classes include `footnotes`, is a footnote section. Each `<li>` of its first `<ol>` that has an `id` is a `footnote` whose blocks are those of the item. The key is the value of `data-carve-footnote-label` where C2-H-186 reads it; otherwise the `id` without a leading `user-content-fn-`, `fn-` or `fn`. An item with no `id`, or whose key would be empty, is dropped and reported with `import-structure-repaired`.
+**C2-M-061** A `<section>` with `role="doc-endnotes"`, or whose classes include `footnotes`, is a footnote section. Each `<li>` of its first `<ol>` that has an `id` is a `footnote` whose blocks are those of the item. The key is the value of `data-carve-footnote-label` where C2-H-186 reads it; otherwise the `id` without a leading `user-content-fn-`, `fn-` or `fn`. An item with no `id`, or whose key would be empty, is dropped and reported with `import-structure-repaired`. A heading element among the children of the section before that `<ol>`, the label other renderers write for their notes, gives no node and is dropped without a report.
 
 **C2-M-062** An `<a>` with `role="doc-noteref"` or the attribute `data-footnote-ref` is a `footnote_ref` whose key is that of the note its `href` names, or else its fragment without the prefixes of C2-M-061. When its `href` names no note and has no fragment, or a fragment that is empty once the prefixes are cut, it is no note reference: it is read as any `<a>` (C2-M-050), a link that keeps `role` or `data-footnote-ref` as a key. A `<sup>` whose only content is such an `<a>`, or whose first class is `footnote-ref` and which holds one, is that reference alone. The `id` a render generates on a reference (C2-H-088) is not kept.
 

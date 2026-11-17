@@ -89,7 +89,7 @@
     {"name": "samp", "treatment": "span", "node": "span", "clauses": ["C2-M-014", "C2-M-056", "C2-M-057"]},
     {"name": "script", "treatment": "raw", "node": "raw_block or raw_inline; nothing with `rawHtml` off", "clauses": ["C2-M-056", "C2-M-057", "C2-M-065", "C2-M-066"]},
     {"name": "search", "treatment": "div", "node": "div", "clauses": ["C2-M-056", "C2-M-057", "C2-M-060"]},
-    {"name": "section", "treatment": "map", "node": "heading and its blocks, a footnote section, or a div", "clauses": ["C2-M-026", "C2-M-028", "C2-M-061"]},
+    {"name": "section", "treatment": "map", "node": "a footnote section where C2-M-061 holds, else heading and its blocks, or a div", "clauses": ["C2-M-026", "C2-M-028", "C2-M-061"]},
     {"name": "select", "treatment": "raw", "node": "raw_block or raw_inline; nothing with `rawHtml` off", "clauses": ["C2-M-056", "C2-M-057", "C2-M-065", "C2-M-066"]},
     {"name": "small", "treatment": "span", "node": "span", "clauses": ["C2-M-014", "C2-M-056", "C2-M-057"]},
     {"name": "source", "treatment": "drop", "clauses": ["C2-M-005", "C2-M-046", "C2-M-048", "C2-M-056", "C2-M-057"]},
