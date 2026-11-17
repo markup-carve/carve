@@ -264,7 +264,7 @@
     "C2-B-127",
     "C2-A-066"
    ],
-   "why": "C2-B-127: Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1). C2-A-066: The name `figure` with no title and no label gives a `figure_group`, and with one of them, or anywhere inside a `figure_group`, a `div` whose first class is `figure` (C2-B-127).",
+   "why": "C2-B-127: Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1). C2-A-066: The name of a div opener decides its node type as C2-B-127 and `data/div-names.json` say: an admonition name gives an `admonition` and a directive name a `directive`, each with the name as its `kind`, a figure group a `figure_group`, and every other name, or none, a `div` (C2-B-128).",
    "summary": "a figure div inside a figure group is a plain div",
    "input": "::: figure\n::: figure\n![a](a.png)\n^ (a) First\n:::\n^ Figure #: Both",
    "options": {},

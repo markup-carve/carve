@@ -290,7 +290,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-065** A quote is a `block_quote` with block `children`, whether it was written with `>` lines or as a quote fence. Which of the two the author wrote is not in the tree.
 
-**C2-A-066** The opener of a div decides its node type. A name from `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` gives an `admonition` of that `kind`. A name from `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` gives a `directive`. The name `figure` with no title and no label gives a `figure_group`, and with one of them, or anywhere inside a `figure_group`, a `div` whose first class is `figure` (C2-B-127). Any other name gives a `div` whose first class is the name. An opener with no name gives a `div`.
+**C2-A-066** The name of a div opener decides its node type as C2-B-127 and `data/div-names.json` say: an admonition name gives an `admonition` and a directive name a `directive`, each with the name as its `kind`, a figure group a `figure_group`, and every other name, or none, a `div` (C2-B-128).
 
 **C2-A-067** A `directive` always carries `children` and may carry a `title` and `tocTarget` (`headings`, `figures`, `tables` or `listings`).
 
