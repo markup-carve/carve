@@ -10389,7 +10389,7 @@
     "C2-I-089",
     "C2-H-087"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link.",
    "summary": "a footnote reference inside an inline footnote takes no number, so later notes keep theirs",
    "input": "a ^[b [^2] c] and [^1]\n\n[^1]: one\n[^2]: two",
    "options": {},
@@ -10466,7 +10466,7 @@
    "clauses": [
     "C2-I-089"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link.",
    "summary": "a footnote reference inside an inline footnote in a table cell is text",
    "input": "| a ^[b [^1]] |\n\n[^1]: note",
    "options": {},
@@ -18026,7 +18026,7 @@
    "clauses": [
     "C2-I-089"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link.",
    "summary": "an inline footnote inside an inline footnote is text, as in 0.1",
    "input": "x ^[a ^[b] c]",
    "options": {},
@@ -18062,7 +18062,7 @@
     "C2-I-089",
     "C2-I-006"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link.",
    "summary": "the bracket of a caret pair inside a note can still form a link, as in 0.1",
    "input": "^[a ^[b](u) c]",
    "options": {},
@@ -19430,6 +19430,52 @@
        "startOffset": 0,
        "endOffset": 11
       }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-357",
+   "clauses": [
+    "C2-I-089",
+    "C2-I-006"
+   ],
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: in both the caret is text and the bracket an ordinary bracket, so `[^1]` and `^[b]` there are text and `[^1](u)` is a link.",
+   "summary": "the bracket of a footnote reference inside a note can form a link, as in 0.1",
+   "input": "^[a [^1](u) c]",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a <a href=\"u\">^1</a> c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "link",
+          "href": "u",
+          "children": [
+           {
+            "type": "text",
+            "value": "^1"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "value": " c"
+         }
+        ],
+        "number": 1
+       }
+      ]
      }
     ]
    },
