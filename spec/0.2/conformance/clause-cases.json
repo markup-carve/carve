@@ -48782,6 +48782,38 @@
     "stderrCategory": null
    },
    "from": []
+  },
+  {
+   "id": "CC-900",
+   "clauses": [
+    "C2-H-085",
+    "C2-H-139"
+   ],
+   "why": "C2-H-085: The attribute blocks glued to the reference follow its text as one brace block in the fixed order (C2-I-085, C2-H-139), for a render of source and of a supplied tree alike. C2-H-139: An attribute block that is attached to an unresolved reference is written after it as text, as one brace block in the fixed order: id, classes, language, keys.",
+   "summary": "unresolved reference in a quote: glued blocks of source written in the fixed order",
+   "kind": "render",
+   "input": "> [x][no]{.c}{#i}",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>[x][no]{#i .c}</p></blockquote>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-901",
+   "clauses": [
+    "C2-H-085",
+    "C2-H-139"
+   ],
+   "why": "C2-H-085: The attribute blocks glued to the reference follow its text as one brace block in the fixed order (C2-I-085, C2-H-139), for a render of source and of a supplied tree alike.",
+   "summary": "unresolved reference in a table cell: glued blocks written in the fixed order",
+   "kind": "render",
+   "input": "| [x][no]{.c}{#i} |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>[x][no]{#i .c}</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
   }
  ]
 }
