@@ -15712,6 +15712,176 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-279",
+   "document": "syntax-blocks.md",
+   "number": 279,
+   "section": "Fences, divs and comment blocks",
+   "clauses": [
+    "C2-B-108",
+    "C2-B-109",
+    "C2-B-110",
+    "C2-B-111",
+    "C2-B-112",
+    "C2-B-113",
+    "C2-B-114",
+    "C2-B-115",
+    "C2-B-116",
+    "C2-B-222",
+    "C2-B-195"
+   ],
+   "kind": "render",
+   "input": "- a\n  %%%\n  hidden\n%%%\n- b\n\nafter",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>\n<p>after</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "a",
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 3,
+              "endColumn": 4,
+              "startOffset": 2,
+              "endOffset": 3
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 3,
+            "endColumn": 4,
+            "startOffset": 2,
+            "endOffset": 3
+           }
+          },
+          {
+           "type": "comment",
+           "form": "block",
+           "value": "hidden",
+           "pos": {
+            "startLine": 2,
+            "endLine": 4,
+            "startColumn": 3,
+            "endColumn": 4,
+            "startOffset": 6,
+            "endOffset": 22
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 22
+         }
+        },
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "b",
+             "pos": {
+              "startLine": 5,
+              "endLine": 5,
+              "startColumn": 3,
+              "endColumn": 4,
+              "startOffset": 25,
+              "endOffset": 26
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 5,
+            "endLine": 5,
+            "startColumn": 3,
+            "endColumn": 4,
+            "startOffset": 25,
+            "endOffset": 26
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 23,
+          "endOffset": 26
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 26
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "after",
+         "pos": {
+          "startLine": 7,
+          "endLine": 7,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 28,
+          "endOffset": 33
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 7,
+        "endLine": 7,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 28,
+        "endOffset": 33
+       }
+      }
+     ],
+     "srcByteLength": 33,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-113",
    "document": "syntax-blocks.md",
    "number": 113,

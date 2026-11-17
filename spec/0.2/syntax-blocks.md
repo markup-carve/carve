@@ -2932,7 +2932,33 @@ code
 
 **C2-B-108** A run of three or more backticks opens a code fence; a run of tildes opens nothing and is text, where 0.1 and Markdown read it as a second fence character. A code block that holds a backtick fence takes a longer run (C2-B-110). Further, a run of three or more colons opens or closes a div, and a run of three or more percent signs opens a comment block. Text behind the percent run on the opener line, without the spaces and tabs before it, is the first line of the comment's value, as in 0.1.
 
-**C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test.
+**C2-B-109** The closer has the opener's character and at least its length, on a line owned by the same container, with no further column test. A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.
+
+The closer at column 0 closes the comment block of the first item and closes no container, so `- b` is the second item of the list and `after` is a paragraph (C2-B-109).
+
+Example 279 (unverified)
+
+::: compare
+
+```carve
+- a
+  %%%
+  hidden
+%%%
+- b
+
+after
+```
+
+```html
+<ul>
+  <li>a</li>
+  <li>b</li>
+</ul>
+<p>after</p>
+```
+
+:::
 
 **C2-B-110** The closer of a code fence and of a comment block is a bare run: a run followed by other text is content of the body.
 
@@ -3747,7 +3773,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
-**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138. A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block. So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line. Its comment is a comment node of that container.
+**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first, after the closer of a comment block (C2-B-109): where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138. A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block. So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line. Its comment is a comment node of that container.
 
 **C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
@@ -6564,7 +6590,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 8 | 0 | 7 | 7 |
 | Attribute lines | 20 | 1 | 12 | 11 |
-| Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
+| Fences, divs and comment blocks | 11 | 0 | 7 | 5 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
 | Comments | 13 | 3 | 14 | 9 |
@@ -6576,7 +6602,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 19 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **107** |
+| **Total** | **219** | **10** | **171** | **108** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

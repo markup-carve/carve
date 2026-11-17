@@ -1902,16 +1902,6 @@
       "silent": true
     },
     {
-      "id": "U-224",
-      "kind": "report",
-      "group": "percent fence at a container boundary",
-      "from": "> %%%\n> secret\n  %%%\nafter\n",
-      "to": "> %%%\n> secret\n  %%%\nafter\n",
-      "meaning02": "C2-B-108, C2-B-110, and C2-B-114 give the percent fence a different container extent in quotes and note definitions.",
-      "toolEntry": "U-224",
-      "silent": true
-    },
-    {
       "id": "U-225",
       "kind": "escape",
       "group": "caption caret followed by an empty comment",
