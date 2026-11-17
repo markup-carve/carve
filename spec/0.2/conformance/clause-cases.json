@@ -54603,6 +54603,26 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1148",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "longer colon run closes shorter div",
+ "kind": "lint",
+ "input": ":::\na\n::::\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "colon-fence-length-mismatch",
+    "messageWhen": "the bare run is longer than the innermost opener"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
