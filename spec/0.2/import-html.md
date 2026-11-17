@@ -1535,7 +1535,7 @@ Video:
 
 :::
 
-The input of Examples 34 and 35 with `rawHtml` off, the default. The two comments, the script and the iframe give four `import-element-dropped` entries. The text around the inline comment is joined (C2-M-073), and the space before the iframe is removed at the end of its paragraph (C2-M-018) and reported with `import-whitespace-normalized`.
+The input of Examples 34 and 35 with `rawHtml` off, the default. The two comments, the script and the iframe give four `import-element-dropped` entries. The text around the inline comment is joined (C2-M-015), and the space before the iframe is removed at the end of its paragraph (C2-M-018) and reported with `import-whitespace-normalized`.
 
 Reported: `import-element-dropped`, `import-whitespace-normalized`.
 
@@ -1559,7 +1559,7 @@ ab
 
 :::
 
-With `rawHtml` off, the default, the raw span that a render with `roundtrip` wrote is dropped and gives one `import-element-dropped` entry whose `foreignType` is `span`. The text around it is joined (C2-M-073).
+With `rawHtml` off, the default, the raw span that a render with `roundtrip` wrote is dropped and gives one `import-element-dropped` entry whose `foreignType` is `span`. The text around it is joined (C2-M-015).
 
 Reported: `import-element-dropped`.
 
@@ -1574,8 +1574,6 @@ Reported: `import-element-dropped`.
 **C2-M-071** The HTML parser never puts an `<a>` inside an `<a>` (C2-M-003), so the tree holds no link inside a link.
 
 **C2-M-072** Ids are kept as written, also when two elements carry the same id. The tree then holds a duplicate id, which the reader reports with `duplicate-id` (C2-A-039); the importer adds no report and changes no id.
-
-**C2-M-073** Adjacent text is joined (C2-M-015).
 
 **C2-M-074** A tree that holds a fact the writer has no spelling for in that place, such as blocks in a table cell, a row span the source cannot express or a `dir`, is returned as it stands. The writer reports it with `field-unspellable` or `structure-unspellable` (C2-W-117), in the same record.
 
@@ -1786,4 +1784,6 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 59 examples: 46 verified and 13 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 83 clauses: 82 rules and 1 exception. It holds 59 examples: 46 verified and 13 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+
+The reduction of 17 November 2026 deleted C2-M-073, whose rule another clause states; its id is not reused.
