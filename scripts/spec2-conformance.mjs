@@ -330,13 +330,19 @@ for (const entry of cases.cases) {
   if (ids.has(entry.id)) fail(`clause-cases.json ${entry.id}: duplicate id`)
   ids.add(entry.id)
   for (const clause of entry.clauses) if (!clauseText.has(clause)) fail(`clause-cases.json ${entry.id}: cites ${clause}, which no document defines`)
-  // `why` is one or more quotes, each `CLAUSE-ID: sentence`; ' ... ' joins two pieces of one clause.
-  const quotes = entry.why.split(/ (?=C2-[A-Z]-\d{3}: )/).map(part => /^(C2-[A-Z]-\d{3}): (.+)$/.exec(part))
+  // `why` quotes clauses and, when a catalog trigger decides the case, a reports fragment.
+  const quotes = entry.why.split(/ (?=C2-[A-Z]-\d{3}: |Catalog [a-z0-9/-]+: )/)
   const norm = (text) => text.replaceAll(/\s+/g, ' ').trim()
-  for (const quote of quotes) {
-    if (!quote) { fail(`clause-cases.json ${entry.id}: why does not start with a clause id`); continue }
-    if (!entry.clauses.includes(quote[1])) fail(`clause-cases.json ${entry.id}: why quotes ${quote[1]}, which clauses does not list`)
-    else if (!quote[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(quote[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${quote[1]}`)
+  for (const part of quotes) {
+    const clause = /^(C2-[A-Z]-\d{3}): (.+)$/.exec(part)
+    const catalog = /^Catalog ([a-z0-9/-]+): (.+)$/.exec(part)
+    if (clause) {
+      if (!entry.clauses.includes(clause[1])) fail(`clause-cases.json ${entry.id}: why quotes ${clause[1]}, which clauses does not list`)
+      else if (!clause[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(clause[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${clause[1]}`)
+    } else if (catalog) {
+      const report = ruleOf.get(catalog[1])?.reports ?? ''
+      if (!catalog[2].split(' ... ').map(norm).every(piece => norm(report).includes(piece))) fail(`clause-cases.json ${entry.id}: why is not reports text of ${catalog[1]}`)
+    } else fail(`clause-cases.json ${entry.id}: why does not start with a clause or Catalog id`)
   }
   if (entry.expected.children && !validateTree({ type: 'document', astVersion: '2.0', children: entry.expected.children })) fail(`clause-cases.json ${entry.id}: the AST schema refuses the expected children at ${validateTree.errors[0].instancePath || '/'}: ${validateTree.errors[0].message}`)
   if ((entry.kind ?? 'render') === 'render' && entry.input !== undefined && !entry.files && exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
