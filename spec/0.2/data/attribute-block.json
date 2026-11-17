@@ -104,7 +104,7 @@
     {
       "name": "empty_block",
       "spelling": "braces_around_nothing_or_spaces",
-      "valid": "only_in_glued_run_after_bracket_pair",
+      "valid": "only_in_glued_run_after_span_bracket_pair",
       "otherwise": "text",
       "clauses": ["C2-I-040", "C2-B-193"]
     },

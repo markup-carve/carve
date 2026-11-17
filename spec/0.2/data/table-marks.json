@@ -54,7 +54,7 @@
       "entries": ["center", "left", "right"],
       "sets": "table_column.align",
       "written_to_html": false,
-      "report": "table-column-arity",
+      "report": "table-attribute-invalid",
       "clauses": ["C2-B-187", "C2-B-211", "C2-B-213", "C2-B-227", "C2-H-153"]
     },
     {

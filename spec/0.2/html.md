@@ -1325,7 +1325,7 @@ a[^n]
 
 :::
 
-**C2-H-091** The backlinks are appended to the last block of the note that renders something when that block is written as `<p>`, and otherwise stand in a paragraph of their own. A note with one reference has one backlink, `<a href="#fnrefN" role="doc-backlink" aria-label="LABEL">↩</a>`. A note with several has one per reference, each with `<sup>K</sup>` after the glyph and `LABEL K` as its label, joined by one space.
+**C2-H-091** The backlinks are appended to the last block of the note that renders something when that block is written as `<p>`, and otherwise stand in a paragraph of their own. A note with one reference has one backlink, `<a href="#fnrefN" role="doc-backlink" aria-label="LABEL">↩</a>`, where LABEL is the `footnoteBacklink` label (C2-H-125). A note with several has one per reference, each with `<sup>K</sup>` after the glyph and `LABEL K` as its label, joined by one space.
 
 A comment after the last paragraph renders nothing and does not move the backlinks; a block image is no `<p>`, so they take a paragraph of their own.
 
@@ -1944,7 +1944,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-124** `symbols` maps a symbol name to its output (C2-H-101). The values are trusted and written verbatim.
 
-**C2-H-125** `labels` replaces the strings the engine writes itself, such as the label of the footnote section and of a backlink. A label is text and is escaped where it is written. A key left out keeps its English default.
+**C2-H-125** `labels` replaces the strings the engine writes itself, such as the label of the footnote section and of a backlink. A label is text and is escaped where it is written. A key left out keeps its English default. The core writes no string of the keys `indexBackref`, `codeGroup` and `tocNav`, which are kept for extensions.
 
 **C2-H-126** `social` holds the URL templates and the resolvers for mentions and tags (C2-H-100). Without it, both render as inert spans. It has four fields, each optional, and no other: `mentionUrl` and `tagUrl` are strings, and `resolveMention` and `resolveTag` are functions of the host. A template gives its string with each `{name}` replaced by the name, percent-encoded as UTF-8 with every character encoded except ASCII letters, digits and `-`, `_`, `.`, `!`, `~`, `*`, `'`, `(` and `)`; no other part of the template is read. A resolver takes the name as written and returns a URL, or nothing. For a mention the resolver is asked first and the template is used when it returns nothing; a tag works the same with its own pair. An empty URL is no URL. The URL is a sink of the URL policy (C2-H-159).
 
@@ -2310,7 +2310,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 
 **C2-H-175** An `abbr` span with neither an authored `title` nor a nonempty derived abbreviation value writes no `title` attribute. The test is made on the value as written, before the filter of C2-H-161: an authored `abbr` that the filter empties gives `title=""`.
 
-**C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list of `data/url-policy.json` as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
+**C2-H-173** The engine exports the scheme test of C2-H-159 and the default deny list, the `default` of `urlPolicy` in `data/options.json`, as public functions and data for every consumer that writes a URL sink. A consumer applies the same test instead of copying the policy.
 
 **C2-H-176** In text content and attribute values, the renderer replaces a character that the HTML input stream rejects with U+FFFD. This includes U+0000, C0 controls other than tab, line feed, form feed and carriage return, U+007F, C1 controls, unpaired surrogates and Unicode noncharacters. A surrogate pair that spells a noncharacter is replaced once. Raw HTML and HTML returned by a host extension renderer remain the host's responsibility.
 

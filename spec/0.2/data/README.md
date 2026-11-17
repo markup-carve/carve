@@ -51,7 +51,7 @@ Read a file at build time and generate the tables the engine needs from it, or l
 npm run spec2:data
 ```
 
-The script validates each file against its schema, checks that every cited clause id exists in the seven documents of `spec/0.2/`, checks the order of the rows and the names one file takes from another, and prints the clauses of the two syntax chapters that no row cites. That list is a report for review and does not fail the run. It reads the seven documents from `spec/0.2/`.
+The script validates each file against its schema, checks that every cited clause id exists in the nine documents of `spec/0.2/`, checks the order of the rows and the names one file takes from another, and prints the clauses of the two syntax chapters that no row cites. That list is a report for review and does not fail the run. It reads the nine documents from `spec/0.2/`.
 
 ```
 npm run spec2:unicode

@@ -496,7 +496,7 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-038** A reference is a host whether or not its label resolves (C2-I-075).
 
-**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, and a later id or key replaces an earlier one of the same name. This is the inline side of C2-B-094.
+**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, a later id or key replaces an earlier one of the same name, and a later language part replaces an earlier one. This is the inline side of C2-B-094.
 
 **Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text. It is read only behind a pair that is a span, also behind another block of that span; behind a link, an inline footnote or an inline extension it is text.
 

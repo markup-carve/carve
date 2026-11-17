@@ -110,7 +110,7 @@ The standard extensions are a catalog that follows the core: this section is not
 
 **C2-X-046** A reader refuses a `carve.tab` outside `carve.tabs.slots.tabs`, an item of that slot that is not `carve.tab`, or a tab without its `body` slot.
 
-**C2-X-047** The tabs renderer groups the controls and names each panel with the plain text of its title, or `Tab` and its position when the title is absent. Without a stylesheet every panel stays visible.
+**C2-X-047** The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title, or `Tab` and its position when the title is absent. Without a stylesheet every panel stays visible.
 
 **C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.
 
