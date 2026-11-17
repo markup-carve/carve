@@ -77,16 +77,20 @@
     },
     "lazy_shapes": {
       "type": "array",
-      "description": "The shapes of line-shapes.json that C2-B-024 names as lazy lines of an open paragraph. A bullet or an ordered marker is lazy where row b does not make it an interrupter (C2-B-015).",
+      "description": "The shapes of line-shapes.json that C2-B-024 names as lazy lines of an open paragraph. A bullet or an ordered marker is lazy where row b does not make it an interrupter (C2-B-015). `stanza` tells whether the shape is also a lazy line of an open stanza of a line block.",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "clauses"],
+        "required": ["name", "stanza", "clauses"],
         "properties": {
           "name": {
             "type": "string",
             "pattern": "^[a-z][a-z0-9_]*$",
             "description": "The identifier of the row, unique in its list."
+          },
+          "stanza": {
+            "type": "boolean",
+            "description": "True when the shape does not end an open stanza of a line block: an include directive and a list marker are lines of text of it, and a comment-only line is not seen (C2-B-137); false when it ends the stanza (C2-B-024)."
           },
           "clauses": {
             "type": "array",

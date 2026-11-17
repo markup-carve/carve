@@ -934,6 +934,141 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-464",
+   "document": "syntax-blocks.md",
+   "number": 464,
+   "section": "Paragraphs and interrupters",
+   "clauses": [
+    "C2-B-011",
+    "C2-B-012",
+    "C2-B-013",
+    "C2-B-014",
+    "C2-B-015",
+    "C2-B-016",
+    "C2-B-017",
+    "C2-B-018",
+    "C2-B-019",
+    "C2-B-200",
+    "C2-B-020",
+    "C2-B-021",
+    "C2-B-022",
+    "C2-B-024"
+   ],
+   "kind": "render",
+   "input": "- ::: |\n  a\nb",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>a<br>\nb</p>\n    </div>\n  </li>\n</ul>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "line_block",
+           "children": [
+            {
+             "type": "line",
+             "children": [
+              {
+               "type": "text",
+               "value": "a",
+               "pos": {
+                "startLine": 2,
+                "endLine": 2,
+                "startColumn": 3,
+                "endColumn": 4,
+                "startOffset": 10,
+                "endOffset": 11
+               }
+              }
+             ],
+             "pos": {
+              "startLine": 2,
+              "endLine": 2,
+              "startColumn": 3,
+              "endColumn": 4,
+              "startOffset": 10,
+              "endOffset": 11
+             }
+            },
+            {
+             "type": "line",
+             "children": [
+              {
+               "type": "text",
+               "value": "b",
+               "pos": {
+                "startLine": 3,
+                "endLine": 3,
+                "startColumn": 1,
+                "endColumn": 2,
+                "startOffset": 12,
+                "endOffset": 13
+               }
+              }
+             ],
+             "pos": {
+              "startLine": 3,
+              "endLine": 3,
+              "startColumn": 1,
+              "endColumn": 2,
+              "startOffset": 12,
+              "endOffset": 13
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 3,
+            "startColumn": 3,
+            "endColumn": 2,
+            "startOffset": 2,
+            "endOffset": 13
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 0,
+          "endOffset": 13
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 2,
+        "startOffset": 0,
+        "endOffset": 13
+       }
+      }
+     ],
+     "srcByteLength": 13,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-264",
    "document": "syntax-blocks.md",
    "number": 264,

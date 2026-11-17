@@ -248,7 +248,32 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
-**C2-B-024** Every line that is not one of the six interrupters and not a region marker line (C2-B-137) is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment other than a region marker (C2-B-137), and a list marker that interrupter (b) does not take (C2-B-015).
+**C2-B-024** Every line that is not one of the six interrupters and not a region marker line (C2-B-137) is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment other than a region marker (C2-B-137), and a list marker that interrupter (b) does not take (C2-B-015). An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. A lazy include directive or list marker is a line of text of the stanza (C2-B-123); a lazy `%%` line is a comment-only line (C2-B-137), no line of the stanza, and the stanza goes on below it.
+
+`b` is not indented, so the item does not own it, but it is a lazy line of the open stanza, and the item stays open (C2-B-024).
+
+Example 464 (unverified)
+
+::: compare
+
+```carve
+- ::: |
+  a
+b
+```
+
+```html
+<ul>
+  <li>
+    <div class="line-block">
+      <p>a<br>
+b</p>
+    </div>
+  </li>
+</ul>
+```
+
+:::
 
 Below an open paragraph an attribute line is a lazy line and waits for nothing, and a comment-only line below it is not seen by block structure (C2-B-137): the paragraph of the item takes both lines, and the comment is its child (C2-B-138).
 
@@ -6767,7 +6792,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Preliminaries | 10 | 1 | 4 | 4 |
-| Paragraphs and interrupters | 14 | 2 | 6 | 3 |
+| Paragraphs and interrupters | 14 | 2 | 6 | 4 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
@@ -6791,7 +6816,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **116** |
+| **Total** | **219** | **10** | **171** | **117** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

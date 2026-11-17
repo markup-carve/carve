@@ -17212,6 +17212,187 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-304",
+   "clauses": [
+    "C2-B-024"
+   ],
+   "why": "C2-B-024: An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item. C2-B-024: A lazy include directive or list marker is a line of text of the stanza (C2-B-123); a lazy `%%` line is a comment-only line (C2-B-137), no line of the stanza, and the stanza goes on below it.",
+   "summary": "lazy lines of a quoted stanza, a list marker among them",
+   "input": "> ::: |\n> a\nb\n- c",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <div class=\"line-block\">\n    <p>a<br>\nb<br>\n- c</p>\n  </div>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "line_block",
+        "children": [
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         },
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "- c"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-305",
+   "clauses": [
+    "C2-B-024"
+   ],
+   "why": "C2-B-024: An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item.",
+   "summary": "lazy lines keep the item open for the closer",
+   "input": "- ::: |\n  a\nb\nc\n  :::",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>a<br>\nb<br>\nc</p>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "line_block",
+          "children": [
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "a"
+             }
+            ]
+           },
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           },
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "c"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-306",
+   "clauses": [
+    "C2-B-024"
+   ],
+   "why": "C2-B-024: An open stanza of a line block takes lazy lines as an open paragraph does, as in 0.1, except a heading, a quote, an attribute line and a definition, which end the stanza: `- ::: |`, `  a`, `b` is one stanza of two lines in the item.",
+   "summary": "a heading ends the stanza and the item",
+   "input": "- ::: |\n  a\nb\n# h",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>a<br>\nb</p>\n    </div>\n  </li>\n</ul>\n<section id=\"h\">\n  <h1>h</h1>\n</section>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "line_block",
+          "children": [
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "a"
+             }
+            ]
+           },
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "h"
+       }
+      ],
+      "generatedId": "h"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

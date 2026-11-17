@@ -56,15 +56,15 @@
     }
   ],
   "lazy_shapes": [
-    { "name": "abbreviation_definition", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "attribute_line", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "bullet", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "comment_only", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "footnote_definition", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "heading", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "include", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "link_definition", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "ordered", "clauses": ["C2-B-012", "C2-B-024"] },
-    { "name": "quote", "clauses": ["C2-B-012", "C2-B-024"] }
+    { "name": "abbreviation_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "attribute_line", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "bullet", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "comment_only", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-137"] },
+    { "name": "footnote_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "heading", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "include", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "link_definition", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] },
+    { "name": "ordered", "stanza": true, "clauses": ["C2-B-012", "C2-B-024", "C2-B-123"] },
+    { "name": "quote", "stanza": false, "clauses": ["C2-B-012", "C2-B-024"] }
   ]
 }
