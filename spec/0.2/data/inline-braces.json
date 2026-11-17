@@ -13,7 +13,7 @@
       "name": "raw_inline",
       "opener": "{=",
       "condition": "glued_to_closed_plain_code_span",
-      "clauses": ["C2-I-021", "C2-I-022", "C2-I-045"]
+      "clauses": ["C2-I-021"]
     },
     {
       "rank": 2,

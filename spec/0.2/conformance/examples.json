@@ -40128,8 +40128,7 @@
    "number": 123,
    "section": "Raw inline",
    "clauses": [
-    "C2-I-021",
-    "C2-I-022"
+    "C2-I-021"
    ],
    "kind": "render",
    "input": "`x`{=_a}",
@@ -40194,8 +40193,7 @@
    "number": 14,
    "section": "Raw inline",
    "clauses": [
-    "C2-I-021",
-    "C2-I-022"
+    "C2-I-021"
    ],
    "kind": "render",
    "input": "a `<br>`{=html} b",
@@ -40273,8 +40271,7 @@
    "number": 15,
    "section": "Raw inline",
    "clauses": [
-    "C2-I-021",
-    "C2-I-022"
+    "C2-I-021"
    ],
    "kind": "render",
    "input": "`<br>`{=html .c} and [s]{=html} and $`x`{=html}",
@@ -42590,8 +42587,7 @@
    "number": 32,
    "section": "The opening brace",
    "clauses": [
-    "C2-I-043",
-    "C2-I-045"
+    "C2-I-043"
    ],
    "kind": "render",
    "input": "[s]{#id} and [s]{#id#} and [s]{#id k=v#}",
@@ -42730,8 +42726,7 @@
    "number": 33,
    "section": "The opening brace",
    "clauses": [
-    "C2-I-043",
-    "C2-I-045"
+    "C2-I-043"
    ],
    "kind": "render",
    "input": "a {=a}b=} c and {---} and [s]{=x=}",
@@ -42883,8 +42878,7 @@
    "number": 34,
    "section": "The opening brace",
    "clauses": [
-    "C2-I-043",
-    "C2-I-045"
+    "C2-I-043"
    ],
    "kind": "render",
    "input": "a {_k=v_} b and {_a_}",
@@ -42962,8 +42956,7 @@
    "number": 35,
    "section": "The opening brace",
    "clauses": [
-    "C2-I-043",
-    "C2-I-045"
+    "C2-I-043"
    ],
    "kind": "render",
    "input": "a {'x'} b and {\"a\": \"b\"}",

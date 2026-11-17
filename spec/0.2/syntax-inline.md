@@ -327,7 +327,7 @@ the sum $`a + b
 
 ## Raw inline
 
-**C2-I-021** A closed code span with `{=name}` glued to it is raw inline. The name is a raw format name (C2-B-225). The content is written unescaped to the output format of that name and dropped for every other format. (carried over from 0.1)
+**C2-I-021** A closed plain code span with `{=name}` glued to it, `name` a raw format name (C2-B-225), is raw inline; the marker is tried together with the attribute block, before the highlight opener. The content is written unescaped to the output format of that name and dropped for every other format. Anywhere else, after a literal-text span or a math span too, `{=` is read as a braced opener (C2-I-043).
 
 A raw format name starts with an ASCII letter, so `{=_a}` makes no raw span.
 
@@ -344,8 +344,6 @@ Example 123 (generated)
 ```
 
 :::
-
-**Exception C2-I-022** Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-043).
 
 Raw HTML is written only when the `rawHtml` option allows it. That is a rendering rule.
 
@@ -699,8 +697,6 @@ Example 31 (generated)
 ## The opening brace
 
 **C2-I-043** At an opening brace the scan takes the first of these that matches. One: a valid attribute block. Two: `{%`, a braced comment, when `%}` follows in the content. Three: `{#`, an editorial comment, when `#}` follows in the content with at least one character between. Four: `{` followed by one of `*`, `/`, `_`, `~`, `=`, `+`, `-`, `^` or `,`, a braced opener on the delimiter stack.
-
-**Exception C2-I-045** Glued to a closed code span, `{=name}` is tried together with the attribute block, before the highlight opener (C2-I-021).
 
 There are no braced quote forms: `{'` and `{"` are a brace followed by a quote. An include directive `{{ ... }}` is a block line; inside inline content each of its braces is read on its own.
 
@@ -2524,10 +2520,10 @@ There is no fixed budget for the inline chapter.
 | Backslash escapes | 4 | 0 | 2 | 0 |
 | Code spans | 5 | 0 | 3 | 1 |
 | Math spans | 1 | 0 | 1 | 1 |
-| Raw inline | 2 | 1 | 2 | 1 |
+| Raw inline | 1 | 0 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 2 |
 | Attribute blocks | 12 | 2 | 7 | 5 |
-| The opening brace | 2 | 1 | 3 | 1 |
+| The opening brace | 1 | 0 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 1 | 0 | 2 | 0 |
@@ -2543,9 +2539,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **111** | **16** | **70** | **61** |
+| **Total** | **109** | **14** | **70** | **61** |
 
-The chapter has 111 clauses, 16 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-041, whose rule another clause states; its id is not reused.
+The chapter has 109 clauses, 14 of them exceptions, and 131 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-I-022, C2-I-041 and C2-I-045, whose rule another clause states; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

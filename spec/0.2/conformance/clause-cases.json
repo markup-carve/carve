@@ -18174,7 +18174,7 @@
     "C2-I-021",
     "C2-B-225"
    ],
-   "why": "C2-I-021: A closed code span with `{=name}` glued to it is raw inline. The name is a raw format name (C2-B-225). The content is written unescaped to the output format of that name and dropped for every other format.",
+   "why": "C2-I-021: A closed plain code span with `{=name}` glued to it, `name` a raw format name (C2-B-225), is raw inline; the marker is tried together with the attribute block, before the highlight opener. The content is written unescaped to the output format of that name and dropped for every other format.",
    "summary": "a raw format name with a hyphen and a digit makes raw inline, dropped for HTML",
    "input": "`x`{=tex-2}",
    "options": {},
@@ -18198,10 +18198,10 @@
   {
    "id": "CC-326",
    "clauses": [
-    "C2-I-022",
+    "C2-I-021",
     "C2-I-043"
    ],
-   "why": "C2-I-022: Only a plain code span takes the marker. After a literal-text span or a math span, and anywhere else, `{=name}` is not a raw marker, and `{=` is read as a braced opener (C2-I-043).",
+   "why": "C2-I-021: Anywhere else, after a literal-text span or a math span too, `{=` is read as a braced opener (C2-I-043).",
    "summary": "a raw marker after a literal-text span is text",
    "input": "!`x`{=html}",
    "options": {},

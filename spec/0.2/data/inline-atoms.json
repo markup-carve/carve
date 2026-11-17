@@ -212,7 +212,7 @@
       "suffix_name": { "first": ["A-Z", "a-z"], "rest": ["-", "0-9", "A-Z", "_", "a-z"] },
       "requires": "closed_plain_code_span",
       "host": false,
-      "clauses": ["C2-I-005", "C2-I-021", "C2-I-022", "C2-I-036", "C2-I-045"]
+      "clauses": ["C2-I-005", "C2-I-021", "C2-I-036"]
     },
     { "name": "symbol", "file": "inline-sigils.json", "host": true, "clauses": ["C2-I-005", "C2-I-036", "C2-I-095"] },
     { "name": "tag", "file": "inline-sigils.json", "host": false, "clauses": ["C2-I-005", "C2-I-036", "C2-I-095"] }
