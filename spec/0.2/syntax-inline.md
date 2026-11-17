@@ -2027,9 +2027,25 @@ Where the guess is wrong, the author types the curly character.
 
 **C2-I-115** Six runs become arrows: `-->`, `<--`, `<-->`, `==>`, `<==` and `<=>`. The longest match is taken, among these runs and the runs of C2-I-117 together, so `<=>` is the arrow and not `<=` followed by `>`. The single forms `->`, `<-` and `=>` are text. (carried over from 0.1) Only replaced runs take part in the match: `->`, `<-` and `=>` take no characters, so `->=` holds the text `-` and the sign for `>=`.
 
-**Exception C2-I-116** An arrow is matched before a hyphen run is split, and it needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. (carried over from 0.1)
+**Exception C2-I-116** An arrow is matched before a hyphen run is split, and an arrow of hyphens needs its exact run: a longer hyphen run next to `<` or `>` is a dash run. An arrow of equals signs needs none: `===>` is `=` and the arrow `==>`. (carried over from 0.1)
 
-**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1) For this test and for the exact run of an arrow (C2-I-116), the neighbors are the characters of the same text on each side of the run: the mark of a delimiter, opening or closing, is never a neighbor, and a braced comment between two characters is transparent (C2-I-026). So `{++-+}` inserts a plus-minus sign.
+**C2-I-117** `!=`, `<=` and `>=` become the comparison signs, `+-` becomes the plus-minus sign and `(tm)` the trademark sign. `+-` needs its exact run, as an arrow of hyphens does (C2-I-116): next to another `+` or `-` it is text, so `C++-style` stays as typed. `(c)` and `(r)` are text. (carried over from 0.1) For this test and for the exact run of an arrow of hyphens (C2-I-116), the neighbors are the characters of the same text on each side of the run: the mark of a delimiter, opening or closing, is never a neighbor, and a braced comment between two characters is transparent (C2-I-026). So `{++-+}` inserts a plus-minus sign.
+
+Only the hyphen arrows need their exact run.
+
+Example 122 (generated)
+
+::: compare
+
+```carve
+a ===> b <==> c
+```
+
+```html
+<p>a =⇒ b ⇐&gt; c</p>
+```
+
+:::
 
 Example 94 (generated)
 
@@ -2363,13 +2379,13 @@ There is no fixed budget for the inline chapter.
 | Abbreviations | 3 | 1 | 1 | 0 |
 | Citations | 1 | 0 | 0 | 1 |
 | Hard break and soft break | 2 | 0 | 3 | 0 |
-| Smart typography | 7 | 2 | 6 | 6 |
+| Smart typography | 7 | 2 | 7 | 6 |
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **118** | **17** | **67** | **54** |
+| **Total** | **118** | **17** | **68** | **54** |
 
-The chapter has 118 clauses, 17 of them exceptions, and 121 examples. The clause count includes the exceptions.
+The chapter has 118 clauses, 17 of them exceptions, and 122 examples. The clause count includes the exceptions.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

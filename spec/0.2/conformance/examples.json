@@ -48317,6 +48317,117 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-inline-122",
+   "document": "syntax-inline.md",
+   "number": 122,
+   "section": "Smart typography",
+   "clauses": [
+    "C2-I-104",
+    "C2-I-105",
+    "C2-I-111",
+    "C2-I-114",
+    "C2-I-115",
+    "C2-I-116",
+    "C2-I-117"
+   ],
+   "kind": "render",
+   "input": "a ===> b <==> c",
+   "options": {},
+   "expected": {
+    "html": "<p>a =⇒ b ⇐&gt; c</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a =",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 0,
+          "endOffset": 3
+         }
+        },
+        {
+         "type": "smart_punctuation",
+         "kind": "rightwards_double_arrow",
+         "glyph": "⇒",
+         "source": "==>",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 4,
+          "endColumn": 7,
+          "startOffset": 3,
+          "endOffset": 6
+         }
+        },
+        {
+         "type": "text",
+         "value": " b ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 7,
+          "endColumn": 10,
+          "startOffset": 6,
+          "endOffset": 9
+         }
+        },
+        {
+         "type": "smart_punctuation",
+         "kind": "leftwards_double_arrow",
+         "glyph": "⇐",
+         "source": "<==",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 10,
+          "endColumn": 13,
+          "startOffset": 9,
+          "endOffset": 12
+         }
+        },
+        {
+         "type": "text",
+         "value": "> c",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 13,
+          "endColumn": 16,
+          "startOffset": 12,
+          "endOffset": 15
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 16,
+        "startOffset": 0,
+        "endOffset": 15
+       }
+      }
+     ],
+     "srcByteLength": 15,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-94",
    "document": "syntax-inline.md",
    "number": 94,
