@@ -54563,6 +54563,26 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1146",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "attribute followed by blank line at EOF selects blank-line advice",
+ "kind": "lint",
+ "input": "{.c}\n\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "unattached-block-attribute",
+    "messageWhen": "a blank line follows the attribute line in its container, whether or not a block follows that blank line"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
