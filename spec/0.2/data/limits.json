@@ -10,6 +10,22 @@
       ]
     },
     {
+      "name": "derived_text_bytes",
+      "value": 1000000,
+      "unit": "bytes",
+      "clauses": [
+        "C2-H-201"
+      ]
+    },
+    {
+      "name": "derived_text_factor",
+      "value": 8,
+      "unit": "bytes_per_source_byte",
+      "clauses": [
+        "C2-H-201"
+      ]
+    },
+    {
       "name": "extension_depth",
       "value": 32,
       "unit": "levels",

@@ -39,6 +39,7 @@
               "open_blocks",
               "open_entries",
               "bytes",
+              "bytes_per_source_byte",
               "columns",
               "lines",
               "levels",

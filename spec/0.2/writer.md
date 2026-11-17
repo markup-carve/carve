@@ -827,6 +827,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `extension-transform-failed` | render-loss | warning | a claim source could not be prepared or a host transform threw, and the core node was retained (C2-X-050, C2-X-051) |
 | `extension-renderer-failed` | render-loss | warning | a host renderer threw or returned a value that was not a string (C2-X-050) |
 | `profile-construct-degraded` | render-loss | warning | a construct outside the active `profile` (C2-H-129) |
+| `derived-text-budget` | render-loss | warning | the first abbreviation or cross-reference of a render whose derived text no longer fits the budget (C2-H-201) |
 | `import-attribute-dropped`, `import-carrier-ignored`, `import-destination-denied`, `import-element-dropped`, `import-element-mapped`, `import-structure-repaired` | render-loss | warning | a fact of the HTML input that an import dropped or changed (C2-M-080, C2-M-083) |
 | `import-whitespace-normalized` | render-loss | hint | whitespace that an import removed or turned into a space (C2-M-020, C2-M-083) |
 

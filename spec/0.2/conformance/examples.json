@@ -71014,7 +71014,8 @@
     "C2-H-095",
     "C2-H-096",
     "C2-H-098",
-    "C2-H-099"
+    "C2-H-099",
+    "C2-H-201"
    ],
    "kind": "render",
    "input": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ Before\n\n{#fig-x-b}\n![b](b.png)\n^ After\n:::\n^ Figure #: Both\n\nSee </#fig-x-b> and </#fig-x>.",
@@ -71336,7 +71337,8 @@
     "C2-H-095",
     "C2-H-096",
     "C2-H-098",
-    "C2-H-099"
+    "C2-H-099",
+    "C2-H-201"
    ],
    "kind": "render",
    "input": "*[HTML]: HyperText Markup Language\n\nHTML and *HTML* and `HTML`.",

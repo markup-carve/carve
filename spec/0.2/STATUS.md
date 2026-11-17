@@ -29,14 +29,14 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-blocks.md` | C2-B | 219 | 217 | 31 | 10 | 282 |
 | `syntax-inline.md` | C2-I | 112 | 136 | 30 | 16 | 129 |
 | `ast.md` | C2-A | 205 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 193 | 470 | 98 | 6 | 76 |
+| `html.md` | C2-H | 194 | 470 | 98 | 6 | 76 |
 | `writer.md` | C2-W | 129 | 294 | 86 | 5 | 16 |
 | `source-layout.md` | C2-L | 57 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 38 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 58 |
 | `tooling.md` | C2-T | 40 | 103 | 8 | 0 | 0 |
-| **Total** | | **1,178** | **2,284** | **450** | **43** | **599** |
+| **Total** | | **1,179** | **2,284** | **450** | **43** | **599** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount.
 

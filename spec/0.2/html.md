@@ -1689,6 +1689,8 @@ HTML and *HTML* and `HTML`.
 
 :::
 
+**C2-H-201** One render has a budget for derived text: `derived_text_bytes` of `data/limits.json`, 1,000,000 bytes, or `derived_text_factor`, 8, times the source length in UTF-8 bytes, whichever is more. The source length is the byte length of the source the renderer parsed; for a supplied tree it is the root's `srcByteLength` (C2-A-010), 0 where that is absent, and never more than the byte length of the supplied tree text. Abbreviation nodes written as `<abbr>` (C2-H-098) and resolved cross-references (C2-H-096) draw on the one budget in the order the renderer writes them. An abbreviation costs the byte length of its expansion as written; a cross-reference costs the byte length of its generated text as written in HTML. A node whose cost is more than what remains draws nothing and is written in its plain form: an abbreviation as its term, with no `<abbr>` and no `title`, and a cross-reference as `<a href="#ID">` around its key. A later node that fits what remains still draws on it. The first node of a render that does not fit reports `derived-text-budget` in the render-loss channel, once per render. A host may raise neither number. As in 0.1, which reported nothing.
+
 ## Mentions, tags and symbols
 
 **C2-H-100** A mention is `<span class="mention"><strong>@NAME</strong></span>` and a tag is `<span class="tag"><strong>#NAME</strong></span>`. When `social` gives a URL for it, the outer element is `<a class="mention" href="URL">` or `<a class="tag" href="URL">`. Where a mention carries `label` (C2-A-101), the label replaces `@NAME` inside `<strong>`.
@@ -2601,7 +2603,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Inline elements | 8 | 0 | 1 | 1 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
-| Cross-references and abbreviations | 4 | 1 | 1 | 1 |
+| Cross-references and abbreviations | 5 | 1 | 1 | 1 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
@@ -2609,6 +2611,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **43** |
+| **Total** | **194** | **6** | **35** | **43** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 78 examples, 35 generated and 43 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 78 examples, 35 generated and 43 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

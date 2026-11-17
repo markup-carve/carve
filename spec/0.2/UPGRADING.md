@@ -303,6 +303,12 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 
 - An empty reference key matches no heading: `# :smile:` above `[:smile:][]` leaves the reference text, `<p>[:smile:][]</p>`, as in 0.1. A symbol gives no plain text, so freeze candidate 6 compared two empty texts and linked the reference to the heading. C2-I-084.
 
+#### Restored (options, HTML, lint)
+
+| What you wrote | Freeze candidate 6 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| A large abbreviation expansion or a long heading used very often: `*[HT]: ` and 10,000 `X`, then `HT` 150 times; `# A` and 9,999 `!`, then `</#A>` 150 times | Every use was expanded: about 1.5 MB of HTML from 11 KB of source. | Abbreviations and cross-reference labels share a budget of 1,000,000 bytes or 8 times the source bytes; a use past it is written as its term, `HT`, or its key, `<a href="#A">A</a>`, and the render reports `derived-text-budget` once (0.1 reported nothing). | C2-H-201 |
+
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
 Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.

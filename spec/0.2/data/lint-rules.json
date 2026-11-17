@@ -449,6 +449,16 @@
       "clauses": ["C2-B-186"]
     },
     {
+      "id": "derived-text-budget",
+      "severity": "warning",
+      "channel": "render-loss",
+      "status": "new",
+      "messages": ["Wrote an abbreviation or a cross-reference in its plain form: the derived text of this render reached its budget of ${budget} bytes"],
+      "message_origin": "data_file",
+      "reports": "the first abbreviation or cross-reference of a render whose derived text no longer fits the budget (C2-H-201)",
+      "clauses": ["C2-H-201"]
+    },
+    {
       "id": "description-separator-below-content-column",
       "severity": "warning",
       "channel": "lint",
