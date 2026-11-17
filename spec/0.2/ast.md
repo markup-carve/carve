@@ -600,8 +600,6 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-165** `parse(x)`, encoded to JSON and decoded, equals `parse(x)` in every field, positions included. An encoder that drops a field is not conformant.
 
-**C2-A-166** What a formatter has to keep therefore is what the tree holds: the bullet character, the ordered style, delimiter and start, the spacing, the task mark, the comment form, the citation text, and every other field of the node table.
-
 ## Reading a tree
 
 **C2-A-167** Where this document says a reader refuses, it fails with a typed, documented error that names what was wrong and the path of the node. It does not truncate, repair, drop or crash, and it does not surface the error of a JSON library.
@@ -791,11 +789,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 175 | 2 |
+| Existing AST contract | 174 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **211** | **3** |
+| **Total** | **210** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090 and C2-A-164 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-164 and C2-A-166 are deleted.
 
 ## Schema
 
