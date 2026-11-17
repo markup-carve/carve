@@ -202,8 +202,8 @@
           "no_effect_on": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
           "report": { "type": "string", "description": "The code that reports misuse. An id of lint-rules.json." },
           "value": {
-            "enum": ["count", "alignment_list", "width_list", "flag"],
-            "description": "The shape of the value. count: decimal digits, and an empty value counts as one. alignment_list: comma-separated entries, each one of `entries` after its spaces are trimmed; one empty or other entry makes the whole value invalid. width_list: comma-separated entries, each a decimal number above 0 and at most 100 after its spaces are trimmed; one empty or other entry makes the whole value invalid. An invalid value has no effect and stays in `attrs`. flag: the key alone."
+            "enum": ["count", "count_list", "alignment_list", "width_list", "flag"],
+            "description": "The shape of the value. count: decimal digits, and an empty value counts as one. alignment_list: comma-separated entries, each one of `entries` after its spaces are trimmed; one empty or other entry makes the whole value invalid. width_list: comma-separated entries, each a decimal number above 0 and at most 100 after its spaces are trimmed; one empty or other entry makes the whole value invalid. count_list: comma-separated counts, one per table body, checked together with the other body keys (C2-B-230). An invalid value has no effect and stays in `attrs`. flag: the key alone."
           },
           "entries": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "The values an entry of an alignment_list takes." },
           "sets": { "type": "string", "description": "The tree field the value sets, as `node.field`." },

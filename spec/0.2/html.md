@@ -822,9 +822,9 @@ Example 49 (unverified, `--roundtrip`)
 
 ## Tables
 
-**C2-H-055** A table is `<table>` with `<thead>`, `<tbody>` and `<tfoot>` for its groups. Each group tag stands on its own line and each row is one line: `<tr>`, its cells, `</tr>`. An empty group is not written.
+**C2-H-055** A table is `<table>` with `<thead>`, one `<tbody>` for each body and `<tfoot>` for its groups. Each group tag stands on its own line and each row is one line: `<tr>`, its cells, `</tr>`. An empty group is not written.
 
-**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. Explicit `table_cell.scope` writes `scope` with its value; otherwise a head header uses `scope="col"` and another header uses `scope="row"`. `headerIds` writes a space-separated `headers` attribute in its listed order, and each id names a header cell.
+**C2-H-056** A header cell is `<th>` and a data cell is `<td>`. Explicit `table_cell.scope` writes `scope` with its value; otherwise a head header uses `scope="col"` and another header uses `scope="row"`. In a body with `rowHeadColumns` N, a cell that starts in one of the first N columns is written as a header cell. `headerIds` writes a space-separated `headers` attribute in its listed order, and each id names a header cell.
 
 **C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. A resolved vertical alignment adds `vertical-align: VALUE;` after it, one space apart, and stands alone where the cell has no horizontal alignment: `style="vertical-align: top;"`. A cell with no alignment on either axis carries no `style`. An authored `style` keeps its value and takes the declarations after it.
 
@@ -879,7 +879,7 @@ Example 12 (generated)
 
 **C2-H-152** A table with at least one column that has a `width` writes `<colgroup>` after its caption and before its first group, with one `<col>` per column. A column with a width carries `style="width: P%;"`, where P is the width times 100 written as a decimal number without trailing zeros, so `0.305` gives `30.5%` and `0.25` gives `25%`. A column without a width is a bare `<col>`. A table where no column has a width has no `<colgroup>`.
 
-**C2-H-153** `aligns`, `valigns`, `widths`, `header-rows` and `footer-rows` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
+**C2-H-153** `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` and `body-header-cols` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
 
 **C2-H-200** A cell whose children are not one `cell_paragraph` holds the blocks of an imported or supplied tree (C2-A-091), and each `paragraph` among them is written with `<p>`. A cell of one paragraph stays on the line of its row: `<td><p>c</p></td>`. Any other such cell is written as a list item with more blocks is (C2-H-007): a first paragraph on the line of the cell tag, every other block on its own line one level deeper than the row, and the closing cell tag on its own line at the indent of the row, after which the row goes on.
 

@@ -8499,6 +8499,822 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-103",
+   "clauses": [
+    "C2-B-230"
+   ],
+   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "summary": "body-rows in a quote makes two bodies; spaces around an entry are ignored",
+   "input": "> {body-rows=\"1, 1\"}\n> | a |\n> | b |",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <table>\n    <tbody>\n      <tr><td>a</td></tr>\n    </tbody>\n    <tbody>\n      <tr><td>b</td></tr>\n    </tbody>\n  </table>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "table",
+        "columns": [
+         {
+          "type": "table_column"
+         }
+        ],
+        "children": [
+         {
+          "type": "table_body",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_body",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-104",
+   "clauses": [
+    "C2-B-230",
+    "C2-B-178"
+   ],
+   "why": "C2-B-230: The head stays that of C2-B-178 or C2-B-209, so a pipe table writes its head with header marks, not `header-rows` (C2-B-186).",
+   "summary": "header marks keep the head, and body-rows splits the rows below it",
+   "input": "{body-rows=1,1}\n|= H |\n| a |\n| b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">H</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "H"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-105",
+   "clauses": [
+    "C2-B-230",
+    "C2-B-227",
+    "C2-H-153"
+   ],
+   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "summary": "body counts that miss rows have no effect and stay in attrs",
+   "input": "{body-rows=1}\n| a |\n| b |\n| c |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "c"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "body-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-106",
+   "clauses": [
+    "C2-B-230"
+   ],
+   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "summary": "a header list with fewer entries than bodies makes all three keys void",
+   "input": "{body-rows=1,1 body-header-cols=1}\n| a | b |\n| c | d |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n    <tr><td>c</td><td>d</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "c"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "d"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "body-rows",
+         "1,1"
+        ],
+        [
+         "body-header-cols",
+         "1"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-107",
+   "clauses": [
+    "C2-B-230"
+   ],
+   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "summary": "a body header list without body-rows has no effect",
+   "input": "{body-header-rows=1}\n| a |\n| b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "body-header-rows",
+         "1"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-108",
+   "clauses": [
+    "C2-B-230",
+    "C2-B-187"
+   ],
+   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "summary": "an empty body-rows value gives a head and a foot and no body",
+   "input": "{body-rows=\"\" footer-rows=1}\n|= H |\n| F |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">H</th></tr>\n  </thead>\n  <tfoot>\n    <tr><td>F</td></tr>\n  </tfoot>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "H"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_foot",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "F"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-109",
+   "clauses": [
+    "C2-B-230",
+    "C2-H-055"
+   ],
+   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "summary": "a zero entry is an empty body, which HTML does not write",
+   "input": "{body-rows=0,1}\n| a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": []
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-110",
+   "clauses": [
+    "C2-B-230",
+    "C2-B-174",
+    "C2-B-172"
+   ],
+   "why": "C2-B-174: The head, each body and the foot are the groups of a table, and no span crosses from one into another.",
+   "summary": "a row span mark in the first row of a body joins nothing",
+   "input": "{body-rows=1,1}\n| a |\n| ^ |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n  <tbody>\n    <tr><td>^</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "^"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-111",
+   "clauses": [
+    "C2-B-230",
+    "C2-H-056"
+   ],
+   "why": "C2-H-056: In a body with `rowHeadColumns` N, a cell that starts in one of the first N columns is written as a header cell.",
+   "summary": "an empty body-header-cols entry sets no row header column",
+   "input": "- {body-rows=1,1 body-header-cols=,1}\n  | a | b |\n  | c | d |",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr><td>a</td><td>b</td></tr>\n      </tbody>\n      <tbody>\n        <tr><th scope=\"row\">c</th><td>d</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "table",
+          "columns": [
+           {
+            "type": "table_column"
+           },
+           {
+            "type": "table_column"
+           }
+          ],
+          "children": [
+           {
+            "type": "table_body",
+            "children": [
+             {
+              "type": "table_row",
+              "children": [
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "a"
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "b"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_body",
+            "children": [
+             {
+              "type": "table_row",
+              "children": [
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "c"
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "d"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ],
+            "rowHeadColumns": 1
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

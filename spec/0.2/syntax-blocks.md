@@ -5253,7 +5253,7 @@ The first row is a head row: the header mark stands before a space, before the e
 
 **C2-B-173** A span mark that joins nothing is an ordinary cell that holds the mark as text, and `table-span-marker-blocked` reports it. Its prefix applies as on any cell (C2-B-171): `|= ^ |` in the first row is a header cell that holds `^`.
 
-**C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.
+**C2-B-174** The head, each body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.
 
 **C2-B-175** A continuation row starts with `+` and ends with a pipe and trailing spaces and tabs, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
@@ -5323,7 +5323,7 @@ A vertical mark without a horizontal mark or `?` before it is no mark: `{^}` is 
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, and `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all, and `body-rows`, `body-header-rows` and `body-header-cols` keep theirs below the head of 0.2. C2-B-210 to C2-B-214, C2-B-227 and C2-B-230 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
@@ -6138,7 +6138,44 @@ Reported: `table-column-overlap`.
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key.
 
-**C2-B-227** A table reads `aligns`, `valigns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+**C2-B-227** A table reads `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` and `body-header-cols` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212, C2-B-230), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+
+**C2-B-230** `body-rows` splits the rows between the head and the foot into bodies, one `table_body` each in source order. Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body. `body-header-rows`, one count per body, puts that many rows before the data rows of its body, and every cell of such a row is a header cell. `body-header-cols`, one count per body, sets `rowHeadColumns` of its body (C2-A-088); an empty entry sets none. The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect. The head stays that of C2-B-178 or C2-B-209, so a pipe table writes its head with header marks, not `header-rows` (C2-B-186).
+
+The body keys split the rows below the head into two bodies; the second body starts with a header row, and the first body's first column holds row headers (C2-B-230). The cells of the header row are header cells of a body, so they take `scope="row"` (C2-H-056).
+
+Example 277 (unverified)
+
+::: compare
+
+```carve
+{body-rows=1,1 body-header-rows=0,1 body-header-cols=1,0 footer-rows=1}
+|= Item |= Qty |
+| tea | 2 |
+| Later | |
+| milk | 1 |
+| Total | 3 |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col">Item</th><th scope="col">Qty</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">tea</th><td>2</td></tr>
+  </tbody>
+  <tbody>
+    <tr><th scope="row">Later</th><th scope="row"></th></tr>
+    <tr><td>milk</td><td>1</td></tr>
+  </tbody>
+  <tfoot>
+    <tr><td>Total</td><td>3</td></tr>
+  </tfoot>
+</table>
+```
+
+:::
 
 Example 229 (generated)
 
@@ -6510,12 +6547,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 34 | 0 | 22 | 18 |
+| Tables | 35 | 0 | 22 | 19 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **218** | **10** | **171** | **105** |
+| **Total** | **219** | **10** | **171** | **106** |
 
-The chapter has 218 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
+The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 
 ## Not covered
 

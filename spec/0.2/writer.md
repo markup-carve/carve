@@ -327,7 +327,7 @@ Written:
 + |
 ```
 
-**C2-W-136** A key `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
+**C2-W-136** A key `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` or `body-header-cols` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. A table of more than one body, or with an empty body or a `rowHeadColumns`, is written with `body-rows`, the rows of each body, header rows included, and, where a body has `rowHeadColumns`, `body-header-cols`, with an empty entry for a body that has none (C2-B-230); the header cells of a body are written with their header marks. Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
 
 ## Canonical forms: inline
 
@@ -787,7 +787,7 @@ Eight findings of the syntax chapters, and one of the tree and writer chapters, 
 | `comment-in-reference-label` | warning | a line comment that starts inside a reference label and takes the rest of the line, so that the brackets are text (C2-I-077) |
 | `comment-fence-closer-with-text` | warning | a line inside a comment block that starts with a `%` run of at least the opener's length and holds other text: it is content in 0.2 and closed the block in 0.1 (C2-B-110, C2-B-195) |
 | `uneven-list-indent` | warning | a marker left of every open list that continues the list above it (C2-B-054) |
-| `table-attribute-invalid` | warning | an invalid value of `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227) |
+| `table-attribute-invalid` | warning | an invalid value of `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows` or the body keys of C2-B-230 that a table keeps in `attrs` and that has no effect (C2-B-227) |
 | `comment-splits-table-row` | hint | a comment-only line, or the trailing comment of a row, between a table row and its continuation row (C2-W-137) |
 | `table-row-count-clamped` | hint | a valid `header-rows` or `footer-rows` count larger than the rows it can take, which the table clamps (C2-B-187, C2-B-209) |
 | `include-attributes-unused` | warning | an attribute line on an include without `code`, which applies to nothing (C2-N-072) |
@@ -877,7 +877,7 @@ Each topic the rulings name, with the rule that reports it. No id is new here.
 | an unquoted fence title | `fence-title-syntax` |
 | an attribute block after a fence language or an admonition name | `fence-opener-fallback`, with severity error |
 | `header-rows` on a pipe table | `deprecated-table-attribute` |
-| an invalid `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` value | `table-attribute-invalid` |
+| an invalid `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` or `body-header-cols` value | `table-attribute-invalid` |
 | a `header-rows` or `footer-rows` count past the rows | `table-row-count-clamped` |
 | an include option that is invalid | `include-option-invalid` |
 | a comment between a table row and its continuation row | `comment-splits-table-row` |

@@ -366,7 +366,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-087** A table whose source declares no grouping has a head made of its leading rows that have a header cell and no other cell, and one body for the rest (C2-B-178).
 
-**C2-A-088** The partition of a table into head, body and foot is held by its groups alone: the `table_head`, `table_body` and `table_foot` nodes and the rows each holds. No node carries a count of head rows. A `header-rows` attribute that set the partition is spelling, recorded in the layout sidecar (C2-L-057), so a pipe table and a delimited table with the same cells in the same groups are equal trees (C2-L-023).
+**C2-A-088** The partition of a table into head, body and foot is held by its groups alone: the `table_head`, `table_body` and `table_foot` nodes and the rows each holds. No node carries a count of head rows. `rowHeadColumns` of a `table_body` is the number of its leading columns whose cells are row headers (C2-B-230). A `header-rows` attribute that set the partition is spelling, recorded in the layout sidecar (C2-L-057), so a pipe table and a delimited table with the same cells in the same groups are equal trees (C2-L-023).
 
 **C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign` and authored `valign` beside result `resolvedValign`; it may also hold `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213), and `resolvedValign` is the vertical mark of that head cell, or else the authored `valign` from the `valigns` attribute. A cell mark overrides the resolved column alignment for that cell.
 

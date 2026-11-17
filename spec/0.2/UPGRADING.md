@@ -274,6 +274,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | What you wrote | Freeze candidate 5 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
 | --- | --- | --- | --- |
 | An attribute block at the end of a link definition: `[ex]: https://example.com {.external}` | The line was text, and every reference to `ex` stayed literal. | The attributes reach every link and image that uses the definition. | C2-B-083, C2-B-089, C2-B-106 |
+| `body-rows`, `body-header-rows` and `body-header-cols` on a table | Ordinary keys, written as HTML attributes; the rows stayed in one body. | The rows below the head split into one `<tbody>` per body, with header rows and row header columns inside a body. U-271 records what still differs from 0.1. | C2-B-230, C2-H-055, C2-H-056 |
 
 ### Include expansion
 
@@ -598,6 +599,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-267 | Under C2-I-043, the U-065 rewrite fails for an underline whose text starts with `name=`: `{_a=b_}` is an attribute block. **SILENT** | `an _a=b_ word` and `an {_a=b_} word` both render the text, not `<u>a=b</u>`. | Escape the equals sign: `an {_a\=b_} word`; rewrite |
 | U-268 | Under C2-H-095 and C2-H-066, a cross-reference to a panel of a figure group, `</#fig-x-a>`, wrote `<a href="#fig-x-a">Figure 1a</a>` in 0.1. **SILENT** | The reference is unresolved and stays text. | Point the reference at the group, `</#fig-x>`, or write a link; report |
 | U-269 | Under C2-B-174, an alignment block on a span mark that joins, `\|= A \|={>^} < \|` above `\| a \| b \|`, set the default of the column the mark covers in 0.1: `b` was right and top. | The block is kept for nothing, `table-span-marker-attribute` reports it, and `b` has no alignment. This holds for both axes. | Move the marks to each cell of that column below the head that has no mark of its own on that axis, `\| a \|{>^} b \|`, and drop the block; rewrite |
+| U-271 | Under C2-B-230, a header row inside a body, `{body-rows=1 body-header-rows=1}` above `\| a \|` and `\| b \|`, wrote `<th scope="col">a</th>` in 0.1; and with `body-rows` a pipe table had no head unless `header-rows` gave one. **SILENT** | The cells of a body header row are header cells with `scope="row"` (C2-H-056). The head of a pipe table is its leading rows of header cells (C2-B-178), also with `body-rows`. | Review the scope; write a head with header marks in place of `header-rows` (U-058); report |
 
 U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` give the same HTML in 0.1 and 0.2 (C2-B-119 and C2-B-225, C2-I-111, C2-B-101). U-196 and U-231 are withdrawn for the same reason: `{k='x}y'}` and `{id='a"b&c'}` are attribute lines, since a single-quoted value may hold a closing brace and a double quote (C2-I-033). U-144 is withdrawn too: `{+-"+}` writes `-”` in both, since behind `-` the quote closes (C2-I-104). U-183 keeps only the labeled reference: `![][]` above `^ a` stays paragraph text in both, since its brackets are text (C2-I-072, C2-B-197). U-191 is withdrawn: `` ```s `` followed by a tab and `""` gives the same HTML in both, a code block with the language `s` and no title.
 
@@ -830,7 +832,7 @@ The table below combines the migration section of [ast.md](ast.md#migration), it
 | T-033 | split | comment block, delimited and content | form and value | C2-A-050 |
 | T-034 | merge | list ordered, start, olType, delim, bareMarker, bulletChar; tight | marker object; spacing = tight or loose | C2-A-053 C2-A-054 |
 | T-035 | rename | list.items, definition_list.items, table.rows, table_row.cells, citation_group.items | children with typed child slots | C2-A-050 C2-A-051 |
-| T-036 | split | table.rows and rowGroups | table_head, table_body, table_foot children; table columns move to table_column nodes | C2-A-050 |
+| T-036 | split | table.rows and rowGroups | table_head, table_body, table_foot children, one table_body for each entry of rowGroups.bodies, which keeps its rowHeadColumns and whose headRows rows hold header cells (C2-B-230); table columns move to table_column nodes | C2-A-050 C2-B-230 |
 | T-037 | split | table_cell inline children and blocks | cell_paragraph child for inline content; block children for other content | C2-A-050 |
 | T-038 | rename | figure.target and shortCaption | caption.short; the figure itself is unwrapped (T-051, T-052) | C2-A-050 |
 | T-039 | rename | mention.user | target, kind and optional label | C2-A-050 |

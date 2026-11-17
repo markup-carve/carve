@@ -1582,8 +1582,8 @@
         "The value of ${key} is not valid, so the table ignores the whole attribute. Correct every entry, or remove the attribute."
       ],
       "message_origin": "data_file",
-      "reports": "an invalid value of `aligns`, `valigns`, `widths`, `header-rows` or `footer-rows` that a table keeps in `attrs` and that has no effect (C2-B-227)",
-      "clauses": ["C2-B-210", "C2-B-211", "C2-B-212", "C2-B-227"]
+      "reports": "an invalid value of `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows` or the body keys of C2-B-230 that a table keeps in `attrs` and that has no effect (C2-B-227)",
+      "clauses": ["C2-B-210", "C2-B-211", "C2-B-212", "C2-B-227", "C2-B-230"]
     },
     {
       "id": "table-column-arity",

@@ -2340,6 +2340,16 @@
       "meaning02": "<table>\n  <tbody>\n    <tr><td>=a</td></tr>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: the header mark needs a space, a tab, `{`, `<`, `>`, `?`, `~` or the end of the cell behind it; otherwise the `=` is cell text, as in 0.1. The rewrite is for a source written for a header cell under freeze candidate 5, not for a 0.1 document.",
       "toolEntry": "U-270",
       "silent": true
+    },
+    {
+      "id": "U-271",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{body-rows=1 body-header-rows=1}\n| a |\n| b |\n",
+      "to": "",
+      "meaning02": "<table>\n  <tbody>\n    <tr><th scope=\"row\">a</th></tr>\n    <tr><td>b</td></tr>\n  </tbody>\n</table> C2-B-230, C2-H-056: a header row inside a body holds header cells, which take `scope=\"row\"` as every header cell outside the head; 0.1 wrote `scope=\"col\"`. A pipe table with `body-rows` keeps the head its header marks give (C2-B-178), where 0.1 made no head; write the head with header marks in place of `header-rows` (U-058).",
+      "toolEntry": "U-271",
+      "silent": true
     }
   ],
   "tree": [
@@ -2627,8 +2637,8 @@
       "id": "T-036",
       "kind": "split",
       "from": "table.rows and rowGroups",
-      "to": "table_head, table_body, table_foot children; table columns move to table_column nodes",
-      "migrationRule": "C2-A-050",
+      "to": "table_head, table_body, table_foot children, one table_body for each entry of rowGroups.bodies, which keeps its rowHeadColumns and whose headRows rows hold header cells (C2-B-230); table columns move to table_column nodes",
+      "migrationRule": "C2-A-050 C2-B-230",
       "silent": false
     },
     {
