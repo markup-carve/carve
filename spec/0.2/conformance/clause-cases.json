@@ -54105,6 +54105,29 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1124",
+  "clauses": [
+   "C2-H-075",
+   "C2-H-076",
+   "C2-W-106"
+  ],
+  "why": "C2-H-076: The core never turns an extension name into an element name.",
+  "summary": "registered extension does not turn samp attribute into an element",
+  "kind": "lint",
+  "input": "[x]{samp=a}\n",
+  "options": {
+   "extensions": [
+    "carve.tabs"
+   ]
+  },
+  "expected": {
+   "notReported": [
+    "semantic-attribute-value-ignored"
+   ]
+  },
+  "from": []
  }
  ]
 }

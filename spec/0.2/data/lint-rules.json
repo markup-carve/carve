@@ -1592,7 +1592,7 @@
       ],
       "message_origin": "data_file",
       "change": "new message text: `dfn` is no semantic key (C2-H-075)",
-      "reports": "a span that carries the key `kbd` with a value that is not empty, and with an extension that makes `samp`, `var` or `cite` an element, also those keys; once per key on the span (C2-H-075, C2-I-064)",
+      "reports": "a span that carries the key `kbd` with a nonempty value, which C2-H-075 discards; once per key on the span (C2-H-075, C2-I-064)",
       "clauses": ["C2-H-075", "C2-I-064"]
     },
     {
