@@ -1626,9 +1626,10 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "Value on the semantic attribute \"${name}\" is discarded: it selects the <${name}> element and reaches no output. Only abbr, dfn and time carry a value (as title or datetime)."
+        "Value on the semantic attribute \"${name}\" is discarded: it selects the <${name}> element and reaches no output. Only abbr and time carry a value (as title or datetime)."
       ],
-      "message_origin": "engine_0_1",
+      "message_origin": "data_file",
+      "change": "new message text: `dfn` is no semantic key (C2-H-075)",
       "reports": "a span that carries the key `kbd` with a value that is not empty, and with an extension that makes `samp`, `var` or `cite` an element, also those keys; once per key on the span (C2-H-075, C2-I-064)",
       "clauses": ["C2-H-075", "C2-I-064"]
     },
@@ -1992,8 +1993,8 @@
       "default": "on",
       "messages": ["Footnote reference [^${id}] has no matching definition; it renders as literal text."],
       "message_origin": "engine_0_1",
-      "reports": "a footnote reference whose key, with each run of spaces folded to one and the ends trimmed, matches no footnote definition, case kept; once per reference (C2-I-087, C2-I-088)",
-      "clauses": ["C2-I-087", "C2-I-088"]
+      "reports": "a footnote reference that resolves to no footnote definition, its key folded as C2-I-079 says and its case kept; once per reference (C2-I-087, C2-I-088, C2-I-079)",
+      "clauses": ["C2-I-087", "C2-I-088", "C2-I-079"]
     },
     {
       "id": "unresolved-reference-link",

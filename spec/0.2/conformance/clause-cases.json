@@ -46691,7 +46691,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: `v.` then `vii.` an alphabetic list of one item and a roman list ... `ordered-list-kind-split` reports both lists.",
+   "why": "C2-B-044: `v.` then `vii.` an alphabetic list of one item and a roman list ... `ordered-list-kind-split` reports the split once, at the list of one item.",
    "summary": "v then vii splits into an alphabetic and a roman list",
    "kind": "lint",
    "input": "v. a\nvii. b\n",
@@ -52245,6 +52245,82 @@
      }
     ],
     "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1039",
+   "clauses": [
+    "C2-W-066",
+    "C2-L-036"
+   ],
+   "why": "C2-W-066: A table with no rows has an empty head, which is the default, and takes no `header-rows`.",
+   "summary": "a table with no rows is a delimited table with no header-rows",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [],
+      "children": []
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{table}\n```csv\n```\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1040",
+   "clauses": [
+    "C2-W-081",
+    "C2-L-034"
+   ],
+   "why": "C2-W-081: The class form is a div whose classes are written as for any div (C2-W-039): where `hardbreaks` is the first class it is the div name, as `{.x}` above `::: hardbreaks`.",
+   "summary": "the class form of a hard-break block with a further class",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "div",
+      "attrs": {
+       "classes": [
+        "hardbreaks",
+        "x"
+       ]
+      },
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "hard_break"
+         },
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "{.x}\n::: hardbreaks\na\\\nb\n:::\n"
    },
    "from": []
   }
