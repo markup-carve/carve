@@ -2650,6 +2650,26 @@
       "meaning02": "<p>{-{#x-}</p> `{#x-}` is a valid attribute block, one atom taken whole (C2-I-005, C2-I-035), so it holds the `-}` that would close the deletion, and the deletion opens no span (C2-I-119). 0.1 closed the deletion at `-}` and read `#x` as a tag, `<p><del>{<span class=\"tag\"><strong>#x</strong></span></del></p>`. An escaped inner brace keeps the 0.1 HTML. The underline form `{_{#x_}` differs the same way, and there the escape leaves `#x_` a tag, so it has no rewrite.",
       "toolEntry": "U-365",
       "silent": true
+    },
+    {
+      "id": "U-366",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "# A </#A>\n",
+      "to": "{#A}\n# A [A A ](#A)\n",
+      "meaning02": "<section id=\"A\">\n  <h1>A <a href=\"#A\">A </a></h1>\n</section> A resolved cross-reference to a heading writes the plain text of the heading (C2-H-096), and a cross-reference gives no plain text (C2-H-143), so a heading that refers to itself writes its text without the reference, `A `. 0.1 expanded the reference once inside its own label, `A A `. U-206 records the same rule for emphasis. An explicit link with the 0.1 text keeps the 0.1 HTML; the authored id keeps the section id, which the link text would otherwise change.",
+      "toolEntry": "U-366",
+      "silent": true
+    },
+    {
+      "id": "U-367",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{#t}\n![a](u)\n^ #y#\n\n</#t>\n",
+      "to": "{#t}\n![a](u)\n^ #y#\n\n[#y 1](#t)\n",
+      "meaning02": "<figure id=\"t\">\n  <img src=\"u\" alt=\"a\">\n  <figcaption><span class=\"tag\"><strong>#y</strong></span>1</figcaption>\n</figure>\n<p><a href=\"#t\">#y 1</a></p> A resolved cross-reference to a numbered caption writes the label word and the number as text (C2-H-096), so a tag that is the label word is plain `#y`. 0.1 wrote the label's inline markup into the reference, `<a href=\"#t\"><span class=\"tag\"><strong>#y</strong></span> 1</a>`. An explicit link with the label and the number keeps the 0.1 HTML, but its number no longer follows the figure.",
+      "toolEntry": "U-367",
+      "silent": true
     }
   ],
   "tree": [
