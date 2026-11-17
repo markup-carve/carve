@@ -40817,7 +40817,7 @@
    "input": "[a %% b](/u) c",
    "options": {},
    "expected": {
-    "html": "<p>[a</p>",
+    "html": "<p><a href=\"/u\">a</a> c</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -40826,27 +40826,53 @@
        "type": "paragraph",
        "children": [
         {
-         "type": "text",
-         "value": "[a",
+         "type": "link",
+         "href": "/u",
+         "children": [
+          {
+           "type": "text",
+           "value": "a",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 1,
+            "endOffset": 2
+           }
+          },
+          {
+           "type": "comment",
+           "form": "line",
+           "value": "b",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 3,
+            "endColumn": 8,
+            "startOffset": 2,
+            "endOffset": 7
+           }
+          }
+         ],
          "pos": {
           "startLine": 1,
           "endLine": 1,
           "startColumn": 1,
-          "endColumn": 3,
+          "endColumn": 13,
           "startOffset": 0,
-          "endOffset": 2
+          "endOffset": 12
          }
         },
         {
-         "type": "comment",
-         "form": "line",
-         "value": "b](/u) c",
+         "type": "text",
+         "value": " c",
          "pos": {
           "startLine": 1,
           "endLine": 1,
-          "startColumn": 3,
+          "startColumn": 13,
           "endColumn": 15,
-          "startOffset": 2,
+          "startOffset": 12,
           "endOffset": 14
          }
         }

@@ -716,35 +716,40 @@
    "clauses": [
     "C2-I-024",
     "C2-I-023",
+    "C2-I-074",
     "C2-B-197"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it.",
-   "summary": "line comment in image alt, no image",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment. C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "line comment in image alt ends before the bracket, and the alt is the source",
    "input": "![a %% b](x)\n^ cap",
    "options": {},
    "expected": {
-    "html": "<p>![a\n^ cap</p>",
+    "html": "<figure>\n  <img src=\"x\" alt=\"a %% b\">\n  <figcaption>cap</figcaption>\n</figure>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "text",
-        "value": "![a"
-       },
-       {
-        "type": "comment",
-        "form": "line",
-        "value": "b](x)"
-       },
-       {
-        "type": "soft_break"
-       },
-       {
-        "type": "text",
-        "value": "^ cap"
+        "type": "image",
+        "src": "x",
+        "alt": "a %% b"
        }
-      ]
+      ],
+      "role": "image",
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "cap"
+          }
+         ]
+        }
+       ]
+      }
      }
     ]
    },
@@ -11035,7 +11040,7 @@
     "C2-I-023",
     "C2-I-089"
    ],
-   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of an inline footnote, or after whitespace starts a line comment.",
+   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment.",
    "summary": "a line comment at the start of an inline footnote hides the whole note body",
    "input": "^[%% c] d",
    "options": {},
@@ -11071,7 +11076,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "a bracket pair inside the comment does not close the note",
    "input": "^[a %% [x] c] d",
    "options": {},
@@ -11111,7 +11116,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "a bracket inside a code span in the comment does not close the note",
    "input": "^[a %% `]` c] d",
    "options": {},
@@ -11151,7 +11156,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "the comment ends before the note bracket inside a quote",
    "input": "> ^[a %% c] d",
    "options": {},
@@ -11197,7 +11202,7 @@
     "C2-I-024",
     "C2-B-169"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "the comment ends before the note bracket inside a table cell",
    "input": "| ^[a %% c] d | e |",
    "options": {},
@@ -11281,7 +11286,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "the comment ends before the note bracket in a heading, so the heading text goes on",
    "input": "# h ^[a %% c] d",
    "options": {},
@@ -11327,7 +11332,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "a delimiter opened before the comment inside the note stays text",
    "input": "^[*a %% c*] d",
    "options": {},
@@ -11367,7 +11372,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "a comment in an inner note ends before the inner note's bracket",
    "input": "^[a ^[b %% c] d] e",
    "options": {},
@@ -11421,7 +11426,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
    "summary": "where the note closes on a later line the comment takes the rest of its line",
    "input": "^[a %% c\nd] e",
    "options": {},
@@ -17828,6 +17833,197 @@
          }
         ],
         "href": "#Café"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-316",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
+   "summary": "a comment in link text ends before the bracket, as in 0.1",
+   "input": "[a %% c] d",
+   "options": {},
+   "expected": {
+    "html": "<p>[a] d</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[a"
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "c"
+       },
+       {
+        "type": "text",
+        "value": "] d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-317",
+   "clauses": [
+    "C2-I-024",
+    "C2-I-094"
+   ],
+   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
+   "summary": "a comment in extension content ends before the bracket, as in 0.1",
+   "input": ":foo[a %% c] d",
+   "options": {},
+   "expected": {
+    "html": "<p><span class=\"ext-foo\">a</span> d</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_extension",
+        "name": "foo",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-318",
+   "clauses": [
+    "C2-I-024",
+    "C2-I-055"
+   ],
+   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
+   "summary": "a comment in a braced form ends before its closer, as in 0.1",
+   "input": "{_a %% b_} y",
+   "options": {},
+   "expected": {
+    "html": "<p><u>a</u> y</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "underline",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "b"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "value": " y"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-319",
+   "clauses": [
+    "C2-I-023",
+    "C2-I-024"
+   ],
+   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment.",
+   "summary": "the start of extension content counts as a line start, as in 0.1",
+   "input": ":f[%%]",
+   "options": {},
+   "expected": {
+    "html": "<p><span class=\"ext-f\"></span></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_extension",
+        "name": "f",
+        "children": [
+         {
+          "type": "comment",
+          "form": "line",
+          "value": ""
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-320",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
+   "summary": "the innermost open form decides where the comment ends",
+   "input": "[a {_b %% c] d_} e",
+   "options": {},
+   "expected": {
+    "html": "<p>[a <u>b</u> e</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[a "
+       },
+       {
+        "type": "underline",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c] d"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "value": " e"
        }
       ]
      }

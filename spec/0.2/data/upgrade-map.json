@@ -1202,16 +1202,6 @@
       "silent": true
     },
     {
-      "id": "U-146",
-      "kind": "report",
-      "group": "measured rendering changes",
-      "from": "[ %%]",
-      "to": "",
-      "meaning02": "<p>[</p>",
-      "toolEntry": "U-146",
-      "silent": true
-    },
-    {
       "id": "U-147",
       "kind": "report",
       "group": "measured rendering changes",
@@ -1229,16 +1219,6 @@
       "to": "",
       "meaning02": "<section id=\"s\">\n  <h1></h1>\n</section>",
       "toolEntry": "U-148",
-      "silent": true
-    },
-    {
-      "id": "U-149",
-      "kind": "report",
-      "group": "measured rendering changes",
-      "from": ":f[%%]",
-      "to": "",
-      "meaning02": "<p><span class=\"ext-f\">%%</span></p>",
-      "toolEntry": "U-149",
       "silent": true
     },
     {
@@ -1699,16 +1679,6 @@
       "to": "{-a-}{+b+}\\{.k} c\n",
       "meaning02": "C2-I-062 writes a replacement as adjacent deletion and insertion nodes, and C2-I-043 would attach the following attribute to the insertion unless its brace is escaped.",
       "toolEntry": "U-200",
-      "silent": true
-    },
-    {
-      "id": "U-201",
-      "kind": "report",
-      "group": "measured inline rendering changes",
-      "from": "{_a %% b_} y\n",
-      "to": "{_a %% b_} y\n",
-      "meaning02": "C2-I-060, C2-I-062, and C2-I-119 close braced inline forms at their own nested or comment boundary, changing the rendered span.",
-      "toolEntry": "U-201",
       "silent": true
     },
     {
