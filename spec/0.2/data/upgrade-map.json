@@ -1682,16 +1682,6 @@
       "silent": true
     },
     {
-      "id": "U-202",
-      "kind": "escape",
-      "group": "measured inline rewrites",
-      "from": "x ^[a ^[b] c]\n",
-      "to": "x ^[a \\^[b] c]\n",
-      "meaning02": "C2-I-089 allows an inline footnote inside another inline footnote. Escape the inner caret to retain 0.1 literal text.",
-      "toolEntry": "U-202",
-      "silent": true
-    },
-    {
       "id": "U-204",
       "kind": "rewrite",
       "group": "measured continuation and fence rewrites",

@@ -10389,7 +10389,7 @@
     "C2-I-089",
     "C2-H-087"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
    "summary": "a footnote reference inside an inline footnote takes no number, so later notes keep theirs",
    "input": "a ^[b [^2] c] and [^1]\n\n[^1]: one\n[^2]: two",
    "options": {},
@@ -10466,7 +10466,7 @@
    "clauses": [
     "C2-I-089"
    ],
-   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text.",
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
    "summary": "a footnote reference inside an inline footnote in a table cell is text",
    "input": "| a ^[b [^1]] |\n\n[^1]: note",
    "options": {},
@@ -11370,14 +11370,15 @@
   {
    "id": "CC-152",
    "clauses": [
-    "C2-I-024"
+    "C2-I-024",
+    "C2-I-089"
    ],
    "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a comment in an inner note ends before the inner note's bracket",
+   "summary": "a comment ends before the bracket of a caret pair inside a note, which opens no note",
    "input": "^[a ^[b %% c] d] e",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> e</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a> d<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>b<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> e</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a ^[b] d<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
     "children": [
      {
       "type": "paragraph",
@@ -11387,26 +11388,16 @@
         "children": [
          {
           "type": "text",
-          "value": "a "
+          "value": "a ^[b"
          },
          {
-          "type": "inline_footnote",
-          "children": [
-           {
-            "type": "text",
-            "value": "b"
-           },
-           {
-            "type": "comment",
-            "form": "line",
-            "value": "c"
-           }
-          ],
-          "number": 2
+          "type": "comment",
+          "form": "line",
+          "value": "c"
          },
          {
           "type": "text",
-          "value": " d"
+          "value": "] d"
          }
         ],
         "number": 1
@@ -18024,6 +18015,87 @@
        {
         "type": "text",
         "value": " e"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-321",
+   "clauses": [
+    "C2-I-089"
+   ],
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "summary": "an inline footnote inside an inline footnote is text, as in 0.1",
+   "input": "x ^[a ^[b] c]",
+   "options": {},
+   "expected": {
+    "html": "<p>x <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a ^[b] c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x "
+       },
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a ^[b] c"
+         }
+        ],
+        "number": 1
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-322",
+   "clauses": [
+    "C2-I-089",
+    "C2-I-006"
+   ],
+   "why": "C2-I-089: Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket.",
+   "summary": "the bracket of a caret pair inside a note can still form a link, as in 0.1",
+   "input": "^[a ^[b](u) c]",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a ^<a href=\"u\">b</a> c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a ^"
+         },
+         {
+          "type": "link",
+          "href": "u",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         },
+         {
+          "type": "text",
+          "value": " c"
+         }
+        ],
+        "number": 1
        }
       ]
      }
