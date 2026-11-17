@@ -937,7 +937,7 @@
       "group": "later rulings",
       "from": "- [ ] a\n- b\n",
       "to": "- [ ] a\n\n\n\n- b\n",
-      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\"><input type=\"checkbox\" disabled aria-label=\"a\"> a</li>\n  <li>b</li>\n</ul>",
+      "meaning02": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"a\"> a</li>\n  <li>b</li>\n</ul>",
       "toolEntry": "U-117",
       "silent": true
     },
@@ -1327,7 +1327,7 @@
       "group": "measured rendering changes",
       "from": "[\\[][]",
       "to": "",
-      "meaning02": "<p>[[][]</p> On an unresolved reference, following attribute blocks can be folded into a reordered literal attribute sequence.",
+      "meaning02": "<p>[[][]</p> C2-H-085 renders the children of an unresolved reference, so an escape in its text is gone; 0.1 wrote the reference as typed.",
       "toolEntry": "U-158",
       "silent": true
     },
@@ -1887,7 +1887,7 @@
       "group": "wrapped link or image title",
       "from": "[a](/u \"t\nu\")\n",
       "to": "[a](/u \"t\nu\")\n",
-      "meaning02": "The current parser writes the wrapped title as text. C2-I-068 does not decide whether a quoted title may cross a line ending.",
+      "meaning02": "The tail holds a line break and is no tail (C2-I-069), so the source is paragraph text.",
       "toolEntry": "U-221",
       "silent": true
     },
