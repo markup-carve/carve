@@ -389,7 +389,7 @@
       "first": ["{"],
       "role": "attribute",
       "sequence": [{ "part": "ref", "ref": "brace_blocks" }, { "part": "trailing_whitespace" }, { "part": "end" }],
-      "clauses": ["C2-B-002", "C2-B-090", "C2-B-091", "C2-B-092", "C2-B-102", "C2-B-192", "C2-B-193"]
+      "clauses": ["C2-B-092", "C2-B-090", "C2-B-091", "C2-B-102", "C2-B-192", "C2-B-193"]
     },
     {
       "name": "include",

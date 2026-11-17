@@ -25,8 +25,6 @@ Terms:
 
 **C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). No rule reads a line below the current one.
 
-**Exception C2-B-002** A pending attribute line (C2-B-092) is the one line whose role waits for the next line.
-
 **C2-B-003** Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space.
 
 **C2-B-004** A leading tab advances the column to the next multiple of 4, for counting only: the bytes are kept as written, also in code.
@@ -6789,7 +6787,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 10 | 1 | 4 | 4 |
+| Preliminaries | 9 | 0 | 4 | 4 |
 | Paragraphs and interrupters | 14 | 2 | 6 | 4 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
@@ -6814,9 +6812,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **211** | **10** | **170** | **118** |
+| **Total** | **210** | **9** | **170** | **118** |
 
-The chapter has 211 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129 and C2-B-150, whose rule another clause states; their ids are not reused.
+The chapter has 210 clauses, and 9 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129 and C2-B-150, whose rule another clause states; their ids are not reused.
 
 ## Not covered
 
