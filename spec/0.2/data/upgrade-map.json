@@ -1852,16 +1852,6 @@
       "silent": true
     },
     {
-      "id": "U-220",
-      "kind": "rewrite",
-      "group": "promoted image block and inline attributes",
-      "from": "{.outer k=one}\n![a](b){.inner k=two}\n",
-      "to": "![a](b){.outer k=one}{.inner k=two}\n",
-      "meaning02": "C2-B-095, C2-B-197, and C2-I-039 merge the attributes in source order when both blocks are glued to the image.",
-      "toolEntry": "U-220",
-      "silent": true
-    },
-    {
       "id": "U-221",
       "kind": "report",
       "group": "wrapped link or image title",

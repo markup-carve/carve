@@ -62608,7 +62608,7 @@
    "input": "{.c #i}\n![a](x.png)\n\n{:de}\n![b](y.png)\n\n![c](z.png)",
    "options": {},
    "expected": {
-    "html": "<p id=\"i\" class=\"c\"><img src=\"x.png\" alt=\"a\"></p>\n<p lang=\"de\"><img src=\"y.png\" alt=\"b\"></p>\n<img src=\"z.png\" alt=\"c\">",
+    "html": "<img src=\"x.png\" alt=\"a\" id=\"i\" class=\"c\">\n<img src=\"y.png\" alt=\"b\" lang=\"de\">\n<img src=\"z.png\" alt=\"c\">",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -62703,6 +62703,138 @@
       }
      ],
      "srcByteLength": 51,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "html-465",
+   "document": "html.md",
+   "number": 465,
+   "section": "İstanbul Straße",
+   "clauses": [],
+   "kind": "render",
+   "input": "> {.c}\n> ![a](y.png)\n\n- {#i}\n  ![b](z.png)",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <img src=\"y.png\" alt=\"a\" class=\"c\">\n</blockquote>\n<ul>\n  <li>\n    <img src=\"z.png\" alt=\"b\" id=\"i\">\n  </li>\n</ul>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "block_quote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "y.png",
+           "alt": "a",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 3,
+            "endColumn": 14,
+            "startOffset": 9,
+            "endOffset": 20
+           }
+          }
+         ],
+         "role": "image",
+         "attrs": {
+          "classes": [
+           "c"
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 2,
+          "startColumn": 3,
+          "endColumn": 14,
+          "startOffset": 2,
+          "endOffset": 20
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 14,
+        "startOffset": 0,
+        "endOffset": 20
+       }
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "image",
+             "src": "z.png",
+             "alt": "b",
+             "pos": {
+              "startLine": 5,
+              "endLine": 5,
+              "startColumn": 3,
+              "endColumn": 14,
+              "startOffset": 31,
+              "endOffset": 42
+             }
+            }
+           ],
+           "role": "image",
+           "attrs": {
+            "id": "i"
+           },
+           "pos": {
+            "startLine": 4,
+            "endLine": 5,
+            "startColumn": 3,
+            "endColumn": 14,
+            "startOffset": 24,
+            "endOffset": 42
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 4,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 14,
+          "startOffset": 22,
+          "endOffset": 42
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 4,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 14,
+        "startOffset": 22,
+        "endOffset": 42
+       }
+      }
+     ],
+     "srcByteLength": 42,
      "stages": [
       "referenceResolution",
       "tableAlignment"

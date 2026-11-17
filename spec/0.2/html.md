@@ -181,7 +181,7 @@ roses
 
 ## Paragraphs, headings and sections
 
-**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them.
+**C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them. A block image is no such paragraph: its `<img>` carries them (C2-H-020).
 
 **C2-H-019** A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph of breaks alone holds no comment and is written with `<p>`. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well.
 
@@ -200,7 +200,7 @@ Example 67 (generated)
 
 :::
 
-**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`. The paragraph also keeps its `<p>` where it carries attributes or a `lang` (C2-H-018): the `<p>` carries them, and the `<img>` stands inside it on the same line, as inline content does.
+**C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. The attributes and the `lang` of the paragraph, which its attribute line gives, are written on the `<img>`, merged before the image's own as if they were the first of its glued blocks (C2-I-039): the classes of the paragraph come first, and for an id or another key the image's value wins. So `{.c}` above `![a](y.png)` gives `<img src="y.png" alt="a" class="c">`, as in 0.1. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`. That `<p>` carries the attributes and the `lang` of the paragraph.
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
@@ -358,7 +358,7 @@ Example 25 (generated, `--heading-ids lower`)
 
 :::
 
-An attribute line on a block image paragraph keeps the `<p>`, which carries it; the image below has none and is bare (C2-H-020).
+An attribute line on a block image paragraph goes onto the bare `<img>`, as a `lang` does (C2-H-020).
 
 Example 37 (unverified)
 
@@ -375,9 +375,36 @@ Example 37 (unverified)
 ```
 
 ```html
-<p id="i" class="c"><img src="x.png" alt="a"></p>
-<p lang="de"><img src="y.png" alt="b"></p>
+<img src="x.png" alt="a" id="i" class="c">
+<img src="y.png" alt="b" lang="de">
 <img src="z.png" alt="c">
+```
+
+:::
+
+In a quote and in an item the attribute line goes onto the bare `<img>` the same way (C2-H-020, C2-H-007).
+
+Example 465 (unverified)
+
+::: compare
+
+```carve
+> {.c}
+> ![a](y.png)
+
+- {#i}
+  ![b](z.png)
+```
+
+```html
+<blockquote>
+  <img src="y.png" alt="a" class="c">
+</blockquote>
+<ul>
+  <li>
+    <img src="z.png" alt="b" id="i">
+  </li>
+</ul>
 ```
 
 :::
@@ -2563,7 +2590,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 3 | 2 |
-| Paragraphs, headings and sections | 16 | 1 | 5 | 1 |
+| Paragraphs, headings and sections | 16 | 1 | 5 | 2 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
@@ -2582,6 +2609,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **42** |
+| **Total** | **193** | **6** | **35** | **43** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 77 examples, 35 generated and 42 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 78 examples, 35 generated and 43 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

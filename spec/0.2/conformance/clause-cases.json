@@ -17393,6 +17393,55 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-307",
+   "clauses": [
+    "C2-H-020"
+   ],
+   "why": "C2-H-020: The attributes and the `lang` of the paragraph, which its attribute line gives, are written on the `<img>`, merged before the image's own as if they were the first of its glued blocks (C2-I-039): the classes of the paragraph come first, and for an id or another key the image's value wins.",
+   "summary": "an attribute line merges before the image's own blocks",
+   "input": "{.outer k=one}\n![a](b){.inner k=two}",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"b\" alt=\"a\" class=\"outer inner\" k=\"two\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "b",
+        "alt": "a",
+        "attrs": {
+         "classes": [
+          "inner"
+         ],
+         "keyValues": [
+          [
+           "k",
+           "two"
+          ]
+         ]
+        }
+       }
+      ],
+      "role": "image",
+      "attrs": {
+       "classes": [
+        "outer"
+       ],
+       "keyValues": [
+        [
+         "k",
+         "one"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
