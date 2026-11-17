@@ -15094,6 +15094,44 @@
    "from": []
   },
   {
+   "id": "CC-213",
+   "clauses": [
+    "C2-H-075"
+   ],
+   "why": "C2-H-075: A value of `abbr` becomes `title` and a value of `time` becomes `datetime`, each only when it is not empty, so `[x]{time}` and `[x]{time=\"\"}` are `<time>x</time>`; a value of `kbd` is dropped.",
+   "summary": "a time key with no value writes no datetime",
+   "input": "[x]{time}",
+   "options": {},
+   "expected": {
+    "html": "<p><time>x</time></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "span",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "time",
+           ""
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-240",
    "clauses": [
     "C2-B-138",

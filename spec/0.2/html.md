@@ -1309,7 +1309,7 @@ Reported: `include-unresolved`.
 
 **C2-H-074** Emphasis and strong nest in the tree order: `<strong><em>` or `<em><strong>`, as written (C2-A-096).
 
-**C2-H-075** A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`. A value of `abbr` becomes `title`, a value of `time` becomes `datetime`, and a value of `kbd` is dropped. Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. An authored `title` or `datetime` wins over the derived one. As in 0.1 (CARVE-P10-003 to CARVE-P10-007).
+**C2-H-075** A span with one of the keys `abbr`, `time` or `kbd` is written as the element of that name in place of `<span>`. A value of `abbr` becomes `title` and a value of `time` becomes `datetime`, each only when it is not empty, so `[x]{time}` and `[x]{time=""}` are `<time>x</time>`; a value of `kbd` is dropped. Several keys nest in the fixed order `abbr`, `time`, `kbd` from inside out, and the remaining attributes go on the outermost element. An authored `title` or `datetime` wins over the derived one. As in 0.1 (CARVE-P10-003 to CARVE-P10-007).
 
 **C2-H-076** The names `samp`, `var`, `cite` and `dfn` are not core. Without their extension, `[x]{samp}` is a span with the attribute `samp=""`. An unqualified inline extension with no renderer is `<span class="ext-NAME">` around its content. The core never turns an extension name into an element name. In 0.2.0 an extension may give qualified `inline_extension` and `block_extension` nodes. A matching trusted renderer writes its returned HTML string unchanged under C2-X-034. An unknown optional extension renders through its fallback, inside an element that carries the node's attributes where it has any (C2-X-035), and is reported with the code `extension-fallback-rendered`.
 
@@ -1330,6 +1330,20 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 ```html
 <p>Press <kbd>Tab</kbd> for <abbr title="HyperText Markup Language">HTML</abbr> at <time datetime="12:00" id="t">noon</time>.</p>
 <p>“q” – a — b … → ™</p>
+```
+
+:::
+
+Example 400 (unverified)
+
+::: compare
+
+```carve
+[x]{time} and [y]{abbr=""}
+```
+
+```html
+<p><time>x</time> and <abbr>y</abbr></p>
 ```
 
 :::
@@ -2557,7 +2571,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 2 | 2 |
-| Inline elements | 8 | 0 | 1 | 0 |
+| Inline elements | 8 | 0 | 1 | 1 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
 | Cross-references and abbreviations | 4 | 1 | 1 | 1 |
@@ -2568,6 +2582,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **41** |
+| **Total** | **193** | **6** | **35** | **42** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 76 examples, 35 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 77 examples, 35 generated and 42 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

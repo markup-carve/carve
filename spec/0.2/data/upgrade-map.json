@@ -2412,6 +2412,26 @@
       "silent": true
     },
     {
+      "id": "U-282",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "{class=\"\"}\np\n",
+      "to": "",
+      "meaning02": "<p>p</p> The value of a `class` key is split at runs of spaces and tabs and an empty value adds no class (C2-I-042), so no element gets `class=\"\"`; 0.1 wrote the value as authored, also `class=\" \"`. No 0.2 source writes an empty `class` attribute.",
+      "toolEntry": "U-282",
+      "silent": true
+    },
+    {
+      "id": "U-283",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": "[x](/u){rel=\"\"}\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">x</a></p> A link carries no `rel` when neither the author nor the profile gives a word (C2-H-167); 0.1 wrote `rel=\"\"` as authored. No 0.2 source writes an empty `rel` attribute.",
+      "toolEntry": "U-283",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",

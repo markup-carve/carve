@@ -68443,6 +68443,132 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-400",
+   "document": "html.md",
+   "number": 400,
+   "section": "Inline elements",
+   "clauses": [
+    "C2-H-072",
+    "C2-H-073",
+    "C2-H-074",
+    "C2-H-075",
+    "C2-H-076",
+    "C2-H-077",
+    "C2-H-078",
+    "C2-H-142"
+   ],
+   "kind": "render",
+   "input": "[x]{time} and [y]{abbr=\"\"}",
+   "options": {},
+   "expected": {
+    "html": "<p><time>x</time> and <abbr>y</abbr></p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "x",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 1,
+            "endOffset": 2
+           }
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "time",
+            ""
+           ]
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 10,
+          "startOffset": 0,
+          "endOffset": 9
+         }
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 10,
+          "endColumn": 15,
+          "startOffset": 9,
+          "endOffset": 14
+         }
+        },
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "y",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 16,
+            "endColumn": 17,
+            "startOffset": 15,
+            "endOffset": 16
+           }
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "abbr",
+            ""
+           ]
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 15,
+          "endColumn": 27,
+          "startOffset": 14,
+          "endOffset": 26
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 27,
+        "startOffset": 0,
+        "endOffset": 26
+       }
+      }
+     ],
+     "srcByteLength": 26,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-17",
    "document": "html.md",
    "number": 17,
