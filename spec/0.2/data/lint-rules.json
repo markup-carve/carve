@@ -1944,7 +1944,7 @@
       "messages": ["This ${span} opener is unclosed in its paragraph; add a closer."],
       "message_origin": "engine_0_1",
       "message_notes": ["`${span}` is `strong` for `*` and `emphasis` for `/`."],
-      "reports": "a `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind; once per delimiter (C2-I-046, C2-I-047, C2-I-051)",
+      "reports": "a bare `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind; once per delimiter (C2-I-046, C2-I-047, C2-I-051)",
       "clauses": ["C2-I-046", "C2-I-047", "C2-I-051"]
     },
     {

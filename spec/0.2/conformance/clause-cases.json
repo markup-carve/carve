@@ -53880,6 +53880,24 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1113",
+  "clauses": [
+   "C2-W-107",
+   "C2-I-060"
+  ],
+  "why": "C2-W-107: Lint does not search the body of a comment block, a line or braced comment, a code span or block, raw content, an attribute key or value, a link destination or title, frontmatter, math content, or the marks of a braced opener or closer that formed or that C2-I-060 leaves as text, unless the row expressly names that place.",
+  "summary": "unclosed braced opener is text and its star is not a bare delimiter",
+  "kind": "lint",
+  "input": "{*a\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "unclosed-inline-emphasis"
+   ]
+  },
+  "from": []
  }
  ]
 }
