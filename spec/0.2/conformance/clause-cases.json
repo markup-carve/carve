@@ -53726,6 +53726,120 @@
     }
    },
    "from": []
-  }
+  },
+ {
+  "id": "CC-1106",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "comment block body is not searched for Markdown strong",
+  "kind": "lint",
+  "input": "%%%\n**b**\n%%%\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "markdown-strong-double-star"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1107",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "code span content is not searched for bare HTML",
+  "kind": "lint",
+  "input": "`<x>`\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "bare-html-tag"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1108",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "attribute value is not searched for Djot subscript",
+  "kind": "lint",
+  "input": "{title=\"H~2~O\"}\np\n",
+  "options": {
+   "rules": {
+    "djot-subscript-tilde": "on"
+   }
+  },
+  "expected": {
+   "notReported": [
+    "djot-subscript-tilde"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1109",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "link destination is not searched for issue token",
+  "kind": "lint",
+  "input": "[x](https://example.test/#12)\n",
+  "options": {
+   "platforms": [
+    "github"
+   ]
+  },
+  "expected": {
+   "notReported": [
+    "platform-issue-reference"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1110",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "frontmatter line is not searched for block marker text",
+  "kind": "lint",
+  "input": "---\n:::note\n---\np\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "block-marker-as-text"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1111",
+  "clauses": [
+   "C2-W-107"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "math content is not searched for double tilde",
+  "kind": "lint",
+  "input": " $`~~x~~`\n",
+  "options": {
+   "rules": {
+    "markdown-strikethrough-double-tilde": "on"
+   }
+  },
+  "expected": {
+   "notReported": [
+    "markdown-strikethrough-double-tilde"
+   ]
+  },
+  "from": []
+ }
  ]
 }

@@ -21,7 +21,7 @@
       "default": "on",
       "messages": ["This bare HTML tag is escaped as text; use a raw HTML block if markup is intended."],
       "message_origin": "engine_0_1",
-      "reports": "the first HTML tag shape on a line of a paragraph, a heading or a pipe table row outside code and raw blocks: `<`, an optional `/`, an ASCII letter, then ASCII letters, digits, `_`, `:` and `-`, optionally whitespace and characters other than `<` and `>`, an optional `/`, and `>`; text inside escapes, code spans, link destinations, autolinks, cross-references, images and inline comments is not searched; once per line (C2-I-073, C2-I-124, C2-B-116)",
+      "reports": "the first HTML tag shape on a line of a paragraph, a heading or a pipe table row: `<`, an optional `/`, an ASCII letter, then ASCII letters, digits, `_`, `:` and `-`, optionally whitespace and characters other than `<` and `>`, an optional `/`, and `>`; once per line (C2-I-073, C2-I-124, C2-B-116)",
       "clauses": ["C2-I-073", "C2-I-124", "C2-B-116"]
     },
     {
@@ -98,7 +98,7 @@
       "default": "on",
       "messages": [{"when": "the line is paragraph text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal paragraph text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
-      "reports": "a line outside code and raw blocks whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
+      "reports": "a line of paragraph, heading, cell, term or caption text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
       "clauses": ["C2-B-031"]
     },
     {
@@ -165,7 +165,7 @@
       "default": "on",
       "messages": ["This caption-looking paragraph sits next to a table or image; use a ^ caption line."],
       "message_origin": "engine_0_1",
-      "reports": "a paragraph line outside code and raw blocks whose text, after container prefixes and indent, matches case-insensitively `^(?:\\*?\\s*(?:Caption|Table|Tabelle|Figure|Image)(?:\\s+\\d+)?\\s*:|:\\s+\\S)`; the optional number needs whitespace before its digits, so `Caption 2:` matches and `Caption2:` does not; a match reports when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line, the range is the first character of the matched line (C2-B-146, C2-B-149)",
+      "reports": "a paragraph line whose text, after container prefixes and indent, matches case-insensitively `^(?:\\*?\\s*(?:Caption|Table|Tabelle|Figure|Image)(?:\\s+\\d+)?\\s*:|:\\s+\\S)`; the optional number needs whitespace before its digits, so `Caption 2:` matches and `Caption2:` does not; a match reports when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line, the range is the first character of the matched line (C2-B-146, C2-B-149)",
       "clauses": ["C2-B-146", "C2-B-149"]
     },
     {
@@ -387,7 +387,7 @@
       "default": "on",
       "messages": [{"when": "the `+` is a standalone line outside a list item", "text": "The plus continuation marker was removed in 0.2 and is text here. If a block was intended, write that block after a blank line."}, {"when": "the `+` is the text of a list item marker line", "text": "The plus continuation marker was removed in 0.2 and is text here. Put the intended block after a blank line, indented past the list marker so it belongs to this item."}],
       "message_origin": "design",
-      "reports": "a line whose content behind its quote marks and indentation is a single `+`, with only spaces and tabs before and after it, and a list item, with or without a task box, whose text on its marker line is a single `+`, both text in 0.2 where 0.1 read a list continuation marker (C2-B-059); `++`, `+a` and a table cell holding `+` are not reported, nor a line of a code block, raw block, comment block or frontmatter or a line inside a code span; once per line, the range is the `+` (C2-B-059)",
+      "reports": "a line whose content behind its quote marks and indentation is a single `+`, with only spaces and tabs before and after it, and a list item, with or without a task box, whose text on its marker line is a single `+`, both text in 0.2 where 0.1 read a list continuation marker (C2-B-059); `++`, `+a` and a table cell holding `+` are not reported; once per line, the range is the `+` (C2-B-059)",
       "clauses": ["C2-B-059"]
     },
     {
@@ -524,7 +524,7 @@
       "messages": ["Djot emphasis `_x_` is literal text in Carve. Carve emphasis is `/x/`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "reports": "a pair of underscores that Djot reads as emphasis and Carve as text (C2-I-046): an opening `_` not behind an odd run of backslashes, not after an ASCII letter, digit or `_` and not before whitespace, and the next `_` not after whitespace and not before an ASCII letter, digit or `_`, with at least one character and no blank line between; code spans, code fences, comment blocks and link destinations are not searched; once per pair (C2-I-046, C2-I-047)",
+      "reports": "a pair of underscores that Djot reads as emphasis and Carve as text (C2-I-046): an opening `_` not behind an odd run of backslashes, not after an ASCII letter, digit or `_` and not before whitespace, and the next `_` not after whitespace and not before an ASCII letter, digit or `_`, with at least one character and no blank line between; once per pair (C2-I-046, C2-I-047)",
       "clauses": ["C2-I-046", "C2-I-047"]
     },
     {
@@ -548,7 +548,7 @@
       "messages": ["Djot highlight `{=x=}` is also Carve highlight. The bare `=x=` is literal text in Carve."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "reports": "each formed braced highlight node from `{=x=}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or second unescaped `{=`; code spans, code fences, comment blocks and link destinations are not searched; once per formed node; a bare `=x=` is not reported (C2-I-055, C2-I-059, C2-I-060)",
+      "reports": "each formed braced highlight node from `{=x=}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or second unescaped `{=`; once per formed node; a bare `=x=` is not reported (C2-I-055, C2-I-059, C2-I-060)",
       "clauses": ["C2-I-055", "C2-I-046"]
     },
     {
@@ -562,7 +562,7 @@
       ],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "reports": "a pair of underscores inside a word, which Djot reads as emphasis: an opening `_` after an ASCII letter or digit, not behind an odd run of backslashes and not before whitespace, and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between, as `snake_case_name`; code spans, code fences, comment blocks and link destinations are not searched; once per pair (C2-I-046, C2-I-047)",
+      "reports": "a pair of underscores inside a word, which Djot reads as emphasis: an opening `_` after an ASCII letter or digit, not behind an odd run of backslashes and not before whitespace, and the next `_` not after whitespace and before an ASCII letter or digit, with no blank line between, as `snake_case_name`; once per pair (C2-I-046, C2-I-047)",
       "clauses": ["C2-I-046", "C2-I-047"]
     },
     {
@@ -586,7 +586,7 @@
       "messages": ["Djot subscript `~x~` is literal text in Carve. Carve subscript is the braced `{,x,}`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
-      "reports": "each pair of bare tildes in text, where the opening tilde is not escaped, not directly after an unescaped `{` and not followed by whitespace or `}`, the closing tilde is the next tilde of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`H~2~O` is reported), tildes in code, link destinations and reference definitions do not count, and a pair inside a `~~x~~` run is left to `markdown-strikethrough-double-tilde`; once per pair (C2-I-046)",
+      "reports": "each pair of bare tildes in text, where the opening tilde is not escaped, not directly after an unescaped `{` and not followed by whitespace or `}`, the closing tilde is the next tilde of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`H~2~O` is reported), and a pair inside a `~~x~~` run is left to `markdown-strikethrough-double-tilde`; once per pair (C2-I-046)",
       "clauses": ["C2-I-046"]
     },
     {
@@ -598,7 +598,7 @@
       "messages": ["Djot subscript `{~x~}` renders as *strikethrough* in Carve."],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "reports": "each formed braced strike node from `{~x~}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or further unescaped `{~`, outside code; once per formed node (C2-I-055, C2-I-059, C2-I-060, C2-I-062)",
+      "reports": "each formed braced strike node from `{~x~}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or further unescaped `{~`; once per formed node (C2-I-055, C2-I-059, C2-I-060, C2-I-062)",
       "clauses": ["C2-I-055", "C2-I-062"]
     },
     {
@@ -610,7 +610,7 @@
       "messages": ["Djot superscript `^x^` is literal text in Carve — Carve superscript is the braced `{^x^}` only."],
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
-      "reports": "each pair of bare carets in text, where the opening caret is not escaped, not directly after an unescaped `{` and not followed by whitespace, `}` or `[`, the closing caret is the next caret of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`x^2^` is reported), and carets in code, link destinations, footnote references `[^x]`, attribute blocks and whole-cell row span markers do not count; once per pair (C2-I-046)",
+      "reports": "each pair of bare carets in text, where the opening caret is not escaped, not directly after an unescaped `{` and not followed by whitespace, `}` or `[`, the closing caret is the next caret of the same paragraph that is not followed by `}`, and the content between them is not empty and does not end in whitespace; letters or digits on either side do not prevent it (`x^2^` is reported); whole-cell row span markers do not count; once per pair (C2-I-046)",
       "clauses": ["C2-I-046"]
     },
     {
@@ -879,7 +879,7 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${key}` is escaped as in a JSON string."],
-      "reports": "each footnote definition whose label is spelled differently from the label of an earlier footnote definition in source order but has the same lookup key; the later parsed definition is reported once; definition-shaped container text is not counted (C2-I-079, C2-B-085)",
+      "reports": "each footnote definition whose label is spelled differently from the label of an earlier footnote definition in source order but has the same lookup key; the later parsed definition is reported once (C2-I-079, C2-B-085)",
       "clauses": ["C2-I-079", "C2-B-085"]
     },
     {
@@ -921,7 +921,7 @@
       "default": "on",
       "messages": ["This spelling does not create a GitHub alert in Carve; use an admonition fence for an alert."],
       "message_origin": "data_file",
-      "reports": "on a line whose first non-space character is a quote mark and that is a paragraph, table row or heading line, the first of `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]`, in upper case as written, outside code spans; once per line (C2-B-031, C2-I-072)",
+      "reports": "on a line whose first non-space character is a quote mark and that is a paragraph, table row or heading line, the first of `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]`, in upper case as written; once per line (C2-B-031, C2-I-072)",
       "clauses": ["C2-B-031", "C2-I-072"]
     },
     {
@@ -989,7 +989,7 @@
       "default": "on",
       "messages": ["This HTML comment renders as visible text. Use %% for one line or %%% for a comment block."],
       "message_origin": "engine_0_1",
-      "reports": "each `<!--` on a paragraph line, outside code spans, escapes and link destinations, when `-->` follows later in the same paragraph, on that line or a later one; once per `<!--` (C2-I-124)",
+      "reports": "each `<!--` on a paragraph line, when `-->` follows later in the same paragraph, on that line or a later one; once per `<!--` (C2-I-124)",
       "clauses": ["C2-I-124"]
     },
     {
@@ -1340,7 +1340,7 @@
       "default": "on",
       "messages": ["The gap after this label prevents the parenthesized destination from attaching; write `](` with no space for an inline link. A defined shortcut reference can still resolve the label."],
       "message_origin": "engine_0_1",
-      "reports": "on each paragraph, table row and heading line, outside code spans and escapes, each `[label]` with a non-empty label that is followed by one or more whitespace characters and a parenthesis group `(...)` whose first non-space character is not `)`, matched from left to right without overlap; once per match (C2-I-066, C2-I-069)",
+      "reports": "on each paragraph, table row and heading line, each `[label]` with a non-empty label that is followed by one or more whitespace characters and a parenthesis group `(...)` whose first non-space character is not `)`, matched from left to right without overlap; once per match (C2-I-066, C2-I-069)",
       "clauses": ["C2-I-066", "C2-I-069"]
     },
     {
@@ -1435,7 +1435,7 @@
       "messages": ["Markdown `~~strikethrough~~` is literal text in Carve. Carve strikethrough is the braced `{~x~}`."],
       "message_origin": "data_file",
       "change": "new message text",
-      "reports": "a pair of `~~` runs in inline text that encloses one or more characters other than `~`, with no whitespace directly inside either run, crossing soft line breaks but not a blank line, outside code and with an unescaped opening run, whatever stands before or after the pair; once per pair, the range is the pair with its content (C2-I-046, C2-I-062)",
+      "reports": "a pair of `~~` runs in inline text that encloses one or more characters other than `~`, with no whitespace directly inside either run, crossing soft line breaks but not a blank line, whatever stands before or after the pair; once per pair, the range is the pair with its content (C2-I-046, C2-I-062)",
       "clauses": ["C2-I-046", "C2-I-062"]
     },
     {
@@ -1447,7 +1447,7 @@
       "messages": ["Markdown `**strong**` is literal text in Carve, asterisks included. Carve strong is a single `*`."],
       "message_origin": "data_file",
       "change": "new message text",
-      "reports": "a pair of two-star runs in text, as `**b**`, whose content is at least one character, holds no star and no blank line, and neither starts nor ends with whitespace, once per pair, pairs taken from left to right; stars inside a code span or code block or behind a backslash form no pair, and a letter, a digit or a further star next to a run does not prevent it; the range runs from the first star to the last (C2-I-049)",
+      "reports": "a pair of two-star runs in text, as `**b**`, whose content is at least one character, holds no star and no blank line, and neither starts nor ends with whitespace, once per pair, pairs taken from left to right; a letter, a digit or a further star next to a run does not prevent it; the range runs from the first star to the last (C2-I-049)",
       "clauses": ["C2-I-049"]
     },
     {
@@ -1502,7 +1502,7 @@
         "${host} re-linkifies a hash-number in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or rewrite it as \"item 1\" / \"point 1\"."
       ],
       "message_origin": "engine_0_1",
-      "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, on a line outside a code block, a raw block, a comment and an unreferenced footnote definition, inline code included, bare URLs and link destinations masked; once per run (C2-W-109, C2-I-092)",
+      "reports": "with the platform `github` selected, a `#` followed by one or more ASCII digits, where the character before the `#` is not an ASCII letter, digit, `_`, `#` or `/` and the character after the digits is none of those nor `-`, in paragraph, heading, cell, term or caption text, with inline code expressly included; bare URLs are masked; once per run (C2-W-109, C2-I-092)",
       "clauses": ["C2-W-109", "C2-I-092"]
     },
     {
@@ -1515,7 +1515,7 @@
         "${host} re-linkifies an at-prefixed word in published output, so \"${text}\" becomes a link that notifies or references something unrelated; move the example into a fenced code block, or strip the sigil and rephrase."
       ],
       "message_origin": "engine_0_1",
-      "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, on a line outside a code block, a raw block, a comment and an unreferenced footnote definition, inline code included, bare URLs and link destinations masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
+      "reports": "with the platform `github` selected, an at-sign followed by a name, which is an ASCII letter, digit or `_` and then letters, digits, `_` and `-`, with interior dots each followed by such a character, where the character before the at-sign is not an ASCII letter, digit, `_`, at-sign, `.`, `-` or `/`, in paragraph, heading, cell, term or caption text, with inline code expressly included; bare URLs are masked; the range is the at-sign and the name, once per token (C2-W-109, C2-I-090, C2-I-092)",
       "clauses": ["C2-W-109", "C2-I-090", "C2-I-092"]
     },
     {
@@ -1861,7 +1861,7 @@
         "This attribute block is attached to nothing and renders as text. Glue it to a span, link or code span, or escape the brace."
       ],
       "message_origin": "design",
-      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a block inside an atom, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
+      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
       "clauses": ["C2-I-028", "C2-I-035", "C2-I-036"]
     },
     {
@@ -1944,7 +1944,7 @@
       "messages": ["This ${span} opener is unclosed in its paragraph; add a closer."],
       "message_origin": "engine_0_1",
       "message_notes": ["`${span}` is `strong` for `*` and `emphasis` for `/`."],
-      "reports": "a `*` or `/` outside code spans and other inline atoms in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind outside code spans; once per delimiter (C2-I-046, C2-I-047, C2-I-051)",
+      "reports": "a `*` or `/` in a paragraph line that stands at the start of the line or after whitespace, `(`, `[` or `{`, that an ASCII letter, digit or `_` follows, that closes no pair, and after which the rest of its paragraph holds no further delimiter of its kind; once per delimiter (C2-I-046, C2-I-047, C2-I-051)",
       "clauses": ["C2-I-046", "C2-I-047", "C2-I-051"]
     },
     {

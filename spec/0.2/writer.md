@@ -1148,7 +1148,7 @@ Written:
 
 **C2-W-106** Every code is an entry of one catalog, `data/lint-rules.json`. A code is a contract: it is not renamed and not reused. Each message variant states a `when` condition; if conditions overlap, the first matching variant in `messages` applies. The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree.
 
-**C2-W-107** Lint is computed from the tokens and the tree of the parse. It never reads the raw text with patterns of its own, so it cannot disagree with the parser about what a line is.
+**C2-W-107** Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse. A source shape counts only where the parse reads it as the construct a catalog row names. Where a rule reports a shape because it stays text, the shape counts only where the parse reads it as text of a paragraph, heading, cell, term or caption. Lint does not search the body of a comment block, a line or braced comment, a code span or block, raw content, an attribute key or value, a link destination or title, frontmatter, math content, or the marks of a braced opener or closer that formed or that C2-I-060 leaves as text, unless the row expressly names that place. The `reports` text cannot extend a trigger beyond a clause it cites: where they give different results for an input, the clause decides and the row must agree.
 
 **C2-W-108** Lint never changes the tree and never changes the output of `fmt`.
 
