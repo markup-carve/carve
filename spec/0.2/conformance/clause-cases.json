@@ -18224,6 +18224,72 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-327",
+   "clauses": [
+    "C2-B-144"
+   ],
+   "why": "C2-B-144: In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.",
+   "summary": "a line comment after text inside a line block is text",
+   "input": "::: |\na %% b\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a %% b</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a %% b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-328",
+   "clauses": [
+    "C2-B-135",
+    "C2-B-111"
+   ],
+   "why": "C2-B-135: In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item.",
+   "summary": "a percent line in an unclosed code fence in a list item is code",
+   "input": "- ```\n  %% x",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <pre><code>%% x\n</code></pre>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "code_block",
+          "value": "%% x\n"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
