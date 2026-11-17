@@ -283,3 +283,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `Example 34`, `C2-H-165`, `C2-H-177`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. Corrected with G-H2 in its one rule commit.
+
+## F15 CC-005 degraded code
+
+Search: `CC-005`, `C2-H-165`, `C2-H-166`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`. A code node gives its value under the nesting bound.

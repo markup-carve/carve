@@ -185,7 +185,7 @@
     "profile": "comment"
    },
    "expected": {
-    "html": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <blockquote><p>`x`</p></blockquote>\n    </blockquote>\n  </blockquote>\n</blockquote>",
+    "html": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <blockquote><p>x</p></blockquote>\n    </blockquote>\n  </blockquote>\n</blockquote>",
     "children": [
      {
       "type": "block_quote",
