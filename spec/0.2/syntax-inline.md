@@ -488,7 +488,23 @@ two %} b and *bo{% c %}ld* and a {% oops
 
 **C2-I-035** A valid attribute block is one atom wherever it stands. One that attaches to nothing is printed as written: nothing inside it is transformed, smart quotes included.
 
-**C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span, a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
+**C2-I-036** A valid attribute block attaches when it is glued to the end of a formed host, and is literal text otherwise. The hosts are: a span, a link, an image, an autolink, a reference, a code span without a raw marker (C2-I-021), a literal-text span, a math span, a footnote reference, an inline footnote, a symbol, an inline extension, and every closed emphasis, strong or braced span.
+
+Example 124 (generated)
+
+::: compare
+
+```carve
+`x`{=html}{.c}
+```
+
+```html
+<p>x{.c}</p>
+```
+
+:::
+
+Raw inline is no host, so the attribute block behind its marker attaches to nothing and is printed as written.
 
 **C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, a later id or key replaces an earlier one of the same name, and a later language part replaces an earlier one. This is the inline side of C2-B-094.
 
@@ -2370,7 +2386,7 @@ There is no fixed budget for the inline chapter.
 | Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 2 | 1 | 2 | 1 |
 | Comments | 4 | 1 | 4 | 1 |
-| Attribute blocks | 13 | 2 | 6 | 5 |
+| Attribute blocks | 13 | 2 | 7 | 5 |
 | The opening brace | 2 | 1 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
@@ -2387,9 +2403,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **69** | **54** |
+| **Total** | **112** | **16** | **70** | **54** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 123 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 124 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

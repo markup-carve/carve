@@ -37274,6 +37274,84 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-inline-124",
+   "document": "syntax-inline.md",
+   "number": 124,
+   "section": "Attribute blocks",
+   "clauses": [
+    "C2-I-028",
+    "C2-I-029",
+    "C2-I-030",
+    "C2-I-031",
+    "C2-I-032",
+    "C2-I-033",
+    "C2-I-034",
+    "C2-I-035",
+    "C2-I-036",
+    "C2-I-039",
+    "C2-I-040",
+    "C2-I-041",
+    "C2-I-042"
+   ],
+   "kind": "render",
+   "input": "`x`{=html}{.c}",
+   "options": {},
+   "expected": {
+    "html": "<p>x{.c}</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "raw_inline",
+         "format": "html",
+         "value": "x",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 11,
+          "startOffset": 0,
+          "endOffset": 10
+         }
+        },
+        {
+         "type": "text",
+         "value": "{.c}",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 11,
+          "endColumn": 15,
+          "startOffset": 10,
+          "endOffset": 14
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 15,
+        "startOffset": 0,
+        "endOffset": 14
+       }
+      }
+     ],
+     "srcByteLength": 14,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-21",
    "document": "syntax-inline.md",
    "number": 21,
