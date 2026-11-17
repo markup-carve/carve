@@ -322,6 +322,14 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | U-340 | Under C2-I-079, a footnote label of spaces: `[^ ]: x`, a blank line, `a[^ ]`; a link label of spaces, `[t][ ]` with `[ ]: /u`; three spaces or a tab the same **SILENT** | A label: `a` with note 1 and an endnote section holding `x`; a link to `/u`. | No label: both lines are text, `<p>[^ ]: x</p>`, `<p>a[^ ]</p>`, and the note is lost. `blank-reference-label` reports it. Give the label a name the document does not use, `[^blank]`; rewrite |
 | U-341 | Under C2-H-126, the 0.1 placeholders `{user}` in `mentionUrl` and `{tag}` in `tagUrl`: `social: {mentionUrl: '/u/{user}'}` with `@alice` | Replaced by the name: `<a class="mention" href="/u/alice">@alice</a>`. | `{name}` is the only placeholder; a template that holds any other is refused with `CarveOptionError`, so no link goes to a literal `{user}`. Write `{name}`; report |
 
+#### Kept and recorded
+
+A ruling of 17 November, 12:30, keeps these 0.2 behaviors, found by replaying a corpus through both engines. Each has a row of the upgrade map: a rewrite where a changed source gives the 0.1 HTML, a report where none does. Where an older row already held the rule for another place, that row now names this one too and is listed below the table.
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-360 | Under C2-B-147, C2-N-073 and C2-N-074, a caption line directly below an unexpanded code include: `{{ a.txt @code }}`, `^ cap`, also in a quote or a list item **SILENT** | The caret line is text: `<p>{{ a.txt @code }}</p>` and `<p>^ cap</p>`. | The caption attaches to the include and follows it as one more paragraph, `<p>cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote; in a list item 0.1 also made the list loose, so add a blank line between the items too, and an item alone in its list stays tight (C2-B-062); rewrite |
+
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
 Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.

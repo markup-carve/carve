@@ -2590,6 +2590,16 @@
       "meaning02": "With `social: {mentionUrl: '/u/{user}'}` or `{tagUrl: '/t/{tag}'}` the render is refused with an option error: `{name}` is the only placeholder of a template (C2-H-126), and any other placeholder is refused rather than written into the `href`. 0.1 replaced `{user}` in `mentionUrl` and `{tag}` in `tagUrl` by the name, `<a class=\"mention\" href=\"/u/alice\">`. Write `{name}`.",
       "toolEntry": "U-341",
       "silent": false
+    },
+    {
+      "id": "U-360",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "{{ a.txt @code }}\n^ cap\n",
+      "to": "{{ a.txt @code }}\n\n^ cap\n",
+      "meaning02": "<p>{{ a.txt @code }}</p>\n<p>cap</p> C2-B-147 and C2-N-073 attach a caption line directly below a code include to the include, also when it is not expanded, and C2-N-074 writes that caption after the directive's paragraph as one more paragraph; 0.1 kept the caret line as text, `<p>^ cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote. In a list item 0.1 also made the list loose: with a blank line before the caret and one between the items the 0.1 HTML comes back, but an item alone in its list is tight (C2-B-062, C2-B-063), so its first paragraph stays bare.",
+      "toolEntry": "U-360",
+      "silent": true
     }
   ],
   "tree": [

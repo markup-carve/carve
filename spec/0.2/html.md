@@ -1308,9 +1308,9 @@ Example 64 (unverified)
 
 Reported: `include-unresolved`.
 
-With a caption the include is not bare, and the caption follows as one more paragraph.
+With a caption the include is not bare, and the caption follows as one more paragraph. 0.1 read the caret line as text (U-360).
 
-Example 70 (generated)
+Example 70 (unverified)
 
 ::: compare
 
@@ -2654,7 +2654,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
-| Comments, frontmatter and definitions | 5 | 0 | 2 | 2 |
+| Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
 | Inline elements | 8 | 0 | 1 | 2 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
@@ -2666,6 +2666,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **194** | **6** | **35** | **46** |
+| **Total** | **194** | **6** | **34** | **47** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 81 examples, 35 generated and 46 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 81 examples, 34 generated and 47 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
