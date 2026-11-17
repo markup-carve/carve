@@ -199,3 +199,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `djot-plus-bullet`, `C2-B-034`, `C2-B-161`.
 
 Places: `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/containers.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Frontmatter is not a paragraph; only parsed paragraph lines trigger this rule.
+
+## Catalog audit: fence-opener-fallback
+
+Search: `fence-opener-fallback`, `C2-B-105`, `C2-B-225`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. A plain div name also reaches the row; make its message name any opener.
