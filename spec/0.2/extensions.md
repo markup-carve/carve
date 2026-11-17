@@ -54,7 +54,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027. A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`. The source form it writes reports no loss: it reads back as that core node, which a reader with the extension claims again, and it is an exception to the equality of C2-W-002.
 
-**C2-X-024** A source transform carries a `source` record with `form`, `name`, canonical `body` text, and any quoted title or bracket label, plus the core node's attributes on the extension node.
+**C2-X-024** A source transform carries a `source` record with `form`, `name`, canonical `body` text, and any quoted title or bracket label, plus the core node's attributes on the extension node. The class a div takes from its name (C2-B-119) is no attribute of the extension node: `{#t .k}` above `:::: tabs` gives the attributes `id` `t` and the class `k`.
 
 **C2-X-025** `source.form` is `inline`, `div` or `fence`, and `source.name` is the claimed source name. A reader refuses a `source.name` that no matcher of its form can claim: for `div` a name that makes no plain div (C2-B-127), for `fence` a language that opens no `code_block`, for `inline` a name that is no inline extension name (C2-I-094).
 
@@ -106,13 +106,13 @@ The standard extensions are a catalog that follows the core: this section is not
 
 **C2-X-044** The tabs renderer renders each label from the tab's `title` slot and each panel from its `body` slot. It escapes text and attributes through the host renderer.
 
-**C2-X-045** The tabs transform keeps the nested `tab` div spelling in the outer `source.body`. A Pandoc bridge carries this structure as nested Divs with the classes `tabs` and `tab`.
+**C2-X-045** The tabs transform keeps the nested `tab` divs as div source in the outer `source.body`, in the canonical spelling of C2-X-026. A Pandoc bridge carries this structure as nested Divs with the classes `tabs` and `tab`.
 
-**C2-X-046** A reader refuses a `carve.tab` outside `carve.tabs.slots.tabs`, an item of that slot that is not `carve.tab`, or a tab without its `body` slot.
+**C2-X-046** A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs`, an item of that slot that is not `carve.tab`, or a tab without its `body` slot. The path of the refusal is the node it names: the `carve.tab`, the item of the slot, or the tab.
 
-**C2-X-047** The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title, or `Tab` and its position when the title is absent. Without a stylesheet every panel stays visible.
+**C2-X-047** The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title, or, when the title is absent, `Tab`, one space and its position counted from 1, as `Tab 1`. Without a stylesheet every panel stays visible.
 
-**C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.
+**C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id. The groups are counted in document order from 1: group N has the input name `tabs-N`, and its inputs the ids `tabs-N-0`, `tabs-N-1` and so on, counted from 0. A group whose ids an authored id already takes moves on to the next N, as the generated ids of C2-H-156 do.
 
 Input:
 
@@ -195,7 +195,10 @@ HTML with the tabs renderer:
 HTML without the tabs renderer:
 
 ```html
-<p><strong>Install</strong></p><p>Run setup.</p><p><strong>Use</strong></p><p>Open the app.</p>
+<p><strong>Install</strong></p>
+<p>Run setup.</p>
+<p><strong>Use</strong></p>
+<p>Open the app.</p>
 ```
 
 Written Carve source:
@@ -214,7 +217,7 @@ Open the app.
 
 ## Writing consistency
 
-**C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023.
+**C2-X-049** A writer with a source record that does not parse and transform back to an equal extension node writes the fallback and reports `structure-unspellable`. The test needs the extension's matcher, so it is the test of a writer that has the extension registered; a writer without it follows C2-X-023. A `write` call reads the option `extensions` for this test.
 
 ## Carrying Carve facts through a tree that has no slot for them
 

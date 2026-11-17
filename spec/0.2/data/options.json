@@ -12,7 +12,7 @@
     {
       "name": "extensions",
       "kind": "parse",
-      "read_by": "parse",
+      "read_by": ["format", "parse"],
       "type": "list",
       "items": "extension",
       "default": [],

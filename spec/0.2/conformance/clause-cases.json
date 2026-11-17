@@ -22378,7 +22378,7 @@
     "C2-X-042",
     "C2-X-045"
    ],
-   "why": "C2-X-008: A block div matcher claims a `div` by the name after its opener run under C2-B-119. C2-X-015: A transform maps one claimed core node to one extension node of the same inline or block role. It may place further extension nodes that it produces inside the slots of that node, as the tabs transform places each `carve.tab` (C2-X-039). C2-X-042: The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order. C2-X-045: The tabs transform keeps the nested `tab` div spelling in the outer `source.body`.",
+   "why": "C2-X-008: A block div matcher claims a `div` by the name after its opener run under C2-B-119. C2-X-015: A transform maps one claimed core node to one extension node of the same inline or block role. It may place further extension nodes that it produces inside the slots of that node, as the tabs transform places each `carve.tab` (C2-X-039). C2-X-042: The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order. C2-X-045: The tabs transform keeps the nested `tab` divs as div source in the outer `source.body`, in the canonical spelling of C2-X-026.",
    "summary": "the tabs div becomes one carve.tabs block extension with a carve.tab per tab and the concatenated fallback",
    "kind": "parse",
    "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
@@ -24910,7 +24910,7 @@
    "clauses": [
     "C2-X-046"
    ],
-   "why": "C2-X-046: A reader refuses a `carve.tab` outside `carve.tabs.slots.tabs`",
+   "why": "C2-X-046: A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs`",
    "summary": "a carve.tab at the top level is refused",
    "kind": "tree",
    "tree": {
@@ -24994,7 +24994,11 @@
      }
     ]
    },
-   "options": {},
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
    "expected": {
     "refusal": {
      "error": "CarveTreeError",
@@ -25008,7 +25012,7 @@
    "clauses": [
     "C2-X-046"
    ],
-   "why": "C2-X-046: an item of that slot that is not `carve.tab`",
+   "why": "C2-X-046: an item of that slot that is not `carve.tab` ... The path of the refusal is the node it names: the `carve.tab`, the item of the slot, or the tab.",
    "summary": "an item of the tabs slot that is another extension is refused",
    "kind": "tree",
    "tree": {
@@ -25101,7 +25105,11 @@
      }
     ]
    },
-   "options": {},
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
    "expected": {
     "refusal": {
      "error": "CarveTreeError",
@@ -25115,7 +25123,7 @@
    "clauses": [
     "C2-X-046"
    ],
-   "why": "C2-X-046: or a tab without its `body` slot.",
+   "why": "C2-X-046: or a tab without its `body` slot. ... The path of the refusal is the node it names: the `carve.tab`, the item of the slot, or the tab.",
    "summary": "a tab without its body slot is refused",
    "kind": "tree",
    "tree": {
@@ -25228,7 +25236,11 @@
      }
     ]
    },
-   "options": {},
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
    "expected": {
     "refusal": {
      "error": "CarveTreeError",
@@ -51958,6 +51970,159 @@
     "notReported": [
      "unresolved-reference-link"
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1032",
+   "clauses": [
+    "C2-X-035",
+    "C2-H-005"
+   ],
+   "why": "C2-X-035: With no matching renderer, the HTML renderer writes the fallback and reports `extension-fallback-rendered`. C2-H-005: Each block element starts on its own line.",
+   "summary": "the fallback blocks of tabs without the renderer stand one per line",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "html": "<p><strong>Install</strong></p>\n<p>Run setup.</p>\n<p><strong>Use</strong></p>\n<p>Open the app.</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1033",
+   "clauses": [
+    "C2-X-047"
+   ],
+   "why": "C2-X-047: The tabs renderer groups the controls under the `tabsGroup` label (C2-H-125) and names each panel with the plain text of its title, or, when the title is absent, `Tab`, one space and its position counted from 1, as `Tab 1`.",
+   "summary": "a tab with no title is named Tab 1",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "carve.tabs",
+      "version": "1",
+      "children": [],
+      "slots": {
+       "tabs": [
+        {
+         "type": "block_extension",
+         "name": "carve.tab",
+         "version": "1",
+         "children": [],
+         "slots": {
+          "body": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         "fallback": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x"
+            }
+           ]
+          }
+         ],
+         "source": {
+          "form": "div",
+          "name": "tab",
+          "body": "x\n"
+         }
+        }
+       ]
+      },
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "div",
+       "name": "tabs",
+       "body": "::: tab \"A\"\nx\n:::\n"
+      }
+     }
+    ],
+    "extensions": [
+     {
+      "name": "carve.tab",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "title",
+       "body"
+      ]
+     },
+     {
+      "name": "carve.tabs",
+      "version": "1",
+      "required": false,
+      "slots": [
+       "tabs"
+      ]
+     }
+    ],
+    "stages": [
+     "referenceResolution",
+     "tableAlignment"
+    ]
+   },
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Tab 1</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Tab 1\"><p>x</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1034",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: The groups are counted in document order from 1: group N has the input name `tabs-N`, and its inputs the ids `tabs-N-0`, `tabs-N-1` and so on, counted from 0.",
+   "summary": "a second tabs group is tabs-2",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\nx\n:::\n::::\n\n:::: tabs\n::: tab \"B\"\ny\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>x</p></div></div>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-2\" id=\"tabs-2-0\" checked><label for=\"tabs-2-0\">B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>y</p></div></div>"
    },
    "from": []
   }
