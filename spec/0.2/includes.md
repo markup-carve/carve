@@ -1149,7 +1149,7 @@ Text.
 
 **C2-N-073** A caption line directly below a code include attaches to the include (C2-B-147). When the include is expanded, its child carries the same caption, and the child is captioned as an authored code block or table is (C2-H-062). The copy in the child has no `pos`: its characters are in the including file, and a node under the children of an include is positioned in the included file (C2-A-142). The caption of the include keeps its position. A caption below an include without `code` is text, and `unattached-caption` reports it (C2-B-149).
 
-**Exception C2-N-074** The caption of an expanded include takes no number and is not written: the copy in its child is numbered and written. The caption of an unexpanded include is numbered where it stands and written after the directive's paragraph as one more paragraph, as C2-H-165 writes the caption of a degraded block.
+**Exception C2-N-074** The caption of an expanded include is skipped by every resolution walk and is not written: it takes no number, makes no footnote and claims no id, and the copy in its child is numbered, resolved and written. The caption of an unexpanded include is numbered where it stands and written after the directive's paragraph as one more paragraph, as C2-H-165 writes the caption of a degraded block.
 
 Example 27 (unverified)
 
@@ -1178,6 +1178,41 @@ Starter,1
     <tr><td>Starter</td><td>1</td></tr>
   </tbody>
 </table>
+```
+
+:::
+
+The note and the id of the caption are made once, by the copy in the child, as for an authored code block.
+
+Example 38 (unverified)
+
+File `a.txt`:
+
+```text
+code
+```
+
+::: compare
+
+```carve
+{{ a.txt @code }}
+^ Listing #: x^[note] [s]{#q}
+```
+
+```html
+<figure>
+  <pre><code>code
+</code></pre>
+  <figcaption>Listing 1: x<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> <span id="q">s</span></figcaption>
+</figure>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>note<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
 :::
@@ -1372,11 +1407,11 @@ I13 and I14 were unassigned in 0.1.
 | Selection, transforms and mode | 29 | 0 | 16 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
-| Attributes and captions | 4 | 2 | 2 |
+| Attributes and captions | 4 | 2 | 3 |
 | Rendering | 5 | 0 | 3 |
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **37** |
+| **Total** | **88** | **2** | **38** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 37 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 38 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
