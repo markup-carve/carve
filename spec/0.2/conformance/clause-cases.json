@@ -137,7 +137,7 @@
     "C2-B-225",
     "C2-B-105"
    ],
-   "why": "C2-B-225: Where it is not a space, a brace block there is an attribute block (C2-B-105) and any other character starts further words (C2-B-122).",
+   "why": "C2-B-225: Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122).",
    "summary": "attribute block glued to div name not applied",
    "input": "::: word{k=v}\ntext\n:::",
    "options": {},
@@ -4825,7 +4825,7 @@
     "C2-B-225",
     "C2-B-122"
    ],
-   "why": "C2-B-225: The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a brace block there is an attribute block (C2-B-105) and any other character starts further words (C2-B-122).",
+   "why": "C2-B-225: The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122).",
    "summary": "div name ends at glued bracket, empty div",
    "input": "::: e[\n:::",
    "options": {},
@@ -6641,7 +6641,7 @@
     "C2-B-122",
     "C2-B-200"
    ],
-   "why": "C2-B-225: The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a brace block there is an attribute block (C2-B-105) and any other character starts further words (C2-B-122).",
+   "why": "C2-B-225: The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122).",
    "summary": "tab after fence language starts further words",
    "input": "- ```s\t\"\"\n***",
    "options": {},

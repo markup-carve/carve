@@ -3334,7 +3334,7 @@ code
 
 :::
 
-**C2-B-225** A language word, a div name and a raw format name are each the longest run of their characters (refs `language_word`, `div_name` and `raw_format` in `data/line-shapes.json`). A raw format name starts with an ASCII letter and goes on with ASCII letters, digits, `_` and `-`. The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a brace block there is an attribute block (C2-B-105) and any other character starts further words (C2-B-122). So `::: glossary>` opens the directive `glossary`, ```` ```js} ```` opens a code block with the language `js`, and ```` ```=html~ ```` opens a raw block with the format `html`, and `fence-title-syntax` reports `>`, `}` and `~`.
+**C2-B-225** A language word, a div name and a raw format name are each the longest run of their characters (refs `language_word`, `div_name` and `raw_format` in `data/line-shapes.json`). A raw format name starts with an ASCII letter and goes on with ASCII letters, digits, `_` and `-`. The first character behind the run that is not one of them ends the run; it is part of no name. Where it is not a space, a valid attribute block there is an attribute block (C2-B-105), and any other character, a brace block that is no valid attribute block included (C2-I-028 to C2-I-034), starts further words (C2-B-122). So `::: glossary>` opens the directive `glossary`, ```` ```js} ```` opens a code block with the language `js`, and ```` ```=html~ ```` opens a raw block with the format `html`, and `fence-title-syntax` reports `>`, `}` and `~`. Likewise `::: e{_a} y` opens the div `e`, and `fence-title-syntax`, not `fence-opener-fallback`, reports `{_a} y`.
 
 A name ends at the first character outside its set. What is glued behind it is reported and does not stop the block (C2-B-225, C2-B-105).
 
@@ -3374,6 +3374,28 @@ n
 ```
 
 :::
+
+`{_a}` is no valid attribute block, so it starts further words behind the name (C2-B-225, C2-B-122).
+
+Example 423 (unverified)
+
+::: compare
+
+```carve
+::: e{_a} y
+x
+:::
+```
+
+```html
+<div class="e">
+  <p>x</p>
+</div>
+```
+
+:::
+
+Reported: `fence-title-syntax`.
 
 The title of a div is inline content, so its `%%` starts a comment that ends at the closing quote (C2-B-120).
 
@@ -6657,7 +6679,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Definitions | 8 | 0 | 7 | 7 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 5 |
-| The fence opener and titles | 7 | 1 | 4 | 8 |
+| The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 11 | 0 | 11 | 2 |
 | Comments | 13 | 3 | 14 | 9 |
 | Captions | 7 | 0 | 12 | 3 |
@@ -6668,7 +6690,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **111** |
+| **Total** | **219** | **10** | **171** | **112** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

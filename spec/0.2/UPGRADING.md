@@ -280,6 +280,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | O18 | A line or region selection opens frontmatter only when it starts at line 1 of the file; a later `---` line and the lines after it are ordinary content. U-301 records the difference to 0.1. | C2-N-020, C2-N-021 |
 | O19 | A line or region selection sees the definitions of its whole file: as under a section, its children are the selected blocks and then every definition of the file it did not take, in source order. U-302 records the difference to 0.1. | C2-N-020, C2-N-031, C2-N-054 |
 | O20 | On import, an `<a>` marked as a note reference whose `href` names no note and has no fragment, or a fragment that is empty once the note prefixes are cut, is a link that keeps `role` as a key: `<a href="/u" role="doc-noteref">x</a>` gives `[x](/u){role=doc-noteref}`. The upgrade map covers source only, so no row. | C2-M-062 |
+| O21 | Only a valid attribute block glued to a div name, a fence language or a raw format is reported as an attribute block (`fence-opener-fallback`); a brace block that is no valid attribute block starts further words (`fence-title-syntax`). The tree and the HTML are the same either way. | C2-B-225 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

@@ -17253,6 +17253,86 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-423",
+   "document": "syntax-blocks.md",
+   "number": 423,
+   "section": "The fence opener and titles",
+   "clauses": [
+    "C2-B-117",
+    "C2-B-118",
+    "C2-B-119",
+    "C2-B-120",
+    "C2-B-121",
+    "C2-B-122",
+    "C2-B-225"
+   ],
+   "kind": "render",
+   "input": "::: e{_a} y\nx\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"e\">\n  <p>x</p>\n</div>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "div",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "x",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 12,
+            "endOffset": 13
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 12,
+          "endOffset": 13
+         }
+        }
+       ],
+       "attrs": {
+        "classes": [
+         "e"
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 17
+       }
+      }
+     ],
+     "srcByteLength": 17,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    },
+    "diagnostics": [
+     "fence-title-syntax"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-254",
    "document": "syntax-blocks.md",
    "number": 254,
