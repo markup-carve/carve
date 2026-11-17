@@ -958,6 +958,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031) |
 | `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
 | `lint --ignore ID` | no counterpart |
+| `lint` exits with 1 on any finding, a hint included | `carve lint` exits with 1 only for a warning or an error, and with 0 for hints alone, so a hint rule never fails a CI job (C2-T-031) |
 | include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
 | `-h`, `-V` | `--help`, `--version` |
 
