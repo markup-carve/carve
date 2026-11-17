@@ -25,7 +25,7 @@ Conventions:
 
 **C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. The error carries those diagnostics. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
 
-**C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
+**C2-W-004** Equal trees render equal HTML, except for the attribute blocks of an unresolved reference, which a render of source writes as typed (C2-I-085) and the writer keeps as typed (C2-W-084); so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
 **C2-W-005** The gates outrank every per-construct clause below. Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree, and another spelling of the same construct is preferred over a different construct. Such a deviation is conformant.
 
@@ -388,7 +388,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 | declared head count | `headerRows` | `header-rows` on a delimited table, also where it equals the default | `header-rows` only where the head is not the first row |
 | continuation rows | `continuationLines`, `wraps` | rows broken at the recorded places | one line per row |
 
-**C2-W-084** The writer also takes `rawRef` (C2-W-075) and `optionSpelling` (C2-W-058).
+**C2-W-084** The writer also takes `rawRef` (C2-W-075) and `optionSpelling` (C2-W-058), and, for a reference that stays unresolved, `rawAttrs`: it writes the recorded blocks in place of the block of C2-W-048 when reading them gives the attributes the tree holds (C2-L-006), so `[x][no]{.c}{#i}` stays as it is.
 
 **C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records (C2-L-043). The other facts of the sidecar are for editors and other tools (C2-L-046).
 
@@ -396,7 +396,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-087** Both gates hold with and without a sidecar. `fmt` reads the sidecar of its own parse, so C2-W-003 is tested on that path.
 
-**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", a reference is written from its key and not from `rawRef`, and an include option from its value and not from `optionSpelling` (C2-W-084). It keeps the reference form, including `shortcut`. So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
+**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", a reference is written from its key and not from `rawRef`, and an include option from its value and not from `optionSpelling` (C2-W-084). It keeps the reference form, including `shortcut`, and the `rawAttrs` of an unresolved reference, whose blocks are rendered text (C2-I-085), so C2-W-004 holds under it too. So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
 
 ## Escaping
 
