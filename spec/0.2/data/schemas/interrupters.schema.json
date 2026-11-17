@@ -36,7 +36,9 @@
               "enum": [
                 "always",
                 "at_open_list_column",
+                "between_columns_of_two_open_lists",
                 "indented_past_enclosing_marker",
+                "left_of_every_open_list",
                 "mark_at_open_description_list_column",
                 "definition_at_column_0_while_definition_open",
                 "paragraph_is_one_block_image_line", "paragraph_is_one_display_math_line",
@@ -62,7 +64,6 @@
             "items": {
               "enum": [
                 "at_description_list_column_after_term_or_description_text",
-                "left_of_list_column_after_item_text",
                 "term_mark_after_paragraph_text_inside_item"
               ]
             },
