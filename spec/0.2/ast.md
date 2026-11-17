@@ -217,7 +217,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `ruby_pair` | `ruby.pairs` | none | `base`, `annotation` |
 | `section` | block | blocks | `level`? |
 | `small_caps` | inline | inlines | none |
-| `smart_punctuation` | inline | none | `kind`, `glyph`?, `source` |
+| `smart_punctuation` | inline | none | `kind`, `glyph`, `source` |
 | `soft_break` | inline | none | none |
 | `span` | inline | inlines | none |
 | `strike` | inline | inlines | none |
