@@ -127,3 +127,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/
 Search: `C2-W-138`, `carrier-attribute-dropped`, `block-opener-overindented`, `CC-649`, `CC-914`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/schemas/lint-rules.schema.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/writer.md`. Attribute extent is the key and value; opener extent is the mark.
+
+## CR9-11
+
+Search: `definition-term-block-folded`, `C2-B-075`, `CC-697`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. R4 changed the message; CC-697 covers the given input.
