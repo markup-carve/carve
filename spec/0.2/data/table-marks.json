@@ -96,7 +96,7 @@
       "sets": "table_column.width",
       "written_to_html": false,
       "report": "table-width-total",
-      "clauses": ["C2-B-187", "C2-B-212", "C2-B-227", "C2-H-059", "C2-H-153"]
+      "clauses": ["C2-B-187", "C2-B-212", "C2-B-227", "C2-H-152", "C2-H-153"]
     }
   ]
 }
