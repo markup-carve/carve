@@ -75,8 +75,8 @@
     { "rank": 4, "name": "keys", "within": "as_written", "clauses": ["C2-B-098", "C2-A-033"] }
   ],
   "folds": [
-    { "key": "class", "letter_case": "any_ascii", "into": "classes", "clauses": ["C2-B-099", "C2-I-042", "C2-A-034"] },
-    { "key": "id", "letter_case": "any_ascii", "into": "id", "clauses": ["C2-B-099", "C2-I-042", "C2-A-034"] }
+    { "key": "class", "letter_case": "any_ascii", "into": "classes", "clauses": ["C2-I-042", "C2-A-034"] },
+    { "key": "id", "letter_case": "any_ascii", "into": "id", "clauses": ["C2-I-042", "C2-A-034"] }
   ],
   "merges": [
     {

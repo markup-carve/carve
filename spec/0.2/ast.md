@@ -111,7 +111,7 @@ Conventions:
 
 **C2-A-033** The tree records no order between the kinds of parts. The written order is fixed: the id, then the classes as written, then the language, then the keys as written (C2-B-098).
 
-**C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-099, C2-B-104).
+**C2-A-034** A key named `id` or `class`, in any ASCII letter case, is not a member of `keyValues`: it folds into `id` or `classes` when the block is parsed, and of several ids the last one written wins (C2-B-104).
 
 **C2-A-035** Glued attribute blocks and consecutive attribute lines are merged before the tree is built: classes add up, and a later key replaces an earlier key of the same name (C2-B-093, C2-I-039). Names are the same when they agree without regard to ASCII letter case, within one block as across merged blocks. A key occurs once in `keyValues`, at the place and in the spelling where it was first written, with the value written last. A reader refuses a supplied `keyValues` that holds two keys of one name, or a key that is no key by C2-I-030.
 

@@ -534,7 +534,7 @@ Raw inline is no host, so the attribute block behind its marker attaches to noth
 
 The order inside a block is that of C2-B-098, and the tree keeps no order between the kinds of parts (C2-A-033); only the text of an unresolved reference writes its blocks as typed (C2-I-085).
 
-**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-099). The value of a `class` key is split at runs of spaces and tabs, each piece is one class at the place of the key, and an empty value adds none.
+**C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-104). The value of a `class` key is split at runs of spaces and tabs, each piece is one class at the place of the key, and an empty value adds none.
 
 Example 21 (generated)
 
