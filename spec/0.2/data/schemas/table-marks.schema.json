@@ -12,6 +12,7 @@
     "span_marks",
     "continuation_fragment",
     "alignment_marks",
+    "vertical_marks",
     "attributes"
   ],
   "properties": {
@@ -140,7 +141,29 @@
         "required": ["mark", "alignment", "clauses"],
         "properties": {
           "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
-          "alignment": { "enum": ["left", "right", "center"] },
+          "alignment": { "enum": ["left", "right", "center", "none"], "description": "none: the mark sets no horizontal alignment." },
+          "only_before": { "const": "vertical_mark", "description": "The mark stands only directly before a vertical mark." },
+          "clauses": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^C2-[ABHILNW]-[0-9]{3}$" },
+            "description": "The clause ids of the six 0.2 documents that the row encodes. The row is normative together with these clauses."
+          }
+        }
+      }
+    },
+    "vertical_marks": {
+      "type": "array",
+      "description": "The marks that stand directly after an alignment mark in the brace block of a cell prefix.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mark", "alignment", "after", "clauses"],
+        "properties": {
+          "mark": { "type": "string", "minLength": 1, "maxLength": 1 },
+          "alignment": { "enum": ["top", "middle", "bottom"] },
+          "after": { "const": "alignment_mark", "description": "The mark is read only as the character directly after an alignment mark; elsewhere it is no mark." },
           "clauses": {
             "type": "array",
             "minItems": 1,

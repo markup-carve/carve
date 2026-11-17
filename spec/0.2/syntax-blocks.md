@@ -5225,7 +5225,53 @@ title: x
 
 **C2-B-181** An unclosed quote in a delimited table runs to the end of the fence body, and `delimited-table-malformed` reports it with severity error: its cell holds everything after the quote character, line breaks and separators included, without the final line ending.
 
-**C2-B-182** In the brace block of a cell prefix the alignment mark, `<`, `>` or `~`, comes first. The mark is not a part of the attribute grammar (C2-I-029): it is read before the parts, only in a cell prefix, and a block that holds nothing but the mark, as in `|={>} x |`, is valid there.
+**C2-B-182** In the brace block of a cell prefix the alignment marks come first: a horizontal mark, `<` left, `>` right or `~` center, and directly after it an optional vertical mark, `^` top, `~` middle or `v` bottom. In place of the horizontal mark, `?` sets no horizontal alignment; it stands only before a vertical mark, so `{?v}` sets the vertical axis alone. A vertical mark with no horizontal mark or `?` before it is no mark: `{^}` and `{?}` are no attribute block, and `{v}` holds the bare key `v`. The marks are not a part of the attribute grammar (C2-I-029): they are read before the parts, only in a cell prefix, and a block that holds nothing but the marks, as in `|={>} x |` and `|={>^} x |`, is valid there. The character directly after the horizontal mark or `?` is the vertical mark whenever it is one of the three, so `{>v}` is right and bottom, and `{~~}` is center and middle (as in 0.1).
+
+Example 272 (generated)
+
+::: compare
+
+```carve
+|={>^} Qty |={?v} Note |
+| 1 |{<~} a |
+| 2 | b |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: right; vertical-align: top;">Qty</th><th scope="col" style="vertical-align: bottom;">Note</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: right; vertical-align: top;">1</td><td style="text-align: left; vertical-align: middle;">a</td></tr>
+    <tr><td style="text-align: right; vertical-align: top;">2</td><td style="vertical-align: bottom;">b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+The head marks set both axes of their columns; `?` leaves the horizontal axis of `Note` unset, and `{<~}` overrides both axes of one cell (C2-B-213).
+
+Example 274 (generated)
+
+::: compare
+
+```carve
+|{^} a |{v} b |{>^^} c |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>{^} a</td><td v="">b</td><td>{&gt;^^} c</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+A vertical mark without a horizontal mark or `?` before it is no mark: `{^}` is no attribute block and stays text, `{v}` holds the bare key `v`, and a second vertical mark fits no part, so `{>^^}` is text (C2-I-034).
 
 **C2-B-183** Spans resolve backward only: a span mark never joins a cell to its right or below.
 
@@ -5235,7 +5281,7 @@ title: x
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, and `aligns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, and `aligns`, `valigns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
@@ -6013,17 +6059,44 @@ a,b
 
 **C2-B-210** The value of `header-rows` and of `footer-rows` is a count: one or more decimal digits. An empty value counts as 1. A count is valid only in this form. Any other value is invalid, and the attribute then has no effect: the table keeps the partition it has without the attribute. A valid count takes effect also where it equals the default or selects no row.
 
-**C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry is `left`, `right` or `center` and sets `align` of that `table_column`. The whole value is checked before any entry is applied: every entry, one past the last column included, must have this form, and an empty or malformed entry makes the whole value invalid, so that it sets no column. Entries past the last column set nothing. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it.
+**C2-B-211** `aligns` is a list of entries separated by commas. The entry at position N sets the horizontal alignment of column N, and spaces around an entry are ignored. An entry is `left`, `right` or `center` and sets `align` of that `table_column`. The whole value is checked before any entry is applied: every entry, one past the last column included, must have this form, and an empty or malformed entry makes the whole value invalid, so that it sets no column. Entries past the last column set nothing. Fewer entries than columns are valid: the remaining columns stay unset, and `table-column-arity` reports it. `valigns` is the same list for the vertical axis: an entry is `top`, `middle` or `bottom` and sets `valign` of that `table_column`.
 
 **C2-B-212** `widths` is a list of entries separated by commas, by position like `aligns`, and its whole value is checked in the same way before any entry is applied (C2-B-211). An entry is a decimal number greater than 0 and at most 100. It is a percentage of the table width, and sets `width` of that `table_column` to the number divided by 100: `25` gives `0.25`. An empty entry or any other entry makes the whole value invalid, so that it sets no column. Entries past the last column set nothing, and fewer entries are valid. The widths need not total 100; `table-width-total` reports a total above 100.
 
 **C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry makes the value invalid (C2-B-212).
 
-**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it. The vertical axis has no table attribute: only cell marks set it, and a `valigns` key on a table is an ordinary key, not one of the table attributes of `data/table-marks.json`.
+**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own mark for that axis (C2-B-182) wins. Then comes the mark for that axis of the header cell in the head that starts in the cell's column, then the entry of that column in `aligns` for the horizontal axis and in `valigns` for the vertical axis. Otherwise the cell has no alignment on that axis. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its marks only to the column it starts in. Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it.
+
+Example 273 (generated)
+
+::: compare
+
+```carve
+{valigns="top,bottom" aligns="left,right"}
+|= A |={?^} B |
+| a | b |
+```
+
+```html
+<table>
+  <thead>
+    <tr><th scope="col" style="text-align: left; vertical-align: top;">A</th><th scope="col" style="text-align: right; vertical-align: top;">B</th></tr>
+  </thead>
+  <tbody>
+    <tr><td style="text-align: left; vertical-align: top;">a</td><td style="text-align: right; vertical-align: top;">b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
+Each axis resolves on its own: column 2 takes its horizontal alignment from `aligns` and its vertical alignment from the head mark `^`, which wins over the `bottom` of `valigns`. Both keys are consumed and not written to HTML (C2-B-227, C2-H-153).
+
+Reported: `table-column-overlap`.
 
 **C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key.
 
-**C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
+**C2-B-227** A table reads `aligns`, `valigns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
 Example 229 (generated)
 
@@ -6395,10 +6468,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 34 | 0 | 19 | 17 |
+| Tables | 34 | 0 | 22 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **218** | **10** | **168** | **103** |
+| **Total** | **218** | **10** | **171** | **103** |
 
 The chapter has 218 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

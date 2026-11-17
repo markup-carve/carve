@@ -228,7 +228,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `table` | block | table groups, `comment` | `columns`, `caption`? |
 | `table_body` | `table` | `table_row`, `comment` | `rowHeadColumns`? |
 | `table_cell` | `table_row` | blocks, `cell_paragraph` | `header`, `span`?, `colspan`?, `rowspan`?, `align`?, `valign`?, `scope`?, `headerIds`? |
-| `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`? |
+| `table_column` | `table.columns` | none | `align`?, `valign`?, `width`?, `resolvedAlign`?, `resolvedValign`? |
 | `table_foot` | `table` | `table_row`, `comment` | none |
 | `table_head` | `table` | `table_row`, `comment` | none |
 | `table_row` | table group | `table_cell` | none |
@@ -368,7 +368,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-088** The partition of a table into head, body and foot is held by its groups alone: the `table_head`, `table_body` and `table_foot` nodes and the rows each holds. No node carries a count of head rows. A `header-rows` attribute that set the partition is spelling, recorded in the layout sidecar (C2-L-057), so a pipe table and a delimited table with the same cells in the same groups are equal trees (C2-L-023).
 
-**C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign`; it may also hold `valign` and `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213). A cell mark overrides the resolved column alignment for that cell.
+**C2-A-089** A table has `columns` of `table_column` nodes. Each column keeps authored `align` beside result `resolvedAlign` and authored `valign` beside result `resolvedValign`; it may also hold `width` (C2-B-211 to C2-B-213). `resolvedAlign` is the mark of the last head cell of that column (C2-B-182), or else the authored `align` from the `aligns` attribute (C2-B-213), and `resolvedValign` is the vertical mark of that head cell, or else the authored `valign` from the `valigns` attribute. A cell mark overrides the resolved column alignment for that cell.
 
 **C2-A-091** `table_cell.children` is always a list of blocks. A cell written in a pipe table holds one `cell_paragraph` with inline `children`, which renders without a paragraph element. An imported cell may hold other blocks. A reader refuses a cell with no children that carries no `span`, and a `cell_paragraph` that is not the only child of its cell; a span mark cell has no children (C2-A-092).
 

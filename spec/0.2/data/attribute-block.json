@@ -98,7 +98,8 @@
     {
       "name": "cell_alignment",
       "where": "first_in_brace_block_of_cell_prefix",
-      "marks": ["<", ">", "~"],
+      "marks": ["<", ">", "?", "~"],
+      "vertical_marks": ["^", "v", "~"],
       "clauses": ["C2-B-182"]
     },
     {

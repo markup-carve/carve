@@ -826,7 +826,28 @@ Example 49 (unverified, `--roundtrip`)
 
 **C2-H-056** A header cell is `<th>` and a data cell is `<td>`. Explicit `table_cell.scope` writes `scope` with its value; otherwise a head header uses `scope="col"` and another header uses `scope="row"`. `headerIds` writes a space-separated `headers` attribute in its listed order, and each id names a header cell.
 
-**C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. Vertical alignment adds `vertical-align: VALUE;` after it, one space apart. A cell with no alignment carries no `style`. An authored `style` keeps its value and takes the declarations after it.
+**C2-H-057** A cell with a resolved alignment (C2-B-213) carries `style="text-align: VALUE;"`. A resolved vertical alignment adds `vertical-align: VALUE;` after it, one space apart, and stands alone where the cell has no horizontal alignment: `style="vertical-align: top;"`. A cell with no alignment on either axis carries no `style`. An authored `style` keeps its value and takes the declarations after it.
+
+Example 71 (generated)
+
+::: compare
+
+```carve
+{valigns="middle"}
+| a |
+|{?v style="color: red;"} b |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td style="vertical-align: middle;">a</td></tr>
+    <tr><td style="color: red; vertical-align: bottom;">b</td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 **C2-H-058** `rowspan` and `colspan` are written only for a count above 1. A cell that a span covers is not written.
 
@@ -858,7 +879,7 @@ Example 12 (generated)
 
 **C2-H-152** A table with at least one column that has a `width` writes `<colgroup>` after its caption and before its first group, with one `<col>` per column. A column with a width carries `style="width: P%;"`, where P is the width times 100 written as a decimal number without trailing zeros, so `0.305` gives `30.5%` and `0.25` gives `25%`. A column without a width is a bare `<col>`. A table where no column has a width has no `<colgroup>`.
 
-**C2-H-153** `aligns`, `widths`, `header-rows` and `footer-rows` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
+**C2-H-153** `aligns`, `valigns`, `widths`, `header-rows` and `footer-rows` on a table are never written as HTML attributes, whether the table consumed the key or kept it in `attrs` (C2-B-227). `header-cols` on a pipe table or a delimited table is written as an ordinary attribute (C2-B-214).
 
 **C2-H-200** A cell whose children are not one `cell_paragraph` holds the blocks of an imported or supplied tree (C2-A-091), and each `paragraph` among them is written with `<p>`. A cell of one paragraph stays on the line of its row: `<td><p>c</p></td>`. Any other such cell is written as a list item with more blocks is (C2-H-007): a first paragraph on the line of the cell tag, every other block on its own line one level deeper than the row, and the closing cell tag on its own line at the indent of the row, after which the row goes on.
 
@@ -1978,7 +1999,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 5 | a soft break directly before a hard break | `a⏎\⏎b` | `a\⏎b`: the line ending before `<br>` is layout |
 | 6 | the spacing of a loose list whose items start with no paragraph | `- > q⏎⏎- > r` | `- > q⏎- > r`: a tight list, since no item writes a `<p>` of its own (C2-H-034) |
 | 7 | a line feed in the text of a delimited-table cell | ```` {table}⏎```csv⏎x⏎"2⏎3"⏎``` ```` | `\|= x \|⏎\| 2 3 \|`: the line feed reads as a space |
-| 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone |
+| 8 | the column that supplied an alignment, where a head row exists | `{aligns="center"}⏎\|= a \|⏎\| b \|` | `\|={~} a \|⏎\| b \|`: every cell writes its resolved alignment (C2-H-057), and it comes back as a mark on the header cell, which aligns the column (C2-B-213); `aligns` is gone, and `valigns` in the same way |
 | 9 | a plain div whose first class is a directive kind | `{.toc}⏎:::⏎a⏎:::` | `::: toc⏎a⏎:::`: the directive, which writes the same `<div class="toc">` (C2-H-158) |
 | 10 | a span whose first class is `ext-NAME`, NAME an inline extension name (C2-I-094) | `[x]{.ext-a}` | `:a[x]`: the inline extension `a`, which writes the same `<span class="ext-a">` (C2-H-076) |
 | 11 | an authored key `lang` on a span | `[x]{lang=de}` | `[x]{:de}`: `node.lang`, which writes the same `lang` attribute (C2-H-009) |
@@ -2411,7 +2432,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 0 |
 | Code and raw content | 9 | 0 | 1 | 1 |
-| Tables | 8 | 0 | 1 | 0 |
+| Tables | 8 | 0 | 2 | 0 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 2 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
@@ -2425,6 +2446,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **34** | **36** |
+| **Total** | **193** | **6** | **35** | **36** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 70 examples, 34 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 71 examples, 35 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

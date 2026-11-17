@@ -6990,6 +6990,455 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-081",
+   "clauses": [
+    "C2-B-174",
+    "C2-B-182"
+   ],
+   "why": "C2-B-174: The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it",
+   "summary": "alignment marks on a joining span mark set no column",
+   "input": "|= A |={>^} < |\n| a | b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th colspan=\"2\" scope=\"col\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "A"
+               }
+              ]
+             }
+            ],
+            "colspan": 2
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "span": "colspan",
+            "children": []
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-082",
+   "clauses": [
+    "C2-B-182",
+    "C2-B-213"
+   ],
+   "why": "C2-B-182: In place of the horizontal mark, `?` sets no horizontal alignment; it stands only before a vertical mark, so `{?v}` sets the vertical axis alone.",
+   "summary": "vertical mark with the header mark and attributes",
+   "input": "|={?v .c #i} A |\n| a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\" id=\"i\" class=\"c\" style=\"vertical-align: bottom;\">A</th></tr>\n  </thead>\n  <tbody>\n    <tr><td style=\"vertical-align: bottom;\">a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column",
+        "resolvedValign": "bottom"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "A"
+               }
+              ]
+             }
+            ],
+            "valign": "bottom",
+            "attrs": {
+             "id": "i",
+             "classes": [
+              "c"
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-083",
+   "clauses": [
+    "C2-B-182",
+    "C2-B-171"
+   ],
+   "why": "C2-B-182: A vertical mark with no horizontal mark or `?` before it is no mark: `{^}` and `{?}` are no attribute block, and `{v}` holds the bare key `v`.",
+   "summary": "a lone vertical mark is cell text",
+   "input": "|={^} a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">{^} a</th></tr>\n  </thead>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "{^} a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-084",
+   "clauses": [
+    "C2-B-182"
+   ],
+   "why": "C2-B-182: The character directly after the horizontal mark or `?` is the vertical mark whenever it is one of the three, so `{>v}` is right and bottom",
+   "summary": "v after a horizontal mark is the vertical mark, not a key",
+   "input": "| a |{>vx} b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td x=\"\" style=\"text-align: right; vertical-align: bottom;\">b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ],
+            "align": "right",
+            "valign": "bottom",
+            "attrs": {
+             "keyValues": [
+              [
+               "x",
+               ""
+              ]
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-085",
+   "clauses": [
+    "C2-B-211",
+    "C2-B-227",
+    "C2-H-153"
+   ],
+   "why": "C2-B-211: The whole value is checked before any entry is applied: every entry, one past the last column included, must have this form, and an empty or malformed entry makes the whole value invalid, so that it sets no column. ... `valigns` is the same list for the vertical axis: an entry is `top`, `middle` or `bottom` and sets `valign` of that `table_column`.",
+   "summary": "a valigns value with a bad entry sets no column and stays in attrs (table-attribute-invalid)",
+   "input": "{valigns=\"top,center\"}\n| a | b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td>b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "valigns",
+         "top,center"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-086",
+   "clauses": [
+    "C2-B-185",
+    "C2-B-182"
+   ],
+   "why": "C2-B-185: A fragment of a continuation row reads no cell prefix, no span mark and no row attribute.",
+   "summary": "alignment marks in a continuation fragment are text",
+   "input": "| a |\n+{<v} b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a {&lt;v} b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a {<v} b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

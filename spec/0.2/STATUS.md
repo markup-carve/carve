@@ -22,16 +22,16 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 
 | Document | Prefix | Clauses | Rules | Exceptions | Labeled | Examples |
 |---|---|---|---|---|---|---|
-| `syntax-blocks.md` | C2-B | 218 | 217 | 31 | 10 | 271 |
+| `syntax-blocks.md` | C2-B | 218 | 217 | 31 | 10 | 274 |
 | `syntax-inline.md` | C2-I | 112 | 136 | 30 | 16 | 124 |
 | `ast.md` | C2-A | 205 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 193 | 470 | 98 | 6 | 70 |
-| `writer.md` | C2-W | 129 | 294 | 86 | 5 | 15 |
+| `html.md` | C2-H | 193 | 470 | 98 | 6 | 71 |
+| `writer.md` | C2-W | 129 | 294 | 86 | 5 | 16 |
 | `source-layout.md` | C2-L | 57 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 38 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
-| `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 57 |
-| **Total** | | **1,137** | **2,181** | **442** | **43** | **575** |
+| `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 58 |
+| **Total** | | **1,137** | **2,181** | **442** | **43** | **581** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount.
 
@@ -49,8 +49,8 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 
 - `npm run spec2:data`: every data file against its schema and its clauses, the documents against each other (clause ids cited anywhere, example numbers, count tables and count sentences, codes against the catalog, the option table), and the two gates below.
 - `npm run spec2:unicode`: the Unicode category ranges against UnicodeData.txt of the pinned version 18.0.0.
-- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 531 positive trees with positions, 57 imported trees, 56 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
-- The corpus (`scripts/spec2-conformance.mjs`): 575 examples (323 verified) and 56 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 80 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
+- The tree gate (`ast.md`, `scripts/spec2-trees.mjs`): 536 positive trees with positions, 58 imported trees, 56 refused trees, the equal pair of blocks Examples 267 and 268, and 10 layout sidecars, three of them refused by a reader check of C2-L-058; every node type and field of the schema occurs, and every positive and imported tree passes the reader checks of `scripts/lib/spec2-reader.mjs`.
+- The corpus (`scripts/spec2-conformance.mjs`): 581 examples (328 verified) and 56 refused trees generated from the documents and the fixtures, so the gate fails when they are stale; an example's expected codes come only from its `Reported:` line; 86 clause cases, each with the sentence that decides it, read back from the clause. The examples are the gate of `html.md` and `writer.md` as well: each of their examples is a case an engine runs.
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
@@ -79,14 +79,13 @@ The standard extensions. The mechanism of `extensions.md` is part of the candida
 - The fourth review read commit `edebb05e`, with `source-layout.md`, `extensions.md` and the data tables in full, against `carve-js` `next2` `2b8b95c1`, and found 36 findings (one high, 14 medium) and 15 rules that could go. In candidate 4, 22 are fixed, 13 are decided (F1, F4, F10, F11, F12, F13, F14, F15, F22, F23, F27, F28 and F34, each one commit for the maintainer to confirm, F1 in two), F30 is parked as O15, and none is refuted. All 15 rules that could go are deleted or shortened, each in its own commit, after each item's input gave the stated result in `carve-js` `next2` `8368515b` and the examples of its section were read against the general rule; no example changed. Of the readings the PHP and Rust engines met at stage 8, the span-mark position was already settled in candidate 3, a paragraph of breaks alone is settled as 0.1 writes it (html Example 67), and the delimiter at the inline cap is parked as O16. Every new example was run against `carve-js` and, where marked generated, against the 0.1 engine.
 - The fifth review read commit `20444577`: the fix round of candidate 4, `includes.md` and `import-html.md` in full with runs of the `carve-js` `next2` `9f88086e` importer and 0.2 engine, and a pass over three further chapters; it found 42 findings (two high, 20 medium) and 27 rules that could go, with a list of lower confidence. In candidate 5, 26 are fixed, 2 are settled by deleting the clause, 10 are decided (each one commit for the maintainer to confirm, F36 in part), F4, F31 and F34 are parked as O17 to O19, and F42 is refuted. Of the rules that could go, 25 are deleted or shortened, 1 is half deleted and 1 is kept; of the lower list, 10 are deleted and 2 kept. Each deletion was tried against inputs at the seams (list item, quote, table cell, footnote, end of input) in `carve-js` `next2` `ee68ffaa` first. The tree gate now runs the reader checks on every positive and imported tree. Of the `carve-js` candidate 2 and PHP stage 9 gap lists, one data row is fixed, one reading is decided (HTML Example 70) and two are parked as O20 and O21. A separate read of the whole diff of the round found six sentences the round left false and one undecided input (C2-M-040), fixed or decided before this commit.
 
-What stays unverified: the 252 unverified examples (written by hand from the clauses, among them every include example by the conventions of `includes.md`), the rows of the data tables beyond what `spec2:data` checks and the fourth review read, `ast-schema.json`, `node-slots.json`, `unicode-categories.json` and the element rows of `import-html.json` row by row, the standard extensions beyond their contact with the mechanism, and the PHP and Rust engines, which ran in none of the five reviews. The reader checks added in candidates 3 to 5 run in the tree gate (`scripts/lib/spec2-reader.mjs`) and in no engine yet beyond those `carve-js` already had.
+What stays unverified: the 253 unverified examples (written by hand from the clauses, among them every include example by the conventions of `includes.md`), the rows of the data tables beyond what `spec2:data` checks and the fourth review read, `ast-schema.json`, `node-slots.json`, `unicode-categories.json` and the element rows of `import-html.json` row by row, the standard extensions beyond their contact with the mechanism, and the PHP and Rust engines, which ran in none of the five reviews. The reader checks added in candidates 3 to 5 run in the tree gate (`scripts/lib/spec2-reader.mjs`) and in no engine yet beyond those `carve-js` already had.
 
 ## Known open points
 
 - **O9.** The layout sidecar has no gate of its own beyond `trees/layouts.json`. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
 - **O10.** Annotation ranges (C2-A-204) are anchored for an unchanged tree only; how their paths follow an edit is not part of 0.2.0.
 - **O12.** For the extension catalog work: a renderer returns an HTML string the host cannot inspect for the escaping and URL policy of C2-X-034; the slots of a supplied node of another extension are walked in the key order of its `slots` object, which can differ from the order of its declaration (C2-X-020); and the annotation ids of C2-A-203 need a reader that is given the range sidecar with the tree.
-- **O13.** The vertical axis of a table: no 0.2 source sets `valign`, while the tree holds it and C2-B-213 says cell marks set it (review 3 F8). Options: define vertical marks, drop the fields, or list them as interchange-only (C2-A-175).
 - **O14.** A comment-only line inside an inline atom that spans lines, such as a code span: the block reading of C2-B-137 or the atom reading of the engine (review 3 F9).
 - **O15.** The attributes of a claimed node when its fallback renders (review 4 F30): wrap the fallback in an element that carries them, drop them with a report, or put them on the first fallback block. For the extension catalog work with O12.
 - **O16.** A delimiter that can close, read at the inline cap behind open brackets (Rust stage 8): tested as a closer first, as `carve-js` reads it, or as an opener that the cap makes text, as `carve-rs` reads it (C2-I-118, C2-I-007).
