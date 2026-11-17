@@ -384,7 +384,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 | declared head count | `headerRows` | `header-rows` on a delimited table, also where it equals the default | `header-rows` only where the head is not the first row |
 | continuation rows | `continuationLines`, `wraps` | rows broken at the recorded places | one line per row |
 
-**C2-W-084** The writer also takes `rawRef` (C2-W-075).
+**C2-W-084** The writer also takes `rawRef` (C2-W-075) and `optionSpelling` (C2-W-058).
 
 **C2-W-085** The writer reads no other sidecar fact. The heading marker, the thematic break, the fence character and length, the frontmatter opener, the marker columns, the continuation style and the counts of blank lines are written in their canonical form whatever the sidecar records (C2-L-043). The other facts of the sidecar are for editors and other tools (C2-L-046).
 
@@ -392,7 +392,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-087** Both gates hold with and without a sidecar. `fmt` reads the sidecar of its own parse, so C2-W-003 is tested on that path.
 
-**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", and a reference is written from its key and not from `rawRef` (C2-W-084). It keeps the reference form, including `shortcut`. So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
+**C2-W-127** The option `normalize` makes `fmt` write as if there were no sidecar: every spelling of C2-W-083 takes its form of the column "Without", a reference is written from its key and not from `rawRef`, and an include option from its value and not from `optionSpelling` (C2-W-084). It keeps the reference form, including `shortcut`. So a quote fence becomes `>` lines, a delimited table a pipe table, written numbers the bare dot, and a continuation row joins its row, unless the tree needs the other form. It is off by default. The tree is the same with and without it (C2-W-002), and a normalized document is stable under `fmt` with the option and without it (C2-W-003). On the command line it is `carve fmt --normalize`, and it combines with `--check` and `--diff`.
 
 ## Escaping
 

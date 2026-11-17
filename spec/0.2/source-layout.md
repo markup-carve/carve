@@ -202,7 +202,7 @@ A writer that starts from a tree with no sidecar, or with a sidecar that lacks a
 
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 
-**C2-L-046** The writer reads eight facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows` and `rawRef` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
+**C2-L-046** The writer reads nine facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows`, `rawRef` and `optionSpelling` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
 
 **C2-L-047** Every block of the top-level document has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. The blocks in the children of an expanded include have no entries (C2-N-082). An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
 
