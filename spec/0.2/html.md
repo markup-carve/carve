@@ -2357,9 +2357,9 @@ See [x](javascript:a) and <javascript:b>[^1].
 
 :::
 
-**C2-H-165** The degraded form of a node outside the profile is its plain text, and no placeholder word stands for it: a node writes the text it holds and, where this clause names one, the mark of its kind, and a node that holds no text and has no such mark writes nothing. An inline node is written as the plain text of its children, and a qualified inline extension as the plain text of its fallback (C2-X-032); an image as `[img: ALT]`, the mark of its kind around its alternative text, so `[img: ]` where that is empty; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text. These inline forms hold for an inline node that is degraded while its block stays, and for every node inside it at any depth. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, so a `code`, a `literal_inline` and a `math` node give their value. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description, and a block extension the blocks of its fallback. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
+**C2-H-165** The degraded form of a node outside the profile is its plain text, and no placeholder word stands for it: a node writes the text it holds and, where this clause names one, the mark of its kind, and a node that holds no text and has no such mark writes nothing. An inline node is written as the plain text of its children, and a qualified inline extension as the plain text of its fallback (C2-X-032); an image as `[img: ALT]`, the mark of its kind around its alternative text, so `[img: ]` where that is empty; a no-break space as U+00A0, a hard break and a soft break as one space, a smart punctuation node as its glyph; a footnote reference as `[^` and its key and `]`; a `comment` and a `critic_comment` give no text, so a paragraph that holds only comments still writes nothing (C2-H-019); every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, and a `raw_inline` as its value, as in 0.1. These inline forms hold for an inline node that is degraded while its block stays, and for every node inside it at any depth. Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, and a `raw_inline`, which gives its value, so a node with no children writes the same text at both levels. An include is written as the source text of its directive. A block becomes one paragraph of its plain text behind the mark of its kind: for a heading one `#` for each level and a space (the source may have used `=`), `> ` for a quote, `- ` for each item of a list, `---` for a thematic break, one line per table row with ` | ` between the cells and a hard break between the rows, the value without its final line break for a code or raw block, and the title and the blocks joined by single spaces for a div, an admonition and a directive. A block that carries a caption writes it after its degraded form, as one more paragraph of its plain text, in which `caption_number` gives its number (C2-H-143): `^ Figure #: cap` degrades to `Figure 1: cap`, and a figure group with no block still writes its caption. Any other block that holds blocks is written as those blocks in their degraded forms, in order, and any other leaf block as one paragraph of its plain text: a description list gives one paragraph for each term and the degraded blocks of each description, and a block extension the blocks of its fallback. A node that leaves no text is dropped. A degraded node is reported once (C2-H-129), and the nodes inside it are not reported again.
 
-Under `minimal` the editorial comment gives no text, and the math span is written as the writer spells the node (C2-H-165).
+Under `minimal` the editorial comment gives no text, and the math span gives its value (C2-H-165).
 
 Example 48 (unverified, `--profile minimal`)
 
@@ -2370,14 +2370,14 @@ a {#c#} b $`m`
 ```
 
 ```html
-<p>a  b $`m`</p>
+<p>a  b m</p>
 ```
 
 :::
 
 Reported: `profile-construct-degraded`.
 
-The children of a degraded link take the inline forms too, at every depth: the raw span and the autolink give their spellings, as they would outside the link (C2-H-165).
+The children of a degraded link take the inline forms too, at every depth: the raw span gives its value and the autolink its visible text, as they would outside the link (C2-H-165).
 
 Example 53 (unverified, `--profile minimal`)
 
@@ -2390,8 +2390,8 @@ Example 53 (unverified, `--profile minimal`)
 ```
 
 ```html
-<p>a `&lt;br&gt;`{=html} b</p>
-<p>&lt;a:b&gt;</p>
+<p>a &lt;br&gt; b</p>
+<p>a:b</p>
 ```
 
 :::
@@ -2529,7 +2529,7 @@ Example 39 (unverified, `--profile comment`)
 
 Reported: `profile-construct-degraded`.
 
-Inside a degraded captioned image and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its spelling (C2-H-165).
+Inside a degraded captioned image and a degraded quote, code and math give their values. The math span in the paragraph, which stays, is degraded on its own and gives its value as well (C2-H-165).
 
 Example 41 (unverified, `--profile minimal`)
 
@@ -2548,7 +2548,7 @@ p $`k`
 <p>[img: i]</p>
 <p>a x b m</p>
 <p>&gt; q c n</p>
-<p>p $`k`</p>
+<p>p k</p>
 ```
 
 :::

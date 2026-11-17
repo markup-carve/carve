@@ -74369,7 +74369,7 @@
     "profile": "minimal"
    },
    "expected": {
-    "html": "<p>a  b $`m`</p>",
+    "html": "<p>a  b m</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -74487,7 +74487,7 @@
     "profile": "minimal"
    },
    "expected": {
-    "html": "<p>a `&lt;br&gt;`{=html} b</p>\n<p>&lt;a:b&gt;</p>",
+    "html": "<p>a &lt;br&gt; b</p>\n<p>a:b</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
@@ -75642,7 +75642,7 @@
     "profile": "minimal"
    },
    "expected": {
-    "html": "<p>[img: i]</p>\n<p>a x b m</p>\n<p>&gt; q c n</p>\n<p>p $`k`</p>",
+    "html": "<p>[img: i]</p>\n<p>a x b m</p>\n<p>&gt; q c n</p>\n<p>p k</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",

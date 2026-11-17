@@ -226,17 +226,17 @@
    "id": "CC-006",
    "clauses": [
     "C2-H-165",
-    "C2-W-116",
+    "C2-H-143",
     "C2-H-163"
    ],
-   "why": "C2-H-165: every other inline node with no children as the writer spells that node on its own (C2-W-116), since a tree holds no source text.",
-   "summary": "comment profile degrades inline math to source spelling",
+   "why": "C2-H-165: every other inline node with no children as its plain text by C2-H-143, so a `code`, a `literal_inline` and a `math` node give their value and an autolink its visible text, and a `raw_inline` as its value, as in 0.1.",
+   "summary": "comment profile degrades inline math to its value, as in 0.1",
    "input": "the sum $`a + b`",
    "options": {
     "profile": "comment"
    },
    "expected": {
-    "html": "<p>the sum $`a + b`</p>",
+    "html": "<p>the sum a + b</p>",
     "children": [
      {
       "type": "paragraph",
@@ -1168,7 +1168,7 @@
     "C2-H-165",
     "C2-H-143"
    ],
-   "why": "C2-H-165: Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, so a `code`, a `literal_inline` and a `math` node give their value.",
+   "why": "C2-H-165: Inside a block that is degraded as a whole, the plain text is that of C2-H-143 for every node except an image, which keeps `[img: ALT]`, and a `raw_inline`, which gives its value, so a node with no children writes the same text at both levels.",
    "summary": "minimal profile degrades quote to marked plain text",
    "input": "> a <b:c> {#x#} d",
    "options": {
