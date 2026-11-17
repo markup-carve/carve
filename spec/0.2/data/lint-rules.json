@@ -155,7 +155,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [{"when": "a pipe table starts one or two lines below this paragraph line", "text": "This caption-looking paragraph is above the table. Move it directly below the table and start it with `^ ` to make a caption."}, {"when": "no pipe table starts one or two lines below, and a table or image starts one or two lines above", "text": "This caption-looking paragraph sits next to a table or image; use a ^ caption line directly below that block."}],
+      "messages": [{"when": "a pipe table starts one or two lines below this paragraph line", "text": "This caption-looking paragraph is above the table. Move it directly below the table and start it with `^ ` to make a caption."}, {"when": "no pipe table starts one or two lines below, and a pipe table row or an image marker `![` occurs in one of the two lines above", "text": "This caption-looking paragraph sits next to a table or image; use a ^ caption line."}],
       "message_origin": "engine_0_1",
       "reports": "a paragraph line whose text, after container prefixes and indent, matches case-insensitively `^(?:\\*?\\s*(?:Caption|Table|Tabelle|Figure|Image)(?:\\s+\\d+)?\\s*:|:\\s+\\S)`; the optional number needs whitespace before its digits, so `Caption 2:` matches and `Caption2:` does not; a match reports when a pipe table row starts one or two lines above or below it or one of the two lines above holds `![`; once per line, the range is the first character of the matched line (C2-B-146, C2-B-149)",
       "clauses": ["C2-B-146", "C2-B-149"]
@@ -446,7 +446,7 @@
         "The substitution arrow was removed in 0.2; this is a strike span. Write a deletion directly followed by an insertion."
       ],
       "message_origin": "design",
-      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` in the strike's own inline content, outside a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
+      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash in the strike's own inline content, outside a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
       "clauses": ["C2-I-062"]
     },
     {
@@ -1892,7 +1892,7 @@
       "severity": "error",
       "channel": "parse",
       "status": "kept",
-      "messages": [{"when": "the unclosed container has a named kind", "text": "This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it."}, {"when": "the unclosed container is an anonymous div", "text": "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."}],
+      "messages": [{"when": "the unclosed container is a named div, admonition, directive, figure group, quote fence or line block", "text": "This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it."}, {"when": "the unclosed container is an anonymous div", "text": "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."}],
       "message_origin": "engine_0_1",
       "channel_reports": "a div that runs to the end of its container (C2-B-111, C2-B-125)",
       "change": "severity error; the block ends with its container (C2-B-111)",

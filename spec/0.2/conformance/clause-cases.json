@@ -54197,6 +54197,24 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1128",
+  "clauses": [
+   "C2-W-107",
+   "C2-I-062"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "escaped substitution arrow does not report",
+  "kind": "lint",
+  "input": "{~a\\~>b~}\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "deprecated-substitution-arrow"
+   ]
+  },
+  "from": []
  }
  ]
 }
