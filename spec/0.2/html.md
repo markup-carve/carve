@@ -54,7 +54,7 @@ Example 1 (generated)
 
 ## Attributes
 
-**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language and the direction, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`), then the render annotation of C2-H-016. A generated `style` merged with an authored `style` stands at the place of the authored key, and the `style` of an `align` key at the place of the first of the two keys (C2-H-015, C2-H-032, C2-H-057). The language is written as the `lang` attribute (C2-A-037) and the direction as the `dir` attribute (C2-A-031).
+**C2-H-009** The attributes of an element are written in one fixed order: the structural attributes of C2-H-010, then `id`, then `class`, then the language and the direction, then the keys in the order written, then the generated attributes that are not structural (`role`, `aria-label`, `aria-labelledby` and a generated `style`), then the render annotation of C2-H-016. A generated `style` merged with an authored `style` stands at the place of the authored key, and the `style` of an `align` key at the place of the first of the two keys (C2-H-015, C2-H-032, C2-H-057). The language is written as the `lang` attribute (C2-A-037) and the direction as the `dir` attribute (C2-A-031). Where C2-H-015 or C2-H-057 merge an authored `style` with generated declarations, the value is the authored value without its trailing spaces and `;`, then `; ` when that value is not empty, then the generated declarations.
 
 **C2-H-010** A structural attribute is one the element derives from its own marker, destination or resolution: `type`, `start` and `data-delim` on `<ol>`; `data-task-state` on `<li>`; `href` and `title` on `<a>`; `src`, `alt` and `title` on `<img>`; `role` on a footnote reference; `title` on `<abbr>` and `datetime` on `<time>` (C2-H-075); `rowspan`, `colspan` and `scope` on a cell; and, with `roundtrip` on, the carriers of C2-H-112. They are written in the order this clause names them.
 
@@ -62,7 +62,7 @@ Example 1 (generated)
 
 **C2-H-012** All classes of an element form one `class` value, joined by one space. A base class that the element's kind requires stands first: `task-list`, `math inline` or `math display`, `admonition` and the admonition kind, the name of a div's opener, `carve-figure-group`, `carve-figure-panel`. The classes the author wrote follow in the order written. A class the marker generates stands last: `line-block`. The class `hardbreaks` is a class of the tree and stands where `attrs.classes` has it (C2-A-068). A class that occurs more than once is written once, at its first place; the tree keeps every occurrence.
 
-**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name. No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written. A `dir` key beside the `dir` field of a supplied or imported tree is the same case: the field decides.
+**C2-H-013** Attribute names compare without regard to ASCII letter case. A structural attribute replaces an authored key of the same name, except where a clause says the authored key wins (C2-H-048, C2-H-075), and an authored key replaces every other generated attribute of the same name, except a `style`, which is merged (C2-H-015, C2-H-032, C2-H-057). No element carries one name twice. A `lang` key beside the language part of an attribute block, as in `{lang=de :en}`, is such a case: the language part decides, and the key is not written. A `dir` key beside the `dir` field of a supplied or imported tree is the same case: the field decides.
 
 **C2-H-014** An attribute whose value is the empty string is written as `name=""`.
 
@@ -83,6 +83,25 @@ Text.
 ```html
 <p style="color:red; text-align: center;" k="v">Text.</p>
 <p k="v" style="text-align: center;">Text.</p>
+```
+
+:::
+
+Example 65 (generated)
+
+::: compare
+
+```carve
+{style="color: red; " align=center}
+T
+
+{style="url(x)" align=center}
+U
+```
+
+```html
+<p style="color: red; text-align: center;">T</p>
+<p style="text-align: center;">U</p>
 ```
 
 :::
@@ -2272,7 +2291,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
-| Attributes | 9 | 1 | 2 | 1 |
+| Attributes | 9 | 1 | 3 | 1 |
 | Paragraphs, headings and sections | 17 | 1 | 4 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
@@ -2292,6 +2311,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **29** | **35** |
+| **Total** | **199** | **7** | **30** | **35** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 64 examples, 29 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 65 examples, 30 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

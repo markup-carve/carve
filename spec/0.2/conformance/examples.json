@@ -56929,6 +56929,116 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-65",
+   "document": "html.md",
+   "number": 65,
+   "section": "Attributes",
+   "clauses": [
+    "C2-H-009",
+    "C2-H-010",
+    "C2-H-011",
+    "C2-H-012",
+    "C2-H-013",
+    "C2-H-014",
+    "C2-H-015",
+    "C2-H-016",
+    "C2-H-017"
+   ],
+   "kind": "render",
+   "input": "{style=\"color: red; \" align=center}\nT\n\n{style=\"url(x)\" align=center}\nU",
+   "options": {},
+   "expected": {
+    "html": "<p style=\"color: red; text-align: center;\">T</p>\n<p style=\"text-align: center;\">U</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "T",
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 36,
+          "endOffset": 37
+         }
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "style",
+          "color: red; "
+         ],
+         [
+          "align",
+          "center"
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 2,
+        "startOffset": 0,
+        "endOffset": 37
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "U",
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 69,
+          "endOffset": 70
+         }
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "style",
+          "url(x)"
+         ],
+         [
+          "align",
+          "center"
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 4,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 2,
+        "startOffset": 39,
+        "endOffset": 70
+       }
+      }
+     ],
+     "srcByteLength": 70,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "html-2",
    "document": "html.md",
    "number": 2,
