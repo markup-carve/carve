@@ -2280,6 +2280,16 @@
       "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">{&gt;^} Qty</th></tr>\n  </thead>\n</table> C2-B-182 and data/table-marks.json define no vertical mark, so the braced mark is cell text.",
       "toolEntry": "U-261",
       "silent": true
+    },
+    {
+      "id": "U-262",
+      "kind": "report",
+      "group": "third review",
+      "from": "[t]{data-carve-raw=html}\n",
+      "to": "",
+      "meaning02": "<p><span>t</span></p> C2-H-116: an authored attribute with a reserved carrier name is dropped with `roundtrip` on or off, and `carrier-attribute-dropped` reports it.",
+      "toolEntry": "U-262",
+      "silent": true
     }
   ],
   "tree": [

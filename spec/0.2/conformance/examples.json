@@ -64589,6 +64589,91 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-59",
+   "document": "html.md",
+   "number": 59,
+   "section": "Roundtrip carriers",
+   "clauses": [
+    "C2-H-112",
+    "C2-H-113",
+    "C2-H-114",
+    "C2-H-115",
+    "C2-H-116",
+    "C2-H-117",
+    "C2-H-118",
+    "C2-H-119",
+    "C2-H-120"
+   ],
+   "kind": "render",
+   "input": "[<img src=x onerror=alert(1)>]{data-carve-raw=html}",
+   "options": {},
+   "expected": {
+    "html": "<p><span>&lt;img src=x onerror=alert(1)&gt;</span></p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "span",
+         "children": [
+          {
+           "type": "text",
+           "value": "<img src=x onerror=alert(1)>",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 2,
+            "endColumn": 30,
+            "startOffset": 1,
+            "endOffset": 29
+           }
+          }
+         ],
+         "attrs": {
+          "keyValues": [
+           [
+            "data-carve-raw",
+            "html"
+           ]
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 52,
+          "startOffset": 0,
+          "endOffset": 51
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 52,
+        "startOffset": 0,
+        "endOffset": 51
+       }
+      }
+     ],
+     "srcByteLength": 51,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    },
+    "diagnostics": [
+     "carrier-attribute-dropped"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-23",
    "document": "html.md",
    "number": 23,

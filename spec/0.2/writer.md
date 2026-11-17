@@ -756,7 +756,7 @@ A glued attribute run is no finding: glued blocks merge (C2-B-093), `fmt` writes
 | `duplicate-id` | parse | warning | a second node with one authored id (C2-A-039) |
 | `raw-format-dropped` | render-loss | warning | raw content in a format the target does not write (C2-H-054) |
 | `destination-denied` | render-loss | error | a destination that `urlPolicy` blanked (C2-H-082) |
-| `carrier-attribute-dropped` | render-loss | warning | an authored attribute with a reserved carrier name under `roundtrip` (C2-H-116) |
+| `carrier-attribute-dropped` | render-loss | warning | an authored attribute with a reserved carrier name (C2-H-116) |
 | `include-unresolved` | render-loss | warning | an include directive that was not expanded, whatever the cause (C2-H-133, C2-N-070) |
 | `include-expanded-roundtrip` | render-loss | warning | an expanded include under `roundtrip`, whose directive an import cannot recover (C2-N-079) |
 | `include-option-invalid` | parse | warning | an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which keeps the include from being expanded (C2-B-206, C2-N-025) |

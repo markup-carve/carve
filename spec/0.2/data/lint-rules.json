@@ -155,7 +155,7 @@
       "status": "kept",
       "messages": ["Dropped the authored attribute ${key}: the name is reserved for roundtrip import"],
       "message_origin": "engine_0_1",
-      "reports": "an authored attribute with a reserved carrier name under `roundtrip` (C2-H-116)",
+      "reports": "an authored attribute with a reserved carrier name (C2-H-116)",
       "clauses": ["C2-H-116", "C2-H-132"]
     },
     {

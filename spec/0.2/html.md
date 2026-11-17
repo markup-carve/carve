@@ -1398,7 +1398,25 @@ Five carriers go: `data-char`, `data-carve-id-slot`, `data-carve-escaped`, `data
 
 **C2-H-115** The reserved names are the 18 names of this table that stay, are new or stay reserved: 15 stay, 2 are new, and `data-carve-src` stays reserved. The set is a list, not a prefix: another `data-carve-` name is an ordinary authored attribute.
 
-**C2-H-116** With `roundtrip` on, an authored attribute with a reserved name is dropped on every element and reported as the render loss `carrier-attribute-dropped`. With it off, the attribute passes through. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
+**C2-H-116** An authored attribute with a reserved name is dropped on every element, with `roundtrip` on or off, and reported as the render loss `carrier-attribute-dropped`. The attribute line of a definition inside an abbreviation template (C2-H-179) is text and not an attribute of an element: it keeps every key it holds, a reserved name included.
+
+In 0.1 the attribute passed through when `roundtrip` was off.
+
+Example 59 (unverified)
+
+::: compare
+
+```carve
+[<img src=x onerror=alert(1)>]{data-carve-raw=html}
+```
+
+```html
+<p><span>&lt;img src=x onerror=alert(1)&gt;</span></p>
+```
+
+:::
+
+Reported: `carrier-attribute-dropped`.
 
 **C2-H-117** A presence carrier is written as the bare attribute name, with no value. A reader takes the name as presence and does not compare a value.
 
@@ -2121,11 +2139,11 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Cross-references and abbreviations | 5 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
-| Roundtrip carriers | 15 | 0 | 0 | 7 |
+| Roundtrip carriers | 15 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **33** |
+| **Total** | **198** | **7** | **25** | **34** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 58 examples, 25 generated and 33 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 59 examples, 25 generated and 34 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
