@@ -57532,6 +57532,65 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-67",
+   "document": "html.md",
+   "number": 67,
+   "section": "Paragraphs, headings and sections",
+   "clauses": [
+    "C2-H-018",
+    "C2-H-019",
+    "C2-H-020",
+    "C2-H-021",
+    "C2-H-022",
+    "C2-H-023",
+    "C2-H-024",
+    "C2-H-025"
+   ],
+   "kind": "render",
+   "input": "\\",
+   "options": {},
+   "expected": {
+    "html": "<p><br>\n</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "hard_break",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 0,
+          "endOffset": 1
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 2,
+        "startOffset": 0,
+        "endOffset": 1
+       }
+      }
+     ],
+     "srcByteLength": 1,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "html-60",
    "document": "html.md",
    "number": 60,

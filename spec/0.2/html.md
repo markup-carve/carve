@@ -162,7 +162,22 @@ roses
 
 **C2-H-018** A paragraph is `<p>` around its inline content, except where a tightness rule writes it bare (C2-H-034, C2-H-040). A paragraph that carries attributes or a `lang` is never written bare, in an item and in a description alike: the `<p>` is what carries them.
 
-**C2-H-019** A paragraph that holds only comments and the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph that holds only a braced comment is this case, and so is one of braced comments on several lines. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well.
+**C2-H-019** A paragraph that holds one or more comments and nothing else but the breaks between them renders nothing: no element and no empty line (C2-B-140). A paragraph of breaks alone holds no comment and is written with `<p>`. A paragraph that holds only a braced comment is this case, and so is one of braced comments on several lines. A paragraph whose content, after the breaks that C2-H-069 does not write, holds only comments renders nothing as well.
+
+Example 67 (generated)
+
+::: compare
+
+```carve
+\
+```
+
+```html
+<p><br>
+</p>
+```
+
+:::
 
 **C2-H-020** A paragraph promoted to a block image (C2-B-157, C2-A-136) is written without its `<p>`: the bare `<img>` on its own line. Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`. The paragraph also keeps its `<p>` where it carries attributes or a `lang` (C2-H-018): the `<p>` carries them, and the `<img>` stands inside it on the same line, as inline content does.
 
@@ -2320,7 +2335,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 3 | 1 |
-| Paragraphs, headings and sections | 17 | 1 | 4 | 1 |
+| Paragraphs, headings and sections | 17 | 1 | 5 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 3 | 0 |
@@ -2339,6 +2354,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **31** | **35** |
+| **Total** | **199** | **7** | **32** | **35** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 66 examples, 31 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 67 examples, 32 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

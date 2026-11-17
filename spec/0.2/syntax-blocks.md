@@ -3747,7 +3747,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-139** Only the line form makes a comment-only line: a line that holds only a braced comment is a paragraph.
 
-**C2-B-140** A paragraph that holds only comments and the breaks between them counts as content of its container and renders nothing: no empty paragraph element is written. So does a paragraph whose content holds only comments once the breaks that C2-H-069 does not write are left out.
+**C2-B-140** A paragraph that holds one or more comments and nothing else but the breaks between them counts as content of its container and renders nothing: no empty paragraph element is written. So does a paragraph whose content holds only comments once the breaks that C2-H-069 does not write are left out.
 
 Example 266 (unverified)
 
