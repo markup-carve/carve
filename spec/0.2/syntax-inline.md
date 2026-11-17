@@ -1170,7 +1170,7 @@ Example 60 (generated)
 
 **C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1) C2-I-122 to C2-I-124 state the characters.
 
-**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1)
+**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1, except that an escape in the alt text now stays as written)
 
 Example 61 (generated)
 

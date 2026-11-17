@@ -627,7 +627,7 @@
       "group": "inline emphasis and typography",
       "from": "an _underlined_ word and snake_case and _id\n",
       "to": "an {_underlined_} word and snake_case and _id\n",
-      "meaning02": "<p>an _underlined_ word and snake_case and _id</p> A slash immediately after the braced underline can become bare emphasis under C2-I-046 through C2-I-048 and must be escaped when 0.1 left it literal.",
+      "meaning02": "<p>an _underlined_ word and snake_case and _id</p> A slash immediately after the braced underline can become bare emphasis under C2-I-046 through C2-I-048 and must be escaped when 0.1 left it literal. Where the underlined text starts with `name=`, see U-267.",
       "toolEntry": "U-065",
       "silent": true
     },
@@ -1295,9 +1295,9 @@
       "id": "U-154",
       "kind": "report",
       "group": "measured rendering changes",
-      "from": "^[ [^1]]\n[^1]: n",
+      "from": "[see this[^1] page](/u)\n\n[^1]: n\n",
       "to": "",
-      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a>\n[^1]: n</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p> [^1]<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+      "meaning02": "<p><a href=\"/u\">see this page</a><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p> C2-H-088: a note mark in link text is written after the closing anchor of the outermost link; 0.1 wrote it inside the anchor.",
       "toolEntry": "U-154",
       "silent": true
     },
@@ -2289,6 +2289,66 @@
       "to": "",
       "meaning02": "<p><span>t</span></p> C2-H-116: an authored attribute with a reserved carrier name is dropped with `roundtrip` on or off, and `carrier-attribute-dropped` reports it.",
       "toolEntry": "U-262",
+      "silent": true
+    },
+    {
+      "id": "U-263",
+      "kind": "report",
+      "group": "third review",
+      "from": "::: \\\n> a\n> b\n:::\n",
+      "to": "",
+      "meaning02": "<div class=\"hardbreaks\">\n  <blockquote><p>a<br>\nb</p></blockquote>\n</div> C2-A-068: every line end in the block is a hard break, also in a nested quote, item, description, admonition or caption; 0.1 broke only the lines of its direct paragraphs. `{.hardbreaks}` on a div gives the same block.",
+      "toolEntry": "U-263",
+      "silent": true
+    },
+    {
+      "id": "U-264",
+      "kind": "report",
+      "group": "third review",
+      "from": "::: |\n*Roses are red\nViolets are blue*\n:::\n",
+      "to": "::: |\n*Roses are red*\n*Violets are blue*\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>*Roses are red<br>\nViolets are blue*</p>\n</div> Inline content is read in each line of a line block on its own (syntax-inline.md, Preliminaries), so a span across two lines is text. The rewrite closes and reopens the span on each line, which gives two strong spans instead of one.",
+      "toolEntry": "U-264",
+      "silent": true
+    },
+    {
+      "id": "U-265",
+      "kind": "rewrite",
+      "group": "third review",
+      "from": "::: |\nRoses  are red\n:::\n",
+      "to": "::: |\nRoses\\ \\ are red\n:::\n",
+      "meaning02": "<div class=\"line-block\">\n  <p>Roses  are red</p>\n</div> C2-H-043 writes only the leading spaces of a line as `&nbsp;`; 0.1 wrote every run of spaces in the line that way. A non-breaking space escape keeps the 0.1 HTML.",
+      "toolEntry": "U-265",
+      "silent": true
+    },
+    {
+      "id": "U-266",
+      "kind": "rewrite",
+      "group": "third review",
+      "from": "![5 \\* 3](/i.png)\n",
+      "to": "![5 * 3](/i.png)\n",
+      "meaning02": "<img src=\"/i.png\" alt=\"5 \\* 3\"> C2-I-074: the alt text is the source of the bracket content, so an escape stays in it; 0.1 removed the backslash. Where the escape is needed, before a bracket, no spelling keeps the 0.1 alt text: `![a \\] b](/i.png)` gives `alt=\"a \\] b\"`.",
+      "toolEntry": "U-266",
+      "silent": true
+    },
+    {
+      "id": "U-267",
+      "kind": "rewrite",
+      "group": "third review",
+      "from": "an _a=b_ word\n",
+      "to": "an {_a\\=b_} word\n",
+      "meaning02": "<p>an _a=b_ word</p> The U-065 rewrite `{_a=b_}` is a valid attribute block with the key `_a` (C2-I-043, C2-I-030) and renders as text. Escaping the equals sign keeps the underline.",
+      "toolEntry": "U-267",
+      "silent": true
+    },
+    {
+      "id": "U-268",
+      "kind": "report",
+      "group": "third review",
+      "from": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (a) One\n:::\n^ Figure #: Both\n\nSee </#fig-x-a>.\n",
+      "to": "",
+      "meaning02": "<p>See &lt;/#fig-x-a&gt;.</p> C2-H-095 resolves a cross-reference against headings and numbered captions only, and a panel caption takes no number (C2-H-066), so a reference to a panel is unresolved; 0.1 wrote `Figure 1a`.",
+      "toolEntry": "U-268",
       "silent": true
     }
   ],
