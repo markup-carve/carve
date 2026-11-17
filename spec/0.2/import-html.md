@@ -535,7 +535,7 @@ The empty paragraph is dropped (C2-M-069), and the cell keeps one empty `cell_pa
 
 **C2-M-040** `scope` is kept unless it is the one a render writes on every header cell: `col` in the head and `row` outside it. `align`, or a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;`, gives the cell's alignment; `valign` gives its vertical alignment. The alignments are then resolved backward by C2-B-213: a body cell that shows the mark of its column's header cell takes it from there, and in a table with no head a column whose cells all show one alignment gives it to the column.
 
-**C2-M-041** A `<col>` of the first `<colgroup>` whose `style` is exactly `width: N%;` gives its column the width N/100 (C2-H-152). The first `<caption>` is the table's `caption`, read as blocks; each further one is dropped with its content and reported with `import-element-dropped`. Any other child of `<table>`, of a row group or of a row is dropped and reported with `import-structure-repaired`.
+**C2-M-041** A `<col>` of the first `<colgroup>` whose `style` is exactly `width: N%;`, with N a decimal number greater than 0 and at most 100 (C2-B-212), gives its column the width N/100 (C2-H-152); another `style` of a `<col>` gives no width and is dropped and reported with `import-attribute-dropped`. The first `<caption>` is the table's `caption`, read as blocks; each further one is dropped with its content and reported with `import-element-dropped`. Any other child of `<table>`, of a row group or of a row is dropped and reported with `import-structure-repaired`.
 
 Example 48 (unverified)
 
@@ -610,6 +610,30 @@ Example 17 (verified)
 ```
 
 :::
+
+Example 53 (unverified)
+
+::: compare
+
+```html
+<table><colgroup><col style="width: 150%;"></colgroup><tr><td>a</td></tr></table>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"a"}]}]}]}]}],"columns":[{"type":"table_column"}]}
+]
+```
+
+```carve
+| a |
+```
+
+:::
+
+A width above 100 percent is no width of C2-B-212.
+
+Reported: `import-attribute-dropped`.
 
 ## Figures
 
@@ -1527,7 +1551,7 @@ ab
 
 | Code | Severity | Reports |
 |---|---|---|
-| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration |
+| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration, a `col` style that gives no width |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
 | `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
@@ -1610,4 +1634,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 52 examples: 46 verified and 6 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 53 examples: 46 verified and 7 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
