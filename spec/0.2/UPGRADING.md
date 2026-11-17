@@ -283,6 +283,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | H4 | No lint is added for a data cell whose text starts with `=` directly after its pipe: `\|=SUM(A1)\|` reads as in 0.1, and such a hint would fire on every spreadsheet formula. | C2-B-171 |
 | V1 | A part may follow the alignment marks of a cell prefix without a space: `\|{>.c} a \|` is right with the class `c`. U-304 (escape) records the difference to 0.1, which read the cell as text; it covers the vertical marks too. | C2-B-182 |
 | V2 | Confirmed: the character directly after the horizontal mark or `?` is the vertical mark whenever it is `^`, `~` or `v`, so `{>vx}` is right and bottom with the bare key `x`; a bare key that starts with `v` is written after a space, `{> vx}`. No 0.1 document changes meaning beyond U-304. | C2-B-182 |
+| V6 | A column's alignment from the head is, for each axis, the mark of the last header cell in the head that starts in the column and carries a mark on that axis; C2-A-089 now says the same. Both engines and 0.1 read it so (CC-246, CC-247). | C2-B-213, C2-A-089 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

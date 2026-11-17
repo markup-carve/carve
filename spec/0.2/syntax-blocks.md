@@ -6247,7 +6247,7 @@ a,b
 
 **C2-B-220** A decimal number in a `widths` entry is one or more ASCII digits, optionally followed by a dot and one or more ASCII digits. `30.5` and `5` are entries; `.5`, `5.`, `1e1` and `+5` are not, and such an entry makes the value invalid (C2-B-212).
 
-**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own mark for that axis (C2-B-182) wins. Then comes the mark for that axis of the header cell in the head that starts in the cell's column, then the entry of that column in `aligns` for the horizontal axis and in `valigns` for the vertical axis. Otherwise the cell has no alignment on that axis. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its marks only to the column it starts in. Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it.
+**C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own mark for that axis (C2-B-182) wins. Then comes the mark for that axis of the last header cell in the head that starts in the cell's column and carries a mark for that axis, then the entry of that column in `aligns` for the horizontal axis and in `valigns` for the vertical axis. Otherwise the cell has no alignment on that axis. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its marks only to the column it starts in. Where a head mark and an `aligns` or `valigns` entry set the same axis of a column, `table-column-overlap` reports it.
 
 Example 273 (generated)
 
