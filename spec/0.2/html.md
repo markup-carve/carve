@@ -1238,7 +1238,7 @@ Press [Tab]{kbd} for [HTML]{abbr="HyperText Markup Language"} at [noon]{time="12
 
 **C2-H-085** An unresolved full or collapsed reference renders its brackets and label as literal text: `[`, rendered children, `]`, then `[key]` for `refForm: "full"` or `[]` for `refForm: "collapsed"`. An image adds `!` and uses its `alt` as text. No source form is rebuilt for the children. A footnote reference or inline footnote among them keeps its ordinary meaning. A shortcut of parsed source has a matching definition and never reaches this rule (C2-I-072).
 
-**C2-H-086** An unresolved footnote reference renders as the text `[^key]`, and an unresolved cross-reference as the text `</#key>`. A footnote reference or an inline footnote inside an unresolved reference is an ordinary one: it takes its number and makes its note.
+**C2-H-086** An unresolved footnote reference renders as the text `[^key]`, and an unresolved cross-reference as the text `</#key>`.
 
 Example 17 (generated)
 
