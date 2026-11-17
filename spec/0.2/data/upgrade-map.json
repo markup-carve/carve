@@ -2360,6 +2360,16 @@
       "meaning02": "<p>See <a href=\"/u\">s</a> and <abbr title=\"Hyper\">HTML</abbr>.</p> for an `a.crv` of `%% #region k`, `See [s][] and HTML.`, `%% #endregion k`, a blank line, `[s]: /u` and `*[HTML]: Hyper`. C2-N-020, C2-N-054: a line or region selection sees every definition of its file, as a section does (C2-N-031); 0.1 resolved only against the selected lines and wrote <p>See [s][] and HTML.</p>.",
       "toolEntry": "U-302",
       "silent": true
+    },
+    {
+      "id": "U-303",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "|=\ta|\n| x |\n",
+      "to": "",
+      "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: a tab after `=` keeps the header cell mark, as a space does; 0.1 read `|=` and a tab as a data cell whose text starts with `=` and the tab.",
+      "toolEntry": "U-303",
+      "silent": true
     }
   ],
   "tree": [
