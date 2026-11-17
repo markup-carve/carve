@@ -15344,8 +15344,7 @@
   {
    "id": "CC-242",
    "clauses": [
-    "C2-B-138",
-    "C2-A-075"
+    "C2-B-138"
    ],
    "why": "C2-B-138: Inside the leaf it stands in the innermost inline node open at its place, and no inline atom spans the line: for an atom that opens before it, such as a code span, a math span, a braced comment or an editorial comment, the content ends at the line, so an opener whose closer stands only on or after it is text (C2-I-017, C2-I-043).",
    "summary": "the comment of a comment-only line inside a strong span is a child of the span",

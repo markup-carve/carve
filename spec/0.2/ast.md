@@ -329,7 +329,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-074** A `comment` carries `value` and `form`, which is `block` for a `%%%` block, `line` for a `%%` comment and `braced` for `{% %}`. `form` is meaning: a line comment and a comment block read differently when the source is parsed again. `value` of a line comment is its text without the one space that follows `%%`, when there is one, and without spaces and tabs at its end, also where the comment ends at the pipe of a cell (C2-B-169, C2-B-223); `value` of a braced comment is its text without the one space after `{%` and the one space before `%}`, when there are such spaces; `value` of a block comment is its body, with a line break between two lines and none after the last.
 
-**C2-A-075** The comment of a comment-only line is a child of the open leaf when one is open, inside the innermost inline node open at its place, and otherwise of the innermost open container, at its place in source order (C2-B-138). It is never part of the value of an atom.
+The comment of a comment-only line belongs to the open leaf, if any, or else to the innermost open container (C2-B-138).
 
 ### Definitions
 
@@ -779,11 +779,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 169 | 2 |
+| Existing AST contract | 168 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **205** | **3** |
+| **Total** | **204** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 
