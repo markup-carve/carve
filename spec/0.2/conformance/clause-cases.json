@@ -52685,6 +52685,36 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1051",
+   "clauses": [
+    "C2-T-009",
+    "C2-T-015"
+   ],
+   "why": "C2-T-015: After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply.",
+   "summary": "repeated loss report flags take the last path",
+   "kind": "cli",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>a</p>\n",
+    "stderrCategory": null
+   },
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "--report-losses",
+    "r.json",
+    "--report-losses",
+    "./r.json",
+    "a.crv"
+   ],
+   "from": []
   }
  ]
 }

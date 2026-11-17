@@ -85,3 +85,9 @@ Places: `spec/0.2/README.md`, `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `sp
 Search: `C2-A-179`, `checked`, `task.mark`, `CC-505`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/schemas/table-marks.schema.json`, `spec/0.2/data/schemas/task-states.schema.json`, `spec/0.2/data/task-states.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/trees/README.md`, `spec/0.2/trees/layouts.json`, `spec/0.2/writer.md`. The 1.2 migration states the exact defaults exercised by CC-505.
+
+## CR9-04
+
+Search: `C2-T-009`, `C2-T-015`, `CC-911`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/data/schemas/cli.schema.json`, `spec/0.2/tooling.md`. Repeated instances are reduced before report collisions and ordering.
