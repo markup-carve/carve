@@ -32,8 +32,7 @@
         "includes": {
           "type": "object",
           "description": "The include settings: file, the id of the top-level document, and the lowered limits depth and bytes. A case with files is parsed with a resolver over them, and a case without files with no resolver.",
-          "properties": { "file": { "type": "string" },
-        "depth": { "type": "integer" }, "bytes": { "type": "integer" } },
+          "properties": { "file": { "type": "string" }, "depth": { "type": "integer" }, "bytes": { "type": "integer" } },
           "additionalProperties": false
         },
         "labels": { "type": "object", "additionalProperties": { "type": "string" } },
