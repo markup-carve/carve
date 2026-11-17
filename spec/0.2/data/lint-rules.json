@@ -931,8 +931,8 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This github alert marker stays literal in a Carve quote; use an admonition fence."],
-      "message_origin": "engine_0_1",
+      "messages": ["This GitHub alert marker stays literal in Carve; use an admonition fence for an alert."],
+      "message_origin": "data_file",
       "reports": "on a line whose first non-space character is a quote mark and that is a paragraph, table row or heading line, the first of `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]`, in upper case as written, outside code spans; once per line (C2-B-031, C2-I-072)",
       "clauses": ["C2-B-031", "C2-I-072"]
     },
