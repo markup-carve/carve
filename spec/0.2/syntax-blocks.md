@@ -3733,8 +3733,6 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-133** The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.
 
-**Exception C2-B-134** In a table row the cells are split first, so a line comment inside a cell ends at its cell.
-
 **Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item, and the clause on comment-only lines (C2-B-137) does not apply there.
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
@@ -6405,7 +6403,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 17 | 4 | 14 | 8 |
+| Comments | 16 | 3 | 14 | 8 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6414,9 +6412,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **226** | **11** | **168** | **103** |
+| **Total** | **225** | **10** | **168** | **103** |
 
-The chapter has 226 clauses, and 11 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 225 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

@@ -385,7 +385,7 @@ Carve has three comment forms. The block form `%%%` is defined in the block chap
 
 **C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
 
-Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-134, C2-B-135, C2-B-144).
+Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-169, C2-B-135, C2-B-144).
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 

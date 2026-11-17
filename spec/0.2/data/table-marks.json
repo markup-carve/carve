@@ -4,7 +4,7 @@
     "separator": "|",
     "not_a_separator": ["escaped_pipe", "pipe_between_backtick_run_and_matching_run_on_same_line"],
     "before": "reading_cell_content",
-    "clauses": ["C2-B-134", "C2-B-169"]
+    "clauses": ["C2-B-169", "C2-B-223"]
   },
   "cell_prefix": {
     "sequence": [
