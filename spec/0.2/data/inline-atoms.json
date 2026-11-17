@@ -48,7 +48,7 @@
             "a-z",
             "~"
           ],
-          "non_ascii": "any_but_format_and_control",
+          "non_ascii": "any_but_white_space_format_and_control",
           "min": 1
         }
       },

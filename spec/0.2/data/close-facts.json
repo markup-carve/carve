@@ -13,7 +13,7 @@
       "name": "caption_attachment",
       "set_when_closes": "caption",
       "condition": "caption_directly_below_target",
-      "targets": ["code_block", "figure_group", "image", "math_block", "quote", "table"],
+      "targets": ["code_block", "code_include", "figure_group", "image", "math_block", "quote", "table"],
       "clauses": ["C2-B-146", "C2-B-147", "C2-B-191"]
     },
     {

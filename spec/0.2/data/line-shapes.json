@@ -453,7 +453,7 @@
       "excluded": ["]"],
       "clauses": ["C2-B-117", "C2-B-119", "C2-B-121"]
     },
-    { "name": "destination", "excluded": [" "], "clauses": ["C2-B-083"] },
+    { "name": "destination", "excluded": ["\t", " "], "clauses": ["C2-B-083"] },
     { "name": "display_math_span", "file": "inline-atoms.json", "clauses": ["C2-B-198", "C2-I-121"] },
     {
       "name": "div_name",
@@ -464,7 +464,7 @@
     },
     { "name": "div_sigil", "values": [">", "\\", "|"], "file": "div-names.json", "clauses": ["C2-B-196"] },
     { "name": "format_name", "forms": ["a lowercase ASCII letter, then lowercase ASCII letters, digits and hyphens"], "clauses": ["C2-B-164"] },
-    { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]"], "clauses": ["C2-B-197"] },
+    { "name": "image_form", "forms": ["![alt](destination)", "![alt][label]", "![alt][]"], "clauses": ["C2-B-197"] },
     {
       "name": "include_options",
       "file": "include-options.json",
@@ -492,6 +492,7 @@
     {
       "name": "label",
       "excluded": ["\n", "]"],
+      "reads_escapes": true,
       "min": 1,
       "clauses": ["C2-B-082", "C2-B-083", "C2-I-079", "C2-I-087"]
     },

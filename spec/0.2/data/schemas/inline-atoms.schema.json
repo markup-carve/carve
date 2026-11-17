@@ -90,8 +90,8 @@
               },
               "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
               "non_ascii": {
-                "enum": ["any_but_format_and_control"],
-                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
               }
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -165,8 +165,8 @@
               },
               "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
               "non_ascii": {
-                "enum": ["any_but_format_and_control"],
-                "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
               }
             },
             "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -225,8 +225,8 @@
                   },
                   "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
                   "non_ascii": {
-                    "enum": ["any_but_format_and_control"],
-                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                    "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
                   }
                 },
                 "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -281,8 +281,8 @@
                   },
                   "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
                   "non_ascii": {
-                    "enum": ["any_but_format_and_control"],
-                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                    "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
                   }
                 },
                 "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -344,8 +344,8 @@
                   },
                   "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
                   "non_ascii": {
-                    "enum": ["any_but_format_and_control"],
-                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                    "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
                   }
                 },
                 "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -400,8 +400,8 @@
                   },
                   "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
                   "non_ascii": {
-                    "enum": ["any_but_format_and_control"],
-                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                    "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
                   }
                 },
                 "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
@@ -455,8 +455,8 @@
                   },
                   "may_be_empty": { "type": "boolean", "description": "True when the empty string fits the shape." },
                   "non_ascii": {
-                    "enum": ["any_but_format_and_control"],
-                    "description": "Which characters outside ASCII fit besides `chars`: every one except a format character (general category Cf) and a control character."
+                    "enum": ["any_but_format_and_control", "any_but_white_space_format_and_control"],
+                    "description": "Which characters outside ASCII fit besides `chars`: `any_but_format_and_control`: every one except a format character (general category Cf) and a control character; `any_but_white_space_format_and_control`: every one except those and a character with the Unicode property White_Space."
                   }
                 },
                 "description": "A shape of a name or a value. `chars`: every character is one of these. `first` and `rest`: the first character and the ones after it. `excluded`: any character but these. `not_first`, `not_last`: characters the name does not start or end with; the longest run that fits is taken."
