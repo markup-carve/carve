@@ -356,6 +356,7 @@ These rows and sentences said something false about 0.1 or about their own examp
 
 - U-184: its example, `- {{ e }}`, gives the same HTML in 0.1 and 0.2, and its rule named list openers and attributes. It now holds a line below an include directive, `- {{ e }}` above `  b`, which 0.1 read as one paragraph and 0.2 as an include and a paragraph (C2-B-156), and two directives on adjacent lines. The escape keeps the 0.1 HTML only where no resolver is given, so the row is a report.
 - U-248: its example held the six letters `U+000B`, which both engines print as text. It now holds a control character itself, `c`, U+007F, `d`, which 0.1 writes and 0.2 replaces with U+FFFD (C2-H-176); U+000B behaves the same but cannot stand unescaped in JSON.
+- U-227 and U-243 were escapes that the tool applies, but the escaped source does not give the 0.1 HTML: 0.1 wrote `<li>`, a line feed and `plain`, 0.2 `<li>plain</li>`, because a comment line takes its line break with it (C2-H-069). Both are reports now, and "Running the rewrite tool" says that its comparison drops a line feed at the start of item text, which is why such a rewrite passes; the three sentences about the complete HTML check point there.
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -523,7 +524,7 @@ Use the real path to each file. Without `--write`, one file's upgraded source go
 
 For the first heading example, `--json` returns a file record with `changed: true`, `check: "pass"`, and a record with `entry: "U-001"`, `class: "rewrite"`, `line: 2`, and `lint: "block-opener-without-blank-line"`. The full report also names the pinned 0.1 engine, currently `0.1.17`. `report` and `escape` records need the same review as rewrites. `U-019` summarizes extra list paragraph elements once per file. `U-079` reminds you to migrate host render options.
 
-The tool renders the old input in 0.1 and the proposed output in 0.2. It compares after sorting attributes, ignoring whitespace between tags, and ignoring the new `task` class. `upgrade-mismatch` means an HTML difference is not explained by a contract entry. `--write` leaves that file alone, and `--force` does not override the HTML check: both upgrade programs then print `carve[upgrade-force-ignored]` and write nothing. Two edits on the same span produce `upgrade-conflict`; the lower entry ID wins. The tool reads only 0.1 source. **Run it once per file. It is not idempotent.** A second run can change already upgraded list text.
+The tool renders the old input in 0.1 and the proposed output in 0.2. It compares after sorting attributes, ignoring whitespace between tags and a line feed at the start of the text in an `<li>`, and ignoring the new `task` class, so a rewrite can pass while the text of an item differs by that line feed (U-227, U-243). `upgrade-mismatch` means an HTML difference is not explained by a contract entry. `--write` leaves that file alone, and `--force` does not override the HTML check: both upgrade programs then print `carve[upgrade-force-ignored]` and write nothing. Two edits on the same span produce `upgrade-conflict`; the lower entry ID wins. The tool reads only 0.1 source. **Run it once per file. It is not idempotent.** A second run can change already upgraded list text.
 
 ### Repository checklist
 
@@ -591,7 +592,7 @@ The following changes are specified by the cited 0.2 clauses and require review 
 
 #### Measured block and inline rewrites
 
-The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HTML compare equal.
+The tool applies these spellings only when the complete 0.1 and rewritten 0.2 HTML compare equal in the sense of "Running the rewrite tool".
 
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
@@ -649,7 +650,7 @@ Each row gives the smallest input retained by the measurement and the exact HTML
 
 #### Further measured rewrites
 
-Each spelling in this table is applied only when the complete 0.1 HTML equals the rewritten 0.2 HTML.
+Each spelling in this table is applied only when the complete 0.1 HTML equals the rewritten 0.2 HTML, compared as "Running the rewrite tool" states.
 
 | ID | Rule | Before in 0.1 | Write in 0.2 / tool |
 | --- | --- | --- | --- |
@@ -668,7 +669,7 @@ Each spelling in this table is applied only when the complete 0.1 HTML equals th
 
 #### Remaining measured source changes
 
-The tool checks each rewrite against the complete 0.1 HTML. The report rows name differences for which a preserving 0.2 spelling has not been verified.
+The tool checks each rewrite against the complete 0.1 HTML, compared as "Running the rewrite tool" states. The report rows name differences for which a preserving 0.2 spelling has not been verified.
 
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
@@ -701,7 +702,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-223 | Under C2-B-087 and C2-B-076, `[^f]: :: t` then a two-space `: | a |` keeps the table in the note's description body in 0.1. A one-space caret line stays outside the note. **SILENT** | The same 0.2 lines can fold into the term and lose the outside caret paragraph. | Indent the description mark to the note content column, and move the outside caret to column zero; rewrite |
 | U-225 | Under C2-B-147 and C2-B-197, `![alt](u)` followed by `^ %% hidden` keeps the caret as literal paragraph text in 0.1. **SILENT** | The same 0.2 source can take the caret as a caption mark. | Escape the caret so the image and caret remain in one paragraph; escape |
 | U-226 | Under C2-B-147 and C2-B-198, `$$` followed by an unclosed backtick span and then `^ p` writes a math figure with caption `p` in 0.1. **SILENT** | The same 0.2 source keeps the caret line in the paragraph, as text behind the unclosed run (C2-I-017). | Close the code span on its math line, or remove a trailing invisible comment after a closed span, so the caption attaches; rewrite |
-| U-227 | Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a percent fence and change the following list boundary. | Escape the percent run inside the brace comment when the complete HTML check passes; escape |
+| U-227 | Under C2-I-036 and C2-B-108, a line containing `%%%` inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a percent fence and change the following list boundary. | Escape the percent run inside the brace comment, `\%%%`: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362); report |
 | U-228 | Under C2-B-069 and C2-B-076, `:: term` then `: - a` then a blank line and a three-space `> c` writes the quote as a sibling of the list inside the description body in 0.1. **SILENT** | The same 0.2 source keeps the quote inside the item. | Move the quote or following list item to the description content column; rewrite |
 | U-229 | Under C2-B-076 and C2-B-081, `[^f]: - :::::` then a seven-space `:::::` writes the second div outside the item but inside the note in 0.1. A seven-space caret line after a note-hosted item is likewise outside that item. **SILENT** | The same 0.2 lines keep the div or caret inside the item. | Move the follower to the note content column when the complete HTML check passes; rewrite |
 | U-230 | Under C2-B-041 and C2-B-045, `{start=9}` before `3. x` writes `<ol start="3">` in 0.1. **SILENT** | The same 0.2 source writes `<ol start="9">` because the attribute decides. | Remove the conflicting attribute to keep the marker's start value; rewrite |
@@ -716,7 +717,7 @@ The tool checks each rewrite against the complete 0.1 HTML. The report rows name
 | U-240 | Under C2-I-030, `[a]{:abcdefgh} [b]{:abcdefghi}` writes a language span for `a` and literal `[b]{:abcdefghi}` in 0.1. **SILENT** | The same 0.2 source writes language spans for both `a` and `b`. | Review the new language span; report |
 | U-241 | Under C2-B-129, `::: \\` then `[a` then `b][missing]` writes an unresolved reference fallback with a line feed in 0.1. **SILENT** | The same 0.2 source writes a hard break between `a` and `b`. | Review the fallback in the hardbreak div; report |
 | U-242 | Under C2-B-108 and C2-B-110, a three-backtick fence containing an indented three-backtick line can keep that line as code content in 0.1. **SILENT** | The same 0.2 source can close the fence at the indented line. | Lengthen the opening fence to four backticks when the complete HTML check passes; rewrite |
-| U-243 | Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a code fence and change the following list boundary. | Escape the first backtick inside the brace comment when the complete HTML check passes; escape |
+| U-243 | Under C2-I-036 and C2-B-108, a line containing three backticks inside a multiline `{% ... %}` comment remains comment text in 0.1. **SILENT** | The same 0.2 source can read that line as a code fence and change the following list boundary. | Escape the first backtick inside the brace comment, `` \``` ``: the list boundary is the 0.1 one, but 0.1 started the item text with a line feed, which no 0.2 source writes (C2-H-069, U-362); report |
 | U-244 | Under C2-B-082, C2-B-091, and C2-B-095, `{.a}` followed by `[^f]: note`, a blank line, and `Visible` writes class `a` on the visible paragraph in 0.1. **SILENT** | The same 0.2 source leaves the visible paragraph without that class. | Move the floating attribute below the footnote definition when the complete HTML check passes; rewrite |
 | U-245 | Under C2-B-108 and C2-B-110, a quoted ordered item can open a code fence whose blank line is written as a bare `>` before the next quoted paragraph. In 0.1, that line remains a blank code line. **SILENT** | The same 0.2 source omits that blank code line. | Add an indented closing fence after the bare quote line when the complete HTML check passes; rewrite |
 | U-246 | Under C2-I-087, C2-I-119, and C2-B-091, `x[^n]{#i}` followed by `## {#i}` writes the unresolved footnote attribute literally and gives the heading id `i` in 0.1. **SILENT** | The same 0.2 source drops the inline attribute and changes the generated heading id. | Escape the attribute's hash, move the authored id above the heading, and escape the heading's opening brace when the complete HTML check passes; rewrite |

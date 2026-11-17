@@ -1903,11 +1903,11 @@
     },
     {
       "id": "U-227",
-      "kind": "escape",
+      "kind": "report",
       "group": "percent run inside a multiline brace comment",
       "from": "- {% a\n   %%%\n   z %}\nplain\n",
       "to": "- {% a\n   \\%%%\n   z %}\nplain\n",
-      "meaning02": "C2-I-036 and C2-B-108 keep the escaped percent run inside the brace comment instead of opening a fence.",
+      "meaning02": "<ul>\n  <li>{% a</li>\n</ul>\n<p>plain</p> C2-I-036 and C2-B-108 read the `%%%` line as a comment block opener, so the brace comment never closes and `plain` leaves the list. The escaped percent run keeps the line inside the brace comment and `plain` in the item, `<ul>\n  <li>plain</li>\n</ul>`, but 0.1 wrote a line feed at the start of the item text, `<li>` then a line feed and `plain`, and a line that holds only a comment takes its line break with it in 0.2 (C2-H-069, U-362), so no 0.2 source gives the 0.1 HTML exactly.",
       "toolEntry": "U-227",
       "silent": true
     },
@@ -2053,11 +2053,11 @@
     },
     {
       "id": "U-243",
-      "kind": "escape",
+      "kind": "report",
       "group": "backtick fence run inside a multiline brace comment",
       "from": "- {% a\n   ```\n   z %}\nplain\n",
       "to": "- {% a\n   \\```\n   z %}\nplain\n",
-      "meaning02": "C2-I-036 and C2-B-108 keep the escaped backtick run inside the brace comment instead of opening a fence.",
+      "meaning02": "<ul>\n  <li>{% a\n    <pre><code>z %}\n</code></pre>\n  </li>\n</ul>\n<p>plain</p> C2-I-036 and C2-B-108 read the backtick line as a code fence opener, so the brace comment never closes and `plain` leaves the list. The escaped backtick keeps the line inside the brace comment and `plain` in the item, `<ul>\n  <li>plain</li>\n</ul>`, but 0.1 wrote a line feed at the start of the item text, `<li>` then a line feed and `plain`, and a line that holds only a comment takes its line break with it in 0.2 (C2-H-069, U-362), so no 0.2 source gives the 0.1 HTML exactly.",
       "toolEntry": "U-243",
       "silent": true
     },
