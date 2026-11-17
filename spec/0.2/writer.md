@@ -144,7 +144,7 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **C2-W-030** A loose list is written with one blank line between all of its items. A tight list is written with none, also when an item holds several blocks: the blank line then stands inside the item, before its later block. This is requirement W5.
 
-**C2-W-126** A nested ordered list whose first marker has another value than 1, and that follows a paragraph of its item, is written after one blank line: directly below the paragraph its marker line would be a lazy line (C2-B-015). The blank line stands inside the item and does not make the list loose (C2-W-030). A nested list that starts at 1, and a nested bullet list, stand directly below the paragraph.
+**C2-W-126** A nested ordered list whose first marker has another value than 1, and that follows a paragraph of its item, is written after one blank line: directly below the paragraph its marker line would be a lazy line (C2-B-015). The blank line stands inside the item and does not make the list loose (C2-W-030). A nested list that starts at 1, and a nested bullet list, stand directly below the paragraph, unless they carry an attribute line (C2-W-018).
 
 **C2-W-031** A quote written with `>` lines carries `> ` on every line of its content and a bare `>` on a blank line inside it.
 
