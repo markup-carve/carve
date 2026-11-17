@@ -85562,6 +85562,73 @@
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
   },
   {
+   "id": "import-html-422",
+   "document": "import-html.md",
+   "number": 422,
+   "section": "Footnotes",
+   "clauses": [
+    "C2-M-061",
+    "C2-M-062",
+    "C2-M-063",
+    "C2-M-064"
+   ],
+   "kind": "import",
+   "html": "<p><a href=\"/u\" role=\"doc-noteref\">x</a> and <a href=\"#fn\" role=\"doc-noteref\">y</a></p>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "/u",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "role",
+           "doc-noteref"
+          ]
+         ]
+        }
+       },
+       {
+        "type": "text",
+        "value": " and "
+       },
+       {
+        "type": "link",
+        "href": "#fn",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ],
+        "attrs": {
+         "keyValues": [
+          [
+           "role",
+           "doc-noteref"
+          ]
+         ]
+        }
+       }
+      ]
+     }
+    ],
+    "carve": "[x](/u){role=doc-noteref} and [y](#fn){role=doc-noteref}\n"
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
+  },
+  {
    "id": "import-html-45",
    "document": "import-html.md",
    "number": 45,

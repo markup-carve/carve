@@ -1371,7 +1371,7 @@ A [fine]{} [print]{} [x]{}
 
 **C2-M-061** A `<section>` with `role="doc-endnotes"`, or whose classes include `footnotes`, is a footnote section. Each `<li>` of its first `<ol>` that has an `id` is a `footnote` whose blocks are those of the item. The key is the value of `data-carve-footnote-label` where C2-H-186 reads it; otherwise the `id` without a leading `user-content-fn-`, `fn-` or `fn`. An item with no `id`, or whose key would be empty, is dropped and reported with `import-structure-repaired`.
 
-**C2-M-062** An `<a>` with `role="doc-noteref"` or the attribute `data-footnote-ref` is a `footnote_ref` whose key is that of the note its `href` names, or else its fragment without the prefixes of C2-M-061. A `<sup>` whose only content is such an `<a>`, or whose first class is `footnote-ref` and which holds one, is that reference alone. The `id` a render generates on a reference (C2-H-088) is not kept.
+**C2-M-062** An `<a>` with `role="doc-noteref"` or the attribute `data-footnote-ref` is a `footnote_ref` whose key is that of the note its `href` names, or else its fragment without the prefixes of C2-M-061. When its `href` names no note and has no fragment, or a fragment that is empty once the prefixes are cut, it is no note reference: it is read as any `<a>` (C2-M-050), a link that keeps `role` or `data-footnote-ref` as a key. A `<sup>` whose only content is such an `<a>`, or whose first class is `footnote-ref` and which holds one, is that reference alone. The `id` a render generates on a reference (C2-H-088) is not kept.
 
 **C2-M-063** A backlink of a note, an `<a>` with `role="doc-backlink"`, with the attribute `data-footnote-backref` or with the class `footnote-backref`, is dropped without a report, with the spaces before it. A paragraph that held only backlinks is dropped.
 
@@ -1400,6 +1400,28 @@ x[^1]
 ```
 
 :::
+
+Example 422 (unverified)
+
+::: compare
+
+```html
+<p><a href="/u" role="doc-noteref">x</a> and <a href="#fn" role="doc-noteref">y</a></p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"link","href":"/u","children":[{"type":"text","value":"x"}],"attrs":{"keyValues":[["role","doc-noteref"]]}},{"type":"text","value":" and "},{"type":"link","href":"#fn","children":[{"type":"text","value":"y"}],"attrs":{"keyValues":[["role","doc-noteref"]]}}]}
+]
+```
+
+```carve
+[x](/u){role=doc-noteref} and [y](#fn){role=doc-noteref}
+```
+
+:::
+
+The first `href` names no note and has no fragment, and the fragment of the second is empty once `fn` is cut, so both are links (C2-M-062).
 
 ## Raw content
 
@@ -1764,4 +1786,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 58 examples: 46 verified and 12 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 59 examples: 46 verified and 13 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
