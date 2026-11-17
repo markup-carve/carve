@@ -252,7 +252,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-055** `marker.char` is meaning: an item with the other character starts another list (C2-B-035).
 
-**C2-A-056** An ordered marker has `kind: "ordered"`, `style` (`1`, `a`, `A`, `i` or `I`) and `delimiter` (`.` or `)`), and may carry `start`. Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
+**C2-A-056** An ordered marker has `kind: "ordered"`, `style` (`1`, `a`, `A`, `i` or `I`) and `delimiter` (`.` or `)`), and may carry `start`, an integer from 0 to 999999999 (C2-B-219). Whether the author wrote numbers or the bare dot is spelling and is not in the marker.
 
 **C2-A-057** A marker that carries fields of both kinds is invalid.
 
