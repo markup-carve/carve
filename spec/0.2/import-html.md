@@ -480,7 +480,32 @@ Example 15 (verified)
 
 ## Tables
 
-**C2-M-037** `<table>` is a `table`. `<thead>` is a `table_head`, `<tbody>` a `table_body` and `<tfoot>` a `table_foot`. Rows that are direct children of `<table>` form one `table_body` of their own. `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false.
+**C2-M-037** `<table>` is a `table`. `<thead>` is a `table_head`, `<tbody>` a `table_body` and `<tfoot>` a `table_foot`. Rows that are direct children of `<table>` form one `table_body` of their own. The groups take the order of C2-A-086: the first `<thead>` is the first group and the first `<tfoot>` the last wherever they stand, as HTML displays them, and this move is not reported; each further `<thead>` or `<tfoot>` is a `table_body` at its place and is reported with `import-structure-repaired`. `<tr>` is a `table_row`, and `<th>` and `<td>` are a `table_cell` with `header` true and false.
+
+Example 50 (unverified)
+
+::: compare
+
+```html
+<table><thead><tr><th>h</th></tr></thead><tfoot><tr><td>f</td></tr></tfoot><tbody><tr><td>b</td></tr></tbody></table>
+```
+
+```json
+[
+  {"type":"table","children":[{"type":"table_head","children":[{"type":"table_row","children":[{"type":"table_cell","header":true,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"h"}]}]}]}]},{"type":"table_body","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"b"}]}]}]}]},{"type":"table_foot","children":[{"type":"table_row","children":[{"type":"table_cell","header":false,"children":[{"type":"cell_paragraph","children":[{"type":"text","value":"f"}]}]}]}]}],"columns":[{"type":"table_column"}]}
+]
+```
+
+```carve
+{footer-rows=1}
+|= h |
+| b |
+| f |
+```
+
+:::
+
+HTML 4 wrote the foot before the body; the foot is the last group of the tree, where a browser shows it.
 
 **C2-M-038** A cell that holds no block element holds one `cell_paragraph` of its inline content. A `soft_break` or `hard_break` in it becomes one space (C2-H-195 row 7) and is reported with `import-whitespace-normalized`. A cell that holds a block element holds those blocks, and one empty `cell_paragraph` when every one of them is dropped (C2-M-069, C2-M-070, C2-A-091).
 
@@ -1538,4 +1563,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 49 examples: 46 verified and 3 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 50 examples: 46 verified and 4 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
