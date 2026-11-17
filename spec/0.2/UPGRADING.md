@@ -313,6 +313,19 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A backslash escape in image alt text: `![5 \* 3](/i.png)` | The backslash stayed: `alt="5 \* 3"`. | Removed before ASCII punctuation: `alt="5 * 3"`, and `\[` and `\]` give brackets. U-266 is withdrawn. | C2-I-074, C2-W-097 |
 | A cross-reference to a panel of a numbered figure group: `</#fig-x-a>` | Unresolved, written as typed. | `<a href="#fig-x-a">Figure 1a</a>`: the group's label and number and the panel's letter. U-268 is withdrawn. | C2-H-095, C2-H-096 |
 
+### Differences to 0.1 that stay, 17 November 2026
+
+A ruling of 17 November keeps these 0.2 behaviors. Each has a row of the upgrade map: a rewrite where a changed source gives the 0.1 HTML, a report where none does. Where an older row already held part of a point, that row now holds all of it and is named below the table.
+
+| ID | What you wrote | 0.1 | 0.2 now and tool |
+| --- | --- | --- | --- |
+| U-273 | Under C2-I-051, a bare delimiter of a kind that is already open: `/This /does not/ nest/`, `*a *b* c*` **SILENT** | The inner delimiter is text: `<em>This /does not</em> nest/`, `<strong>a *b</strong> c*`. | A kind nests in itself: `<em>This <em>does not</em> nest</em>`. Escape each delimiter that 0.1 kept as text, `/This \/does not/ nest\/`; rewrite |
+| U-274 | Under C2-I-051 and C2-I-059, a bare pair of the kind of an open braced span: `{*a *b* c*}`, `{/a /b/ c/}` **SILENT** | The bare pair is text: `<strong>a *b* c</strong>`. | The pair nests: `<strong>a <strong>b</strong> c</strong>`. Escape the inner delimiters, `{*a \*b\* c*}`; rewrite |
+
+Older rows that hold a point of this ruling, extended where they held only part of it:
+
+- U-145: `/a /b/` is one shape of U-273 (C2-I-051); the row now names U-273 and U-274.
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
@@ -509,7 +522,7 @@ Each row gives the smallest input retained by the measurement and the exact HTML
 | ID | Before in 0.1 | After in 0.2 | Tool |
 | --- | --- | --- | --- |
 | U-143 | Under C2-I-047,C2-I-051, /{/ writes &lt;p&gt;&lt;em&gt;{&lt;/em&gt;&lt;/p&gt; in 0.1. **SILENT** | The same source writes &lt;p&gt;/{/&lt;/p&gt; in 0.2. | Review; report |
-| U-145 | Under C2-I-047,C2-I-048,C2-I-051, /*// writes &lt;p&gt;&lt;em&gt;*&lt;/em&gt;/&lt;/p&gt; in 0.1. The 0.1 reading of `/***/` nests strong and emphasis around a star. **SILENT** | The first source is text in 0.2; C2-I-049 makes the three-star run in the second source literal. In `/a /b/`, 0.2 pairs the inner slashes. | The tool writes `{*{/*/}*}` or `{/a /b/}` for the checked shapes. Review other pairings; report |
+| U-145 | Under C2-I-047,C2-I-048,C2-I-051, /*// writes &lt;p&gt;&lt;em&gt;*&lt;/em&gt;/&lt;/p&gt; in 0.1. The 0.1 reading of `/***/` nests strong and emphasis around a star. **SILENT** | The first source is text in 0.2; C2-I-049 makes the three-star run in the second source literal. In `/a /b/`, 0.2 pairs the inner slashes; U-273 and U-274 record the general rule, a kind nests in itself. | The tool writes `{*{/*/}*}` or `{/a /b/}` for the checked shapes. Review other pairings; report |
 | U-146 | Under C2-B-133 and C2-I-119, `[ %%]` writes `<p>[]</p>` in 0.1. The `[a %% c] d` form writes `<p>[a] d</p>`. In a quote, `>   %% note` followed by `>   more` leaves `more` outside the description term. **SILENT** | The same 0.2 sources write `<p>[</p>` and `<p>[a</p>`, respectively, and can fold `more` into the term. | Review the comment boundary; report |
 | U-147 | Under C2-B-175,C2-B-184, \|\| ⏎ +\|\| writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.1. **SILENT** | The same source writes &lt;table&gt; ⏎   &lt;tbody&gt; ⏎     &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt; ⏎   &lt;/tbody&gt; ⏎ &lt;/table&gt; in 0.2. | Review; report |
 | U-148 | Under C2-I-081,C2-I-084, # 	%%h writes &lt;section id="h"&gt; ⏎   &lt;h1&gt;	%%h&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.1. **SILENT** | The same source writes &lt;section id="s"&gt; ⏎   &lt;h1&gt;&lt;/h1&gt; ⏎ &lt;/section&gt; in 0.2. | Review; report |

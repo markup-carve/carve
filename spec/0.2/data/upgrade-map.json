@@ -2322,6 +2322,26 @@
       "silent": true
     },
     {
+      "id": "U-273",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "/This /does not/ nest/\n",
+      "to": "/This \\/does not/ nest\\/\n",
+      "meaning02": "<p><em>This <em>does not</em> nest</em></p> C2-I-051 pushes a delimiter that can open also while an entry of its kind is open, so a kind nests in itself; 0.1 kept a bare delimiter of a kind already open as text. Escaping each delimiter that 0.1 kept as text keeps the 0.1 HTML.",
+      "toolEntry": "U-273",
+      "silent": true
+    },
+    {
+      "id": "U-274",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "{*a *b* c*}\n",
+      "to": "{*a \\*b\\* c*}\n",
+      "meaning02": "<p><strong>a <strong>b</strong> c</strong></p> Inside a braced span a bare pair of the same kind nests (C2-I-051, C2-I-059); 0.1 kept a bare child of an open braced kind as text. Escaping the inner delimiters keeps the 0.1 HTML.",
+      "toolEntry": "U-274",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
