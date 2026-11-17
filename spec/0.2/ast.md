@@ -1,6 +1,6 @@
 # Carve 0.2: the AST, contract 2.0
 
-Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: part of the freeze candidate of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md` names the candidate).
 
 This document defines the tree a Carve 0.2 parser returns and its JSON form, which one implementation writes and another reads. It is ported from the contract 2.0 draft on the `next-ast2` branch (PART 12 of the 0.1 grammar, clauses CARVE-P12-nnn) and brought in line with the 0.2 syntax. Spelling that the draft kept in the tree lives in the source-layout sidecar, which has its own document (`source-layout.md`).
 

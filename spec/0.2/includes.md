@@ -1,6 +1,6 @@
 # Carve 0.2: includes
 
-Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: part of the freeze candidate of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md` names the candidate).
 
 This document defines how an include directive is expanded: which file a directive reads, how that file becomes part of the tree, what its options select, how references cross a file boundary, what fails and how a failure is reported. The shape of the directive is defined by the block chapter (C2-B-156, C2-B-201 to C2-B-206) and its node by the AST document (C2-A-181, C2-A-182). It replaces section 19 of the 0.1 specification (rules I1 to I16 of CARVE-P6-001) and applies the 0.2 rulings on includes.
 

@@ -1,6 +1,6 @@
 # Carve 0.2: HTML rendering
 
-Status: freeze candidate 4 of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md`).
+Status: part of the freeze candidate of Carve 0.2 on `next2`, frozen with the rest of the core (`STATUS.md` names the candidate).
 
 This document defines how a 0.2 tree becomes HTML. The block and inline chapters say which tree a source gives, `ast.md` defines the tree, and `writer.md` defines the way back to source. It ports PART 10 of the 0.1 grammar and the rendering parts of PART 9 and PART 9R, and applies the 0.2 decisions.
 
