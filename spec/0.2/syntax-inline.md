@@ -1319,7 +1319,7 @@ Example 108 (generated)
 
 **C2-I-086** A footnote reference and an inline footnote inside an unresolved reference are ordinary footnotes: each takes its number and makes its note.
 
-**C2-I-125** The block pass has read every top-level link definition before the inline pass decides shortcuts. A definition anywhere in the document counts, including one after the use. The inline link tail, full reference label, collapsed reference label and glued attribute block take precedence over a shortcut. An inline footnote, inline extension, footnote reference, citation form, sigil form, task box in marker position and every other bracket construct of this chapter keep their own reading. A failed inline link tail keeps the pair as text under C2-I-069. A following footnote or citation bracket keeps the preceding pair as text under C2-I-078. A shortcut image `![text]` uses the same definition test as a shortcut link `[text]`. An unresolved shortcut does not exist.
+**C2-I-125** An inline footnote, inline extension, footnote reference, citation form, sigil form, task box in marker position and every other bracket construct of this chapter keep their own reading over a shortcut.
 
 Example 109 (unverified)
 
