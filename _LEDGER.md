@@ -241,3 +241,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `C2-H-165`, `C2-H-177`, `Example 34`, `CC-358`, `reference to a heading the profile degrades`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. CC-358 follows the 0.1 plain-text behavior; amend conflicting clause and Example 34.
+
+## G-H3 semantic key roundtrip loss
+
+Search: `C2-H-195`, `KBD`, `roundtrip`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/conformance/schema.json`, `spec/0.2/data/README.md`, `spec/0.2/data/cli.json`, `spec/0.2/data/import-html.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/options.json`, `spec/0.2/data/schemas/import-html.schema.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/trees/examples-html.json`, `spec/0.2/writer.md`. Row 19 of C2-H-195 already lists the lost key case and the 0.1 limit; no text edit is needed.
