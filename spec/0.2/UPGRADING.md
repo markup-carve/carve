@@ -321,6 +321,7 @@ A ruling of 17 November keeps these 0.2 behaviors. Each has a row of the upgrade
 | --- | --- | --- | --- |
 | U-273 | Under C2-I-051, a bare delimiter of a kind that is already open: `/This /does not/ nest/`, `*a *b* c*` **SILENT** | The inner delimiter is text: `<em>This /does not</em> nest/`, `<strong>a *b</strong> c*`. | A kind nests in itself: `<em>This <em>does not</em> nest</em>`. Escape each delimiter that 0.1 kept as text, `/This \/does not/ nest\/`; rewrite |
 | U-274 | Under C2-I-051 and C2-I-059, a bare pair of the kind of an open braced span: `{*a *b* c*}`, `{/a /b/ c/}` **SILENT** | The bare pair is text: `<strong>a *b* c</strong>`. | The pair nests: `<strong>a <strong>b</strong> c</strong>`. Escape the inner delimiters, `{*a \*b\* c*}`; rewrite |
+| U-275 | Under C2-I-035 and C2-I-036, a valid attribute block that attaches to nothing in running text: `a {#id} b`, `x {.c #id} y` **SILENT** | The tag inside is a tag: `a {<span class="tag"><strong>#id</strong></span>} b`. | The block is one literal atom, `a {#id} b`, and a `span.tag` selector finds nothing. Escape the opening brace, `a \{#id} b`; rewrite |
 
 Older rows that hold a point of this ruling, extended where they held only part of it:
 

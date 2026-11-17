@@ -2342,6 +2342,16 @@
       "silent": true
     },
     {
+      "id": "U-275",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "a {#id} b\n",
+      "to": "a \\{#id} b\n",
+      "meaning02": "<p>a {#id} b</p> C2-I-035 and C2-I-036 make a valid attribute block that attaches to nothing one literal atom, so the tag inside it is text; 0.1 read `#id` inside the braces as a tag. An escaped opening brace keeps the 0.1 HTML.",
+      "toolEntry": "U-275",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
