@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 caption number mark",
-  "description": "The number mark of a caption. The block chapter carries the rule over from 0.1 (C2-B-150); the values here restate the 0.1 clause CARVE-P2-022.",
+  "description": "The number mark of a caption. The block chapter carries the rule over from 0.1 (C2-B-207); the values here restate the 0.1 clause CARVE-P2-022.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "mark", "bare_when_followed_by", "not_a_mark", "label", "sequence"],

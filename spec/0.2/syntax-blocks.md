@@ -4480,7 +4480,7 @@ Example 265 (unverified)
 ]
 ```
 
-**C2-B-150** The first bare `#` in a caption's text is the caption number mark, and the sequences and the label word that selects one keep their 0.1 definition (carried over from 0.1). C2-B-207 and C2-B-208 state the mark and the label, and C2-H-149 to C2-H-151 the numbering.
+The caption number mark is the first bare `#` of C2-B-207; C2-B-208 and C2-H-149 to C2-H-151 give its label and sequence.
 
 Under ordinary paragraph text a caption line is a lazy line (C2-B-017). Directly below a line of a quote, a caption line without the quote's mark closes the quote and captions it (C2-B-018). With the mark it belongs to the quote, where it is a lazy line of an open paragraph. Inside an item or a quote a caption line carries that container's indent or mark like any other line.
 
@@ -6806,7 +6806,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 10 | 0 | 11 | 3 |
 | Comments | 13 | 3 | 14 | 9 |
-| Captions | 7 | 0 | 12 | 3 |
+| Captions | 6 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
@@ -6814,9 +6814,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **213** | **10** | **170** | **118** |
+| **Total** | **212** | **10** | **170** | **118** |
 
-The chapter has 213 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063, C2-B-064, C2-B-099, C2-B-103, C2-B-114 and C2-B-129, whose rule another clause states; their ids are not reused.
+The chapter has 212 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063, C2-B-064, C2-B-099, C2-B-103, C2-B-114, C2-B-129 and C2-B-150, whose rule another clause states; their ids are not reused.
 
 ## Not covered
 
