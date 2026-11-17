@@ -53301,6 +53301,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1085",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "two rendered authored ids stay duplicated in HTML",
+   "kind": "render",
+   "input": "{#x}\n# A\n\n{#x}\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-id"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
