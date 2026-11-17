@@ -45537,6 +45537,72 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-inline-129",
+   "document": "syntax-inline.md",
+   "number": 129,
+   "section": "Links and images",
+   "clauses": [
+    "C2-I-066",
+    "C2-I-067",
+    "C2-I-068",
+    "C2-I-069",
+    "C2-I-070",
+    "C2-I-071",
+    "C2-I-072",
+    "C2-I-073",
+    "C2-I-074",
+    "C2-I-122",
+    "C2-I-123",
+    "C2-I-124"
+   ],
+   "kind": "render",
+   "input": "![5 \\* 3 \\[draft\\]](/i.png)",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"5 * 3 [draft]\">",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "image",
+         "src": "/i.png",
+         "alt": "5 * 3 [draft]",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 28,
+          "startOffset": 0,
+          "endOffset": 27
+         }
+        }
+       ],
+       "role": "image",
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 28,
+        "startOffset": 0,
+        "endOffset": 27
+       }
+      }
+     ],
+     "srcByteLength": 27,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-61",
    "document": "syntax-inline.md",
    "number": 61,
@@ -69773,6 +69839,328 @@
       }
      ],
      "srcByteLength": 60,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "html-76",
+   "document": "html.md",
+   "number": 76,
+   "section": "Cross-references and abbreviations",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096",
+    "C2-H-098",
+    "C2-H-099"
+   ],
+   "kind": "render",
+   "input": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ Before\n\n{#fig-x-b}\n![b](b.png)\n^ After\n:::\n^ Figure #: Both\n\nSee </#fig-x-b> and </#fig-x>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure id=\"fig-x-a\" class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>Before</figcaption>\n  </figure>\n  <figure id=\"fig-x-b\" class=\"carve-figure-panel\">\n    <img src=\"b.png\" alt=\"b\">\n    <figcaption>After</figcaption>\n  </figure>\n  <figcaption>Figure 1: Both</figcaption>\n</figure>\n<p>See <a href=\"#fig-x-b\">Figure 1b</a> and <a href=\"#fig-x\">Figure 1</a>.</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "figure_group",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "a.png",
+           "alt": "a",
+           "pos": {
+            "startLine": 4,
+            "endLine": 4,
+            "startColumn": 1,
+            "endColumn": 12,
+            "startOffset": 31,
+            "endOffset": 42
+           }
+          }
+         ],
+         "role": "image",
+         "attrs": {
+          "id": "fig-x-a"
+         },
+         "pos": {
+          "startLine": 3,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 9,
+          "startOffset": 20,
+          "endOffset": 51
+         },
+         "caption": {
+          "type": "caption",
+          "children": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "Before",
+              "pos": {
+               "startLine": 5,
+               "endLine": 5,
+               "startColumn": 3,
+               "endColumn": 9,
+               "startOffset": 45,
+               "endOffset": 51
+              }
+             }
+            ],
+            "pos": {
+             "startLine": 5,
+             "endLine": 5,
+             "startColumn": 3,
+             "endColumn": 9,
+             "startOffset": 45,
+             "endOffset": 51
+            }
+           }
+          ],
+          "pos": {
+           "startLine": 5,
+           "endLine": 5,
+           "startColumn": 1,
+           "endColumn": 9,
+           "startOffset": 43,
+           "endOffset": 51
+          }
+         }
+        },
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "image",
+           "src": "b.png",
+           "alt": "b",
+           "pos": {
+            "startLine": 8,
+            "endLine": 8,
+            "startColumn": 1,
+            "endColumn": 12,
+            "startOffset": 64,
+            "endOffset": 75
+           }
+          }
+         ],
+         "role": "image",
+         "attrs": {
+          "id": "fig-x-b"
+         },
+         "pos": {
+          "startLine": 7,
+          "endLine": 9,
+          "startColumn": 1,
+          "endColumn": 8,
+          "startOffset": 53,
+          "endOffset": 83
+         },
+         "caption": {
+          "type": "caption",
+          "children": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "After",
+              "pos": {
+               "startLine": 9,
+               "endLine": 9,
+               "startColumn": 3,
+               "endColumn": 8,
+               "startOffset": 78,
+               "endOffset": 83
+              }
+             }
+            ],
+            "pos": {
+             "startLine": 9,
+             "endLine": 9,
+             "startColumn": 3,
+             "endColumn": 8,
+             "startOffset": 78,
+             "endOffset": 83
+            }
+           }
+          ],
+          "pos": {
+           "startLine": 9,
+           "endLine": 9,
+           "startColumn": 1,
+           "endColumn": 8,
+           "startOffset": 76,
+           "endOffset": 83
+          }
+         }
+        }
+       ],
+       "attrs": {
+        "id": "fig-x"
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 11,
+        "startColumn": 1,
+        "endColumn": 17,
+        "startOffset": 0,
+        "endOffset": 104
+       },
+       "caption": {
+        "type": "caption",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "Figure ",
+            "pos": {
+             "startLine": 11,
+             "endLine": 11,
+             "startColumn": 3,
+             "endColumn": 10,
+             "startOffset": 90,
+             "endOffset": 97
+            }
+           },
+           {
+            "type": "caption_number",
+            "pos": {
+             "startLine": 11,
+             "endLine": 11,
+             "startColumn": 10,
+             "endColumn": 11,
+             "startOffset": 97,
+             "endOffset": 98
+            },
+            "n": 1
+           },
+           {
+            "type": "text",
+            "value": ": Both",
+            "pos": {
+             "startLine": 11,
+             "endLine": 11,
+             "startColumn": 11,
+             "endColumn": 17,
+             "startOffset": 98,
+             "endOffset": 104
+            }
+           }
+          ],
+          "pos": {
+           "startLine": 11,
+           "endLine": 11,
+           "startColumn": 3,
+           "endColumn": 17,
+           "startOffset": 90,
+           "endOffset": 104
+          }
+         }
+        ],
+        "pos": {
+         "startLine": 11,
+         "endLine": 11,
+         "startColumn": 1,
+         "endColumn": 17,
+         "startOffset": 88,
+         "endOffset": 104
+        }
+       }
+      },
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "See ",
+         "pos": {
+          "startLine": 13,
+          "endLine": 13,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 106,
+          "endOffset": 110
+         }
+        },
+        {
+         "type": "xref",
+         "key": "fig-x-b",
+         "namespace": "heading",
+         "pos": {
+          "startLine": 13,
+          "endLine": 13,
+          "startColumn": 5,
+          "endColumn": 16,
+          "startOffset": 110,
+          "endOffset": 121
+         },
+         "href": "#fig-x-b"
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 13,
+          "endLine": 13,
+          "startColumn": 16,
+          "endColumn": 21,
+          "startOffset": 121,
+          "endOffset": 126
+         }
+        },
+        {
+         "type": "xref",
+         "key": "fig-x",
+         "namespace": "heading",
+         "pos": {
+          "startLine": 13,
+          "endLine": 13,
+          "startColumn": 21,
+          "endColumn": 30,
+          "startOffset": 126,
+          "endOffset": 135
+         },
+         "href": "#fig-x"
+        },
+        {
+         "type": "text",
+         "value": ".",
+         "pos": {
+          "startLine": 13,
+          "endLine": 13,
+          "startColumn": 30,
+          "endColumn": 31,
+          "startOffset": 135,
+          "endOffset": 136
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 13,
+        "endLine": 13,
+        "startColumn": 1,
+        "endColumn": 31,
+        "startOffset": 106,
+        "endOffset": 136
+       }
+      }
+     ],
+     "srcByteLength": 136,
      "stages": [
       "referenceResolution",
       "tableAlignment"

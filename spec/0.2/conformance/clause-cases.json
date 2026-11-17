@@ -14176,6 +14176,874 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-200",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "an escaped backslash in alt text gives one backslash",
+   "input": "![a\\\\b](/i.png)",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"a\\b\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "/i.png",
+        "alt": "a\\b"
+       }
+      ],
+      "role": "image"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-201",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "a backslash before a letter in alt text stays",
+   "input": "![a\\q](/i.png)",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"a\\q\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "/i.png",
+        "alt": "a\\q"
+       }
+      ],
+      "role": "image"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-202",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "a backslash before a space in alt text stays",
+   "input": "![a\\ b](/i.png)",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"a\\ b\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "/i.png",
+        "alt": "a\\ b"
+       }
+      ],
+      "role": "image"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-203",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "markup in alt text is not parsed",
+   "input": "![*a* `c`](/i.png)",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"*a* `c`\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "/i.png",
+        "alt": "*a* `c`"
+       }
+      ],
+      "role": "image"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-204",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "a reference image removes the escapes from its alt text",
+   "input": "![a \\*b\\*][r]\n\n[r]: /i.png",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"/i.png\" alt=\"a *b*\">",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "key": "r",
+        "namespace": "link",
+        "refForm": "full",
+        "alt": "a *b*",
+        "src": "/i.png"
+       }
+      ],
+      "role": "image"
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "r",
+      "namespace": "link",
+      "href": "/i.png"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-205",
+   "clauses": [
+    "C2-I-074"
+   ],
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "summary": "an image in a list item with attributes removes the escape",
+   "input": "- ![x\\!y](/i.png){.c}",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <img src=\"/i.png\" alt=\"x!y\" class=\"c\">\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "image",
+            "src": "/i.png",
+            "alt": "x!y",
+            "attrs": {
+             "classes": [
+              "c"
+             ]
+            }
+           }
+          ],
+          "role": "image"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-206",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "the panel number follows the group's place in its sequence",
+   "input": "{#fig-y}\n![y](y.png)\n^ Figure #: Y\n\n{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (a) One\n\n{#fig-x-b}\n![b](b.png)\n^ (b) Two\n:::\n^ Figure #: Both\n\nSee </#fig-x-b>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"fig-y\">\n  <img src=\"y.png\" alt=\"y\">\n  <figcaption>Figure 1: Y</figcaption>\n</figure>\n<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure id=\"fig-x-a\" class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>(a) One</figcaption>\n  </figure>\n  <figure id=\"fig-x-b\" class=\"carve-figure-panel\">\n    <img src=\"b.png\" alt=\"b\">\n    <figcaption>(b) Two</figcaption>\n  </figure>\n  <figcaption>Figure 2: Both</figcaption>\n</figure>\n<p>See <a href=\"#fig-x-b\">Figure 2b</a>.</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "y.png",
+        "alt": "y"
+       }
+      ],
+      "role": "image",
+      "attrs": {
+       "id": "fig-y"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Figure "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Y"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "a.png",
+          "alt": "a"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-a"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(a) One"
+            }
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "b.png",
+          "alt": "b"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-b"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(b) Two"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "fig-x"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Figure "
+          },
+          {
+           "type": "caption_number",
+           "n": 2
+          },
+          {
+           "type": "text",
+           "value": ": Both"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "fig-x-b",
+        "namespace": "heading",
+        "href": "#fig-x-b"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-207",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "the letter is the panel order, not the caption text",
+   "input": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (i) One\n:::\n^ Figure #: Both\n\nSee </#fig-x-a>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure id=\"fig-x-a\" class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>(i) One</figcaption>\n  </figure>\n  <figcaption>Figure 1: Both</figcaption>\n</figure>\n<p>See <a href=\"#fig-x-a\">Figure 1a</a>.</p>",
+    "children": [
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "a.png",
+          "alt": "a"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-a"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(i) One"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "fig-x"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Figure "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Both"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "fig-x-a",
+        "namespace": "heading",
+        "href": "#fig-x-a"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-208",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "a panel without an id still takes its letter",
+   "input": "{#fig-x}\n::: figure\n![a](a.png)\n^ (a) One\n\n{#fig-x-b}\n![b](b.png)\n^ (b) Two\n:::\n^ Figure #: Both\n\nSee </#fig-x-b>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>(a) One</figcaption>\n  </figure>\n  <figure id=\"fig-x-b\" class=\"carve-figure-panel\">\n    <img src=\"b.png\" alt=\"b\">\n    <figcaption>(b) Two</figcaption>\n  </figure>\n  <figcaption>Figure 1: Both</figcaption>\n</figure>\n<p>See <a href=\"#fig-x-b\">Figure 1b</a>.</p>",
+    "children": [
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "a.png",
+          "alt": "a"
+         }
+        ],
+        "role": "image",
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(a) One"
+            }
+           ]
+          }
+         ]
+        }
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "b.png",
+          "alt": "b"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-b"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(b) Two"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "fig-x"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Figure "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Both"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "fig-x-b",
+        "namespace": "heading",
+        "href": "#fig-x-b"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-209",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "a table panel takes the label of the group",
+   "input": "{#t}\n::: figure\n{#t-a}\n| a |\n^ (a) One\n:::\n^ Table #: Both\n\nSee </#t-a>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"t\" class=\"carve-figure-group\">\n  <figure class=\"carve-figure-panel\">\n    <table id=\"t-a\">\n      <caption>(a) One</caption>\n      <tbody>\n        <tr><td>a</td></tr>\n      </tbody>\n    </table>\n  </figure>\n  <figcaption>Table 1: Both</figcaption>\n</figure>\n<p>See <a href=\"#t-a\">Table 1a</a>.</p>",
+    "children": [
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "table",
+        "columns": [
+         {
+          "type": "table_column"
+         }
+        ],
+        "children": [
+         {
+          "type": "table_body",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ],
+        "attrs": {
+         "id": "t-a"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(a) One"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "t"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Table "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Both"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "t-a",
+        "namespace": "heading",
+        "href": "#t-a"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-210",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "a reference before the group resolves too",
+   "input": "See </#fig-x-a> first.\n\n{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (a) One\n:::\n^ Figure #: Both",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"#fig-x-a\">Figure 1a</a> first.</p>\n<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure id=\"fig-x-a\" class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>(a) One</figcaption>\n  </figure>\n  <figcaption>Figure 1: Both</figcaption>\n</figure>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "fig-x-a",
+        "namespace": "heading",
+        "href": "#fig-x-a"
+       },
+       {
+        "type": "text",
+        "value": " first."
+       }
+      ]
+     },
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "a.png",
+          "alt": "a"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-a"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(a) One"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "fig-x"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Figure "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Both"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-211",
+   "clauses": [
+    "C2-H-095",
+    "C2-H-096"
+   ],
+   "why": "C2-H-095: A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084) C2-H-096: For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1.",
+   "summary": "the label word of the group caption is used",
+   "input": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (a) One\n:::\n^ Abbildung #: Beide\n\nSee </#fig-x-a>.",
+   "options": {},
+   "expected": {
+    "html": "<figure id=\"fig-x\" class=\"carve-figure-group\">\n  <figure id=\"fig-x-a\" class=\"carve-figure-panel\">\n    <img src=\"a.png\" alt=\"a\">\n    <figcaption>(a) One</figcaption>\n  </figure>\n  <figcaption>Abbildung 1: Beide</figcaption>\n</figure>\n<p>See <a href=\"#fig-x-a\">Abbildung 1a</a>.</p>",
+    "children": [
+     {
+      "type": "figure_group",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "image",
+          "src": "a.png",
+          "alt": "a"
+         }
+        ],
+        "role": "image",
+        "attrs": {
+         "id": "fig-x-a"
+        },
+        "caption": {
+         "type": "caption",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "(a) One"
+            }
+           ]
+          }
+         ]
+        }
+       }
+      ],
+      "attrs": {
+       "id": "fig-x"
+      },
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Abbildung "
+          },
+          {
+           "type": "caption_number",
+           "n": 1
+          },
+          {
+           "type": "text",
+           "value": ": Beide"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "fig-x-a",
+        "namespace": "heading",
+        "href": "#fig-x-a"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

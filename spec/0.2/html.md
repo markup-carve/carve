@@ -1587,9 +1587,46 @@ Example 33 (unverified)
 
 ## Cross-references and abbreviations
 
-**C2-H-095** A cross-reference resolves against the ids of headings and of numbered captions, under NFC and without case folding (C2-I-097). The id of a numbered caption is the `attrs.id` of the block that carries it.
+**C2-H-095** A cross-reference resolves against the ids of headings, of numbered captions and of the panels of a figure group whose caption is numbered (C2-A-084), under NFC and without case folding (C2-I-097). The id of a numbered caption or of a panel is the `attrs.id` of the block that carries it.
 
-**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
+**C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. For a panel it is the label word and the number of its group and the letter of the panel in panel order, `a` to `z`, then `aa`, `ab` and so on, such as `Figure 1a`, as in 0.1. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
+
+Example 76 (unverified)
+
+::: compare
+
+```carve
+{#fig-x}
+::: figure
+{#fig-x-a}
+![a](a.png)
+^ Before
+
+{#fig-x-b}
+![b](b.png)
+^ After
+:::
+^ Figure #: Both
+
+See </#fig-x-b> and </#fig-x>.
+```
+
+```html
+<figure id="fig-x" class="carve-figure-group">
+  <figure id="fig-x-a" class="carve-figure-panel">
+    <img src="a.png" alt="a">
+    <figcaption>Before</figcaption>
+  </figure>
+  <figure id="fig-x-b" class="carve-figure-panel">
+    <img src="b.png" alt="b">
+    <figcaption>After</figcaption>
+  </figure>
+  <figcaption>Figure 1: Both</figcaption>
+</figure>
+<p>See <a href="#fig-x-b">Figure 1b</a> and <a href="#fig-x">Figure 1</a>.</p>
+```
+
+:::
 
 **C2-H-098** An abbreviation node is `<abbr title="EXPANSION">` around the term.
 
@@ -2523,7 +2560,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
-| Cross-references and abbreviations | 4 | 1 | 1 | 0 |
+| Cross-references and abbreviations | 4 | 1 | 1 | 1 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
@@ -2531,6 +2568,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **40** |
+| **Total** | **193** | **6** | **35** | **41** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 75 examples, 35 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 76 examples, 35 generated and 41 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

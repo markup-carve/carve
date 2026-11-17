@@ -1212,7 +1212,21 @@ Example 60 (generated)
 
 **C2-I-073** `<`, a URL or an email address, and `>` form an autolink. A URL is a scheme (a letter, then letters, digits, `+`, `-` and `.`), a colon and one or more URL characters. An email address is a local part, an at-sign, a domain, a dot and letters. The visible text is the body as written. It is an atom. (carried over from 0.1) C2-I-122 to C2-I-124 state the characters.
 
-**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed. Before any other bracket pair the `!` is text. (carried over from 0.1, except that an escape in the alt text now stays as written)
+**C2-I-074** A `!` glued before a bracket pair that forms an inline link or a reference makes an image. Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010). Before any other bracket pair the `!` is text. (carried over from 0.1)
+
+Example 129 (unverified)
+
+::: compare
+
+```carve
+![5 \* 3 \[draft\]](/i.png)
+```
+
+```html
+<img src="/i.png" alt="5 * 3 [draft]">
+```
+
+:::
 
 Example 61 (generated)
 
@@ -2480,7 +2494,7 @@ There is no fixed budget for the inline chapter.
 | Emphasis and strong | 8 | 3 | 7 | 6 |
 | Braced delimiters | 9 | 1 | 6 | 4 |
 | Spans | 1 | 0 | 2 | 0 |
-| Links and images | 12 | 1 | 6 | 1 |
+| Links and images | 12 | 1 | 6 | 2 |
 | Reference resolution | 13 | 3 | 5 | 15 |
 | Footnotes | 3 | 0 | 1 | 2 |
 | Mention, tag, symbol and inline extension | 6 | 0 | 3 | 3 |
@@ -2492,9 +2506,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **58** |
+| **Total** | **112** | **16** | **70** | **59** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 128 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 129 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 

@@ -434,7 +434,7 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-096** An opening brace is tested for forming an attribute block, a braced comment, an editorial comment or a braced opener (C2-I-043).
 
-**C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012).
+**C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012). In the alt text of an image a backslash is written as two when the next character is ASCII punctuation or when it ends the alt text, and a bracket that has no partner in the alt text takes a backslash (C2-I-074).
 
 **C2-W-098** In a table cell every pipe is written with a backslash, in text, a destination, a title, a label and a quoted attribute value alike, except a pipe between a backtick run and its closing run, as in a code span, which needs none (C2-B-169, C2-B-224). A value of a row attribute that holds a pipe is written in quotes (C2-W-050) with the pipe bare, since a pipe in a quoted value there does not close the row (C2-B-166).
 

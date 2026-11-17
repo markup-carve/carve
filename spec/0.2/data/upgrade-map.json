@@ -2282,16 +2282,6 @@
       "silent": true
     },
     {
-      "id": "U-266",
-      "kind": "rewrite",
-      "group": "third review",
-      "from": "![5 \\* 3](/i.png)\n",
-      "to": "![5 * 3](/i.png)\n",
-      "meaning02": "<img src=\"/i.png\" alt=\"5 \\* 3\"> C2-I-074: the alt text is the source of the bracket content, so an escape stays in it; 0.1 removed the backslash. Where the escape is needed, before a bracket, no spelling keeps the 0.1 alt text: `![a \\] b](/i.png)` gives `alt=\"a \\] b\"`.",
-      "toolEntry": "U-266",
-      "silent": true
-    },
-    {
       "id": "U-267",
       "kind": "rewrite",
       "group": "third review",
@@ -2299,16 +2289,6 @@
       "to": "an {_a\\=b_} word\n",
       "meaning02": "<p>an _a=b_ word</p> The U-065 rewrite `{_a=b_}` is a valid attribute block with the key `_a` (C2-I-043, C2-I-030) and renders as text. Escaping the equals sign keeps the underline.",
       "toolEntry": "U-267",
-      "silent": true
-    },
-    {
-      "id": "U-268",
-      "kind": "report",
-      "group": "third review",
-      "from": "{#fig-x}\n::: figure\n{#fig-x-a}\n![a](a.png)\n^ (a) One\n:::\n^ Figure #: Both\n\nSee </#fig-x-a>.\n",
-      "to": "",
-      "meaning02": "<p>See &lt;/#fig-x-a&gt;.</p> C2-H-095 resolves a cross-reference against headings and numbered captions only, and a panel caption takes no number (C2-H-066), so a reference to a panel is unresolved; 0.1 wrote `Figure 1a`.",
-      "toolEntry": "U-268",
       "silent": true
     },
     {
