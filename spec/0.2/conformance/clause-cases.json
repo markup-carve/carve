@@ -17706,6 +17706,42 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-262",
+   "clauses": [
+    "C2-I-088"
+   ],
+   "why": "C2-I-088: The attribute blocks glued to it follow as C2-I-085 says, as typed: `[^x]{.c}{#i}` gives `<p>[^x]{.c}{#i}</p>`, as in 0.1.",
+   "summary": "an unresolved footnote reference keeps its blocks as typed",
+   "input": "a [^x]{ .c }{#i}",
+   "options": {},
+   "expected": {
+    "html": "<p>a [^x]{ .c }{#i}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "x",
+        "namespace": "footnote",
+        "attrs": {
+         "id": "i",
+         "classes": [
+          "c"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

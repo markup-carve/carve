@@ -83,7 +83,7 @@ These facts hold spelling that the tree does not. The last column names the fiel
 | `hardBreakOpener` | a `div` with the class `hardbreaks` | `true` for the hard-break opener, `false` for the class form | none; the draft had no field |
 | `wraps`, `continuationLines` | a `table_cell`, a `table_row` | where continuation rows broke the cell, and how many the row has | `cell_wrap`, `cellWraps`, `table_row.continuationLines` |
 | `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the bracket that closes the reference (C2-L-049) | `link.rawRef`, `image.rawRef` |
-| `rawAttrs` | a `link` or `image` that carries `key` and has attribute blocks glued to it | the glued attribute blocks as typed, from the first opening brace to the last closing brace (C2-L-049) | none; the draft had no field |
+| `rawAttrs` | a `link` or `image` that carries `key`, or a `footnote_ref`, and has attribute blocks glued to it | the glued attribute blocks as typed, from the first opening brace to the last closing brace (C2-L-049) | none; the draft had no field |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
 | `headerRows` | a delimited `table` | the effective count of its `header-rows` attribute | `table_body.headRows` |
 

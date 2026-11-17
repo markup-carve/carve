@@ -1807,7 +1807,7 @@ Example 119 (unverified)
 
 **C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077. A footnote reference takes no link tail and no reference label: `(` or `[` directly behind it starts ordinary text or the next construct, so `[^n](/u)` is a footnote reference and the text `(/u)`. Where the label is none (C2-I-079), the `[` is text and opens no bracket pair, so a link tail behind it forms nothing.
 
-**C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085).
+**C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085). The attribute blocks glued to it follow as C2-I-085 says, as typed: `[^x]{.c}{#i}` gives `<p>[^x]{.c}{#i}</p>`, as in 0.1.
 
 **C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference at any depth: a footnote reference there is text. Unclosed, the two characters are text. (carried over from 0.1)
 
