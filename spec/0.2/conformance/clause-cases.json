@@ -54623,6 +54623,25 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1149",
+ "clauses": [
+  "C2-W-106"
+ ],
+ "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+ "summary": "indented quote fence advice follows catalog",
+ "kind": "lint",
+ "input": "> a\n    ::: >\n    b\n    :::\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "quote-fence-ends-the-quote-above"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
