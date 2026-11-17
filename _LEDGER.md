@@ -271,3 +271,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `Example 81`, `html-81`, `C2-H-147`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/trees/examples-html.json`. The ASCII option preserves case in generated ids.
+
+## F13 HTML Example 80
+
+Search: `Example 80`, `C2-A-035`, `C2-H-013`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/conformance/refused-trees.json`, `spec/0.2/data/attribute-block.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/trees/refused.json`, `spec/0.2/writer.md`. Held with G-H1; see open reading.
