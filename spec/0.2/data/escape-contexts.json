@@ -262,12 +262,5 @@
       "clauses": ["C2-W-099", "C2-B-159"]
     }
   ],
-  "no_spelling": [
-    {
-      "name": "em_dash_as_document_line_1",
-      "source": "---",
-      "report": "field-unspellable",
-      "clauses": ["C2-W-099", "C2-B-161"]
-    }
-  ]
+  "no_spelling": []
 }
