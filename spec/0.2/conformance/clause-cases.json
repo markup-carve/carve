@@ -18462,6 +18462,978 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-333",
+   "clauses": [
+    "C2-A-040",
+    "C2-A-041"
+   ],
+   "why": "C2-A-040: A node list holds no two adjacent `text` nodes. Adjacent runs are joined in the tree that `parse` returns, not in the encoder. C2-A-041: A backslash escape is not a node. The escaped character is part of the surrounding `text` value, and a writer computes the escapes it needs.",
+   "summary": "escaped delimiter joins text",
+   "input": "a\\*b",
+   "options": {},
+   "expected": {
+    "html": "<p>a*b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a*b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-334",
+   "clauses": [
+    "C2-A-042"
+   ],
+   "why": "C2-A-042: An escaped space is a `non_breaking_space` node with no value. One node stands for one space.",
+   "summary": "escaped space is a node",
+   "input": "a\\ b",
+   "options": {},
+   "expected": {
+    "html": "<p>a&nbsp;b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "non_breaking_space"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-335",
+   "clauses": [
+    "C2-A-043"
+   ],
+   "why": "C2-A-043: Every string field holds literal Unicode. No private-use character has a special meaning, and a temporary marker of a parser or writer is never published.",
+   "summary": "private-use character stays literal",
+   "input": "ab",
+   "options": {},
+   "expected": {
+    "html": "<p>ab</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "ab"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-336",
+   "clauses": [
+    "C2-A-045"
+   ],
+   "why": "C2-A-045: `code_block.value` holds every payload character, the final line break included. A closed fence with one line `a` has the value `\"a\\n\"`, and a closed fence with no line has `\"\"`. Container prefixes and fence delimiters are not payload.",
+   "summary": "code block keeps final break",
+   "input": "```\na\n```",
+   "options": {},
+   "expected": {
+    "html": "<pre><code>a\n</code></pre>",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-337",
+   "clauses": [
+    "C2-A-112",
+    "C2-A-113"
+   ],
+   "why": "C2-A-112: `href`, `src` and every other destination hold what the author wrote. A producer does not blank or rewrite a destination on the way into the tree. C2-A-113: A consumer that puts a destination into a URL sink applies the URL policy itself. The tree may hold `javascript:alert(1)`.",
+   "summary": "unsafe destination stays in tree",
+   "input": "[x](javascript:alert(1))",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "javascript:alert(1)",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-338",
+   "clauses": [
+    "C2-B-035"
+   ],
+   "why": "C2-B-035: The bullet character is part of the list's kind, so an item with the other character starts another list (C2-B-049).",
+   "summary": "changing bullet character starts a new list",
+   "input": "- red\n* blue",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>red</li>\n</ul>\n<ul>\n  <li>blue</li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "red"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "*"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "blue"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-339",
+   "clauses": [
+    "C2-A-080"
+   ],
+   "why": "C2-A-080: Definitions are nodes with a position, so document order decides which of two definitions wins: the first one (C2-B-085).",
+   "summary": "first definition wins",
+   "input": "[x]: /a\n[x]: /b\n\n[x]",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/a\">x</a></p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "x",
+      "namespace": "link",
+      "href": "/a"
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "x",
+      "namespace": "link",
+      "href": "/b"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "x",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "/a"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-340",
+   "clauses": [
+    "C2-B-178"
+   ],
+   "why": "C2-B-178: Where the source declares no grouping, the rest of the rows form one body.",
+   "summary": "implicit table head ends before ordinary row",
+   "input": "|= H |\n| a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <thead>\n    <tr><th scope=\"col\">H</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_head",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": true,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "H"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-341",
+   "clauses": [
+    "C2-A-094"
+   ],
+   "why": "C2-A-094: A continuation row leaves no node and no field. Each fragment is read as inline content by itself, and the cell holds the nodes of its fragments in order with one space of ordinary text between two fragments (C2-B-184). Where the row broke is spelling and is in the sidecar.",
+   "summary": "continuation row adds a space and no node",
+   "input": "| a |\n+ b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a b</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a b"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-342",
+   "clauses": [
+    "C2-A-108"
+   ],
+   "why": "C2-A-108: An unresolved full or collapsed reference remains a `link` or `image` with its `children` or `alt`, `key`, `refForm` and `attrs`; it never becomes text. HTML renders its brackets and label as literal text. A shortcut forms only for a defined key and is therefore never unresolved when parsed from source.",
+   "summary": "unresolved reference remains a link",
+   "input": "[a][missing]",
+   "options": {},
+   "expected": {
+    "html": "<p>[a][missing]</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "missing",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-343",
+   "clauses": [
+    "C2-A-107"
+   ],
+   "why": "C2-A-107: On a reference use an absent `href` or `src` means unresolved, and the empty string means a destination that is empty. There is no `resolved` field.",
+   "summary": "empty direct destination is distinct from absent",
+   "input": "[a]()",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"\">a</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-344",
+   "clauses": [
+    "C2-A-110",
+    "C2-B-083",
+    "C2-H-141"
+   ],
+   "why": "C2-A-110: A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (C2-I-082) is a resolution result: it is not written into `attrs` and takes no part in equality. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u\"T\"` and in `[a]: \"T\"` the quotes are part of the destination, and `[a]: /u  \"T\"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). C2-H-141: The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k=\"1\" m=\"4\" j=\"3\"`.",
+   "summary": "reference keeps own attributes; definition attributes merge only on render",
+   "input": "[x][r]{.use}\n\n[r]: /u {.def}",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u\" class=\"def use\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "r",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "classes": [
+          "use"
+         ]
+        },
+        "href": "/u"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "r",
+      "namespace": "link",
+      "href": "/u",
+      "attrs": {
+       "classes": [
+        "def"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-345",
+   "clauses": [
+    "C2-A-036"
+   ],
+   "why": "C2-A-036: A reader never looks for nodes inside `keyValues`: `{type=widget}` is an ordinary attribute.",
+   "summary": "type attribute stays an ordinary key",
+   "input": "{type=widget}\na",
+   "options": {},
+   "expected": {
+    "html": "<p type=\"widget\">a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ],
+      "attrs": {
+       "keyValues": [
+        [
+         "type",
+         "widget"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-346",
+   "clauses": [
+    "C2-A-038",
+    "C2-A-134"
+   ],
+   "why": "C2-A-038: `attrs.id` holds only an id the author wrote. A generated heading id is not stored there (C2-A-134). C2-A-134: A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`.",
+   "summary": "generated id does not enter attrs",
+   "input": "# B",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"B\">\n  <h1>B</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "B"
+       }
+      ],
+      "generatedId": "B"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-347",
+   "clauses": [
+    "C2-A-063"
+   ],
+   "why": "C2-A-063: The grouping of terms and descriptions is not published. A run of terms belongs to the descriptions that follow it.",
+   "summary": "terms and description have no grouping wrapper",
+   "input": ":: a\n:: b\n: c",
+   "options": {},
+   "expected": {
+    "html": "<dl>\n  <dt>a</dt>\n  <dt>b</dt>\n  <dd>c</dd>\n</dl>",
+    "children": [
+     {
+      "type": "definition_list",
+      "children": [
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "definition_term",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       },
+       {
+        "type": "definition_description",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "c"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-348",
+   "clauses": [
+    "C2-A-068"
+   ],
+   "why": "C2-A-068: A hard-break block is not a node type and not a field. It is a `div` with the class `hardbreaks` in which every line end is a `hard_break` node. The opener form adds the class after the classes the author wrote, so it comes last in `attrs.classes`; the class form has it where it was written. The two forms give the same tree when `hardbreaks` is the last class. Which form the author wrote is in the sidecar.",
+   "summary": "hard-break opener is a div",
+   "input": "::: \\\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"hardbreaks\">\n  <p>a</p>\n</div>",
+    "children": [
+     {
+      "type": "div",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "hardbreaks"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-349",
+   "clauses": [
+    "C2-B-138"
+   ],
+   "why": "C2-B-138: The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.",
+   "summary": "comment-only line belongs to open leaf",
+   "input": "> a\n> %% note",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>a</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "note"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-350",
+   "clauses": [
+    "C2-A-104"
+   ],
+   "why": "C2-A-104: `key` is the folded label: every run of spaces, tabs and line breaks becomes one space, the ends are trimmed, and case is kept (C2-I-079). Uses and definitions fold the same way, so two keys match when they are equal strings.",
+   "summary": "reference label folds spaces",
+   "input": "[A  B]: /u\n\n[x][A  B]",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u\">x</a></p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "A B",
+      "namespace": "link",
+      "href": "/u"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "A B",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "/u"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-351",
+   "clauses": [
+    "C2-A-109"
+   ],
+   "why": "C2-A-109: A link reference is looked up in the link definitions first and then in the headings (C2-I-081, C2-I-083, C2-I-084). The heading lookup applies to link references only, not to images and not to footnotes. It compares plain text that the tree alone gives, so it needs no source. Its result is an `href` on the link, like any other resolution.",
+   "summary": "link definition wins over heading lookup",
+   "input": "# x\n\n[x]: /u\n\n[x]",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"x\">\n  <h1>x</h1>\n  <p><a href=\"/u\">x</a></p>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ],
+      "generatedId": "x"
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "x",
+      "namespace": "link",
+      "href": "/u"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "x",
+        "namespace": "link",
+        "refForm": "shortcut",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "/u"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-352",
+   "clauses": [
+    "C2-A-046"
+   ],
+   "why": "C2-A-046: The value of a parsed fence ends with a line break after its last line, also where the fence is unclosed and the source ends on that line without one: the end of the source counts as a line ending. A producer adds nothing else.",
+   "summary": "unclosed code fence keeps last line break",
+   "input": "```\nq",
+   "options": {},
+   "expected": {
+    "html": "<pre><code>q\n</code></pre>",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "q\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-353",
+   "clauses": [
+    "C2-A-187"
+   ],
+   "why": "C2-A-187: The bracket label of a div, an admonition, a directive and a code block is the string `groupLabel`, the text between the brackets as written, with no inline parsing: in `::: tip [Tab *x*]` it is `Tab *x*`. In 0.1 the label was inline content.",
+   "summary": "group label stays raw text",
+   "input": "::: tip [Tab *x*]\na\n:::",
+   "options": {},
+   "expected": {
+    "html": "<aside class=\"admonition tip\" aria-label=\"Tip\">\n  <p class=\"div-label\">Tab *x*</p>\n  <p>a</p>\n</aside>",
+    "children": [
+     {
+      "type": "admonition",
+      "kind": "tip",
+      "groupLabel": "Tab *x*",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-354",
+   "clauses": [
+    "C2-A-186"
+   ],
+   "why": "C2-A-186: A parsed item, description, term or heading is never empty: one with nothing else holds a comment node (C2-B-136, C2-B-145). A parsed div, admonition, line block, hard-break block or quote may have no children: a quote mark alone on its line is an empty quote (C2-B-031), as is a quote fence with no body (C2-W-032, C2-W-082). A tree that was not parsed from source may hold an item, description, term or heading with no children.",
+   "summary": "comment-only list item stays nonempty",
+   "input": "- %% note",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li></li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "note"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-355",
+   "clauses": [
+    "C2-A-153"
+   ],
+   "why": "C2-A-153: A break that a parser makes from a plain line ending, with no backslash in the source, has a span: the spaces and tabs that C2-I-002 drops before the line ending and no line comment owns (C2-A-151), and the line ending itself. It starts directly after the last kept character of its line, so for `a`, two spaces, a line feed and `b` the soft break spans offsets 1 to 4. A hard break spans the same and its backslash (C2-A-152). It is not among the nodes that omit `pos`.",
+   "summary": "soft break span includes the two dropped spaces and line feed",
+   "input": "a  \nb",
+   "options": {},
+   "expected": {
+    "html": "<p>a\nb</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a",
+        "pos": {
+         "startLine": 1,
+         "endLine": 1,
+         "startColumn": 1,
+         "endColumn": 2,
+         "startOffset": 0,
+         "endOffset": 1
+        }
+       },
+       {
+        "type": "soft_break",
+        "pos": {
+         "startLine": 1,
+         "endLine": 2,
+         "startColumn": 2,
+         "endColumn": 1,
+         "startOffset": 1,
+         "endOffset": 4
+        }
+       },
+       {
+        "type": "text",
+        "value": "b",
+        "pos": {
+         "startLine": 2,
+         "endLine": 2,
+         "startColumn": 1,
+         "endColumn": 2,
+         "startOffset": 4,
+         "endOffset": 5
+        }
+       }
+      ],
+      "pos": {
+       "startLine": 1,
+       "endLine": 2,
+       "startColumn": 1,
+       "endColumn": 2,
+       "startOffset": 0,
+       "endOffset": 5
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-356",
+   "clauses": [
+    "C2-A-154"
+   ],
+   "why": "C2-A-154: A container, a list, a description list and a table end after their closer when they have one, and otherwise after their last child that has a position. Each starts at its opening markup and ends at its closing markup also when its first or last child has no position. A block that carries a caption, a figure group and a table included, ends where its caption ends, and the caption spans from its caret to the end of its last line (C2-A-151).",
+   "summary": "fenced quote span reaches the closer after its last child",
+   "input": "::: >\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>b</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "b",
+          "pos": {
+           "startLine": 2,
+           "endLine": 2,
+           "startColumn": 1,
+           "endColumn": 2,
+           "startOffset": 6,
+           "endOffset": 7
+          }
+         }
+        ],
+        "pos": {
+         "startLine": 2,
+         "endLine": 2,
+         "startColumn": 1,
+         "endColumn": 2,
+         "startOffset": 6,
+         "endOffset": 7
+        }
+       }
+      ],
+      "pos": {
+       "startLine": 1,
+       "endLine": 3,
+       "startColumn": 1,
+       "endColumn": 4,
+       "startOffset": 0,
+       "endOffset": 11
+      }
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
