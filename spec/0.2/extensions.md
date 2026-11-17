@@ -72,7 +72,7 @@ This document defines the extension interface for Carve 0.2.0.
 
 ## Resolution, rendering and equality
 
-**C2-X-032** Resolution visits `children`, named slots and fallback, and does not execute or inspect props, payload or source text.
+**C2-X-032** Resolution visits one view of an extension node: its `children` and named slots when a renderer for its name and version is registered (C2-X-033), and its fallback otherwise. Validation and the limits visit all of them. Resolution does not execute or inspect props, payload or source text.
 
 **C2-X-033** A host registers a renderer by qualified name and version. The renderer receives the node, resolved child lists, fallback, rendering profile, URL policy and host helpers for escaped text, attributes, child lists and generated ids.
 

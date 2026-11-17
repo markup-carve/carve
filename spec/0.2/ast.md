@@ -121,7 +121,7 @@ Conventions:
 
 **C2-A-038** `attrs.id` holds only an id the author wrote. A generated heading id is not stored there (C2-A-134).
 
-**C2-A-039** `attrs.id` is an anchor in the document. For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type.
+**C2-A-039** `attrs.id` is an anchor in the document. For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. An id in the view of an extension node that resolution does not visit (C2-X-032) is no anchor and is not compared.
 
 ```json
 {
