@@ -1523,9 +1523,9 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "new",
-      "messages": ["Degraded a construct under profile \"${profile}\": ${construct}"],
+      "messages": [{"when": "the construct type is excluded by the active profile", "text": "Degraded a construct the profile \"${profile}\" does not allow: ${construct}."}, {"when": "the construct exceeds `max_nesting` under the active profile", "text": "Degraded ${construct} because it exceeds the nesting limit of profile \"${profile}\"; move it to a shallower level or use a profile that permits the depth."}],
       "message_origin": "data_file",
-      "reports": "a construct outside the active `profile` (C2-H-129)",
+      "reports": "a construct outside the active `profile` by its type or because it exceeds `max_nesting`, rendered in its degraded form; once per degraded construct, with children of a degraded construct not reported again (C2-H-129, C2-H-163, C2-H-165, C2-H-166)",
       "clauses": ["C2-H-129"]
     },
     {
