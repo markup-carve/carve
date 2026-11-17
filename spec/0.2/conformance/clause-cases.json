@@ -52737,6 +52737,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1058",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a differently cased region line comment is not a marker",
+   "kind": "lint",
+   "input": "%% #REGION x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "region-marker-renders-as-text"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

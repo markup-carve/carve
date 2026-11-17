@@ -139,3 +139,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.
 Search: `setext-heading-underline`, `C2-B-160`, `CC-961`.
 
 Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. CC-961 covers the equals-run input.
+
+## CR9-13
+
+Search: `region-marker-renders-as-text`, `C2-B-217`, `C2-N-038`.
+
+Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/includes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A line comment with differently cased keyword is not a region marker; new case.

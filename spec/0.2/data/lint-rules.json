@@ -1596,8 +1596,8 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This line renders as text and is not a region marker for a Carve include. Use \"%% #region name\"."],
-      "message_origin": "engine_0_1",
+      "messages": ["This is not a region marker for a Carve include. Use \"%% #region name\" for a recognized region start."],
+      "message_origin": "data_file",
       "reports": "a line outside a code block, a raw block, a math block, a comment and frontmatter that holds, after spaces and tabs and an optional `//`, `--`, `/*` or `<!--` with spaces or tabs, `#region` or `#endregion` in any letter case not followed by an ASCII letter, digit or `_`; and a `%%` line comment whose keyword is `#region` or `#endregion` in another letter case; once per line, the range from its first character that is not a space or tab to the end of the line (C2-B-217, C2-N-038)",
       "clauses": ["C2-B-217", "C2-N-038", "C2-N-039"]
     },
