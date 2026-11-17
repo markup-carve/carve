@@ -253,3 +253,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `U-201`, `U-146`, `C2-I-024`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-atoms.json`, `spec/0.2/data/schemas/inline-atoms.schema.json`, `spec/0.2/syntax-inline.md`. The nested braced boundary changes a 0.1 render; park the upgrade classification.
+
+## G-H5 caret-pair inline footnote cycle
+
+Search: `C2-I-089`, `inline footnote`, `a^^[`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/inline-brackets.json`, `spec/0.2/data/inline-scan.json`, `spec/0.2/html.md`, `spec/0.2/syntax-inline.md`, `spec/0.2/writer.md`. The note-closing rule has a cyclic reading; park until the 0.1 result is established.
