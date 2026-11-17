@@ -1794,6 +1794,23 @@ Example 55 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
 
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
+A CSS image function loads a URL from a bare string, so `image(`, `image-set(` and `src(` blank the value as `url(` does, under every policy (C2-H-128).
+
+Example 57 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
+
+::: compare
+
+```carve
+{style="background:image-set(\"https://x.org/a.png\" 1x)"}
+Hello
+```
+
+```html
+<p style="">Hello</p>
+```
+
+:::
+
 **C2-H-172** The bidirectional controls U+202A to U+202E and U+2066 to U+2069 are never written between tags: not in text, not in code, and not in text the renderer makes, as a title paragraph, a label paragraph, the text of a cross-reference (C2-H-096), static math (C2-H-168) and a degraded form (C2-H-165). They can make source read in another order than it runs. They stay in the tree and in the canonical form, and an attribute value keeps them; the scheme test removes them from its copy (C2-H-159, `probe_removes`). Raw content that is passed through unescaped is not filtered, and neither is the text of an abbreviation template (C2-H-179), which is data for a reader and not presentation. (carried over from 0.1)
 
 **C2-H-163** A profile decides for each node by its type and its axis, block or inline. A type on the deny list of its axis is outside the profile. Otherwise, when the axis has an allow list, a type is inside exactly when the list names it. Otherwise it is inside. An image paragraph, a code block, a quote or a math block that carries a caption is tested as its `<figure>` (C2-H-062), a type that no allow list names, so under an allow list it is outside and is degraded as a whole. No other rule excludes a type, an unknown one included. The four profiles are the rows of `profiles` in `data/url-policy.json`: `full` accepts everything, `article` everything but raw content, and `comment` and `minimal` the listed types. `comment` writes `rel="nofollow ugc"` on every link. A node that stands deeper than `max_nesting` levels below the document, each block and each inline level counted, is outside the profile like a node of a refused type. An input longer than `max_length` UTF-8 bytes is refused before it is parsed: the render returns an error and no output.
@@ -2086,9 +2103,9 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 7 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 7 |
+| Options | 24 | 0 | 3 | 8 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **31** |
+| **Total** | **198** | **7** | **25** | **32** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 56 examples, 25 generated and 31 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 57 examples, 25 generated and 32 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

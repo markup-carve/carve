@@ -66300,6 +66300,96 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-57",
+   "document": "html.md",
+   "number": 57,
+   "section": "Options",
+   "clauses": [
+    "C2-H-121",
+    "C2-H-122",
+    "C2-H-168",
+    "C2-H-123",
+    "C2-H-124",
+    "C2-H-125",
+    "C2-H-126",
+    "C2-H-127",
+    "C2-H-128",
+    "C2-H-129",
+    "C2-H-130",
+    "C2-H-131",
+    "C2-H-132",
+    "C2-H-159",
+    "C2-H-160",
+    "C2-H-161",
+    "C2-H-162",
+    "C2-H-172",
+    "C2-H-163",
+    "C2-H-165",
+    "C2-H-166",
+    "C2-H-167",
+    "C2-H-164",
+    "C2-H-177"
+   ],
+   "kind": "render",
+   "input": "{style=\"background:image-set(\\\"https://x.org/a.png\\\" 1x)\"}\nHello",
+   "options": {
+    "urlPolicy": {
+     "allow": [
+      "mailto"
+     ]
+    }
+   },
+   "expected": {
+    "html": "<p style=\"\">Hello</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "Hello",
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 59,
+          "endOffset": 64
+         }
+        }
+       ],
+       "attrs": {
+        "keyValues": [
+         [
+          "style",
+          "background:image-set(\"https://x.org/a.png\" 1x)"
+         ]
+        ]
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 64
+       }
+      }
+     ],
+     "srcByteLength": 64,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-48",
    "document": "html.md",
    "number": 48,

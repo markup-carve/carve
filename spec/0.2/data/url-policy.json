@@ -30,6 +30,9 @@
     { "text": "@import", "clauses": ["C2-H-162"] },
     { "text": "behavior:", "clauses": ["C2-H-162"] },
     { "text": "expression(", "clauses": ["C2-H-162"] },
+    { "text": "image(", "clauses": ["C2-H-162"] },
+    { "text": "image-set(", "clauses": ["C2-H-162"] },
+    { "text": "src(", "clauses": ["C2-H-162"] },
     { "text": "url(", "clauses": ["C2-H-162"] }
   ],
   "profiles": [
