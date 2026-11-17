@@ -33,8 +33,6 @@ Terms:
 
 **C2-B-005** Tab stops count from the start of the line, not from a container's content column.
 
-**C2-B-006** Only a space separates a marker or a quote mark from its content: a marker followed by a tab is text.
-
 **C2-B-007** Indent stripping removes whole characters, so a tab that straddles the strip column is kept.
 
 **C2-B-008** Prefixes are read outside-in, in the order the containers were opened: for a quote inside a list item the quote mark sits past the item's marker.
@@ -3165,7 +3163,7 @@ after
 
 **C2-B-122** An unquoted title or further words in the info string do not stop the block from opening, and `fence-title-syntax` reports them. A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported. The 0.1 engine read such a line as text. A second space behind the backtick run leaves the opener with no language (the empty option of `code_fence_opener` in `data/line-shapes.json`), so what follows is further words: ```` ```  b ```` opens a code block with no language and `b` is reported.
 
-Only spaces separate the parts of an opener (C2-B-006): behind a tab the quoted title is further words, reported and not kept (C2-B-122).
+Only spaces separate the parts of an opener (`code_fence_opener` and `div_opener` in `data/line-shapes.json`, C2-B-117, C2-B-119): behind a tab the quoted title is further words, reported and not kept (C2-B-122).
 
 Example 263 (unverified)
 
@@ -6379,7 +6377,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 
 | Construct | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
-| Preliminaries | 11 | 1 | 4 | 4 |
+| Preliminaries | 10 | 1 | 4 | 4 |
 | Paragraphs and interrupters | 14 | 2 | 6 | 3 |
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
@@ -6404,9 +6402,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **221** | **10** | **168** | **103** |
+| **Total** | **220** | **10** | **168** | **103** |
 
-The chapter has 221 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 220 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

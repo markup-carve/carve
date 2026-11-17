@@ -235,7 +235,7 @@
             "min": { "type": "integer", "minimum": 0, "description": "The lowest count of spaces." },
             "max": { "type": "integer", "minimum": 0, "description": "The highest count. Absent: no upper bound." }
           },
-          "description": "Spaces (U+0020), never tabs (C2-B-006)."
+          "description": "Spaces (U+0020), never tabs."
         },
         {
           "type": "object",
