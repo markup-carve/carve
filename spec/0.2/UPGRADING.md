@@ -51,7 +51,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-021 | Loose list with one item **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;Note text.&lt;/li&gt; ⏎ &lt;/ul&gt; | Review by hand; report |
 | U-023 | Marker indented less than the content column of the item above **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item text ⏎ 3. child&lt;/li&gt; ⏎ &lt;/ul&gt; | - item text ⏎ 3. child ⏎ ; rewrite |
 | U-024 | Alphabetic list that starts at &#96;i&#96; **SILENT** | &lt;ol type="i" data-delim=")"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ol&gt; ⏎ &lt;ol type… | {start=9} ⏎ a) one ⏎ b) two ⏎ ; rewrite |
-| U-025 | Ordered marker of ten or more digits **SILENT** | &lt;p&gt;1234567890. x&lt;/p&gt; | {start=1234567890} ⏎ . x ⏎ ; rewrite |
+| U-025 | Ordered marker of ten or more digits **SILENT** | &lt;p&gt;1234567890. x&lt;/p&gt; | Review by hand: `{start=1234567890}` above `. x` keeps the number only as an HTML attribute, since the tree starts at 1 (C2-B-219); report |
 | U-026 | Comment block at column 0 between two items **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | - a ⏎ %%% ⏎ x ⏎ %%% ⏎ - b ⏎ ; rewrite |
 | U-027 | Three blank lines between two lists | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | Keep it; none |
 | U-028 | &#96;-&#96; and &#96;*&#96; items | &lt;ul&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;two&lt;/li&g… | Keep it; none |

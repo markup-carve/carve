@@ -233,7 +233,7 @@
     },
     {
       "id": "U-025",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "lists",
       "from": "1234567890. x\n",
       "to": "{start=1234567890}\n. x\n",
