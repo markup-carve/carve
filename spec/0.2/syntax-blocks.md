@@ -5235,8 +5235,6 @@ title: x
 
 **C2-B-176** A fragment past the last column forms a new cell.
 
-**Exception C2-B-177** Without the closing pipe a `+` line is text and ends the table.
-
 **C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174).
 
 **C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table. C2-B-209 and C2-B-210 state its default and its value.
@@ -6415,12 +6413,12 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 1 | 19 | 17 |
+| Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **168** | **103** |
+| **Total** | **227** | **12** | **168** | **103** |
 
-The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 227 clauses, and 12 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 

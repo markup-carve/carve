@@ -125,7 +125,7 @@
         { "part": "end" }
       ],
       "requires": ["below_table_row_or_continuation_row"],
-      "clauses": ["C2-B-059", "C2-B-175", "C2-B-176", "C2-B-177", "C2-B-184", "C2-B-185"]
+      "clauses": ["C2-B-059", "C2-B-175", "C2-B-176", "C2-B-184", "C2-B-185"]
     },
     {
       "name": "frontmatter_closer",
