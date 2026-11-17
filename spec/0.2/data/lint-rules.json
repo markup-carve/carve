@@ -133,12 +133,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "Cross-reference </#${target}> matches no id; ${caseOnlyPhrase}, and cross-references are case-sensitive, so it renders as the literal text \"</#${target}>\".",
-        "Cross-reference </#${target}> names the id \"${id}\", which is on a ${kind}; a cross-reference reaches only headings and numbered captions, so it renders as the literal text \"</#${target}>\". Link to it with [text](#${id}).",
-        "Cross-reference </#${target}> has no matching heading id; it renders as the literal text \"</#${target}>\"."
-      ],
-      "message_notes": ["`${caseOnlyPhrase}` is \"the ${noun} ${id} differs only in case\" or its plural."],
+      "messages": [{"when": "the target id exists exactly but belongs to a node that is not a heading or numbered caption", "text": "Cross-reference </#${target}> names the id \"${id}\", which is on a ${kind}; a cross-reference reaches only headings and numbered captions, so it renders as the literal text \"</#${target}>\". Link to it with [text](#${id})."}, {"when": "no qualifying id matches exactly, but one or more qualifying ids differ only in case", "text": "Cross-reference </#${target}> matches no id; ${caseOnlyPhrase}, and cross-references are case-sensitive, so it renders as the literal text \"</#${target}>\"."}, {"when": "no qualifying id matches exactly or only by case, and no exact id belongs to a nonqualifying node", "text": "Cross-reference </#${target}> has no matching heading id; it renders as the literal text \"</#${target}>\"."}],
       "message_origin": "engine_0_1",
       "reports": "a cross-reference whose id, normalized to NFC, matches no heading id, authored or generated, and no id of a table, a figure or a figure group whose caption has a number mark, nor of a panel of such a group; matching is exact, so an id that differs only in case is reported; once per cross-reference, in footnote bodies too (C2-I-096, C2-I-097, C2-B-207, C2-H-022)",
       "clauses": ["C2-I-096", "C2-I-097", "C2-B-207", "C2-H-022"]
@@ -149,10 +144,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "Link to \"${href}\" matches no id; the id \"${caseOnly}\" differs only in case, and fragment links are case-sensitive, so the link goes nowhere.",
-        "Link to \"${href}\" matches no id in this document, so the link goes nowhere."
-      ],
+      "messages": [{"when": "a rendered id differs from the fragment only in case", "text": "Link to \"${href}\" matches no id; the id \"${caseOnly}\" differs only in case, and fragment links are case-sensitive, so the link goes nowhere."}, {"when": "no rendered id matches the fragment, even by case", "text": "Link to \"${href}\" matches no id in this document, so the link goes nowhere."}],
       "message_origin": "engine_0_1",
       "reports": "a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded, is not empty, is not `top` in any letter case, and is no `id` (and no `name` of an `a` element) in the rendered HTML of the document, heading, footnote, note mark and raw HTML ids included; once per link; not reported at all while an extension that generates ids is registered for the run, whether or not the document contains a node of that extension (C2-I-066, C2-H-022, C2-H-088, C2-H-089)",
       "clauses": ["C2-I-066", "C2-H-022", "C2-H-088", "C2-H-089"]
@@ -510,7 +502,7 @@
       "severity": "error",
       "channel": "render-loss",
       "status": "kept",
-      "messages": ["Blanked a denied destination scheme", "Blanked a denied image source"],
+      "messages": [{"when": "the denied destination belongs to a link", "text": "Blanked a denied destination scheme"}, {"when": "the denied destination belongs to an image", "text": "Blanked a denied image source"}],
       "message_origin": "engine_0_1",
       "reports": "a destination that `urlPolicy` blanked (C2-H-082)",
       "clauses": ["C2-H-082", "C2-H-132"]
@@ -687,10 +679,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text.",
-        "This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit."
-      ],
+      "messages": [{"when": "the marker is text and closes no span", "text": "This ${ch} closes no span, so it and the attribute block after it stay text. Brace the span you mean ({${ch}text${ch}}{…}) to attach the block, or escape the ${ch} to keep both as text."}, {"when": "the marker closes a bare strong or emphasis span that holds an earlier literal copy of the marker", "text": "This ${marker} closes the ${name} span that opens at line ${line}, column ${column}, so the attribute block after it attaches to that whole span, which also holds a literal ${marker}. Brace the span you mean ({${marker}text${marker}}{…}) or escape the inner ${marker} to make the pairing explicit."}],
       "message_origin": "engine_0_1",
       "reports": "(1) each unescaped `*`, `/`, `_`, `~` or `=` that is text and is directly followed by a valid attribute block in the same text, and (2) the closing `*` or `/` of a bare strong or emphasis span that carries an attribute block, when the span's own text holds an unescaped copy of its delimiter before that closer (as in `*a * b*{.c}`); once per marker (C2-I-028, C2-I-036, C2-I-046, C2-I-048)",
       "clauses": ["C2-I-028", "C2-I-036", "C2-I-046", "C2-I-048"]
@@ -1400,10 +1389,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "This list marker is part of the preceding paragraph; add a blank line before the list.",
-        "This list marker directly follows term or description text and is part of that text; add a blank line before the list."
-      ],
+      "messages": [{"when": "the marker is paragraph text", "text": "This list marker is part of the preceding paragraph; add a blank line before the list."}, {"when": "the marker is term or description text", "text": "This list marker directly follows term or description text and is part of that text; add a blank line before the list."}],
       "message_origin": "data_file",
       "change": "also a list marker directly after term or description text (C2-B-022), with a second message",
       "reports": "a line of paragraph, term or description text, not the first line of that text, that starts after its quote marks and indent with a bullet marker `-` or `*` or an ordered marker of one to nine digits and `.` or `)`, followed by a space and content, so the marker is part of that text and opens no list, once per line; the range runs from the marker to the end of the line text (C2-B-015, C2-B-022, C2-B-034, C2-B-036)",
@@ -1765,10 +1751,7 @@
       "channel": "lint",
       "status": "new",
       "default": "on",
-      "messages": [
-        "This \"${marker}\" joins the cell ${direction}, so its attribute block applies to no cell and carve fmt drops it. Move the attributes to the cell it joins, or remove them.",
-        "This \"${marker}\" joins the cell ${direction}, and its header mark makes no head row, so it marks no cell and carve fmt drops it. Remove the \"=\", or make the row a head row."
-      ],
+      "messages": [{"when": "the joining span mark has a brace block in its prefix", "text": "This \"${marker}\" joins the cell ${direction}, so its attribute block applies to no cell and carve fmt drops it. Move the attributes to the cell it joins, or remove them."}, {"when": "the joining span mark has a header mark in its prefix that makes no head row, and no brace block in its prefix", "text": "This \"${marker}\" joins the cell ${direction}, and its header mark makes no head row, so it marks no cell and carve fmt drops it. Remove the \"=\", or make the row a head row."}],
       "message_origin": "data_file",
       "reports": "a prefix of a span mark that joins a cell and that the tree does not keep: a brace block, or a header mark that does not make its row a head row (C2-B-174)",
       "clauses": ["C2-B-174"]
@@ -1829,10 +1812,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it.",
-        "This attribute line is separated from its block by a blank line, so it is text. Remove the blank line."
-      ],
+      "messages": [{"when": "the attribute line reaches the end of its container or document", "text": "This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it."}, {"when": "a blank line follows the attribute line in its container", "text": "This attribute line is separated from its block by a blank line, so it is text. Remove the blank line."}],
       "message_origin": "data_file",
       "change": "also an attribute line separated from its block by a blank line, which is text",
       "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192)",
@@ -1914,10 +1894,7 @@
       "severity": "error",
       "channel": "parse",
       "status": "kept",
-      "messages": [
-        "This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it.",
-        "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."
-      ],
+      "messages": [{"when": "the unclosed container has a named kind", "text": "This ${width}-colon ${kind} has no closer; it runs to the end of its container. Add a bare fence of ${width} colons to close it."}, {"when": "the unclosed container is an anonymous div", "text": "This ${width}-colon container has no closer; add a bare fence of ${width} colons to close it."}],
       "message_origin": "engine_0_1",
       "channel_reports": "a div that runs to the end of its container (C2-B-111, C2-B-125)",
       "change": "severity error; the block ends with its container (C2-B-111)",
@@ -1978,12 +1955,7 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": [
-        "Reference link ${rawRef} matches no link definition or heading; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.",
-        "Reference link ${rawRef} has no matching link definition or heading; it renders as literal text.",
-        "Reference image ${rawRef} matches no link definition; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text.",
-        "Reference image ${rawRef} has no matching link definition; it renders as literal text."
-      ],
+      "messages": [{"when": "the unresolved reference is a link and a label or heading differs from its key only in case", "text": "Reference link ${rawRef} matches no link definition or heading; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text."}, {"when": "the unresolved reference is a link with no label or heading that differs only in case", "text": "Reference link ${rawRef} has no matching link definition or heading; it renders as literal text."}, {"when": "the unresolved reference is an image and a link definition label differs from its key only in case", "text": "Reference image ${rawRef} matches no link definition; ${caseOnlyPhrase}, and reference labels are case-sensitive, so it renders as literal text."}, {"when": "the unresolved reference is an image with no link definition label that differs only in case", "text": "Reference image ${rawRef} has no matching link definition; it renders as literal text."}],
       "message_origin": "engine_0_1",
       "change": "the full form and a wrapped label now reach the heading lookup (C2-I-080, C2-I-081)",
       "reports": "a full or collapsed reference, link or image, whose key matches no link definition and, for a link, no heading by the lookup of C2-I-084, once per reference; a shortcut forms only from a definition and is text otherwise, so it is never reported, and a wrapped label folds its line break to one space; the range is the reference (C2-I-081, C2-I-080, C2-A-109)",

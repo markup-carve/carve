@@ -54007,6 +54007,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1119",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-022"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "term text list marker takes term advice",
+  "kind": "lint",
+  "input": ":: a\n- b\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "list-marker-without-blank-line"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
