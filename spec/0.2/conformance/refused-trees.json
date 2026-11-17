@@ -98,8 +98,7 @@
    "id": "unknown-core-field",
    "clauses": [
     "C2-A-018",
-    "C2-A-028",
-    "C2-A-169"
+    "C2-A-028"
    ],
    "reason": "a field the schema does not name on a paragraph",
    "refusedBy": "schema",
@@ -123,7 +122,7 @@
   {
    "id": "unknown-core-field-nested",
    "clauses": [
-    "C2-A-169"
+    "C2-A-028"
    ],
    "reason": "a field the schema does not name on a nested text node",
    "refusedBy": "schema",

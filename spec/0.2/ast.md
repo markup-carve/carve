@@ -55,7 +55,7 @@ Conventions:
 }
 ```
 
-**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-169).
+**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-028).
 
 **C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
 
@@ -97,7 +97,7 @@ Conventions:
 
 **C2-A-027** Every typed node may carry the common fields `attrs`, `data`, `pos`, `segments`, `metadata`, `dir` and `lang`, as far as its schema definition allows.
 
-**C2-A-028** Nodes are closed: a field the schema does not name on a node type is an error (C2-A-169). Unknown fields inside `task`, `marker`, a payload alternative or a manifest entry are refused as well.
+**C2-A-028** Nodes are closed: a reader refuses a field the schema does not name on a node type (C2-A-167). Unknown fields inside `task`, `marker`, a payload alternative or a manifest entry are refused as well.
 
 **C2-A-029** Every `data` key has the qualified grammar of C2-A-123, matches a declaration on the root or envelope, and holds opaque JSON. A reader preserves unknown optional data and refuses a node anywhere inside it.
 
@@ -604,8 +604,6 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-168** A reader refuses a root that lacks `type`, `children` or `astVersion`, and a root whose `type` is not `document`.
 
-**C2-A-169** A reader refuses a field the schema does not name, at any node, and neither drops it nor passes it on.
-
 **C2-A-170** A reader validates a tree against `spec/0.2/data/ast-schema.json` at decode and refuses a failure. The files under `resources/` describe the 0.1 contract.
 
 **C2-A-171** A reader accepts every tree its own parser can produce at the two nesting limits, 200 blocks (C2-B-190) and 200 inline levels in each inline content (C2-I-118), and refuses deeper input. The levels are counted within each file: the children of an expanded include start again at level 0 (C2-N-015), so one chain of includes may hold the top-level document and 16 included files (C2-N-064), each as deep as the limits allow. It derives its bound from the limits by the worst cost per level of its own encoding.
@@ -787,11 +785,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 173 | 2 |
+| Existing AST contract | 172 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **209** | **3** |
+| **Total** | **208** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-163, C2-A-164 and C2-A-166 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 
