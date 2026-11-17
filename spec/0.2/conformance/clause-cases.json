@@ -53187,6 +53187,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1079",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a defined shortcut after the quote character is still no GitHub alert",
+   "kind": "lint",
+   "input": "[!NOTE]: /u\n\n>[!NOTE]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "github-alert-marker"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
