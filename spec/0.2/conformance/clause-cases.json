@@ -53987,6 +53987,26 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1118",
+  "clauses": [
+   "C2-W-106",
+   "C2-B-122"
+  ],
+  "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+  "summary": "spaced brace after two spaces takes attribute-line advice",
+  "kind": "lint",
+  "input": "```  {.c}\nx\n```\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "fence-title-syntax"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
