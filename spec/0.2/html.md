@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020), and in static mode a display math paragraph (C2-H-168), is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` or `<pre>` stands on its own lines inside the item, the description or the quote. A captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
@@ -2040,7 +2040,7 @@ Example 69 (unverified, `--mode static`)
 
 **C2-H-129** `profile` restricts the features a render accepts: `full`, `article`, `comment` or `minimal`, as in 0.1. C2-H-163 and C2-H-164 state what each one accepts. A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`.
 
-**C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-174): the render returns no output.
+**C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-172): the render returns no output.
 
 **C2-H-131** `headingIds` controls generated heading ids (C2-H-022). Its values are `off`, `keep-case`, `lower` and `ascii`, and the default is `keep-case`. With `off` no id is generated, and an authored id is still written.
 

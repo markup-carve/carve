@@ -445,7 +445,7 @@
       ],
       "message_origin": "design",
       "reports": "`header-rows` on a pipe table",
-      "change": "only `header-rows`; `aligns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1",
+      "change": "only `header-rows`; `aligns`, `widths` and `footer-rows` stay as in 0.1, and `header-cols` has no effect in 0.2.0",
       "clauses": ["C2-B-186"]
     },
     {

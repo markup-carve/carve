@@ -748,7 +748,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `table-row-without-closing-pipe` | hint | a row with no closing pipe | void: such a line is text (C2-B-168) and `table-shaped-paragraph` reports it |
 | `table-row-attribute-as-cell` | warning | a row whose last cell holds only an attribute block | the half about a row without a closing pipe is void |
 | `deprecated-separator-row` | warning | a row in which every cell holds only hyphens and colons | unchanged |
-| `deprecated-table-attribute` | warning | `header-rows` on a pipe table | only `header-rows`; `aligns`, `widths`, `header-cols` and `footer-rows` stay as in 0.1 |
+| `deprecated-table-attribute` | warning | `header-rows` on a pipe table | only `header-rows`; `aligns`, `widths` and `footer-rows` stay as in 0.1, and `header-cols` has no effect in 0.2.0 |
 | `deprecated-bare-underline` | warning | an underscore pair that 0.1 read as underline | unchanged |
 | `deprecated-bare-strike` | warning | a tilde pair that 0.1 read as strike | unchanged |
 | `deprecated-bare-highlight` | warning | an equals pair that 0.1 read as highlight | unchanged |

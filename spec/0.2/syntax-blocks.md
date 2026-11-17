@@ -248,7 +248,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
-**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker where no list is open.
+**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker that interrupter (b) does not take (C2-B-015).
 
 Below an open paragraph an attribute line is a lazy line and waits for nothing, and a comment-only line below it is not seen by block structure (C2-B-137): the paragraph of the item takes both lines, and the comment is its child (C2-B-138).
 
