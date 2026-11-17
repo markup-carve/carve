@@ -122,6 +122,13 @@
       "clauses": ["C2-B-106", "C2-I-082"]
     },
     {
+      "name": "link_definition_end",
+      "where": "one_space_after_destination_or_title_of_link_definition",
+      "otherwise": "text",
+      "applies_to": "every_link_that_uses_the_definition",
+      "clauses": ["C2-B-083", "C2-B-089", "C2-B-106"]
+    },
+    {
       "name": "marker_abutting",
       "where": "glued_behind_list_marker_or_cell_mark",
       "closes": "on_marker_line",

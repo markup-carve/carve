@@ -13108,6 +13108,160 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-276",
+   "document": "syntax-blocks.md",
+   "number": 276,
+   "section": "Definitions",
+   "clauses": [
+    "C2-B-081",
+    "C2-B-082",
+    "C2-B-083",
+    "C2-B-084",
+    "C2-B-085",
+    "C2-B-087",
+    "C2-B-088",
+    "C2-B-089"
+   ],
+   "kind": "render",
+   "input": "See [Example][ex] and ![logo][ex]{.wide}.\n\n[ex]: /a.png \"Home\" {.external}",
+   "options": {},
+   "expected": {
+    "html": "<p>See <a href=\"/a.png\" title=\"Home\" class=\"external\">Example</a> and <img src=\"/a.png\" alt=\"logo\" title=\"Home\" class=\"external wide\">.</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "See ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 0,
+          "endOffset": 4
+         }
+        },
+        {
+         "type": "link",
+         "key": "ex",
+         "namespace": "link",
+         "refForm": "full",
+         "children": [
+          {
+           "type": "text",
+           "value": "Example",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 6,
+            "endColumn": 13,
+            "startOffset": 5,
+            "endOffset": 12
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 5,
+          "endColumn": 18,
+          "startOffset": 4,
+          "endOffset": 17
+         },
+         "href": "/a.png"
+        },
+        {
+         "type": "text",
+         "value": " and ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 18,
+          "endColumn": 23,
+          "startOffset": 17,
+          "endOffset": 22
+         }
+        },
+        {
+         "type": "image",
+         "key": "ex",
+         "namespace": "link",
+         "refForm": "full",
+         "alt": "logo",
+         "attrs": {
+          "classes": [
+           "wide"
+          ]
+         },
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 23,
+          "endColumn": 41,
+          "startOffset": 22,
+          "endOffset": 40
+         },
+         "src": "/a.png"
+        },
+        {
+         "type": "text",
+         "value": ".",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 41,
+          "endColumn": 42,
+          "startOffset": 40,
+          "endOffset": 41
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 42,
+        "startOffset": 0,
+        "endOffset": 41
+       }
+      },
+      {
+       "type": "link_reference_definition",
+       "key": "ex",
+       "namespace": "link",
+       "href": "/a.png",
+       "tooltip": "Home",
+       "attrs": {
+        "classes": [
+         "external"
+        ]
+       },
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 32,
+        "startOffset": 43,
+        "endOffset": 74
+       }
+      }
+     ],
+     "srcByteLength": 74,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-90",
    "document": "syntax-blocks.md",
    "number": 90,

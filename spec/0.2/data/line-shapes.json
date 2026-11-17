@@ -316,10 +316,14 @@
           "part": "optional",
           "sequence": [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "link_title" }]
         },
+        {
+          "part": "optional",
+          "sequence": [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "brace_block" }]
+        },
         { "part": "trailing_spaces" },
         { "part": "end" }
       ],
-      "clauses": ["C2-B-081", "C2-B-083", "C2-B-089"]
+      "clauses": ["C2-B-081", "C2-B-083", "C2-B-089", "C2-B-106"]
     },
     {
       "name": "caption",

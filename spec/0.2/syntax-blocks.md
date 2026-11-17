@@ -2144,7 +2144,7 @@ A *definition* is a footnote definition, a link definition or an abbreviation de
 
 **C2-B-082** A footnote definition is `[^label]:`, a space and content on the same line. The label follows the rules of a footnote reference label (C2-I-087): it may hold spaces, and it holds no unescaped bracket.
 
-**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then only spaces. So `[a]: /u 'T'` has a title, in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
+**C2-B-083** A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u"T"` and in `[a]: "T"` the quotes are part of the destination, and `[a]: /u  "T"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082).
 
 **C2-B-084** An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty. Exactly one space separates the colon from the expansion: every character after it belongs to the expansion, a leading space or tab included, except the spaces and tabs at the end of the line.
 
@@ -2223,7 +2223,7 @@ x[^n]
 
 **C2-B-088** References resolve after block parsing, so a reference may stand before its definition.
 
-**C2-B-089** Anything but spaces and tabs after the URL or the title of a link definition makes the line text.
+**C2-B-089** Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block. A brace block glued to the URL is part of it: `[a]: /u{.c}` has the destination `/u{.c}`.
 
 A definition line directly after a paragraph line is a lazy line (C2-B-012) unless it is a sibling of an open definition (C2-B-016). A definition takes an attribute line (C2-B-095).
 
@@ -2449,6 +2449,24 @@ Example 89 (generated)
 
 :::
 
+The attribute block at the end of the definition line reaches the link and the image that use it, and the image's own class follows it (C2-B-083, C2-B-106).
+
+Example 276 (unverified)
+
+::: compare
+
+```carve
+See [Example][ex] and ![logo][ex]{.wide}.
+
+[ex]: /a.png "Home" {.external}
+```
+
+```html
+<p>See <a href="/a.png" title="Home" class="external">Example</a> and <img src="/a.png" alt="logo" title="Home" class="external wide">.</p>
+```
+
+:::
+
 ## Attribute lines
 
 **C2-B-090** An attribute line is one or more glued brace blocks `{...}`, alone on its line, each a valid attribute block (C2-I-028 to C2-I-034). A line of braces that is no valid block, such as a braced inline form alone on its line, is text.
@@ -2483,7 +2501,7 @@ Example 89 (generated)
 
 **C2-B-105** An attribute block after an admonition name or after a fence language does not stop the block from opening, and `fence-opener-fallback` reports it with severity error.
 
-**C2-B-106** The attributes of a link definition are merged into every link that uses it, and the link's own values win.
+**C2-B-106** The attributes of a link definition, from its attribute line and from the block at the end of its line, merged in that order as glued blocks are (C2-B-093), are merged into every link and image that uses it, and the link's own values win.
 
 **C2-B-192** Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.
 
@@ -6481,7 +6499,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
-| Definitions | 8 | 0 | 7 | 6 |
+| Definitions | 8 | 0 | 7 | 7 |
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
@@ -6495,7 +6513,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 22 | 18 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **218** | **10** | **171** | **104** |
+| **Total** | **218** | **10** | **171** | **105** |
 
 The chapter has 218 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

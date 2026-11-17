@@ -267,6 +267,14 @@ A header mark needs a space, a tab, `{`, one of the alignment marks `<`, `>`, `?
 | --- | --- | --- | --- |
 | U-270 | `\|=a\|`, meant as a header cell, with the text glued to the header mark **SILENT** | 0.1: a data cell with the text `=a`. Freeze candidate 5 and early 0.2 engines: a header cell that holds `a`. | A data cell with the text `=a`, as in 0.1. Where a header cell is meant, write `\|= a \|`; rewrite |
 
+### Seventeen 0.1 behaviors restored, 17 November 2026
+
+Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a ruling of 17 November restores each one. Against 0.1 they remove differences; against freeze candidate 5 and early 0.2 engines they change what a document gives. The rows carry no `U-` id; the clause decides.
+
+| What you wrote | Freeze candidate 5 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| An attribute block at the end of a link definition: `[ex]: https://example.com {.external}` | The line was text, and every reference to `ex` stayed literal. | The attributes reach every link and image that uses the definition. | C2-B-083, C2-B-089, C2-B-106 |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.

@@ -8227,6 +8227,278 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-097",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block.",
+   "summary": "two spaces before the attribute block of a link definition make the line text",
+   "input": "[x][a]\n\n[a]: /u  {.c}",
+   "options": {},
+   "expected": {
+    "html": "<p>[x][a]</p>\n<p>[a]: /u  {.c}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[a]: /u  {.c}"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-098",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block.",
+   "summary": "a second glued block after a link definition makes the line text",
+   "input": "[x][a]\n\n[a]: /u {.c}{.d}",
+   "options": {},
+   "expected": {
+    "html": "<p>[x][a]</p>\n<p>[a]: /u {.c}{.d}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[a]: /u {.c}{.d}"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-099",
+   "clauses": [
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block.",
+   "summary": "an invalid block after a link definition makes the line text",
+   "input": "[x][a]\n\n[a]: /u {#}",
+   "options": {},
+   "expected": {
+    "html": "<p>[x][a]</p>\n<p>[a]: /u {#}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[a]: /u {#}"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-100",
+   "clauses": [
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: A brace block glued to the URL is part of it: `[a]: /u{.c}` has the destination `/u{.c}`.",
+   "summary": "a brace block glued to the destination is part of the URL",
+   "input": "[x][a]\n\n[a]: /u{.c}",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u{.c}\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "/u{.c}"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u{.c}"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-101",
+   "clauses": [
+    "C2-B-106",
+    "C2-B-093"
+   ],
+   "why": "C2-B-106: The attributes of a link definition, from its attribute line and from the block at the end of its line, merged in that order as glued blocks are (C2-B-093), are merged into every link and image that uses it, and the link's own values win.",
+   "summary": "an attribute line and the block at the end of a link definition merge, the line first",
+   "input": "[x][a]{#own}\n\n{#d .p}\n[a]: /u {.c k=1}",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u\" id=\"own\" class=\"p c\" k=\"1\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "attrs": {
+         "id": "own"
+        },
+        "href": "/u"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "attrs": {
+       "id": "d",
+       "classes": [
+        "p",
+        "c"
+       ],
+       "keyValues": [
+        [
+         "k",
+         "1"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-102",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block.",
+   "summary": "spaces and a tab after the attribute block of a link definition are allowed",
+   "input": "[x][a]\n\n[a]: /u 'T' {.c} \t",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u\" title=\"T\" class=\"c\">x</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "full",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ],
+        "href": "/u"
+       }
+      ]
+     },
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": "/u",
+      "tooltip": "T",
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
