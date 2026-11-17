@@ -1047,7 +1047,7 @@
       "status": "kept",
       "messages": ["Include \"${path}\" was not expanded: @cols ${reason}."],
       "message_origin": "data_file",
-      "reports": "a `cols` name that the head lacks, an empty or repeated head name, or a column range that the table does not allow (C2-N-047)",
+      "reports": "a `cols` name that the head lacks or holds twice, or a column range that the table does not allow (C2-N-047)",
       "clauses": ["C2-N-047", "C2-N-061"]
     },
     {

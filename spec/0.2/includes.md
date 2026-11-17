@@ -766,7 +766,7 @@ F
 
 Record 4 is the foot of the file, so the range puts only `a` and `b` in the body, and `F` is written once, in the foot.
 
-**C2-N-047** `cols` with a list of names takes the columns whose head names match exactly, in the order given, so it may reorder them. The names are matched against the head of the whole file (C2-N-046) under any selection: a `lines` or `region` selection chooses records and never makes a new head. A name the first head record lacks, an empty head name and a head name that occurs twice leave the include unexpanded with `include-cols-invalid`, and a name given twice with `include-cols-duplicate`. `cols` with a range selects columns by number and is valid only with `header-rows=0`; on another table, or past the last column, it gives `include-cols-invalid`. `cols` combines with any one selection or none. (I1d, carried over)
+**C2-N-047** `cols` with a list of names takes the columns whose head names match exactly, in the order given, so it may reorder them. The names are matched against the head of the whole file (C2-N-046) under any selection: a `lines` or `region` selection chooses records and never makes a new head. A requested name that the first head record lacks or holds twice leaves the include unexpanded with `include-cols-invalid`, and a name requested twice with `include-cols-duplicate`; an empty or a repeated head name that no request names is not tested. `cols` with a range selects columns by number and is valid only with `header-rows=0`; on another table, or past the last column, it gives `include-cols-invalid`. `cols` combines with any one selection or none. (I1d, carried over)
 
 Example 36 (unverified)
 

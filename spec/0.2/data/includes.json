@@ -177,7 +177,7 @@
       "name": "cols_invalid",
       "code": "include-cols-invalid",
       "stage": "after_resolver",
-      "when": "a column name is missing, empty or ambiguous, or a column range is invalid for the table",
+      "when": "a requested column name is missing from the head or stands there twice, or a column range is invalid for the table",
       "clauses": [
         "C2-N-047"
       ]
