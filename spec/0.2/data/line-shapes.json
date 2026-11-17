@@ -546,8 +546,8 @@
       "opener": "\"",
       "closer": "\"",
       "excluded": ["\""],
-      "reads_escapes": false,
-      "clauses": ["C2-B-117", "C2-B-119", "C2-B-120"]
+      "reads_escapes": true,
+      "clauses": ["C2-A-073", "C2-B-117", "C2-B-119", "C2-B-120", "C2-I-033"]
     },
     { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] }
   ]

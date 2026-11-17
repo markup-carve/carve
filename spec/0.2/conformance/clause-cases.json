@@ -48999,6 +48999,38 @@
     "carve": "| x | y | |\n+ p | q | r |\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-904",
+   "clauses": [
+    "C2-A-073",
+    "C2-I-033"
+   ],
+   "why": "C2-A-073: A parsed `title` is one `text` node that holds the quoted value read as in C2-I-033; it is not inline-parsed, so `\"src/*a*\"` gives the text `src/*a*`. C2-I-033: In it a backslash escapes as in text (C2-I-010, C2-I-012): before an ASCII punctuation character it is dropped and the character is literal, and before any other character it stays.",
+   "summary": "a backslash escape in the quoted title of a code fence is read",
+   "kind": "render",
+   "input": "```js \"a\\*b\"\nx\n```",
+   "options": {},
+   "expected": {
+    "html": "<pre title=\"a*b\"><code class=\"language-js\">x\n</code></pre>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-905",
+   "clauses": [
+    "C2-A-073",
+    "C2-I-033"
+   ],
+   "why": "C2-I-033: In it a backslash escapes as in text (C2-I-010, C2-I-012): before an ASCII punctuation character it is dropped and the character is literal, and before any other character it stays.",
+   "summary": "an escaped quote does not close the quoted title of a code fence",
+   "kind": "render",
+   "input": "```js \"a\\\"b\"\nx\n```",
+   "options": {},
+   "expected": {
+    "html": "<pre title=\"a&quot;b\"><code class=\"language-js\">x\n</code></pre>"
+   },
+   "from": []
   }
  ]
 }
