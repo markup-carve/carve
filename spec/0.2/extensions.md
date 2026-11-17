@@ -52,11 +52,11 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-022** `fallback` is mandatory for every qualified extension node and contains only core nodes of the extension's role.
 
-**C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027.
+**C2-X-023** A reader without the extension resolves, renders and writes the fallback as core content, except where the Carve writer has a source form under C2-X-027. A writer without the extension writes that source form only when the written text parses back to one core node of that form and name whose canonical content is `body`, and otherwise writes the fallback and reports `structure-unspellable`.
 
 **C2-X-024** A source transform carries a `source` record with `form`, `name`, canonical `body` text, and any quoted title or bracket label, plus the core node's attributes on the extension node.
 
-**C2-X-025** `source.form` is `inline`, `div` or `fence`, and `source.name` is the claimed source name.
+**C2-X-025** `source.form` is `inline`, `div` or `fence`, and `source.name` is the claimed source name. A reader refuses a `source.name` that no matcher of its form can claim: for `div` a name that makes no plain div (C2-B-127), for `fence` a language that opens no `code_block`, for `inline` a name that is no inline extension name (C2-I-094).
 
 **C2-X-026** `source.body` is the canonical Carve spelling of the claimed node's content, without its opener, closer or attached outer attributes.
 

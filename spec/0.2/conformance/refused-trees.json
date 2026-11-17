@@ -3568,6 +3568,50 @@
      }
     ]
    }
+  },
+  {
+   "id": "extension-source-name-raw-fence",
+   "clauses": [
+    "C2-X-025"
+   ],
+   "reason": "a fence source record whose name is a raw format, which opens no code block",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.n",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.n",
+      "version": "1",
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "safe"
+         }
+        ]
+       }
+      ],
+      "source": {
+       "form": "fence",
+       "name": "=html",
+       "body": "<script>alert(1)</script>\n"
+      }
+     }
+    ]
+   }
   }
  ]
 }
