@@ -58,8 +58,8 @@
       "name": "cell_pipe",
       "group": "table",
       "triggers": ["|"],
-      "positions": ["text_of_table_cell_outside_code_span"],
-      "clauses": ["C2-W-098", "C2-B-169"]
+      "positions": ["table_cell_outside_backtick_run"],
+      "clauses": ["C2-W-098", "C2-B-169", "C2-B-224"]
     },
     {
       "name": "continuation_plus",
