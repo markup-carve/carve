@@ -660,7 +660,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-179** A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on) and then migrated as above.
 
-**C2-A-180** The migration is lossy for spelling by design and reports nothing for it. It reports a loss when a tree holds something that 0.2 cannot represent at all.
+**C2-A-180** The migration is lossy for spelling by design and reports nothing for it.
 
 ## Further clauses
 

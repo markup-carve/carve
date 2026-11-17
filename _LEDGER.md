@@ -55,3 +55,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `list-marker-without-blank-line`, `table-shaped-paragraph`, `C2-B-022`, `C2-B-168`.
 
 Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/interrupters.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/schemas/interrupters.schema.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Clauses and cases report each line; add upgrade rows U-372 and U-373.
+
+## R9 migration loss promise
+
+Search: `C2-A-178`, `C2-A-180`, `migration-loss`, `migrateTree`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/schemas/upgrade-map.schema.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/tooling.md`. Draft fields are represented, derived, or spelling-only; no separate loss code is needed.
