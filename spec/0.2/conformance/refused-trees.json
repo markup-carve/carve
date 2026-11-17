@@ -3827,6 +3827,47 @@
      }
     ]
    }
+  },
+  {
+   "id": "default-empty-resource-ids",
+   "clauses": [
+    "C2-A-058",
+    "C2-X-037"
+   ],
+   "reason": "an empty resourceIds list on an extension node, a second encoding of absent resource ids",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.n",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.n",
+      "version": "1",
+      "resourceIds": [],
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }

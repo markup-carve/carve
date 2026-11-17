@@ -256,7 +256,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-057** A marker that carries fields of both kinds is invalid.
 
-**C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it. A default has one encoding everywhere: a reader refuses `mode: "normal"` on a citation (C2-A-120), an autolink `text` equal to its `href` (C2-A-216), and an empty `attrs`, `classes` or `keyValues`, and an empty `props`, `slots` or `payload` of an extension node (C2-X-037). An ordered marker always carries `style` and `delimiter` (C2-A-056).
+**C2-A-058** `marker.start` is omitted when it is 1, and a reader refuses `start: 1` in a supplied tree instead of normalizing it. A default has one encoding everywhere: a reader refuses `mode: "normal"` on a citation (C2-A-120), an autolink `text` equal to its `href` (C2-A-216), and an empty `attrs`, `classes` or `keyValues`, and an empty `props`, `slots`, `payload` or `resourceIds` of an extension node (C2-X-037). An ordered marker always carries `style` and `delimiter` (C2-A-056).
 
 **C2-A-059** `list.spacing` is `tight` or `loose` and is set when the list closes (C2-B-062). No list attribute overrides it.
 

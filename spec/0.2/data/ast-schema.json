@@ -1290,6 +1290,7 @@
         },
         "resourceIds": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "string"
           }
@@ -9468,6 +9469,7 @@
         },
         "resourceIds": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "string"
           }
