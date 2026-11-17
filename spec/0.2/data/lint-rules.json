@@ -541,11 +541,11 @@
       "status": "kept",
       "default": "off",
       "messages": [
-        "Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column is a separate block and the heading id changes."
+        "Djot folds the line(s) below a heading INTO it (a plain line, or one with the same number of `#`); Carve takes only lines indented past the heading marker into the heading (C2-B-154), so a line at the marker column starts a separate block."
       ],
-      "message_origin": "engine_0_1",
+      "message_origin": "data_file",
       "change": "opt-in Djot check",
-      "reports": "a heading line of one to six `#` and a space, directly followed by one or more lines that Djot folds into it: a line with the same number of `#`, or a line that is not blank and opens no block (not a thematic break, `#`, `>`, `|`, a `-`, `*` or `+` bullet, an ordered or parenthesized marker, `:` or `::`, a backtick or tilde fence, `^ `, `%%%`, `{` or a definition `[label]:`); once per heading, the range covering the heading and every folded line (C2-B-152, C2-B-154)",
+      "reports": "a heading line of one to six `#` and a space, directly followed by one or more lines at or left of the heading marker column that Djot folds into it: a line with the same number of `#`, or a line that is not blank and opens no block (not a thematic break, `#`, `>`, `|`, a `-`, `*` or `+` bullet, an ordered or parenthesized marker, `:` or `::`, a backtick or tilde fence, `^ `, `%%%`, `{` or a definition `[label]:`); once per heading, the range covering the heading and every folded line (C2-B-152, C2-B-154)",
       "clauses": ["C2-B-152", "C2-B-154"]
     },
     {

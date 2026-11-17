@@ -52851,6 +52851,27 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1064",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "an indented line continues a Carve heading",
+   "kind": "lint",
+   "input": "# H\n  continued\n",
+   "options": {
+    "rules": {
+     "djot-heading-continuation": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "djot-heading-continuation"
+    ]
+   },
+   "from": []
   }
  ]
 }

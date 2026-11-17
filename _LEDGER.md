@@ -187,3 +187,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec
 Search: `deprecated-continuation-marker`, `C2-B-059`, `CC-715`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. CC-715 covers the standalone plus input.
+
+## Catalog audit: djot-heading-continuation
+
+Search: `djot-heading-continuation`, `C2-B-154`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. An indented line continues a Carve heading and must be excluded; message no longer promises a changed id.
