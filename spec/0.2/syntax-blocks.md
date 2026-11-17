@@ -3731,7 +3731,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-133** The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.
 
-**Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item, and the clause on comment-only lines (C2-B-137) does not apply there.
+**Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item.
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
