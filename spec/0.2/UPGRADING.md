@@ -414,6 +414,14 @@ These rows and sentences said something false about 0.1 or about their own examp
 - `syntax-blocks.md` example 116 was labeled as 0.1 output, but 0.1 writes no line feed after `code` there; it is unverified now, and U-370 records the difference. `html.md` example 70 is the same case for U-360.
 - Guide sentences: the map holds no 0.1 HTML, only `from`, `to` and `meaning02` (the introduction said "rendered HTML"); 0.1 kept a ten-digit `@shift` exact and rounded only past 2^53; after a space and a tab before an abbreviation expansion both versions keep the tab, and only the case of two spaces differs; the comment line below a heading is shown with `# Title`, since 0.1 read `= Title` as text; the reference engine has an extension implementation, the `tab` and `tabs` family.
 
+### Rulings of 17 November 2026 on the open points of candidate 6
+
+A ruling of 17 November decides four open points of the restore round of candidate 6 toward 0.1. Against 0.1 each removes a difference; against freeze candidate 7 and early 0.2 engines it changes what a document gives. The rows carry no `U-` id; the clause decides, and the rows the ruling withdraws are named in the line.
+
+| What you wrote | Freeze candidate 7 and early 0.2 engines | 0.2 now, as in 0.1 | Clause |
+| --- | --- | --- | --- |
+| An implicit heading reference typed with a decomposed character, `[Cafe` and U+0301 `][]`, below `# Café` | Text: the folded plain texts were compared without normalization. | `<a href="#Café">`: the key and the heading text are compared under NFC, as a cross-reference is. | C2-I-084 |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
