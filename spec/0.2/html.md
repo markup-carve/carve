@@ -961,8 +961,6 @@ Example 14 (generated)
 
 :::
 
-**C2-H-135** The label word of a caption selects its number sequence, as in 0.1 (C2-B-208, C2-H-149).
-
 **C2-H-149** Each sequence key (C2-B-208) has its own count, from 1, in the order of C2-H-170. Each caption with a mark takes the next number of the sequence of its key. The label words are not a closed list: `Figure`, `Table`, `Listing` and `Equation` have no special meaning, the block under the caption does not select the sequence, and `Fig.`, `figure` and `Figure` count apart. The number is written in place of the mark as a decimal number, and the rest of the caption is written as it stands. A caption without a mark is written as it stands and takes no number.
 
 **C2-H-150** The captions and numbered equations of footnote bodies take their numbers after those of the document body, in the order of the footnote numbers. One in an unused footnote definition takes none.
@@ -2396,7 +2394,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 0 |
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 9 | 0 | 1 | 0 |
-| Captions and figures | 12 | 0 | 4 | 1 |
+| Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 9 | 0 | 1 | 2 |
@@ -2409,6 +2407,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **6** | **33** | **36** |
+| **Total** | **197** | **6** | **33** | **36** |
 
-The document has 198 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 197 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
