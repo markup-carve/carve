@@ -541,7 +541,7 @@
       "message_origin": "data_file",
       "change": "opt-in Djot check; new message text",
       "reports": "each formed braced highlight node from `{=x=}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or second unescaped `{=`; once per formed node; a bare `=x=` is not reported (C2-I-055, C2-I-059, C2-I-060)",
-      "clauses": ["C2-I-055", "C2-I-046"]
+      "clauses": ["C2-I-055", "C2-I-046", "C2-I-059", "C2-I-060"]
     },
     {
       "id": "djot-intraword-underscore",
@@ -591,7 +591,7 @@
       "message_origin": "engine_0_1",
       "change": "opt-in Djot check",
       "reports": "each formed braced strike node from `{~x~}` that survives delimiter pairing, whose opener is not escaped and whose non-empty content holds no blank line or further unescaped `{~`; once per formed node (C2-I-055, C2-I-059, C2-I-060, C2-I-062)",
-      "clauses": ["C2-I-055", "C2-I-062"]
+      "clauses": ["C2-I-055", "C2-I-062", "C2-I-059", "C2-I-060"]
     },
     {
       "id": "djot-superscript-caret",
@@ -996,7 +996,7 @@
       "channel": "render-loss",
       "status": "new",
       "reports": "a reserved name that `html.md` ignores (C2-H-185)",
-      "clauses": ["C2-M-009"]
+      "clauses": ["C2-M-009", "C2-H-185"]
     },
     {
       "id": "import-destination-denied",
@@ -1466,7 +1466,7 @@
       "status": "obsolete",
       "replaced_by": "uneven-list-indent",
       "why": "lists with markers at different columns are one list (C2-B-054)",
-      "clauses": ["C2-B-054"]
+      "clauses": ["C2-B-054", "C2-B-030"]
     },
     {
       "id": "ordered-marker-right-aligned",
@@ -1513,7 +1513,7 @@
       "messages": [{"when": "the construct type is excluded by the active profile", "text": "Degraded a construct the profile \"${profile}\" does not allow: ${construct}."}, {"when": "the construct exceeds `max_nesting` under the active profile", "text": "Degraded ${construct} because it exceeds the nesting limit of profile \"${profile}\"; move it to a shallower level or use a profile that permits the depth."}],
       "message_origin": "data_file",
       "reports": "a construct outside the active `profile` by its type or because it exceeds `max_nesting`, rendered in its degraded form; once per degraded construct, with children of a degraded construct not reported again (C2-H-129, C2-H-163, C2-H-165, C2-H-166)",
-      "clauses": ["C2-H-129"]
+      "clauses": ["C2-H-129", "C2-H-163", "C2-H-165", "C2-H-166"]
     },
     {
       "id": "quote-fence-ends-the-quote-above",
@@ -1665,7 +1665,7 @@
       ],
       "message_origin": "engine_0_1",
       "reports": "a table column for which a header cell in the head carries an alignment mark of one axis while the table attribute `aligns` (horizontal axis) or `valigns` (vertical axis) has a valid whole list under C2-B-211 with an entry at that column; an invalid list reports only `table-attribute-invalid`; once per column, the range is the key name, `aligns` where both axes overlap (C2-B-211, C2-B-213, C2-B-182)",
-      "clauses": ["C2-B-213", "C2-B-182"]
+      "clauses": ["C2-B-213", "C2-B-182", "C2-B-211"]
     },
     {
       "id": "table-marker-run-padding",

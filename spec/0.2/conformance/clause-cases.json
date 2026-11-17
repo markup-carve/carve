@@ -54172,6 +54172,31 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1127",
+  "clauses": [
+   "C2-I-055",
+   "C2-I-059",
+   "C2-I-060"
+  ],
+  "why": "C2-I-055: A braced opener is `{` and a mark, and a braced closer is the mark and `}`.",
+  "summary": "formed highlight brace reports in opt-in Djot lint",
+  "kind": "lint",
+  "input": "a {=b=} c\n",
+  "options": {
+   "rules": {
+    "djot-highlight-braces": "on"
+   }
+  },
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "djot-highlight-braces"
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
