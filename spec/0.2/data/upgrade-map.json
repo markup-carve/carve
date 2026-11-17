@@ -2670,6 +2670,16 @@
       "meaning02": "<figure id=\"t\">\n  <img src=\"u\" alt=\"a\">\n  <figcaption><span class=\"tag\"><strong>#y</strong></span>1</figcaption>\n</figure>\n<p><a href=\"#t\">#y 1</a></p> A resolved cross-reference to a numbered caption writes the label word and the number as text (C2-H-096), so a tag that is the label word is plain `#y`. 0.1 wrote the label's inline markup into the reference, `<a href=\"#t\"><span class=\"tag\"><strong>#y</strong></span> 1</a>`. An explicit link with the label and the number keeps the 0.1 HTML, but its number no longer follows the figure.",
       "toolEntry": "U-367",
       "silent": true
+    },
+    {
+      "id": "U-368",
+      "kind": "rewrite",
+      "group": "kept and recorded",
+      "from": "```js `\n```\n",
+      "to": "```js\n```\n",
+      "meaning02": "<p>```js `</p>\n<pre><code></code></pre> A backtick run whose info string holds a backtick is not an opener (C2-B-118), so the line is paragraph text and the next run opens a code block that runs to the end. 0.1 opened a code block with the language `js`, `<pre><code class=\"language-js\"></code></pre>`, also with body lines. Removing the backtick from the info string keeps the 0.1 HTML.",
+      "toolEntry": "U-368",
+      "silent": true
     }
   ],
   "tree": [
