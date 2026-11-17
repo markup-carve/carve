@@ -52623,7 +52623,7 @@
     "C2-T-009"
    ],
    "why": "C2-T-015: After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply. C2-T-009: A flag given twice takes its last value, except `--allow-loss`, which collects every value.",
-   "summary": "repeated loss report flags take the last path",
+   "summary": "repeated loss report flags write only the last distinct path",
    "kind": "cli",
    "options": {},
    "expected": {
@@ -52641,7 +52641,8 @@
         }
        ]
       }
-     }
+     },
+     "first.json": null
     },
     "stderrDiagnostics": []
    },
@@ -52653,9 +52654,9 @@
    "args": [
     "render",
     "--report-losses",
-    "r.json",
+    "first.json",
     "--report-losses",
-    "./r.json",
+    "r.json",
     "a.crv"
    ],
    "from": []
@@ -53734,6 +53735,50 @@
       "code": "fence-title-syntax"
      }
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1105",
+   "clauses": [
+    "C2-T-009",
+    "C2-T-015"
+   ],
+   "why": "C2-T-009: A flag given twice takes its last value, except `--allow-loss`, which collects every value. C2-T-015: After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply.",
+   "summary": "repeated loss report flags with two spellings of one path write one report",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "--report-losses",
+    "r.json",
+    "--report-losses",
+    "./r.json",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "<p>a</p>\n",
+    "stderrCategory": null,
+    "stderrDiagnostics": [],
+    "filesAfter": {
+     "r.json": {
+      "json": {
+       "files": [
+        {
+         "file": "a.crv",
+         "diagnostics": [],
+         "suppressed": 0
+        }
+       ]
+      }
+     }
+    }
    },
    "from": []
   }
