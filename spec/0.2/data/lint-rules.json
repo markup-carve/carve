@@ -695,8 +695,8 @@
       "status": "new",
       "messages": ["Rendered the fallback of the unknown extension \"${name}\""],
       "message_origin": "data_file",
-      "reports": "an unknown optional extension that rendered through its fallback (C2-A-127, C2-H-076)",
-      "clauses": ["C2-A-127", "C2-H-076"]
+      "reports": "an unknown optional extension that rendered through its fallback (C2-X-004, C2-H-076)",
+      "clauses": ["C2-H-076", "C2-X-004"]
     },
     {
       "id": "extension-renderer-failed",

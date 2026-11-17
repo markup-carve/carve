@@ -496,8 +496,6 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-126** A qualified extension fallback is core content of the node's own role, block or inline. It contains no extension node and validates as core content.
 
-**C2-A-127** An unknown optional extension renders through its fallback and is reported as a loss. An unknown required extension is refused.
-
 **C2-A-128** Reading a tree never runs anything in `payload`, `props` or `data`. An application enables active content only through a separate capability outside this contract.
 
 ```json
@@ -781,11 +779,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 170 | 2 |
+| Existing AST contract | 169 | 2 |
 | Further clauses and standard data namespaces | 36 | 1 |
-| **Total** | **206** | **3** |
+| **Total** | **205** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-216; C2-A-076, C2-A-083, C2-A-085, C2-A-090, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166 and C2-A-169 are deleted.
 
 ## Schema
 
