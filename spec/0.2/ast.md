@@ -432,7 +432,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-101** A `mention` carries `kind`, `target` and an optional visible `label`. Parsing `@name` gives the `kind` `user`, the name as `target` and no `label`; another kind and a label come from an extension or a supplied tree. A `tag` and a `symbol` carry `name`.
 
-**C2-A-102** A `math` node carries `value` and `display`. A display equation may carry result `number` only together with `numberPrefix`, and a reader refuses either field alone.
+**C2-A-102** A `math` node carries `value` and `display`. A display equation may carry `numberPrefix`, and result `number` only together with it: a reader refuses `number` without `numberPrefix`, and either field on inline math.
 
 ### References
 

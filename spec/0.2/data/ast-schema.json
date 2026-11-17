@@ -11920,9 +11920,6 @@
       "dependentRequired": {
         "number": [
           "numberPrefix"
-        ],
-        "numberPrefix": [
-          "number"
         ]
       },
       "allOf": [
@@ -11946,19 +11943,26 @@
         },
         {
           "if": {
-            "required": [
-              "numberPrefix"
-            ],
             "properties": {
-              "numberPrefix": {}
+              "display": {
+                "const": false
+              }
             }
           },
           "then": {
-            "required": [
-              "number"
-            ],
-            "properties": {
-              "number": {}
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "numberPrefix"
+                  ]
+                },
+                {
+                  "required": [
+                    "number"
+                  ]
+                }
+              ]
             }
           }
         }

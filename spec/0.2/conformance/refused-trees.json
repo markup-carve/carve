@@ -3044,6 +3044,57 @@
    }
   },
   {
+   "id": "math-number-without-prefix",
+   "clauses": [
+    "C2-A-102"
+   ],
+   "reason": "a result number on a display equation without numberPrefix",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "role": "math",
+      "children": [
+       {
+        "type": "math",
+        "display": true,
+        "value": "x",
+        "number": 1
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "id": "math-prefix-inline",
+   "clauses": [
+    "C2-A-102"
+   ],
+   "reason": "numberPrefix on inline math",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "math",
+        "display": false,
+        "value": "x",
+        "numberPrefix": "Eq"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
    "id": "head-rows-field",
    "clauses": [
     "C2-A-088"
