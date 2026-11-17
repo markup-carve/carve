@@ -97,3 +97,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.
 Search: `unattached-caption`, `C2-B-147`, `C2-N-073`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/conformance/refused-trees.json`, `spec/0.2/data/ast-schema.json`, `spec/0.2/data/close-facts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/trees/nodes.json`, `spec/0.2/trees/refused.json`, `spec/0.2/writer.md`. A valid code include is a caption target; new near miss uses the supplied input.
+
+## CR9-06
+
+Search: `duplicate-reference-url`, `C2-B-081`, `U-210`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. U-210 records the 0.1 container-definition difference; count parsed definitions only.

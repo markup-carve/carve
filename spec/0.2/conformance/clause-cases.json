@@ -52732,6 +52732,27 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1053",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "definition-shaped quote text is not a duplicate URL",
+   "kind": "lint",
+   "input": "[a]: /u\n> [b]: /u\n",
+   "options": {
+    "rules": {
+     "duplicate-reference-url": "on"
+    }
+   },
+   "expected": {
+    "notReported": [
+     "duplicate-reference-url"
+    ]
+   },
+   "from": []
   }
  ]
 }
