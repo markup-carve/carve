@@ -250,7 +250,45 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **C2-W-035** A heading is written with `=`, one per level, and one space. A `#` in the source is rewritten. A level above six, which only a supplied tree holds (C2-A-071), is written with six markers, and the writer reports `field-unspellable` for `level`. A line break inside a heading is kept, and each continuation line is written at the heading's content column, that is the marker width plus one (C2-B-154).
 
+A `#` heading is rewritten with `=`, one per level (C2-W-035).
+
+Example 26 (unverified)
+
+Input:
+
+```carve
+## A
+```
+
+Written:
+
+```carve
+== A
+```
+
+
 **C2-W-036** A thematic break is written as `***`.
+
+A thematic break of five stars is written as three (C2-W-036).
+
+Example 27 (unverified)
+
+Input:
+
+```carve
+a
+
+*****
+```
+
+Written:
+
+```carve
+a
+
+***
+```
+
 
 **C2-W-037** A code block is written with a backtick fence of the length C2-W-038 states. An info string that holds a backtick has no spelling (C2-B-118): a parse never gives one, and for a supplied tree the writer leaves it out and reports `field-unspellable`.
 
@@ -278,41 +316,388 @@ a```b
 
 **C2-W-039** A div is written with the shortest colon run of at least three that is longer than the run of every div inside it. The name of an admonition or a directive is its kind. The name of a plain div is its first class, when that class has the shape of a div name and is not one of the names that C2-B-127 gives another meaning; otherwise the div has no name, and all of its classes stand on the attribute line. The opener of a div, an admonition or a directive is the run, then one space and the name when there is one, then one space and the quoted title when there is one, then one space and the label in brackets when there is one. A raw block is written as a backtick fence whose run is glued to `=` and the format name, with nothing after it.
 
+The div holds no div, so its run is the shortest, three colons (C2-W-039).
+
+Example 28 (unverified)
+
+Input:
+
+```carve
+:::: note
+a
+::::
+```
+
+Written:
+
+```carve
+::: note
+a
+:::
+```
+
+
 **C2-W-120** A class has the shape of a div name when it holds only ASCII letters, digits, `_` and `-` (C2-I-030) and is none of the names of `data/div-names.json`. Any other first class stands on the attribute line, which gives the same tree (C2-B-128).
+
+The class `a.b` has no shape of a div name, so it stays on the attribute line and the div has no name (C2-W-120).
+
+Example 29 (unverified)
+
+Input:
+
+```carve
+{class="a.b"}
+:::
+c
+:::
+```
+
+Written:
+
+```carve
+{class="a.b"}
+:::
+c
+:::
+```
+
 
 **C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
+The opener puts one space before the title and one before the label (C2-W-040).
+
+Example 30 (unverified)
+
+Input:
+
+````carve
+```php  "f"  [L]
+x
+```
+````
+
+Written:
+
+````carve
+```php "f" [L]
+x
+```
+````
+
+
 **C2-W-041** The title of a code block is written in the info string, in double quotes.
+
+The title stands in the info string in double quotes, behind the language glued to the run (C2-W-041).
+
+Example 31 (unverified)
+
+Input:
+
+````carve
+``` php "x"
+y
+```
+````
+
+Written:
+
+````carve
+```php "x"
+y
+```
+````
+
 
 **C2-W-044** A decimal list is written with the numbering form the sidecar records (C2-L-016): the bare dot, or sequential digits from the start value. In the bare form a start value other than 1 stands in a `start` attribute above the list (C2-L-030); in the numbered form the first marker carries it. A start value of more than nine digits cannot be a marker (C2-B-036) and cannot be a `start` attribute (C2-B-219), and a reader refuses it (C2-A-056). A list of repeated `1.` markers is renumbered to sequential digits. A later marker whose number would have more than nine digits is written as `1`: only the first marker carries a value (C2-B-041). With no sidecar fact the bare dot is written (C2-L-030). The bare dot is written only for a list whose delimiter is the period: a decimal list with `)` is written with sequential digits, because a bare `)` is not a marker (C2-B-036, C2-L-031). A bare dot is not written directly behind a bare-dot marker on the marker line, where it would read as text (C2-B-043): there the inner list is written with digits, as in `. 1. a`.
 
+Repeated `1.` markers are renumbered to sequential digits (C2-W-044).
+
+Example 32 (unverified)
+
+Input:
+
+```carve
+1. a
+1. b
+```
+
+Written:
+
+```carve
+1. a
+2. b
+```
+
+
 **C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written could read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
+
+An alphabetic list is written with its letters in sequence (C2-W-045).
+
+Example 33 (unverified)
+
+Input:
+
+```carve
+a. x
+a. y
+```
+
+Written:
+
+```carve
+a. x
+b. y
+```
+
 
 **C2-W-046** A task item is written with the character in `task.mark` (C2-A-060). The tree holds `x` for an authored `X`, so `[X]` comes back as `[x]`.
 
+The tree holds `x` for `X`, so the task mark comes back as `[x]` (C2-W-046).
+
+Example 34 (unverified)
+
+Input:
+
+```carve
+- [X] a
+```
+
+Written:
+
+```carve
+- [x] a
+```
+
+
 **C2-W-047** The attributes of a block are written as one brace block on one line directly above the block, with no blank line between. Glued blocks and consecutive attribute lines of the source are merged into it (C2-B-093, C2-B-102). This is part of requirement W7.
+
+Two attribute lines are merged into one brace block above the paragraph (C2-W-047).
+
+Example 35 (unverified)
+
+Input:
+
+```carve
+{.a}
+{.b}
+para
+```
+
+Written:
+
+```carve
+{.a .b}
+para
+```
+
 
 **C2-W-048** Inside a brace block the parts are written in the order id, classes, language, keys, classes and keys each in tree order, with one space between two parts and none inside the braces. The language is written as `:tag` (C2-I-029, C2-A-037). A class that the `.name` form cannot hold, such as `a.b`, is written as a quoted `class` key at its place among the classes (C2-I-042).
 
+The parts stand in the order id, classes, keys (C2-W-048).
+
+Example 36 (unverified)
+
+Input:
+
+```carve
+{k=v #i .c}
+para
+```
+
+Written:
+
+```carve
+{#i .c k=v}
+para
+```
+
+
 **C2-W-049** A key whose value is the empty string is written as the bare key: `{kbd}`, not `{kbd=""}`. A key that starts with `_` is written with an empty quoted value, `{_k=""}`, because a bare key does not start with `_` (C2-I-031).
+
+A key with the empty value is written bare (C2-W-049).
+
+Example 37 (unverified)
+
+Input:
+
+```carve
+[a]{kbd=""}
+```
+
+Written:
+
+```carve
+[a]{kbd}
+```
+
 
 **C2-W-050** A value is written unquoted when it has the shape of an unquoted value (C2-I-032), and in double quotes otherwise.
 
+A value with the shape of an unquoted value is written without quotes (C2-W-050).
+
+Example 38 (unverified)
+
+Input:
+
+```carve
+[a]{k="v"}
+```
+
+Written:
+
+```carve
+[a]{k=v}
+```
+
+
 **C2-W-051** The attributes of a list item and of a table cell are written glued to the marker (C2-B-101).
+
+The attributes of the item stay glued to its marker (C2-W-051).
+
+Example 39 (unverified)
+
+Input:
+
+```carve
+-{.c} a
+```
+
+Written:
+
+```carve
+-{.c} a
+```
+
 
 **C2-W-052** Frontmatter whose format is `yaml` is written with the bare opener `---`, also when the source named the format. Every other format, `YAML` included, keeps its format name glued to the opener: `---toml`, `---json` (C2-B-164). The form with a space before the name, `--- toml`, is read too (C2-B-164) and is written glued. The body is written as it is.
 
+YAML frontmatter is written with the bare opener (C2-W-052).
+
+Example 40 (unverified)
+
+Input:
+
+```carve
+---yaml
+a: 1
+---
+```
+
+Written:
+
+```carve
+---
+a: 1
+---
+```
+
+
 **C2-W-053** A caption is written directly below its block, with no blank line (C2-B-146), as `^`, one space and its content. This is part of requirement W7.
 
+A caption is written as `^`, one space and its content (C2-W-053).
+
+Example 41 (unverified)
+
+Input:
+
+```carve
+![a](u)
+^   cap
+```
+
+Written:
+
+```carve
+![a](u)
+^ cap
+```
+
+
 **C2-W-055** A definition is written at column 0 at its place among the children of the document (C2-A-052). A footnote definition is `[^key]:`, one space and its first block on the marker line, with its later blocks at the content column (C2-W-024, C2-W-027). An abbreviation definition is `*[key]:`, one space and the expansion, whose leading spaces and tabs are written after that space. An expansion of a supplied tree that holds a line break has no spelling: its nearest form writes one space in place of each line break, so the definition stays one line, and the writer reports `field-unspellable` (C2-W-117). The writer does not move definitions to the end and does not sort them, because their order is part of the tree (C2-A-080).
+
+A footnote definition has one space between its marker and its first block (C2-W-055).
+
+Example 42 (unverified)
+
+Input:
+
+```carve
+x[^a]
+
+[^a]:   note
+```
+
+Written:
+
+```carve
+x[^a]
+
+[^a]: note
+```
+
 
 A supplied `abbreviation_def` with the key `A` and the expansion `A`, a line feed and `B` is written `*[A]: A B`, and `field-unspellable` reports the expansion. Under `roundtrip` its template holds the same line: `<template data-carve-abbreviations>*[A]: A B</template>` (C2-H-181).
 
 **C2-W-056** A link definition is written as `[label]:`, one space, the destination and, when there is one, one space and the title in double quotes. A parsed tree has no link definition with an empty destination, because such a line is text (C2-B-083). For a supplied one the writer reports `field-unspellable`.
 
+A link definition has one space before the destination and its title in double quotes (C2-W-056).
+
+Example 43 (unverified)
+
+Input:
+
+```carve
+[r]:   /u 't'
+
+[x][r]
+```
+
+Written:
+
+```carve
+[r]: /u "t"
+
+[x][r]
+```
+
+
 **C2-W-057** There is no sentinel for an empty body. A parsed item, description or term is never empty: the empty spelling is a marker plus a comment (C2-B-145), and the comment is a node. A footnote body is never empty either, because its marker needs content on its line (C2-B-082). An empty body in a supplied tree has no spelling, and the writer reports `structure-unspellable` for it.
 
+The empty item is a marker and a comment, and the writer keeps the comment (C2-W-057).
+
+Example 44 (unverified)
+
+Input:
+
+```carve
+-  %%
+```
+
+Written:
+
+```carve
+- %%
+```
+
+
 **C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117). The writer never writes the `children` or the `file` of an expanded include, and reports no loss for them (C2-N-080).
+
+The options are written in rank order, `lines` before `code` (C2-W-058).
+
+Example 45 (unverified)
+
+Input:
+
+```carve
+{{ a.crv @code @lines:1-2 }}
+```
+
+Written:
+
+```carve
+{{ a.crv @lines:1-2 @code }}
+```
+
 
 An include is written as its directive, with no children and no `file` (C2-N-080).
 
@@ -1147,13 +1532,13 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The writer and its two gates | 13 | 2 | 0 | 2 |
 | What the writer cannot spell | 10 | 0 | 0 | 2 |
 | Layout | 22 | 2 | 0 | 3 |
-| Canonical forms: blocks | 24 | 0 | 0 | 2 |
+| Canonical forms: blocks | 24 | 0 | 0 | 22 |
 | Canonical forms: tables | 12 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 2 |
-| **Total** | **128** | **5** | **6** | **19** |
+| **Total** | **128** | **5** | **6** | **39** |
 
-The document has 128 clauses, 5 of them marked with the word "Exception", and 25 examples, 6 generated and 19 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 128 clauses, 5 of them marked with the word "Exception", and 45 examples, 6 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
