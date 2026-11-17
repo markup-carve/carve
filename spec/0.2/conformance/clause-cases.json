@@ -6879,7 +6879,7 @@
     "C2-H-007",
     "C2-H-062"
    ],
-   "why": "C2-H-007: A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. C2-H-062: An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption.",
+   "why": "C2-H-007: A list item whose only visible block is one paragraph without a caption, bare or wrapped, is written on one line. C2-H-062: An image paragraph, a code block, a quote or a math block that carries a caption (C2-A-082) is written as `<figure>` around the block and then `<figcaption>` with the caption.",
    "summary": "captioned math paragraph alone in a list item renders its figure on its own lines",
    "input": "- $$`x`\n  ^ cap",
    "options": {},
@@ -8505,7 +8505,7 @@
    "clauses": [
     "C2-B-230"
    ],
-   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "why": "C2-B-230: Its value is a list of entries separated by commas, spaces around an entry ignored, one entry per body giving its data rows.",
    "summary": "body-rows in a quote makes two bodies; spaces around an entry are ignored",
    "input": "> {body-rows=\"1, 1\"}\n> | a |\n> | b |",
    "options": {},
@@ -8690,7 +8690,7 @@
     "C2-B-227",
     "C2-H-153"
    ],
-   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "why": "C2-B-230: The two header lists need `body-rows` and exactly one entry per body, and the header and data rows of the bodies must be exactly the rows between the head and the foot; where a value breaks one of these rules, none of the three keys has an effect.",
    "summary": "body counts that miss rows have no effect and stay in attrs",
    "input": "{body-rows=1}\n| a |\n| b |\n| c |",
    "options": {},
@@ -8789,7 +8789,7 @@
    "clauses": [
     "C2-B-230"
    ],
-   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "why": "C2-B-230: The two header lists need `body-rows` and exactly one entry per body, and the header and data rows of the bodies must be exactly the rows between the head and the foot; where a value breaks one of these rules, none of the three keys has an effect.",
    "summary": "a header list with fewer entries than bodies makes all three keys void",
    "input": "{body-rows=1,1 body-header-cols=1}\n| a | b |\n| c | d |",
    "options": {},
@@ -8905,7 +8905,7 @@
    "clauses": [
     "C2-B-230"
    ],
-   "why": "C2-B-230: The three keys take effect together or not at all: the two header lists need `body-rows` and exactly one entry per body, an empty `body-header-rows` entry is invalid, and the header and data rows of the bodies must be exactly the rows between the head and the foot. Otherwise none of the three has an effect.",
+   "why": "C2-B-230: The two header lists need `body-rows` and exactly one entry per body, and the header and data rows of the bodies must be exactly the rows between the head and the foot; where a value breaks one of these rules, none of the three keys has an effect.",
    "summary": "a body header list without body-rows has no effect",
    "input": "{body-header-rows=1}\n| a |\n| b |",
    "options": {},
@@ -8985,7 +8985,7 @@
     "C2-B-230",
     "C2-B-187"
    ],
-   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "why": "C2-B-230: `0` is an empty body, and an empty value gives no body.",
    "summary": "an empty body-rows value gives a head and a foot and no body",
    "input": "{body-rows=\"\" footer-rows=1}\n|= H |\n| F |",
    "options": {},
@@ -9062,7 +9062,7 @@
     "C2-B-230",
     "C2-H-055"
    ],
-   "why": "C2-B-230: Its value is a list of counts (C2-B-210) separated by commas, spaces around an entry ignored, one entry per body giving its data rows: `0` is an empty body, and an empty value gives no body.",
+   "why": "C2-B-230: `0` is an empty body, and an empty value gives no body.",
    "summary": "a zero entry is an empty body, which HTML does not write",
    "input": "{body-rows=0,1}\n| a |",
    "options": {},
@@ -10553,7 +10553,7 @@
     "C2-B-109",
     "C2-B-111"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer at column 0 closes the comment of an item, and the next line is a paragraph",
    "input": "- %%%\n%%%\nx",
    "options": {},
@@ -10598,7 +10598,7 @@
    "clauses": [
     "C2-B-109"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer without the quote mark closes the comment and keeps the quote open",
    "input": "> %%%\n%%%\n> x",
    "options": {},
@@ -10633,7 +10633,7 @@
    "clauses": [
     "C2-B-109"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer at column 0 closes the comment of a nested item",
    "input": "- a\n  - %%%\n%%%\nx",
    "options": {},
@@ -10702,7 +10702,7 @@
    "clauses": [
     "C2-B-109"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer at column 0 closes the comment of a description",
    "input": ":: t\n: %%%\n%%%\nx",
    "options": {},
@@ -10752,7 +10752,7 @@
     "C2-B-109",
     "C2-B-087"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer at column 0 closes the comment of a footnote body",
    "input": "[^n]: %%%\n%%%\nx\n\ny[^n]",
    "options": {},
@@ -10804,7 +10804,7 @@
    "clauses": [
     "C2-B-109"
    ],
-   "why": "C2-B-109: A comment block closes at such a run on any line, whatever its indent and its quote marks, and that line closes no container, as in 0.1.",
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
    "summary": "a closer below the quote's column closes the comment, and a later unmarked line leaves the quote",
    "input": "> %%%\n> secret\n  %%%\nafter",
    "options": {},
@@ -11085,7 +11085,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "a bracket pair inside the comment does not close the note",
    "input": "^[a %% [x] c] d",
    "options": {},
@@ -11125,7 +11125,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "a bracket inside a code span in the comment does not close the note",
    "input": "^[a %% `]` c] d",
    "options": {},
@@ -11165,7 +11165,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "the comment ends before the note bracket inside a quote",
    "input": "> ^[a %% c] d",
    "options": {},
@@ -11211,7 +11211,7 @@
     "C2-I-024",
     "C2-B-169"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "the comment ends before the note bracket inside a table cell",
    "input": "| ^[a %% c] d | e |",
    "options": {},
@@ -11295,7 +11295,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "the comment ends before the note bracket in a heading, so the heading text goes on",
    "input": "# h ^[a %% c] d",
    "options": {},
@@ -11341,7 +11341,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "a delimiter opened before the comment inside the note stays text",
    "input": "^[*a %% c*] d",
    "options": {},
@@ -11381,7 +11381,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "a comment in an inner note ends before the inner note's bracket",
    "input": "^[a ^[b %% c] d] e",
    "options": {},
@@ -11435,7 +11435,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089).",
    "summary": "where the note closes on a later line the comment takes the rest of its line",
    "input": "^[a %% c\nd] e",
    "options": {},
@@ -12815,7 +12815,7 @@
    "clauses": [
     "C2-B-166"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "a single-quoted value with several pipes",
    "input": "| a | b |{a='x|y|z' .c}",
    "options": {},
@@ -12895,7 +12895,7 @@
    "clauses": [
     "C2-B-166"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "a value that is only a pipe on a header row",
    "input": "|= a |{a=\"|\"}",
    "options": {},
@@ -12954,7 +12954,7 @@
    "clauses": [
     "C2-B-166"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "a quoted pipe in a row attribute inside a quote",
    "input": "> | a |{a=\"x|y\"}",
    "options": {},
@@ -13018,7 +13018,7 @@
    "clauses": [
     "C2-B-166"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "a quoted pipe in a row attribute inside a list item",
    "input": "- | a |{a=\"x|y\"}",
    "options": {},
@@ -13093,7 +13093,7 @@
     "C2-B-166",
     "C2-B-167"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "a quoted pipe and a trailing line comment",
    "input": "| a |{a=\"x|y\"} %% c",
    "options": {},
@@ -13158,7 +13158,7 @@
     "C2-B-166",
     "C2-B-170"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "the next row continues the table",
    "input": "| a |{a=\"x|y\"}\n| b |",
    "options": {},
@@ -13238,7 +13238,7 @@
     "C2-B-166",
     "C2-I-032"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "an unquoted pipe is no value, so the line is text",
    "input": "| a |{a=x|y}",
    "options": {},
@@ -13264,7 +13264,7 @@
     "C2-B-166",
     "C2-B-168"
    ],
-   "why": "C2-B-166: The closing pipe is the last pipe of the line outside the quoted values (C2-I-033) of a row attribute behind it, as in 0.1",
+   "why": "C2-B-166: The closing pipe is the last pipe of the line, not counting a pipe inside a quoted value (C2-I-033) of a brace block that follows a pipe as a row attribute does (C2-B-167), as in 0.1, and also where a line comment stands before it:",
    "summary": "an unclosed quote is no row attribute, so its pipes split cells",
    "input": "| a |{a=\"x|y\" | b |",
    "options": {},
@@ -14149,7 +14149,7 @@
    "clauses": [
     "C2-H-160"
    ],
-   "why": "C2-H-160: A failed destination is written as the empty value, `href=\"\"` or `src=\"\"` (under `comment` a link has no `<a>`, C2-H-163), and is reported with `destination-denied` once per destination.",
+   "why": "C2-H-160: A failed destination is written as the empty value, `href=\"\"` or `src=\"\"` (under `comment` a link or an autolink has no `<a>`, C2-H-163), and is reported with `destination-denied` once per destination.",
    "summary": "under article a denied link keeps its inert anchor",
    "input": "[x](javascript:a)",
    "options": {

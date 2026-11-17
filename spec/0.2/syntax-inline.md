@@ -383,7 +383,7 @@ Carve has three comment forms. The block form `%%%` is defined in the block chap
 
 **C2-I-023** `%%` at the start of a line of the content, at the start of the content of an inline footnote, or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
 
-**C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line. Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089). As in 0.1.
+**C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line. Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is scanned as inline content only to find that bracket, and up to it the line stays comment (C2-I-089). As in 0.1.
 
 Example 128 (unverified)
 

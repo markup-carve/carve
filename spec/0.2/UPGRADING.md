@@ -620,7 +620,7 @@ U-156, U-173 and U-208 are withdrawn: `::: e[`, `c--------` and `-{+a+} text` gi
 
 U-266 and U-268 are withdrawn: `![5 \* 3](/i.png)` writes `alt="5 * 3"` and a cross-reference to a panel of a numbered figure group, `</#fig-x-a>`, writes `Figure 1a`, in 0.1 and 0.2 alike (C2-I-074, C2-H-095, C2-H-096).
 
-U-224 is withdrawn: `> %%%`, `> secret`, an unmarked `  %%%` and `after` give the same HTML in 0.1 and 0.2, an empty quote and the paragraph `after`, since the closer of a comment block closes it on any line (C2-B-109).
+U-224 is withdrawn: `> %%%`, `> secret`, an unmarked `  %%%` and `after` give the same HTML in 0.1 and 0.2, an empty quote and the paragraph `after`, since the closer of a comment block closes it on any line (C2-B-109). The note shape of U-224 agrees too: `[^1]: %%%`, `  hidden`, `%%%` and `  shown` keep `shown` in the note.
 
 U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark glued to a letter is cell text (C2-B-171).
 
