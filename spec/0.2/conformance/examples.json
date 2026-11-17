@@ -25901,6 +25901,171 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-271",
+   "document": "syntax-blocks.md",
+   "number": 271,
+   "section": "Tables",
+   "clauses": [
+    "C2-B-166",
+    "C2-B-167",
+    "C2-B-168",
+    "C2-B-169",
+    "C2-B-223",
+    "C2-B-224",
+    "C2-B-170",
+    "C2-B-171",
+    "C2-B-172",
+    "C2-B-173",
+    "C2-B-174",
+    "C2-B-175",
+    "C2-B-176",
+    "C2-B-177",
+    "C2-B-178",
+    "C2-B-179",
+    "C2-B-180",
+    "C2-B-181",
+    "C2-B-182",
+    "C2-B-183",
+    "C2-B-184",
+    "C2-B-185",
+    "C2-B-186",
+    "C2-B-187",
+    "C2-B-188",
+    "C2-B-209",
+    "C2-B-221",
+    "C2-B-210",
+    "C2-B-211",
+    "C2-B-212",
+    "C2-B-220",
+    "C2-B-213",
+    "C2-B-214",
+    "C2-B-227",
+    "C2-B-226"
+   ],
+   "kind": "render",
+   "input": "| a |\t \n+ b |  \n| c |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a b</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "table",
+       "columns": [
+        {
+         "type": "table_column"
+        }
+       ],
+       "children": [
+        {
+         "type": "table_body",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "a b"
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "c",
+                 "pos": {
+                  "startLine": 3,
+                  "endLine": 3,
+                  "startColumn": 3,
+                  "endColumn": 4,
+                  "startOffset": 18,
+                  "endOffset": 19
+                 }
+                }
+               ],
+               "pos": {
+                "startLine": 3,
+                "endLine": 3,
+                "startColumn": 3,
+                "endColumn": 4,
+                "startOffset": 18,
+                "endOffset": 19
+               }
+              }
+             ],
+             "pos": {
+              "startLine": 3,
+              "endLine": 3,
+              "startColumn": 2,
+              "endColumn": 5,
+              "startOffset": 17,
+              "endOffset": 20
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 1,
+            "endColumn": 6,
+            "startOffset": 16,
+            "endOffset": 21
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 21
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 21
+       }
+      }
+     ],
+     "srcByteLength": 21,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "verified",
+   "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-199",
    "document": "syntax-blocks.md",
    "number": 199,

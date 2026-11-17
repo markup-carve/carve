@@ -121,6 +121,7 @@
         { "part": "literal", "text": "+" },
         { "part": "content", "min": 0 },
         { "part": "literal", "text": "|" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "requires": ["below_table_row_or_continuation_row"],
@@ -430,6 +431,7 @@
           ]
         },
         { "part": "optional", "sequence": [{ "part": "ref", "ref": "line_comment" }] },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-166", "C2-B-167", "C2-B-168", "C2-B-170"]

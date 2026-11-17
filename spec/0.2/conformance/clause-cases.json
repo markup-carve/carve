@@ -6523,7 +6523,7 @@
     "C2-B-133",
     "C2-A-086"
    ],
-   "why": "C2-B-166: A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. C2-B-133: The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.",
+   "why": "C2-B-166: A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute, a line comment and trailing spaces and tabs may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. C2-B-133: The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.",
    "summary": "percent run after row pipe is a trailing line comment",
    "input": "|= A |= B |\n| 1 | %%%\nhidden\n%%%\nafter",
    "options": {},

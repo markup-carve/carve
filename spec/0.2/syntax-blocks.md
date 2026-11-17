@@ -5209,7 +5209,7 @@ title: x
 
 ## Tables
 
-**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute and a line comment may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The closing pipe is the last pipe of the line, also where a line comment stands before it: `| a | b | %% note | x` does not end with a pipe and is text (C2-B-168). The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
+**C2-B-166** A table row is a line that starts with a pipe after the prefixes and ends with a pipe, after which only a row attribute, a line comment and trailing spaces and tabs may follow (C2-B-167), with at least two pipes, so a pipe alone on a line is text. The closing pipe is a separator under C2-B-169: a line whose last pipe is escaped or stands inside a code span is not a row. The closing pipe is the last pipe of the line, also where a line comment stands before it: `| a | b | %% note | x` does not end with a pipe and is text (C2-B-168). The 0.1 engine read an escaped last pipe as the closer. A row of hyphens and colons, the separator row of a Markdown table, is an ordinary body row: it marks no head and sets no alignment (C2-A-095).
 
 **C2-B-167** After its closing pipe a row may carry a row attribute, which is a brace block glued to that pipe or one space after it, and a trailing line comment. The comment stands after whitespace, as C2-B-133 requires: `| a |%% x` and `||%%` do not end with a pipe and are text (C2-B-168). The comment stands in the tree as a comment-only line directly below the row would (C2-A-086).
 
@@ -5231,7 +5231,7 @@ title: x
 
 **C2-B-174** The head, the body and the foot are the groups of a table, and no span crosses from one into another. For the head test (C2-B-178) a `<` with a cell to its left and a `^` below a cell of one column are part of that cell and add no cell to their row, but such a mark with the header mark counts as a header cell; any other span mark counts as the cell it is. So `|= H | < |` is a head row, and below `|= H |` the row `| ^ |` has no header cell and is none. The prefix of a mark that joins is kept for nothing else, and `table-span-marker-attribute` reports a brace block in it, and a header mark on it that does not make its row a head row, as on `|= ^ |` below `| a |`.
 
-**C2-B-175** A continuation row starts with `+` and ends with a pipe, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
+**C2-B-175** A continuation row starts with `+` and ends with a pipe and trailing spaces and tabs, directly below a row or a continuation row. A comment-only line between them does not break the adjacency (C2-B-137).
 
 **C2-B-176** A fragment past the last column forms a new cell.
 
@@ -5258,6 +5258,29 @@ title: x
 **C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` keeps its 0.1 definition, and `aligns` and `widths` keep theirs except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: the list-table extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
+
+Line 1 ends with a tab and a space, line 2 with two spaces.
+
+Example 271 (generated)
+
+::: compare
+
+```carve
+| a |	 
++ b |  
+| c |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td>a b</td></tr>
+    <tr><td>c</td></tr>
+  </tbody>
+</table>
+```
+
+:::
 
 A row is an interrupter (C2-B-019).
 
@@ -6392,10 +6415,10 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
 | Frontmatter | 5 | 0 | 5 | 1 |
-| Tables | 35 | 1 | 18 | 17 |
+| Tables | 35 | 1 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **228** | **13** | **167** | **103** |
+| **Total** | **228** | **13** | **168** | **103** |
 
 The chapter has 228 clauses, and 13 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
