@@ -1445,7 +1445,7 @@ Input:
 
 Reported: `comment-splits-table-row`, severity hint, on line 2, offsets 6 to 10.
 
-**C2-W-138** The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless the clause of the rule names another place, as C2-W-137 and C2-M-081 do. Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node. An entry of a run on source carries that range, in the render-loss channel too, and its path, where it has one, names the node that holds the construct. An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`. A finding about a whole document starts where the document starts.
+**C2-W-138** The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless the clause of the rule names another place, as C2-W-137 and C2-M-081 do. Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node. An attribute range is its whole key and value as written, without the enclosing braces; a block opener range is the opening mark only, without indentation or following content. An entry of a run on source carries that range, in the render-loss channel too, and its path, where it has one, names the node that holds the construct. An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`. A finding about a whole document starts where the document starts.
 
 ## Out of scope
 

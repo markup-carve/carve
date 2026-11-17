@@ -43147,7 +43147,9 @@
       "line": 1,
       "column": 5,
       "channel": "render-loss",
-      "severity": "warning"
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 21
      }
     ]
    },
@@ -49357,7 +49359,9 @@
       "line": 1,
       "column": 3,
       "channel": "lint",
-      "severity": "warning"
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 4
      }
     ]
    },
@@ -52801,6 +52805,31 @@
    "expected": {
     "notReported": [
      "table-column-overlap"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1057",
+   "clauses": [
+    "C2-W-138"
+   ],
+   "why": "C2-W-138: An attribute range is its whole key and value as written, without the enclosing braces; a block opener range is the opening mark only, without indentation or following content.",
+   "summary": "an overindented quote opener range is its mark",
+   "kind": "lint",
+   "input": ":: t\n: d\n\n    > b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 4,
+      "column": 5,
+      "endLine": 4,
+      "endColumn": 6,
+      "channel": "lint",
+      "severity": "warning"
+     }
     ]
    },
    "from": []
