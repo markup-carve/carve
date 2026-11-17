@@ -1381,7 +1381,32 @@ Reported: `import-element-dropped`.
 
 **C2-M-074** A tree that holds a fact the writer has no spelling for in that place, such as blocks in a table cell, a row span the source cannot express or a `dir`, is returned as it stands. The writer reports it with `field-unspellable` or `structure-unspellable` (C2-W-117), in the same record.
 
-**C2-M-075** On a `<p>`, a `<div>` and a heading element, a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;` is the key `align` with that value, as a render writes it (C2-H-015).
+**C2-M-075** On a `<p>`, a `<div>` and a heading element, a `style` that is exactly `text-align: left;`, `text-align: right;` or `text-align: center;` is the key `align` with that value, as a render writes it (C2-H-015). An `align` attribute of the same element is then dropped, since the declaration wins in a browser, and reported with `import-attribute-dropped`.
+
+Example 51 (unverified)
+
+::: compare
+
+```html
+<p align="right" style="text-align: left;">x</p>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"x"}],"attrs":{"keyValues":[["align","left"]]}}
+]
+```
+
+```carve
+{align=left}
+x
+```
+
+:::
+
+The declaration wins, as it does in a browser.
+
+Reported: `import-attribute-dropped`.
 
 Example 36 (verified)
 
@@ -1480,12 +1505,12 @@ ab
 
 | Code | Severity | Reports |
 |---|---|---|
-| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box |
+| `import-attribute-dropped` | warning | an attribute that the tree does not keep: an event handler, a name that is no key, an invalid `dir`, a wrapper or section attribute, an unread attribute of `code` or of a task box, an ordered start out of range, an `align` beside an alignment declaration |
 | `import-carrier-ignored` | warning | a reserved name that `html.md` ignores (C2-H-185) |
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
 | `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
 | `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
-| `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a clamped row span, an empty node that held attributes, a ruby base without annotation |
+| `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
 
 ## The guarantee
@@ -1563,4 +1588,4 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 50 examples: 46 verified and 4 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 84 clauses: 83 rules and 1 exception. It holds 51 examples: 46 verified and 5 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
