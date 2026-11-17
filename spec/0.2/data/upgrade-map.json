@@ -1377,7 +1377,7 @@
       "group": "measured rendering changes",
       "from": "[](‮javascript:)",
       "to": "",
-      "meaning02": "<p><a href=\"\"></a></p>",
+      "meaning02": "<p><a href=\"\"></a></p> The same holds for an authored attribute that is no URL sink: `*x*{k=\"‮javascript:x\"}` writes `<strong k=\"\">`, where 0.1 wrote the value, since C2-H-161 removes the characters of `probe_removes` before it tests the scheme of any authored value. Without the control both engines write the value empty. No spelling keeps the 0.1 HTML.",
       "toolEntry": "U-164",
       "silent": true
     },
