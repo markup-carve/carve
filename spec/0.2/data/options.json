@@ -16,7 +16,7 @@
       "type": "list",
       "items": "extension",
       "default": [],
-      "clauses": ["C2-H-137"]
+      "clauses": ["C2-H-137", "C2-T-005", "C2-X-038"]
     },
     {
       "name": "headingIds",

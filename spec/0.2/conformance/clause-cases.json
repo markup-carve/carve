@@ -24908,9 +24908,11 @@
   {
    "id": "CC-468",
    "clauses": [
-    "C2-X-046"
+    "C2-X-046",
+    "C2-T-005",
+    "C2-X-038"
    ],
-   "why": "C2-X-046: A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs`",
+   "why": "C2-X-046: A reader that knows `carve.tabs` (C2-X-038) refuses a `carve.tab` outside `carve.tabs.slots.tabs` C2-T-005: `decodeTree` reads a 2.0 JSON tree, checks it as C2-A-166 to C2-A-188 state, and returns the tree. C2-X-038: A host that registers a qualified name gives its schema for `data` and slots.",
    "summary": "a carve.tab at the top level is refused",
    "kind": "tree",
    "tree": {
