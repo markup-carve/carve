@@ -2340,6 +2340,16 @@
       "meaning02": "<p>`a\nc`</p> C2-B-138: no inline atom spans a comment-only line, so a code span, a math span or an editorial comment opened before the line and closed after it is text on both sides; 0.1 dropped the line and read <p><code>a\nc</code></p>. Moving the comment line below the closing line keeps the 0.1 output.",
       "toolEntry": "U-300",
       "silent": true
+    },
+    {
+      "id": "U-301",
+      "kind": "report",
+      "group": "rulings of 17 November",
+      "from": "{{ a.crv @lines:3-7 }}\n",
+      "to": "",
+      "meaning02": "<p>—\nt: 1\n—</p>\n<p>para</p> for an `a.crv` of `x`, a blank line, `---`, `t: 1`, `---`, a blank line and `para`. C2-N-020: a selection opens frontmatter only when it starts at line 1 of the file; 0.1 read the selected `---` lines as frontmatter and wrote <p>para</p>. Start the selection below the closing `---` line where the lines are meant as frontmatter.",
+      "toolEntry": "U-301",
+      "silent": true
     }
   ],
   "tree": [

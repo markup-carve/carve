@@ -92,7 +92,6 @@ What stays unverified: the 271 unverified examples (written by hand from the cla
 - **O9.** The layout sidecar has no gate of its own beyond `trees/layouts.json`. A candidate: for every corpus document, writing the tree with its sidecar gives the formatter's output, and writing it without gives a source that parses to an equal tree.
 - **O10.** Annotation ranges (C2-A-204) are anchored for an unchanged tree only; how their paths follow an edit is not part of 0.2.0.
 - **O12.** For the extension catalog work: a renderer returns an HTML string the host cannot inspect for the escaping and URL policy of C2-X-034; the slots of a supplied node of another extension are walked in the key order of its `slots` object, which can differ from the order of its declaration (C2-X-020); and the annotation ids of C2-A-203 need a reader that is given the range sidecar with the tree.
-- **O18.** A line or region selection whose first line opens frontmatter (review 5 F31): frontmatter of the selection, or only of a selection that starts at line 1 of the file (C2-N-020).
 - **O19.** Which definitions a line or region selection sees (review 5 F34): only the selected ones, or those of the whole file as a section sees them (C2-N-054, C2-N-031).
 - **O20.** A note reference whose `href` names no note and has no fragment (C2-M-062): a footnote reference keyed by the whole `href`, or an ordinary link.
 - **O21.** A balanced brace block glued to a div name that is no valid attribute block (C2-B-225): `fence-opener-fallback` or `fence-title-syntax`; the tree is the same.

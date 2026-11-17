@@ -77956,6 +77956,174 @@
    "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
   },
   {
+   "id": "includes-420",
+   "document": "includes.md",
+   "number": 420,
+   "section": "Expansion",
+   "clauses": [
+    "C2-N-015",
+    "C2-N-016",
+    "C2-N-017",
+    "C2-N-018",
+    "C2-N-019",
+    "C2-N-020",
+    "C2-N-021",
+    "C2-N-022",
+    "C2-N-023"
+   ],
+   "kind": "include",
+   "files": {
+    "a.crv": {
+     "text": "x\n\n---\nt: 1\n---\n\npara\n"
+    }
+   },
+   "input": "{{ a.crv @lines:3-7 }}",
+   "options": {},
+   "expected": {
+    "html": "<p>—\nt: 1\n—</p>\n<p>para</p>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "include",
+       "path": "a.crv",
+       "options": {
+        "lines": "3-7"
+       },
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 23,
+        "startOffset": 0,
+        "endOffset": 22
+       },
+       "file": "a.crv",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "smart_punctuation",
+           "kind": "em_dash",
+           "glyph": "—",
+           "source": "---",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 1,
+            "endColumn": 4,
+            "startOffset": 3,
+            "endOffset": 6,
+            "file": "a.crv"
+           }
+          },
+          {
+           "type": "soft_break",
+           "pos": {
+            "startLine": 3,
+            "endLine": 4,
+            "startColumn": 4,
+            "endColumn": 1,
+            "startOffset": 6,
+            "endOffset": 7,
+            "file": "a.crv"
+           }
+          },
+          {
+           "type": "text",
+           "value": "t: 1",
+           "pos": {
+            "startLine": 4,
+            "endLine": 4,
+            "startColumn": 1,
+            "endColumn": 5,
+            "startOffset": 7,
+            "endOffset": 11,
+            "file": "a.crv"
+           }
+          },
+          {
+           "type": "soft_break",
+           "pos": {
+            "startLine": 4,
+            "endLine": 5,
+            "startColumn": 5,
+            "endColumn": 1,
+            "startOffset": 11,
+            "endOffset": 12,
+            "file": "a.crv"
+           }
+          },
+          {
+           "type": "smart_punctuation",
+           "kind": "em_dash",
+           "glyph": "—",
+           "source": "---",
+           "pos": {
+            "startLine": 5,
+            "endLine": 5,
+            "startColumn": 1,
+            "endColumn": 4,
+            "startOffset": 12,
+            "endOffset": 15,
+            "file": "a.crv"
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 4,
+          "startOffset": 3,
+          "endOffset": 15,
+          "file": "a.crv"
+         }
+        },
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "para",
+           "pos": {
+            "startLine": 7,
+            "endLine": 7,
+            "startColumn": 1,
+            "endColumn": 5,
+            "startOffset": 17,
+            "endOffset": 21,
+            "file": "a.crv"
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 7,
+          "endLine": 7,
+          "startColumn": 1,
+          "endColumn": 5,
+          "startOffset": 17,
+          "endOffset": 21,
+          "file": "a.crv"
+         }
+        }
+       ]
+      }
+     ],
+     "srcByteLength": 22,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the fixture trees come from the reference engine, and the HTML is written by hand and not machine-checked (includes.md, conventions)"
+  },
+  {
    "id": "includes-35",
    "document": "includes.md",
    "number": 35,

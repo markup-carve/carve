@@ -198,9 +198,9 @@ Top.
 }
 ```
 
-**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1.
+**C2-N-020** A selection by lines or by region (C2-N-034 to C2-N-041) is parsed as a document of its own too, and its positions keep the coordinates of the file: the first selected line is the line it is in the file, not line 1. Frontmatter belongs to the file, so a selection opens frontmatter (C2-B-161) only when it starts at line 1 of the file; in a selection that starts later, a `---` line and the lines after it are ordinary content.
 
-**C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: when the selection takes it, it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
+**C2-N-021** In Carve mode the frontmatter of an included file is that file's frontmatter: when the selection takes it, which a selection by lines or region does only from line 1 of the file (C2-N-020), it is the first child of the include node, it renders nothing (C2-H-070), and it is not the metadata of the top-level document. With `code` the frontmatter lines are content of the payload (C2-N-042).
 
 Example 5 (unverified)
 
@@ -240,6 +240,37 @@ Top.
   ]
 }
 ```
+
+Example 420 (unverified)
+
+File `a.crv`:
+
+```carve
+x
+
+---
+t: 1
+---
+
+para
+```
+
+::: compare
+
+```carve
+{{ a.crv @lines:3-7 }}
+```
+
+```html
+<p>—
+t: 1
+—</p>
+<p>para</p>
+```
+
+:::
+
+The selection starts at line 3 of the file, so its `---` line opens no frontmatter and the three lines are a paragraph (C2-N-020).
 
 Example 35 (unverified)
 
@@ -1403,7 +1434,7 @@ I13 and I14 were unassigned in 0.1.
 | --- | --- | --- | --- |
 | Scope and defaults | 6 | 0 | 1 |
 | The resolver | 8 | 0 | 0 |
-| Expansion | 9 | 0 | 7 |
+| Expansion | 9 | 0 | 8 |
 | Selection, transforms and mode | 29 | 0 | 16 |
 | References across files | 8 | 0 | 4 |
 | Failures and limits | 10 | 0 | 3 |
@@ -1412,6 +1443,6 @@ I13 and I14 were unassigned in 0.1.
 | Writing and the sidecar | 3 | 0 | 0 |
 | Dependencies | 2 | 0 | 1 |
 | Lint | 4 | 0 | 0 |
-| **Total** | **88** | **2** | **38** |
+| **Total** | **88** | **2** | **39** |
 
-The document has 88 clauses, 2 of them marked with the word "Exception", and 38 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
+The document has 88 clauses, 2 of them marked with the word "Exception", and 39 examples, all unverified. The clause count includes the exceptions. Clause ids are stable: a clause added later takes the next free number and stands at the end of its section.
