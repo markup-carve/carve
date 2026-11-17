@@ -784,10 +784,10 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "A \"::: figure\" inside a figure group is a figure group of its own and not a panel of the outer group. Move it out of the enclosing group."
+        "A \"::: figure\" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-W-106"]
+      "clauses": ["C2-B-127", "C2-W-106"]
     },
     {
       "id": "figure-group-opener-metadata",

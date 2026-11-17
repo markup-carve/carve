@@ -3586,7 +3586,44 @@ b</p>
 
 **C2-B-126** A colon run followed by a name or a sigil always opens a div, at any length.
 
-**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1).
+**C2-B-127** The name of a div decides what it is: `note`, `tip`, `warning`, `danger`, `info`, `success`, `example` and `quote` give an admonition, `figure` with no title and no label gives a figure group, and with one of them a plain div with the class `figure`, `bibliography`, `footnotes`, `glossary`, `index`, `references` and `toc` give a directive, and every other name gives a plain div with that name as a class, and names are compared as written (carried over from 0.1). Figure groups do not nest: anywhere inside a figure group, also in a quote, a list item or any other container of its body, `figure` with no title and no label gives a plain div with the class `figure` too, and `figure-group-nested` reports it (as in 0.1).
+
+The inner `figure` stands inside a group, so it is a plain div, and its captioned image is a plain figure, no panel of the outer group (C2-B-127).
+
+Example 462 (unverified)
+
+::: compare
+
+```carve
+::: figure
+![b](b.png)
+^ (b) B
+
+:::: figure
+![a](a.png)
+^ (a) A
+::::
+:::
+```
+
+```html
+<figure class="carve-figure-group">
+  <figure class="carve-figure-panel">
+    <img src="b.png" alt="b">
+    <figcaption>(b) B</figcaption>
+  </figure>
+  <div class="figure">
+    <figure>
+      <img src="a.png" alt="a">
+      <figcaption>(a) A</figcaption>
+    </figure>
+  </div>
+</figure>
+```
+
+:::
+
+Reported: `figure-group-nested`.
 
 **C2-B-128** The classes of a div stand in one order: the name of a plain div first, then the classes of its attribute line as written, then the class of a sigil opener, `line-block` or `hardbreaks`, last.
 
@@ -6724,7 +6761,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Attribute lines | 20 | 1 | 12 | 11 |
 | Fences, divs and comment blocks | 11 | 0 | 7 | 5 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
-| Sigil divs | 11 | 0 | 11 | 2 |
+| Sigil divs | 11 | 0 | 11 | 3 |
 | Comments | 13 | 3 | 14 | 9 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
@@ -6734,7 +6771,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **114** |
+| **Total** | **219** | **10** | **171** | **115** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

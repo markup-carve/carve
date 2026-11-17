@@ -293,6 +293,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 #### Restored
 
 - A first ordered marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` takes its style from the next marker, as in 0.1: `v.` then `vi.` is one roman list from 5, `i.` then `j.` one alphabetic list from 9, where freeze candidate 6 split each into two lists. With no next marker that settles it, a lone `i` is roman and the other letters are alphabetic, and `ordered-list-kind-split` reports the split. U-024 is withdrawn: `i) one`, `j) two` is one alphabetic list in both versions. C2-B-042, C2-B-044, C2-W-028.
+- A `figure` div with no title and no label anywhere inside a figure group, also in a quote, a list item or an admonition in it, is a plain div with the class `figure`, as in 0.1: `::: figure` around `:::: figure` gives `<div class="figure">` inside `<figure class="carve-figure-group">`, where freeze candidate 6 gave a second figure group. Its captioned blocks are plain figures, no panels, and `figure-group-nested` reports the div. A supplied tree with a group inside a group has no spelling. C2-B-127, C2-A-066, C2-W-117.
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
