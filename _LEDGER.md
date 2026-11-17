@@ -133,3 +133,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/cla
 Search: `definition-term-block-folded`, `C2-B-075`, `CC-697`.
 
 Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. R4 changed the message; CC-697 covers the given input.
+
+## CR9-12
+
+Search: `setext-heading-underline`, `C2-B-160`, `CC-961`.
+
+Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. CC-961 covers the equals-run input.
