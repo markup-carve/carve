@@ -15247,6 +15247,36 @@
    "from": []
   },
   {
+   "id": "CC-217",
+   "clauses": [
+    "C2-H-165"
+   ],
+   "why": "C2-H-165: The degraded form of a node outside the profile is its plain text, and no placeholder word stands for it: a node writes the text it holds and, where this clause names one, the mark of its kind, and a node that holds no text writes nothing.",
+   "summary": "an empty div, quote and code block under minimal write no placeholder",
+   "input": ":::\n:::\n\n>\n\n```\n```",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "",
+    "children": [
+     {
+      "type": "div",
+      "children": []
+     },
+     {
+      "type": "block_quote",
+      "children": []
+     },
+     {
+      "type": "code_block",
+      "value": ""
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-240",
    "clauses": [
     "C2-B-138",

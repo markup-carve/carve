@@ -2522,6 +2522,16 @@
       "silent": true
     },
     {
+      "id": "U-293",
+      "kind": "report",
+      "group": "differences that stay",
+      "from": ":::\n:::\n",
+      "to": "",
+      "meaning02": "<div>\n\n</div> Under `minimal` this empty div writes nothing: a node outside the profile writes its plain text and no placeholder word, and a node that holds no text writes nothing (C2-H-165). 0.1 wrote the node type in brackets for every degraded node without text: `[div]`, `[table]` for `||`, `[block_quote]` for `>`, `[code_block]` for an empty fence, `[link]` for `[](/u)`, `[text]` for each quote of `x.*/\"q\"/*`, and `[img]` for an image with no alt, where 0.2 writes `[img: ]`. The other degraded forms that differ are named in the UPGRADING.md row. No 0.2 source gives the placeholders.",
+      "toolEntry": "U-293",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",
