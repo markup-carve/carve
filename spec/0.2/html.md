@@ -1477,8 +1477,6 @@ Example 33 (unverified)
 
 **C2-H-096** A resolved cross-reference is `<a href="#ID">` around generated text. For a heading the text is the plain text of the heading. For a numbered caption it is the label word and the number, such as `Figure 1`. 0.2.0 renders this default text for every cross-reference: a `display` (C2-A-116) that an extension or a supplied tree set is kept in the tree and selects no other text in the core.
 
-**C2-H-097** The generated text is plain text: no abbreviation, mention or typography rule is applied to it (C2-I-100).
-
 **C2-H-098** An abbreviation node is `<abbr title="EXPANSION">` around the term.
 
 **Exception C2-H-099** Inside a span that carries the `abbr` key an abbreviation node writes only its text, so no `<abbr>` nests in another.
@@ -2395,7 +2393,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
-| Cross-references and abbreviations | 5 | 1 | 1 | 0 |
+| Cross-references and abbreviations | 4 | 1 | 1 | 0 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 2 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
@@ -2403,6 +2401,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **195** | **6** | **33** | **36** |
+| **Total** | **194** | **6** | **33** | **36** |
 
-The document has 195 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
