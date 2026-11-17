@@ -27,6 +27,7 @@ for (const chapter of ['syntax-blocks', 'syntax-inline', 'html', 'writer', 'incl
 const FLAGS = [
   [/^--roundtrip$/, () => ({ roundtrip: true })],
   [/^--profile (\w+)$/, (m) => ({ profile: m[1] })],
+  [/^--mode (\w+)$/, (m) => ({ mode: m[1] })],
   [/^profile set to (\w+)$/, (m) => ({ profile: m[1] })],
   [/^--no-raw-html$/, () => ({ rawHtml: false })],
   [/^--heading-ids (\S+)$/, (m) => ({ headingIds: m[1] })],

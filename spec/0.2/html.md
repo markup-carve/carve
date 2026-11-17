@@ -26,7 +26,7 @@ Conventions:
 
 **Exception C2-H-006** A quote whose only visible child is one paragraph without a caption is written on one line: `<blockquote><p>q</p></blockquote>`.
 
-**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A display math paragraph without a caption is one, and is written on one line; a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
+**Exception C2-H-007** A list item whose only block is one paragraph without a caption, bare or wrapped, is written on one line. An item with more blocks puts a first paragraph, bare or wrapped, on the line of `<li>` and each later block on its own line. A bare block image paragraph (C2-H-020) is not a paragraph in the sense of this clause, of C2-H-006 and of C2-H-040: its `<img>` stands on its own line inside the item, the description or the quote. A display math paragraph without a caption is one, and is written on one line, except in static mode (C2-H-168); a captioned paragraph is written as its figure (C2-H-062), on its own lines as in a quote (C2-H-006).
 
 **C2-H-008** A container whose body renders nothing keeps one empty line between its tags. This holds for a quote, a div, an admonition, a line block, a hard-break block and a figure group, and a body that holds only comments is such a body. The line is empty, with no indent. A table with no rows is not such a container: it is written as `<table>` and `</table>` on two lines.
 
@@ -1991,7 +1991,26 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram or an equation without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
-**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source and one line feed, as a code block writes its value (C2-A-045), with the attributes of the paragraph on `<pre>`. A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+**C2-H-168** In static mode with no build-time renderer an inline math node is written as `<code class="language-math">` around its source, with the attributes of the node, and a display math paragraph (C2-H-077) as `<pre><code class="language-math">` around its source and one line feed, as a code block writes its value (C2-A-045), with the attributes of the paragraph on `<pre>`. That `<pre>` stands on its own lines wherever it is, as a code block does, also as the only block of a tight item, a quote or a description (C2-H-006, C2-H-007, C2-H-040). A `renderers` option that is not empty is refused in 0.2.0, which has no build-time renderer to call.
+
+Example 69 (unverified, `--mode static`)
+
+::: compare
+
+```carve
+- $$`x`
+```
+
+```html
+<ul>
+  <li>
+    <pre><code class="language-math">x
+</code></pre>
+  </li>
+</ul>
+```
+
+:::
 
 **C2-H-123** `renderers` maps an extension name to a build-time renderer and is read only in static mode.
 
@@ -2389,9 +2408,9 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 9 |
+| Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **199** | **7** | **33** | **35** |
+| **Total** | **199** | **7** | **33** | **36** |
 
-The document has 199 clauses, 7 of them marked with the word "Exception", and 68 examples, 33 generated and 35 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 199 clauses, 7 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
