@@ -2370,6 +2370,16 @@
       "meaning02": "<table>\n  <tbody>\n    <tr><td class=\"c\" style=\"text-align: right;\">a</td></tr>\n  </tbody>\n</table> C2-B-182: a part may follow the alignment marks with no space, so `{>.c}` is right with the class `c`, and `{>^.c}` and `{>vx}` read the vertical mark too; 0.1 read a brace block with a part glued to the marks as cell text.",
       "toolEntry": "U-304",
       "silent": true
+    },
+    {
+      "id": "U-305",
+      "kind": "escape",
+      "group": "rulings of 17 November",
+      "from": "|{>}{^} a |\n",
+      "to": "|\\{>}{^} a |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td style=\"text-align: right;\">{^} a</td></tr>\n  </tbody>\n</table> C2-B-171, C2-B-182: a cell prefix takes a run of glued brace blocks, with the marks only at the start of the first; 0.1 read every glued run in a cell prefix, such as `{>}{^}` or `{.a}{.b}`, as cell text.",
+      "toolEntry": "U-305",
+      "silent": true
     }
   ],
   "tree": [

@@ -15552,6 +15552,117 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-248",
+   "clauses": [
+    "C2-B-182",
+    "C2-B-171",
+    "C2-B-093"
+   ],
+   "why": "C2-B-182: The marks stand only at the start of the first block of the run of glued blocks (C2-B-171, C2-B-093); every later block is read by the attribute grammar alone, and the first one that is no valid attribute block ends the run, so it and what follows are the cell's text.",
+   "summary": "a vertical mark in the second glued block is no mark and starts the cell text",
+   "input": "|{>}{^} a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td style=\"text-align: right;\">{^} a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "{^} a"
+               }
+              ]
+             }
+            ],
+            "align": "right"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-249",
+   "clauses": [
+    "C2-B-182",
+    "C2-B-171"
+   ],
+   "why": "C2-B-182: The marks stand only at the start of the first block of the run of glued blocks (C2-B-171, C2-B-093); every later block is read by the attribute grammar alone, and the first one that is no valid attribute block ends the run, so it and what follows are the cell's text.",
+   "summary": "a horizontal mark in a later glued block is no mark and starts the cell text",
+   "input": "|{.a}{>} a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td class=\"a\">{&gt;} a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "{>} a"
+               }
+              ]
+             }
+            ],
+            "attrs": {
+             "classes": [
+              "a"
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
