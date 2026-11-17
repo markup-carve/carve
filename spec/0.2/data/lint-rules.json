@@ -1868,7 +1868,7 @@
         "This caption line is not directly below an image, table, code block, quote, math block, figure group or code include, so it is text. If a blank line separates it from such a block, remove the blank line; otherwise escape the caret."
       ],
       "message_origin": "data_file",
-      "reports": "a caption line that is not directly below one of the six caption targets, a caption after a blank line among them",
+      "reports": "a caption line that is not directly below an image, table, code block, quote, math block, figure group or valid code include, a caption after a blank line among them",
       "change": "the target list has six kinds, the figure group included",
       "clauses": ["C2-B-149", "C2-N-073"]
     },

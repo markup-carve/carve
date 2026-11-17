@@ -52715,6 +52715,23 @@
     "a.crv"
    ],
    "from": []
+  },
+  {
+   "id": "CC-1052",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "caption below code include attaches",
+   "kind": "lint",
+   "input": "{{ a.crv @code }}\n^ Cap\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-caption"
+    ]
+   },
+   "from": []
   }
  ]
 }
