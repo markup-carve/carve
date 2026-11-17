@@ -135,18 +135,6 @@
       ]
     },
     {
-      "name": "extensions",
-      "commands": [
-        "render"
-      ],
-      "kind": "json",
-      "option": "extensions",
-      "clauses": [
-        "C2-T-010",
-        "C2-H-137"
-      ]
-    },
-    {
       "name": "from",
       "commands": [
         "import"
@@ -356,18 +344,6 @@
       "clauses": [
         "C2-T-010",
         "C2-M-066"
-      ]
-    },
-    {
-      "name": "renderers",
-      "commands": [
-        "render"
-      ],
-      "kind": "json",
-      "option": "renderers",
-      "clauses": [
-        "C2-T-010",
-        "C2-H-137"
       ]
     },
     {
