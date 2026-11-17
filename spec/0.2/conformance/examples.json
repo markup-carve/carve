@@ -22499,38 +22499,27 @@
           "startOffset": 132,
           "endOffset": 133
          }
-        },
-        {
-         "type": "soft_break",
-         "pos": {
-          "startLine": 7,
-          "endLine": 8,
-          "startColumn": 11,
-          "endColumn": 1,
-          "startOffset": 133,
-          "endOffset": 134
-         }
-        },
-        {
-         "type": "comment",
-         "form": "line",
-         "value": "#endregion intro",
-         "pos": {
-          "startLine": 8,
-          "endLine": 8,
-          "startColumn": 1,
-          "endColumn": 20,
-          "startOffset": 134,
-          "endOffset": 153
-         }
         }
        ],
        "pos": {
         "startLine": 7,
+        "endLine": 7,
+        "startColumn": 1,
+        "endColumn": 11,
+        "startOffset": 123,
+        "endOffset": 133
+       }
+      },
+      {
+       "type": "comment",
+       "form": "line",
+       "value": "#endregion intro",
+       "pos": {
+        "startLine": 8,
         "endLine": 8,
         "startColumn": 1,
         "endColumn": 20,
-        "startOffset": 123,
+        "startOffset": 134,
         "endOffset": 153
        }
       }
@@ -22753,7 +22742,6 @@
      ],
      "srcByteLength": 61,
      "stages": [
-      "includeExpansion",
       "referenceResolution",
       "tableAlignment"
      ]
@@ -27618,7 +27606,6 @@
      ],
      "srcByteLength": 25,
      "stages": [
-      "includeExpansion",
       "referenceResolution",
       "tableAlignment"
      ]
