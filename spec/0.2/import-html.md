@@ -1343,7 +1343,7 @@ A [fine]{} [print]{} [x]{}
 
 ## Footnotes
 
-**C2-M-061** A `<section>` with `role="doc-endnotes"`, or whose classes include `footnotes`, is a footnote section. Each `<li>` of its first `<ol>` that has an `id` is a `footnote` whose blocks are those of the item. The key is the value of `data-carve-footnote-label` where C2-H-186 reads it; otherwise the `id` without a leading `user-content-fn-`, `fn-` or `fn`. An item with no `id` is dropped and reported with `import-structure-repaired`.
+**C2-M-061** A `<section>` with `role="doc-endnotes"`, or whose classes include `footnotes`, is a footnote section. Each `<li>` of its first `<ol>` that has an `id` is a `footnote` whose blocks are those of the item. The key is the value of `data-carve-footnote-label` where C2-H-186 reads it; otherwise the `id` without a leading `user-content-fn-`, `fn-` or `fn`. An item with no `id`, or whose key would be empty, is dropped and reported with `import-structure-repaired`.
 
 **C2-M-062** An `<a>` with `role="doc-noteref"` or the attribute `data-footnote-ref` is a `footnote_ref` whose key is that of the note its `href` names, or else its fragment without the prefixes of C2-M-061. A `<sup>` whose only content is such an `<a>`, or whose first class is `footnote-ref` and which holds one, is that reference alone. The `id` a render generates on a reference (C2-H-088) is not kept.
 
@@ -1660,7 +1660,7 @@ ab
 | `import-destination-denied` | warning | a destination that fails the deny list; the link is its text and the image its alternative text |
 | `import-element-dropped` | warning | an element or comment given nothing, with its content: the head, the doctype, the treatment `drop`, and with `rawHtml` off every comment, the treatment `raw` and every `data-carve-raw` span |
 | `import-element-mapped` | warning | an element without a counterpart read as a div, a span or its children; a block element in inline content; a section without a heading; MathML without TeX |
-| `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation |
+| `import-structure-repaired` | warning | content dropped or changed so that the tree is valid: a non-item child of a list, a foreign child of a table or a description list, a second head or foot of a table, a clamped row span, an empty node that held attributes, a ruby base without annotation, a footnote item with no `id` or an empty key |
 | `import-whitespace-normalized` | hint | whitespace removed or a line break turned into a space; no visible text changes |
 
 ## The guarantee
