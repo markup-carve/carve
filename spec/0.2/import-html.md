@@ -1649,7 +1649,7 @@ ab
 
 **C2-M-081** The position of an importer entry is a range in UTF-8 bytes of the HTML input: the start and the end of the element, attribute owner or text node the entry is about, as the HTML parser locates them. An entry may also carry the path of the node it produced in the imported tree. The entry names that node in the field `foreignType` (C2-A-173): its lower-case tag name, or `#comment`, `#text` or `#doctype`.
 
-**C2-M-082** Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported. The importer reports what it changed; the writer reports what it cannot spell (C2-M-074). `strictLosses` makes every render-loss entry an error (C2-A-174), the importer's included.
+**C2-M-082** Every fact of the input that the tree does not hold, and every change of a fact, is reported, except where a clause says the drop is not reported. The importer reports what it changed; the writer reports what it cannot spell (C2-M-074). `strictLosses` makes every render-loss entry an error (C2-H-130), the importer's included.
 
 **C2-M-083** The codes are the rows of `codes` in `data/import-html.json`:
 
