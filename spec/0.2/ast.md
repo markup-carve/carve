@@ -658,7 +658,7 @@ The invariants below are written so that a test can check each one on any tree a
 | a `figure` that holds one image paragraph, code block, quote or math paragraph, and comments after it | that block, which takes the `caption` and the `attrs` of the figure; the comments go where C2-A-082 places them; `kind` is dropped |
 | any other `figure` | a `figure_group` with the same children, `caption` and `attrs`; `kind` is dropped |
 
-**C2-A-179** A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on) and then migrated as above.
+**C2-A-179** A 1.2 tree is first upgraded to the draft shape by the upgrade the draft defines (flat rows to table groups, `items` and `rows` to `children`, `ref` to `key`, `checked` and `taskState` to `task`, and so on; a 1.2 unordered list with no stored bullet character takes `marker: {kind: "bullet", char: "-"}`, and `checked: true` becomes `task: {mark: "x"}` while `checked: false` becomes `task: {mark: " "}`) and then migrated as above.
 
 **C2-A-180** The migration is lossy for spelling by design and reports nothing for it.
 

@@ -52611,6 +52611,80 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1050",
+   "clauses": [
+    "C2-A-179"
+   ],
+   "why": "C2-A-179: `checked: false` becomes `task: {mark: \" \"}`",
+   "summary": "a false 1.2 checked flag migrates to an empty task box",
+   "kind": "migrate",
+   "options": {},
+   "expected": {
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "task": {
+          "mark": " "
+         },
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "a"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "tree": {
+    "type": "document",
+    "astVersion": "1.2",
+    "children": [
+     {
+      "type": "list",
+      "ordered": false,
+      "tight": true,
+      "items": [
+       {
+        "type": "list_item",
+        "checked": false,
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

@@ -79,3 +79,9 @@ Places: `spec/0.2/STATUS.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.
 Search: `C2-T-005`, `decodeTree`, `validateTree`, `extensions`.
 
 Places: `spec/0.2/README.md`, `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/README.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/refused-trees.json`, `spec/0.2/conformance/schema.json`, `spec/0.2/data/README.md`, `spec/0.2/data/ast-schema.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/extensions.json`, `spec/0.2/data/node-slots.json`, `spec/0.2/data/options.json`, `spec/0.2/data/schemas/extensions.schema.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/trees/nodes.json`, `spec/0.2/trees/refused.json`. Tree calls now read registered extensions; CC-468 to CC-472 already require this; new near miss.
+
+## CR9-03
+
+Search: `C2-A-179`, `checked`, `task.mark`, `CC-505`.
+
+Places: `spec/0.2/STATUS.md`, `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/schemas/table-marks.schema.json`, `spec/0.2/data/schemas/task-states.schema.json`, `spec/0.2/data/task-states.json`, `spec/0.2/data/upgrade-map.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/trees/README.md`, `spec/0.2/trees/layouts.json`, `spec/0.2/writer.md`. The 1.2 migration states the exact defaults exercised by CC-505.
