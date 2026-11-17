@@ -1426,7 +1426,7 @@
       "channel": "lint",
       "status": "new",
       "default": "on",
-      "messages": ["This marker sits left of its list and is text of the item above. Ordered markers are left-aligned in 0.2."],
+      "messages": ["This marker sits left of its list, so it is a sibling item that moves the list's column. Write the ordered markers left-aligned, as the formatter does."],
       "message_origin": "design",
       "reports": "an ordered marker left of its list that ends at the column where the list's markers end",
       "clauses": ["C2-B-030"]
