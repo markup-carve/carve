@@ -97,9 +97,9 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "A blockquote marker must be either bare \">\" or followed by a space. This line renders as literal text; write \"> ${text}\" to quote it."
+        "A blockquote marker must be either bare \">\" or followed by a space. This spelling does not open a quote; in frontmatter it stays frontmatter content."
       ],
-      "message_origin": "engine_0_1",
+      "message_origin": "data_file",
       "reports": "a line outside code and raw blocks whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line, frontmatter lines included (C2-B-031)",
       "clauses": ["C2-B-031"]
     },

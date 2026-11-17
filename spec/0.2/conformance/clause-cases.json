@@ -52756,6 +52756,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1059",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "a frontmatter line beginning with > is no quote",
+   "kind": "lint",
+   "input": "---\n>a\n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

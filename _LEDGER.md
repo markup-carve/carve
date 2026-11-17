@@ -145,3 +145,9 @@ Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples
 Search: `region-marker-renders-as-text`, `C2-B-217`, `C2-N-038`.
 
 Places: `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/includes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. A line comment with differently cased keyword is not a region marker; new case.
+
+## CR9-14
+
+Search: `blockquote-marker-without-space`, `C2-B-031`, `C2-B-161`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/containers.json`, `spec/0.2/data/escape-contexts.json`, `spec/0.2/data/line-shapes.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/includes.md`, `spec/0.2/syntax-blocks.md`, `spec/0.2/writer.md`. Frontmatter input reports without producing quote or text output.
