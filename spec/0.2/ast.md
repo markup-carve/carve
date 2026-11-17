@@ -197,7 +197,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `highlight` | inline | inlines | none |
 | `image` | inline | none | `src`?, `alt`?, `decorative`?, `tooltip`?, `targetKind`?, `key`?, `namespace`?, `resourceId`?, `refForm`?, `longDescription`? |
 | `include` | block | blocks, once expanded | `path`, `section`?, `options`?, `invalid`?, `file`?, `caption`? |
-| `inline_extension` | inline | inlines | `name`, `version` and `fallback` (both required when `name` is qualified, else optional), `props`?, `slots`?, `payload`?, `resourceIds`?, `source`? |
+| `inline_extension` | inline | inlines | `name`; when `name` is qualified also `version`, `fallback`, `props`?, `slots`?, `payload`?, `resourceIds`?, `source`? (C2-A-124) |
 | `inline_footnote` | inline | inlines | `number`? |
 | `insert` | inline | inlines | none |
 | `line` | `line_block` | inlines | none |
@@ -492,7 +492,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-123** A qualified name has the grammar `namespace.name`, with each segment matching `[A-Za-z][A-Za-z0-9_-]*` and one or more dot-separated namespace segments. A qualified extension node is declared by the full name on the root or envelope and carries a same-role fallback, whether it is inline or block. This closes the earlier draft dot-only test.
 
-**C2-A-124** A name without a dot is the name of an inline extension written in Carve source when no declared matcher claims it. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback. A matcher may transform that core node to a qualified extension under C2-X-006.
+**C2-A-124** A name without a dot is the name of an inline extension written in Carve source when no declared matcher claims it. `:kbd[Ctrl]` gives `"name": "kbd"`, needs no declaration, and its `children` are its fallback. Such a node carries `name`, `children` and the common fields, and a reader refuses any other field on it. A matcher may transform that core node to a qualified extension under C2-X-006.
 
 **C2-A-125** A `block_extension` has a qualified name and a mandatory fallback. A 0.2.0 transform may produce one from a core div or code block under C2-X-008 to C2-X-011. This replaces the earlier phase 6 deferral and the prohibition on produced block extensions.
 

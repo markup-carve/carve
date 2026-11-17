@@ -3612,6 +3612,42 @@
      }
     ]
    }
+  },
+  {
+   "id": "unqualified-inline-extension-fallback",
+   "clauses": [
+    "C2-A-124",
+    "C2-A-050"
+   ],
+   "reason": "an unqualified inline extension with a fallback beside its children",
+   "refusedBy": "reader",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_extension",
+        "name": "kbd",
+        "children": [
+         {
+          "type": "text",
+          "value": "K"
+         }
+        ],
+        "fallback": [
+         {
+          "type": "text",
+          "value": "FB"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }
