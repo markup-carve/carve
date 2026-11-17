@@ -15212,6 +15212,63 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-244",
+   "clauses": [
+    "C2-B-182"
+   ],
+   "why": "C2-B-182: A part may follow the marks directly, with no space between: `|{>.c} a |` is right with the class `c`, and `|{>^.c} a |` right and top with the class `c`.",
+   "summary": "a class glued to the horizontal mark applies with the mark",
+   "input": "|{>.c} a |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td class=\"c\" style=\"text-align: right;\">a</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ],
+            "align": "right",
+            "attrs": {
+             "classes": [
+              "c"
+             ]
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

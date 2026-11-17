@@ -2360,6 +2360,16 @@
       "meaning02": "<table>\n  <thead>\n    <tr><th scope=\"col\">a</th></tr>\n  </thead>\n  <tbody>\n    <tr><td>x</td></tr>\n  </tbody>\n</table> C2-B-171: a tab after `=` keeps the header cell mark, as a space does; 0.1 read `|=` and a tab as a data cell whose text starts with `=` and the tab.",
       "toolEntry": "U-303",
       "silent": true
+    },
+    {
+      "id": "U-304",
+      "kind": "escape",
+      "group": "rulings of 17 November",
+      "from": "|{>.c} a |\n",
+      "to": "|\\{>.c} a |\n",
+      "meaning02": "<table>\n  <tbody>\n    <tr><td class=\"c\" style=\"text-align: right;\">a</td></tr>\n  </tbody>\n</table> C2-B-182: a part may follow the alignment marks with no space, so `{>.c}` is right with the class `c`, and `{>^.c}` and `{>vx}` read the vertical mark too; 0.1 read a brace block with a part glued to the marks as cell text.",
+      "toolEntry": "U-304",
+      "silent": true
     }
   ],
   "tree": [
