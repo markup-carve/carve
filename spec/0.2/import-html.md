@@ -20,7 +20,7 @@ Conventions:
 
 **C2-M-003** The importer reads the tree the parser builds, not the input text. So character references are decoded, a carriage return and a CR LF pair are one line feed (C2-H-195 row 1), U+0000 in text is U+FFFD, attribute names are in lower case (C2-H-195 row 13), and the elements the parser opens, closes or moves stand where the parser put them. The importer repeats none of this work and reports none of it.
 
-**C2-M-004** A document's children are the children of its `<body>`. The `lang` of `<body>`, or else of `<html>`, is the `lang` of the document node, and the same holds for a `dir` of `ltr`, `rtl` or `auto`. Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`.
+**C2-M-004** A document's children are the children of its `<body>`. The `lang` of `<body>`, or else of `<html>`, is the `lang` of the document node, and the same holds for a `dir` read as the attribute row `dir` reads it (C2-M-052). Every other attribute of `<html>` and `<body>` is dropped and reported with `import-attribute-dropped`.
 
 **C2-M-005** `<head>` and everything in it are dropped and reported once with `import-element-dropped`: the title, `<meta>`, `<link>`, `<base>`, and the scripts and styles of the head. The doctype is dropped and reported in the same way.
 
@@ -1078,7 +1078,7 @@ Inline ![I](/i.png){width=10} and gone
 | `aria-label` | name | input | field | read on the task box; on an admonition `aside` it is generated and not kept; elsewhere a key |
 | `class` | name | any | classes | split at ASCII whitespace; a class a convention reads is not kept; a value that leaves no class gives no `classes` (C2-A-058) |
 | `data-carve-` | reserved | any | carrier | the 18 reserved names of C2-H-115 only |
-| `dir` | name | any | dir | `ltr`, `rtl` or `auto`; another value is dropped and reported |
+| `dir` | name | any | dir | `ltr`, `rtl` or `auto` in any ASCII letter case, kept in lower case; another value is dropped and reported |
 | `formaction` | name | any | drop |  |
 | `id` | name | any | id |  |
 | `lang` | name | any | lang |  |
