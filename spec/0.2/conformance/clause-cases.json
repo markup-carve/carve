@@ -53840,6 +53840,42 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1112",
+  "clauses": [
+   "C2-A-035",
+   "C2-H-013",
+   "C2-H-075"
+  ],
+  "why": "C2-A-035: On every other node, all spellings of each name merge by the general rule.",
+  "summary": "case variants of an ordinary paragraph attribute merge before HTML rendering",
+  "kind": "render",
+  "input": "{abbr=a ABBR=b}\np\n",
+  "options": {},
+  "expected": {
+   "html": "<p abbr=\"b\">p</p>",
+   "children": [
+    {
+     "type": "paragraph",
+     "attrs": {
+      "keyValues": [
+       [
+        "abbr",
+        "b"
+       ]
+      ]
+     },
+     "children": [
+      {
+       "type": "text",
+       "value": "p"
+      }
+     ]
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
