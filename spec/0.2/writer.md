@@ -65,7 +65,7 @@ Conventions:
 
 **C2-W-017** One blank line stands between two sibling blocks. This is requirement W1 of the migrate design.
 
-**Exception C2-W-018** No blank line stands before a nested list that follows the first paragraph of its item in a tight list, and none before a caption line. A nested ordered list that starts above 1 (C2-W-126) and a nested list with an attribute line, which directly below the paragraph would be a lazy line (C2-B-024), are the cases with a blank line there.
+**Exception C2-W-018** No blank line stands before a nested list that follows the first paragraph of its item in a tight list, and none before a caption line. A nested ordered list that does not start at 1 (C2-W-126) and a nested list with an attribute line, which directly below the paragraph would be a lazy line (C2-B-024), are the cases with a blank line there.
 
 Example 14 (unverified)
 
