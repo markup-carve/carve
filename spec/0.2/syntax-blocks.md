@@ -1458,8 +1458,6 @@ Example 270 (generated)
 
 ## Nested lists and the marker line
 
-**C2-B-056** A list marker with content, indented past the marker of an item, a description or a footnote body, opens a nested list there without a blank line, when it is a bullet or has the value 1 (C2-B-015): below `- a`, the line `  7. b` is a lazy line.
-
 **C2-B-057** An item may start with any block: the block opener stands directly after the marker, on the marker line.
 
 **C2-B-058** A marker line that holds another marker with content has a nested list as the item's first block.
@@ -6395,7 +6393,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Ordered lists | 11 | 1 | 10 | 2 |
 | Task items | 4 | 0 | 1 | 5 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 6 | 1 |
-| Nested lists and the marker line | 6 | 0 | 5 | 1 |
+| Nested lists and the marker line | 5 | 0 | 5 | 1 |
 | Tightness | 5 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 9 | 0 | 7 | 6 |
@@ -6412,9 +6410,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **225** | **10** | **168** | **103** |
+| **Total** | **224** | **10** | **168** | **103** |
 
-The chapter has 225 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 224 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
