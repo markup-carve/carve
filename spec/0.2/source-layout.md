@@ -4,7 +4,7 @@ Status: part of the freeze candidate of Carve 0.2 on `next2`, frozen with the re
 
 The tree of a Carve document holds its meaning (`ast.md`). How the author spelled it is recorded in a second JSON object, the source-layout sidecar. This document defines that object: its shape, the facts it holds, and the spelling a writer uses when it has a tree and no sidecar.
 
-The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Seven facts are new here: they were tree fields in that draft or in an earlier 0.2 draft and moved out of the tree. `rawAttrs` is new as well and was never a tree field.
+The shape is ported from the sidecar of the `next-ast2` branch (CARVE-P12-032 and CARVE-P12-067, `resources/ast-source-layout-schema.json`). The version 2 schema is `spec/0.2/data/layout-schema.json`. Seven facts are new here: they were tree fields in that draft or in an earlier 0.2 draft and moved out of the tree.
 
 Conventions: a clause is a paragraph that starts with an id of the form `C2-L-nnn`. `C2-A-nnn`, `C2-B-nnn` and `C2-I-nnn` name clauses of the AST document and of the block and inline chapters.
 
@@ -14,7 +14,7 @@ The sidecar is a record beside the tree, returned only when the caller asks and 
 
 Two documents that differ only in sidecar content are the same document (C2-A-004): tree equality (C2-A-161) does not read the sidecar.
 
-**C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree. A render of source and a render of its tree can still differ: a render of source writes the attribute blocks of an unresolved reference as typed, read from the source (C2-I-085).
+**C2-L-003** Parsing, AST JSON, CLI JSON and rendering are the same with and without a sidecar. An AST reader does not accept a sidecar as a tree.
 
 **C2-L-004** A sidecar belongs to the one tree it was returned with. Its paths do not hold after that tree is edited.
 
@@ -83,7 +83,6 @@ These facts hold spelling that the tree does not. The last column names the fiel
 | `hardBreakOpener` | a `div` with the class `hardbreaks` | `true` for the hard-break opener, `false` for the class form | none; the draft had no field |
 | `wraps`, `continuationLines` | a `table_cell`, a `table_row` | where continuation rows broke the cell, and how many the row has | `cell_wrap`, `cellWraps`, `table_row.continuationLines` |
 | `rawRef` | a `link` or `image` that carries `key` | the reference as typed, from the opening bracket to the bracket that closes the reference (C2-L-049) | `link.rawRef`, `image.rawRef` |
-| `rawAttrs` | a `link` or `image` that carries `key`, or a `footnote_ref`, and has attribute blocks glued to it | the glued attribute blocks as typed, from the first opening brace to the last closing brace (C2-L-049) | none; the draft had no field |
 | `sourceFormat` | a `table` | `pipe`, `csv` or `tsv` | `table.sourceFormat` |
 | `headerRows` | a delimited `table` | the effective count of its `header-rows` attribute | `table_body.headRows` |
 
@@ -203,13 +202,13 @@ Where 0.2 has one canonical form, the formatter writes it whatever the sidecar r
 
 **C2-L-045** `markerColumn` on the entry of a `comment` that came from a comment-only line inside a quote is the column of the quote mark on that line. No writer rule reads it.
 
-**C2-L-046** The writer reads ten facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows`, `rawRef`, `rawAttrs` and `optionSpelling` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
+**C2-L-046** The writer reads nine facts: `bare`, `fenced`, `hardBreakOpener`, `wraps`, `continuationLines`, `sourceFormat`, `headerRows`, `rawRef` and `optionSpelling` (C2-W-083, C2-W-084). The measured facts of the section "Measured facts carried over" have no reader in the 0.2 documents. They are for editors and other tools that need the layout as typed.
 
 **C2-L-047** Every node in a list of blocks of the top-level document (C2-A-051), outside a caption and a table cell, and every `list_item`, `definition_term`, `definition_description` and `caption` has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown. Table groups, rows and cells, the blocks inside a cell, the lines of a line block and the blocks inside a caption have no such facts, and the blocks of a `fallback` have no entry (C2-L-011). The blocks in the children of an expanded include have no entries (C2-N-082). An inline node has an entry only when it has a fact. The examples of this document show only the entries and facts under discussion.
 
 **C2-L-048** The `wraps` of a cell are sorted by `line`, and those of one line by `row`; a cell that spans rows has `row` on every wrap, 0 for its own row. A cell whose content starts in a continuation row has no joining space: its wrap for that row names its first inline node with `offset` 0.
 
-**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed. `rawAttrs` starts at the first brace behind that bracket and ends at the brace that closes the last glued attribute block; it is read the same way. For an unresolved reference a render of source writes this span of the source (C2-I-085), and the writer writes it back (C2-W-084); no renderer reads the sidecar.
+**C2-L-049** `rawRef` starts at the opening bracket, without the `!` of an image, and ends at the bracket that closes the reference, without an attribute block. In the full and collapsed forms this is the label's closing bracket; in the shortcut form it is the text pair's closing bracket. It is read without the prefixes of the lines it crosses, and the pieces are joined by a line feed.
 
 **C2-L-050** `markerRaw` of a definition is its label with the colon, as `[^n]:`, `[r]:` and `*[A]:`, and its `metadataSeparatorRaw` is the colon with the spaces behind it, so the colon is in both. For a `definition_term`, `markerRaw` is `::` and the separator is the run of spaces between the mark and the term text.
 

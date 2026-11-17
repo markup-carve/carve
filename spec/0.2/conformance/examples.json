@@ -47364,7 +47364,7 @@
    "input": "[x][no]{.c}{#i}",
    "options": {},
    "expected": {
-    "html": "<p>[x][no]{.c}{#i}</p>",
+    "html": "<p>[x][no]{#i .c}</p>",
     "tree": {
      "type": "document",
      "astVersion": "2.0",

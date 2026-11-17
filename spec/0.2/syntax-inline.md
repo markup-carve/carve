@@ -529,7 +529,7 @@ Raw inline is no host, so the attribute block behind its marker attaches to noth
 
 **Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text. It is read only behind a pair that is a span, also behind another block of that span; behind a link, an inline footnote or an inline extension it is text.
 
-The order inside a block is that of C2-B-098, and the tree keeps no order between the kinds of parts (C2-A-033); only the text of an unresolved reference writes its blocks as typed (C2-I-085).
+The order inside a block is that of C2-B-098, and the tree keeps no order between the kinds of parts (C2-A-033).
 
 **C2-I-042** A key named `id` or `class`, in any ASCII letter case, folds into the id or into the classes when the block is parsed, and of several ids the last one wins (C2-B-104). The value of a `class` key is split at runs of spaces and tabs, each piece is one class at the place of the key, and an empty value adds none.
 
@@ -1379,9 +1379,9 @@ Example 131 (unverified)
 
 :::
 
-**C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part of the children is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. The attribute blocks glued to it are written behind it as text as they were typed, each with its braces, spaces and quotes, in source order, neither merged nor reordered: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, as in 0.1. A render of source takes that text from the source, the span that `rawAttrs` records (C2-L-049), whether or not a sidecar was asked for. A supplied tree has no source and `render` takes no sidecar (C2-T-005), so for it the renderer writes the attributes of the node as one block in the fixed order (C2-B-098).
+**C2-I-085** An unresolved reference renders its brackets and its label as literal text and its children as HTML: an opening bracket, the rendered children, a closing bracket, then the label in brackets, or an empty bracket pair for the collapsed form. No part of the children is respelled as source. The label is written from the key, so a label that wrapped has one space where the line break was. The attribute blocks glued to it are merged (C2-I-039) and written behind it as text, as one block in the fixed order (C2-H-139), so the HTML is a function of the tree: `[x][no]{.c}{#i}` gives `<p>[x][no]{#i .c}</p>`. 0.1 wrote the blocks as typed (U-371).
 
-`no` names no definition, so the reference is text, and its two attribute blocks follow as typed (C2-I-085).
+`no` names no definition, so the reference is text, and its two attribute blocks follow as one block in the fixed order (C2-I-085).
 
 Example 130 (unverified)
 
@@ -1392,7 +1392,7 @@ Example 130 (unverified)
 ```
 
 ```html
-<p>[x][no]{.c}{#i}</p>
+<p>[x][no]{#i .c}</p>
 ```
 
 :::
@@ -1802,7 +1802,7 @@ Example 119 (unverified)
 
 **C2-I-087** `[^`, a label and `]` form a footnote reference. The label is one or more characters up to the next `]`, its key follows C2-I-079, and it may wrap (C2-I-080). The label follows C2-I-076 and C2-I-077. A footnote reference takes no link tail and no reference label: `(` or `[` directly behind it starts ordinary text or the next construct, so `[^n](/u)` is a footnote reference and the text `(/u)`. Where the label is none (C2-I-079), the `[` is text and opens no bracket pair, so a link tail behind it forms nothing.
 
-**C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085). The attribute blocks glued to it follow as C2-I-085 says, as typed: `[^x]{.c}{#i}` gives `<p>[^x]{.c}{#i}</p>`, as in 0.1.
+**C2-I-088** A footnote reference with no definition renders its brackets, the caret and its label as literal text (C2-I-085). The attribute blocks glued to it follow as C2-I-085 says, in the fixed order: `[^x]{.c}{#i}` gives `<p>[^x]{#i .c}</p>`, where 0.1 wrote them as typed (U-207).
 
 **C2-I-089** `^[` opens an inline footnote that closes at its matching bracket on the bracket stack. Its content is inline content, in which `[^` opens no footnote reference and `^[` no inline footnote, at any depth: a footnote reference there is text, and so is the caret of `^[`, whose bracket is an ordinary bracket. Unclosed, the two characters are text.
 

@@ -17443,12 +17443,12 @@
    "clauses": [
     "C2-I-085"
    ],
-   "why": "C2-I-085: The attribute blocks glued to it are written behind it as text as they were typed, each with its braces, spaces and quotes, in source order, neither merged nor reordered: `[x][no]{.c}{#i}` gives `<p>[x][no]{.c}{#i}</p>`, as in 0.1.",
-   "summary": "an unresolved image keeps its block as typed",
+   "why": "C2-I-085: The attribute blocks glued to it are merged (C2-I-039) and written behind it as text, as one block in the fixed order (C2-H-139), so the HTML is a function of the tree: `[x][no]{.c}{#i}` gives `<p>[x][no]{#i .c}</p>`.",
+   "summary": "an unresolved image reference writes its attribute block in the fixed order",
    "input": "![a][nope]{ .c  k='v' }",
    "options": {},
    "expected": {
-    "html": "<p>![a][nope]{ .c  k='v' }</p>",
+    "html": "<p>![a][nope]{.c k=v}</p>",
     "children": [
      {
       "type": "paragraph",
@@ -17707,12 +17707,12 @@
    "clauses": [
     "C2-I-088"
    ],
-   "why": "C2-I-088: The attribute blocks glued to it follow as C2-I-085 says, as typed: `[^x]{.c}{#i}` gives `<p>[^x]{.c}{#i}</p>`, as in 0.1.",
-   "summary": "an unresolved footnote reference keeps its blocks as typed",
+   "why": "C2-I-088: The attribute blocks glued to it follow as C2-I-085 says, in the fixed order: `[^x]{.c}{#i}` gives `<p>[^x]{#i .c}</p>`, where 0.1 wrote them as typed (U-207).",
+   "summary": "an unresolved footnote reference writes its attribute blocks in the fixed order",
    "input": "a [^x]{ .c }{#i}",
    "options": {},
    "expected": {
-    "html": "<p>a [^x]{ .c }{#i}</p>",
+    "html": "<p>a [^x]{#i .c}</p>",
     "children": [
      {
       "type": "paragraph",
