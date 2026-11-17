@@ -2429,4 +2429,4 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Further clauses | 4 | 0 | 0 | 0 |
 | **Total** | **194** | **6** | **34** | **36** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 70 examples, 34 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 70 examples, 34 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
