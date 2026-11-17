@@ -1,6 +1,6 @@
 # Freeze candidate 10 report
 
-Candidate: `eda35624c`. The status commit follows it. CI: pending.
+Candidate: `eda35624c`. The status commit follows it. CI: [CI](https://github.com/markup-carve/carve/actions/runs/44168289986) and [0.2 spec data](https://github.com/markup-carve/carve/actions/runs/44168290123) green at 1c8a4f1d5.
 
 ## Part 1: maintainer rulings
 
