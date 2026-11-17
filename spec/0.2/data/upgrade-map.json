@@ -147,7 +147,7 @@
       "group": "lists",
       "from": "- a\n+\nsecond\n- b\n",
       "to": "- a\n\n  second\n- b\n",
-      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul> The `+` line is text in 0.2. The spelling with a blank line, `- a`, a blank line, `  second`, `- b`, keeps `second` in the item as a second paragraph, `<li>a\n    <p>second</p>\n  </li>`, but 0.1 wrote that later paragraph of a tight item bare, `<li>a\n    second\n  </li>`, and in 0.2 every paragraph of an item but the first gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul> The `+` line is text in 0.2. The spelling with a blank line, `- a`, a blank line, `  second`, `- b`, keeps `second` in the item as a second paragraph, `<li>a\n    <p>second</p>\n  </li>`, but 0.1 wrote that later paragraph of a tight item bare, `<li>a\n    second\n  </li>`, and in 0.2 every paragraph of an item but the first gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-015",
       "silent": true
     },
@@ -497,7 +497,7 @@
       "group": "fences, quotes, comments",
       "from": "- item\n\n\t```\n\tx\n\t\ty\n\t```\n",
       "to": "- item\n\n\t```\n\tx\n\t    y\n\t```\n",
-      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul> The tab after the content column stays in the code in 0.2. The spelling with four spaces gives the 0.1 code text, `x\n    y`, but 0.1 also made this one-item list loose, `<li><p>item</p>`, and a list with one item is tight in 0.2, its first paragraph bare (C2-B-062, C2-B-063), so no 0.2 source gives the 0.1 HTML.",
+      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul> The tab after the content column stays in the code in 0.2. The spelling with four spaces gives the 0.1 code text, `x\n    y`, but 0.1 also made this one-item list loose, `<li><p>item</p>`, and a list with one item is tight in 0.2, its first paragraph bare (C2-B-062, C2-H-034), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-053",
       "silent": true
     },
@@ -1937,7 +1937,7 @@
       "group": "nested item definition boundary",
       "from": "* * [d]: u\n  :\n",
       "to": "* * {% %}\n\n  :\n",
-      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text. An empty comment keeps the old empty nested item, and a blank line keeps the colon outside it, `<ul>\n      <li></li>\n    </ul>\n    <p>:</p>`, but 0.1 wrote the colon bare, `</ul>\n    :`, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text. An empty comment keeps the old empty nested item, and a blank line keeps the colon outside it, `<ul>\n      <li></li>\n    </ul>\n    <p>:</p>`, but 0.1 wrote the colon bare, `</ul>\n    :`, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-235",
       "silent": true
     },
@@ -1967,7 +1967,7 @@
       "group": "list hosted fence continuation closer",
       "from": "- ```\n  x\n\n+\ntail\n",
       "to": "- ```\n  x\n\n  ```\n  tail\n",
-      "meaning02": "C2-B-057 and C2-B-111 end the item before `+`. An explicit closer at the item content column keeps the blank code line and `tail` in the item, `<pre><code>x\n\n</code></pre>\n    <p>tail</p>`, but 0.1 wrote `tail` bare after the code block, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
+      "meaning02": "C2-B-057 and C2-B-111 end the item before `+`. An explicit closer at the item content column keeps the blank code line and `tail` in the item, `<pre><code>x\n\n</code></pre>\n    <p>tail</p>`, but 0.1 wrote `tail` bare after the code block, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-H-034, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-238",
       "silent": true
     },
@@ -2547,7 +2547,7 @@
       "group": "kept and recorded",
       "from": "{{ a.txt @code }}\n^ cap\n",
       "to": "{{ a.txt @code }}\n\n^ cap\n",
-      "meaning02": "<p>{{ a.txt @code }}</p>\n<p>cap</p> C2-B-147 and C2-N-073 attach a caption line directly below a code include to the include, also when it is not expanded, and C2-N-074 writes that caption after the directive's paragraph as one more paragraph; 0.1 kept the caret line as text, `<p>^ cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote. In a list item 0.1 also made the list loose: with a blank line before the caret and one between the items the 0.1 HTML comes back, but an item alone in its list is tight (C2-B-062, C2-B-063), so its first paragraph stays bare.",
+      "meaning02": "<p>{{ a.txt @code }}</p>\n<p>cap</p> C2-B-147 and C2-N-073 attach a caption line directly below a code include to the include, also when it is not expanded, and C2-N-074 writes that caption after the directive's paragraph as one more paragraph; 0.1 kept the caret line as text, `<p>^ cap</p>`. A blank line before the caret keeps the 0.1 HTML at document level and in a quote. In a list item 0.1 also made the list loose: with a blank line before the caret and one between the items the 0.1 HTML comes back, but an item alone in its list is tight (C2-B-062, C2-H-034), so its first paragraph stays bare.",
       "toolEntry": "U-360",
       "silent": true
     },
@@ -2557,7 +2557,7 @@
       "group": "kept and recorded",
       "from": ":: t\n: d\n%%%\n%%%\n: d2\n",
       "to": ":: t\n: d\n  %%%\n  %%%\n: d2\n",
-      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>: d2</p> A comment block opener is a block line (C2-B-108); at column 0 below a description it is not indented past the mark, so the description and its list close (C2-B-025, C2-B-026, C2-B-076), and `: d2` has no term left. 0.1 kept the description list open across a comment block at column 0. Indenting the comment block into the description keeps the 0.1 HTML. Below an item, `- a`, `%%%`, `%%%`, `  b`, 0.2 closes the list the same way and `b` is a paragraph after it; indented to the content column the block keeps `b` in the item as `<p>b</p>`, where 0.1 wrote it bare (C2-B-063, U-019).",
+      "meaning02": "<dl>\n  <dt>t</dt>\n  <dd>d</dd>\n</dl>\n<p>: d2</p> A comment block opener is a block line (C2-B-108); at column 0 below a description it is not indented past the mark, so the description and its list close (C2-B-025, C2-B-026, C2-B-076), and `: d2` has no term left. 0.1 kept the description list open across a comment block at column 0. Indenting the comment block into the description keeps the 0.1 HTML. Below an item, `- a`, `%%%`, `%%%`, `  b`, 0.2 closes the list the same way and `b` is a paragraph after it; indented to the content column the block keeps `b` in the item as `<p>b</p>`, where 0.1 wrote it bare (C2-H-034, U-019).",
       "toolEntry": "U-361",
       "silent": true
     },

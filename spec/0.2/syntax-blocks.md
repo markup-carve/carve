@@ -1663,9 +1663,7 @@ Example 57 (generated)
 
 **C2-B-062** A list is loose only when a blank line stands between two of its items, so a list with one item is tight.
 
-**C2-B-063** In a tight list a paragraph is rendered bare only when it is the item's first block, and every other paragraph of the item gets `<p>`.
-
-**C2-B-064** In a loose list every paragraph of every item gets `<p>`.
+A tight list writes a paragraph bare only when it is the first block of its item (C2-H-034); a loose list gives every paragraph `<p>` (C2-H-035).
 
 **C2-B-065** A blank line counts for the list whose sibling follows it.
 
@@ -6802,7 +6800,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Task items | 3 | 0 | 1 | 5 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 6 | 1 |
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
-| Tightness | 5 | 0 | 2 | 3 |
+| Tightness | 3 | 0 | 2 | 3 |
 | Description lists | 14 | 0 | 12 | 5 |
 | Definitions | 8 | 0 | 7 | 7 |
 | Attribute lines | 20 | 1 | 12 | 11 |
@@ -6818,9 +6816,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **170** | **118** |
+| **Total** | **217** | **10** | **170** | **118** |
 
-The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
+The chapter has 217 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-063 and C2-B-064, whose rule another clause states; their ids are not reused.
 
 ## Not covered
 
