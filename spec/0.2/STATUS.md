@@ -1,8 +1,10 @@
 # Carve 0.2: status
 
-**Freeze candidate 9.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
+**Freeze candidate 10.** The candidate is the text of `spec/0.2/` at the last commit named below, on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
-Commit: `3e7b31e10cefa19e887a02b32b75631a048e6ea9` (`3e7b31e1`). The commit after it writes only this line.
+Commit: `eda35624c74b730ac3d32b5f8b7e0f931768ddee` (`eda35624`). The commit after it writes only this line and the final report.
+
+Freeze candidate 9 commit: `3e7b31e10cefa19e887a02b32b75631a048e6ea9` (`3e7b31e1`).
 
 Freeze candidate 1, revision 2: `3aba61c624bda75049c7055962bf1a6b9120a3a4` (`3aba61c6`), the rulings on O6, O7 and O8. The commit after it writes only this line.
 
@@ -24,7 +26,9 @@ Freeze candidate 7: `7af9ba6bb3554b496d439600ab05113a776ef500` (`7af9ba6b`), the
 
 Freeze candidate 8: `69f260332101ea1e08108d5e57041bfcc548c366` (`69f26033`), the four rulings of 17 November 2026 on the open points of candidate 6 (UPGRADING, "Rulings of 17 November 2026 on the open points of candidate 6"); the gaps the engine lane logged; the reduction of 17 November 2026, which deletes 27 clauses whose rule other clauses state or give and changes no expected result; the ruling of 13:55 on the open points of candidate 7 (UPGRADING, "Rulings of 17 November 2026, 13:55"); the seven defects of an independent read of candidate 7; the cases of a coverage audit; and the fixes of a read of the whole round; each point in one commit. The commit after it writes only this line.
 
-Freeze candidate 9: named in the line above, the last fix round: the eight defects of a second independent read of candidate 8 (CR8-01 to CR8-08); what writing the clause cases showed, with one rule for where an entry's range starts (C2-W-138), a trigger for every active row of the code catalog taken from the 0.1 lint source, the comparison of layout facts (C2-L-059) and the open points of the conformance lane decided as recommended or parked; the gaps of the engine lane (G-G1 to G-G8); and the fixes of a read of the whole round; each point in one commit.
+Freeze candidate 9: at `3e7b31e1`, the last fix round: the eight defects of a second independent read of candidate 8 (CR8-01 to CR8-08); what writing the clause cases showed, with one rule for where an entry's range starts (C2-W-138), a trigger for every active row of the code catalog taken from the 0.1 lint source, the comparison of layout facts (C2-L-059) and the open points of the conformance lane decided as recommended or parked; the gaps of the engine lane (G-G1 to G-G8); and the fixes of a read of the whole round; each point in one commit.
+
+Freeze candidate 10: the ten maintainer rulings, twenty findings of the third independent read, seven further catalog defects, the engine lane examples and gaps, and the final stranger read. G-H1, G-H4 and G-H5 remain parked in the root open-points file. The extension mechanism remains provisional. The complete point and case inventory is in the root ledger and report.
 
 ## Documents
 
