@@ -25,7 +25,7 @@ Conventions:
 
 **C2-W-134** A `format` or `write` call that returns only source throws `CarveWriteError` if the diagnostic writer reports `field-unspellable`, `structure-unspellable` or `writer-refused`. The error carries those diagnostics. `formatWithDiagnostics` and `writeWithDiagnostics` return the nearest source and the report. A nearest source that may change on another pass is never returned by a call that cannot carry its loss report.
 
-**C2-W-004** Equal trees render equal HTML, so `fmt` never changes the rendered output. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
+**C2-W-004** Equal trees render equal HTML under the same render options and the same source length (C2-H-201), so `fmt` never changes the rendered output, except where it changes the length of the source and the derived-text budget of C2-H-201 binds. The HTML check is a consequence of C2-W-002 and is weaker: a writer that keeps the HTML and changes the tree fails.
 
 **C2-W-005** The gates outrank every per-construct clause below. Where the spelling a clause names would not parse back to the tree it was written from, the writer takes the smallest departure that restores the tree, and another spelling of the same construct is preferred over a different construct. Such a deviation is conformant.
 
