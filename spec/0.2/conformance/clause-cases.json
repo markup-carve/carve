@@ -54128,6 +54128,30 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1125",
+  "clauses": [
+   "C2-W-138",
+   "C2-B-227"
+  ],
+  "why": "C2-W-138: A stated catalog range takes precedence over the general extents below.",
+  "summary": "invalid table attribute range covers key and value",
+  "kind": "lint",
+  "input": "{aligns=x}\n| a |\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "table-attribute-invalid",
+     "line": 1,
+     "column": 2,
+     "endLine": 1,
+     "endColumn": 10
+    }
+   ]
+  },
+  "from": []
  }
  ]
 }
