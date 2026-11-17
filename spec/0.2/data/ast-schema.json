@@ -8446,7 +8446,8 @@
           "type": "boolean"
         },
         "tooltip": {
-          "type": "string"
+          "type": "string",
+          "$comment": "resolution result when reference use"
         },
         "targetKind": {
           "enum": [
@@ -10849,7 +10850,8 @@
           "$comment": "resolution result when reference use"
         },
         "tooltip": {
-          "type": "string"
+          "type": "string",
+          "$comment": "resolution result when reference use"
         },
         "targetKind": {
           "enum": [
