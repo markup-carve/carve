@@ -9640,6 +9640,313 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-119",
+   "clauses": [
+    "C2-H-058"
+   ],
+   "why": "C2-H-058: `rowspan` and `colspan` are written only from the counts of the cell and only for a count above 1, so an authored key of either name on a cell is never written: the span marks alone shape the grid, as in 0.1.",
+   "summary": "an authored colspan on a header cell in a quote is not written",
+   "input": "> |={colspan=2} H |\n> | a | b |",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <table>\n    <thead>\n      <tr><th scope=\"col\">H</th></tr>\n    </thead>\n    <tbody>\n      <tr><td>a</td><td>b</td></tr>\n    </tbody>\n  </table>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "table",
+        "columns": [
+         {
+          "type": "table_column"
+         },
+         {
+          "type": "table_column"
+         }
+        ],
+        "children": [
+         {
+          "type": "table_head",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": true,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "H"
+                 }
+                ]
+               }
+              ],
+              "attrs": {
+               "keyValues": [
+                [
+                 "colspan",
+                 "2"
+                ]
+               ]
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_body",
+          "children": [
+           {
+            "type": "table_row",
+            "children": [
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               }
+              ]
+             },
+             {
+              "type": "table_cell",
+              "header": false,
+              "children": [
+               {
+                "type": "cell_paragraph",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "b"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-120",
+   "clauses": [
+    "C2-H-058",
+    "C2-B-172"
+   ],
+   "why": "C2-H-058: `rowspan` and `colspan` are written only from the counts of the cell and only for a count above 1, so an authored key of either name on a cell is never written: the span marks alone shape the grid, as in 0.1.",
+   "summary": "a row span mark gives the count, and the authored rowspan beside it is not written",
+   "input": "| a |{rowspan=5 .x} b |\n| c | ^ |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td><td rowspan=\"2\" class=\"x\">b</td></tr>\n    <tr><td>c</td></tr>\n  </tbody>\n</table>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "b"
+               }
+              ]
+             }
+            ],
+            "rowspan": 2,
+            "attrs": {
+             "classes": [
+              "x"
+             ],
+             "keyValues": [
+              [
+               "rowspan",
+               "5"
+              ]
+             ]
+            }
+           }
+          ]
+         },
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "c"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "span": "rowspan",
+            "children": []
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-121",
+   "clauses": [
+    "C2-H-058"
+   ],
+   "why": "C2-H-058: `rowspan` and `colspan` are written only from the counts of the cell and only for a count above 1, so an authored key of either name on a cell is never written: the span marks alone shape the grid, as in 0.1.",
+   "summary": "a rowspan key on a row is no cell key and is written",
+   "input": "- | a | b |{rowspan=2}",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <table>\n      <tbody>\n        <tr rowspan=\"2\"><td>a</td><td>b</td></tr>\n      </tbody>\n    </table>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "table",
+          "columns": [
+           {
+            "type": "table_column"
+           },
+           {
+            "type": "table_column"
+           }
+          ],
+          "children": [
+           {
+            "type": "table_body",
+            "children": [
+             {
+              "type": "table_row",
+              "children": [
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "a"
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "type": "table_cell",
+                "header": false,
+                "children": [
+                 {
+                  "type": "cell_paragraph",
+                  "children": [
+                   {
+                    "type": "text",
+                    "value": "b"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ],
+              "attrs": {
+               "keyValues": [
+                [
+                 "rowspan",
+                 "2"
+                ]
+               ]
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
