@@ -1219,7 +1219,7 @@ code
 
 ## Rendering
 
-**C2-N-075** An expanded include renders its children and nothing else: no element, no attribute and no `data-source-line` of its own. Every HTML rule that reads the blocks of a container or of the document reads the children of an expanded include in its place, recursively: section wrapping (C2-H-026), the one-line forms of an item and a quote (C2-H-006, C2-H-007), the bare first paragraph of a description (C2-H-040) and the placement of the footnote section (C2-H-093).
+**C2-N-075** An expanded include renders its children and nothing else: no element, no attribute and no `data-source-line` of its own. Every HTML rule that reads the blocks of a container or of the document reads the children of an expanded include in its place, recursively: section wrapping (C2-H-026), the one-line forms of an item and a quote (C2-H-006, C2-H-007), the bare first paragraph of a description (C2-H-040) and the placement of the footnote section (C2-H-158).
 
 Example 28 (unverified)
 

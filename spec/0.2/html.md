@@ -638,7 +638,7 @@ b</p>
 
 **C2-H-169** The blocks inside the directive that places the footnote section are written before the section, in their order. The attributes of the directive are not written, and the section is named with `aria-labelledby` also when the directive carries an authored `aria-label`: the attributes of this directive are not written, so the exception of C2-H-155 for an authored name does not apply to it.
 
-**C2-H-158** A top-level `footnotes` directive places the footnote section (C2-H-093). Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. What a directive places beyond this is left to a later extension, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
+**C2-H-158** A top-level `footnotes` directive (C2-A-066) places the footnote section at its own place (C2-H-093). Its title and its label are the first children of the `<section>`, before `<hr>`. A titled one carries `aria-labelledby` and a generated id as in C2-H-155, in place of the `aria-label` of C2-H-089. The other five directives, `toc`, `glossary`, `index`, `bibliography` and `references`, place nothing in the core: each is written as `<div class="KIND">` that holds its title, its label and its blocks as a plain div does. What a directive places beyond this is left to a later extension, such as a table of contents for `toc`. A `footnotes` directive that places nothing is written as `<div class="footnotes">` in the same way.
 
 Example 28 (generated)
 
@@ -1371,7 +1371,7 @@ a[^n]
 
 **C2-H-092** A footnote definition that no reference uses is not written.
 
-**C2-H-093** The section stands at the end of the document, after the last block. A top-level `::: footnotes` directive (C2-A-066) moves it to the place of that directive. A `::: footnotes` directive inside a container places nothing and renders as `<div class="footnotes">`. As in 0.1 (CARVE-P9-073).
+**C2-H-093** The section stands at the end of the document, after the last block, unless a `footnotes` directive places it (C2-H-158). As in 0.1 (CARVE-P9-073).
 
 **C2-H-094** With no numbered footnote in the document, no section is written. A note whose every reference is degraded (C2-H-165) is not written, and with no note left no section is written.
 
