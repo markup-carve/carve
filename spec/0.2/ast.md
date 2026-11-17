@@ -55,7 +55,7 @@ Conventions:
 }
 ```
 
-**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve --json` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-028).
+**C2-A-012** At a storage or process boundary the tree travels inside an envelope with `astVersion` and `document`, and optionally `vocabulary` and `extensions`. An in-memory handoff and `carve ast` without `--envelope` use the bare tree. `vocabulary` is an object. An envelope field other than `astVersion`, `document`, `vocabulary` and `extensions` is refused, as an unknown field of a node is (C2-A-028).
 
 **C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
 

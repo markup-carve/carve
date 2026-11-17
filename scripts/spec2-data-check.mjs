@@ -26,12 +26,14 @@ const DOCUMENTS = {
   writer: 'origin/spec/0.2-html-writer',
   includes: 'origin/next2',
   'import-html': 'origin/next2',
+  tooling: 'origin/next2',
 }
 
 // file -> the lists it holds, with the key that identifies a row and how the list is ordered.
 const FILES = {
   'attribute-block': { parts: ['name', 'name'], shapes: ['name', 'name'], order: ['name', 'rank'], folds: ['key', 'key'], merges: ['name', 'name'], contexts: ['name', 'name'] },
   'caption-number': { not_a_mark: ['name', 'name'] },
+  cli: { commands: ['name', 'name'], flags: ['name', 'name'], categories: ['name', 'name'], library: ['name', 'name'], entry_fields: ['name', 'name'] },
   'close-facts': { facts: ['name', 'name'] },
   containers: { containers: ['name', 'name'] },
   'div-names': { names: ['name', 'name'], sigils: ['name', 'sigil'] },
@@ -82,7 +84,7 @@ const sources = []
 for (const [name, ref] of Object.entries(DOCUMENTS)) {
   const { text, from } = readDocument(name, ref)
   sources.push(`${name}.md from ${from}`)
-  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILMNWX]-\d{3})\*\*/gm)) defined.add(match[1])
+  for (const match of text.matchAll(/^\*\*(?:Exception )?(C2-[ABHILMNTWX]-\d{3})\*\*/gm)) defined.add(match[1])
 }
 
 const data = {}
@@ -146,7 +148,7 @@ else {
   const schema = JSON.parse(schemaText)
   try { ajv.compile(schema) } catch (error) { fail(`ast-schema.json: invalid JSON Schema: ${error.message}`) }
   collectClauses(schema, 'ast-schema.json')
-  for (const match of schemaText.matchAll(/C2-[ABHILMNWX]-\d{3}/g)) {
+  for (const match of schemaText.matchAll(/C2-[ABHILMNTWX]-\d{3}/g)) {
     cited.add(match[0])
     if (!defined.has(match[0])) fail(`ast-schema.json: cites ${match[0]}, which no document defines`)
   }
@@ -484,6 +486,76 @@ for (const [option, kind] of optionRows) {
   if (!row) fail(`html.md C2-H-137: ${option} is not in options.json`)
   else if (kind !== kinds.join(', ')) fail(`html.md C2-H-137: ${option} is of the kind ${kind}, options.json says ${kinds.join(', ')}`)
 }
+
+// tooling.md against cli.json: the commands, the flag table of each command, the categories, the calls and the entry fields.
+const cli = data.cli ?? {}
+const toolingTable = (text, header) => {
+  const lines = text.split('\n')
+  const start = lines.findIndex(line => line.startsWith(header))
+  if (start < 0) return []
+  const rows = []
+  for (let at = start + 2; at < lines.length && lines[at].startsWith('|'); at++) rows.push(lines[at].split('|').slice(1, -1).map(cell => cell.trim()))
+  return rows
+}
+const unquote = cell => cell.replace(/^`|`$/g, '')
+const sameSet = (left, right, where) => {
+  for (const name of left) if (!right.has(name)) fail(`${where}: ${name} is in tooling.md, not in cli.json`)
+  for (const name of right) if (!left.has(name)) fail(`${where}: ${name} is in cli.json, not in tooling.md`)
+}
+const tooling = texts.tooling ?? ''
+const commandNames = new Set((cli.commands ?? []).map(row => row.name))
+sameSet(new Set(toolingTable(tooling, '| Command |').map(row => unquote(row[0]))), commandNames, 'tooling.md commands')
+const specified = (cli.commands ?? []).filter(row => row.specified).map(row => row.name)
+const listed = new Map()
+const flagSection = (command, body) => {
+  for (const row of toolingTable(body, '| Flag |')) {
+    const flag = unquote(row[0]).replace(/^--/, '')
+    if (!listed.has(flag)) listed.set(flag, new Set())
+    listed.get(flag).add(command)
+  }
+}
+for (const part of tooling.split(/^### /m).slice(1)) {
+  const heading = part.split('\n')[0].trim()
+  const body = part.split(/^## /m)[0]
+  if (heading === 'Every command') for (const command of specified) flagSection(command, body)
+  else {
+    const command = /^`carve ([a-z-]+)`$/.exec(heading)?.[1]
+    if (!command || !commandNames.has(command)) { fail(`tooling.md: the section "${heading}" names no command of cli.json`); continue }
+    flagSection(command, body)
+  }
+}
+const optionRowsByName = new Map((data.options?.options ?? []).map(row => [row.name, row]))
+const FLAG_KINDS = { boolean: 'switch', enum: 'enum', list: 'json', map: 'json', structure: 'json' }
+for (const row of cli.flags ?? []) {
+  const where = `cli.json flags ${row.name}`
+  const shown = [...(listed.get(row.name) ?? [])].sort()
+  if (shown.join(',') !== row.commands.join(',')) fail(`${where}: the commands are ${row.commands.join(', ')}, the tables of tooling.md list it for ${shown.join(', ') || 'none'}`)
+  for (const command of row.commands) if (!specified.includes(command)) fail(`${where}: ${command} is no specified command`)
+  if (row.option !== undefined) {
+    const option = optionRowsByName.get(row.option)
+    if (!option) fail(`${where}: ${row.option} is not in options.json`)
+    else {
+      if (FLAG_KINDS[option.type] !== row.kind) fail(`${where}: the option ${row.option} is a ${option.type}, so the flag is a ${FLAG_KINDS[option.type]}`)
+      if (row.kind === 'enum' && (option.values ?? []).join(',') !== (row.values ?? []).join(',')) fail(`${where}: the values differ from options.json`)
+      const kebab = row.option.replaceAll(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)
+      if (kebab !== row.name) fail(`${where}: the option ${row.option} is spelled --${kebab} (C2-T-010)`)
+      if (row.default !== undefined) fail(`${where}: a flag that sets an option takes the default of the option`)
+    }
+  }
+  if ((row.kind === 'enum') !== (row.values !== undefined)) fail(`${where}: values belong to an enum flag and only to one`)
+}
+for (const flag of listed.keys()) if (!(cli.flags ?? []).some(row => row.name === flag)) fail(`tooling.md: --${flag} is not in cli.json flags`)
+const categoryRows = toolingTable(tooling, '| Status | Category |')
+sameSet(new Set(categoryRows.map(row => unquote(row[1]))), new Set((cli.categories ?? []).map(row => row.name)), 'tooling.md categories')
+for (const row of categoryRows) {
+  const kept = (cli.categories ?? []).find(entry => entry.name === unquote(row[1]))
+  if (!kept) continue
+  if (String(kept.status) !== row[0]) fail(`tooling.md categories: ${kept.name} has status ${row[0]}, cli.json says ${kept.status}`)
+  const errors = [...row[2].matchAll(/`([A-Za-z]+)`/g)].map(match => match[1]).sort()
+  if (errors.join(',') !== [...kept.errors].sort().join(',')) fail(`tooling.md categories: ${kept.name} names other errors than cli.json`)
+}
+sameSet(new Set(toolingTable(tooling, '| Call |').map(row => unquote(row[0]))), new Set((cli.library ?? []).map(row => row.name)), 'tooling.md library')
+sameSet(new Set(toolingTable(tooling, '| Field |').map(row => unquote(row[0]))), new Set((cli.entry_fields ?? []).map(row => row.name)), 'tooling.md entry fields')
 
 console.log(`Documents: ${sources.join('; ')}`)
 console.log(`Clauses defined: ${defined.size}. Clauses cited by a data row: ${cited.size}.`)

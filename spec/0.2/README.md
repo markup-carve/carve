@@ -6,5 +6,6 @@ This tree holds the specification of Carve 0.2, written fresh from the 0.2 rule 
 It is freeze candidate 4 on the `next2` branch and is not released: [`STATUS.md`](STATUS.md) says what is frozen and what is still open. The reference engine is `carve-js` under `v2/` on the same branch name.
 Documents: Syntax blocks (`syntax-blocks.md`, which includes tables), Syntax inline, HTML rendering, AST 2.0, extensions (`extensions.md`), the source-layout sidecar, Writer and fmt, and Includes (`includes.md`, prefix `C2-N-`), which defines include expansion.
 The HTML import mapping (`import-html.md`, prefix `C2-M-`) defines how HTML without carriers becomes a tree.
+Tooling (`tooling.md`, prefix `C2-T-`) defines the library calls and the command line every engine offers, with its flags, exit codes and reports.
 Clause ids in this tree use a new prefix per document, starting with `C2-B-` for the block chapter, so that no 0.1 id is reused with a new meaning.
-Every example of the nine documents is also an entry of the [conformance corpus](conformance/README.md), with the clause cases and the refused trees that engines test against; an example marked "unverified" has hand-written expected output.
+Every example of the ten documents is also an entry of the [conformance corpus](conformance/README.md), with the clause cases and the refused trees that engines test against; an example marked "unverified" has hand-written expected output.

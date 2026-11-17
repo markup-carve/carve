@@ -35,7 +35,8 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 38 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 84 | 239 | 46 | 1 | 58 |
-| **Total** | | **1,138** | **2,181** | **442** | **43** | **599** |
+| `tooling.md` | C2-T | 40 | 103 | 8 | 0 | 0 |
+| **Total** | | **1,178** | **2,284** | **450** | **43** | **599** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount.
 
@@ -45,7 +46,7 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 
 ## Data files
 
-- `data/`: 34 JSON files that the documents cite, among them the tree schema (`ast-schema.json`), the layout schema (`layout-schema.json`), the option table (`options.json`), the code catalog (`lint-rules.json`), the limits (`limits.json`), the import table (`import-html.json`) and the upgrade map (`upgrade-map.json`); `data/schemas/` holds the schema of each table; `data/README.md` lists them. Where a data row and its clause disagree, the clause wins.
+- `data/`: 35 JSON files that the documents cite, among them the tree schema (`ast-schema.json`), the layout schema (`layout-schema.json`), the option table (`options.json`), the code catalog (`lint-rules.json`), the limits (`limits.json`), the import table (`import-html.json`), the command line table (`cli.json`) and the upgrade map (`upgrade-map.json`); `data/schemas/` holds the schema of each table; `data/README.md` lists them. Where a data row and its clause disagree, the clause wins.
 - `trees/`: the fixtures of the tree gate (`trees/README.md`).
 - `conformance/`: the corpus every engine reads (`conformance/README.md`).
 
@@ -67,6 +68,7 @@ The gates check the text against itself. No engine runs in them; an engine runs 
 - The layout sidecar: `source-layout.md` with `data/layout-schema.json`.
 - Includes: `includes.md`.
 - HTML import: `import-html.md`.
+- Tooling, the library calls and the command line: `tooling.md` with `data/cli.json`.
 
 ## What is not frozen
 

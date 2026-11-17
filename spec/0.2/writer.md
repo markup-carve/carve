@@ -480,7 +480,7 @@ A line.
 
 **C2-W-100** `carve fmt` writes the canonical form of each file, and with `--normalize` the normalized one (C2-W-127). With `--check` it changes nothing, prints `path:line` for the first changed line of each file with the old and the new line, and exits with status 1 when a file would change and 0 when none would. With `--diff` it prints a unified diff under the same exit codes. The path of standard input is `<stdin>`.
 
-**C2-W-101** A command line fails with status 2 for an unknown option or a bad option value, for an input file that is missing or unreadable, for AST JSON that is not valid, and for an HTML input the importer refuses (C2-M-006). The first line on stderr starts with `carve[CATEGORY]:`, where CATEGORY is `usage`, `input-unreadable`, `ast-json-invalid` or `import-input-invalid`.
+**C2-W-101** A command line fails with status 2 for an unknown option or a bad option value, for an input file that is missing or unreadable, for AST JSON that is not valid, and for an HTML input the importer refuses (C2-M-006). The first line on stderr starts with `carve[CATEGORY]:`, where CATEGORY is `usage`, `input-unreadable`, `ast-json-invalid` or `import-input-invalid` for these failures; the table of C2-T-040 holds every category with its status.
 
 **C2-W-102** The writer is also reachable from AST JSON with no source and no sidecar. It then writes the defaults of C2-W-083.
 

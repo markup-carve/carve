@@ -1085,7 +1085,7 @@ Reported: `duplicate-id`.
 
 ## Failures and limits
 
-**C2-N-061** Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning. The causes, their codes and the order in which they are tested are the rows of `causes` in `data/includes.json`; the first cause that applies is reported and no later one is tested. No failure removes the directive, and no failure is silent.
+**C2-N-061** Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning. The causes, their codes and the order in which they are tested are the rows of `causes` in `data/includes.json`; the first cause that applies is reported and no later one is tested. No failure removes the directive, and no failure is silent: past the cap `include_diagnostics` of `data/limits.json`, 100 entries, a failure is counted and not listed (C2-T-024).
 
 **C2-N-062** The causes that are tested before the resolver is called, `no_resolver`, `option_invalid`, `conflict`, `depth` and `size_spent`, never call it, and the node has no `file`. A cause the resolver returns leaves the node without `file`. A cause tested after the resolver returned a text, `cycle`, `size_exceeded` and every selection cause, leaves `file` on the node: the file was read.
 

@@ -68,6 +68,15 @@
       ]
     },
     {
+      "name": "include_diagnostics",
+      "value": 100,
+      "unit": "entries",
+      "clauses": [
+        "C2-N-061",
+        "C2-T-024"
+      ]
+    },
+    {
       "name": "inline_depth",
       "value": 200,
       "unit": "open_entries",

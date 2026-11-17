@@ -1,9 +1,9 @@
-// The one extractor of the examples of the nine 0.2 documents. spec2-trees.mjs and spec2-conformance.mjs read
+// The one extractor of the examples of the ten 0.2 documents. spec2-trees.mjs and spec2-conformance.mjs read
 // the examples through it, so the tree gate and the conformance corpus see the same inputs.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-export const DOCUMENTS = ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html']
+export const DOCUMENTS = ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']
 
 export const HEADER = /^Example (\d+) \((generated|unverified|verified)([^)]*)\)\s*$/
 export const FENCE = /^(`{3,}|~{3,})(\w*)\s*$/
@@ -98,5 +98,5 @@ export function examplesOf(spec, document) {
   return out
 }
 
-/** Every example of the nine documents, in document order. */
+/** Every example of the ten documents, in document order. */
 export const allExamples = (spec) => DOCUMENTS.flatMap(document => examplesOf(spec, document))
