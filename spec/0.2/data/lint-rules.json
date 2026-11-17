@@ -651,8 +651,8 @@
       "status": "renamed",
       "renamed_from": "duplicate-heading-id",
       "messages": [
-        "Duplicate id \"${explicit}\": the repeated HTML id is invalid, and cross-references to it resolve to the first occurrence."],
-      "message_origin": "engine_0_1",
+        "Duplicate id \"${explicit}\": the first node in document order wins id lookup."],
+      "message_origin": "data_file",
       "channel_reports": "a second node with one authored id (C2-A-039)",
       "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",
       "reports": "a node of any type whose authored `attrs.id` is the id of an earlier node in document order, also when the two stand in different files of an include, once per later node; an id that heading slugging generates is never reported, and an id in the view of an extension node that resolution does not visit is not compared (C2-A-039, C2-N-058)",

@@ -52971,6 +52971,27 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1070",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "duplicate authored ids report even under a degrading profile",
+   "kind": "render",
+   "input": "{#x}\n# A\n\n{#x}\n# B\n",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-id"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

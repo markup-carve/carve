@@ -223,3 +223,9 @@ Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause
 Search: `profile-construct-degraded`, `C2-H-129`, `C2-H-163`.
 
 Places: `spec/0.2/UPGRADING.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/options.json`, `spec/0.2/data/url-policy.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/writer.md`. Nesting depth can degrade an otherwise allowed type.
+
+## Catalog audit: duplicate-id
+
+Search: `duplicate-id`, `C2-A-039`, `C2-H-163`.
+
+Places: `spec/0.2/UPGRADING.md`, `spec/0.2/ast.md`, `spec/0.2/conformance/clause-cases.json`, `spec/0.2/conformance/examples.json`, `spec/0.2/data/cli.json`, `spec/0.2/data/lint-rules.json`, `spec/0.2/data/options.json`, `spec/0.2/data/url-policy.json`, `spec/0.2/extensions.md`, `spec/0.2/html.md`, `spec/0.2/import-html.md`, `spec/0.2/includes.md`, `spec/0.2/tooling.md`, `spec/0.2/writer.md`. An authored duplicate can be degraded and never appear as a repeated HTML id.
