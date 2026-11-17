@@ -156,7 +156,7 @@
         "Link to \"${href}\" matches no id in this document, so the link goes nowhere."
       ],
       "message_origin": "engine_0_1",
-      "reports": "a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded, is not empty, is not `top` in any letter case, and is no `id` (and no `name` of an `a` element) in the rendered HTML of the document, heading, footnote, note mark and raw HTML ids included; once per link; not reported at all while an id-generating extension is in use (C2-I-066, C2-H-022, C2-H-088, C2-H-089)",
+      "reports": "a link whose destination starts with `#` and whose fragment, the part before any `:~:` and tested both as written and percent-decoded, is not empty, is not `top` in any letter case, and is no `id` (and no `name` of an `a` element) in the rendered HTML of the document, heading, footnote, note mark and raw HTML ids included; once per link; not reported at all while an extension that generates ids is registered for the run, whether or not the document contains a node of that extension (C2-I-066, C2-H-022, C2-H-088, C2-H-089)",
       "clauses": ["C2-I-066", "C2-H-022", "C2-H-088", "C2-H-089"]
     },
     {

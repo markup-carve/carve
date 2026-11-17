@@ -53121,6 +53121,28 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1076",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "registered id-generating extension suppresses a missing fragment without a matching node",
+   "kind": "lint",
+   "input": "[x](#missing)\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
   }
  ]
 }
