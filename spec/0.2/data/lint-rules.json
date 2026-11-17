@@ -126,8 +126,8 @@
         "This braced span did not open: the delimiter inside it closed a span that started before it. Escape that delimiter."
       ],
       "message_origin": "design",
-      "reports": "a braced opener left as text because a bare delimiter inside it closed an outer span",
-      "clauses": ["C2-W-106"]
+      "reports": "a braced opener (C2-I-055) inside a bare emphasis or strong span that is removed and left as text because a bare delimiter after it closed that span, which opened before it (C2-I-059, C2-I-060), where a braced closer of the opener's mark follows later in the same content, so the braced span would have formed without that delimiter; a braced opener removed by a braced closer of an outer braced span, as in `{+a {*b+} c*}`, and one that has no closer of its mark are not reported; once per opener, the range is the two characters of the opener (C2-I-055, C2-I-059, C2-I-060)",
+      "clauses": ["C2-I-055", "C2-I-059", "C2-I-060"]
     },
     {
       "id": "broken-crossref",
@@ -311,7 +311,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "a block opener under a term is term text (C2-B-075)",
-      "clauses": ["C2-B-075"]
+      "reports": "a term whose text (C2-B-069) starts with a quote mark (C2-B-031) or a list marker (C2-B-034, C2-B-036) followed by a space, which C2-B-075 makes term text; `:: >a` and a block opener on a later line of the term are not reported; once per term, the range is the quote mark or the list marker (C2-B-031, C2-B-034, C2-B-036, C2-B-069, C2-B-075)",
+      "clauses": ["C2-B-075", "C2-B-069", "C2-B-031", "C2-B-034", "C2-B-036"]
     },
     {
       "id": "delimited-table-malformed",
@@ -324,6 +325,7 @@
       "message_origin": "data_file",
       "channel_reports": "an unclosed quote in a delimited table (C2-B-181)",
       "change": "severity error; new message text: the block stays a table (C2-B-181)",
+      "reports": "an unclosed quote in a delimited table: a `\"` at the start of a field of a `csv` or `tsv` fence marked with `table` that finds no closing `\"` before the end of the fence body, so its cell holds the rest of the body (C2-B-181); a `\"` inside an unquoted field and text after a closing quote are no bad quoting in 0.2 and are not reported; once per table, the range is the unclosed quote character (C2-B-180, C2-B-181)",
       "clauses": ["C2-B-180", "C2-B-181"]
     },
     {
@@ -345,8 +347,8 @@
       "default": "on",
       "messages": ["A bare equals pair is text in 0.2. Write the braced highlight."],
       "message_origin": "design",
-      "reports": "an equals pair that 0.1 read as highlight",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of bare `=` in one inline content that 0.1 read as highlight, read as if `=` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `=`, is not followed by `>` and is not the `=` of `!=`, `<=` or `>=` (C2-I-117); the closer is the first later `=` that can close by C2-I-048 and is not the `=` of such a comparison, and a `=` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `=` between two word characters (C2-I-053); a `=` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053, C2-I-117)",
+      "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053", "C2-I-117"]
     },
     {
       "id": "deprecated-bare-strike",
@@ -356,8 +358,8 @@
       "default": "on",
       "messages": ["A bare tilde pair is text in 0.2. Write the braced strike."],
       "message_origin": "design",
-      "reports": "a tilde pair that 0.1 read as strike",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of bare `~` in one inline content that 0.1 read as strike, read as if `~` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `~`; the closer is the first later `~` that can close by C2-I-048, and a `~` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `~` between two word characters (C2-I-053); a `~` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
+      "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053"]
     },
     {
       "id": "deprecated-bare-underline",
@@ -367,8 +369,8 @@
       "default": "on",
       "messages": ["A bare underscore pair is text in 0.2. Write the braced underline, or the slash pair for emphasis."],
       "message_origin": "design",
-      "reports": "an underscore pair that 0.1 read as underline",
-      "clauses": ["C2-W-106"]
+      "reports": "a pair of bare `_` in one inline content that 0.1 read as underline, read as if `_` were a bare delimiter of C2-I-046: the opener can open by C2-I-047, stands next to no other `_`; the closer is the first later `_` that can close by C2-I-048, and a `_` between them that cannot close is text, so the pair does not nest; the content between them is not empty and may hold line breaks and other spans, and no pair forms where that content holds `_` between two word characters (C2-I-053); a `_` behind a backslash, inside an atom or followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part; once per pair, the range runs from the opener to the end of the closer (C2-I-046, C2-I-047, C2-I-048, C2-I-050, C2-I-053)",
+      "clauses": ["C2-I-046", "C2-I-047", "C2-I-048", "C2-I-050", "C2-I-053"]
     },
     {
       "id": "deprecated-cell-alignment",
@@ -394,8 +396,8 @@
         "The plus continuation marker was removed in 0.2 and is text here. Put the block after a blank line, indented past the list marker."
       ],
       "message_origin": "design",
-      "reports": "a line that holds only `+` outside a table and a fence, and an item whose first line is `+`",
-      "clauses": ["C2-W-106"]
+      "reports": "a line whose content behind its quote marks and indentation is a single `+`, with only spaces and tabs before and after it, and a list item, with or without a task box, whose text on its marker line is a single `+`, both text in 0.2 where 0.1 read a list continuation marker (C2-B-059); `++`, `+a` and a table cell holding `+` are not reported, nor a line of a code block, raw block, comment block or frontmatter or a line inside a code span; once per line, the range is the `+` (C2-B-059)",
+      "clauses": ["C2-B-059"]
     },
     {
       "id": "deprecated-indented-line-under-heading",
@@ -434,8 +436,8 @@
         "The separator row was removed in 0.2 and is a row of dashes here. Mark the header cells with the header mark and delete this row."
       ],
       "message_origin": "design",
-      "reports": "a row in which every cell holds only hyphens and colons",
-      "clauses": ["C2-W-106"]
+      "reports": "the second row of a table whose first row is not such a row, when every cell of it holds, inside its padding, only a run of one or more hyphens with an optional colon at either end (`-`, `---`, `:--`, `--:`, `:-:`) and has no cell prefix: the separator row 0.1 read as the end of a Markdown head, which 0.2 reads as an ordinary body row (C2-B-166); a row of hyphens at any other place, a lone first row, an empty cell and a cell with a header mark or a brace block are not reported; once per row, the range is the row (C2-B-166, C2-B-171)",
+      "clauses": ["C2-B-166", "C2-B-171"]
     },
     {
       "id": "deprecated-spaced-thematic-break",
@@ -461,8 +463,8 @@
         "The substitution arrow was removed in 0.2; this is a strike span. Write a deletion directly followed by an insertion."
       ],
       "message_origin": "design",
-      "reports": "a braced strike span that holds `~>`",
-      "clauses": ["C2-W-106"]
+      "reports": "a braced strike span whose own content holds `~>`, which 0.1 read as a substitution of the text before by the text after and which 0.2 reads as text in the strike (C2-I-062): the first `~>` not behind a backslash and not inside an atom (a code span, a math span, a braced or line comment), a bracket construct or a nested braced span, while a bare span around it does not hide it; once per strike span, the range is the strike span (C2-I-062)",
+      "clauses": ["C2-I-062"]
     },
     {
       "id": "deprecated-table-attribute",
@@ -509,8 +511,8 @@
       "default": "on",
       "messages": ["This line continues the term above. Add a blank line after the term if it is a paragraph."],
       "message_origin": "design",
-      "reports": "a term whose text spans several lines",
-      "clauses": ["C2-W-106"]
+      "reports": "the first line below a term's mark line that holds text of the term, which continues the term like paragraph text (C2-B-069) instead of starting a paragraph; comment-only lines between are skipped, and a term on one line is not reported; once per term, the range runs from the first character of that line's text, behind its prefixes and indentation, to the end of the line (C2-B-069)",
+      "clauses": ["C2-B-069"]
     },
     {
       "id": "destination-denied",
@@ -641,7 +643,8 @@
       "messages": ["Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins."],
       "message_origin": "engine_0_1",
       "channel_reports": "a second footnote definition for a key (C2-B-085)",
-      "clauses": ["C2-B-085"]
+      "reports": "a footnote definition whose key, folded as C2-I-079 says, is the key of an earlier footnote definition of the same file, once per later definition; the first one wins, keys that differ only in case are different keys, and a definition-shaped line inside a container is text and takes no part (C2-B-085, C2-I-079, C2-B-081, C2-N-060)",
+      "clauses": ["C2-B-085", "C2-I-079", "C2-B-081", "C2-N-060"]
     },
     {
       "id": "duplicate-id",
@@ -656,7 +659,8 @@
       "message_origin": "engine_0_1",
       "channel_reports": "a second node with one authored id (C2-A-039)",
       "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",
-      "clauses": ["C2-A-039"]
+      "reports": "a node of any type whose authored `attrs.id` is the id of an earlier node in document order, also when the two stand in different files of an include, once per later node; an id that heading slugging generates is never reported, and an id in the view of an extension node that resolution does not visit is not compared (C2-A-039, C2-N-058)",
+      "clauses": ["C2-A-039", "C2-N-058"]
     },
     {
       "id": "duplicate-link-reference-definition",
@@ -740,7 +744,8 @@
       ],
       "message_origin": "data_file",
       "change": "re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text",
-      "clauses": ["C2-B-083"]
+      "reports": "a line of text that holds, after its quote marks and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts too, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
+      "clauses": ["C2-B-083", "C2-B-082", "C2-I-079"]
     },
     {
       "id": "extension-fallback-rendered",
@@ -778,8 +783,8 @@
         "This line closes the block opened on line (n) although it is indented differently. If it is content, make the outer fence longer."
       ],
       "message_origin": "design",
-      "reports": "a closer whose indent differs from its opener's",
-      "clauses": ["C2-W-106"]
+      "reports": "the closer of a code fence whose first backtick stands at another source column than the first backtick of its opener, which still closes the block because a closer has no column test (C2-B-109); an unclosed fence, a div and a comment block are not reported; once per code block, the range runs from the closer's first backtick to the end of its line (C2-B-108, C2-B-109)",
+      "clauses": ["C2-B-108", "C2-B-109"]
     },
     {
       "id": "fence-opener-fallback",
@@ -793,7 +798,8 @@
       "message_origin": "data_file",
       "channel_reports": "an attribute block after a fence language or an admonition name",
       "change": "severity error for an attribute block after a fence language or an admonition name",
-      "clauses": ["C2-B-105"]
+      "reports": "a valid attribute block glued to the language word of a code fence, to the format of a raw fence or to a div name, as ```` ```js{.c} ```` or `::: note{.x}`, which the block opens without, once per opener; the range is the attribute block, and a brace block after a space, or one that is no valid attribute block, starts further words that `fence-title-syntax` reports instead (C2-B-105, C2-B-225)",
+      "clauses": ["C2-B-105", "C2-B-225"]
     },
     {
       "id": "fence-title-syntax",
@@ -807,7 +813,8 @@
       ],
       "message_origin": "data_file",
       "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
-      "clauses": ["C2-B-117", "C2-B-122", "C2-B-225"]
+      "reports": "the further words of a code fence or div opener, once per opener: what follows the run and the optional language word, raw format, div name or sigil and is not a title in straight double quotes and then a label in brackets, in that order, such as an unquoted or typographically quoted title, a title after the label, a brace block after a space, a character glued to the word that starts no valid attribute block, any text after the format of a raw fence or after a sigil, and the text after a second space behind a backtick run; the range runs from the first character of the further words to the end of the opener line text (C2-B-122, C2-B-117, C2-B-225)",
+      "clauses": ["C2-B-122", "C2-B-117", "C2-B-225"]
     },
     {
       "id": "field-unspellable",
@@ -842,7 +849,8 @@
         "A \"::: figure\" inside a composite figure does not nest; it renders as a generic container. Move it out of the enclosing group."
       ],
       "message_origin": "engine_0_1",
-      "clauses": ["C2-B-127", "C2-W-106"]
+      "reports": "a div opener named `figure` with no title and no label that stands anywhere inside a figure group, directly or in a quote, a list item, an admonition or any other container of its body, which gives a plain div with the class `figure` and no second group, once per such div; the range is that div (C2-B-127)",
+      "clauses": ["C2-B-127"]
     },
     {
       "id": "figure-group-opener-metadata",
@@ -918,8 +926,8 @@
       "default": "on",
       "messages": ["Three hyphens on line 1 open frontmatter, not a thematic break. Write three stars for a break."],
       "message_origin": "design",
-      "reports": "frontmatter whose first line is blank or that holds no key line",
-      "clauses": ["C2-W-106"]
+      "reports": "frontmatter with no format name (C2-B-161, C2-B-164) whose first value line is blank or holds only spaces and tabs, or none of whose value lines holds a colon, a key line of YAML; frontmatter with a format name is not reported; once per frontmatter, the range is the frontmatter from its opener to the end of its closer (C2-B-161, C2-B-162, C2-B-164)",
+      "clauses": ["C2-B-161", "C2-B-162", "C2-B-164"]
     },
     {
       "id": "gfm-delimiter-row",
@@ -1384,8 +1392,8 @@
         "This line is indented past the list marker but short of the item's text, and it belongs to the item. Indent it to the text, or move it to the column of the list to end the item."
       ],
       "message_origin": "design",
-      "reports": "a block of an item that is indented past the marker and short of the content column",
-      "clauses": ["C2-W-106"]
+      "reports": "the first line of a block of a list item, other than its first block, whose first character stands past the item's marker column and left of its content column, both measured in the item's container (C2-B-025, C2-B-027), so the block belongs to the item; a lazy continuation line of a paragraph is not reported; once per block, the range runs from that character to the end of the line (C2-B-025, C2-B-027)",
+      "clauses": ["C2-B-025", "C2-B-027"]
     },
     {
       "id": "list-item-body-detached",
@@ -1405,6 +1413,7 @@
       ],
       "message_origin": "data_file",
       "change": "new message: the marker is read at the column of the deeper list (C2-B-055)",
+      "reports": "a list item whose marker stands right of the marker column of an open list item and left of the marker column of the open list nested in that item, so it is read at the column of the deeper list, with a paragraph open or not, once per marker, also when it does not match the deeper list and opens a new list there; the range is the item (C2-B-055)",
       "clauses": ["C2-B-055"]
     },
     {
@@ -1419,7 +1428,8 @@
       ],
       "message_origin": "data_file",
       "change": "also a list marker directly after term or description text (C2-B-022), with a second message",
-      "clauses": ["C2-B-022"]
+      "reports": "a line of paragraph, term or description text, not the first line of that text, that starts after its quote marks and indent with a bullet marker `-` or `*` or an ordered marker of one to nine digits and `.` or `)`, followed by a space and content, so the marker is part of that text and opens no list, once per line; the range runs from the marker to the end of the line text (C2-B-015, C2-B-022, C2-B-034, C2-B-036)",
+      "clauses": ["C2-B-015", "C2-B-022", "C2-B-034", "C2-B-036"]
     },
     {
       "id": "markdown-definition-paragraph",
@@ -1460,6 +1470,7 @@
       "messages": ["Markdown `**strong**` is literal text in Carve, asterisks included. Carve strong is a single `*`."],
       "message_origin": "data_file",
       "change": "new message text",
+      "reports": "a pair of two-star runs in text, as `**b**`, whose content is at least one character, holds no star and no blank line, and neither starts nor ends with whitespace, once per pair, pairs taken from left to right; stars inside a code span or code block or behind a backslash form no pair, and a letter, a digit or a further star next to a run does not prevent it; the range runs from the first star to the last (C2-I-049)",
       "clauses": ["C2-I-049"]
     },
     {
@@ -1605,7 +1616,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "it fires for each of the keys `abbr`, `time` and `kbd` (C2-H-075) on a node that is not a span",
-      "clauses": ["C2-W-106", "C2-H-075"]
+      "reports": "a key `abbr`, `time` or `kbd`, in lower case, in the attributes of a node that is not a span, as a heading, a paragraph, a list, a quote, a table, a code span, a link or an image, which stays an ordinary attribute there, once per key; a key in another case is not reported; the range is the key (C2-H-075)",
+      "clauses": ["C2-H-075"]
     },
     {
       "id": "semantic-attribute-value-ignored",
@@ -1640,8 +1652,8 @@
       "default": "on",
       "messages": ["A mention or tag does not start directly after a letter or number. Put a space or punctuation before it."],
       "message_origin": "design",
-      "reports": "a mention or tag shape directly after a letter or number outside ASCII",
-      "clauses": ["C2-W-106"]
+      "reports": "an at-sign or a `#` directly after a Unicode letter or number outside ASCII and followed by a mention or tag name (C2-I-092), which forms no mention or tag in 0.2 because the sigil follows a letter or number (C2-I-090) and which 0.1, testing only ASCII letters, digits and `_` before it, read as one; a sigil after an ASCII letter or digit, after a space or punctuation, behind a backslash or in an atom is not reported, nor `#1`, whose name holds no letter; once per sigil, the range is the sigil (C2-I-090, C2-I-092)",
+      "clauses": ["C2-I-090", "C2-I-092"]
     },
     {
       "id": "structure-unspellable",
@@ -1713,9 +1725,9 @@
       "default": "on",
       "messages": ["A row attribute is the brace block glued after the closing pipe. Here it is cell content."],
       "message_origin": "design",
-      "reports": "a row whose last cell holds only an attribute block",
+      "reports": "a table row whose last cell holds, behind its cell prefix and padding, nothing but one valid attribute block or a run of glued ones (C2-I-028, C2-B-093), which is cell text, not a row attribute, since a row attribute stands behind the closing pipe (C2-B-167); a brace block in the cell prefix, `{}`, a braced comment and a block with other text in the cell are not reported; once per row, the range is the row (C2-B-167, C2-B-171, C2-I-028)",
       "change": "the half about a row without a closing pipe is void",
-      "clauses": ["C2-W-106"]
+      "clauses": ["C2-B-167", "C2-B-171", "C2-I-028", "C2-B-093"]
     },
     {
       "id": "table-row-cell-count",
@@ -1767,7 +1779,8 @@
       "messages": ["This table-shaped line lacks a closing pipe and renders as paragraph text; close the table row."],
       "message_origin": "engine_0_1",
       "change": "stays: a line that starts with a pipe and does not end with one is text (C2-B-168)",
-      "clauses": ["C2-B-168"]
+      "reports": "a line of text that starts with a pipe after its quote marks and indent and does not end with a closing pipe as C2-B-166 and C2-B-167 say, once per line: its last pipe is escaped or stands in a code span, or something other than a row attribute, a line comment after whitespace and trailing spaces and tabs follows it; a line that is a single pipe is not reported; the range runs from the pipe to the end of the line text (C2-B-168, C2-B-166, C2-B-167)",
+      "clauses": ["C2-B-168", "C2-B-166", "C2-B-167"]
     },
     {
       "id": "table-span-marker-attribute",
@@ -1794,6 +1807,7 @@
       ],
       "message_origin": "data_file",
       "change": "a mark that joins nothing is now the text of its cell, also at a group boundary: head, body or foot (C2-B-173, C2-B-174)",
+      "reports": "a table cell that holds only a span mark, `<` or `^`, after any prefix, that joins nothing and so holds the mark as text: a `<` in the first column or whose left cell is covered by a row span from above, a `^` in the first row of its group (head, body or foot) or below a cell that spans more than one column; once per cell, an escaped mark is not reported, and the range is the cell, the text between its pipes (C2-B-172, C2-B-173, C2-B-174)",
       "clauses": ["C2-B-172", "C2-B-173", "C2-B-174"]
     },
     {
@@ -1816,7 +1830,8 @@
       "messages": ["This line of \"${raw}\" is text in Carve 0.2. Write \"***\" for a thematic break."],
       "message_origin": "engine_0_1",
       "change": "new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2",
-      "clauses": ["C2-B-160"]
+      "reports": "a line of text that after its quote marks and indent holds only a run of three or more hyphens or of three or more underscores and trailing spaces and tabs, which is no thematic break in 0.2, once per line; a hyphen run directly below a line of paragraph text is reported by `setext-heading-underline` instead, and three hyphens on line 1 open frontmatter; the range is the run (C2-B-160, C2-B-161)",
+      "clauses": ["C2-B-160", "C2-B-161"]
     },
     {
       "id": "tight-list-item-with-blank-line",
@@ -1828,8 +1843,8 @@
         "A blank line inside an item no longer makes the list loose. Put a blank line between the items if every item should render as a paragraph."
       ],
       "message_origin": "design",
-      "reports": "a tight list in which an item holds a blank line and a paragraph",
-      "clauses": ["C2-W-106"]
+      "reports": "a tight list (C2-B-062) in which an item holds a paragraph among its own blocks and a blank line between two of its own blocks, which 0.1 read as a loose list and which 0.2 keeps tight, so the first paragraph of each item is written bare (C2-H-034); a blank line inside a nested block does not count; once per list, the range is the list (C2-B-062, C2-H-034)",
+      "clauses": ["C2-B-062", "C2-H-034"]
     },
     {
       "id": "unattached-block-attribute",
@@ -1870,8 +1885,8 @@
         "This attribute block is attached to nothing and renders as text. Glue it to a span, link or code span, or escape the brace."
       ],
       "message_origin": "design",
-      "reports": "an attribute block in a paragraph that is glued to no host",
-      "clauses": ["C2-W-106"]
+      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a block inside an atom and a line that holds nothing but blocks, an attribute line, are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
+      "clauses": ["C2-I-028", "C2-I-035", "C2-I-036"]
     },
     {
       "id": "unclosed-braced-comment",
@@ -1900,6 +1915,7 @@
       "message_origin": "data_file",
       "channel_reports": "a code fence that runs to the end of its container (C2-B-111)",
       "change": "severity error; the block ends with its container (C2-B-111)",
+      "reports": "a code fence, a raw fence included, that has no closing fence before its container ends, so it ends with its container or with the document, once per fence; the range is the block (C2-B-111)",
       "clauses": ["C2-B-111"]
     },
     {
@@ -1913,6 +1929,7 @@
       "message_origin": "engine_0_1",
       "channel_reports": "a comment block that runs to the end of its container (C2-B-111)",
       "change": "severity error; the block ends with its container (C2-B-111)",
+      "reports": "a comment block, opened by a run of three or more percent signs, that has no closing run before its container ends, so it ends with its container or with the document, once per block; the range is the block (C2-B-111)",
       "clauses": ["C2-B-111"]
     },
     {
@@ -1927,6 +1944,7 @@
       "message_origin": "engine_0_1",
       "channel_reports": "a div that runs to the end of its container (C2-B-111, C2-B-125)",
       "change": "severity error; the block ends with its container (C2-B-111)",
+      "reports": "a div of any kind, plain, anonymous, admonition, directive, figure group, quote fence or line block, whose colon run meets no bare colon run long enough to close it before its container ends, once per div; a stray colon run at column 0 below an item with an unclosed div opens an anonymous div at top level, which is reported too; the range is the div (C2-B-111, C2-B-125, C2-B-132)",
       "clauses": ["C2-B-111", "C2-B-125", "C2-B-132"]
     },
     {
@@ -1991,7 +2009,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "the full form and a wrapped label now reach the heading lookup (C2-I-080, C2-I-081)",
-      "clauses": ["C2-I-080", "C2-I-081"]
+      "reports": "a full or collapsed reference, link or image, whose key matches no link definition and, for a link, no heading by the lookup of C2-I-084, once per reference; a shortcut forms only from a definition and is text otherwise, so it is never reported, and a wrapped label folds its line break to one space; the range is the reference (C2-I-081, C2-I-080, C2-A-109)",
+      "clauses": ["C2-I-081", "C2-I-080", "C2-A-109", "C2-I-084"]
     },
     {
       "id": "unused-footnote-definition",
