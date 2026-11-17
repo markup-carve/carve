@@ -221,6 +221,7 @@ const readerProblems = readerChecks(spec)
 const REFUSALS = {
   render: ['CarveInputError', 'CarveRenderError', 'CarveOptionError', 'CarveTreeError'],
   parse: ['CarveInputError', 'CarveOptionError'],
+  layout: ['CarveInputError', 'CarveOptionError'],
   lint: ['CarveOptionError'],
   format: ['CarveWriteError', 'CarveOptionError'],
   write: ['CarveWriteError', 'CarveLayoutError', 'CarveTreeError', 'CarveOptionError'],
@@ -252,6 +253,29 @@ function refusalProblems(entry) {
   return problems
 }
 
+// A sidecar a case gives or expects passes the layout schema (a supplied one unless the case expects its
+// refusal); an expected one holds the input as its source, and its ranges lie inside it (C2-L-012).
+const validateLayout = new Ajv2020({ strict: true, allErrors: false }).compile(readJson(join(spec, 'data/layout-schema.json')))
+function layoutProblems(entry) {
+  const problems = []
+  if (entry.layout && entry.expected.refusal?.error !== 'CarveLayoutError' && !validateLayout(entry.layout)) problems.push(`gives a sidecar the layout schema refuses at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`)
+  if (entry.layout && entry.kind !== 'write') problems.push('gives a sidecar to a call that reads none')
+  const expected = entry.expected.layout
+  if (expected) {
+    if (entry.kind !== 'layout') problems.push('expects a sidecar from a call that returns none')
+    const bytes = entry.inputBytes !== undefined ? Buffer.from(entry.inputBytes.replaceAll(' ', ''), 'hex') : Buffer.from(entry.input ?? '', 'utf8')
+    const complete = { version: 2, encoding: 'utf-8', source: '', lineEndings: 'none', bom: false, nodes: [], ...expected }
+    if (!validateLayout(complete)) problems.push(`expects a sidecar the layout schema refuses at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`)
+    if (expected.source !== undefined && expected.source !== (expected.encoding === 'base64' ? bytes.toString('base64') : entry.input)) problems.push('expects a sidecar whose source is not the input')
+    for (const node of expected.nodes ?? []) if (node.startByte > node.endByte || node.endByte > bytes.length) problems.push(`expects ${node.path} at a range outside the input`)
+  }
+  for (const [path, facts] of Object.entries(entry.expected.layoutAbsent ?? {})) {
+    const stated = expected?.nodes?.find(node => node.path === path)
+    for (const fact of facts) if (stated && fact in stated) problems.push(`both expects and excludes ${fact} on ${path}`)
+  }
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -277,6 +301,7 @@ for (const entry of cases.cases) {
   if ((entry.kind ?? 'render') === 'render' && !entry.files && exampleInputs.has(JSON.stringify([entry.input, entry.options]))) fail(`clause-cases.json ${entry.id}: duplicates an example`)
   for (const problem of diagnosticProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of refusalProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }

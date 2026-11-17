@@ -55,6 +55,8 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `parse` | `input` or `inputBytes`, `files` | `parseWithDiagnostics` | `children`, `tree`, diagnostics, `refusal` |
 | `lint` | `input` or `inputBytes`, `files` | `lint` | diagnostics, `refusal` |
 | `format` | `input` or `inputBytes` | `formatWithDiagnostics` | `carve`, diagnostics, `refusal` |
+| `layout` | `input` or `inputBytes` | `parseWithLayout` | `layout`, `layoutAbsent`, `children`, diagnostics |
+| `write` | `tree`, and `layout`, its sidecar | `writeWithDiagnostics`, and `write` for a refusal | `carve`, diagnostics (the losses), `refusal` |
 | `tree` | `tree`, a JSON value, or `json`, JSON text | `decodeTree` | `accepted`, `tree`, `refusal` |
 | `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
 
@@ -79,6 +81,34 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 ```
 
 The check fails a code that `data/lint-rules.json` does not list or lists as obsolete or void, a `channel` or `severity` that differs from the catalog, a position outside the text it is counted in, and a code that is both expected and excluded.
+
+### Layout and writing
+
+A `layout` case compares the sidecar that `parseWithLayout` returns with `expected.layout`. Each root field the expected sidecar states is equal, and each node entry it states is an entry of the result with the same `path` and an equal value of every field it states. Facts are optional (C2-L-014), so the result may hold more entries and more facts; `expected.layoutAbsent` names, for a path, the facts its entry must not hold. A `write` case gives the writer a `tree` and, where it has one, the sidecar `layout`, and compares the source with `expected.carve` and the losses of the record with `expected.diagnostics`.
+
+```json
+{
+  "kind": "layout",
+  "input": "> a\n",
+  "options": {},
+  "expected": {
+    "layout": { "lineEndings": "lf", "nodes": [{ "path": "/children/0", "startByte": 0, "endByte": 3, "fenced": false }] },
+    "layoutAbsent": { "/children/0": ["openerRaw"] }
+  }
+}
+```
+
+```json
+{
+  "kind": "write",
+  "tree": { "type": "document", "astVersion": "2.0", "children": [{ "type": "block_quote", "children": [{ "type": "paragraph", "children": [{ "type": "text", "value": "a" }] }] }] },
+  "layout": { "version": 2, "encoding": "utf-8", "source": "::: >\na\n:::\n", "lineEndings": "lf", "bom": false, "nodes": [{ "path": "/children/0", "startByte": 0, "endByte": 11, "fenced": true }] },
+  "options": {},
+  "expected": { "carve": "::: >\na\n:::\n" }
+}
+```
+
+The check fails a sidecar the layout schema refuses (a supplied one, unless the case expects `CarveLayoutError`), an expected sidecar whose `source` is not the input or whose ranges lie outside it, and a fact both expected and excluded.
 
 ### Refusals
 
