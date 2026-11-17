@@ -1726,7 +1726,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 
 **C2-H-188** Round trip is promised only for HTML that the renderer wrote with `roundtrip` on and that was not changed afterwards. For such HTML the importer recovers each fact that a carrier names. It does not recover what has no carrier: the sidecar facts of C2-H-119 and the facts that HTML and the carriers do not hold.
 
-**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1 and 7.
+**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13 and 16.
 
 | Row | Fact | Input | Comes back as |
 |---|---|---|---|
