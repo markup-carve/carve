@@ -1012,7 +1012,7 @@ See [^n].
 
 :::
 
-**C2-N-057** Ids run over the expanded tree by the existing rules: the authored ids of every file are reserved in document order, then generated heading ids follow in document order with the suffixes of C2-H-024. Nothing is renamed: an authored id keeps its spelling in every file, and no rename is reported. A generated id that the merged tree suffixes is a generated id like any other (C2-H-023).
+**C2-N-057** Ids run over the expanded tree by the existing rules: the authored ids of every file are reserved in document order, then generated heading ids follow in document order with the suffixes of C2-H-024. Nothing is renamed: an authored id keeps its spelling in every file, and no rename is reported. A generated id that the merged tree suffixes is a generated id like any other (C2-A-134).
 
 Example 21 (unverified)
 
