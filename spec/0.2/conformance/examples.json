@@ -4507,6 +4507,296 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-460",
+   "document": "syntax-blocks.md",
+   "number": 460,
+   "section": "Ordered lists",
+   "clauses": [
+    "C2-B-036",
+    "C2-B-037",
+    "C2-B-038",
+    "C2-B-039",
+    "C2-B-040",
+    "C2-B-041",
+    "C2-B-042",
+    "C2-B-043",
+    "C2-B-044",
+    "C2-B-219",
+    "C2-B-045"
+   ],
+   "kind": "render",
+   "input": "v.  x\nvi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"5\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "ordered",
+        "style": "i",
+        "delimiter": ".",
+        "start": 5
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "x",
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 5,
+              "endColumn": 6,
+              "startOffset": 4,
+              "endOffset": 5
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 5,
+            "endColumn": 6,
+            "startOffset": 4,
+            "endOffset": 5
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 5
+         }
+        },
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "y",
+             "pos": {
+              "startLine": 2,
+              "endLine": 2,
+              "startColumn": 6,
+              "endColumn": 7,
+              "startOffset": 11,
+              "endOffset": 12
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 6,
+            "endColumn": 7,
+            "startOffset": 11,
+            "endOffset": 12
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 7,
+          "startOffset": 6,
+          "endOffset": 12
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 7,
+        "startOffset": 0,
+        "endOffset": 12
+       }
+      }
+     ],
+     "srcByteLength": 12,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
+   "id": "syntax-blocks-461",
+   "document": "syntax-blocks.md",
+   "number": 461,
+   "section": "Ordered lists",
+   "clauses": [
+    "C2-B-036",
+    "C2-B-037",
+    "C2-B-038",
+    "C2-B-039",
+    "C2-B-040",
+    "C2-B-041",
+    "C2-B-042",
+    "C2-B-043",
+    "C2-B-044",
+    "C2-B-219",
+    "C2-B-045"
+   ],
+   "kind": "render",
+   "input": "i.  a\nk.  b",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\">\n  <li>a</li>\n</ol>\n<ol type=\"a\" start=\"11\">\n  <li>b</li>\n</ol>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "list",
+       "marker": {
+        "kind": "ordered",
+        "style": "i",
+        "delimiter": "."
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "a",
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 5,
+              "endColumn": 6,
+              "startOffset": 4,
+              "endOffset": 5
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 5,
+            "endColumn": 6,
+            "startOffset": 4,
+            "endOffset": 5
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 0,
+          "endOffset": 5
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 0,
+        "endOffset": 5
+       }
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "ordered",
+        "style": "a",
+        "delimiter": ".",
+        "start": 11
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "b",
+             "pos": {
+              "startLine": 2,
+              "endLine": 2,
+              "startColumn": 5,
+              "endColumn": 6,
+              "startOffset": 10,
+              "endOffset": 11
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 5,
+            "endColumn": 6,
+            "startOffset": 10,
+            "endOffset": 11
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 6,
+          "endOffset": 11
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 2,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 6,
+        "endOffset": 11
+       }
+      }
+     ],
+     "srcByteLength": 11,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    },
+    "diagnostics": [
+     "ordered-list-kind-split"
+    ]
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-30",
    "document": "syntax-blocks.md",
    "number": 30,

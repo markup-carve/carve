@@ -15894,6 +15894,983 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-280",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "x then xi is one roman list from 10",
+   "input": "x.  a\nxi.  b",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"10\">\n  <li>a</li>\n  <li>b</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 10
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-281",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "i then j is one alphabetic list from 9",
+   "input": "i.  x\nj.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"9\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 9
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-282",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "c then ci is one roman list from 100",
+   "input": "c.  x\nci.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"100\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 100
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-283",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The first marker fixes the style: digits and the bare dot are one style, decimal, two or more roman letters are roman, and a single letter is alphabetic, except one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, which takes its style from the next marker. C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "uppercase V then VI is one roman list",
+   "input": "V.  x\nVI.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"I\" start=\"5\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "I",
+       "delimiter": ".",
+       "start": 5
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-284",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count. C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
+   "summary": "a next marker in the other case settles nothing",
+   "input": "c.  x\n\nCI.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"3\">\n  <li>x</li>\n</ol>\n<ol type=\"I\" start=\"101\">\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 3
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "I",
+       "delimiter": ".",
+       "start": 101
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-285",
+   "clauses": [
+    "C2-B-042",
+    "C2-B-044"
+   ],
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count. C2-B-044: Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.",
+   "summary": "three blank lines keep v alphabetic and vi apart",
+   "input": "v.  x\n\n\n\nvi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 22
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-286",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "summary": "two blank lines still let vi settle v",
+   "input": "v.  x\n\n\nvi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"5\">\n  <li><p>x</p></li>\n  <li><p>y</p></li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 5
+      },
+      "spacing": "loose",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-287",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
+   "summary": "a lone i before three blank lines is roman",
+   "input": "i.  first 1\n\n\n\nc.  second 1\nd.  second 2",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\">\n  <li>first 1</li>\n</ol>\n<ol type=\"a\" start=\"3\">\n  <li>second 1</li>\n  <li>second 2</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "first 1"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 100
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "second 1"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "second 2"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-288",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "summary": "lines indented past the marker are skipped",
+   "input": "v.  x\n    - n\nvi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"5\">\n  <li>x\n    <ul>\n      <li>n</li>\n    </ul>\n  </li>\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 5
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "bullet",
+           "char": "-"
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "n"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-289",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count.",
+   "summary": "the delimiter of the next marker does not count",
+   "input": "v.  x\nvi)  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"5\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 5
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ")",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-290",
+   "clauses": [
+    "C2-B-044"
+   ],
+   "why": "C2-B-044: Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024).",
+   "summary": "a lazy line before vi leaves v alphabetic",
+   "input": "v.  x\nlazy\nvi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x\nlazy</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 22
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "text",
+            "value": "lazy"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-291",
+   "clauses": [
+    "C2-B-044"
+   ],
+   "why": "C2-B-044: Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024).",
+   "summary": "v then vii splits into two lists",
+   "input": "v.  x\nvii.  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"7\">\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 22
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 7
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-292",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "i then j inside a quote is one alphabetic list",
+   "input": "> i.  x\n> j.  y",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <ol type=\"a\" start=\"9\">\n    <li>x</li>\n    <li>y</li>\n  </ol>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "list",
+        "marker": {
+         "kind": "ordered",
+         "style": "a",
+         "delimiter": ".",
+         "start": 9
+        },
+        "spacing": "tight",
+        "children": [
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "x"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "list_item",
+          "children": [
+           {
+            "type": "paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "y"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-293",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "v then vi inside a list item is one roman list",
+   "input": "- v.  x\n  vi.  y",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <ol type=\"i\" start=\"5\">\n      <li>x</li>\n      <li>y</li>\n    </ol>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "list",
+          "marker": {
+           "kind": "ordered",
+           "style": "i",
+           "delimiter": ".",
+           "start": 5
+          },
+          "spacing": "tight",
+          "children": [
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "x"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "list_item",
+            "children": [
+             {
+              "type": "paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-294",
+   "clauses": [
+    "C2-B-042"
+   ],
+   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
+   "summary": "l then li with a paren is one roman list from 50",
+   "input": "l)  x\nli)  y",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" start=\"50\" data-delim=\")\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ")",
+       "start": 50
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "x"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "y"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

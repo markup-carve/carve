@@ -945,11 +945,55 @@ Example 29 (generated)
 
 **C2-B-041** The list starts at the value of its first marker.
 
-**C2-B-042** The first marker alone fixes the style: digits and the bare dot are one style, decimal, a lone `i` or `I` is roman, any other single letter is alphabetic, and two or more roman letters are roman.
+**C2-B-042** The first marker fixes the style: digits and the bare dot are one style, decimal, two or more roman letters are roman, and a single letter is alphabetic, except one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, which takes its style from the next marker. The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that marker stands at that column, has the letter case of the first marker and follows it with no run of three or more blank lines in between; its delimiter does not count. The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`. With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic. This is the reading of 0.1.
 
 **C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot is no marker when the text behind its required space starts with another dot and a space, so `. . . and then silence` is a paragraph. A task box behind the space is read only after this test (C2-B-229).
 
-**C2-B-044** A list meant as alphabetic that starts at `i`, and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m`, split into two lists at the second item, and `ordered-list-kind-split` reports both.
+**C2-B-044** Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024). `ordered-list-kind-split` reports both lists. Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.
+
+The second marker settles a one-letter first marker: `vi.` is the numeral after `v`, so both items are one roman list (C2-B-042).
+
+Example 460 (unverified)
+
+::: compare
+
+```carve
+v.  x
+vi.  y
+```
+
+```html
+<ol type="i" start="5">
+  <li>x</li>
+  <li>y</li>
+</ol>
+```
+
+:::
+
+`k` is neither the numeral after `i` nor the letter after it, so the lone `i` is roman and `k.` starts an alphabetic list (C2-B-044).
+
+Example 461 (unverified)
+
+::: compare
+
+```carve
+i.  a
+k.  b
+```
+
+```html
+<ol type="i">
+  <li>a</li>
+</ol>
+<ol type="a" start="11">
+  <li>b</li>
+</ol>
+```
+
+:::
+
+Reported: `ordered-list-kind-split`.
 
 **C2-B-219** A `start` value of more than nine digits is no start value, as a marker of more than nine digits is no marker (C2-B-036): the list keeps the start of its first marker and `start` stays a key.
 
@@ -6670,7 +6714,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Container ownership and stripping | 7 | 0 | 3 | 7 |
 | Block quotes | 2 | 0 | 5 | 0 |
 | Bullet lists | 3 | 0 | 3 | 0 |
-| Ordered lists | 11 | 1 | 10 | 2 |
+| Ordered lists | 11 | 1 | 10 | 4 |
 | Task items | 3 | 0 | 1 | 5 |
 | Siblings, adjacency and the three-blank-line boundary | 7 | 1 | 6 | 1 |
 | Nested lists and the marker line | 5 | 0 | 5 | 1 |
@@ -6690,7 +6734,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **112** |
+| **Total** | **219** | **10** | **171** | **114** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

@@ -50,7 +50,6 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 | U-020 | &#96;{loose}&#96; on a list with several items **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | - a ⏎ ⏎ - b ⏎ ; rewrite |
 | U-021 | Loose list with one item **SILENT** | &lt;ul loose=""&gt; ⏎ &lt;li&gt;Note text.&lt;/li&gt; ⏎ &lt;/ul&gt; | Review by hand; report |
 | U-023 | Marker indented less than the content column of the item above **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;item text ⏎ 3. child&lt;/li&gt; ⏎ &lt;/ul&gt; | - item text ⏎ 3. child ⏎ ; rewrite |
-| U-024 | Alphabetic list that starts at &#96;i&#96; **SILENT** | &lt;ol type="i" data-delim=")"&gt; ⏎ &lt;li&gt;one&lt;/li&gt; ⏎ &lt;/ol&gt; ⏎ &lt;ol type… | {start=9} ⏎ a) one ⏎ b) two ⏎ ; rewrite |
 | U-025 | Ordered marker of ten or more digits **SILENT** | &lt;p&gt;1234567890. x&lt;/p&gt; | Review by hand: `{start=1234567890}` above `. x` keeps the number only as an HTML attribute, since the tree starts at 1 (C2-B-219); report |
 | U-026 | Comment block at column 0 between two items **SILENT** | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | - a ⏎ %%% ⏎ x ⏎ %%% ⏎ - b ⏎ ; rewrite |
 | U-027 | Three blank lines between two lists | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;/ul&gt; ⏎ &lt;ul&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎… | Keep it; none |
@@ -286,6 +285,14 @@ The maintainer decided these open points as their recommendations: O14 to O21 of
 | V6 | A column's alignment from the head is, for each axis, the mark of the last header cell in the head that starts in the column and carries a mark on that axis; C2-A-089 now says the same. Both engines and 0.1 read it so (CC-246, CC-247). | C2-B-213, C2-A-089 |
 | V10 | The alignment marks stand only at the start of the first of a cell prefix's glued blocks; a later block is read by the attribute grammar alone, and the first one that is no valid attribute block ends the run and starts the cell text: `\|{>}{^} a \|` is right with the text `{^} a`. U-305 (escape) records that 0.1 read glued blocks in a cell prefix as text. | C2-B-182, C2-B-171, C2-B-093 |
 | Extensions | The extension mechanism of `extensions.md` is provisional, not frozen: its interfaces may change in a 0.2.x release together with the extension catalog, because the interface points O12, O15 and O17 belong to that work. No rule changes. | `STATUS.md`, `extensions.md` head |
+
+### Rulings of 17 November 2026, 12:30
+
+A ruling of 17 November, 12:30, restores further 0.1 behaviors and records further differences that stay. Against 0.1 a restore removes a difference; against freeze candidate 6 and early 0.2 engines it changes what a document gives.
+
+#### Restored
+
+- A first ordered marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` takes its style from the next marker, as in 0.1: `v.` then `vi.` is one roman list from 5, `i.` then `j.` one alphabetic list from 9, where freeze candidate 6 split each into two lists. With no next marker that settles it, a lone `i` is roman and the other letters are alphabetic, and `ordered-list-kind-split` reports the split. U-024 is withdrawn: `i) one`, `j) two` is one alphabetic list in both versions. C2-B-042, C2-B-044, C2-W-028.
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 

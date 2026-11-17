@@ -222,16 +222,6 @@
       "silent": true
     },
     {
-      "id": "U-024",
-      "kind": "rewrite",
-      "group": "lists",
-      "from": "i) one\nj) two\n",
-      "to": "{start=9}\na) one\nb) two\n",
-      "meaning02": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol>",
-      "toolEntry": "U-024",
-      "silent": true
-    },
-    {
       "id": "U-025",
       "kind": "report",
       "group": "lists",

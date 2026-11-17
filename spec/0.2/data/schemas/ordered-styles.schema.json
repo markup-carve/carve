@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 ordered list styles",
-  "description": "The kind of an ordered list: its numbering style, which the first marker alone fixes, and its delimiter. `styles` is sorted by name, `delimiters` by the code point of `char`.",
+  "description": "The kind of an ordered list: its numbering style, which the first marker fixes (a one-letter roman letter together with the next marker, C2-B-042), and its delimiter. `styles` is sorted by name, `delimiters` by the code point of `char`.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "styles", "delimiters", "start"],
