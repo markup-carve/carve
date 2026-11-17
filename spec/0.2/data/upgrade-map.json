@@ -143,11 +143,11 @@
     },
     {
       "id": "U-015",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "lists",
       "from": "- a\n+\nsecond\n- b\n",
       "to": "- a\n\n  second\n- b\n",
-      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul>",
+      "meaning02": "<ul>\n  <li>a\n+\nsecond</li>\n  <li>b</li>\n</ul> The `+` line is text in 0.2. The spelling with a blank line, `- a`, a blank line, `  second`, `- b`, keeps `second` in the item as a second paragraph, `<li>a\n    <p>second</p>\n  </li>`, but 0.1 wrote that later paragraph of a tight item bare, `<li>a\n    second\n  </li>`, and in 0.2 every paragraph of an item but the first gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-015",
       "silent": true
     },
@@ -493,11 +493,11 @@
     },
     {
       "id": "U-053",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "fences, quotes, comments",
       "from": "- item\n\n\t```\n\tx\n\t\ty\n\t```\n",
       "to": "- item\n\n\t```\n\tx\n\t    y\n\t```\n",
-      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul>",
+      "meaning02": "<ul>\n  <li>item\n    <pre><code>x\n\ty\n</code></pre>\n  </li>\n</ul> The tab after the content column stays in the code in 0.2. The spelling with four spaces gives the 0.1 code text, `x\n    y`, but 0.1 also made this one-item list loose, `<li><p>item</p>`, and a list with one item is tight in 0.2, its first paragraph bare (C2-B-062, C2-B-063), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-053",
       "silent": true
     },
@@ -1973,11 +1973,11 @@
     },
     {
       "id": "U-235",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "nested item definition boundary",
       "from": "* * [d]: u\n  :\n",
       "to": "* * {% %}\n\n  :\n",
-      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text; an empty comment retains the old empty item while the blank line keeps the colon outside it.",
+      "meaning02": "C2-B-081 and C2-B-083 read the item-local definition as text. An empty comment keeps the old empty nested item, and a blank line keeps the colon outside it, `<ul>\n      <li></li>\n    </ul>\n    <p>:</p>`, but 0.1 wrote the colon bare, `</ul>\n    :`, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-235",
       "silent": true
     },
@@ -2003,11 +2003,11 @@
     },
     {
       "id": "U-238",
-      "kind": "rewrite",
+      "kind": "report",
       "group": "list hosted fence continuation closer",
       "from": "- ```\n  x\n\n+\ntail\n",
       "to": "- ```\n  x\n\n  ```\n  tail\n",
-      "meaning02": "C2-B-057 and C2-B-111 use an explicit closer at the item content column where 0.1 used a continuation to end the fence.",
+      "meaning02": "C2-B-057 and C2-B-111 end the item before `+`. An explicit closer at the item content column keeps the blank code line and `tail` in the item, `<pre><code>x\n\n</code></pre>\n    <p>tail</p>`, but 0.1 wrote `tail` bare after the code block, and in 0.2 a paragraph after the first block of an item gets `<p>` (C2-B-063, U-019), so no 0.2 source gives the 0.1 HTML.",
       "toolEntry": "U-238",
       "silent": true
     },
