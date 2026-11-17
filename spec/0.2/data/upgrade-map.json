@@ -2432,6 +2432,26 @@
       "silent": true
     },
     {
+      "id": "U-284",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[t](u v)\n",
+      "to": "\\[t](u v)\n",
+      "meaning02": "<p><a href=\"u v\">t</a></p> Whitespace is a space, a tab or a line break, so a no-break space (U+202F or U+00A0) inside a destination is part of it (C2-I-067); 0.1 excluded every Unicode whitespace character from a destination, so the source stayed text. An escaped opening bracket keeps the 0.1 HTML.",
+      "toolEntry": "U-284",
+      "silent": true
+    },
+    {
+      "id": "U-285",
+      "kind": "rewrite",
+      "group": "differences that stay",
+      "from": "[a]:  /u\n\n[a][]\n",
+      "to": "\\[a]:  /u\n\n[a][]\n",
+      "meaning02": "<p><a href=\" /u\">a</a></p> A narrow no-break space after the space of a link definition starts its destination (C2-B-083, C2-I-067), so the line is a definition and the reference resolves; in 0.1 the line was text and the reference stayed literal. An escaped opening bracket keeps the 0.1 HTML.",
+      "toolEntry": "U-285",
+      "silent": true
+    },
+    {
       "id": "U-300",
       "kind": "rewrite",
       "group": "rulings of 17 November",

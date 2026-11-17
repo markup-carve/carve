@@ -15132,6 +15132,78 @@
    "from": []
   },
   {
+   "id": "CC-214",
+   "clauses": [
+    "C2-I-067"
+   ],
+   "why": "C2-I-067: Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace.",
+   "summary": "a narrow no-break space inside a destination is part of it",
+   "input": "[t](u v)",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"u v\">t</a></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "href": "u v",
+        "children": [
+         {
+          "type": "text",
+          "value": "t"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-215",
+   "clauses": [
+    "C2-I-067",
+    "C2-B-083"
+   ],
+   "why": "C2-I-067: Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title",
+   "summary": "a narrow no-break space after the space of a link definition starts its destination",
+   "input": "[a]:  /u\n\n[a][]",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\" /u\">a</a></p>",
+    "children": [
+     {
+      "type": "link_reference_definition",
+      "key": "a",
+      "namespace": "link",
+      "href": " /u"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "link",
+        "key": "a",
+        "namespace": "link",
+        "refForm": "collapsed",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ],
+        "href": " /u"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-240",
    "clauses": [
     "C2-B-138",

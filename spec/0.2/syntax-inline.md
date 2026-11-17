@@ -1198,7 +1198,7 @@ Example 60 (generated)
 
 **C2-I-066** A bracket pair with a link tail glued to it is an inline link. The tail is `(`, a destination, an optional title and `)`.
 
-**C2-I-067** A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty. (carried over from 0.1)
+**C2-I-067** A destination is a run of characters without whitespace, in which parentheses are balanced or escaped. It may be empty. Whitespace is a space, a tab or a line break here as everywhere (Preliminaries), so a no-break space, U+00A0 or U+202F, before or inside the destination is part of it, where 0.1 ended the destination at any Unicode whitespace.
 
 **C2-I-068** A title follows the destination after exactly one space. It stands in double quotes, which is the canonical form, or in single quotes, which the formatter rewrites. A backslash escapes the quote in it, and spaces may follow it. (carried over from 0.1)
 
