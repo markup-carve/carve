@@ -5221,7 +5221,7 @@ title: x
 
 **C2-B-178** The head of a table is its leading rows that have a header cell and no other cell (C2-B-174).
 
-**C2-B-179** `header-rows` sets the number of head rows of a delimited table and of a list-table. C2-B-209 and C2-B-210 state its default and its value.
+**C2-B-179** `header-rows` sets the number of head rows of a delimited table. C2-B-209 and C2-B-210 state its default and its value.
 
 **C2-B-180** A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table, and `delimited-table-malformed` reports bad quoting with severity error.
 
@@ -5237,7 +5237,7 @@ title: x
 
 **C2-B-186** On a pipe table `header-rows` has no effect on the head, and `deprecated-table-attribute` reports it.
 
-**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` keeps its 0.1 definition, and `aligns` and `widths` keep theirs except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
+**C2-B-187** `footer-rows` makes the last rows of a table its footer, counted among the rows below the head only: a head row is never a footer row, and a count larger than the rows below the head takes them all. In 0.1 a lone header row became the footer. `header-cols` has no effect in 0.2.0, and `aligns` and `widths` keep their 0.1 definition except that a list with an invalid entry now has no effect at all. C2-B-210 to C2-B-214 and C2-B-227 state them.
 
 **C2-B-188** A list-table is a div named `list-table` whose body is a list of rows: a later extension defines it, it gives the same table as a pipe table, and this chapter does not restate it (carried over from 0.1).
 
@@ -6023,7 +6023,7 @@ a,b
 
 **C2-B-213** The alignment of a cell is resolved for each axis on its own. The cell's own alignment mark (C2-B-182) wins. Then comes the mark of the header cell in the head that starts in the cell's column, then the `aligns` entry of that column. Otherwise the cell has no alignment. A mark on any other cell applies to that cell only, and a header cell that spans several columns gives its mark only to the column it starts in. Where a head mark and an `aligns` entry both set a column, `table-column-overlap` reports it. The vertical axis has no table attribute: only cell marks set it, and a `valigns` key on a table is an ordinary key, not one of the table attributes of `data/table-marks.json`.
 
-**C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key. The list-table extension reads it.
+**C2-B-214** `header-cols` has no effect on a pipe table or a delimited table: there it is an ordinary key.
 
 **C2-B-227** A table reads `aligns`, `widths`, `header-rows` and `footer-rows` from its `attrs`. A key whose value is valid and that applies to the table form is removed from `attrs` once its effect is recorded in the tree, in the groups or in the column fields (C2-A-088, C2-A-089). A valid count that the table clamps (C2-B-187, C2-B-209) is consumed too. A key whose value is invalid (C2-B-210 to C2-B-212), and `header-rows` on a pipe table (C2-B-186), has no effect and stays in `attrs`. Lint reports a kept invalid value as `table-attribute-invalid`; `deprecated-table-attribute` reports `header-rows` on a pipe table.
 
