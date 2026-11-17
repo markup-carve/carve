@@ -248,7 +248,7 @@ An *interrupter* is a line that ends an open paragraph without a blank line. The
 
 **Exception C2-B-022** A description list is not a list for interrupter (b): a list marker at its column, directly after term or description text, is a lazy line, and `list-marker-without-blank-line` reports it.
 
-**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment, and a list marker that interrupter (b) does not take (C2-B-015).
+**C2-B-024** Every line that is not one of the six interrupters is a lazy line of an open paragraph. These lines are no interrupters and so are lazy lines: a heading, a quote, an attribute line, a definition, an include directive, a `%%` comment other than a region marker (C2-B-137), and a list marker that interrupter (b) does not take (C2-B-015).
 
 Below an open paragraph an attribute line is a lazy line and waits for nothing, and a comment-only line below it is not seen by block structure (C2-B-137): the paragraph of the item takes both lines, and the comment is its child (C2-B-138).
 
@@ -3747,7 +3747,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
-**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138.
+**Exception C2-B-137** A *comment-only line*, a line that holds nothing but a line comment while no opaque body is open, is not a line for block structure. Ownership is tested first: where the container of an open opaque body does not own the line, that container closes with the body (C2-B-026, C2-B-111), and the line is then a comment-only line. Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. So whatever its indent it closes no container, no heading and no table, a pending attribute line waits across it, it adds nothing to a count of blank lines, and it separates no caption from its block. Its comment is placed by C2-B-138. A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block. So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line. Its comment is a comment node of that container.
 
 **C2-B-138** The comment of a comment-only line, and a comment that stands alone after a marker or a quote mark, is a child of the open leaf when one is open, and otherwise a comment node of the innermost open container, whatever the line's indent.
 
@@ -3803,7 +3803,7 @@ The paragraph holds a hard break and a braced comment. The comment-only line end
 
 **C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
-**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes keep their 0.1 definitions (carried over from 0.1). C2-B-215 to C2-B-217 state them.
+**C2-B-199** The lint control comments and the region markers of an include are line comments that a tool reads, and their shapes, and the block boundary a region marker makes (C2-B-137), keep their 0.1 definitions (carried over from 0.1). C2-B-215 to C2-B-217 state them.
 
 One paragraph, with the comment inside it:
 
@@ -4170,6 +4170,32 @@ See [c]().
 <p>See <a href="">a</a>.</p>
 <p>See <a href="">b</a>.</p>
 <p>See <a href="">c</a>.</p>
+```
+
+:::
+
+A region marker is a line of block structure (C2-B-137): at column 0 it is owned by no quote and no item, so it ends the quote and the first list, and the two items are two lists.
+
+Example 278 (unverified)
+
+::: compare
+
+```carve
+> Intro text
+%% #region steps
+- one
+%% #endregion steps
+- two
+```
+
+```html
+<blockquote><p>Intro text</p></blockquote>
+<ul>
+  <li>one</li>
+</ul>
+<ul>
+  <li>two</li>
+</ul>
 ```
 
 :::
@@ -6541,7 +6567,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 13 | 3 | 14 | 8 |
+| Comments | 13 | 3 | 14 | 9 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6550,7 +6576,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 19 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **219** | **10** | **171** | **106** |
+| **Total** | **219** | **10** | **171** | **107** |
 
 The chapter has 219 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused.
 

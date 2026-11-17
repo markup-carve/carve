@@ -150,7 +150,7 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **Exception C2-W-123** One fence is written without its closer: the last block of a list, a description list or a footnote body, when a comment follows that container as its sibling. Only the open fence lets the comment line end the container (C2-B-111, C2-B-135); behind a closed fence the comment would be a child of the item (C2-B-138).
 
-**C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073).
+**C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073). Since the line ends a paragraph (C2-B-137), a marker among the inline children of a supplied paragraph has no spelling, and the writer reports `structure-unspellable`.
 
 **C2-W-114** In a description list no blank line stands between a term and its description or between two entries. A later block of a description follows one blank line, at the content column.
 

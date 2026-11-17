@@ -21370,6 +21370,223 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-blocks-278",
+   "document": "syntax-blocks.md",
+   "number": 278,
+   "section": "Comments",
+   "clauses": [
+    "C2-B-133",
+    "C2-B-135",
+    "C2-B-136",
+    "C2-B-137",
+    "C2-B-138",
+    "C2-B-140",
+    "C2-B-141",
+    "C2-B-144",
+    "C2-B-145",
+    "C2-B-199",
+    "C2-B-215",
+    "C2-B-216",
+    "C2-B-217"
+   ],
+   "kind": "render",
+   "input": "> Intro text\n%% #region steps\n- one\n%% #endregion steps\n- two",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>Intro text</p></blockquote>\n<ul>\n  <li>one</li>\n</ul>\n<ul>\n  <li>two</li>\n</ul>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "block_quote",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "Intro text",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 3,
+            "endColumn": 13,
+            "startOffset": 2,
+            "endOffset": 12
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 13,
+          "startOffset": 2,
+          "endOffset": 12
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 13,
+        "startOffset": 0,
+        "endOffset": 12
+       }
+      },
+      {
+       "type": "comment",
+       "form": "line",
+       "value": "#region steps",
+       "pos": {
+        "startLine": 2,
+        "endLine": 2,
+        "startColumn": 1,
+        "endColumn": 17,
+        "startOffset": 13,
+        "endOffset": 29
+       }
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "one",
+             "pos": {
+              "startLine": 3,
+              "endLine": 3,
+              "startColumn": 3,
+              "endColumn": 6,
+              "startOffset": 32,
+              "endOffset": 35
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 3,
+            "endColumn": 6,
+            "startOffset": 32,
+            "endOffset": 35
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 30,
+          "endOffset": 35
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 30,
+        "endOffset": 35
+       }
+      },
+      {
+       "type": "comment",
+       "form": "line",
+       "value": "#endregion steps",
+       "pos": {
+        "startLine": 4,
+        "endLine": 4,
+        "startColumn": 1,
+        "endColumn": 20,
+        "startOffset": 36,
+        "endOffset": 55
+       }
+      },
+      {
+       "type": "list",
+       "marker": {
+        "kind": "bullet",
+        "char": "-"
+       },
+       "spacing": "tight",
+       "children": [
+        {
+         "type": "list_item",
+         "children": [
+          {
+           "type": "paragraph",
+           "children": [
+            {
+             "type": "text",
+             "value": "two",
+             "pos": {
+              "startLine": 5,
+              "endLine": 5,
+              "startColumn": 3,
+              "endColumn": 6,
+              "startOffset": 58,
+              "endOffset": 61
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 5,
+            "endLine": 5,
+            "startColumn": 3,
+            "endColumn": 6,
+            "startOffset": 58,
+            "endOffset": 61
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 5,
+          "endLine": 5,
+          "startColumn": 1,
+          "endColumn": 6,
+          "startOffset": 56,
+          "endOffset": 61
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 5,
+        "endLine": 5,
+        "startColumn": 1,
+        "endColumn": 6,
+        "startOffset": 56,
+        "endOffset": 61
+       }
+      }
+     ],
+     "srcByteLength": 61,
+     "stages": [
+      "includeExpansion",
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-blocks-256",
    "document": "syntax-blocks.md",
    "number": 256,

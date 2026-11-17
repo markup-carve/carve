@@ -9315,6 +9315,331 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-112",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-217"
+   ],
+   "why": "C2-B-137: So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line.",
+   "summary": "a region marker ends a paragraph",
+   "input": "a\n%% #region x\nb",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-113",
+   "clauses": [
+    "C2-B-137"
+   ],
+   "why": "C2-B-137: A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block.",
+   "summary": "a region marker inside a quote ends the paragraph and keeps the quote",
+   "input": "> a\n> %% #region x\n> b",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <p>a</p>\n  <p>b</p>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "#region x"
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-114",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-025"
+   ],
+   "why": "C2-B-137: A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block.",
+   "summary": "a region marker at an item's content column ends the paragraph inside the item",
+   "input": "- a\n  %% #region x\n  b",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a\n    <p>b</p>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "#region x"
+         },
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-115",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-175"
+   ],
+   "why": "C2-B-137: So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line.",
+   "summary": "a continuation row does not reach across a region marker",
+   "input": "| a |\n%% #region x\n+ b |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n</table>\n<p>+ b |</p>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "a"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "+ b |"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-116",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-149"
+   ],
+   "why": "C2-B-137: So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line.",
+   "summary": "a caption below a region marker is unattached",
+   "input": "![a](i.png)\n%% #region x\n^ cap",
+   "options": {},
+   "expected": {
+    "html": "<img src=\"i.png\" alt=\"a\">\n<p>^ cap</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "image",
+        "src": "i.png",
+        "alt": "a"
+       }
+      ],
+      "role": "image"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "^ cap"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-117",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-092"
+   ],
+   "why": "C2-B-137: So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line.",
+   "summary": "a pending attribute line waits across a region marker",
+   "input": "{.c}\n%% #region x\npara",
+   "options": {},
+   "expected": {
+    "html": "<p class=\"c\">para</p>",
+    "children": [
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "para"
+       }
+      ],
+      "attrs": {
+       "classes": [
+        "c"
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-118",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-154"
+   ],
+   "why": "C2-B-137: So it closes every container that does not own it and ends every open paragraph, heading and table, and no lazy line, continuation row or caption reaches across it; a pending attribute line waits across it, and it is not a blank line.",
+   "summary": "a region marker ends a heading, so an indented line below it is a paragraph",
+   "input": "# H\n%% #region x\n  more",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"H\">\n  <h1>H</h1>\n  <p>more</p>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "H"
+       }
+      ],
+      "generatedId": "H"
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "more"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

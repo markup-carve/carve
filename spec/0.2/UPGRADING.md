@@ -275,6 +275,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | --- | --- | --- | --- |
 | An attribute block at the end of a link definition: `[ex]: https://example.com {.external}` | The line was text, and every reference to `ex` stayed literal. | The attributes reach every link and image that uses the definition. | C2-B-083, C2-B-089, C2-B-106 |
 | `body-rows`, `body-header-rows` and `body-header-cols` on a table | Ordinary keys, written as HTML attributes; the rows stayed in one body. | The rows below the head split into one `<tbody>` per body, with header rows and row header columns inside a body. U-271 records what still differs from 0.1. | C2-B-230, C2-H-055, C2-H-056 |
+| A region marker line, `%% #region x` or `%% #endregion`, below text, a quote or a list | Not seen by block structure: the text went on, and the quote or list stayed open across it. | The line ends the paragraph, closes the quote or list it is not owned by, and ends a heading or a table. | C2-B-137, C2-B-199 |
 
 ### Include expansion
 
