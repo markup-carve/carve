@@ -43017,7 +43017,7 @@
     "C2-N-048",
     "C2-W-138"
    ],
-   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it. C2-W-138: The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless the clause of the rule names another place",
+   "why": "C2-N-048: A level that would fall below 1 or rise above 6 is set to 1 or 6, the heading is kept, and `include-heading-clamp` reports it. C2-W-138: The range of an entry is the source span of the construct that the catalog row of its code names, in `reports` or `channel_reports`, unless that row states a `range` or names a range in `reports`, or the clause of the rule names another place",
    "summary": "a shift that would raise a heading to level 7 is reported",
    "kind": "parse",
    "input": "{{ a.crv @shift:6 }}",
@@ -52740,7 +52740,7 @@
    "clauses": [
     "C2-W-138"
    ],
-   "why": "C2-W-138: An attribute range is its whole key and value as written, without the enclosing braces; a block opener range is the opening mark only, without indentation or following content.",
+   "why": "C2-W-138: Where the row states no range, an attribute range is its whole key and value as written, without the enclosing braces; a block opener range is the opening mark only, without indentation or following content.",
    "summary": "an overindented quote opener range is its mark",
    "kind": "lint",
    "input": ":: t\n: d\n\n    > b\n",
@@ -53154,9 +53154,9 @@
    "kind": "lint",
    "input": "*a {~b* c~}\n",
    "options": {
-    "lintRules": [
-     "djot-subscript-tilde-braced"
-    ]
+    "rules": {
+     "djot-subscript-tilde-braced": "on"
+    }
    },
    "expected": {
     "diagnostics": [],
@@ -53176,9 +53176,9 @@
    "kind": "lint",
    "input": "*a {=b* c=}\n",
    "options": {
-    "lintRules": [
-     "djot-highlight-braces"
-    ]
+    "rules": {
+     "djot-highlight-braces": "on"
+    }
    },
    "expected": {
     "diagnostics": [],
