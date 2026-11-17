@@ -1294,7 +1294,7 @@ Example 246 (unverified)
 
 **C2-B-052** Three or more blank lines before a marker at the list's column end the list, and that marker starts a new one.
 
-**C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart (C2-B-142).
+**C2-B-053** Two lists of the same kind in one container, with nothing between them but fewer than three blank lines and comment-only lines (C2-B-137), are one list. Any other block between them keeps them apart, a `%%%` block at column 0 among them, which sits at top level (C2-B-014, C2-B-228).
 
 **C2-B-054** Adjacency holds at any column for bullet and ordered lists: with no paragraph open, a marker left of every open list continues the list above it when it matches the outermost open list in kind (C2-B-049) and the container that holds that list owns the line (C2-B-025), and `uneven-list-indent` reports it. A description list has no kind and no adjacency across columns: a term mark or a description mark at another column than the open description list starts a new list.
 
@@ -3788,8 +3788,6 @@ Example 269 (unverified)
 The paragraph holds a hard break and a braced comment. The comment-only line ends the content, so the break before it is not written (C2-H-069), and the paragraph renders nothing.
 
 **C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.
-
-**C2-B-142** A `%%%` block at column 0 between two list items ends the first list and sits at top level, so there are two lists.
 
 **C2-B-143** A line comment is an inline token and never an interrupter.
 
@@ -6401,7 +6399,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 11 | 0 | 7 | 4 |
 | The fence opener and titles | 7 | 1 | 4 | 8 |
 | Sigil divs | 11 | 0 | 11 | 1 |
-| Comments | 16 | 3 | 14 | 8 |
+| Comments | 15 | 3 | 14 | 8 |
 | Captions | 7 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6410,9 +6408,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 34 | 0 | 19 | 17 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **224** | **10** | **168** | **103** |
+| **Total** | **223** | **10** | **168** | **103** |
 
-The chapter has 224 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
+The chapter has 223 clauses, and 10 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on.
 
 ## Not covered
 
