@@ -283,6 +283,7 @@ Freeze candidate 5 changed these 0.1 behaviors without a decision behind them; a
 | A comment block in an item or a quote closed by a `%%%` line at column 0: `- %%%`, `%%%`, `x` | The closer closed the item, opened a second comment block, and every line after it to the end of the document vanished. | The closer closes the comment block and no container; `x` is a paragraph. U-224 is withdrawn. | C2-B-109 |
 | A comment block inside a line block: `::: \|`, `a`, `%%%`, `x`, `%%%`, `b`, `:::` | Three fence lines and `x` were lines of text. | The comment block hides its lines and adds no line; a `%%` line is still text (U-052). | C2-B-123 |
 | A line comment inside an inline footnote: `^[a %% c] d`, `^[%% c] d` | The comment took the closing bracket, so the note was text; directly after `^[` the `%%` was text inside the note. | The comment ends before the bracket that closes the note, and the start of the note counts as a line start. Link text and extension content still differ (U-146, U-149). | C2-I-023, C2-I-024 |
+| A backslash at the end of a line of a line block: `::: \|`, `a\`, `b`, `:::` | Two `<br>` between `a` and `b`, a blank line. | One `<br>`; the tree still holds the hard break, and a backslash alone on a line still gives an empty line. | C2-H-043 |
 
 ### Include expansion
 

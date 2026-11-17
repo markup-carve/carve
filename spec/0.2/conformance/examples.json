@@ -62791,6 +62791,184 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-73",
+   "document": "html.md",
+   "number": 73,
+   "section": "Quotes, divs and their sigil forms",
+   "clauses": [
+    "C2-H-041",
+    "C2-H-042",
+    "C2-H-043",
+    "C2-H-044",
+    "C2-H-045",
+    "C2-H-046",
+    "C2-H-136",
+    "C2-H-154",
+    "C2-H-155",
+    "C2-H-156",
+    "C2-H-157",
+    "C2-H-169",
+    "C2-H-158"
+   ],
+   "kind": "render",
+   "input": "::: |\na\\\n\\\nb\n\nc\\\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\n<br>\nb</p>\n  <p>c<br>\n</p>\n</div>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "line_block",
+       "children": [
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "a",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 6,
+            "endOffset": 7
+           }
+          },
+          {
+           "type": "hard_break",
+           "pos": {
+            "startLine": 2,
+            "endLine": 2,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 7,
+            "endOffset": 8
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 2,
+          "endLine": 2,
+          "startColumn": 1,
+          "endColumn": 3,
+          "startOffset": 6,
+          "endOffset": 8
+         }
+        },
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "hard_break",
+           "pos": {
+            "startLine": 3,
+            "endLine": 3,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 9,
+            "endOffset": 10
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 9,
+          "endOffset": 10
+         }
+        },
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "b",
+           "pos": {
+            "startLine": 4,
+            "endLine": 4,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 11,
+            "endOffset": 12
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 4,
+          "endLine": 4,
+          "startColumn": 1,
+          "endColumn": 2,
+          "startOffset": 11,
+          "endOffset": 12
+         }
+        },
+        {
+         "type": "line",
+         "children": []
+        },
+        {
+         "type": "line",
+         "children": [
+          {
+           "type": "text",
+           "value": "c",
+           "pos": {
+            "startLine": 6,
+            "endLine": 6,
+            "startColumn": 1,
+            "endColumn": 2,
+            "startOffset": 14,
+            "endOffset": 15
+           }
+          },
+          {
+           "type": "hard_break",
+           "pos": {
+            "startLine": 6,
+            "endLine": 6,
+            "startColumn": 2,
+            "endColumn": 3,
+            "startOffset": 15,
+            "endOffset": 16
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 6,
+          "endLine": 6,
+          "startColumn": 1,
+          "endColumn": 3,
+          "startOffset": 14,
+          "endOffset": 16
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 7,
+        "startColumn": 1,
+        "endColumn": 4,
+        "startOffset": 0,
+        "endOffset": 20
+       }
+      }
+     ],
+     "srcByteLength": 20,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-10",
    "document": "html.md",
    "number": 10,

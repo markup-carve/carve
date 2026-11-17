@@ -577,7 +577,33 @@ Example 9 (generated)
 
 **C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how.
 
-**C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza; a comment in it writes nothing. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space.
+**C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza; a comment in it writes nothing. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space. A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.
+
+Example 73 (unverified)
+
+::: compare
+
+```carve
+::: |
+a\
+\
+b
+
+c\
+:::
+```
+
+```html
+<div class="line-block">
+  <p>a<br>
+<br>
+b</p>
+  <p>c<br>
+</p>
+</div>
+```
+
+:::
 
 **C2-H-044** A hard-break block is a `<div>` around its blocks, with the classes of the tree in their order (C2-A-068). Every `hard_break` inside the block is `<br>`; a soft break of a supplied tree is written by C2-H-045.
 
@@ -2031,6 +2057,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 15 | the attributes of a link definition | `[x][r]⏎⏎{.c}⏎[r]: /u` | `[x][r]{.c}⏎⏎[r]: /u`: the attributes stand on the reference (C2-H-191) |
 | 16 | the whitespace at the edge of a delimited-table cell | ```` {table}⏎```csv⏎a, d⏎``` ```` | `\|= a \|= d \|`: the cell is written `<th scope="col"> d</th>`, and the import removes the space at the edge of its inline content (C2-M-018) |
 | 17 | an authored key with the name of a structural attribute that its element does not generate | `[a](/u){title=x}` | `[a](/u "x")`: the import reads the attribute as the structure it names (C2-H-013); `{type=A}` above `. a` comes back as a list of the style `A` the same way |
+| 18 | a hard break that ends a line of a line block other than the last line of its stanza | `::: \|⏎a\⏎b⏎:::` | `::: \|⏎a⏎b⏎:::`: the one `<br>` reads as the line end (C2-H-043) |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 
@@ -2452,7 +2479,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Paragraphs, headings and sections | 16 | 1 | 5 | 1 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
-| Quotes, divs and their sigil forms | 13 | 0 | 4 | 0 |
+| Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
@@ -2468,6 +2495,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **193** | **6** | **35** | **37** |
+| **Total** | **193** | **6** | **35** | **38** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 72 examples, 35 generated and 37 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 193 clauses, 6 of them marked with the word "Exception", and 73 examples, 35 generated and 38 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

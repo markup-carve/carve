@@ -11476,6 +11476,326 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-154",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "a hard break at a line end inside a quoted line block writes one break",
+   "input": "> ::: |\n> a\\\n> b\n> :::",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <div class=\"line-block\">\n    <p>a<br>\nb</p>\n  </div>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "line_block",
+        "children": [
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           },
+           {
+            "type": "hard_break"
+           }
+          ]
+         },
+         {
+          "type": "line",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-155",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "a hard break at a line end inside a line block in an item writes one break",
+   "input": "- ::: |\n  a\\\n  b\n  :::",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>\n    <div class=\"line-block\">\n      <p>a<br>\nb</p>\n    </div>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "line_block",
+          "children": [
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "a"
+             },
+             {
+              "type": "hard_break"
+             }
+            ]
+           },
+           {
+            "type": "line",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-156",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "the space before the backslash stays and the break is still one",
+   "input": "::: |\na \\\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a <br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-157",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "a backslash alone on a line gives one empty line",
+   "input": "::: |\na\n\\\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\n<br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-158",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "an escaped backslash before the line end is no hard break",
+   "input": "::: |\na\\\\\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a\\<br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a\\"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-159",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "an escaped backslash and then a hard break write one break",
+   "input": "::: |\na\\\\\\\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a\\<br>\nb</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a\\"
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-160",
+   "clauses": [
+    "C2-H-043"
+   ],
+   "why": "C2-H-043: A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.",
+   "summary": "the hard break of the last line of a stanza is still written",
+   "input": "::: |\na\\\n\nb\n:::",
+   "options": {},
+   "expected": {
+    "html": "<div class=\"line-block\">\n  <p>a<br>\n</p>\n  <p>b</p>\n</div>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "hard_break"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": []
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
