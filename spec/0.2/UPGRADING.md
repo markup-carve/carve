@@ -338,6 +338,7 @@ Older rows that hold a point of this ruling, extended where they held only part 
 - U-145: `/a /b/` is one shape of U-273 (C2-I-051); the row now names U-273 and U-274.
 - U-160: a tab inside a footnote label, `x[^a` tab `b]` with `[^a b]: note`, resolves in 0.2 and was text in 0.1 (C2-I-079); the row now names U-280, the reference-label half.
 - U-264 and U-265, extended into U-130: each line of a line block is its own inline content, so `*Roses are red` above `Violets are blue*` keeps both stars as text where 0.1 wrote one `<strong>` across the `<br>` (inline Preliminaries, C2-A-069; report); `Roses  are red` keeps its inner spaces as spaces where 0.1 wrote `&nbsp;&nbsp;` (C2-H-043; rewrite `Roses\ \ are red`). U-130, the line block row, now names both.
+- U-263: every line end inside a hard-break block is a `<br>`, also inside a quote, an item, a description, an admonition or a caption in it and in a div with the class `hardbreaks`: `::: \` above `> a`, `> b` gives `<p>a<br>` and `b</p>` in the quote, where 0.1 kept the soft break (C2-A-068, C2-B-129; report). U-241 is the unresolved reference in such a block.
 
 ### Include expansion
 
