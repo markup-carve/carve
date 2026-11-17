@@ -190,7 +190,7 @@ a```b
 
 **C2-W-040** A title that holds a double quote or a line break and a label that holds a closing bracket or a line break have no spelling on an opener (C2-B-117, C2-B-119): the writer leaves that field out and reports `field-unspellable` for it. The opener of a code fence is the run, glued to the language word, then one space and the quoted title when there is one, then one space and the label in brackets when there is one: ```` ```php "src/Auth.php" [Composer] ````.
 
-**C2-W-041** The title of a code block is written in the info string, in double quotes. A `title` key on the attribute line above stays a key: it is a different tree (C2-A-032).
+**C2-W-041** The title of a code block is written in the info string, in double quotes.
 
 **C2-W-042** A bullet item is written with the character in `marker.char`. `-` and `*` make different lists (C2-B-035), and the writer changes neither.
 
@@ -327,7 +327,7 @@ Written:
 
 **C2-W-071** Underline, strike and highlight are written in their braced forms, `{_text_}`, `{~text~}` and `{=text=}`. They have no bare form in 0.2 (C2-I-046).
 
-**C2-W-073** A link title is written in double quotes. Single quotes are rewritten to that form. A `title` key in an attribute block stays a key: it is a different tree (C2-A-032).
+**C2-W-073** A link title is written in double quotes. Single quotes are rewritten to that form.
 
 **C2-W-074** A link with an empty destination is written as `[text]()`, and an image as `![alt]()`. The writer adds no placeholder.
 
