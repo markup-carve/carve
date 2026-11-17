@@ -3918,7 +3918,7 @@ Carve has three comment forms: the line form `%%`, the braced form `{% ... %}` a
 
 **C2-B-133** The line form is `%%` at the start of a line or after whitespace, it runs to the end of the line, and elsewhere `%%` is text.
 
-**Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item.
+**Exception C2-B-135** In every opaque body, which is the body of a code fence, a raw block or a comment block, a `%%` line is content and never a comment, also when the block is unclosed or sits in a list item. In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.
 
 **C2-B-136** After a list marker, a quote mark, a description mark, a term mark or a heading marker, a comment counts as content: the block opens, or stays open, and holds the comment as a comment node and no paragraph, on the first line of a quote as on a later one.
 
@@ -3973,8 +3973,6 @@ Example 269 (unverified)
 The paragraph holds a hard break and a braced comment. The comment-only line ends the content, so the break before it is not written (C2-H-069), and the paragraph renders nothing.
 
 **C2-B-141** Block rules classify lines first, so a braced comment that would span an interrupter line is left unclosed and stays text, and `unclosed-braced-comment` reports it.
-
-**Exception C2-B-144** In the body of a line block a line comment `%%` is text, and `comment-line-in-line-block` reports it.
 
 **C2-B-145** A marker followed by a comment is the only spelling of an empty item, description, term or heading: there is no sentinel for an empty body.
 
@@ -6803,7 +6801,7 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Fences, divs and comment blocks | 10 | 0 | 6 | 6 |
 | The fence opener and titles | 7 | 1 | 4 | 9 |
 | Sigil divs | 10 | 0 | 11 | 3 |
-| Comments | 13 | 3 | 14 | 9 |
+| Comments | 12 | 2 | 14 | 9 |
 | Captions | 6 | 0 | 12 | 3 |
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
@@ -6812,9 +6810,9 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **210** | **9** | **170** | **118** |
+| **Total** | **209** | **8** | **170** | **118** |
 
-The chapter has 210 clauses, and 9 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129 and C2-B-150, whose rule another clause states; their ids are not reused.
+The chapter has 209 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule another clause states; their ids are not reused.
 
 ## Not covered
 

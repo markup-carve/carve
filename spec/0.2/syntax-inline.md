@@ -405,7 +405,7 @@ a ^[see b %% check *this*] c
 
 :::
 
-Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-169, C2-B-135, C2-B-144).
+Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-169, C2-B-135).
 
 **C2-I-025** `{%` opens a braced comment that closes at the first `%}` in the content. It may cross line breaks, it does not nest, and it renders nothing. (carried over from 0.1)
 

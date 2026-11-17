@@ -28,7 +28,7 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 
 | Document | Prefix | Clauses | Rules | Exceptions | Labeled | Examples |
 |---|---|---|---|---|---|---|
-| `syntax-blocks.md` | C2-B | 210 | 217 | 31 | 9 | 288 |
+| `syntax-blocks.md` | C2-B | 209 | 217 | 31 | 8 | 288 |
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 198 | 422 | 65 | 3 | 0 |
 | `html.md` | C2-H | 193 | 470 | 98 | 6 | 81 |
@@ -38,11 +38,11 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 83 | 239 | 46 | 1 | 59 |
 | `tooling.md` | C2-T | 40 | 103 | 8 | 0 | 0 |
-| **Total** | | **1,154** | **2,284** | **450** | **40** | **615** |
+| **Total** | | **1,153** | **2,284** | **450** | **39** | **615** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule another clause states; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay.
 
-Retired clause ids, deleted in candidate 4 because a general rule gives the same result, are not reused: C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143, C2-B-177, C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065. Deleted in candidate 5 for the same reason: C2-A-076, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169, C2-B-086, C2-H-028, C2-H-059, C2-H-084, C2-H-097, C2-H-118, C2-H-135, C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and C2-W-132. Deleted in the reduction of 17 November 2026, because another clause states the same rule: C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-087, C2-A-126, C2-A-185, C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-150, C2-H-023, C2-I-022, C2-I-041, C2-I-045, C2-L-001, C2-L-002, C2-L-043, C2-L-044 and C2-M-073. Each chapter names them at its end.
+Retired clause ids, deleted in candidate 4 because a general rule gives the same result, are not reused: C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143, C2-B-177, C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065. Deleted in candidate 5 for the same reason: C2-A-076, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169, C2-B-086, C2-H-028, C2-H-059, C2-H-084, C2-H-097, C2-H-118, C2-H-135, C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and C2-W-132. Deleted in the reduction of 17 November 2026, because another clause states the same rule: C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-087, C2-A-126, C2-A-185, C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144, C2-B-150, C2-H-023, C2-I-022, C2-I-041, C2-I-045, C2-L-001, C2-L-002, C2-L-043, C2-L-044 and C2-M-073. Each chapter names them at its end.
 
 `UPGRADING.md` is a non-normative guide with its upgrade map.
 
