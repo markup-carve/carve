@@ -1016,10 +1016,12 @@
           "minLength": 1
         },
         "props": {
-          "type": "object"
+          "type": "object",
+          "minProperties": 1
         },
         "slots": {
           "type": "object",
+          "minProperties": 1,
           "additionalProperties": {
             "type": "array",
             "items": {
@@ -1265,6 +1267,7 @@
         },
         "payload": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "properties": {
@@ -9203,10 +9206,12 @@
           "minLength": 1
         },
         "props": {
-          "type": "object"
+          "type": "object",
+          "minProperties": 1
         },
         "slots": {
           "type": "object",
+          "minProperties": 1,
           "additionalProperties": {
             "type": "array",
             "items": {
@@ -9440,6 +9445,7 @@
         },
         "payload": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "object",
             "properties": {

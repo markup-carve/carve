@@ -3786,6 +3786,47 @@
      }
     ]
    }
+  },
+  {
+   "id": "default-empty-props",
+   "clauses": [
+    "C2-A-058",
+    "C2-X-037"
+   ],
+   "reason": "an empty props object on an extension node, a second encoding of absent props",
+   "refusedBy": "schema",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "org.example.n",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "block_extension",
+      "name": "org.example.n",
+      "version": "1",
+      "props": {},
+      "children": [],
+      "fallback": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
   }
  ]
 }
