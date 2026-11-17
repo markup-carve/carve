@@ -1792,6 +1792,26 @@ Example 55 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
 
 :::
 
+A browser loads the `background` of a table cell as an image, so it is on the list as well.
+
+Example 58 (unverified, `urlPolicy` set to `{"allow": ["mailto"]}`)
+
+::: compare
+
+```carve
+|{background="https://x.org/b.png"} a |
+```
+
+```html
+<table>
+  <tbody>
+    <tr><td background="">a</td></tr>
+  </tbody>
+</table>
+```
+
+:::
+
 **C2-H-162** An authored `style` value is written empty when it holds one of the texts of `style_patterns` in `data/url-policy.json`, tested after its CSS escapes are decoded, its whitespace is removed and its ASCII letters are lowered. A backslash and one to six hexadecimal digits decode to that code point and take one whitespace character after them; a backslash and a line break decode to nothing; a backslash and any other character decode to that character. The value that passes is written as the author spelled it.
 
 A CSS image function loads a URL from a bare string, so `image(`, `image-set(` and `src(` blank the value as `url(` does, under every policy (C2-H-128).
@@ -2103,9 +2123,9 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 15 | 0 | 0 | 7 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 8 |
+| Options | 24 | 0 | 3 | 9 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **198** | **7** | **25** | **32** |
+| **Total** | **198** | **7** | **25** | **33** |
 
-The document has 198 clauses, 7 of them marked with the word "Exception", and 57 examples, 25 generated and 32 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 198 clauses, 7 of them marked with the word "Exception", and 58 examples, 25 generated and 33 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.

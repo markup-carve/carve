@@ -66300,6 +66300,154 @@
    "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
   },
   {
+   "id": "html-58",
+   "document": "html.md",
+   "number": 58,
+   "section": "Options",
+   "clauses": [
+    "C2-H-121",
+    "C2-H-122",
+    "C2-H-168",
+    "C2-H-123",
+    "C2-H-124",
+    "C2-H-125",
+    "C2-H-126",
+    "C2-H-127",
+    "C2-H-128",
+    "C2-H-129",
+    "C2-H-130",
+    "C2-H-131",
+    "C2-H-132",
+    "C2-H-159",
+    "C2-H-160",
+    "C2-H-161",
+    "C2-H-162",
+    "C2-H-172",
+    "C2-H-163",
+    "C2-H-165",
+    "C2-H-166",
+    "C2-H-167",
+    "C2-H-164",
+    "C2-H-177"
+   ],
+   "kind": "render",
+   "input": "|{background=\"https://x.org/b.png\"} a |",
+   "options": {
+    "urlPolicy": {
+     "allow": [
+      "mailto"
+     ]
+    }
+   },
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td background=\"\">a</td></tr>\n  </tbody>\n</table>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "table",
+       "columns": [
+        {
+         "type": "table_column"
+        }
+       ],
+       "children": [
+        {
+         "type": "table_body",
+         "children": [
+          {
+           "type": "table_row",
+           "children": [
+            {
+             "type": "table_cell",
+             "header": false,
+             "children": [
+              {
+               "type": "cell_paragraph",
+               "children": [
+                {
+                 "type": "text",
+                 "value": "a",
+                 "pos": {
+                  "startLine": 1,
+                  "endLine": 1,
+                  "startColumn": 37,
+                  "endColumn": 38,
+                  "startOffset": 36,
+                  "endOffset": 37
+                 }
+                }
+               ],
+               "pos": {
+                "startLine": 1,
+                "endLine": 1,
+                "startColumn": 37,
+                "endColumn": 38,
+                "startOffset": 36,
+                "endOffset": 37
+               }
+              }
+             ],
+             "attrs": {
+              "keyValues": [
+               [
+                "background",
+                "https://x.org/b.png"
+               ]
+              ]
+             },
+             "pos": {
+              "startLine": 1,
+              "endLine": 1,
+              "startColumn": 2,
+              "endColumn": 39,
+              "startOffset": 1,
+              "endOffset": 38
+             }
+            }
+           ],
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 1,
+            "endColumn": 40,
+            "startOffset": 0,
+            "endOffset": 39
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 40,
+          "startOffset": 0,
+          "endOffset": 39
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 40,
+        "startOffset": 0,
+        "endOffset": 39
+       }
+      }
+     ],
+     "srcByteLength": 39,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-57",
    "document": "html.md",
    "number": 57,
