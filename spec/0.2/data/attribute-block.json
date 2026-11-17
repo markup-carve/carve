@@ -82,7 +82,7 @@
     {
       "name": "classes",
       "rule": "add_in_written_order",
-      "clauses": ["C2-B-093", "C2-B-094", "C2-B-102", "C2-I-039", "C2-A-035"]
+      "clauses": ["C2-B-093", "C2-I-039", "C2-B-102", "C2-A-035"]
     },
     { "name": "id", "rule": "last_written_wins", "clauses": ["C2-B-104", "C2-I-039", "C2-I-042", "C2-A-034"] },
     { "name": "keys", "rule": "later_value_replaces_at_first_position", "clauses": ["C2-I-039", "C2-A-035"] },

@@ -528,7 +528,7 @@ Example 124 (generated)
 
 Raw inline is no host, so the attribute block behind its marker attaches to nothing and is printed as written.
 
-**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, a later id or key replaces an earlier one of the same name, and a later language part replaces an earlier one. This is the inline side of C2-B-094.
+**C2-I-039** Glued attribute blocks after one host merge, in the order written: classes add up, a later id or key replaces an earlier one of the same name, and a later language part replaces an earlier one.
 
 **Exception C2-I-040** The block with no part, `{}` or braces around spaces, is valid only in the glued run after a bracket pair, where it adds nothing: `[a]{}` is a span with no attributes. Everywhere else it is text. It is read only behind a pair that is a span, also behind another block of that span; behind a link, an inline footnote or an inline extension it is text.
 
