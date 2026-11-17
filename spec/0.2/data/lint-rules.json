@@ -252,8 +252,8 @@
       "channel": "lint",
       "status": "kept",
       "default": "on",
-      "messages": ["This emphasis looks like a C comment; use Carve comment syntax if you meant a comment."],
-      "message_origin": "engine_0_1",
+      "messages": ["This span looks like a C comment; use Carve comment syntax if you meant a comment."],
+      "message_origin": "data_file",
       "reports": "an emphasis span whose source starts with `/*` or ends with `*/`, or a strong span whose source starts with `*/` or ends with `/*`, as `/* foo */`; braced forms are not reported; once per span, at hint severity (C2-I-046, C2-I-052)",
       "clauses": ["C2-I-046", "C2-I-052"]
     },
