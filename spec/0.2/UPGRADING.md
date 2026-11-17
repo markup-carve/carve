@@ -426,7 +426,7 @@ A ruling of 17 November decides four open points of the restore round of candida
 
 ### Rulings of 17 November 2026, 13:55
 
-A ruling of 17 November, 13:55, decides the open points of the round of candidate 7. One takes a restore of that round back; the rows below record what therefore stays different from 0.1.
+A ruling of 17 November, 13:55, decides the open points of the round of candidate 7. It confirms the choices of that round that `STATUS.md` listed (the `headingIds` names, the nested figure group of an import, the fixed cap on include diagnostics, the JSON rule selection of `lint`), and it changes these: a degraded node with no children writes its plain text at every level and a paragraph left empty by degradation renders nothing (C2-H-165, C2-H-019), a throwing resolver gives the inert span (C2-H-126), a lazy `%%` line below a stanza is a comment at the end of the line above (C2-B-024), the 0.1 `lint` exit status has a row in the command line map, and the typed attribute blocks of an unresolved reference are taken back. The rows below record what therefore stays different from 0.1.
 
 | ID | What you wrote | 0.1 | 0.2 now and tool |
 | --- | --- | --- | --- |
