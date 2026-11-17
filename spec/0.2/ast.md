@@ -518,7 +518,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 
 **C2-A-133** Resolution results remain in the tree beside authored fields. `spec/0.2/data/ast-results.json` is the complete per-type list of result fields, including generated ids, resolved destinations, numbers, alignment, derived span counts and root `stages`.
 
-**C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`. The `headingIds` option is `off`, `keep-case`, `lower` or `ascii`, and `keep-case` is the default; with `off` no `generatedId` is produced, and an authored id stays.
+**C2-A-134** A generated heading id is a resolution result. It is published in the heading field `generatedId` and never in `attrs.id`.
 
 **C2-A-135** The root `stages` list names the resolution stages that ran: `includeExpansion` (C2-N-006), `referenceResolution` and `tableAlignment`. A producer names a stage only when its results are complete. A renderer runs reference resolution and table alignment on every tree it is given and overwrites every result field of `data/ast-results.json` except the fields of `include`: it never reads such a field from the tree, and `stages` lets it skip no stage. The fields of an expanded include are kept (C2-N-075).
 
