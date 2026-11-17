@@ -280,6 +280,7 @@ The maintainer decided the open points of `STATUS.md` listed here as their recom
 | H1 | Confirmed: the header mark keeps its cell where any of the four alignment marks `<`, `>`, `?`, `~` or any `{` follows it, whether or not a brace block forms: `\|=?v a\|` and `\|={}a\|` are header cells (CC-096, CC-092). | C2-B-171 |
 | H2 | A tab after the header mark keeps the header cell, as a space does; U-303 (report) records the difference to 0.1, which read `\|=` and a tab as a data cell. | C2-B-171 |
 | H3 | U-270 is withdrawn: 0.2 reads `\|=a\|` as 0.1 did, a data cell with the text `=a`, so a 0.1 document has nothing to upgrade. | C2-B-171 |
+| H4 | No lint is added for a data cell whose text starts with `=` directly after its pipe: `\|=SUM(A1)\|` reads as in 0.1, and such a hint would fire on every spreadsheet formula. | C2-B-171 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
