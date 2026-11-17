@@ -404,8 +404,6 @@ Mail <a@b.org> or <mailto:a@b.org>
 
 **C2-W-125** The procedure of C2-W-088 can end while a node of the tree has not formed, because a character that opens nothing in the bare text keeps it from forming or ends it early. The writer then places a backslash for that node, takes out the backslashes the procedure had placed for the same stretch, and runs the procedure again from there. These are the only cases. One: a bare opening brace that reads on into a later construct of the tree gets the backslash, `x *\{*` for a strong `{`; of several braces it is the one glued before the construct, or else the last one inside the construct before its own attribute block, or else the nearest before it. Two: where the right neighbor decides the direction of a smart quote of the tree, the neighbor gets it, `x/"\]` for a left double quote before `]`. Three: where a sigil stands before the bracket of a footnote reference of the tree, the sigil gets it, `x\^[^[]`. Four: where a hyphen run starts with a dash of the tree and ends in text, the first hyphen behind the dash gets it, `x--\-` for an en dash and a hyphen. Five: where a closer, a lone bracket or a sigil inside a bracket label keeps a link from forming or ends it early, its first character gets the backslash, as the `/}` inside a braced emphasis, a `[` or `]` inside an inline footnote, and the caret of link text `^a` in `[\^a](/u)`. Six: where a text character directly behind a node would lengthen that node, it gets the backslash, as a backtick behind a code span and a name character behind a mention or a tag: the text of a code span `a` followed by a backtick is written with a backslash before that backtick, and a mention `@a` followed by an underscore as `@a\_`. Seven: where the escape of a sigil opener would change the direction of a smart quote of the tree before it, the backslash goes before the bracket of that opener instead: a right single quote before the text `:n[]` is written with the backslash before `[`, not before the colon; where the opener is a run without a bracket, as a comparison sign, its second character takes the backslash, `!\=`. Where more than one case fits an input, the cases are tried in this order and the first that gives the tree is taken. Where none gives the tree alone, the writer keeps the backslash of case six when case six fits, and otherwise that of the first case that fits, and runs the procedure again from there: for the text `x{.c}` and a backtick, the code span `a` and the text of a backtick, the brace stays bare and both text backticks take a backslash. A form with these backslashes is the canonical one, and C2-W-088 does not call them defects.
 
-**C2-W-121** A paragraph that starts with a description mark and follows a description list gets its backslash, also where three blank lines stood between them in the source: the writer puts one blank line there (C2-W-017), and behind it the bare mark would read as a description of the list.
-
 **C2-W-092** A paragraph line is tested for reading as a block opener or as an interrupter. The cases:
 
 - one to six `=` or `#` and a space at the start of a paragraph (C2-B-151, C2-B-152);
@@ -985,9 +983,9 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Canonical forms: tables | 12 | 0 | 1 | 2 |
 | Canonical forms: inline | 15 | 1 | 0 | 1 |
 | The sidecar | 6 | 0 | 0 | 0 |
-| Escaping | 14 | 0 | 1 | 1 |
+| Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 11 | 0 | 0 | 1 |
-| **Total** | **135** | **6** | **5** | **10** |
+| **Total** | **134** | **6** | **5** | **10** |
 
-The document has 135 clauses, 6 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 134 clauses, 6 of them marked with the word "Exception", and 15 examples, 5 generated and 10 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
