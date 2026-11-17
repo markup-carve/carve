@@ -52323,6 +52323,109 @@
     "carve": "{.x}\n::: hardbreaks\na\\\nb\n:::\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1041",
+   "clauses": [
+    "C2-W-097"
+   ],
+   "why": "C2-W-097: A `[` directly followed by `^` opens a footnote label (C2-I-087) and would end the image text early, so the writer escapes the `]` directly after `[^`, and where a later `]` of the alt text has no partner it escapes the `]` that closes the `[^` pair instead, so that the `[` takes the later one",
+   "summary": "a caret pair in alt text keeps the image",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x "
+       },
+       {
+        "type": "image",
+        "src": "",
+        "alt": "[^]]"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "x ![[^\\]]]()\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1042",
+   "clauses": [
+    "C2-W-097"
+   ],
+   "why": "C2-W-097: A `[` directly followed by `^` opens a footnote label (C2-I-087) and would end the image text early, so the writer escapes the `]` directly after `[^`, and where a later `]` of the alt text has no partner it escapes the `]` that closes the `[^` pair instead, so that the `[` takes the later one ... A code span and a braced comment in the alt text are read raw: their brackets take part in no pairing, and the opening run of one that has no closer in the alt text takes a backslash.",
+   "summary": "a caret pair and an unclosed braced comment opener in alt text",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x "
+       },
+       {
+        "type": "image",
+        "src": "",
+        "alt": "[^}]{#]"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "x ![[^}\\]\\{#]]()\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1043",
+   "clauses": [
+    "C2-W-034",
+    "C2-W-017"
+   ],
+   "why": "C2-W-034: A marker that follows another block is a sibling block, and one blank line stands before it (C2-W-017): `a` directly above `%% #endregion` is written with a blank line between, as the tree is the same with or without it.",
+   "summary": "a region marker below a paragraph is written after a blank line",
+   "kind": "format",
+   "input": "a\n%% #endregion x\n",
+   "options": {},
+   "expected": {
+    "carve": "a\n\n%% #endregion x\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1044",
+   "clauses": [
+    "C2-H-195"
+   ],
+   "why": "C2-H-195: The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194.",
+   "summary": "a body with no rows is lost in a roundtrip render and import",
+   "kind": "import",
+   "html": "<table>\n  <tbody>\n    <tr><td>a</td></tr>\n  </tbody>\n  <tbody>\n    <tr><td>b</td></tr>\n  </tbody>\n</table>",
+   "options": {},
+   "expected": {
+    "carve": "{body-rows=1,1}\n| a |\n| b |\n"
+   },
+   "from": []
   }
  ]
 }

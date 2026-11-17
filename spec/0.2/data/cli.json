@@ -94,6 +94,7 @@
         "render"
       ],
       "kind": "code",
+      "channel": "render-loss",
       "repeatable": true,
       "clauses": [
         "C2-T-027"

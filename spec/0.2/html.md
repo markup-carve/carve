@@ -2213,6 +2213,9 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 17 | an authored key with the name of a structural attribute that its element does not generate | `[a](/u){title=x}` | `[a](/u "x")`: the import reads the attribute as the structure it names (C2-H-013); `{type=A}` above `. a` comes back as a list of the style `A` the same way |
 | 18 | a hard break that ends a line of a line block other than the last line of its stanza | `::: \|⏎a\⏎b⏎:::` | `::: \|⏎a⏎b⏎:::`: the one `<br>` reads as the line end (C2-H-043) |
 | 19 | a semantic key in another case on a span | `[x]{KBD}` | `[x]{kbd}`: the HTML parser lowers the case of the attribute name (C2-H-183), and the key in lower case is the element of that key, `<kbd>x</kbd>` (C2-H-075); 0.1 had the same limit |
+| 20 | the key of a cross-reference typed in another normal form than its id | `= Café⏎⏎</#Cafe`, U+0301 and `>` | `</#Café>` with the precomposed `é`: the `href` names the id (C2-I-097), and `data-carve-xref` takes the key from the `href` (C2-H-011) |
+| 21 | a body with no rows in a table with `body-rows` | `{body-rows="1,0,1"}⏎\| a \|⏎\| b \|` | `{body-rows=1,1}⏎\| a \|⏎\| b \|`: a body with no rows writes no `<tbody>` (C2-H-056), and `body-rows` is never written (C2-H-153) |
+| 22 | `rowHeadColumns` of a body | `{body-rows=2 body-header-cols=1}⏎\| a \| b \|⏎\| c \| d \|` | `\|= a \| b \|⏎\|= c \| d \|`: header cells, since `<th scope="row">` (C2-H-056) carries no count (C2-H-153) |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 

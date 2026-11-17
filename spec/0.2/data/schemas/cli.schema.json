@@ -108,6 +108,10 @@
             ],
             "description": "`switch`: no value, `--no-` turns it off (C2-T-008); `enum`: one of `values`; `json`: JSON text; `path`: a file path or `-` (C2-T-015); `count`: a decimal integer of at least 0; `code`: a code of data/lint-rules.json."
           },
+          "channel": {
+            "enum": ["parse", "render-loss", "lint"],
+            "description": "For a `code` flag: the channel of data/lint-rules.json whose codes the flag takes; the ids of the rows with that `channel` are the list of valid values (C2-T-027)."
+          },
           "values": {
             "type": "array",
             "minItems": 1,

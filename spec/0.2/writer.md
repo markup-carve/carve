@@ -242,7 +242,7 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **Exception C2-W-123** One fence is written without its closer: the last block of a list, a description list or a footnote body, when a comment follows that container as its sibling. Only the open fence lets the comment line end the container (C2-B-111, C2-B-135); behind a closed fence the comment would be a child of the item (C2-B-138).
 
-**C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073). Since the line ends a paragraph (C2-B-137), a marker among the inline children of a supplied paragraph has no spelling, and the writer reports `structure-unspellable`.
+**C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073). Since the line ends a paragraph (C2-B-137), a marker among the inline children of a supplied paragraph has no spelling, and the writer reports `structure-unspellable`. A marker that follows another block is a sibling block, and one blank line stands before it (C2-W-017): `a` directly above `%% #endregion` is written with a blank line between, as the tree is the same with or without it.
 
 **C2-W-114** In a description list no blank line stands between a term and its description or between two entries. A later block of a description follows one blank line, at the content column.
 
@@ -966,7 +966,7 @@ Written:
 
 **C2-W-096** An opening brace is tested for forming an attribute block, a braced comment, an editorial comment or a braced opener (C2-I-043).
 
-**C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012). In the alt text of an image a backslash is written as two when the next character is ASCII punctuation or when it ends the alt text, and a bracket that has no partner in the alt text takes a backslash (C2-I-074).
+**C2-W-097** A backslash in text is written as two when the next character is ASCII punctuation or a space, or when it ends the line (C2-I-010 to C2-I-012). In the alt text of an image a backslash is written as two when the next character is ASCII punctuation or when it ends the alt text, and a bracket that has no partner in the alt text takes a backslash (C2-I-074). A `[` directly followed by `^` opens a footnote label (C2-I-087) and would end the image text early, so the writer escapes the `]` directly after `[^`, and where a later `]` of the alt text has no partner it escapes the `]` that closes the `[^` pair instead, so that the `[` takes the later one: `[^]]` is written `![[^\]]]()` and `[^}]{#]` is written `![[^}\]\{#]]()`. A code span and a braced comment in the alt text are read raw: their brackets take part in no pairing, and the opening run of one that has no closer in the alt text takes a backslash.
 
 **C2-W-098** In a table cell every pipe is written with a backslash, in text, a destination, a title, a label and a quoted attribute value alike, except a pipe between a backtick run and its closing run, as in a code span, which needs none (C2-B-169, C2-B-224). A value of a row attribute that holds a pipe is written in quotes (C2-W-050) with the pipe bare, since a pipe in a quoted value there does not close the row (C2-B-166).
 
