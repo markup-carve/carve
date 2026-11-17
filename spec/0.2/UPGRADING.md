@@ -863,6 +863,30 @@ A direct top-level heading and a direct footnote, by contrast, produced the same
 
 The 0.1 CLI at `dist/cli.js` exists and accepts a file or stdin. It has render targets for HTML, Markdown, plain text, ANSI, Carve, and AST JSON; `fmt`, `flatten`, `fix`, `lint`, `diff`, `merge`, `portability`, `trace`, and `migrate --from html|markdown|djot|bbcode`. It can expand includes. The 0.2 command line is specified in [tooling](tooling.md): `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import` and `migrate-ast`, with their flags, exit codes and reports. The reference engine ships it as `carve2`, so far without `lint` and without the reports that `tooling.md` adds; its `upgrade` command and `node upgrade/src/cli.ts` are the rewrite program described in Part 1.
 
+The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table does not name keeps its name where `tooling.md` lists it, or belongs to a target or command that 0.2 does not have.
+
+| 0.1 | 0.2 |
+| --- | --- |
+| `--json`, `--ast` | `carve ast`, a 2.0 tree |
+| `--from-json` | `--from-ast`, which reads a 2.0 tree; migrate an older tree first with `carve migrate-ast` |
+| `--no-raw-html`, `--safe` | the default; `--raw-html` turns raw HTML on |
+| `--report-losses`, `--allow-loss`, `--max-render-losses`, `--report-includes` | the same names (C2-T-021 to C2-T-029); a loss report holds 0.2 diagnostic entries, and the include report the dependencies of C2-N-083 with `path`, `from`, `file` and `read` |
+| `migrate --from html` | `carve import --from html` |
+| `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
+| `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
+| `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
+| `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031) |
+| `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
+| `lint --ignore ID` | no counterpart |
+| include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
+| `-h`, `-V` | `--help`, `--version` |
+
+Not carried over:
+
+- `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
+- `-o FILE` and `--output FILE` of the PHP engine. Every 0.2 command writes its product on standard output (C2-T-014); redirect it to a file.
+- `fmt --migrate`, the repair of a reference whose only target differs in case. The upgrade tool rewrites 0.1 sources for 0.2 (Part 1, "Running the rewrite tool").
+
 The 0.2 engine lacks Markdown, plain text and ANSI renderers and patch and editor APIs. Do not switch a caller that depends on these features without another implementation.
 
 ## Part 3. Tree consumers: AST 1.x to 2.0
