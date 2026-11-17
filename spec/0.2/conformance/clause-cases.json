@@ -53979,6 +53979,7 @@
    "diagnostics": [
     {
      "code": "deprecated-continuation-marker",
+     "messageWhen": "the `+` is a standalone line inside a list item but not its marker line",
      "line": 2,
      "column": 3,
      "endLine": 2,
@@ -54002,7 +54003,8 @@
   "expected": {
    "diagnostics": [
     {
-     "code": "fence-title-syntax"
+     "code": "fence-title-syntax",
+     "messageWhen": "further words after a raw format, div name or sigil, a title after a label, a spaced brace block, or a character glued to a type that is no valid attribute block"
     }
    ]
   },
@@ -54022,7 +54024,8 @@
   "expected": {
    "diagnostics": [
     {
-     "code": "list-marker-without-blank-line"
+     "code": "list-marker-without-blank-line",
+     "messageWhen": "the marker is term or description text"
     }
    ]
   },
@@ -54042,7 +54045,8 @@
   "expected": {
    "diagnostics": [
     {
-     "code": "caption-looking-paragraph"
+     "code": "caption-looking-paragraph",
+     "messageWhen": "a pipe table starts one or two lines below this paragraph line"
     }
    ]
   },

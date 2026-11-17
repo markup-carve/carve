@@ -66,7 +66,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 
 ### Diagnostics
 
-`expected.diagnostics` lists entries of the record the call returns. An entry is a code, or an object with `code` and any of `line`, `column`, `endLine`, `endColumn`, `severity`, `channel`, `path` and `file`. `line` and `column` are the start of the entry's `range`, counted as `pos` counts them (C2-A-141): lines from 1 at each line feed, columns in code points from 1. They are counted in the file the entry names (`file`, C2-N-063) and in the input otherwise; the end is exclusive, as in `pos`. A field the object does not state is not compared.
+`expected.diagnostics` lists entries of the record the call returns. An entry is a code, or an object with `code` and any of `line`, `column`, `endLine`, `endColumn`, `severity`, `channel`, `path` and `file`. `line` and `column` are the start of the entry's `range`, counted as `pos` counts them (C2-A-141): lines from 1 at each line feed, columns in code points from 1. They are counted in the file the entry names (`file`, C2-N-063) and in the input otherwise; the end is exclusive, as in `pos`. A field the object does not state is not compared. `messageWhen`, when present, is the exact `when` text of the selected message variant in `data/lint-rules.json`; the runner compares that variant, and the corpus check verifies that the row lists it.
 
 `expected.diagnosticsComplete` set to `true` says the record holds the listed entries and no others; otherwise it holds at least them, in any order. `expected.notReported` lists codes the record must not hold: the near miss of a rule. `expected.suppressed` is the `suppressedDiagnostics` of the result (C2-T-024).
 
