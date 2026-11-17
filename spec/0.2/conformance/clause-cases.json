@@ -17646,6 +17646,66 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-312",
+   "clauses": [
+    "C2-H-147",
+    "C2-H-022"
+   ],
+   "why": "C2-H-147: The transliteration table belongs to the host, so under these four values an id is outside conformance where the plain text holds a character at or above U+0080; an ASCII heading keeps its slug, `Hello-World` under `ascii` and `hello-world` under `ascii-lower`.",
+   "summary": "ascii-strict keeps the case of an ASCII heading, as 0.1 asciiHeadingIds strict did",
+   "input": "# Getting Started",
+   "options": {
+    "headingIds": "ascii-strict"
+   },
+   "expected": {
+    "html": "<section id=\"Getting-Started\">\n  <h1>Getting Started</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Getting Started"
+       }
+      ],
+      "generatedId": "Getting-Started"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-313",
+   "clauses": [
+    "C2-H-147",
+    "C2-H-022"
+   ],
+   "why": "C2-H-147: `ascii-lower` and `ascii-strict-lower` are `ascii` and `ascii-strict` with the result then lowered as with `lower`.",
+   "summary": "ascii-strict-lower lowers the slug, as 0.1 asciiHeadingIds strict with lowercaseHeadingIds did",
+   "input": "# Getting Started",
+   "options": {
+    "headingIds": "ascii-strict-lower"
+   },
+   "expected": {
+    "html": "<section id=\"getting-started\">\n  <h1>Getting Started</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Getting Started"
+       }
+      ],
+      "generatedId": "getting-started"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

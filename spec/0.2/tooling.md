@@ -120,7 +120,7 @@ This document defines what every engine offers a caller: the library calls and t
 | Flag | Value | Meaning |
 |---|---|---|
 | `--extensions` | JSON | the option `extensions` |
-| `--heading-ids` | `off`, `keep-case`, `lower`, `ascii` | the option `headingIds` |
+| `--heading-ids` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower` | the option `headingIds` |
 | `--labels` | JSON | the option `labels` |
 | `--mode` | `interactive`, `static` | the option `mode` |
 | `--profile` | `full`, `article`, `comment`, `minimal` | the option `profile` |

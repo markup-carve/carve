@@ -204,7 +204,7 @@ Example 67 (generated)
 
 **C2-H-021** A heading is `<h1>` to `<h6>` by its level. HTML has no element for a level above 6, which only a supplied tree can hold (C2-A-071): such a heading is written as `<div role="heading" aria-level="N">` with its true level, so the level is not lost. It takes its attributes and its id like any heading, and it nests sections by its level (C2-H-026).
 
-**C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004) and stated in C2-H-143 to C2-H-148. With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case, and `ascii` also transliterates it to ASCII, as the two 0.1 switches did.
+**C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004) and stated in C2-H-143 to C2-H-148. With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case. `ascii` also transliterates it to ASCII and keeps its case, as 0.1 `asciiHeadingIds` did, and `ascii-strict` also drops what the transliteration leaves outside ASCII, as 0.1 `asciiHeadingIds: 'strict'` did; `ascii-lower` and `ascii-strict-lower` also fold the result to lower case, as each of the two with 0.1 `lowercaseHeadingIds` did.
 
 **C2-H-023** A generated id is a resolution result: the `generatedId` that resolution computes (C2-A-134, C2-A-135).
 
@@ -292,7 +292,7 @@ Example 4 (generated)
 
 **C2-H-146** Each maximal run of characters that are not an ASCII letter, an ASCII digit or a character at or above U+0080 is replaced by one hyphen. Leading and trailing hyphens are then removed. ASCII letters keep their case, and every character at or above U+0080 is kept as it is: letters of any script, symbols, punctuation outside ASCII, and the no-break space.
 
-**C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII, C2-H-146 is applied again, and the result is lowered as with `lower`. The transliteration table, and what it does with a character it cannot map, belong to the host. An id under `ascii` is outside conformance.
+**C2-H-147** With `lower`, each character of the result of C2-H-146 is then mapped to lower case on its own, by the Unicode lowercase mapping of that character with no context, so `Σ` becomes `σ` also at the end of a word and `İ` becomes `i` followed by U+0307. With `ascii`, the result is transliterated to ASCII, a character the table cannot map is kept as it is, and C2-H-146 is applied again; ASCII letters keep their case, as in 0.1. `ascii-strict` works the same, except that each character at or above U+0080 that the transliteration leaves is then treated as a character that is not an ASCII letter or digit, so C2-H-146 makes a run of them one hyphen: `Café 日本語` gives `Cafe` where `ascii` gives `Cafe-日本語`. `ascii-lower` and `ascii-strict-lower` are `ascii` and `ascii-strict` with the result then lowered as with `lower`. The transliteration table belongs to the host, so under these four values an id is outside conformance where the plain text holds a character at or above U+0080; an ASCII heading keeps its slug, `Hello-World` under `ascii` and `hello-world` under `ascii-lower`.
 
 **C2-H-148** A result whose first character is a Unicode number (general category N, not only an ASCII digit) gets the prefix `s-`, and an empty result becomes `s`. The category is that of the pinned Unicode version (C2-I-127). This is the slug. A duplicate slug then takes its suffix (C2-H-024), so the suffix follows the prefix: two headings `1` give `s-1` and `s-1-2`.
 
@@ -332,6 +332,29 @@ Example 24 (generated)
 </section>
 <section id="Hello-World-2">
   <h1>Hello-World</h1>
+</section>
+```
+
+:::
+
+Under `ascii` an ASCII heading keeps its case, as under 0.1 `asciiHeadingIds: true`.
+
+Example 482 (unverified, `--heading-ids ascii`)
+
+::: compare
+
+```carve
+# Hello World
+
+# API v2
+```
+
+```html
+<section id="Hello-World">
+  <h1>Hello World</h1>
+</section>
+<section id="API-v2">
+  <h1>API v2</h1>
 </section>
 ```
 
@@ -2242,7 +2265,7 @@ Example 69 (unverified, `--mode static`)
 
 **C2-H-130** `strictLosses` turns every render-loss entry into an error (C2-A-172): the render returns no output.
 
-**C2-H-131** `headingIds` controls generated heading ids (C2-H-022). Its values are `off`, `keep-case`, `lower` and `ascii`, and the default is `keep-case`. With `off` no id is generated, and an authored id is still written.
+**C2-H-131** `headingIds` controls generated heading ids (C2-H-022). Its values are `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict` and `ascii-strict-lower`, and the default is `keep-case`. With `off` no id is generated, and an authored id is still written.
 
 **C2-H-132** A render loss is an entry of the diagnostics record with the channel for render losses (C2-A-173). The 0.1 loss codes that apply to HTML stay: `raw-format-dropped`, `destination-denied`, `carrier-attribute-dropped`. The catalog lists every code of the channel (C2-W-113). `destination-denied` has the severity error.
 
@@ -2565,7 +2588,7 @@ Reported: `profile-construct-degraded`.
 |---|---|---|---|---|
 | `extensions` | parse | list of extensions | empty: the core alone | the extension API; the only option that changes parsing |
 | `includes` | parse | include root or resolver, with its limits | none: no directive is expanded (C2-H-133) | the Includes document (`includes.md`, C2-N-003) |
-| `headingIds` | resolution | `off`, `keep-case`, `lower` or `ascii` | `keep-case` | C2-H-131 |
+| `headingIds` | resolution | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict` or `ascii-strict-lower` | `keep-case` | C2-H-131 |
 | `mode` | render | `interactive` or `static` | `interactive` | C2-H-122 |
 | `renderers` | render | map from extension name to renderer | empty | C2-H-123 |
 | `symbols` | render | map from symbol name to output | empty | C2-H-124 |
@@ -2643,6 +2666,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **194** | **6** | **35** | **44** |
+| **Total** | **194** | **6** | **35** | **45** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 79 examples, 35 generated and 44 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 80 examples, 35 generated and 45 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused.

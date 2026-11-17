@@ -183,7 +183,10 @@
         "off",
         "keep-case",
         "lower",
-        "ascii"
+        "ascii",
+        "ascii-lower",
+        "ascii-strict",
+        "ascii-strict-lower"
       ],
       "option": "headingIds",
       "clauses": [

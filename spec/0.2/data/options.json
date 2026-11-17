@@ -23,7 +23,7 @@
       "kind": "resolution",
       "read_by": "resolve",
       "type": "enum",
-      "values": ["off", "keep-case", "lower", "ascii"],
+      "values": ["off", "keep-case", "lower", "ascii", "ascii-lower", "ascii-strict", "ascii-strict-lower"],
       "default": "keep-case",
       "clauses": ["C2-H-131", "C2-H-137"]
     },

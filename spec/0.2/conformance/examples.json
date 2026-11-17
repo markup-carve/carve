@@ -62639,10 +62639,92 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "html-482",
+   "document": "html.md",
+   "number": 482,
+   "section": "Hello-World",
+   "clauses": [],
+   "kind": "render",
+   "input": "# Hello World\n\n# API v2",
+   "options": {
+    "headingIds": "ascii"
+   },
+   "expected": {
+    "html": "<section id=\"Hello-World\">\n  <h1>Hello World</h1>\n</section>\n<section id=\"API-v2\">\n  <h1>API v2</h1>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "heading",
+       "level": 1,
+       "children": [
+        {
+         "type": "text",
+         "value": "Hello World",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 14,
+          "startOffset": 2,
+          "endOffset": 13
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 14,
+        "startOffset": 0,
+        "endOffset": 13
+       },
+       "generatedId": "hello-world"
+      },
+      {
+       "type": "heading",
+       "level": 1,
+       "children": [
+        {
+         "type": "text",
+         "value": "API v2",
+         "pos": {
+          "startLine": 3,
+          "endLine": 3,
+          "startColumn": 3,
+          "endColumn": 9,
+          "startOffset": 17,
+          "endOffset": 23
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 3,
+        "endLine": 3,
+        "startColumn": 1,
+        "endColumn": 9,
+        "startOffset": 15,
+        "endOffset": 23
+       },
+       "generatedId": "api-v2"
+      }
+     ],
+     "srcByteLength": 23,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "html-25",
    "document": "html.md",
    "number": 25,
-   "section": "Hello-World",
+   "section": "API v2",
    "clauses": [],
    "kind": "render",
    "input": "# Ärger mit ΣΑΣ\n\n# İstanbul Straße",

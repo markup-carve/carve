@@ -312,6 +312,7 @@ A ruling of 17 November, 12:30, restores further 0.1 behaviors and records furth
 | `social: {mentionUrl: '/u/{name}', resolveMention: () => null}` with `@alice`, a resolver that refuses a name | The template was used when the resolver returned nothing: `<a class="mention" href="/u/alice">`. | A resolver is final: the template of its pair is not read, and a mention or tag it returns nothing for is the inert span, `<span class="mention"><strong>@alice</strong></span>`. | C2-H-126 |
 | `@alice` with `social: {mentionUrl: '/u/{name}'}`, `#news` with `tagUrl` | The link held a `<strong>`: `<a class="mention" href="/u/alice"><strong>@alice</strong></a>`. | No `<strong>` in a link: `<a class="mention" href="/u/alice">@alice</a>`; the inert span keeps its `<strong>`. | C2-H-100 |
 | A semantic key in another case: `[x]{KBD}`, `[x]{ABBR="Hyper"}`, `[x]{TIME=12:00}` | The key matched in any case: `<kbd>x</kbd>`, `<abbr title="Hyper">x</abbr>`. | The keys `abbr`, `time` and `kbd` match in lower case only; another case is an ordinary attribute, `<span KBD="">x</span>`. | C2-H-075, C2-H-013 |
+| `# Hello World` and `# Café 日本語` with `headingIds: 'ascii'`, the 0.2 value for 0.1 `asciiHeadingIds: true` | `hello-world` and `cafe`: lowered, and what the table could not map dropped. | `Hello-World` and `Cafe-日本語`, case and unmapped characters kept, as 0.1 `asciiHeadingIds: true` gave. The candidate 6 behavior is now `ascii-strict-lower`; `ascii-strict` and `ascii-lower` give the other two 0.1 combinations. | C2-H-022, C2-H-147, C2-H-131 |
 
 ### Seventeen 0.1 behaviors restored, 17 November 2026
 
@@ -833,7 +834,7 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 
 | 0.1 option or behavior | 0.2 option or behavior |
 | --- | --- |
-| `lowercaseHeadingIds`, `asciiHeadingIds` | `headingIds: 'keep-case'` (default), `'lower'`, `'ascii'`, or `'off'`. `'off'` still writes authored ids. |
+| `lowercaseHeadingIds`, `asciiHeadingIds` | `headingIds`, default `'keep-case'` (neither 0.1 option). `lowercaseHeadingIds: true` is `'lower'`; `asciiHeadingIds: true` or `'fold'` is `'ascii'`, and with `lowercaseHeadingIds: true` `'ascii-lower'`; `asciiHeadingIds: 'strict'` is `'ascii-strict'`, and with `lowercaseHeadingIds: true` `'ascii-strict-lower'`. `'off'` writes no generated id and still writes authored ids. |
 | `sourceLine` | `sourceLines`, default false. |
 | `allowRawHtml`, default true | `rawHtml`, default false. |
 | `sanitizeUrls`, `allowedUrlSchemes`, `deniedUrlSchemes` | `urlPolicy: {allow: [...]}` or `{deny: [...]}`. There is no disabled URL filter. |
