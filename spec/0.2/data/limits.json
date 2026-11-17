@@ -10,6 +10,48 @@
       ]
     },
     {
+      "name": "extension_depth",
+      "value": 32,
+      "unit": "levels",
+      "clauses": [
+        "C2-X-031"
+      ]
+    },
+    {
+      "name": "extension_fallback_depth",
+      "value": 32,
+      "unit": "levels",
+      "clauses": [
+        "C2-A-132",
+        "C2-X-030"
+      ]
+    },
+    {
+      "name": "extension_payload_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-A-132",
+        "C2-X-030"
+      ]
+    },
+    {
+      "name": "extension_resource_references",
+      "value": 4096,
+      "unit": "entries",
+      "clauses": [
+        "C2-A-132"
+      ]
+    },
+    {
+      "name": "extension_source_body_bytes",
+      "value": 8388608,
+      "unit": "bytes",
+      "clauses": [
+        "C2-X-031"
+      ]
+    },
+    {
       "name": "include_bytes",
       "value": 8388608,
       "unit": "bytes",
