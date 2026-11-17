@@ -2667,9 +2667,9 @@
       "group": "lint report counts",
       "from": "a\n- b\n- c\n",
       "to": "",
-      "meaning02": "0.2 reports each marker-shaped paragraph line; 0.1 reported only the first line of the run.",
+      "meaning02": "0.2 reports each marker-shaped paragraph line; 0.1 reported only the first line of the run. The HTML is unchanged.",
       "toolEntry": "U-372",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-373",
@@ -2677,9 +2677,9 @@
       "group": "lint report counts",
       "from": "| a\n| b\n",
       "to": "",
-      "meaning02": "0.2 reports each table-shaped paragraph line; 0.1 reported only the first line of the run.",
+      "meaning02": "0.2 reports each table-shaped paragraph line; 0.1 reported only the first line of the run. The HTML is unchanged.",
       "toolEntry": "U-373",
-      "silent": true
+      "silent": false
     }
   ],
   "tree": [

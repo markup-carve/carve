@@ -53320,6 +53320,54 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1086",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "each later marker-shaped paragraph line reports without changing HTML",
+   "kind": "lint",
+   "input": "a\n- b\n- c\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-marker-without-blank-line",
+      "line": 2
+     },
+     {
+      "code": "list-marker-without-blank-line",
+      "line": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1087",
+   "clauses": [
+    "C2-W-106"
+   ],
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
+   "summary": "each later table-shaped paragraph line reports without changing HTML",
+   "kind": "lint",
+   "input": "| a\n| b\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "table-shaped-paragraph",
+      "line": 1
+     },
+     {
+      "code": "table-shaped-paragraph",
+      "line": 2
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
