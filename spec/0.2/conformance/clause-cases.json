@@ -53916,6 +53916,29 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1115",
+  "clauses": [
+   "C2-W-107",
+   "C2-W-109"
+  ],
+  "why": "C2-W-107: Lint is computed from the parsed document: its tokens, tree and source ranges assigned by the parse.",
+  "summary": "issue and mention tokens in an attribute value are not searched",
+  "kind": "lint",
+  "input": "{title=\"#12 @bob\"}\np\n",
+  "options": {
+   "platforms": [
+    "github"
+   ]
+  },
+  "expected": {
+   "notReported": [
+    "platform-issue-reference",
+    "platform-mention-token"
+   ]
+  },
+  "from": []
  }
  ]
 }
