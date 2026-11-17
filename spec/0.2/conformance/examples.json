@@ -39244,6 +39244,113 @@
    "reason": "the HTML was produced by the 0.1 reference engine, because the 0.2 rule equals 0.1 behavior for that input (conventions of the document)"
   },
   {
+   "id": "syntax-inline-128",
+   "document": "syntax-inline.md",
+   "number": 128,
+   "section": "Comments",
+   "clauses": [
+    "C2-I-023",
+    "C2-I-024",
+    "C2-I-025",
+    "C2-I-026"
+   ],
+   "kind": "render",
+   "input": "a ^[see b %% check *this*] c",
+   "options": {},
+   "expected": {
+    "html": "<p>a <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> c</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>see b<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "tree": {
+     "type": "document",
+     "astVersion": "2.0",
+     "children": [
+      {
+       "type": "paragraph",
+       "children": [
+        {
+         "type": "text",
+         "value": "a ",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 1,
+          "endColumn": 3,
+          "startOffset": 0,
+          "endOffset": 2
+         }
+        },
+        {
+         "type": "inline_footnote",
+         "children": [
+          {
+           "type": "text",
+           "value": "see b",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 5,
+            "endColumn": 10,
+            "startOffset": 4,
+            "endOffset": 9
+           }
+          },
+          {
+           "type": "comment",
+           "form": "line",
+           "value": "check *this*",
+           "pos": {
+            "startLine": 1,
+            "endLine": 1,
+            "startColumn": 10,
+            "endColumn": 26,
+            "startOffset": 9,
+            "endOffset": 25
+           }
+          }
+         ],
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 3,
+          "endColumn": 27,
+          "startOffset": 2,
+          "endOffset": 26
+         },
+         "number": 1
+        },
+        {
+         "type": "text",
+         "value": " c",
+         "pos": {
+          "startLine": 1,
+          "endLine": 1,
+          "startColumn": 27,
+          "endColumn": 29,
+          "startOffset": 26,
+          "endOffset": 28
+         }
+        }
+       ],
+       "pos": {
+        "startLine": 1,
+        "endLine": 1,
+        "startColumn": 1,
+        "endColumn": 29,
+        "startOffset": 0,
+        "endOffset": 28
+       }
+      }
+     ],
+     "srcByteLength": 28,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the HTML was written by hand from the clauses and has not been run through any engine (conventions of the document)"
+  },
+  {
    "id": "syntax-inline-16",
    "document": "syntax-inline.md",
    "number": 16,

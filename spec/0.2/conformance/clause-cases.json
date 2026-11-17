@@ -11042,6 +11042,440 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-145",
+   "clauses": [
+    "C2-I-023",
+    "C2-I-089"
+   ],
+   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of an inline footnote, or after whitespace starts a line comment.",
+   "summary": "a line comment at the start of an inline footnote hides the whole note body",
+   "input": "^[%% c] d",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-146",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "a bracket pair inside the comment does not close the note",
+   "input": "^[a %% [x] c] d",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "[x] c"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-147",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "a bracket inside a code span in the comment does not close the note",
+   "input": "^[a %% `]` c] d",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "`]` c"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-148",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "the comment ends before the note bracket inside a quote",
+   "input": "> ^[a %% c] d",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p></blockquote>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "inline_footnote",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           },
+           {
+            "type": "comment",
+            "form": "line",
+            "value": "c"
+           }
+          ],
+          "number": 1
+         },
+         {
+          "type": "text",
+          "value": " d"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-149",
+   "clauses": [
+    "C2-I-024",
+    "C2-B-169"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "the comment ends before the note bracket inside a table cell",
+   "input": "| ^[a %% c] d | e |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</td><td>e</td></tr>\n  </tbody>\n</table>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "inline_footnote",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 },
+                 {
+                  "type": "comment",
+                  "form": "line",
+                  "value": "c"
+                 }
+                ],
+                "number": 1
+               },
+               {
+                "type": "text",
+                "value": " d"
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "e"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-150",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "the comment ends before the note bracket in a heading, so the heading text goes on",
+   "input": "# h ^[a %% c] d",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"h-d\">\n  <h1>h <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</h1>\n</section>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "h "
+       },
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ],
+      "generatedId": "h-d"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-151",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "a delimiter opened before the comment inside the note stays text",
+   "input": "^[*a %% c*] d",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>*a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "*a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c*"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-152",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "a comment in an inner note ends before the inner note's bracket",
+   "input": "^[a ^[b %% c] d] e",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> e</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a <a id=\"fnref2\" href=\"#fn2\" role=\"doc-noteref\"><sup>2</sup></a> d<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n    <li id=\"fn2\">\n      <p>b<a href=\"#fnref2\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a "
+         },
+         {
+          "type": "inline_footnote",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           },
+           {
+            "type": "comment",
+            "form": "line",
+            "value": "c"
+           }
+          ],
+          "number": 2
+         },
+         {
+          "type": "text",
+          "value": " d"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " e"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-153",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089).",
+   "summary": "where the note closes on a later line the comment takes the rest of its line",
+   "input": "^[a %% c\nd] e",
+   "options": {},
+   "expected": {
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> e</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a\nd<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "inline_footnote",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "c"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "d"
+         }
+        ],
+        "number": 1
+       },
+       {
+        "type": "text",
+        "value": " e"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

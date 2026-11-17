@@ -381,9 +381,31 @@ Example 15 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
+**C2-I-023** `%%` at the start of a line of the content, at the start of the content of an inline footnote, or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
 
-**C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line.
+**C2-I-024** A line comment takes the rest of its line with every closer on it. A form that is open at the comment can only close on a later line. Inside an inline footnote the comment ends before the bracket that closes the innermost note open at it, where that bracket stands on the same line; the rest of the line is read as inline content to find the bracket (C2-I-089). As in 0.1.
+
+Example 128 (unverified)
+
+::: compare
+
+```carve
+a ^[see b %% check *this*] c
+```
+
+```html
+<p>a <a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a> c</p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>see b<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 Inside an atom that started earlier on the line, `%%` is content (C2-I-005): in a code span, in a link tail and in a quoted attribute value. The limits in a table row, in an opaque body such as a code fence, and in a line block are block clauses (C2-B-169, C2-B-135, C2-B-144).
 
@@ -2452,7 +2474,7 @@ There is no fixed budget for the inline chapter.
 | Code spans | 5 | 0 | 3 | 1 |
 | Math spans | 1 | 0 | 1 | 1 |
 | Raw inline | 2 | 1 | 2 | 1 |
-| Comments | 4 | 1 | 4 | 1 |
+| Comments | 4 | 1 | 4 | 2 |
 | Attribute blocks | 13 | 2 | 7 | 5 |
 | The opening brace | 2 | 1 | 3 | 1 |
 | Emphasis and strong | 8 | 3 | 7 | 6 |
@@ -2470,9 +2492,9 @@ There is no fixed budget for the inline chapter.
 | The depth limit | 1 | 0 | 0 | 3 |
 | The fallback rule | 2 | 0 | 2 | 0 |
 | The display math line | 1 | 0 | 1 | 0 |
-| **Total** | **112** | **16** | **70** | **57** |
+| **Total** | **112** | **16** | **70** | **58** |
 
-The chapter has 112 clauses, 16 of them exceptions, and 127 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
+The chapter has 112 clauses, 16 of them exceptions, and 128 examples. The clause count includes the exceptions. Freeze candidate 4 deleted C2-I-027, C2-I-037, C2-I-038, C2-I-044, C2-I-054 and C2-I-065, whose general rules give the same result; their ids are not reused.
 
 For comparison, counted with the rubric of the inline review (one atomic statement per rule):
 
