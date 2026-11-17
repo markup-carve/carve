@@ -1146,7 +1146,7 @@ a
 
 :::
 
-**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text, written bare or with `<p>` as a `paragraph` node at its place would be (C2-H-006, C2-H-007, C2-H-034, C2-H-040): `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. It is reported with the code `include-unresolved`. An include is unexpanded when no resolver was given or when its expansion failed (C2-N-061); an expanded include writes its children and nothing else (C2-N-075).
+**C2-H-133** An include directive that was not expanded is an `include` node (C2-A-181). It renders as a paragraph that holds the directive as text, written bare or with `<p>` as a `paragraph` node at its place would be (C2-H-006, C2-H-007, C2-H-034, C2-H-040): `{{`, a space, the path as C2-H-171 writes it, the section, the options in the order of C2-W-058 and the entries of `invalid` as the tree holds them, each after one space, a space and `}}`. An unexpanded include that has a caption is never written bare: its paragraph and the paragraph of the caption (C2-N-074) each get `<p>` on lines of their own. It is reported with the code `include-unresolved`. An include is unexpanded when no resolver was given or when its expansion failed (C2-N-061); an expanded include writes its children and nothing else (C2-N-075).
 
 An unexpanded include that is the first block of a tight item is written bare, as a paragraph there is.
 
@@ -1162,6 +1162,32 @@ Example 64 (unverified)
 ```html
 <ul>
   <li>{{ a.crv }}</li>
+  <li>b</li>
+</ul>
+```
+
+:::
+
+Reported: `include-unresolved`.
+
+With a caption the include is not bare, and the caption follows as one more paragraph.
+
+Example 70 (generated)
+
+::: compare
+
+```carve
+- {{ a.txt @code }}
+  ^ cap
+- b
+```
+
+```html
+<ul>
+  <li>
+    <p>{{ a.txt @code }}</p>
+    <p>cap</p>
+  </li>
   <li>b</li>
 </ul>
 ```
@@ -2389,7 +2415,7 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Code and raw content | 9 | 0 | 1 | 1 |
 | Tables | 9 | 0 | 1 | 0 |
 | Captions and figures | 11 | 0 | 4 | 1 |
-| Comments, frontmatter and definitions | 5 | 0 | 1 | 2 |
+| Comments, frontmatter and definitions | 5 | 0 | 2 | 2 |
 | Inline elements | 8 | 0 | 1 | 0 |
 | Links, images and references | 9 | 0 | 1 | 2 |
 | Footnotes | 8 | 0 | 3 | 2 |
@@ -2401,6 +2427,6 @@ The five attribute ranks of PART 10 section 1 are replaced by the fixed order of
 | Options | 24 | 0 | 3 | 10 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 0 |
-| **Total** | **194** | **6** | **33** | **36** |
+| **Total** | **194** | **6** | **34** | **36** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 69 examples, 33 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 70 examples, 34 generated and 36 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere.
