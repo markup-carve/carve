@@ -437,6 +437,16 @@ A ruling of 17 November, 13:55, decides the open points of the round of candidat
 
 U-207 now holds the same rule for a footnote reference, `Text[^a]{.c}{#i}.`; its old example, one block, gives the same HTML in both versions.
 
+### Rulings of 18 November 2026
+
+A ruling of 18 November decides #6055: the ids of notes and their marks take part in the uniqueness of generated ids (C2-H-202). Two elements with one id are invalid HTML, and the note link then lands on the wrong element: a reference that carries `{#fn1}` linked to itself, and a heading `fn1` caught the link of the first note. This takes back the rule of candidate 13 that these ids are fixed. A document without such a collision renders as before.
+
+| What you wrote | 0.1 and freeze candidate 13 | 0.2 now | Clause |
+| --- | --- | --- | --- |
+| A heading whose slug is `fn1` and a footnote: `# fn1` above `a[^x]` | The section and the first note both carry `id="fn1"`; the reference jumps to the heading. | The note is `<li id="fn1-2">` and the reference links `#fn1-2`. | C2-H-024, C2-H-202 |
+| An authored id that a note id would take: `a^[x] and b[^n]{#fn1}` | Two `id="fn1"`; the first reference jumps to the second. | The authored id stays; the first note is `fn1-2`. | C2-H-202 |
+| An authored id that a later reference id would take: `a^[x]{#fnref2} b^[y]` | Two `id="fnref2"`; the second note's backlink goes to the first reference. | The second reference is `fnref2-2`. | C2-H-202 |
+
 ### Include expansion
 
 The Includes document (`includes.md`) defines expansion for 0.2.0. These differences against the 0.1 processor are observable; they have no rewrite-tool entry, so the table carries no `U-` id.
