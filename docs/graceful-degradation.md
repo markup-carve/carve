@@ -16,7 +16,7 @@ An unregistered inline extension still carries readable core content:
 
 Write the fallback to carry meaning. An interactive tab set, for example, should still expose each title and panel content in source order. The optional standard tabs extension has a core fallback with strong titles followed by body blocks. Its HTML renderer writes all panel content, so the content is visible without a stylesheet. See [the tabs extension](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#standard-extension-tabs).
 
-A render profile can degrade an extension even if its renderer is installed. Resolution then follows its fallback. Check `profile-construct-degraded` and `extension-fallback-rendered` diagnostics when auditing output. See [profiles](./profiles.md) and [extension resolution](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).
+A render profile can degrade an extension even if its renderer is installed. Resolution then follows its fallback. A profile degradation reports `profile-construct-degraded`. A missing renderer reports `extension-fallback-rendered`. Check the relevant diagnostic when auditing output. See [profiles](./profiles.md) and [extension resolution](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).
 
 ## Changed in 0.2
 

@@ -4,7 +4,7 @@ Carve 0.2 is developed on the `next2` branch. The [0.2 status](https://github.co
 
 ## Language, tree, and extension versions
 
-The language version and AST version are separate. A 0.2 document's tree uses `astVersion: "2.0"`. A major AST change may rename or remove fields; a minor 2.x AST change has only the limited additions allowed by the [AST version rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#root-envelope-and-versions). Qualified extensions declare exact versions independently. A reader rejects an unknown required extension or a version it does not implement. See [extension matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching).
+The language version and AST version are separate. A 0.2 document's tree uses `astVersion: "2.0"`. A major AST change may rename or remove fields; a minor 2.x AST change has only the limited additions allowed by the [AST version rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#root-envelope-and-versions). Qualified extensions declare exact versions independently. A reader refuses an unknown required extension or unsupported required version. It preserves an unknown optional extension and uses its core fallback. See [extension matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching).
 
 ## Upgrade a document or integration
 

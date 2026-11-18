@@ -14,7 +14,7 @@ The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics
 
 ## Lint rule catalog
 
-The following 114 lint-channel rows were generated from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings. The data file is authoritative if a row changes.
+The following 112 lint-channel rows were generated from [`spec/0.2/data/lint-rules.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/lint-rules.json). That file also defines parse and render-loss codes, exact messages, conditions, and clause references. `on` and `off` are the default settings. The data file is authoritative if a row changes.
 
 | Rule id | Severity | Default |
 | --- | --- | --- |
@@ -102,7 +102,6 @@ The following 114 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `platform-issue-reference` | warning | undefined |
 | `platform-mention-token` | warning | undefined |
 | `quote-fence-ends-the-quote-above` | warning | on |
-| `references-placement-in-container` | warning | on |
 | `region-marker-renders-as-text` | warning | on |
 | `semantic-attribute-outside-span` | warning | on |
 | `semantic-attribute-value-ignored` | warning | on |
@@ -115,7 +114,6 @@ The following 114 lint-channel rows were generated from [`spec/0.2/data/lint-rul
 | `table-row-attribute-as-cell` | warning | on |
 | `table-row-cell-count` | warning | on |
 | `table-row-count-clamped` | hint | on |
-| `table-row-without-closing-pipe` | hint | undefined |
 | `table-shaped-paragraph` | warning | on |
 | `table-span-marker-attribute` | warning | on |
 | `table-span-marker-blocked` | warning | on |
