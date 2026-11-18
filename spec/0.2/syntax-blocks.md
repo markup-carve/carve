@@ -2231,7 +2231,7 @@ HTML
 
 :::
 
-**C2-B-085** For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one.
+**C2-B-085** For a duplicate label the first definition wins, and `duplicate-footnote-definition`, `duplicate-link-reference-definition` or `duplicate-abbreviation-definition` reports the later one. The range of a `duplicate-footnote-definition` finding is the definition marker `[^label]:` of the later definition, without its content or lazy lines (C2-W-138).
 
 The first definition of `n` wins and renders; the later one stays in the tree, and resolution visits it like every other node (C2-A-025, C2-A-135), so its link carries `href`.
 

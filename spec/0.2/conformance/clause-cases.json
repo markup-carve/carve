@@ -41917,10 +41917,10 @@
    "id": "CC-601",
    "clauses": [
     "C2-A-039",
-    "C2-A-148"
+    "C2-W-138"
    ],
-   "why": "C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. C2-A-148: the opening bracket of a link",
-   "summary": "a second span with the same authored id is reported at the later span",
+   "why": "C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
+   "summary": "a second span with the same authored id is reported at its id attribute",
    "kind": "parse",
    "input": "[x]{#a} [y]{#a}",
    "options": {},
@@ -41931,7 +41931,9 @@
       "channel": "parse",
       "severity": "warning",
       "line": 1,
-      "column": 9
+      "column": 13,
+      "endLine": 1,
+      "endColumn": 15
      }
     ]
    },
@@ -51161,9 +51163,10 @@
    "id": "CC-996",
    "clauses": [
     "C2-W-106",
-    "C2-A-039"
+    "C2-A-039",
+    "C2-W-138"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-A-039: For a duplicate id the first node in document order wins, and the producer reports each later one with the rule `duplicate-id`, whatever the node type. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "a span that repeats the authored id of a heading is reported, whatever the node type",
    "kind": "parse",
    "input": "{#a}\n= x\n\n[y]{#a}\n",
@@ -51173,7 +51176,9 @@
      {
       "code": "duplicate-id",
       "line": 4,
-      "column": 1,
+      "column": 5,
+      "endLine": 4,
+      "endColumn": 7,
       "channel": "parse",
       "severity": "warning"
      }
@@ -55011,10 +55016,11 @@
     "C2-I-079",
     "C2-B-081",
     "C2-N-060",
-    "C2-W-106"
+    "C2-W-106",
+    "C2-B-085"
    ],
-   "why": "Catalog duplicate-footnote-definition: a footnote definition whose key, folded as C2-I-079 says, is the key of an earlier footnote definition of the same file, once per later definition; the first one wins, keys that differ only in case are different keys, and a definition-shaped line inside a container is text and takes no part (C2-B-085, C2-I-079, C2-B-081, C2-N-060) C2-W-106: A row may express that same message as one variant whose `when` is `every finding of this code`; it applies to every finding.",
-   "summary": "duplicate footnote uses single catalog message",
+   "why": "Catalog duplicate-footnote-definition: a footnote definition whose key, folded as C2-I-079 says, is the key of an earlier footnote definition of the same file, once per later definition; the first one wins, keys that differ only in case are different keys, and a definition-shaped line inside a container is text and takes no part (C2-B-085, C2-I-079, C2-B-081, C2-N-060) C2-W-106: A row may express that same message as one variant whose `when` is `every finding of this code`; it applies to every finding. C2-B-085: The range of a `duplicate-footnote-definition` finding is the definition marker `[^label]:` of the later definition, without its content or lazy lines (C2-W-138).",
+   "summary": "duplicate footnote uses single catalog message and ranges the later marker",
    "kind": "parse",
    "input": "[^a]: +\n[^a]: +\n- b\n\n[^a]\n",
    "options": {},
@@ -55025,7 +55031,7 @@
       "line": 2,
       "column": 1,
       "endLine": 2,
-      "endColumn": 8,
+      "endColumn": 6,
       "messageWhen": "every finding of this code"
      }
     ]
