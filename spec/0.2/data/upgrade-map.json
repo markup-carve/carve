@@ -3107,7 +3107,7 @@
       "group": "tabs modes",
       "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
       "to": "",
-      "meaning02": "A host using the former aria mode must review its integration: the standard renderer uses radio controls in both modes (C2-X-043, C2-X-056).",
+      "meaning02": "A host using the former aria mode must review its integration: the standard renderer writes radio controls in interactive mode and control-free sections in static mode (C2-X-043, C2-X-056).",
       "toolEntry": "U-416",
       "silent": true
     },
@@ -3119,6 +3119,26 @@
       "to": "",
       "meaning02": "A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer.",
       "toolEntry": "U-417",
+      "silent": true
+    },
+    {
+      "id": "U-418",
+      "kind": "none",
+      "group": "tabs selection",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\"><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\" checked><label for=\"tabs-1-1\">B</label>… C2-X-056 keeps `selected`: the first marked tab is the initially selected tab and with no mark the first tab is, as in 0.1. No source edit is needed; the renderer markup around it is a host matter (U-416, U-419).",
+      "toolEntry": "U-418",
+      "silent": false
+    },
+    {
+      "id": "U-419",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section></div> Static mode keeps the 0.1 static elements and classes (C2-X-043) but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. Report so a host that processes static HTML can check it.",
+      "toolEntry": "U-419",
       "silent": true
     }
   ],

@@ -23581,7 +23581,7 @@
     "C2-X-043",
     "C2-X-048"
    ],
-   "why": "C2-X-033: A host registers a renderer by qualified name and version. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked in interactive mode. C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
+   "why": "C2-X-033: A host registers a renderer by qualified name and version. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the input of the selected tab (C2-X-056) checked. C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
    "summary": "the standard tabs renderer writes inputs, linked labels and panels",
    "kind": "render",
    "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
@@ -56816,10 +56816,11 @@
   {
    "id": "CC-1219",
    "clauses": [
-    "C2-X-052"
+    "C2-X-052",
+    "C2-X-043"
    ],
-   "why": "C2-X-052: In `interactive` mode a registered interactive renderer handles the node.",
-   "summary": "static tabs use the explicitly registered build-time channel",
+   "why": "C2-X-052: In `static` mode an explicitly registered build-time renderer handles it; registration for interactive mode alone does not select that channel. C2-X-043: Its build-time renderer, which a host registers for static mode (C2-X-052), writes no input, no `label` element, no generated id and no script: inside the same wrapper `div` it writes, per item in order, a `<section class=\"tabs-panel\">` holding an `<h3 class=\"tabs-label\">` with the content the label would hold, followed by the panel content.",
+   "summary": "static tabs use the build-time renderer, which writes sections and headings and no controls",
    "kind": "render",
    "input": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
    "options": {
@@ -56832,7 +56833,7 @@
     }
    },
    "expected": {
-    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Install</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Install\"><p>Run.</p></div></div>"
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section></div>"
    },
    "from": []
   },
@@ -56962,7 +56963,7 @@
    "clauses": [
     "C2-X-056"
    ],
-   "why": "C2-X-056: A tab's nonempty quoted title is its only label source (C2-X-040).",
+   "why": "C2-X-056: A tab's nonempty quoted title is its only label source (C2-X-040); a bracket label, a `label` attribute or a first heading does not supply a tab title.",
    "summary": "bracket label does not qualify a tab for the standard transform",
    "kind": "render",
    "input": ":::: tabs\n::: tab [Install]\nRun.\n:::\n::::\n",
@@ -57224,10 +57225,11 @@
   {
    "id": "CC-1231",
    "clauses": [
-    "C2-X-056"
+    "C2-X-056",
+    "C2-X-043"
    ],
-   "why": "C2-X-056: `selected` does not choose a tab.",
-   "summary": "selected attribute on second tab does not change the first checked input",
+   "why": "C2-X-056: A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the input of the selected tab (C2-X-056) checked.",
+   "summary": "selected on the second tab checks the second input",
    "kind": "render",
    "input": ":::: tabs\n::: tab \"A\"\na\n:::\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
    "options": {
@@ -57239,7 +57241,77 @@
     }
    },
    "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\"><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\" checked><label for=\"tabs-1-1\">B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>b</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1232",
+   "clauses": [
+    "C2-X-056",
+    "C2-X-043"
+   ],
+   "why": "C2-X-056: A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the input of the selected tab (C2-X-056) checked.",
+   "summary": "of two tabs marked selected the first wins",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n\n{selected}\n::: tab \"C\"\nc\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\"><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\" checked><label for=\"tabs-1-1\">B</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-2\"><label for=\"tabs-1-2\">C</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>b</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"C\"><p>c</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1233",
+   "clauses": [
+    "C2-X-056",
+    "C2-X-043"
+   ],
+   "why": "C2-X-056: A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the input of the selected tab (C2-X-056) checked.",
+   "summary": "with no selected mark the first tab is selected, and another key is no mark",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{k=v}\n::: tab \"B\"\nb\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
     "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\"><label for=\"tabs-1-1\">B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>b</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1234",
+   "clauses": [
+    "C2-X-043",
+    "C2-X-052"
+   ],
+   "why": "C2-X-043: Its build-time renderer, which a host registers for static mode (C2-X-052), writes no input, no `label` element, no generated id and no script: inside the same wrapper `div` it writes, per item in order, a `<section class=\"tabs-panel\">` holding an `<h3 class=\"tabs-label\">` with the content the label would hold, followed by the panel content. ... The selection does not change static output. C2-X-052: In `static` mode an explicitly registered build-time renderer handles it; registration for interactive mode alone does not select that channel.",
+   "summary": "static mode writes a two-tab set as two sections in order, whatever tab is selected",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n{selected}\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "mode": "static",
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run setup.</p></section><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Use</h3><p>Open the app.</p></section></div>"
    },
    "from": []
   }

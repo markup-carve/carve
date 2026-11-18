@@ -110,7 +110,7 @@ The standard extensions are a catalog that follows the core: this section is not
 
 **C2-X-042** The transform gives each `carve.tab` a core fallback with its title as a `strong` paragraph, when present, followed by its body blocks. The `carve.tabs` fallback concatenates those sequences in tab order.
 
-**C2-X-043** The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked in interactive mode. Static mode uses the same controls and panels when its build-time renderer is registered (C2-X-052); it has no control-free tabs output.
+**C2-X-043** The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the input of the selected tab (C2-X-056) checked. Its build-time renderer, which a host registers for static mode (C2-X-052), writes no input, no `label` element, no generated id and no script: inside the same wrapper `div` it writes, per item in order, a `<section class="tabs-panel">` holding an `<h3 class="tabs-label">` with the content the label would hold, followed by the panel content. The selection does not change static output. Neither mode writes a line break between the elements it writes.
 
 **C2-X-044** The tabs renderer renders each label from the tab's `title` slot and each panel from its `body` slot. It escapes text and attributes through the host renderer.
 
@@ -122,7 +122,7 @@ The standard extensions are a catalog that follows the core: this section is not
 
 **C2-X-048** The tabs renderer gives each radio input a unique document-scoped id and links its label to that id. The groups are counted in document order from 1: group N has the input name `tabs-N`, and its inputs the ids `tabs-N-0`, `tabs-N-1` and so on, counted from 0. Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes, and later groups count on from it.
 
-**C2-X-056** A tab's nonempty quoted title is its only label source (C2-X-040). A bracket label, a `label` attribute, or a first heading does not supply a tab title; `selected` does not choose a tab. The first tab is selected as in C2-X-043. The renderer keeps the group and panel accessibility labels of C2-X-047 in both modes; an `aria` mode or a per-instance host class does not change the standard tabs contract.
+**C2-X-056** A tab's nonempty quoted title is its only label source (C2-X-040); a bracket label, a `label` attribute or a first heading does not supply a tab title. A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. The group label of C2-X-047 applies in both modes, and the panel names in interactive mode only: in static mode the heading of each section names it. An `aria` mode or a per-instance host class does not change the standard tabs contract.
 
 Input:
 
@@ -200,6 +200,12 @@ HTML with the tabs renderer:
 
 ```html
 <div class="tabs" role="group" aria-label="Tabs"><input type="radio" name="tabs-1" id="tabs-1-0" checked><label for="tabs-1-0">Install</label><input type="radio" name="tabs-1" id="tabs-1-1"><label for="tabs-1-1">Use</label><div class="tab-panel" role="group" aria-label="Install"><p>Run setup.</p></div><div class="tab-panel" role="group" aria-label="Use"><p>Open the app.</p></div></div>
+```
+
+HTML with the build-time tabs renderer, `--mode static`:
+
+```html
+<div class="tabs" role="group" aria-label="Tabs"><section class="tabs-panel"><h3 class="tabs-label">Install</h3><p>Run setup.</p></section><section class="tabs-panel"><h3 class="tabs-label">Use</h3><p>Open the app.</p></section></div>
 ```
 
 HTML without the tabs renderer:
