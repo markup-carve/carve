@@ -644,7 +644,7 @@ Example 9 (generated)
 
 **C2-H-041** A quote is `<blockquote>`.
 
-**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how.
+**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how. A trusted extension renderer receives `host.blockDepth` as the current block indent in two-space units (C2-X-033). The host indents the first line of the renderer's returned block HTML; the renderer indents later lines by that depth.
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza; a comment in it writes nothing. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space. A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.
 
