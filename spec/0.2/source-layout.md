@@ -53,7 +53,7 @@ The draft had `version: 1`. The version changes because the closed schema gains 
 
 **C2-L-013** A producer does not invent a range. A node whose source is not one contiguous range, such as a cell joined from continuation rows, has an entry whose range runs from the start of its first piece to the end of its last. Such a node has no `pos` (C2-A-156), so this range is not a position.
 
-**C2-L-014** Source and ranges are the minimum. Every fact is optional, and an absent fact means unknown: a producer omits what it did not measure, and a consumer does not read an absent fact as a value.
+**C2-L-014** Source and ranges are the minimum. A fact other than the required facts of C2-L-047, C2-L-052, C2-L-054 and C2-L-059 is optional. An absent optional fact means unknown: a producer omits what it did not measure, and a consumer does not read an absent fact as a value.
 
 **C2-L-015** A writer that finds no fact uses the default of the section "Defaults". That is a rule about writing, not a reading of the document: the default is never reported as what the author wrote.
 
@@ -136,7 +136,7 @@ These facts are ported from the draft. Columns in them are the zero-based column
 | `markerColumn` | the same | the column of the marker's first character |
 | `contentColumn` | a `list_item`, a `definition_description`, a `footnote` | the content column |
 | `continuationStyle` | a `list_item`, a `definition_description` and a `footnote` (C2-L-052) | `lazy`, `indent`, `marker_line` or `none` |
-| `blankLinesBefore`, `blankLinesAfter` | any block | the number of blank lines around the node inside its container |
+| `blankLinesBefore`, `blankLinesAfter` | the nodes named in C2-L-047 | the number of blank lines around the node inside its container |
 | `openerRaw`, `closerRaw` | a `code_block`, a `div`, an `admonition`, a `directive`, a `line_block`, a fenced `block_quote`, a block `comment`, a `raw_block`, `frontmatter` | the delimiter runs as typed, without the info string |
 | `metadataSeparatorRaw` | a definition, a `definition_term` | the separator between the label or term and its body, whitespace included |
 | `attachment` | a `caption` | `preceding` or `none` |
