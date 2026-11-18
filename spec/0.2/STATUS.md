@@ -2,7 +2,7 @@
 
 **Freeze candidate 14.** The candidate is the text of `spec/0.2/` on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
-Freeze candidate 14 content commit: `4b674b8ad`. This status-only commit follows it. Freeze candidate 13 content commit: `786e2821c`.
+Freeze candidate 14 content commit: `f2be82f57`. This status-only commit follows it. Freeze candidate 13 content commit: `786e2821c`.
 
 Freeze candidate 12 commit: `7c9de4372`. The older `eda35624` commit is freeze candidate 10.
 
