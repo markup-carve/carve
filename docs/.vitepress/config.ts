@@ -4,6 +4,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import container from 'markdown-it-container'
 import { carveMarkdown } from '@markup-carve/carve-grammars/shiki'
+import carve2Grammar from '@markup-carve/carve-grammars/textmate/carve2.tmLanguage.json' with { type: 'json' }
 import carve from '@markup-carve/vite-plugin-carve'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { carveExtensions } from './carve-extensions.js'
@@ -46,6 +47,13 @@ const caseStudySidebar = [
 // If the repo is published at https://markup-carve.github.io/carve/
 // keep `base: '/carve/'`. If you publish from an org page repo named
 // `markup-carve.github.io`, change `base` to '/'.
+// These docs describe Carve 0.2, so `carve` and `crv` fences take the 0.2 grammar; the shared helper still ships 0.1 under those names.
+function carve02Markdown() {
+  const md = carveMarkdown({ languages: [ebnfGrammar, orgGrammar, textileGrammar] })
+  const carve2 = { ...carve2Grammar, name: 'carve', aliases: ['crv', 'Carve'] } as never
+  return { ...md, languages: [carve2, ...md.languages.filter((l: { name?: string }) => l.name !== 'carve')] }
+}
+
 export default defineConfig({
   title: 'Carve',
   description: 'A markup language for structured documents.',
@@ -64,7 +72,7 @@ export default defineConfig({
   },
 
   markdown: {
-    ...carveMarkdown({ languages: [ebnfGrammar, orgGrammar, textileGrammar] }),
+    ...carve02Markdown(),
     config(md) {
       // VitePress renders every page for the client and the server bundle, so
       // each fence was highlighted ~3 times; Shiki was ~90% of the build.
