@@ -714,12 +714,11 @@
   {
    "id": "CC-017",
    "clauses": [
-    "C2-I-024",
     "C2-I-023",
     "C2-I-074",
     "C2-B-197"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment. C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
+   "why": "C2-I-074: Its alt text is the source of the bracket content, not parsed, except that a backslash before an ASCII punctuation character is removed (C2-I-010).",
    "summary": "line comment in image alt ends before the bracket, and the alt is the source",
    "input": "![a %% b](x)\n^ cap",
    "options": {},
@@ -11076,34 +11075,24 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a bracket pair inside the comment does not close the note",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the note closer",
    "input": "^[a %% [x] c] d",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>^[a</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_footnote",
-        "children": [
-         {
-          "type": "text",
-          "value": "a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "[x] c"
-         }
-        ],
-        "number": 1
+        "type": "text",
+        "value": "^[a"
        },
        {
-        "type": "text",
-        "value": " d"
+        "type": "comment",
+        "form": "line",
+        "value": "[x] c] d"
        }
       ]
      }
@@ -11116,34 +11105,24 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a bracket inside a code span in the comment does not close the note",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes note closers even when code marks intervene",
    "input": "^[a %% `]` c] d",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>^[a</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_footnote",
-        "children": [
-         {
-          "type": "text",
-          "value": "a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "`]` c"
-         }
-        ],
-        "number": 1
+        "type": "text",
+        "value": "^[a"
        },
        {
-        "type": "text",
-        "value": " d"
+        "type": "comment",
+        "form": "line",
+        "value": "`]` c] d"
        }
       ]
      }
@@ -11156,12 +11135,12 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "the comment ends before the note bracket inside a quote",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the note closer inside a quote",
    "input": "> ^[a %% c] d",
    "options": {},
    "expected": {
-    "html": "<blockquote><p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p></blockquote>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<blockquote><p>^[a</p></blockquote>",
     "children": [
      {
       "type": "block_quote",
@@ -11170,23 +11149,13 @@
         "type": "paragraph",
         "children": [
          {
-          "type": "inline_footnote",
-          "children": [
-           {
-            "type": "text",
-            "value": "a"
-           },
-           {
-            "type": "comment",
-            "form": "line",
-            "value": "c"
-           }
-          ],
-          "number": 1
+          "type": "text",
+          "value": "^[a"
          },
          {
-          "type": "text",
-          "value": " d"
+          "type": "comment",
+          "form": "line",
+          "value": "c] d"
          }
         ]
        }
@@ -11202,12 +11171,12 @@
     "C2-I-024",
     "C2-B-169"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "the comment ends before the note bracket inside a table cell",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the note closer inside a table cell",
    "input": "| ^[a %% c] d | e |",
    "options": {},
    "expected": {
-    "html": "<table>\n  <tbody>\n    <tr><td><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</td><td>e</td></tr>\n  </tbody>\n</table>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<table>\n  <tbody>\n    <tr><td>^[a</td><td>e</td></tr>\n  </tbody>\n</table>",
     "children": [
      {
       "type": "table",
@@ -11234,23 +11203,13 @@
               "type": "cell_paragraph",
               "children": [
                {
-                "type": "inline_footnote",
-                "children": [
-                 {
-                  "type": "text",
-                  "value": "a"
-                 },
-                 {
-                  "type": "comment",
-                  "form": "line",
-                  "value": "c"
-                 }
-                ],
-                "number": 1
+                "type": "text",
+                "value": "^[a"
                },
                {
-                "type": "text",
-                "value": " d"
+                "type": "comment",
+                "form": "line",
+                "value": "c] d"
                }
               ]
              }
@@ -11286,12 +11245,12 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "the comment ends before the note bracket in a heading, so the heading text goes on",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the note closer inside a heading",
    "input": "# h ^[a %% c] d",
    "options": {},
    "expected": {
-    "html": "<section id=\"h-d\">\n  <h1>h <a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</h1>\n</section>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<section id=\"h-a\">\n  <h1>h ^[a</h1>\n</section>",
     "children": [
      {
       "type": "heading",
@@ -11299,29 +11258,15 @@
       "children": [
        {
         "type": "text",
-        "value": "h "
+        "value": "h ^[a"
        },
        {
-        "type": "inline_footnote",
-        "children": [
-         {
-          "type": "text",
-          "value": "a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "c"
-         }
-        ],
-        "number": 1
-       },
-       {
-        "type": "text",
-        "value": " d"
+        "type": "comment",
+        "form": "line",
+        "value": "c] d"
        }
       ],
-      "generatedId": "h-d"
+      "generatedId": "h-a"
      }
     ]
    },
@@ -11332,34 +11277,24 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a delimiter opened before the comment inside the note stays text",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the note and delimiter closers",
    "input": "^[*a %% c*] d",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>*a<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>^[*a</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_footnote",
-        "children": [
-         {
-          "type": "text",
-          "value": "*a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "c*"
-         }
-        ],
-        "number": 1
+        "type": "text",
+        "value": "^[*a"
        },
        {
-        "type": "text",
-        "value": " d"
+        "type": "comment",
+        "form": "line",
+        "value": "c*] d"
        }
       ]
      }
@@ -11373,38 +11308,24 @@
     "C2-I-024",
     "C2-I-089"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a comment ends before the bracket of a caret pair inside a note, which opens no note",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes every nested note closer on its line",
    "input": "^[a ^[b %% c] d] e",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> e</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a ^[b] d<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p>^[a ^[b</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_footnote",
-        "children": [
-         {
-          "type": "text",
-          "value": "a ^[b"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "c"
-         },
-         {
-          "type": "text",
-          "value": "] d"
-         }
-        ],
-        "number": 1
+        "type": "text",
+        "value": "^[a ^[b"
        },
        {
-        "type": "text",
-        "value": " e"
+        "type": "comment",
+        "form": "line",
+        "value": "c] d] e"
        }
       ]
      }
@@ -11417,7 +11338,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
+   "why": "C2-I-024: A bracket or braced opener left unclosed by the comment is text; a closer on a later line may still close an open form.",
    "summary": "where the note closes on a later line the comment takes the rest of its line",
    "input": "^[a %% c\nd] e",
    "options": {},
@@ -15879,22 +15800,23 @@
   {
    "id": "CC-280",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "x then xi is one roman list from 10",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first x. marker fixes its style and the next style splits the list",
    "input": "x.  a\nxi.  b",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"10\">\n  <li>a</li>\n  <li>b</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"24\">\n  <li>a</li>\n</ol>\n<ol type=\"i\" start=\"11\">\n  <li>b</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 10
+       "start": 24
       },
       "spacing": "tight",
       "children": [
@@ -15911,7 +15833,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 11
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -15935,22 +15869,22 @@
   {
    "id": "CC-281",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "i then j is one alphabetic list from 9",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first i. marker fixes its style and the next style splits the list",
    "input": "i.  x\nj.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"a\" start=\"9\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"i\">\n  <li>x</li>\n</ol>\n<ol type=\"a\" start=\"10\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "a",
-       "delimiter": ".",
-       "start": 9
+       "style": "i",
+       "delimiter": "."
       },
       "spacing": "tight",
       "children": [
@@ -15967,7 +15901,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 10
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -15991,22 +15937,23 @@
   {
    "id": "CC-282",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "c then ci is one roman list from 100",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first c. marker fixes its style and the next style splits the list",
    "input": "c.  x\nci.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"100\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"3\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"101\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 100
+       "start": 3
       },
       "spacing": "tight",
       "children": [
@@ -16023,7 +15970,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 101
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -16047,22 +16006,23 @@
   {
    "id": "CC-283",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style: digits and the bare dot are one style, decimal, two or more roman letters are roman, and a single letter is alphabetic, except one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, which takes its style from the next marker. C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "uppercase V then VI is one roman list",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first V. marker fixes its style and the next style splits the list",
    "input": "V.  x\nVI.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"I\" start=\"5\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"A\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"I\" start=\"6\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "I",
+       "style": "A",
        "delimiter": ".",
-       "start": 5
+       "start": 22
       },
       "spacing": "tight",
       "children": [
@@ -16079,7 +16039,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "I",
+       "delimiter": ".",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -16105,7 +16077,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count. C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic.",
    "summary": "a next marker in the other case settles nothing",
    "input": "c.  x\n\nCI.  y",
    "options": {},
@@ -16174,7 +16146,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count. C2-B-044: Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.",
+   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "three blank lines keep v alphabetic and vi apart",
    "input": "v.  x\n\n\n\nvi.  y",
    "options": {},
@@ -16240,24 +16212,25 @@
   {
    "id": "CC-286",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
-   "summary": "two blank lines still let vi settle v",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "v.  x\n\n\nvi.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"5\">\n  <li><p>x</p></li>\n  <li><p>y</p></li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 5
+       "start": 22
       },
-      "spacing": "loose",
+      "spacing": "tight",
       "children": [
        {
         "type": "list_item",
@@ -16272,7 +16245,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -16298,7 +16283,7 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic.",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic.",
    "summary": "a lone i before three blank lines is roman",
    "input": "i.  first 1\n\n\n\nc.  second 1\nd.  second 2",
    "options": {},
@@ -16377,22 +16362,23 @@
   {
    "id": "CC-288",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
-   "summary": "lines indented past the marker are skipped",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "v.  x\n    - n\nvi.  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"5\">\n  <li>x\n    <ul>\n      <li>n</li>\n    </ul>\n  </li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x\n    <ul>\n      <li>n</li>\n    </ul>\n  </li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 5
+       "start": 22
       },
       "spacing": "tight",
       "children": [
@@ -16433,7 +16419,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -16459,20 +16457,20 @@
    "clauses": [
     "C2-B-042"
    ],
-   "why": "C2-B-042: The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count.",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic.",
    "summary": "the delimiter of the next marker does not count",
    "input": "v.  x\nvi)  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"5\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ".",
-       "start": 5
+       "start": 22
       },
       "spacing": "tight",
       "children": [
@@ -16527,7 +16525,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "a lazy line before vi leaves v alphabetic",
    "input": "v.  x\nlazy\nvi.  y",
    "options": {},
@@ -16602,7 +16600,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "v then vii splits into two lists",
    "input": "v.  x\nvii.  y",
    "options": {},
@@ -16668,14 +16666,15 @@
   {
    "id": "CC-292",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "i then j inside a quote is one alphabetic list",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first i. marker fixes its style and the next style splits the list",
    "input": "> i.  x\n> j.  y",
    "options": {},
    "expected": {
-    "html": "<blockquote>\n  <ol type=\"a\" start=\"9\">\n    <li>x</li>\n    <li>y</li>\n  </ol>\n</blockquote>",
+    "html": "<blockquote>\n  <ol type=\"i\">\n    <li>x</li>\n  </ol>\n  <ol type=\"a\" start=\"10\">\n    <li>y</li>\n  </ol>\n</blockquote>",
     "children": [
      {
       "type": "block_quote",
@@ -16684,9 +16683,8 @@
         "type": "list",
         "marker": {
          "kind": "ordered",
-         "style": "a",
-         "delimiter": ".",
-         "start": 9
+         "style": "i",
+         "delimiter": "."
         },
         "spacing": "tight",
         "children": [
@@ -16703,7 +16701,19 @@
             ]
            }
           ]
-         },
+         }
+        ]
+       },
+       {
+        "type": "list",
+        "marker": {
+         "kind": "ordered",
+         "style": "a",
+         "delimiter": ".",
+         "start": 10
+        },
+        "spacing": "tight",
+        "children": [
          {
           "type": "list_item",
           "children": [
@@ -16729,14 +16739,15 @@
   {
    "id": "CC-293",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "v then vi inside a list item is one roman list",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "- v.  x\n  vi.  y",
    "options": {},
    "expected": {
-    "html": "<ul>\n  <li>\n    <ol type=\"i\" start=\"5\">\n      <li>x</li>\n      <li>y</li>\n    </ol>\n  </li>\n</ul>",
+    "html": "<ul>\n  <li>\n    <ol type=\"a\" start=\"22\">\n      <li>x</li>\n    </ol>\n    <ol type=\"i\" start=\"6\">\n      <li>y</li>\n    </ol>\n  </li>\n</ul>",
     "children": [
      {
       "type": "list",
@@ -16753,9 +16764,9 @@
           "type": "list",
           "marker": {
            "kind": "ordered",
-           "style": "i",
+           "style": "a",
            "delimiter": ".",
-           "start": 5
+           "start": 22
           },
           "spacing": "tight",
           "children": [
@@ -16772,7 +16783,19 @@
               ]
              }
             ]
-           },
+           }
+          ]
+         },
+         {
+          "type": "list",
+          "marker": {
+           "kind": "ordered",
+           "style": "i",
+           "delimiter": ".",
+           "start": 6
+          },
+          "spacing": "tight",
+          "children": [
            {
             "type": "list_item",
             "children": [
@@ -16800,22 +16823,23 @@
   {
    "id": "CC-294",
    "clauses": [
-    "C2-B-042"
+    "C2-B-042",
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`.",
-   "summary": "l then li with a paren is one roman list from 50",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "the first l) marker fixes its style and the next style splits the list",
    "input": "l)  x\nli)  y",
    "options": {},
    "expected": {
-    "html": "<ol type=\"i\" start=\"50\" data-delim=\")\">\n  <li>x</li>\n  <li>y</li>\n</ol>",
+    "html": "<ol type=\"a\" start=\"12\" data-delim=\")\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"51\" data-delim=\")\">\n  <li>y</li>\n</ol>",
     "children": [
      {
       "type": "list",
       "marker": {
        "kind": "ordered",
-       "style": "i",
+       "style": "a",
        "delimiter": ")",
-       "start": 50
+       "start": 12
       },
       "spacing": "tight",
       "children": [
@@ -16832,7 +16856,19 @@
           ]
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ")",
+       "start": 51
+      },
+      "spacing": "tight",
+      "children": [
        {
         "type": "list_item",
         "children": [
@@ -17835,12 +17871,12 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a comment in link text ends before the bracket, as in 0.1",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the link text closer",
    "input": "[a %% c] d",
    "options": {},
    "expected": {
-    "html": "<p>[a] d</p>",
+    "html": "<p>[a</p>",
     "children": [
      {
       "type": "paragraph",
@@ -17852,11 +17888,7 @@
        {
         "type": "comment",
         "form": "line",
-        "value": "c"
-       },
-       {
-        "type": "text",
-        "value": "] d"
+        "value": "c] d"
        }
       ]
      }
@@ -17870,34 +17902,24 @@
     "C2-I-024",
     "C2-I-094"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a comment in extension content ends before the bracket, as in 0.1",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the extension closer",
    "input": ":foo[a %% c] d",
    "options": {},
    "expected": {
-    "html": "<p><span class=\"ext-foo\">a</span> d</p>",
+    "html": "<p>:foo[a</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_extension",
-        "name": "foo",
-        "children": [
-         {
-          "type": "text",
-          "value": "a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "c"
-         }
-        ]
+        "type": "text",
+        "value": ":foo[a"
        },
        {
-        "type": "text",
-        "value": " d"
+        "type": "comment",
+        "form": "line",
+        "value": "c] d"
        }
       ]
      }
@@ -17911,33 +17933,24 @@
     "C2-I-024",
     "C2-I-055"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line with every closer on it, except where a bracket or a braced opener is open at it: a bracket on the bracket stack (C2-I-006), `^[` and the bracket of an inline extension included, or a braced opener (C2-I-055). C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "a comment in a braced form ends before its closer, as in 0.1",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes the braced span closer",
    "input": "{_a %% b_} y",
    "options": {},
    "expected": {
-    "html": "<p><u>a</u> y</p>",
+    "html": "<p>{_a</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "underline",
-        "children": [
-         {
-          "type": "text",
-          "value": "a"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "b"
-         }
-        ]
+        "type": "text",
+        "value": "{_a"
        },
        {
-        "type": "text",
-        "value": " y"
+        "type": "comment",
+        "form": "line",
+        "value": "b_} y"
        }
       ]
      }
@@ -17951,26 +17964,24 @@
     "C2-I-023",
     "C2-I-024"
    ],
-   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment.",
-   "summary": "the start of extension content counts as a line start, as in 0.1",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment at the start of extension content takes its closer",
    "input": ":f[%%]",
    "options": {},
    "expected": {
-    "html": "<p><span class=\"ext-f\"></span></p>",
+    "html": "<p>:f[</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "inline_extension",
-        "name": "f",
-        "children": [
-         {
-          "type": "comment",
-          "form": "line",
-          "value": ""
-         }
-        ]
+        "type": "text",
+        "value": ":f["
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "]"
        }
       ]
      }
@@ -17983,37 +17994,24 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: There the comment ends before the closer of the innermost of them, the closing bracket that pairs with it or the braced closer of its mark, where that closer stands on the same line; the rest of the line is scanned as inline content only to find that closer, and up to it the line stays comment.",
-   "summary": "the innermost open form decides where the comment ends",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "a comment takes nested bracket and braced closers",
    "input": "[a {_b %% c] d_} e",
    "options": {},
    "expected": {
-    "html": "<p>[a <u>b</u> e</p>",
+    "html": "<p>[a {_b</p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
         "type": "text",
-        "value": "[a "
+        "value": "[a {_b"
        },
        {
-        "type": "underline",
-        "children": [
-         {
-          "type": "text",
-          "value": "b"
-         },
-         {
-          "type": "comment",
-          "form": "line",
-          "value": "c] d"
-         }
-        ]
-       },
-       {
-        "type": "text",
-        "value": " e"
+        "type": "comment",
+        "form": "line",
+        "value": "c] d_} e"
        }
       ]
      }
@@ -46705,7 +46703,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: `v.` then `vii.` an alphabetic list of one item and a roman list ... `ordered-list-kind-split` reports the split once, at the list of one item.",
+   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "v then vii splits into an alphabetic and a roman list",
    "kind": "lint",
    "input": "v. a\nvii. b\n",
@@ -46726,16 +46724,22 @@
   {
    "id": "CC-800",
    "clauses": [
-    "C2-B-042"
+    "C2-B-044"
    ],
-   "why": "C2-B-042: The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`",
-   "summary": "v then vi is one roman list and does not split",
+   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "v then vi splits into alphabetic and roman lists",
    "kind": "lint",
    "input": "v. a\nvi. b\n",
    "options": {},
    "expected": {
-    "notReported": [
-     "ordered-list-kind-split"
+    "diagnostics": [
+     {
+      "code": "ordered-list-kind-split",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
     ]
    },
    "from": []
@@ -56129,6 +56133,119 @@
      "text": "## A\n"
     }
    }
+  },
+  {
+   "id": "CC-1207",
+   "clauses": [
+    "C2-B-042",
+    "C2-B-044"
+   ],
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "summary": "m then mi splits alphabetic and roman lists",
+   "kind": "render",
+   "input": "m. one\nmi. two",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"13\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"1001\">\n  <li>two</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 13
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "one"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 1001
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "two"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1208",
+   "clauses": [
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included. C2-I-024: A bracket or braced opener left unclosed by the comment is text; a closer on a later line may still close an open form.",
+   "summary": "braced span closes on a later line after a comment takes the first closer",
+   "kind": "render",
+   "input": "{_a %% note_}\nb_}",
+   "options": {},
+   "expected": {
+    "html": "<p><u>a\nb</u></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "underline",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         },
+         {
+          "type": "comment",
+          "form": "line",
+          "value": "note_}"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

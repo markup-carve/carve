@@ -201,7 +201,7 @@ Written:
 
 **C2-W-027** An item, a description or a footnote body whose first block is not a paragraph is written with that block's opener on the marker line (C2-B-057, C2-B-072). This is requirement W8.
 
-**C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). Two adjacent ordered lists of different styles are separated in the same way when the first has one item whose marker, as written, the first marker of the second would settle into the other style (C2-B-042): a roman list `i.` above an alphabetic list `j.`, an alphabetic list `v.` above a roman list `vi.`. This is requirement W4.
+**C2-W-028** Two adjacent lists of the same kind in one container are separated by exactly three blank lines (C2-B-052). The writer does not change a bullet character or a delimiter to separate them, because both are meaning (C2-L-032, C2-B-037). Adjacent ordered lists of different styles need no blank lines to keep their styles separate (C2-B-042). This is requirement W4.
 
 **C2-W-122** Where a comment stands between two lists of one kind, the comment is written by its own rule (C2-W-059) and the three blank lines stand between the comment and the second list, except when attribute lines of the second list stand above the comment. In that case the attribute lines and any consecutive line comments follow the preceding list after one blank line, since directly below the last paragraph of the list an attribute line is a lazy line of that paragraph (C2-B-024, blocks Example 264). A line comment can follow a list, a description list or a footnote body as a sibling in two cases. One is C2-W-123. The other is a comment that stands below the attribute lines of the next block: those lines are written above the comment, as the source had them, after that blank line, since the attribute line then closes the list and the comment belongs to the container (C2-B-091). In every other place the comment line belongs to the last item (C2-B-138), a parse never gives that tree, and for a supplied tree the writer reports `structure-unspellable` (C2-W-117).
 
@@ -429,7 +429,7 @@ Written:
 ```
 
 
-**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written could read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
+**C2-W-045** A list whose style is not decimal is written with its letters or numerals in sequence (C2-L-031). Where the first marker so written would read as another style (C2-B-042), which is an alphabetic list that starts at `i` or `I` and a roman list that starts at a one-letter numeral other than `i` or `I`, the list is written from the first value of its style, `a` or `i` in its letter case, under a `start` attribute that carries the real value (C2-B-045). Only the first marker carries a value (C2-B-041), so a later marker that the marker grammar cannot hold, a letter past `z` or a numeral of more than nine letters (C2-B-036), is written as the first value of its style, and a first marker of that kind moves its value to the `start` attribute in the same way.
 
 An alphabetic list is written with its letters in sequence (C2-W-045).
 
@@ -1300,7 +1300,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
 | `fence-closer-indented` | hint | a closer whose indent differs from its opener's | unchanged |
-| `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the next marker settles the style first (C2-B-042) |
+| `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the first marker fixes its style (C2-B-042) |
 | `duplicate-link-reference-definition` | warning | a link definition whose key was defined before | unchanged |
 | `duplicate-abbreviation-definition` | warning | an abbreviation definition whose key was defined before | unchanged |
 | `deprecated-spaced-thematic-break` | warning | a line of three or more stars, hyphens or underscores with spaces between them | unchanged; `- - -` is this case |

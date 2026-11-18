@@ -1485,7 +1485,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "Nothing after this one-letter marker settles its style, so a lone i reads as roman and any other letter as alphabetic, and the list splits after its first item."
+        "This one-letter marker fixes its list style, so the next marker starts another list."
       ],
       "message_origin": "design",
       "reports": "a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them",

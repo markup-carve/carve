@@ -2873,13 +2873,13 @@
     },
     {
       "id": "U-393",
-      "kind": "report",
+      "kind": "none",
       "group": "inline comments",
       "from": "{~a %% b~>c~} d\n",
-      "to": "",
-      "meaning02": "<p><s>a</s> d</p> A comment marker inside a substitution changes which arrow and closer survive under C2-I-023 and C2-I-062. Report the source range from the substitution opener through its closing brace.",
+      "to": "{~a %% b~>c~} d\n",
+      "meaning02": "<p>{~a d</p> C2-I-024 makes the line comment take the substitution arrow and closer, as 0.1 did. No source edit is needed.",
       "toolEntry": "U-393",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-394",
@@ -2909,6 +2909,66 @@
       "to": "",
       "meaning02": "<p>a $`</p> C2-I-017 reads a backtick run with no closer of its length as text, and 0.1 wrote an empty math span. An adjacent closer joins the opener into a wider run, and a separator changes the empty value, so no spelling keeps the empty span. Report the parsed math range, `$` or `$$` with its backticks, at the end of inline content; do not rewrite.",
       "toolEntry": "U-396",
+      "silent": true
+    },
+    {
+      "id": "U-397",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v.  x\nvi.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\">\n  <li>x</li>\n</ol>\n<ol type=\"i\" start=\"6\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as alphabetic; C2-B-044 splits at `vi.`. Report the two-list boundary for review.",
+      "toolEntry": "U-397",
+      "silent": false
+    },
+    {
+      "id": "U-398",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i.  x\nj.  y\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\">\n  <li>x</li>\n</ol>\n<ol type=\"a\" start=\"10\">\n  <li>y</li>\n</ol> C2-B-042 fixes the first marker as roman; C2-B-044 splits at `j.`. Report the two-list boundary for review.",
+      "toolEntry": "U-398",
+      "silent": false
+    },
+    {
+      "id": "U-399",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[a %% b](/u) c\n",
+      "to": "[a{% b %}](/u) c\n",
+      "meaning02": "<p>[a</p> C2-I-024 takes the closing bracket and link tail. The proposed braced comment restores the 0.1 link HTML.",
+      "toolEntry": "U-399",
+      "silent": true
+    },
+    {
+      "id": "U-400",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[a %% c] d\n",
+      "to": "^[a{% c %}] d\n",
+      "meaning02": "<p>^[a</p> C2-I-024 takes the closing bracket and following text. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-400",
+      "silent": true
+    },
+    {
+      "id": "U-401",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "{_a %% b_} y\n",
+      "to": "{_a{% b %}_} y\n",
+      "meaning02": "<p>{_a</p> C2-I-024 takes the closing brace. The proposed braced comment restores the 0.1 underline HTML.",
+      "toolEntry": "U-401",
+      "silent": true
+    },
+    {
+      "id": "U-402",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":foo[a %% c] d\n",
+      "to": ":foo[a{% c %}] d\n",
+      "meaning02": "<p>:foo[a</p> C2-I-024 takes the closing bracket. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-402",
       "silent": true
     }
   ],

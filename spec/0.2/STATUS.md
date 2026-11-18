@@ -88,17 +88,25 @@ The gates check the text against itself. No engine runs in them; an engine runs 
 ## What is frozen
 
 - The syntax: `syntax-blocks.md` and `syntax-inline.md`.
-- Tree contract 2.0: `ast.md` with `data/ast-schema.json`.
-- HTML rendering: `html.md`.
-- The canonical writer, `carve fmt` and lint: `writer.md`.
+- Tree contract 2.0: `ast.md` with its schema.
+- HTML rendering and URL policy: `html.md` with `data/url-policy.json`.
+- The canonical writer and `carve fmt`: `writer.md`.
+- Lint ids, triggers, severities and meanings: `writer.md` with `data/lint-rules.json`.
 - The layout sidecar: `source-layout.md` with `data/layout-schema.json`.
 - Includes: `includes.md`.
 - HTML import: `import-html.md`.
-- Tooling, the library calls and the command line: `tooling.md` with `data/cli.json`.
+- Tooling, library calls and command line behavior: `tooling.md` with `data/cli.json`.
 
 ## What is not frozen
 
+Lint message wording may change in a 0.2.x release when its id, severity and meaning stay the same. New upgrade-map rows and corrections may be added.
+
 The extension mechanism and the standard extensions: `extensions.md` as a whole. The mechanism is part of the candidate and is provisional: its interfaces (registration, matchers, transforms, the node fields and slots, resolution, renderers and the source record) may change in a 0.2.x release together with the extension catalog. The reason is the interface points still open for that work: O12 (a renderer returns an HTML string the host cannot inspect for C2-X-034, the slot walk order of C2-X-020, and the reader of annotation ids), and two rulings of 17 November that the catalog may revisit, the element that carries the attributes of a fallback (O15, C2-X-035) and the fallback written unresolved after a renderer throws (O17, C2-X-050). A change to the mechanism is recorded in `UPGRADING.md` with the release that makes it. Today the catalog is one extension, tabs (C2-X-039 to C2-X-048).
+
+## Engine gaps from the 18 November rulings
+
+- D1, C2-B-042 and C2-B-044: the reference engine still makes one list for `v. x` followed by `vi. y`; the first marker fixes alphabetic style, so the second begins a roman list. CC-1207 tests the same rule with `m.` and `mi.`.
+- D2, C2-I-024: the reference engine still lets a line comment stop before a bracket or braced closer; `^[a %% c] d` must render `<p>^[a</p>`. CC-1208 tests a closer on a later line.
 
 ## What the reviews covered
 
