@@ -20,7 +20,7 @@ A blank line before a new heading or quote avoids a lazy paragraph line. List ma
 Render the Markdown with a trusted Markdown renderer, save the HTML, then run the reference engine:
 
 ```sh
-node dist/cli2.js import page.html
+node dist/cli2.js import --from html page.html
 ```
 
 Inspect the imported source and any loss diagnostics. HTML cannot preserve every original Markdown spelling. Run `fmt --check`, render the result, and compare the HTML that matters to your site. Raw HTML in Markdown needs particular review: Carve treats bare tags as text and permits explicit raw HTML only under the host policy. See [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) and [HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md).
