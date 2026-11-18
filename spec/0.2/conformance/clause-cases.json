@@ -56417,6 +56417,147 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1211",
+   "clauses": [
+    "C2-B-037",
+    "C2-B-042",
+    "C2-B-044"
+   ],
+   "why": "C2-B-037: The kind of an ordered list is its numbering style and its delimiter. C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list:",
+   "summary": "parenthesized one-letter marker fixes the style and splits on a mismatched later marker",
+   "kind": "render",
+   "input": "i) one\nj) two",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ")"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "one"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ")",
+       "start": 10
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "two"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1212",
+   "clauses": [
+    "C2-B-037",
+    "C2-B-042",
+    "C2-B-044"
+   ],
+   "why": "C2-B-037: The kind of an ordered list is its numbering style and its delimiter. C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list:",
+   "summary": "parenthesized one-letter marker fixes the style and splits on a mismatched later marker",
+   "kind": "render",
+   "input": "v) one\nvi) two",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"22\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>two</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ")",
+       "start": 22
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "one"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ")",
+       "start": 6
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "two"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

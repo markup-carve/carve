@@ -18,9 +18,9 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 ### Replay gap rulings
 
-The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397 and U-398 report list splits; U-399 to U-402 rewrite only the four sources whose full 0.1 and 0.2 HTML was checked. U-393 now needs no change. A comment inside a raw image alt is still source text (C2-I-074).
+The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; U-399 to U-402 rewrite only the four sources whose full 0.1 and 0.2 HTML was checked. U-393 now needs no change. A comment inside a raw image alt is still source text (C2-I-074).
 
-For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-402, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
+For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-404, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
 
 | ID | 0.1 cause | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
@@ -52,6 +52,8 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-400 | A line comment takes an inline footnote closer: `^[a %% c] d`. **SILENT** | The note does not form. | Write `^[a{% c %}] d`; rewrite |
 | U-401 | A line comment takes a braced span closer: `{_a %% b_} y`. **SILENT** | The span does not form. | Write `{_a{% b %}_} y`; rewrite |
 | U-402 | A line comment takes an extension closer: `:foo[a %% c] d`. **SILENT** | The extension does not form. | Write `:foo[a{% c %}] d`; rewrite |
+| U-403 | `i)` followed by `j)`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-404 | `v)` followed by `vi)`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
 
 ### Source change index
 
@@ -812,7 +814,7 @@ U-224 keeps only the three shapes of its row. Its quote shape, `> %%%`, `> secre
 
 U-270 is withdrawn: `|=a|` gives the same HTML in 0.1 and 0.2, a data cell with the text `=a` (C2-B-171), so a 0.1 document has nothing to upgrade; the rewrite to `|= a |` served only sources written for freeze candidate 5, and the upgrade tool checks each rewrite against the 0.1 HTML, which it would change.
 
-U-024 was withdrawn by the 17 November restore. The 18 November ruling takes that restore back; U-398 reports the split for `i.` then `j.`. U-220 remains withdrawn: `{.outer k=one}` above `![a](b){.inner k=two}` gives `<img src="b" alt="a" class="outer inner" k="two">` in both versions (C2-H-020).
+U-024 was withdrawn by the 17 November restore. The 18 November ruling takes that restore back; U-398 reports the split for `i.` then `j.`, and U-403 reports `i)` then `j)`. U-220 remains withdrawn: `{.outer k=one}` above `![a](b){.inner k=two}` gives `<img src="b" alt="a" class="outer inner" k="two">` in both versions (C2-H-020).
 
 U-185 is withdrawn: `| total |=SUM(A1:A3) |` gives the same HTML in 0.1 and 0.2, a data cell with the text `=SUM(A1:A3)`, since a header mark glued to a letter is cell text (C2-B-171).
 

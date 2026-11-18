@@ -2970,6 +2970,26 @@
       "meaning02": "<p>:foo[a</p> C2-I-024 takes the closing bracket. The proposed braced comment restores the 0.1 extension HTML.",
       "toolEntry": "U-402",
       "silent": true
+    },
+    {
+      "id": "U-403",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "i) one\nj) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"i\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"a\" start=\"10\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `i)` as roman; C2-B-044 splits at `j)`. Report the two-list boundary for review.",
+      "toolEntry": "U-403",
+      "silent": false
+    },
+    {
+      "id": "U-404",
+      "kind": "report",
+      "group": "ordered list style",
+      "from": "v) one\nvi) two\n",
+      "to": "",
+      "meaning02": "<ol type=\"a\" start=\"22\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `v)` as alphabetic; C2-B-044 splits at `vi)`. Report the two-list boundary for review.",
+      "toolEntry": "U-404",
+      "silent": false
     }
   ],
   "tree": [
