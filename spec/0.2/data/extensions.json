@@ -2,6 +2,58 @@
   "$schema": "schemas/extensions.schema.json",
   "extensions": [
     {
+      "name": "carve.cite",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "cite"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-058"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.image",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "image"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.imgFence.img",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "img"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-059",
+        "C2-X-060"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.tab",
       "version": "1",
       "parent": {
@@ -59,6 +111,20 @@
       "slotOrder": [
         "tabs"
       ]
+    },
+    {
+      "name": "carve.wiki",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "wiki"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-057"
+      ],
+      "slotOrder": []
     }
   ]
 }

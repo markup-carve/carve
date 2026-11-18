@@ -136,6 +136,7 @@
         "args": { "type": "array", "items": { "type": "string" }, "description": "The arguments of a command line case, after the program name (C2-T-007)." },
         "stdin": { "type": "string", "description": "What a command line case reads on standard input; absent is empty." },
         "options": { "$ref": "#/$defs/options" },
+        "host": { "type": "object", "description": "Conformance harness registrations, not a Carve option.", "properties": { "documentTransforms": { "type": "array", "items": { "type": "object", "required": ["name", "after", "insert"], "properties": { "name": { "type": "string" }, "after": { "type": "string" }, "insert": { "type": "object" } }, "additionalProperties": false } } }, "additionalProperties": false },
         "expected": {
           "type": "object",
           "properties": {

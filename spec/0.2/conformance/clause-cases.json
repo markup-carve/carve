@@ -23581,7 +23581,7 @@
     "C2-X-043",
     "C2-X-048"
    ],
-   "why": "C2-X-033: A host registers a renderer by qualified name and version. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked. C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
+   "why": "C2-X-033: A host registers a renderer by qualified name and version. C2-X-043: The tabs renderer writes one radio input, one linked label and one panel per item of `tabs` in order, with the first input checked in interactive mode. C2-X-048: The tabs renderer gives each radio input a unique document-scoped id and links its label to that id.",
    "summary": "the standard tabs renderer writes inputs, linked labels and panels",
    "kind": "render",
    "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
@@ -23836,7 +23836,7 @@
     "C2-X-032",
     "C2-W-138"
    ],
-   "why": "C2-X-032: Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered (C2-X-033) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
+   "why": "C2-X-032: Resolution visits one view of an extension node: its `children` and named slots when a renderer is registered in the selected mode's channel (C2-X-033, C2-X-052) for its name and version or for an extension node whose slots hold it, and the profile admits the node (C2-H-163), and its fallback otherwise. C2-W-138: An entry on a supplied tree has the path alone (C2-W-103); where its construct is a field, the path names the field, as `/children/1/href`.",
    "summary": "a heading in the slot of an extension rendered through its fallback takes no generated id from a later heading",
    "kind": "render",
    "tree": {
@@ -56810,6 +56810,436 @@
       ]
      }
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1219",
+   "clauses": [
+    "C2-X-052"
+   ],
+   "why": "C2-X-052: In `interactive` mode a registered interactive renderer handles the node.",
+   "summary": "static tabs use the explicitly registered build-time channel",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "mode": "static",
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">Install</label><div class=\"tab-panel\" role=\"group\" aria-label=\"Install\"><p>Run.</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1220",
+   "clauses": [
+    "C2-X-052"
+   ],
+   "why": "C2-X-052: In `interactive` mode a registered interactive renderer handles the node.",
+   "summary": "static tabs with no build-time renderer use the fallback",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<p><strong>Install</strong></p>\n<p>Run.</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1221",
+   "clauses": [
+    "C2-X-053"
+   ],
+   "why": "C2-X-053: A host may register ordered document transforms.",
+   "summary": "document transform inserts a declared node into the render view",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "sample.insert",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.insert",
+      "after": "/children/0",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.insert",
+       "version": "1",
+       "children": [],
+       "slots": {},
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "B"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<p>A</p>\n<p>B</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1222",
+   "clauses": [
+    "C2-X-057"
+   ],
+   "why": "C2-X-057: A registered `wiki` inline matcher claims `:wiki[Page]` as an inline extension with the parsed content as its target and core-text fallback.",
+   "summary": "wiki source uses the core fallback without a renderer",
+   "kind": "render",
+   "input": ":wiki[Page]\n",
+   "options": {
+    "extensions": [
+     "carve.wiki"
+    ]
+   },
+   "expected": {
+    "html": "<p>Page</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1223",
+   "clauses": [
+    "C2-X-058"
+   ],
+   "why": "C2-X-058: A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback.",
+   "summary": "citation locator remains an attribute and the fallback keeps the key",
+   "kind": "render",
+   "input": ":cite[doe]{locator=\"p. 4\"}\n",
+   "options": {
+    "extensions": [
+     "carve.cite"
+    ]
+   },
+   "expected": {
+    "html": "<p>doe</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1224",
+   "clauses": [
+    "C2-X-056"
+   ],
+   "why": "C2-X-056: A tab's nonempty quoted title is its only label source (C2-X-040).",
+   "summary": "bracket label does not qualify a tab for the standard transform",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab [Install]\nRun.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ]
+   },
+   "expected": {
+    "html": "<div class=\"tabs\">\n  <div class=\"tab\">\n    <p class=\"div-label\">Install</p>\n    <p>Run.</p>\n  </div>\n</div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1225",
+   "clauses": [
+    "C2-X-059"
+   ],
+   "why": "C2-X-059: The standard `imgFence` matchers claim code fences whose language is `img` or `image` and whose body is SVG source, producing `carve.imgFence.img` or `carve.imgFence.image`, respectively.",
+   "summary": "safe SVG becomes a percent-encoded image URL",
+   "kind": "render",
+   "input": "```img\n<svg/>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ],
+    "renderers": {
+     "carve.imgFence.img": "standard"
+    }
+   },
+   "expected": {
+    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1226",
+   "clauses": [
+    "C2-X-059"
+   ],
+   "why": "C2-X-059: The standard `imgFence` matchers claim code fences whose language is `img` or `image` and whose body is SVG source, producing `carve.imgFence.img` or `carve.imgFence.image`, respectively.",
+   "summary": "hostile script without an SVG root falls back to code",
+   "kind": "render",
+   "input": "```img\n<script>alert(1)</script>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ],
+    "renderers": {
+     "carve.imgFence.img": "standard"
+    }
+   },
+   "expected": {
+    "html": "<pre><code class=\"language-img\">&lt;script&gt;alert(1)&lt;/script&gt;\n</code></pre>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1227",
+   "clauses": [
+    "C2-X-060"
+   ],
+   "why": "C2-X-060: Only the `imgFence` sanitizer's own result, passed directly to that `<img>` sink with its provenance intact, receives the URL-policy exception of C2-H-159.",
+   "summary": "an authored SVG data URL remains denied",
+   "kind": "render",
+   "input": "![x](data:image/svg+xml,%3Csvg%2F%3E)\n",
+   "options": {},
+   "expected": {
+    "html": "<p><img src=\"\" alt=\"x\"></p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1228",
+   "clauses": [
+    "C2-X-059",
+    "C2-X-060"
+   ],
+   "why": "C2-X-059: Its trusted sanitizer removes unsafe elements with their descendants and unsafe attributes, then accepts only a single well-formed SVG root it can reduce to a bounded image without scripts, event attributes, active or external references, or foreign content.",
+   "summary": "script element, event handler and remote paint URL are removed before the image URL is made",
+   "kind": "render",
+   "input": "```img\n<svg onload=\"alert(1)\"><script>bad</script><rect fill=\"url(https://evil.test/x)\"/></svg>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ],
+    "renderers": {
+     "carve.imgFence.img": "standard"
+    }
+   },
+   "expected": {
+    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1229",
+   "clauses": [
+    "C2-X-053"
+   ],
+   "why": "C2-X-053: After includes and ordinary resolution, before HTML rendering, each receives a copy of the resolved render view and returns a view; registration order is execution order, and a later transform sees the earlier result.",
+   "summary": "later document transform sees the node inserted by the earlier one",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "sample.first",
+      "version": "1",
+      "required": false,
+      "slots": []
+     },
+     {
+      "name": "sample.second",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.first",
+      "after": "/children/0",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.first",
+       "version": "1",
+       "children": [],
+       "slots": {},
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "B"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "name": "sample.second",
+      "after": "/children/1",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.second",
+       "version": "1",
+       "children": [],
+       "slots": {},
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "C"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<p>A</p>\n<p>B</p>\n<p>C</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1230",
+   "clauses": [
+    "C2-X-055"
+   ],
+   "why": "C2-X-055: The host checks ids in the transformed view in document order after each transform.",
+   "summary": "duplicate authored id from a transform leaves the input view intact",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "sample.first",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ],
+      "attrs": {
+       "id": "a"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.first",
+      "after": "/children/0",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.first",
+       "version": "1",
+       "children": [],
+       "slots": {},
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "B"
+          }
+         ]
+        }
+       ],
+       "attrs": {
+        "id": "a"
+       }
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<p id=\"a\">A</p>",
+    "diagnostics": [
+     "extension-transform-failed"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1231",
+   "clauses": [
+    "C2-X-056"
+   ],
+   "why": "C2-X-056: `selected` does not choose a tab.",
+   "summary": "selected attribute on second tab does not change the first checked input",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\na\n:::\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-1\"><label for=\"tabs-1-1\">B</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div><div class=\"tab-panel\" role=\"group\" aria-label=\"B\"><p>b</p></div></div>"
    },
    "from": []
   }

@@ -3020,6 +3020,106 @@
       "meaning02": "<p><span class=\"ext-f\">%%</span></p> C2-I-023 keeps `%%` at the start of extension content as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 extension HTML.",
       "toolEntry": "U-407",
       "silent": true
+    },
+    {
+      "id": "U-408",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page][].\n",
+      "to": "",
+      "meaning02": "A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target.",
+      "toolEntry": "U-408",
+      "silent": true
+    },
+    {
+      "id": "U-409",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [Page](#Page).\n",
+      "to": "",
+      "meaning02": "A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label.",
+      "toolEntry": "U-409",
+      "silent": true
+    },
+    {
+      "id": "U-410",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "Visit https://example.test.\n",
+      "to": "",
+      "meaning02": "Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting.",
+      "toolEntry": "U-410",
+      "silent": true
+    },
+    {
+      "id": "U-411",
+      "kind": "report",
+      "group": "extension respellings",
+      "from": "See [cite doe, p. 4].\n",
+      "to": "",
+      "meaning02": "A citation uses `:cite[doe]{locator=\"p. 4\"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently.",
+      "toolEntry": "U-411",
+      "silent": true
+    },
+    {
+      "id": "U-412",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab [Install]\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label.",
+      "toolEntry": "U-412",
+      "silent": true
+    },
+    {
+      "id": "U-413",
+      "kind": "rewrite",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{label=Install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "The sole `label` attribute is moved to the quoted title (C2-X-056); inspect any other attribute before applying the rewrite.",
+      "toolEntry": "U-413",
+      "silent": true
+    },
+    {
+      "id": "U-414",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n::: tab\n# Install\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A first heading is content, not a tab label (C2-X-056). Report because changing it to a title would also change the body.",
+      "toolEntry": "U-414",
+      "silent": true
+    },
+    {
+      "id": "U-415",
+      "kind": "report",
+      "group": "tabs labels",
+      "from": ":::: tabs\n{.install}\n::: tab\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A class alone supplies no quoted title (C2-X-056). Report to choose a title without guessing from the class.",
+      "toolEntry": "U-415",
+      "silent": true
+    },
+    {
+      "id": "U-416",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A host using the former aria mode must review its integration: the standard renderer uses radio controls in both modes (C2-X-043, C2-X-056).",
+      "toolEntry": "U-416",
+      "silent": true
+    },
+    {
+      "id": "U-417",
+      "kind": "report",
+      "group": "tabs modes",
+      "from": "{.custom-tabs}\n:::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "to": "",
+      "meaning02": "A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer.",
+      "toolEntry": "U-417",
+      "silent": true
     }
   ],
   "tree": [
