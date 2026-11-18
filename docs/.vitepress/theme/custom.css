@@ -722,3 +722,34 @@
     gap: 16px;
   }
 }
+/* The version menu is the last nav group: a pill, so it reads as a switch and not as a section. */
+.VPNavBarMenu > .VPFlyout:last-child {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+.VPNavBarMenu > .VPFlyout:last-child > .button {
+  height: 30px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+.VPNavBarMenu > .VPFlyout:last-child > .button::before {
+  content: "Version";
+  margin-right: 6px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+:root:has(.docs-dev-banner) .VPNavBarMenu > .VPFlyout:last-child > .button {
+  border-color: #8b4513;
+  background: rgba(139, 69, 19, 0.12);
+  color: #8b4513;
+}
+.dark:has(.docs-dev-banner) .VPNavBarMenu > .VPFlyout:last-child > .button {
+  border-color: #d2955f;
+  background: rgba(210, 149, 95, 0.16);
+  color: #e0a875;
+}
