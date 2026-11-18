@@ -55634,6 +55634,87 @@
     "carve": "{table}\n```csv\n \n`\n```\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1187",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-217"
+   ],
+   "why": "C2-B-137: A region marker line (C2-B-217) is no comment-only line: it is a line of the innermost container that owns it (C2-B-025), and it opens no block.",
+   "summary": "a region marker at the top level ends the paragraph, so a line-shape table must not read it as a comment-only line",
+   "input": "a\n%% #region x\nb",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "comment",
+      "form": "line",
+      "value": "#region x"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1188",
+   "clauses": [
+    "C2-B-137",
+    "C2-B-217"
+   ],
+   "why": "C2-B-137: A malformed marker, as `%% #region-x`, and a keyword run on by a letter, as `%% #regional`, make no region marker line: such a line is a comment-only line.",
+   "summary": "a malformed region marker is a comment-only line and leaves one paragraph",
+   "input": "a\n%% #region-x\nb",
+   "options": {},
+   "expected": {
+    "html": "<p>a\nb</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "#region-x"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

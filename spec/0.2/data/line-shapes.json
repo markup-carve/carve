@@ -74,7 +74,37 @@
       "first": ["%"],
       "role": "skipped",
       "sequence": [{ "part": "literal", "text": "%%" }, { "part": "content", "min": 0 }],
+      "excludes": ["region_marker"],
       "clauses": ["C2-B-133", "C2-B-137"]
+    },
+    {
+      "name": "region_marker",
+      "first": ["%"],
+      "role": "comment",
+      "sequence": [
+        { "part": "literal", "text": "%%" },
+        { "part": "run", "chars": ["\t", " "], "min": 0 },
+        {
+          "part": "choice",
+          "options": [
+            [
+              { "part": "literal", "text": "#region" },
+              { "part": "run", "chars": ["\t", " "], "min": 1 },
+              { "part": "ref", "ref": "region_name" }
+            ],
+            [
+              { "part": "literal", "text": "#endregion" },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "run", "chars": ["\t", " "], "min": 1 }, { "part": "ref", "ref": "region_name" }]
+              }
+            ]
+          ]
+        },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-137", "C2-B-217"]
     },
     {
       "name": "abbreviation_definition",
@@ -549,6 +579,7 @@
       "reads_escapes": true,
       "clauses": ["C2-A-073", "C2-B-117", "C2-B-119", "C2-B-120", "C2-I-033"]
     },
-    { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] }
+    { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] },
+    { "name": "region_name", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9"], "min": 1, "clauses": ["C2-B-217"] }
   ]
 }
