@@ -1,149 +1,38 @@
----
-title: Parsed Document JSON
-description: Understand and use the JSON representation shared by Carve implementations.
----
-
 # Parsed document JSON
 
-A parser represents a Carve document as an **abstract syntax tree (AST)**: a
-tree of objects for headings, paragraphs, links, and other content. Use this
-JSON when an editor, linter, converter, or service needs structured content
-rather than rendered HTML.
+Carve 0.2 exposes a versioned semantic tree. Use it when a tool needs document structure, references, or source positions. The [AST specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars) defines the tree and separate records that accompany it.
 
-Most applications need only the common shape described here. Parser and binding
-authors can use the [complete AST contract](./ast-json-contract).
+## Get a tree
 
-## Start with a small document
-
-The Carve source:
+For example, this source has a heading and one paragraph:
 
 ```carve
-Hello *world*.
+= Hello
+
+A *bold* word.
 ```
 
-has a document root containing a paragraph and inline children:
+The reference engine installs the 0.2 command as `carve2` on `next2`. `ast` writes a bare tree by default. Add `--envelope` at a storage or process boundary.
 
-```json
-{
-  "type": "document",
-  "children": [
-    {
-      "type": "paragraph",
-      "children": [
-        { "type": "text", "value": "Hello " },
-        {
-          "type": "strong",
-          "children": [{ "type": "text", "value": "world" }]
-        },
-        { "type": "text", "value": "." }
-      ]
-    }
-  ],
-  "srcByteLength": 15
-}
+```sh
+carve2 ast document.crv
+carve2 ast --envelope document.crv
 ```
 
-Nodes may also include source positions. Those fields are omitted above so the
-structure is easy to see. The root's `srcByteLength` is required and counts the
-UTF-8 bytes in the parsed source.
+The JavaScript API offers `parse`, `parseWithDiagnostics`, `parseWithLayout`, `encodeTree`, `encodeEnvelope`, `decodeTree`, and `validateTree`. The [tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library) gives each call's inputs and outputs.
 
-## Fields you will use most
+## Read the shape
 
-| Field | Meaning |
-|---|---|
-| `type` | The object kind, such as `paragraph`, `heading`, `link`, or `text` |
-| `children` | Ordered child objects for a container node |
-| `value` | Text or another scalar value held by a leaf node |
-| `attrs` | Authored or resolved attributes associated with the node |
-| `pos` | Optional source range for nodes produced by parsing Carve source |
+The root is a `document` with `astVersion: "2.0"` and block `children`. Each node has a `type`. Nodes with literal text use `value`; containers use `children` or a declared named slot. Definitions and frontmatter are children of the document. A reader rejects unknown core fields and node types. See [root and versions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#root-envelope-and-versions) and [node grammar](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#node-grammar).
 
-The document root has `type`, `children`, and `srcByteLength`, and a bare tree
-from `carve --json` also carries `astVersion`.
-Consumers should dispatch on `type`, then read only fields valid for that type.
-Validate untrusted JSON before traversing it.
+The schema is [`ast-schema.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/ast-schema.json). Walk child slots in the order of [`node-slots.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/node-slots.json). Searching every JSON object for `children` misses captions, metadata, extension slots, and other declared content.
 
-## Walk the tree
+## Meaning, positions, and spelling
 
-A depth-first traversal is enough for most integrations:
+Authored attributes are in `attrs`. Generated heading ids and resolved destinations are result fields on the resolved tree. Positions use one-based lines and Unicode code point columns, with zero-based UTF-8 byte offsets and exclusive ends. A position can be absent where the source has no single contiguous span. See [resolution results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#resolution-results) and [positions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#positions).
 
-```js
-function visit(node) {
-  if (node.type === 'heading') {
-    // Add it to a document outline.
-  }
+The tree keeps meaning, while the [source-layout sidecar](./ast-source-layout.md) keeps author spelling. [Identity](./ast-node-identity.md), [annotation ranges](./ast-annotation-ranges.md), and [provenance](./ast-provenance.md) are also separate. They address one tree by JSON Pointer and need rebinding after edits.
 
-  for (const child of node.children ?? []) visit(child)
-}
-```
+## Edit or exchange a tree
 
-Do not assume that every object has `children`: text and other leaf nodes carry
-a value instead. Likewise, do not infer a node’s meaning from its HTML output;
-different tree shapes can sometimes render the same bytes.
-
-## Attributes and identifiers
-
-Authored identifiers, classes, and key/value attributes appear in `attrs`.
-Resolved information may also appear there when consumers need it without
-replaying the whole document, for example a heading’s final identifier.
-
-The schema closes every node type. An unknown property makes the payload
-invalid; reject it with a typed validation error rather than silently dropping
-or passing it through.
-
-## Links and references
-
-Links keep their resolved destination in `href`; images use `src`. A reference
-form also retains its lookup key in `ref` and its authored spelling in `rawRef`
-so formatters and editor tools can preserve intent. An undefined reference is
-still a link or image node with `ref` and `rawRef`, but has no resolved `href`
-or `src`.
-
-If your application only needs the destination, use `href` or `src`.
-If it writes Carve back, use the canonical writer rather than reconstructing
-reference syntax from the destination alone.
-
-## Source positions
-
-Parsed nodes may carry `pos` with line, column, and offset boundaries. Imported
-or programmatically created nodes may have no source position, because they did
-not originate in Carve source.
-
-For exact coordinate rules, byte offsets, source slices, and editor-facing
-layout metadata, see [Source locations in JSON](./ast-source-layout).
-
-## Editing safely
-
-Prefer the editing or patch API supplied by your implementation when you need
-undoable structural changes. Validate patches from untrusted callers and reject
-stale edits using the implementation’s document fingerprint or equivalent
-guard when available.
-
-An anchor that has to survive an edit needs more than a pointer, because a
-pointer moves when a sibling is inserted before it. See
-[Node identity in JSON](./ast-node-identity).
-
-A range that does not nest inside the inline tree - a comment across two
-emphases, a search hit across a link boundary - is carried beside the tree too.
-See [Annotation ranges in JSON](./ast-annotation-ranges).
-
-`pos.file` names the file an included node came from and nothing else about it.
-For the format it arrived in, its bytes in that input, and the include chain
-above it, see [Provenance in JSON](./ast-provenance).
-
-After changing a tree:
-
-1. validate its JSON shape;
-2. serialize it with the canonical Carve writer;
-3. parse the result again if the change crosses a storage or interoperability
-   boundary; and
-4. surface any reported loss instead of silently discarding it.
-
-## Schema and complete contract
-
-- [Published JSON Schema](https://markup-carve.github.io/carve/ast-schema.json)
-- [Schema source](https://github.com/markup-carve/carve/blob/main/resources/ast-schema.json)
-- [Complete AST contract](./ast-json-contract)
-
-The complete contract defines every object type and field, validation rules,
-source-spellability limits, forward compatibility, and the evidence used to
-check interoperability across engines.
+Validate an external tree before rendering or writing it. `decodeTree` performs reader checks in addition to schema validation. `write` emits canonical Carve and reports facts it cannot spell. `migrateTree` and `carve2 migrate-ast` convert older trees; renaming `astVersion` alone is not migration. The [complete contract](./ast-json-contract.md) explains these boundaries.

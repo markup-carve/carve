@@ -1,121 +1,33 @@
----
-description: Import HTML into Carve, choose a fidelity mode, and review content that could not be represented exactly.
----
-
 # Import HTML
 
-Use HTML import when migrating existing content or accepting editor-produced
-HTML. The importer returns Carve content plus diagnostics for anything it could
-not preserve exactly.
-
-For the element-by-element and implementer rules, read the
-[HTML import contract](./html-import-contract).
+Carve 0.2 uses HTML as its specified import hub. The importer returns a 2.0 tree, Carve source, and diagnostics. The normative behavior is in [importing HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md); the command and library entry points are in [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-import).
 
 ## Basic workflow
 
-1. Choose the import mode that matches how much you trust the HTML.
-2. Import to Carve source or to a parsed document.
-3. Review warnings, errors, and diagnostic codes that report changed content.
-4. Render the result and check the structures important to your application.
-5. Store the Carve source only after that review passes.
+```sh
+carve2 import --from html page.html > page.crv
+carve2 lint page.crv
+carve2 render page.crv > page-output.html
+```
 
-For a large migration, keep the diagnostic report with the source document so
-later review can distinguish an accepted conversion from an unnoticed loss.
+For a JavaScript integration, call `importDocument(html, { from: "html" })` and inspect its `document`, `source`, and diagnostics record. The source is a canonical spelling of the imported tree when the writer can express it. See [the two results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#carriers-and-the-two-documents).
 
-## Choose a mode
+## What the importer reads
 
-| Mode | Use it for | Behavior |
-|---|---|---|
-| **safe** | Untrusted or user-supplied HTML | Preserves supported content while applying the strictest safety policy |
-| **semantic** | Typical migration and editor HTML | Prefers meaningful Carve constructs over exact presentation |
-| **roundtrip** | HTML previously emitted by a Carve implementation | Uses Carve provenance to preserve more structure and reports what source cannot reproduce |
+Importing `<p>Hello <strong>world</strong>.</p>` produces this Carve source in the reference engine:
 
-`safe` is the default and the right starting point for arbitrary input. Choose
-`semantic` explicitly for trusted CMS or editor HTML when you want the
-importer's semantic and CSS mappings. Choose `roundtrip` only for
-Carve-produced HTML; it may retain otherwise unsupported markup as raw HTML and
-is not safe for arbitrary input.
+```carve
+Hello *world*.
+```
 
-## Source and parsed-document results
+The importer maps supported HTML elements to Carve structures, preserves the order of content, and reports normalization or loss. It reads roundtrip carriers emitted by a 0.2 render, but an arbitrary HTML page need not carry them. The [semantic mapping](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#how-content-is-read), [whitespace rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#whitespace), and [normalization rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#normalization) define the result.
 
-Importers expose two useful forms:
+Use `--report-losses FILE` to save diagnostics and `--strict-losses` when a lossy import must fail. `--allow-loss CODE` exempts a specific render-loss code. The importer and writer both contribute to that report. See [diagnostics](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#diagnostics) and [the guarantee](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#the-guarantee).
 
-- **Carve source** is what you store, edit, diff, or pass to another processor.
-- **Parsed document JSON** is convenient for editor integrations and structural
-  transforms.
+## Raw content and trust
 
-Both represent the same imported document. If your workflow changes the parsed
-document, serialize it with the canonical writer instead of assembling Carve
-source by hand.
+Raw HTML is off by default. `--raw-html` lets the importer retain raw content under the [raw-content rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#raw-content). Use it only when the source and eventual render target are trusted. URL policy still applies to URL sinks. See [security](./security.md).
 
-## What imports naturally
+## Changed in 0.2
 
-Common document HTML has direct Carve equivalents:
-
-- headings, paragraphs, lists, block quotes, and code blocks;
-- emphasis, links, images, and inline code;
-- tables that fit Carve’s table model;
-- figures and captions whose structure can be expressed in Carve;
-- comments;
-- semantic inline elements such as `kbd`, `abbr`, and `time`.
-
-Attributes are preserved when Carve can carry them safely. Active content,
-event handlers, unsafe URLs, and structure with no Carve equivalent may be
-removed or represented less precisely, depending on the mode.
-
-## Read the diagnostics
-
-Each diagnostic has a `code`, `message`, and `severity` of `info`, `warning`, or
-`error`. Applications should normally treat them as follows:
-
-| Signal | Typical meaning | Suggested response |
-|---|---|---|
-| `info` | A visible but non-lossy normalization or preservation decision | Keep for audit or display when useful |
-| `warning` | An element, attribute, table, or encoding could not be represented exactly | Review if the affected content matters |
-| `error` | Unsafe content survived only because trusted round-trip behavior retained it, or another decision needs explicit attention | Do not publish without review |
-
-Codes such as `element-dropped`, `element-unwrapped`, `attribute-dropped`, and
-`table-degraded` tell you what changed. An exact import normally emits no
-diagnostic for that content.
-
-Diagnostics include a path to the affected imported node. Display that path or
-translate it into an editor selection so reviewers can find the problem.
-
-## Examples of expected degradation
-
-- A visual-only wrapper may disappear while its text remains.
-- Interactive HTML may become a static Carve container.
-- A table structure richer than Carve’s model may be simplified.
-- Unsupported active content may be dropped in safe mode.
-- HTML-specific layout whitespace may not survive canonical formatting.
-
-These outcomes are not necessarily errors. The important requirement is that a
-meaningful change is reported rather than silently hidden.
-
-## Security
-
-HTML import is not permission to trust arbitrary HTML. Keep Carve’s built-in URL
-and attribute protections enabled, use `safe` mode at untrusted boundaries, and
-apply your normal rendered-HTML sanitization policy where arbitrary attributes
-or raw HTML are allowed. See [Security](./security) for the deployment model.
-
-## Verify a migration
-
-Before running a bulk conversion, assemble a small representative set that
-includes tables, figures, links, code, comments, and any application-specific
-HTML. Compare:
-
-1. the original rendered content;
-2. the imported Carve source;
-3. the diagnostic report; and
-4. the rendered Carve result.
-
-The [format conversion](./format-bridges) guide explains the same review process
-when another document model is involved.
-
-## Technical reference
-
-The [HTML import contract](./html-import-contract) specifies element mapping,
-canonical spelling, the relationship between source and parsed-document exits,
-diagnostic ordering and paths, figures, tables, list tightness, whitespace,
-resource limits, and the required API surface.
+The specified CLI imports `--from html`. The reference JavaScript engine may offer Markdown, GFM, and Djot adapters, but they are outside the 0.2 import contract. To move one of those inputs through the specified path, convert it to HTML first and import that HTML. The 0.1 `migrate --from html` path becomes `import --from html`. See [the upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
