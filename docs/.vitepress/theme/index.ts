@@ -1,13 +1,14 @@
 import DefaultTheme from 'vitepress/theme'
 import { getScrollOffset } from 'vitepress'
 import type { Theme } from 'vitepress'
+import { defineAsyncComponent } from 'vue'
 import '@markup-carve/carve-grammars/shiki/carve.css'
 import '@markup-carve/carve-css'
 import '@markup-carve/carve-css/recipes.css'
 import './custom.css'
 import 'katex/dist/katex.min.css'
-import Playground from './components/Playground.vue'
-import DogfoodCarve from './components/DogfoodCarve.vue'
+const Playground = defineAsyncComponent(() => import('./components/Playground.vue'))
+const DogfoodCarve = defineAsyncComponent(() => import('./components/DogfoodCarve.vue'))
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../render-math.js'
 

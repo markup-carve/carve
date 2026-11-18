@@ -1,25 +1,17 @@
 ---
 title: Examples
-description: Side-by-side Carve source and the output it produces, split by what is always on, what you switch on, and what only shows up at the boundaries.
+description: Carve 0.2 source and HTML from the pinned 0.2 JavaScript engine.
 ---
 
 # Examples
 
-Each example shows Carve source and its HTML output. Select **Rendered** to see
-the result.
+These examples start with the [0.2 specification cases](https://github.com/markup-carve/carve/tree/next2/spec/0.2/conformance). The generator formats each source with the 0.2 writer and renders the displayed HTML with the same engine as the playground. Select **Rendered** to see the HTML in the page.
 
-The examples are grouped by whether a feature is always available, must be
-enabled, or applies only to unusual input.
-
-| Page | What is on it |
+| Page | Contents |
 |---|---|
-| [**Core**](/examples/core) | Syntax available without configuration and supported by every implementation. |
-| [**Optional features**](/examples/extensions) | Features available in every implementation that you enable explicitly, plus extensions supplied by an application. |
-| [**Parser and output settings**](/examples/processor-options) | Typography settings, heading-section wrappers, and non-HTML output. |
-| [**Edge cases**](/examples/edge-cases/) | Unmatched, incomplete, or intentionally literal syntax. |
+| [Core](/examples/core) | 0.2 core block and inline syntax. |
+| [Extensions](/examples/extensions) | The provisional tabs extension and its core fallback. |
+| [Processor options](/examples/processor-options) | Profiles, heading IDs, sections, typography, and raw HTML. |
+| [Edge cases](/examples/edge-cases/) | Literal and incomplete syntax from the 0.2 cases. |
 
-The displayed HTML for Core and Edge Cases is generated from examples shared by
-the JavaScript, PHP, and Rust implementations.
-
-The Optional Features and Settings pages show saved output because the result
-depends on configuration that this site does not enable.
+See the [0.2 block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md), [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md), and [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) chapters for the rules behind each example.

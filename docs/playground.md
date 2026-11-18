@@ -1,6 +1,6 @@
 ---
 title: Playground
-description: Live Carve to HTML preview, in your browser.
+description: Live Carve 0.2 to HTML preview in your browser.
 aside: false
 sidebar: false
 pageClass: playground-page
@@ -8,44 +8,26 @@ pageClass: playground-page
 
 # Playground
 
-<div class="playground-intro">
+Write Carve source on the left. The 0.2 JavaScript engine renders it in your browser. The preview and the HTML, tree JSON, lint, and formatted source views update as you type.
 
-Type Carve on the left. The rendered result and generated HTML appear on the right.\
-Processing happens in your browser; the document is not sent to a server.\
-The playground uses the [JavaScript parser](https://github.com/markup-carve/carve-js) tested by this project's shared input/output tests.
+The render controls correspond to the [0.2 host options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options). Raw HTML starts off. Turn it on only for source you trust. The profile can restrict which constructs appear in the output.
 
-<div class="playground-notes">
+**Format source** uses the [0.2 writer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md). The formatted view lets you inspect the result before replacing your source.
 
-::: details Formatting the source
-**Format** rewrites the source in the canonical Carve layout, the same output as `carve fmt`. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The selected engine does the formatting: in Rust mode the bundled WASM build runs its own writer.
-:::
-
-::: details Sharing a document as a link
-The **share button** in the toolbar puts the whole document in the URL fragment, so a playground state is bookmarkable and sendable. The fragment never reaches a server: it is compressed and base64-encoded in the browser, and decoded there again. Very large documents are refused rather than turned into a link that arrives truncated.
-
-**Opening someone else's link.** A document that arrives in a link renders with **raw HTML disabled**: raw blocks show as escaped text instead of running. A link is written by whoever sent it, and enabling raw HTML would make one a way to run script on this site. A link made in Rust mode opens on the JavaScript engine if the bundled Rust engine cannot disable raw HTML or fails to load. The output may then differ from what the sender saw. Reload the playground without the fragment for a normal session.
-:::
-
-</div>
-
-</div>
+**Share link** puts the source and render options in the URL fragment. The document stays in the browser. A link received from someone else always opens with raw HTML off, even if the sender enabled it. Other options are restored from the link.
 
 <Playground />
 
-## Visual editor
+## Using the command line
 
-Prefer direct visual editing to this source-to-preview flow? The [Carve visual editor](https://markup-carve.github.io/carve-wysiwyg/) offers rich WYSIWYG authoring while keeping the underlying Carve source available for inspection.
+The 0.2 CLI offers `render`, `ast`, `lint`, `fmt`, `import`, and `upgrade`. Use `carve2 import --from=html` for HTML input. For Markdown, first convert it to HTML, then import the HTML. See [the 0.2 tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
 
 ## Build-time example
 
-This example is read from a `.crv` file and converted to HTML during the
-VitePress build by `@markup-carve/vite-plugin-carve`.
+This `.crv` file is rendered by the pinned 0.2 JavaScript engine for the docs build.
 
 <DogfoodCarve />
 
-## Version used by this playground
+## Engine revision
 
-The playground and documentation examples use
-[`@markup-carve/carve`](https://github.com/markup-carve/carve-js). The exact
-source revision is recorded in `package.json`, so the examples do not change
-when a new package version is published.
+The exact `carve-js` `next2` commit is pinned in `package.json`. The browser bundle used here is built from that same revision. The 0.1 Rust WASM bundle is not used for 0.2 rendering.
