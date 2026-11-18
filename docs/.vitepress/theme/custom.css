@@ -724,9 +724,21 @@
 }
 /* Keep the status visible above the documentation navigation. */
 .docs-dev-banner {
-  padding: 0.4rem 1rem;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: var(--vp-z-index-layout-top);
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 1rem;
+  line-height: 32px;
   text-align: center;
   color: #fff;
   background: #8b4513;
   font-weight: 600;
+}
+/* The default theme offsets the fixed navigation and the sidebar by this height. */
+:root:has(.docs-dev-banner) {
+  --vp-layout-top-height: 32px;
 }

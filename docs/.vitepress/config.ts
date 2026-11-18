@@ -135,13 +135,6 @@ export default defineConfig({
     nav: [
       { text: 'Get Started', link: '/get-started' },
       { text: 'Playground', link: '/playground' },
-      ...(docsVersionText ? [{
-        text: docsVersionText,
-        items: [
-          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase) },
-          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase) },
-        ],
-      }] : []),
       {
         text: 'Reference',
         items: [
@@ -199,6 +192,13 @@ export default defineConfig({
         ],
       },
       { text: 'Community', link: '/community' },
+      ...(docsVersionText ? [{
+        text: docsVersionText,
+        items: [
+          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase) },
+          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase) },
+        ],
+      }] : []),
     ],
 
     // Path-keyed (multi) sidebar so each page's sub-nav lists only its own
