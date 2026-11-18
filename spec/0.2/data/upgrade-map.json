@@ -2847,7 +2847,7 @@
       "group": "editorial comments",
       "from": "{-%% b-}\n",
       "to": "{-\\%\\% b-}\n",
-      "meaning02": "<p><del></del></p> A comment marker inside a deletion removes its following text under C2-I-023 and C2-I-024. Escape both percent signs to keep the old text. Rewrite the source range from the two percent signs in the deletion.",
+      "meaning02": "<p>{-</p> C2-I-024 makes the line comment take the deletion closer, so the deletion opener is text. Escape both percent signs to keep the old deletion HTML. Rewrite the source range from the two percent signs in the deletion.",
       "toolEntry": "U-390",
       "silent": true
     },
