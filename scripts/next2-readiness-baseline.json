@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "engineHeads": {
+    "js": "09f2b8b477126875a4c30c350e8662968bff158c",
+    "php": "a9fb4bcd8557e2b5a75955348d8ec8fe002a98a7",
+    "rs": "5d91f83dadb66ddffecf3798f4a324d6aa877b90"
+  },
+  "counts": {
+    "js": {
+      "clauses": {
+        "pass": 1108,
+        "fail": 41,
+        "unsupported": 0
+      },
+      "examples": {
+        "pass": 648,
+        "fail": 8,
+        "unsupported": 0
+      },
+      "trees": {
+        "pass": 704,
+        "fail": 0,
+        "unsupported": 0
+      },
+      "catalog": {
+        "pass": 147,
+        "fail": 8,
+        "unsupported": 22
+      },
+      "upgrade": {
+        "pass": 12653,
+        "fail": 2447,
+        "unsupported": 0
+      }
+    },
+    "php": {
+      "clauses": {
+        "pass": 1036,
+        "fail": 108,
+        "unsupported": 5
+      },
+      "examples": {
+        "pass": 643,
+        "fail": 13,
+        "unsupported": 0
+      },
+      "trees": {
+        "pass": 704,
+        "fail": 0,
+        "unsupported": 0
+      },
+      "catalog": {
+        "pass": 140,
+        "fail": 15,
+        "unsupported": 22
+      }
+    },
+    "rs": {
+      "clauses": {
+        "pass": 752,
+        "fail": 162,
+        "unsupported": 235
+      },
+      "examples": {
+        "pass": 544,
+        "fail": 5,
+        "unsupported": 107
+      },
+      "trees": {
+        "pass": 683,
+        "fail": 2,
+        "unsupported": 19
+      },
+      "catalog": {
+        "pass": 93,
+        "fail": 53,
+        "unsupported": 31
+      }
+    }
+  },
+  "lintAgreement": {
+    "js": {
+      "idPercent": 100,
+      "rangePercent": 98.81,
+      "messagePercent": 90.33,
+      "probes": 384,
+      "rangeProbes": 253,
+      "messageProbes": 362
+    },
+    "php": {
+      "idPercent": 97.92,
+      "rangePercent": 96.05,
+      "messagePercent": 96.41,
+      "probes": 384,
+      "rangeProbes": 253,
+      "messageProbes": 362
+    },
+    "rs": {
+      "idPercent": 80.21,
+      "rangePercent": 76.28,
+      "messagePercent": 83.15,
+      "probes": 384,
+      "rangeProbes": 253,
+      "messageProbes": 362
+    }
+  },
+  "upgrade": {
+    "total": 15100,
+    "blocked": 2447,
+    "mismatches": 2447,
+    "noMappedRow": 290
+  }
+}
