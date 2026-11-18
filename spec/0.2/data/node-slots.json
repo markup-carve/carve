@@ -531,6 +531,21 @@
     }
   },
   "extensions": {
+    "carve.cite": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.imgFence.image": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
+    "carve.imgFence.img": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
+    },
     "carve.tab": {
       "version": "1",
       "slotOrder": [
@@ -559,6 +574,11 @@
           "minItems": 1
         }
       }
+    },
+    "carve.wiki": {
+      "version": "1",
+      "slotOrder": [],
+      "slots": {}
     }
   }
 }

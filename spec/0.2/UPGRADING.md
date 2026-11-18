@@ -58,6 +58,25 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-406 | A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note. **SILENT** | The old HTML is restored by the verified source spelling. | Write `^[{% c %}] d`; rewrite |
 | U-407 | A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it. **SILENT** | The old HTML is restored by the verified source spelling. | Write `:f[{% %}]`; rewrite |
 
+### Extension rulings of 18 November
+
+The explicit extension forms preserve their core fallback when no renderer is registered. Review source and host settings before changing a document.
+
+| ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-408 | See [Page][]. **SILENT** | A wiki target needs the explicit `:wiki[Page]` extension form (C2-X-057). A reference may instead be a core reference, so report and choose from its resolved target. | Review by hand; report |
+| U-409 | See [Page](#Page). **SILENT** | A heading target may be written as `</#Page>` or kept as `[Page](#Page)` (C2-X-057). Report only when a former heading-reference integration supplied a different label. | Review by hand; report |
+| U-410 | Visit https://example.test. **SILENT** | Use `<https://example.test>` for an autolink (C2-X-057); inspect punctuation and the original link target before rewriting. | Review by hand; report |
+| U-411 | See [cite doe, p. 4]. **SILENT** | A citation uses `:cite[doe]{locator="p. 4"}` and its definition belongs in a named bibliography or references directive (C2-X-058). Report because the old integration may have interpreted the locator differently. | Review by hand; report |
+| U-412 | :::: tabs ⏎ ::: tab [Install] ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | The bracket label becomes the only tab label when moved to a nonempty quoted title (C2-X-040, C2-X-056); this source has no other tab label. | Use the quoted-title spelling; rewrite |
+| U-413 | :::: tabs ⏎ {label=Install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | The sole `label` attribute is moved to the quoted title (C2-X-056); inspect any other attribute before applying the rewrite. | Use the quoted-title spelling; rewrite |
+| U-414 | :::: tabs ⏎ ::: tab ⏎ # Install ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | A first heading is content, not a tab label (C2-X-056). Report because changing it to a title would also change the body. | Review by hand; report |
+| U-415 | :::: tabs ⏎ {.install} ⏎ ::: tab ⏎ Run. ⏎ ::: ⏎ :::: **SILENT** | A class alone supplies no quoted title (C2-X-056). Report to choose a title without guessing from the class. | Review by hand; report |
+| U-416 | :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former aria host mode) **SILENT** | A host using the former aria mode must review its integration: the standard renderer writes radio controls in interactive mode and control-free sections in static mode (C2-X-043, C2-X-056). | Review by hand; report |
+| U-417 | {.custom-tabs} ⏎ :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former per-instance host class) **SILENT** | A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer. | Review by hand; report |
+| U-418 | :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ {selected} ⏎ ::: tab "B" ⏎ b ⏎ ::: ⏎ :::: | `selected` keeps choosing the initially selected tab: the first marked tab, or the first tab with no mark, as in 0.1 (C2-X-056). The renderer markup around it is covered by U-416 and U-419. | No source edit; none |
+| U-419 | :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (static mode) **SILENT** | Static mode keeps the 0.1 static elements and classes, a `section` with an `h3` per tab and no controls (C2-X-043), but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. | Review the host's static HTML processing; report |
+
 ### Source change index
 
 
