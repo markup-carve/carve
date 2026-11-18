@@ -767,7 +767,7 @@
     "C2-H-020",
     "C2-H-062"
    ],
-   "why": "C2-B-197: A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)`, `![alt][label]` or the collapsed `![alt][]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces. C2-H-020: Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`.",
+   "why": "C2-B-197: A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)`, `![alt][label]` or the collapsed `![alt][]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces or tabs. C2-H-020: Where the image is an unresolved reference, C2-H-085 writes it as text, and text needs a block around it: the paragraph then keeps its `<p>`.",
    "summary": "unresolved block image with caption keeps p",
    "input": "![a][b[c]\n^ cap",
    "options": {},
@@ -18906,7 +18906,7 @@
     "C2-B-083",
     "C2-H-141"
    ],
-   "why": "C2-A-110: A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (C2-I-082) is a resolution result: it is not written into `attrs` and takes no part in equality. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u\"T\"` and in `[a]: \"T\"` the quotes are part of the destination, and `[a]: /u  \"T\"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). C2-H-141: The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k=\"1\" m=\"4\" j=\"3\"`.",
+   "why": "C2-A-110: A trailing attribute block on a reference is ordinary `attrs`, resolved or not. The reference node keeps only its own authored attributes. The merge with the attributes of its link definition (C2-I-082) is a resolution result: it is not written into `attrs` and takes no part in equality. C2-B-083: A link definition is one line: `[label]:`, one or more spaces, a destination and an optional title, so a label and a colon followed by nothing or only spaces is text. The destination and the title are those of an inline link tail (C2-I-067, C2-I-068), except that the destination holds at least one character: a run without whitespace, then optionally exactly one space and a title in double or in single quotes, then optionally exactly one space and one valid attribute block (C2-I-028), then only spaces and tabs. So `[a]: /u 'T'` has a title, `[a]: /u {.c}` carries the class `c` (C2-B-106), in `[a]: /u\"T\"` and in `[a]: \"T\"` the quotes are part of the destination, and `[a]: /u  \"T\"` with two spaces is text. The label does not start with `^`: that shape is tested first and is a footnote definition (C2-B-082). C2-H-141: The attributes of a link definition are merged into every link and image that resolves through it. The classes of the definition come first and the classes of the reference follow. An id and a key of the reference win over those of the definition. The keys of the definition that the reference does not carry come first, in the definition's order, then the keys of the reference in its order: a definition `{j=2 k=1}` and a reference `{m=4 j=3}` give `k=\"1\" m=\"4\" j=\"3\"`.",
    "summary": "reference keeps own attributes; definition attributes merge only on render",
    "input": "[x][r]{.use}\n\n[r]: /u {.def}",
    "options": {},
@@ -31579,7 +31579,7 @@
     "C2-T-039",
     "C2-W-101"
    ],
-   "why": "C2-T-039: Every failure writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101). C2-W-101: for an input file that is missing or unreadable",
+   "why": "C2-T-039: Every failure with a category in C2-T-040 writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101). C2-W-101: for an input file that is missing or unreadable",
    "summary": "a missing input file opens standard error with the input-unreadable failure line",
    "kind": "cli",
    "files": {},
@@ -42861,7 +42861,7 @@
     "C2-N-046",
     "C2-A-148"
    ],
-   "why": "C2-N-046: A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "why": "C2-N-046: A `rows` range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
    "summary": "a row range that starts past the last of two records is reported",
    "kind": "parse",
    "input": "{table}\n{{ a.csv @rows:3-3 @code:csv }}",
@@ -42890,7 +42890,7 @@
     "C2-N-046",
     "C2-A-148"
    ],
-   "why": "C2-N-046: A range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
+   "why": "C2-N-046: A `rows` range that starts past the last record leaves the include unexpanded with `include-rows-out-of-range`, and an end past the last record is clipped. C2-A-148: A block that took attribute lines (C2-B-091) starts at the first of them.",
    "summary": "a row range that starts on the last record is clipped and not reported",
    "kind": "parse",
    "input": "{table}\n{{ a.csv @rows:2-3 @code:csv }}",
@@ -55715,6 +55715,414 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1189",
+   "clauses": [
+    "C2-B-093"
+   ],
+   "why": "C2-B-093: Glued brace blocks merge into one.",
+   "summary": "glued item attributes merge",
+   "kind": "render",
+   "input": "-{.a}{.b} x",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li class=\"a b\">x</li>\n</ul>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1190",
+   "clauses": [
+    "C2-B-161"
+   ],
+   "why": "C2-B-161: Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces and tabs.",
+   "summary": "a trailing tab leaves the frontmatter opener valid",
+   "kind": "parse",
+   "input": "---\t\na: b\n---",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "a: b\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1191",
+   "clauses": [
+    "C2-B-089"
+   ],
+   "why": "C2-B-089: Anything but spaces and tabs after the URL, the title or the attribute block of a link definition makes the line text, and so does a brace block that is no valid attribute block.",
+   "summary": "a trailing tab leaves a link definition valid",
+   "kind": "render",
+   "input": "[a]: /u\t\n\n[a]",
+   "options": {},
+   "expected": {
+    "html": "<p><a href=\"/u\">a</a></p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1192",
+   "clauses": [
+    "C2-B-122"
+   ],
+   "why": "C2-B-122: A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported.",
+   "summary": "a raw fence ignores a title",
+   "kind": "render",
+   "input": "```=html \"T\"\nx\n```",
+   "options": {
+    "rawHtml": true
+   },
+   "expected": {
+    "html": "x",
+    "children": [
+     {
+      "type": "raw_block",
+      "format": "html",
+      "value": "x\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1193",
+   "clauses": [
+    "C2-B-122"
+   ],
+   "why": "C2-B-122: A raw fence (C2-B-116) and a sigil div (C2-B-196) take no title and no label: what follows the format or the sigil is further words in this sense, is not kept in the tree, and is reported.",
+   "summary": "a sigil div ignores a title",
+   "kind": "render",
+   "input": "::: > \"T\"\nx\n:::",
+   "options": {},
+   "expected": {
+    "html": "<blockquote><p>x</p></blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "x"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1194",
+   "clauses": [
+    "C2-B-146"
+   ],
+   "why": "C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "summary": "spaces alone do not make a caption",
+   "kind": "render",
+   "input": "![](a)\n^  ",
+   "options": {},
+   "expected": {
+    "html": "<p><img src=\"a\" alt=\"\">\n^</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1195",
+   "clauses": [
+    "C2-B-082"
+   ],
+   "why": "C2-B-082: A footnote definition is `[^label]:`, a space and content on the same line.",
+   "summary": "spaces alone do not make a footnote definition",
+   "kind": "render",
+   "input": "[^n]:   \n",
+   "options": {},
+   "expected": {
+    "html": "<p>[^n]:</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1196",
+   "clauses": [
+    "C2-B-084"
+   ],
+   "why": "C2-B-084: An abbreviation definition is one line: `*[label]:` with a label of one or more ASCII letters and digits, a space, and a plain-text expansion that is not empty.",
+   "summary": "spaces alone do not make an abbreviation definition",
+   "kind": "render",
+   "input": "*[A]:   \n",
+   "options": {},
+   "expected": {
+    "html": "<p>*[A]:</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1197",
+   "clauses": [
+    "C2-B-197"
+   ],
+   "why": "C2-B-197: A block image line is decided by its shape and not by inline parsing: the line consists of exactly one image form, `![alt](destination)`, `![alt][label]` or the collapsed `![alt][]`, optional attribute blocks glued to it (C2-I-039), and trailing spaces or tabs.",
+   "summary": "a tab before the line break leaves an image captionable",
+   "kind": "render",
+   "input": "![](a)\t\n^ cap",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <img src=\"a\" alt=\"\">\n  <figcaption>cap</figcaption>\n</figure>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1198",
+   "clauses": [
+    "C2-B-198"
+   ],
+   "why": "C2-B-198: A display math line is decided by its shape and not by inline parsing: the line consists of exactly one display math span, `$$` glued to a code span, optional attribute blocks glued to it, and trailing spaces or tabs.",
+   "summary": "a tab before the line break leaves math captionable",
+   "kind": "render",
+   "input": "$$`x`\t\n^ cap",
+   "options": {},
+   "expected": {
+    "html": "<figure>\n  <p><span class=\"math display\" role=\"math\">\\[x\\]</span></p>\n  <figcaption>cap</figcaption>\n</figure>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1199",
+   "clauses": [
+    "C2-I-119"
+   ],
+   "why": "C2-I-119: An opening brace that fails as an attribute block is first tried as the later braced forms (C2-I-043) and is text only when it opens none of them.",
+   "summary": "an invalid attribute candidate can open strong text",
+   "kind": "render",
+   "input": "{*x*}",
+   "options": {},
+   "expected": {
+    "html": "<p><strong>x</strong></p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1200",
+   "clauses": [
+    "C2-L-047"
+   ],
+   "why": "C2-L-047: Every node in a list of blocks of the top-level document (C2-A-051), outside a caption and a table cell, and every `list_item`, `definition_term`, `definition_description` and `caption` has an entry with `blankLinesBefore` and `blankLinesAfter`, 0 included, since an absent fact means unknown.",
+   "summary": "a paragraph records zero blank lines",
+   "kind": "layout",
+   "input": "a\n",
+   "options": {},
+   "expected": {
+    "layout": {
+     "version": 2,
+     "encoding": "utf-8",
+     "source": "a\n",
+     "lineEndings": "lf",
+     "bom": false,
+     "nodes": [
+      {
+       "path": "/children/0",
+       "startByte": 0,
+       "endByte": 1,
+       "blankLinesBefore": 0,
+       "blankLinesAfter": 0
+      }
+     ]
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1201",
+   "clauses": [
+    "C2-M-030"
+   ],
+   "why": "C2-M-030: A value that is not empty and does not end with a line feed gets one (C2-A-045).",
+   "summary": "import adds a final line break to code",
+   "kind": "import",
+   "html": "<pre><code>a</code></pre>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1202",
+   "clauses": [
+    "C2-M-033"
+   ],
+   "why": "C2-M-033: A list with one item is tight even so (C2-B-062).",
+   "summary": "import makes a one-item list tight",
+   "kind": "import",
+   "html": "<ul>\n  <li><p>a</p></li>\n</ul>",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "list",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ],
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1203",
+   "clauses": [
+    "C2-H-047"
+   ],
+   "why": "C2-H-047: The value is written as it is, its final line ending included, and nothing is added.",
+   "summary": "render preserves an unterminated code value",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "code_block",
+      "value": "a"
+     }
+    ],
+    "stages": [
+     "referenceResolution",
+     "tableAlignment"
+    ]
+   },
+   "options": {
+    "rawHtml": true,
+    "roundtrip": true
+   },
+   "expected": {
+    "html": "<pre><code>a</code></pre>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1204",
+   "clauses": [
+    "C2-H-036"
+   ],
+   "why": "C2-H-036: The renderer reads `list.spacing` (C2-A-059) and never derives tightness from blank lines or from the blocks of an item.",
+   "summary": "render preserves supplied loose list spacing",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "loose",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "stages": [
+     "referenceResolution",
+     "tableAlignment"
+    ]
+   },
+   "options": {
+    "rawHtml": true,
+    "roundtrip": true
+   },
+   "expected": {
+    "html": "<ul>\n  <li><p>a</p></li>\n</ul>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1205",
+   "clauses": [
+    "C2-B-171"
+   ],
+   "why": "C2-B-171: A cell prefix is the optional header cell mark `|=`, then an optional run of glued brace blocks, merged into one (C2-B-093).",
+   "summary": "a cell attribute attaches before a literal alignment mark",
+   "kind": "render",
+   "input": "|{.a}< x |",
+   "options": {},
+   "expected": {
+    "html": "<table>\n  <tbody>\n    <tr><td class=\"a\">&lt; x</td></tr>\n  </tbody>\n</table>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1206",
+   "clauses": [
+    "C2-T-039"
+   ],
+   "why": "C2-T-039: Every failure with a category in C2-T-040 writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101).",
+   "summary": "fmt check difference has no failure category",
+   "kind": "cli",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stderrCategory": null
+   },
+   "from": [],
+   "args": [
+    "fmt",
+    "--check",
+    "a.crv"
+   ],
+   "files": {
+    "a.crv": {
+     "text": "## A\n"
+    }
+   }
   }
  ]
 }

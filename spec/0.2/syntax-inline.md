@@ -2451,7 +2451,7 @@ Example 113 (unverified)
 | bracket pair with a broken link tail | the pair and the tail (C2-I-069) |
 | unclosed inline footnote | `^[` (C2-I-089) |
 | unclosed inline extension | the sigil, the name and the bracket (C2-I-094) |
-| unclosed or invalid attribute block | the whole run (C2-I-034) |
+| unclosed or invalid attribute block | the opening brace is tried as a braced form (C2-I-043), then is text if none matches (C2-I-034) |
 | unclosed bare delimiter | the delimiter (C2-I-119) |
 | unclosed braced opener | the brace and its mark (C2-I-060) |
 | unclosed braced comment or editorial comment | the brace and its mark (C2-I-043) |
