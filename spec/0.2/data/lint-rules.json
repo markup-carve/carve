@@ -83,8 +83,9 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "This line looks like a (kind) but directly follows text, so it is part of the paragraph or caption above it. Add a blank line before it."
+        "This line looks like ${opener} but directly follows text, so it is part of the paragraph or caption above it. Add a blank line before it."
       ],
+      "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition."],
       "message_origin": "design",
       "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
@@ -193,14 +194,19 @@
       "default": "on",
       "messages": [
         {
-          "when": "the bare run is shorter than the innermost opener",
-          "text": "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it ${outcome}."
+          "when": "the bare run is shorter than the innermost opener and long enough for no open div",
+          "text": "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it opens an anonymous div."
+        },
+        {
+          "when": "the bare run is shorter than the innermost opener and long enough for an enclosing open container",
+          "text": "Bare ${authoredWidth}-colon fence does not close the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it closes an enclosing container and every container inside it."
         },
         {
           "when": "the bare run is longer than the innermost opener",
-          "text": "Bare ${authoredWidth}-colon fence has a different width from the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it ${outcome}."
+          "text": "Bare ${authoredWidth}-colon fence has a different width from the innermost ${expectedWidth}-colon ${kind} opened at ${line}:${column}; it closes the container."
         }
       ],
+      "message_notes": ["`${kind}` names the innermost open colon container: `div`, `admonition`, `figure group`, `line block` or `hard-break block` (C2-B-119, C2-B-125)."],
       "message_origin": "engine_0_1",
       "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div, an admonition, a figure group, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
       "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
@@ -1227,7 +1233,22 @@
       "severity": "warning",
       "channel": "parse",
       "status": "new",
-      "messages": ["The include option ${option} ${reason}, so the include is not expanded. Correct it or remove it."],
+      "messages": [{
+          "when": "the key is not one of the include options",
+          "text": "The include option ${option} has a key that is not an include option, so the include is not expanded. Correct it or remove it."
+        },
+        {
+          "when": "the key stands earlier in the same directive",
+          "text": "The include option ${option} repeats a key that stands earlier in the directive, so the include is not expanded. Correct it or remove it."
+        },
+        {
+          "when": "the key needs a value and has none or an empty quoted one",
+          "text": "The include option ${option} needs a value, so the include is not expanded. Correct it or remove it."
+        },
+        {
+          "when": "the value is outside the shape of its key (C2-B-206)",
+          "text": "The include option ${option} has a value outside the shape of its key, so the include is not expanded. Correct it or remove it."
+        }],
       "message_origin": "data_file",
       "reports": "an include option with an unknown key, a value outside its shape, a missing value or a repeated key, which the node keeps as written (C2-B-206) and which keeps the include from being expanded (C2-N-025)",
       "clauses": ["C2-A-181", "C2-B-206", "C2-N-025"]
@@ -1771,7 +1792,22 @@
       "status": "kept",
       "default": "on",
       "messages": [
-        "The \"${marker}\" span marker cannot extend a cell. ${reason} It is a cell that holds \"${marker}\" as text; escape it as \"\\${marker}\" to say so, or remove it."
+        {
+          "when": "the `<` stands in the first column",
+          "text": "The \"<\" span marker cannot extend a cell. There is no cell to its left in its row. It is a cell that holds \"<\" as text; escape it as \"\\<\" to say so, or remove it."
+        },
+        {
+          "when": "the cell to the left of the `<` is covered by a row span from above",
+          "text": "The \"<\" span marker cannot extend a cell. The cell to its left is covered by a row span from above. It is a cell that holds \"<\" as text; escape it as \"\\<\" to say so, or remove it."
+        },
+        {
+          "when": "the `^` stands in the first row of its group",
+          "text": "The \"^\" span marker cannot extend a cell. It stands in the first row of its group: head, body or foot. It is a cell that holds \"^\" as text; escape it as \"\\^\" to say so, or remove it."
+        },
+        {
+          "when": "the cell above the `^` spans more than one column",
+          "text": "The \"^\" span marker cannot extend a cell. The cell above it spans more than one column. It is a cell that holds \"^\" as text; escape it as \"\\^\" to say so, or remove it."
+        }
       ],
       "message_origin": "data_file",
       "change": "a mark that joins nothing is now the text of its cell, also at a group boundary: head, body or foot (C2-B-173, C2-B-174)",

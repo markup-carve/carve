@@ -22,7 +22,7 @@
       "sequence": [
         { "part": "ref", "ref": "image_form" },
         { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
-        { "part": "trailing_spaces" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-157", "C2-B-197"]
@@ -45,7 +45,7 @@
       "sequence": [
         { "part": "ref", "ref": "display_math_span" },
         { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
-        { "part": "trailing_spaces" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-158", "C2-B-198", "C2-I-121"]
@@ -74,7 +74,37 @@
       "first": ["%"],
       "role": "skipped",
       "sequence": [{ "part": "literal", "text": "%%" }, { "part": "content", "min": 0 }],
+      "excludes": ["region_marker"],
       "clauses": ["C2-B-133", "C2-B-137"]
+    },
+    {
+      "name": "region_marker",
+      "first": ["%"],
+      "role": "comment",
+      "sequence": [
+        { "part": "literal", "text": "%%" },
+        { "part": "run", "chars": ["\t", " "], "min": 0 },
+        {
+          "part": "choice",
+          "options": [
+            [
+              { "part": "literal", "text": "#region" },
+              { "part": "run", "chars": ["\t", " "], "min": 1 },
+              { "part": "ref", "ref": "region_name" }
+            ],
+            [
+              { "part": "literal", "text": "#endregion" },
+              {
+                "part": "optional",
+                "sequence": [{ "part": "run", "chars": ["\t", " "], "min": 1 }, { "part": "ref", "ref": "region_name" }]
+              }
+            ]
+          ]
+        },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
+      "clauses": ["C2-B-137", "C2-B-217"]
     },
     {
       "name": "abbreviation_definition",
@@ -86,7 +116,7 @@
         { "part": "run", "chars": ["a-z", "A-Z", "0-9"], "min": 1 },
         { "part": "literal", "text": "]:" },
         { "part": "space", "min": 1, "max": 1 },
-        { "part": "content", "min": 1 }
+        { "part": "content", "min": 1, "has_non_space": true }
       ],
       "clauses": ["C2-B-081", "C2-B-084"]
     },
@@ -96,7 +126,7 @@
       "role": "container",
       "sequence": [
         { "part": "run", "chars": ["-", "*"], "min": 1, "max": 1 },
-        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+        { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
         { "part": "space", "min": 1 },
         { "part": "content", "min": 1, "has_non_space": true }
       ],
@@ -149,7 +179,7 @@
             { "part": "ref", "ref": "format_name" }
           ]
         },
-        { "part": "trailing_spaces" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "requires": ["only_byte_order_mark_before"],
@@ -166,30 +196,30 @@
             [
               { "part": "run", "chars": ["0-9"], "min": 1, "max": 9 },
               { "part": "run", "chars": [".", ")"], "min": 1, "max": 1 },
-              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
               { "part": "space", "min": 1 }
             ],
             [
               { "part": "ref", "ref": "letter_or_roman_number" },
               { "part": "literal", "text": ")" },
-              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
               { "part": "space", "min": 1 }
             ],
             [
               { "part": "ref", "ref": "letter_or_roman_number_uppercase" },
               { "part": "literal", "text": "." },
-              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
               { "part": "space", "min": 2 }
             ],
             [
               { "part": "ref", "ref": "letter_or_roman_number_lowercase" },
               { "part": "literal", "text": "." },
-              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
               { "part": "space", "min": 1 }
             ],
             [
               { "part": "literal", "text": "." },
-              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_block" }] },
+              { "part": "optional", "sequence": [{ "part": "ref", "ref": "brace_blocks" }] },
               { "part": "space", "min": 1 }
             ]
           ]
@@ -232,10 +262,7 @@
           "options": [
             [
               { "part": "space", "min": 1 },
-              {
-                "part": "choice",
-                "options": [[{ "part": "ref", "ref": "div_name" }], [{ "part": "ref", "ref": "div_sigil" }]]
-              },
+              { "part": "ref", "ref": "div_name" },
               {
                 "part": "optional",
                 "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "quoted_title" }]
@@ -244,6 +271,10 @@
                 "part": "optional",
                 "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
               }
+            ],
+            [
+              { "part": "space", "min": 1 },
+              { "part": "ref", "ref": "div_sigil" }
             ],
             [
               { "part": "space", "min": 1 },
@@ -297,7 +328,7 @@
         { "part": "ref", "ref": "label" },
         { "part": "literal", "text": "]:" },
         { "part": "space", "min": 1, "max": 1 },
-        { "part": "content", "min": 1 }
+        { "part": "content", "min": 1, "has_non_space": true }
       ],
       "clauses": ["C2-B-081", "C2-B-082", "C2-B-087"]
     },
@@ -320,7 +351,7 @@
           "part": "optional",
           "sequence": [{ "part": "space", "min": 1, "max": 1 }, { "part": "ref", "ref": "brace_block" }]
         },
-        { "part": "trailing_spaces" },
+        { "part": "trailing_whitespace" },
         { "part": "end" }
       ],
       "clauses": ["C2-B-081", "C2-B-083", "C2-B-089", "C2-B-106"]
@@ -329,7 +360,7 @@
       "name": "caption",
       "first": ["^"],
       "role": "leaf",
-      "sequence": [{ "part": "literal", "text": "^" }, { "part": "space", "min": 1 }, { "part": "content", "min": 1 }],
+      "sequence": [{ "part": "literal", "text": "^" }, { "part": "space", "min": 1 }, { "part": "content", "min": 1, "has_non_space": true }],
       "requires": ["directly_below_caption_target"],
       "clauses": ["C2-B-146", "C2-B-147", "C2-B-148", "C2-B-149"]
     },
@@ -356,10 +387,7 @@
           "part": "choice",
           "options": [
             [
-              {
-                "part": "choice",
-                "options": [[{ "part": "ref", "ref": "language_word" }], [{ "part": "ref", "ref": "raw_format" }]]
-              },
+              { "part": "ref", "ref": "language_word" },
               {
                 "part": "optional",
                 "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "quoted_title" }]
@@ -368,6 +396,9 @@
                 "part": "optional",
                 "sequence": [{ "part": "space", "min": 1 }, { "part": "ref", "ref": "bracket_label" }]
               }
+            ],
+            [
+              { "part": "ref", "ref": "raw_format" }
             ],
             [
               { "part": "ref", "ref": "quoted_title" },
@@ -549,6 +580,7 @@
       "reads_escapes": true,
       "clauses": ["C2-A-073", "C2-B-117", "C2-B-119", "C2-B-120", "C2-I-033"]
     },
-    { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] }
+    { "name": "raw_format", "opener": "=", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9", "_"], "min": 1, "clauses": ["C2-B-116", "C2-B-225"] },
+    { "name": "region_name", "chars": ["-", "0-9", "A-Z", "_", "a-z"], "not_first": ["-", "0-9"], "min": 1, "clauses": ["C2-B-217"] }
   ]
 }

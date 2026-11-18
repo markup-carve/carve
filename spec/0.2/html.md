@@ -644,7 +644,7 @@ Example 9 (generated)
 
 **C2-H-041** A quote is `<blockquote>`.
 
-**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how.
+**C2-H-042** A div is `<div>`. The name on its opener is its first class. A title on its opener is written as its first child, `<p class="admonition-title">`, as in 0.1. An admonition and a directive render as in 0.1. C2-H-154 to C2-H-158 state how. A trusted extension renderer receives `host.blockDepth` as the current block indent in two-space units (C2-X-033). The host indents the first line of the renderer's returned block HTML; the renderer indents later lines by that depth.
 
 **C2-H-043** A line block is `<div class="line-block">` around one `<p>` per stanza; a comment in it writes nothing. Every line break in it is `<br>`, and leading spaces of a line are written as `&nbsp;`, one per space. A hard break that ends a line which another line of its stanza follows writes nothing: the `<br>` of that line end stands for it, as in 0.1.
 
@@ -2244,7 +2244,7 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 
 **C2-H-188** Round trip is promised only for HTML that the renderer wrote with `roundtrip` on and that was not changed afterwards. For such HTML the importer recovers each fact that a carrier names. It does not recover what has no carrier: the sidecar facts of C2-H-119 and the facts that HTML and the carriers do not hold.
 
-**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16 and 19.
+**C2-H-195** The facts of this table are known not to survive a render with `roundtrip` and an import, in addition to the sidecar facts of C2-H-119 and the definitions of C2-H-193 and C2-H-194. 0.2.0 adds no carrier for them. Each row gives a minimal input, in which `⏎` stands for a line break, and the source that the import gives back as the canonical writer spells it. Rendering that source again gives the same HTML, except for rows 1, 5, 6, 7, 13, 16, 19, 23 and 24.
 
 | Row | Fact | Input | Comes back as |
 |---|---|---|---|
@@ -2270,6 +2270,8 @@ Importing this HTML gives the paragraphs `A[^n], B[^m] and ^[inline] C[^n].` and
 | 20 | the key of a cross-reference typed in another normal form than its id | `= Café⏎⏎</#Cafe`, U+0301 and `>` | `</#Café>` with the precomposed `é`: the `href` names the id (C2-I-097), and `data-carve-xref` takes the key from the `href` (C2-H-011) |
 | 21 | a body with no rows in a table with `body-rows` | `{body-rows="1,0,1"}⏎\| a \|⏎\| b \|` | `{body-rows=1,1}⏎\| a \|⏎\| b \|`: a body with no rows writes no `<tbody>` (C2-H-056), and `body-rows` is never written (C2-H-153) |
 | 22 | `rowHeadColumns` of a body | `{body-rows=2 body-header-cols=1}⏎\| a \| b \|⏎\| c \| d \|` | `\|= a \| b \|⏎\|= c \| d \|`: header cells, since `<th scope="row">` (C2-H-056) carries no count (C2-H-153) |
+| 23 | the absence of a final line feed in a supplied nonempty code block value | a supplied `code_block` with value `a` | a `code_block` with value `a⏎`: C2-M-030 appends a line feed when the `<pre><code>` text has none |
+| 24 | loose spacing of a supplied list with one item, even when the item starts with a paragraph | a supplied one-item `list` with `spacing` `loose` and paragraph `a` | a tight list with the same item: C2-M-033 makes every one-item list tight |
 
 **C2-H-196** The list of C2-H-195 is complete as far as known. A tree fact that neither the table of C2-H-186, nor C2-H-119, C2-H-193, C2-H-194 or the table of C2-H-195 names, nor a fact the render does not write (C2-H-188), is expected to survive a render with `roundtrip` and an import of the unchanged HTML. A round trip that loses such a fact is a defect of this specification or of the engine, and the fix is a row in that table or a fix of the engine.
 

@@ -225,7 +225,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-038** A run ends with status 1 and no category when `fmt --check` or `fmt --diff` finds a file that would change (C2-W-100), or `lint` finds an entry of severity `warning` or `error` (C2-T-031).
 
-**C2-T-039** Every failure writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101).
+**C2-T-039** Every failure with a category in C2-T-040 writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101).
 
 **C2-T-040** The failure categories, their status and the library error each comes from are the rows of this table.
 

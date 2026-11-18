@@ -101,7 +101,15 @@ export async function decodeShare(fragment) {
     if (typeof state.source !== 'string') return null
     // The fragment is attacker-supplied: read the fields we know and ignore
     // everything else, rather than spreading a decoded object into app state.
-    return { source: state.source, engine: state.engine === 'rust' ? 'rust' : 'js' }
+    const result = { source: state.source }
+    // Read old links as well; their engine choice no longer affects the 0.2 site.
+    if ('engine' in state) result.engine = state.engine === 'rust' ? 'rust' : 'js'
+    if ('options' in state) {
+      result.options = state.options && typeof state.options === 'object' && !Array.isArray(state.options)
+        ? state.options
+        : {}
+    }
+    return result
   } catch {
     return null
   }

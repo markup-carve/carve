@@ -57,9 +57,10 @@
               "attribute",
               "row",
               "skipped",
+              "comment",
               "close_fact"
             ],
-            "description": "What a line of the shape does: `container` opens a container on its marker line, `opener` opens a fenced block, `closer` closes one, `opener_or_closer` closes an open div it is long enough for and otherwise opens one, `skipped` is the comment-only line, `close_fact` is a shape read when a paragraph closes and never a role of a line."
+            "description": "What a line of the shape does: `container` opens a container on its marker line, `opener` opens a fenced block, `closer` closes one, `opener_or_closer` closes an open div it is long enough for and otherwise opens one, `skipped` is the comment-only line, `leaf` a line that is a block of its own (heading, thematic break, term, caption, include), `comment` a line that opens no block, ends what C2-B-137 says it ends and adds a comment node to the container that owns it (the region marker), `close_fact` is a shape read when a paragraph closes and never a role of a line."
           },
           "clauses": {
             "type": "array",
@@ -106,7 +107,7 @@
           },
           "excludes": {
             "type": "array",
-            "items": { "enum": ["backtick_in_info_string_of_backtick_run"] },
+            "items": { "enum": ["backtick_in_info_string_of_backtick_run", "region_marker"] },
             "uniqueItems": true,
             "description": "Cases in which a line that matches the sequence is not the shape."
           }
