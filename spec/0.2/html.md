@@ -206,13 +206,13 @@ Example 67 (generated)
 
 **C2-H-022** Unless `headingIds` is `off`, every heading has an id: the id the author wrote, or a generated one. A generated id is the slug of the heading's plain text, computed as in 0.1 (CARVE-P2-004) and stated in C2-H-143 to C2-H-148. With `keep-case` the case is kept and a run of spaces becomes one hyphen. `lower` also folds the slug to lower case. `ascii` also transliterates it to ASCII and keeps its case, as 0.1 `asciiHeadingIds` did, and `ascii-strict` also drops what the transliteration leaves outside ASCII, as 0.1 `asciiHeadingIds: 'strict'` did; `ascii-lower` and `ascii-strict-lower` also fold the result to lower case, as each of the two with 0.1 `lowercaseHeadingIds` did.
 
-**C2-H-024** Generated heading ids are unique in the document; the ids of notes and their marks are fixed (C2-H-088, C2-H-089) and take no part. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. An authored id is written as the author wrote it, also where two nodes carry the same one: the renderer does not change it, each later one is reported (C2-A-039), and a reference to that id resolves to the first node that carries it.
+**C2-H-024** Generated ids are unique in the document: heading ids by this clause, the ids of notes and their marks by C2-H-202. Authored ids are reserved first, in document order. Generated ids follow in document order, and a slug that is already taken gets the suffix `-2`, then `-3`, and so on. An authored id is written as the author wrote it, also where two nodes carry the same one: the renderer does not change it, each later one is reported (C2-A-039), and a reference to that id resolves to the first node that carries it.
 
 **Exception C2-H-025** The headings of a footnote body take their generated ids after every heading of the document body, in the order of the footnote numbers. A heading in an unused footnote definition takes none.
 
-The ids `fnN` and `fnrefN` are not checked against the heading ids, so a heading `fn1` and the first note share the id, as in 0.1.
+A heading `fn1` takes its id before the notes do, so the first note becomes `fn1-2` (C2-H-202). 0.1 gave both the id `fn1`.
 
-Example 60 (generated)
+Example 60 (unverified)
 
 ::: compare
 
@@ -227,12 +227,12 @@ a[^x]
 ```html
 <section id="fn1">
   <h1>fn1</h1>
-  <p>a<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+  <p>a<a id="fnref1" href="#fn1-2" role="doc-noteref"><sup>1</sup></a></p>
 </section>
 <section role="doc-endnotes" aria-label="Footnotes">
   <hr>
   <ol>
-    <li id="fn1">
+    <li id="fn1-2">
       <p>n<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
     </li>
   </ol>
@@ -1534,9 +1534,63 @@ Example 56 (unverified)
 
 :::
 
-**C2-H-088** A footnote reference or inline footnote writes its note mark as `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on. An id the author wrote on a reference replaces the generated one, and the backlink of the note points to it. When a note mark occurs anywhere in the text of a direct or reference link, including inside an inline descendant, nothing is written at its place. The marks are written directly after the closing `</a>` of the outermost rendered link in source order. The footnote and inline footnote nodes stay at their places in the tree, and the backlinks point to the moved marks. An image's alternative text and every other plain text rendering are unchanged. A cross-reference has generated plain text and no inline children that can hold a note mark. A heading's generated id is on its heading or section element, not on an enclosing anchor, so a link inside a heading follows this rule as elsewhere.
+**C2-H-088** A footnote reference or inline footnote writes its note mark as `<a id="fnrefN" href="#fnN" role="doc-noteref"><sup>N</sup></a>`. The second and later references to one note have the ids `fnrefN-2`, `fnrefN-3`, and so on, each suffixed when taken (C2-H-202). An id the author wrote on a reference replaces the generated one, and the backlink of the note points to it. When a note mark occurs anywhere in the text of a direct or reference link, including inside an inline descendant, nothing is written at its place. The marks are written directly after the closing `</a>` of the outermost rendered link in source order. The footnote and inline footnote nodes stay at their places in the tree, and the backlinks point to the moved marks. An image's alternative text and every other plain text rendering are unchanged. A cross-reference has generated plain text and no inline children that can hold a note mark. A heading's generated id is on its heading or section element, not on an enclosing anchor, so a link inside a heading follows this rule as elsewhere.
 
-**C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order. LABEL is the `endnotes` string of `labels`.
+**C2-H-089** The footnotes are written in one section: `<section role="doc-endnotes" aria-label="LABEL">`, then `<hr>`, then `<ol>` with one `<li id="fnN">` per note in number order, its id suffixed when taken (C2-H-202). LABEL is the `endnotes` string of `labels`.
+
+**C2-H-202** The ids of C2-H-088 and C2-H-089 take part in the uniqueness of C2-H-024. They are allocated after every other generated id (C2-H-024, C2-H-025, C2-H-156, C2-H-158), reference by reference in the order of C2-H-087: a reference that introduces note N allocates `fnN` and then its own id, and a later reference to note N allocates its own id. An id that is already taken gets the suffix `-2`, then `-3`, until it is free, so a taken `fnref1-2` becomes `fnref1-2-2`. The `href` of the reference and the backlinks of the note use the final id. An id the author wrote on a reference is reserved first like every authored id and is kept. 0.1 left these ids out, so an authored id or a heading slug could duplicate them.
+
+Example 85 (unverified)
+
+::: compare
+
+```carve
+a^[x] and b[^n]{#fn1}
+
+[^n]: y
+```
+
+```html
+<p>a<a id="fnref1" href="#fn1-2" role="doc-noteref"><sup>1</sup></a> and b<a id="fn1" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1-2">
+      <p>x<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>y<a href="#fn1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
+
+Example 86 (unverified)
+
+::: compare
+
+```carve
+a^[x]{#fnref2} b^[y]
+```
+
+```html
+<p>a<a id="fnref2" href="#fn1" role="doc-noteref"><sup>1</sup></a> b<a id="fnref2-2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>x<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>y<a href="#fnref2-2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
+```
+
+:::
 
 **C2-H-090** The body of an inline footnote is one paragraph.
 
@@ -2702,7 +2756,7 @@ ab
 |---|---|---|---|---|
 | Output form | 8 | 2 | 1 | 0 |
 | Attributes | 9 | 1 | 3 | 2 |
-| Paragraphs, headings and sections | 15 | 1 | 5 | 3 |
+| Paragraphs, headings and sections | 15 | 1 | 4 | 4 |
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
@@ -2712,7 +2766,7 @@ ab
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
 | Inline elements | 8 | 0 | 1 | 2 |
 | Links, images and references | 9 | 0 | 1 | 2 |
-| Footnotes | 8 | 0 | 3 | 2 |
+| Footnotes | 9 | 0 | 3 | 4 |
 | Cross-references and abbreviations | 5 | 1 | 1 | 1 |
 | Mentions, tags and symbols | 2 | 0 | 1 | 3 |
 | State beyond the current block | 10 | 0 | 0 | 0 |
@@ -2721,6 +2775,6 @@ ab
 | Options | 24 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **193** | **6** | **34** | **50** |
+| **Total** | **194** | **6** | **33** | **53** |
 
-The document has 193 clauses, 6 of them marked with the word "Exception", and 84 examples, 34 generated and 50 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 194 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
