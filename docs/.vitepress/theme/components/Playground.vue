@@ -256,9 +256,8 @@ function restoreOutputScroll(): void {
 const rendered = computed<{ html: string; ms: number | null }>(() => {
   try {
     const started = performance.now()
-    let html = render(previewSource.value ?? source.value, options.value)
+    const html = render(previewSource.value ?? source.value, options.value)
     const ms = performance.now() - started
-    html = html.replace(/src="images\//g, `src="${withBase('/images/')}`)
     return { html, ms }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
@@ -523,8 +522,16 @@ function decorateCodeBlocks(): void {
 }
 
 // Mermaid first (it replaces blocks), then highlight code, then render math.
+function resolveImagePaths(): void {
+  for (const image of outputEl.value?.querySelectorAll<HTMLImageElement>('img[src^="images/"]') ?? []) {
+    const source = image.getAttribute('src')!
+    image.setAttribute('src', withBase(`/images/${source.slice('images/'.length)}`))
+  }
+}
+
 async function postProcessOutput(): Promise<void> {
   const generation = renderGeneration
+  resolveImagePaths()
   await renderMermaid()
   await renderCharts()
   wireSpoilers()

@@ -1,5 +1,5 @@
-// Carve language features for the playground editor: diagnostics, completion
-// and hover, computed in the page by carve-lsp's browser entry.
+// The 0.2 engine supplies diagnostics. The existing language server supplies
+// completion and hover until the 0.2 editor API provides those features.
 import type { Text } from '@codemirror/state'
 import { EditorView, hoverTooltip, tooltips, type Tooltip } from '@codemirror/view'
 import { linter, type Diagnostic as LintDiagnostic } from '@codemirror/lint'
@@ -8,6 +8,22 @@ import { completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
 import { lint } from '../../engine-v2.js'
 
 type Position = { line: number; character: number }
+
+// The 0.2 linter reports UTF-8 byte offsets; CodeMirror uses UTF-16 offsets.
+function utf16Offsets(source: string): number[] {
+  const positions: number[] = []
+  let bytes = 0
+  let utf16 = 0
+  for (const scalar of source) {
+    const codePoint = scalar.codePointAt(0)!
+    const width = codePoint < 0x80 ? 1 : codePoint < 0x800 ? 2 : codePoint < 0x10000 ? 3 : 4
+    for (let index = 0; index < width; index++) positions[bytes + index] = utf16
+    bytes += width
+    utf16 += scalar.length
+  }
+  positions[bytes] = utf16
+  return positions
+}
 
 // LSP positions are 0-based lines and UTF-16 columns, which are CodeMirror's offsets.
 function toOffset(doc: Text, position: Position): number {
@@ -23,9 +39,12 @@ export const carveDiagnostics = linter(
   (view) => {
     const doc = view.state.doc
     try {
-      return lint(doc.toString()).map((d): LintDiagnostic => ({
-        from: Math.min(doc.length, d.range.startOffset),
-        to: Math.max(Math.min(doc.length, d.range.startOffset), Math.min(doc.length, d.range.endOffset)),
+      const source = doc.toString()
+      const offsets = utf16Offsets(source)
+      const fromByte = (byteOffset: number): number => offsets[Math.max(0, Math.min(offsets.length - 1, byteOffset))] ?? doc.length
+      return lint(source).map((d): LintDiagnostic => ({
+        from: fromByte(d.range.startOffset),
+        to: Math.max(fromByte(d.range.startOffset), fromByte(d.range.endOffset)),
         severity: d.severity === 'error' ? 'error' : d.severity === 'hint' ? 'hint' : 'warning',
         message: d.message,
         source: `carve 0.2 ${d.code}`,

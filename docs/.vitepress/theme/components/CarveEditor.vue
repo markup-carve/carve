@@ -64,14 +64,19 @@ const tokenField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 })
 
-// The pinned 0.1 TextMate grammar predates 0.2 equals headings. Apply the
-// 0.2 heading color as a line decoration while retaining its other tokens.
+// The pinned 0.1 TextMate grammar predates 0.2 equals headings. Read the
+// 0.2 tree so a heading-shaped line inside a code fence stays code colored.
 function headingDecorations(doc: Text): DecorationSet {
-  const lines = []
-  for (let number = 1; number <= doc.lines; number++) {
-    const line = doc.line(number)
-    if (/^={1,6} [^=]/.test(line.text)) lines.push(Decoration.line({ class: 'cm-v2-heading' }).range(line.from))
+  const lineNumbers = new Set<number>()
+  const visit = (node: { type?: string; pos?: { endLine?: number }; children?: unknown[] }): void => {
+    if (node.type === 'heading' && node.pos?.endLine) lineNumbers.add(node.pos.endLine)
+    for (const child of node.children ?? []) {
+      if (child && typeof child === 'object') visit(child as typeof node)
+    }
   }
+  try { visit(parse(doc.toString())) } catch { return Decoration.none }
+  const lines = [...lineNumbers].sort((a, b) => a - b).map(number =>
+    Decoration.line({ class: 'cm-v2-heading' }).range(doc.line(number).from))
   return Decoration.set(lines)
 }
 const headingField = StateField.define<DecorationSet>({
