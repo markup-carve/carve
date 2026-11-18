@@ -1,127 +1,28 @@
----
-description: How Carve treats tabs, trailing spaces and line endings so a document survives an editor save.
----
-
 # Portable Whitespace
 
-Carve is not required to follow Djot's whitespace rules, and a document that
-ignores this page is not wrong - it renders exactly as written. But Carve and
-Djot disagree about whitespace in two places, and a document that keeps to the
-Djot-shaped form in both is also valid Djot source. If you ever expect your
-`.crv` files to be read by a Djot processor, it is worth writing them that way
-from the start.
+Whitespace determines block starts and container ownership in Carve 0.2. These habits make a document easier to read and keep edits from changing nearby blocks. The exact rules are in [paragraphs and interrupters](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters) and [container ownership](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#container-ownership-and-stripping).
 
-This costs nothing. Both portable forms below are also the CommonMark-safe
-forms, so following this page does not trade Markdown compatibility for Djot
-compatibility - it gives up neither.
+## Separate a new block
 
-::: tip
-These are advisory. Nothing reports them: the blank-line form is a portability
-convention rather than a defect, and the marker-space form became core syntax,
-where `carve lint` already reports a missing space as
-`blockquote-marker-without-space`.
-:::
+```crv
+A paragraph ends here.
 
-## Leave a blank line before a block opener
+= A heading
 
-In Carve a visible block opener interrupts an open paragraph. In Djot it does
-not - the opener folds into the paragraph as text.
-
-```
-Some text
-# A heading
+> A quote.
 ```
 
-Carve renders a paragraph and a heading. Djot renders one paragraph reading
-`Some text # A heading`. The same applies to `>`, a code fence, `---`, a
-`:::` fence, a table, and a definition list.
+A heading or quote without the blank line can be a lazy paragraph line. List markers have their own interruption rules. When a list should be separate, leave the blank line.
 
-The portable form is a blank line:
+## Keep container prefixes clear
 
-```
-Some text
-
-# A heading
+```crv
+> First quoted line.
+> Second quoted line.
 ```
 
-The same holds one level in, where the "paragraph" is a list item's content:
+A quote marker needs a following space or the end of its line. Use the marker on each line whose ownership should be clear. For list items, indent continued blocks past the item marker's content column. A line with `+` does not continue a container in 0.2.
 
-```
-- a
-  - b
-```
+## Format the result
 
-Carve nests the second bullet; Djot reads it as a continuation line of the
-first. A blank line between them nests in both.
-
-A top-level list is the exception that needs nothing: a list marker does not
-interrupt a paragraph in Carve either, so `Some text` followed by `- a` is a
-single paragraph in both languages already.
-
-
-## Put a space after every `>`
-
-Carve and Djot both require the space after `>` unless the marker is the whole
-line. This is ordinary Carve, not just a portability convention.
-
-```
->quote
-```
-
-Both render the literal text `>quote`. Write the space:
-
-```
-> quote
-```
-
-Nesting needs the same treatment on every marker. There is no `>>` shorthand;
-write both markers explicitly:
-
-```
-> > q
-```
-
-Every marked line of the quote needs it, not just the opening one:
-
-```
-> ok
->bad
-```
-
-Both read that as one quoted paragraph `ok` followed by a lazy continuation
-line `>bad`.
-
-Two spaces after the marker, a lazy continuation line with no marker at all, and
-a bare `>` separator line inside a quote are all valid.
-
-A TAB after the marker is not. Carve's separator is the space character, so a
-tab is content and the line is an ordinary paragraph; Djot accepts the tab and
-opens the quote. The two engines disagree about the whole block, not about its
-spacing:
-
-```
->	q
-```
-
-The fence above holds a real tab. Carve renders that line as ordinary
-paragraph text, marker and all; Djot renders a quoted `q`. Write a space.
-
-## What this page does not cover
-
-**Constructs Carve deliberately spells differently.** Emphasis delimiters are
-swapped (`/italic/`, `*bold*`), `_x_` is underline rather than emphasis, and
-sup/sub are braced-only. Those are on
-[Divergence from Djot](/divergence-from-djot) and no whitespace rule recovers
-them - a document using them is Carve, not Djot, by design.
-
-**Link reference definitions.** A `[b]: /url` line directly under a paragraph
-diverges the same way, but it leaves no node in the tree for the linter to
-anchor on, so `carve lint` does not report it. Give it a blank line too.
-
-(Abbreviation definitions and comment fences are not exceptions: both produce
-real nodes and both **are** reported.)
-
-**Places where Carve is the stricter engine.** Djot accepts a block opener
-indented one to three spaces; Carve requires column zero and reads the indented
-line as paragraph text. A document that hits this is already rendering wrongly
-in Carve, so it is a plain correctness problem rather than a portability one.
+`carve2 fmt --check file.crv` checks whether the source is in the writer's canonical form. It does not replace a render check when changing indentation or blank lines; compare the HTML of representative pages after a migration. See [writer and fmt](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md).
