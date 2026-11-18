@@ -194,7 +194,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
-| U-116 | Tilde fence **SILENT** | &lt;p&gt;~~~js ⏎ x ⏎ ~~~&lt;/p&gt; | &#96;&#96;&#96;js ⏎ x ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
+| U-116 | Tilde fence **SILENT** | &lt;p&gt;~~~js ⏎ x ⏎ ~~~&lt;/p&gt;; `block-marker-as-text` reports the refused fence candidate | &#96;&#96;&#96;js ⏎ x ⏎ &#96;&#96;&#96; ⏎ ; rewrite |
 | U-117 | List of task items next to a list of plain items **SILENT** | &lt;ul class="task-list"&gt; ⏎ &lt;li class="task"&gt;&lt;input type="checkbox" disabled … | - [ ] a ⏎ ⏎ ⏎ ⏎ - b ⏎ ; rewrite |
 | U-118 | Uppercase marker with a dot and one space | &lt;p&gt;II. Background&lt;/p&gt; | Keep it; none |
 | U-119 | List marker left of every open list under item text | &lt;ul&gt; ⏎ &lt;li&gt;a&lt;/li&gt; ⏎ &lt;li&gt;b&lt;/li&gt; ⏎ &lt;/ul&gt; | Keep it; none |

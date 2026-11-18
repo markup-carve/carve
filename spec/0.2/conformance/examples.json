@@ -87485,7 +87485,8 @@
                 "type": "text",
                 "value": "note"
                }
-              ]
+              ],
+              "number": 1
              },
              {
               "type": "text",

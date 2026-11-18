@@ -59,8 +59,8 @@
       ],
       "message_origin": "engine_0_1",
       "change": "also a brace line that is not a valid one-line attribute line",
-      "reports": "a paragraph whose first text, after leading spaces and tabs, starts with a run of three or more colons or with `{.` or `{#`, a div opener or an attribute line that did not open, as `:::note` with the name glued to the run (C2-B-119), once per paragraph on its first line; and, by the row's change, a paragraph line that, after leading spaces and tabs, starts with `{` followed by `.`, `#`, `_` or an ASCII letter and is no valid attribute line, as `{a=}` (C2-B-090), once per line; a colon line that `fence-title-syntax` reports and a line that a list-indent rule reports are left to those rules (C2-B-119, C2-B-090)",
-      "clauses": ["C2-B-119", "C2-B-090"]
+      "reports": "a paragraph whose first text, after leading spaces and tabs, starts with a run of three or more colons, a run of three or more tildes (a refused code fence candidate under C2-B-108), or with `{.` or `{#`, a div opener or an attribute line that did not open, as `:::note` with the name glued to the run (C2-B-119), once per paragraph on its first line; and, by the row's change, a paragraph line that, after leading spaces and tabs, starts with `{` followed by `.`, `#`, `_` or an ASCII letter and is no valid attribute line, as `{a=}` (C2-B-090), once per line; a colon line that `fence-title-syntax` reports and a line that a list-indent rule reports are left to those rules (C2-B-108, C2-B-119, C2-B-090)",
+      "clauses": ["C2-B-108", "C2-B-119", "C2-B-090"]
     },
     {
       "id": "block-opener-overindented",
@@ -167,7 +167,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "kept",
-      "messages": ["Dropped the authored attribute ${key}: the name is reserved for roundtrip import"],
+      "messages": [{"when": "every finding of this code", "text": "Dropped the authored attribute ${key}: the name is reserved for roundtrip import"}],
       "message_origin": "engine_0_1",
       "reports": "an authored attribute with a reserved carrier name (C2-H-116)",
       "clauses": ["C2-H-116", "C2-H-132"]
@@ -630,7 +630,7 @@
       "severity": "warning",
       "channel": "parse",
       "status": "kept",
-      "messages": ["Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins."],
+      "messages": [{"when": "every finding of this code", "text": "Duplicate footnote definition [^${label}] is ignored; the first definition for a label wins."}],
       "message_origin": "engine_0_1",
       "channel_reports": "a second footnote definition for a key (C2-B-085)",
       "reports": "a footnote definition whose key, folded as C2-I-079 says, is the key of an earlier footnote definition of the same file, once per later definition; the first one wins, keys that differ only in case are different keys, and a definition-shaped line inside a container is text and takes no part (C2-B-085, C2-I-079, C2-B-081, C2-N-060)",
@@ -642,7 +642,7 @@
       "channel": "parse",
       "status": "renamed",
       "renamed_from": "duplicate-heading-id",
-      "messages": ["Duplicate authored id \"${explicit}\": the first node in document order wins id lookup. Change one id."],
+      "messages": [{"when": "every finding of this code", "text": "Duplicate authored id \"${explicit}\": the first node in document order wins id lookup. Change one id."}],
       "message_origin": "data_file",
       "channel_reports": "a second node with one authored id (C2-A-039)",
       "change": "renamed from `duplicate-heading-id`; covers a duplicate authored id on every node (C2-A-039)",
@@ -785,11 +785,11 @@
       "severity": "warning",
       "channel": "parse",
       "status": "kept",
-      "messages": [{"when": "an anonymous div opener has unrecognized further words after the fence run", "text": "These words are not part of the anonymous div opener; it opens without them. Remove the words or use a named div."}, {"when": "a code fence has a valid quoted title followed by further words", "text": "These words follow a valid title and are not part of the code fence opener. Remove them or put them in the block body."}, {"when": "a code fence type is followed by typographic quotation marks around a title", "text": "The title after \"${type}\" uses typographic quotes. Check whether a smart quote filter changed the source; a fence title needs straight double quotes: ${fence} ${type} \"${title}\"${label}."}, {"when": "a code fence type is followed by unquoted title text", "text": "Text after \"${type}\" must be a quoted title or a [label]; it is not read as a title. Write ${fence} ${type} \"${title}\"${label}."}, {"when": "further words after a raw format, div name (including a tab before later words) or sigil, a title after a label, a spaced brace block, or a character glued to a type that is no valid attribute block", "text": "These further words are not read as a title, label or attributes. The block opens without them. Use \"${correctedOpener}\" for the same block with only valid opener parts; put attributes on their own line above it."}, {"when": "a second space follows the backtick fence run, or a tab immediately behind that run leaves the language empty", "text": "The whitespace in this fence opener is invalid: at most one space follows the fence, and info-string parts use spaces, never tabs. The block opens with no language; write \"${respaced}\"."}, {"when": "a tab separates a parsed code-fence language from later info-string parts", "text": "The tab does not separate valid info-string parts; the block keeps its language, but does not keep the later title or label. Use \"${respaced}\" with spaces between parts."}, {"when": "any other reported further words not covered by an earlier condition", "text": "These further words are not part of the fence opener. Remove them or place them in the block body."}],
+      "messages": [{"when": "an anonymous div opener has unrecognized further words after the fence run", "text": "These words are not part of the anonymous div opener; it opens without them. Remove the words or use a named div."}, {"when": "a code fence has a valid quoted title followed by further words", "text": "These words follow a valid title and are not part of the code fence opener. Remove them or put them in the block body."}, {"when": "a code fence type is followed by typographic quotation marks around a title", "text": "The title after \"${type}\" uses typographic quotes. Check whether a smart quote filter changed the source; a fence title needs straight double quotes: ${fence} ${type} \"${title}\"${label}."}, {"when": "a code fence type is followed by unquoted title text", "text": "Text after \"${type}\" must be a quoted title or a [label]; it is not read as a title. Write ${fence} ${type} \"${title}\"${label}."}, {"when": "further words after a raw format, div name (including a tab before later words) or sigil, a title after a label, a spaced brace block, or a character glued to a type that is no valid attribute block", "text": "These further words are not read as a title, label or attributes. The block opens without them. Use \"${correctedOpener}\" for the same block with only valid opener parts; put attributes on their own line above it."}, {"when": "a second space follows the backtick fence run, or a tab immediately behind that run leaves the language empty", "text": "The whitespace in this fence opener is invalid: at most one space follows the fence, and info-string parts use spaces, never tabs. The block opens with no language; write \"${respaced}\"."}, {"when": "a tab separates a parsed code-fence language from later info-string parts", "text": "The tab does not separate valid info-string parts; the block keeps its language, but does not keep the later title or label. Use \"${respaced}\" with spaces between parts."}],
       "message_notes": ["`${label}` is a space followed by the bracketed label when one is present, and the empty string otherwise.", "`${correctedOpener}` keeps the fence run and any valid type, title and label before the further words, omitting the further words; attributes go on their own line above it.", "`${respaced}` has one space after the fence run and between valid info-string parts, with no tab; where no info-string part is valid it is the fence run alone.", "`${fence}` is the authored fence run; `${type}` is the parsed code-fence language; `${title}` is the authored title text without its surrounding quotes when quoted, otherwise the later text proposed as a title. These values come from the reported opener; if a value is absent, substitute the empty string."],
       "message_origin": "data_file",
       "channel_reports": "an unquoted title or further words in an info string (C2-B-117)",
-      "reports": "the further words of a code fence or div opener, once per opener: what follows the run and the optional language word, raw format, div name or sigil and is not a title in straight double quotes and then a label in brackets, in that order, such as an unquoted or typographically quoted title, a title after the label, a brace block after a space, a character glued to the word that starts no valid attribute block, any text after the format of a raw fence or after a sigil, and the text after a second space behind a backtick run; the range runs from the first character of the further words to the end of the opener line text (C2-B-122, C2-B-117, C2-B-225)",
+      "reports": "the further words of a code fence or div opener, once per opener: what follows the run and the optional language word, raw format, div name or sigil and is not a title in straight double quotes and then a label in brackets, in that order, such as an unquoted or typographically quoted title, a title after the label, a brace block after a space, a character glued to the word that starts no valid attribute block, any text after the format of a raw fence or after a sigil, and the text after a second space or a tab behind a bare backtick run; the range runs from the first character of the further words (the tab itself for a bare-run tab) to the end of the opener line text (C2-B-122, C2-B-117, C2-B-225)",
       "clauses": ["C2-B-122", "C2-B-117", "C2-B-225"]
     },
     {
@@ -1317,7 +1317,7 @@
       "messages": ["Include \"${path}\" could not be resolved."],
       "message_origin": "engine_0_1",
       "reports": "an include directive that was not expanded, whatever the cause (C2-H-133, C2-N-070)",
-      "change": "a render loss only; the cause is reported by its own code in the parse channel (C2-N-061)",
+      "change": "a render loss only; the cause is reported by its own code in the parse channel (C2-N-061), so a render of an unexpanded include without a resolver reports both include-no-resolver and include-unresolved in their separate channels",
       "clauses": ["C2-H-133", "C2-N-070"]
     },
     {
@@ -1540,7 +1540,7 @@
       "severity": "warning",
       "channel": "render-loss",
       "status": "kept",
-      "messages": ["Dropped ${kind} raw format \"${format}\" while rendering ${target}"],
+      "messages": [{"when": "every finding of this code", "text": "Dropped ${kind} raw format \"${format}\" while rendering ${target}"}],
       "message_origin": "engine_0_1",
       "reports": "raw content in a format the target does not write (C2-H-054)",
       "clauses": ["C2-H-054", "C2-H-132"]
@@ -1888,9 +1888,7 @@
       "severity": "error",
       "channel": "parse",
       "status": "kept",
-      "messages": [
-        "The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop."
-      ],
+      "messages": [{"when": "every finding of this code", "text": "The ${opener} comment fence opened here has no closing fence and hides everything to the end of its container (or: the document). Add a closing ${opener} where the comment should stop."}],
       "message_origin": "engine_0_1",
       "channel_reports": "a comment block that runs to the end of its container (C2-B-111)",
       "change": "severity error; the block ends with its container (C2-B-111)",
