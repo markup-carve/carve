@@ -63,7 +63,7 @@ The outer fence above is documentation markup; the inner `js` fence is Carve sou
 An introduction paragraph.
 ```
 
-For a section, an attribute line can carry an id, such as `{#intro}`, above its heading. An include directive looks like `{{ chapter.crv #summary }}`.
+For a section, an attribute line can carry an id, such as `{#intro}`, above its heading. An include directive looks like <code>&#123;&#123; chapter.crv #summary &#125;&#125;</code>.
 
 An attribute line attaches to the next block only when its placement satisfies the block rules. Includes expand only with an enabled resolver and a permitted root. See [attributes](./blocks-and-attributes) and [includes](./include-files).
 
