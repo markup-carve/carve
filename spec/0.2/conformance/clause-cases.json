@@ -15798,6 +15798,42 @@
    "from": []
   },
   {
+   "id": "CC-262",
+   "clauses": [
+    "C2-I-088"
+   ],
+   "why": "C2-I-088: The attribute blocks glued to it follow as C2-I-085 says, in the fixed order: `[^x]{.c}{#i}` gives `<p>[^x]{#i .c}</p>`, where 0.1 wrote them as typed (U-207).",
+   "summary": "an unresolved footnote reference writes its attribute blocks in the fixed order",
+   "input": "a [^x]{ .c }{#i}",
+   "options": {},
+   "expected": {
+    "html": "<p>a [^x]{#i .c}</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "footnote_ref",
+        "key": "x",
+        "namespace": "footnote",
+        "attrs": {
+         "id": "i",
+         "classes": [
+          "c"
+         ]
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
    "id": "CC-280",
    "clauses": [
     "C2-B-042",
@@ -17733,42 +17769,6 @@
        }
       ],
       "generatedId": "getting-started"
-     }
-    ]
-   },
-   "from": []
-  },
-  {
-   "id": "CC-262",
-   "clauses": [
-    "C2-I-088"
-   ],
-   "why": "C2-I-088: The attribute blocks glued to it follow as C2-I-085 says, in the fixed order: `[^x]{.c}{#i}` gives `<p>[^x]{#i .c}</p>`, where 0.1 wrote them as typed (U-207).",
-   "summary": "an unresolved footnote reference writes its attribute blocks in the fixed order",
-   "input": "a [^x]{ .c }{#i}",
-   "options": {},
-   "expected": {
-    "html": "<p>a [^x]{#i .c}</p>",
-    "children": [
-     {
-      "type": "paragraph",
-      "children": [
-       {
-        "type": "text",
-        "value": "a "
-       },
-       {
-        "type": "footnote_ref",
-        "key": "x",
-        "namespace": "footnote",
-        "attrs": {
-         "id": "i",
-         "classes": [
-          "c"
-         ]
-        }
-       }
-      ]
      }
     ]
    },
@@ -56556,6 +56556,170 @@
       ]
      }
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1213",
+   "clauses": [
+    "C2-W-028",
+    "C2-B-038",
+    "C2-B-039",
+    "C2-B-049"
+   ],
+   "why": "C2-W-028: Adjacent ordered lists of different styles are separated in the same way when the first written marker of the second would be a sibling of the first list (C2-B-038, C2-B-039, C2-B-049); otherwise they need no extra blank lines.",
+   "summary": "writer separates alpha and roman lists when i would join alpha",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "first"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "second"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a. first\n\n\n\ni. second\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1214",
+   "clauses": [
+    "C2-B-044"
+   ],
+   "why": "C2-B-044: `ordered-list-kind-split` reports a split after a one-letter first marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, when the next list has the other letter style in the same case and begins with fewer than three blank lines between them.",
+   "summary": "delimiter change alone does not trigger ordered style split warning",
+   "kind": "lint",
+   "input": "v. a\nv) b\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "ordered-list-kind-split"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1215",
+   "clauses": [
+    "C2-W-028",
+    "C2-B-038",
+    "C2-B-039",
+    "C2-B-049"
+   ],
+   "why": "C2-W-028: Adjacent ordered lists of different styles are separated in the same way when the first written marker of the second would be a sibling of the first list (C2-B-038, C2-B-039, C2-B-049); otherwise they need no extra blank lines.",
+   "summary": "writer keeps adjacent lists when ii cannot join alpha",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "first"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": ".",
+       "start": 2
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "second"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a. first\nii. second\n"
    },
    "from": []
   }
