@@ -10,6 +10,7 @@ Build `carve-js` on `next2` with `npm ci` and `npm run build`. Its 0.2 CLI is `n
 node dist/cli2.js upgrade --check page.crv
 node dist/cli2.js upgrade --json page.crv
 node dist/cli2.js upgrade --write page.crv
+node dist/cli2.js fmt --write page.crv
 ```
 
 `--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope) does not require it.
@@ -18,7 +19,7 @@ Read `rewrite`, `escape`, `report`, `upgrade-conflict`, and `upgrade-mismatch` r
 
 ## Common source rewrites
 
-These pairs are outputs measured with `carve2 upgrade` on 0.1 input. The left fences show old source, not 0.2 examples.
+These pairs were measured with `carve2 upgrade` on 0.1 input, then formatted with `carve2 fmt`. The left fences show old source, not 0.2 examples.
 
 A heading after a paragraph needs a blank line (`U-001`):
 
