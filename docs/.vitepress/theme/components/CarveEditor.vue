@@ -14,7 +14,7 @@ import {
 } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess, isolateHistory } from '@codemirror/commands'
 import type { Command } from '@codemirror/view'
-import { parse } from '@markup-carve/carve'
+import { parse } from '../../engine-v2.js'
 import {
   BARE_CONTINUATION_MARKER,
   bareMarkerItem,
@@ -62,6 +62,22 @@ const tokenField = StateField.define<DecorationSet>({
     return tr.docChanged ? deco.map(tr.changes) : deco
   },
   provide: (f) => EditorView.decorations.from(f),
+})
+
+// The pinned 0.1 TextMate grammar predates 0.2 equals headings. Apply the
+// 0.2 heading color as a line decoration while retaining its other tokens.
+function headingDecorations(doc: Text): DecorationSet {
+  const lines = []
+  for (let number = 1; number <= doc.lines; number++) {
+    const line = doc.line(number)
+    if (/^={1,6} [^=]/.test(line.text)) lines.push(Decoration.line({ class: 'cm-v2-heading' }).range(line.from))
+  }
+  return Decoration.set(lines)
+}
+const headingField = StateField.define<DecorationSet>({
+  create: state => headingDecorations(state.doc),
+  update: (decorations, transaction) => transaction.docChanged ? headingDecorations(transaction.state.doc) : decorations,
+  provide: field => EditorView.decorations.from(field),
 })
 
 const markCache = new Map<string, Decoration>()
@@ -382,6 +398,7 @@ const theme = EditorView.theme({
   },
   '.cm-gutter.cm-lineNumbers .cm-gutterElement': { padding: '0 0.5rem 0 0' },
   '.cm-activeLine': { background: 'var(--vp-c-default-soft)' },
+  '.cm-v2-heading': { color: 'var(--vp-c-brand-1)', fontWeight: '700' },
   '.cm-activeLineGutter': { background: 'transparent', color: 'var(--vp-c-text-2)' },
   '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
     background: 'var(--vp-c-brand-soft) !important',
@@ -423,6 +440,7 @@ onMounted(() => {
         wrapping.of(props.wrap ? EditorView.lineWrapping : []),
         EditorView.contentAttributes.of({ spellcheck: 'false', 'aria-label': 'Carve source' }),
         tokenField,
+        headingField,
         theme,
         carveDiagnostics,
         carveCompletion,
@@ -554,6 +572,11 @@ defineExpose({
   color: var(--shiki-dark) !important;
   font-style: var(--shiki-dark-font-style, inherit) !important;
   font-weight: var(--shiki-dark-font-weight, inherit) !important;
+}
+.carve-editor .cm-v2-heading span[style],
+.dark .carve-editor .cm-v2-heading span[style*='--shiki-dark'] {
+  color: var(--vp-c-brand-1) !important;
+  font-weight: 700 !important;
 }
 .carve-editor .cm-carve-diff-add {
   color: #22863a;

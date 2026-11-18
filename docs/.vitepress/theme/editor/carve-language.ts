@@ -4,7 +4,8 @@ import type { Text } from '@codemirror/state'
 import { EditorView, hoverTooltip, tooltips, type Tooltip } from '@codemirror/view'
 import { linter, type Diagnostic as LintDiagnostic } from '@codemirror/lint'
 import { autocompletion, type CompletionContext, type CompletionResult } from '@codemirror/autocomplete'
-import { analyzeCarve, completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
+import { completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
+import { lint } from '../../engine-v2.js'
 
 type Position = { line: number; character: number }
 
@@ -18,27 +19,20 @@ function toPosition(doc: Text, offset: number): Position {
   return { line: line.number - 1, character: offset - line.from }
 }
 
-const SEVERITY: Record<number, LintDiagnostic['severity']> = { 1: 'error', 2: 'warning', 3: 'info', 4: 'hint' }
-
 export const carveDiagnostics = linter(
   (view) => {
     const doc = view.state.doc
-    let diagnostics
     try {
-      diagnostics = analyzeCarve(doc.toString()).diagnostics
+      return lint(doc.toString()).map((d): LintDiagnostic => ({
+        from: Math.min(doc.length, d.range.startOffset),
+        to: Math.max(Math.min(doc.length, d.range.startOffset), Math.min(doc.length, d.range.endOffset)),
+        severity: d.severity === 'error' ? 'error' : d.severity === 'hint' ? 'hint' : 'warning',
+        message: d.message,
+        source: `carve 0.2 ${d.code}`,
+      }))
     } catch {
       return []
     }
-    return diagnostics.map((d): LintDiagnostic => {
-      const from = toOffset(doc, d.range.start)
-      return {
-        from,
-        to: Math.max(from, toOffset(doc, d.range.end)),
-        severity: SEVERITY[d.severity ?? 2] ?? 'warning',
-        message: d.message,
-        source: d.code === undefined ? 'carve' : `carve ${d.code}`,
-      }
-    })
   },
   { delay: 400 },
 )

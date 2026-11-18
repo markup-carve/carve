@@ -5,7 +5,7 @@
 // whose render would change is left alone.
 import type { EditorState, Text } from '@codemirror/state'
 import type { Command, EditorView } from '@codemirror/view'
-import { carveToHtml } from '@markup-carve/carve'
+import { render } from '../../engine-v2.js'
 
 interface Cell {
   opener: string
@@ -125,7 +125,7 @@ function formatRows(rows: Row[]): string[] {
 // Padding only moves whitespace, which HTML text collapses; structure and
 // content must match. A row of only blank cells is text, so it differs here.
 function renderSame(before: string, after: string): boolean {
-  const html = (text: string) => carveToHtml(text).replace(/\s+/g, ' ')
+  const html = (text: string) => render(text).replace(/\s+/g, ' ')
   try {
     return html(before) === html(after)
   } catch {

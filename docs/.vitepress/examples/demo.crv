@@ -1,18 +1,139 @@
-= Carve 0.2 playground
+---
+title: Carve Feature Demo
+date: 2026-11-18
+tags: [demo, reference]
+---
 
-Edit this source to see the HTML, tree JSON, lint results, and canonical form.
+= Carve Feature Demo
 
-== Inline text
+%% This file demonstrates Carve 0.2. Comments do not render.
 
-Use /emphasis/, *strong text*, and `code`. Link to [the specification](https://github.com/markup-carve/carve/tree/next2/spec/0.2).
+A document with the core constructs in one place. Edit a line to see the preview and the four output views change.
 
-== Lists and tables
+== Headings and attributes
 
-- First item
-- Second item
+{#section .featured}
+=== A heading with an id and a class
 
-|= Name |= Quantity |
-| Apples | 3 |
-| Pears | 5 |
+Headings can also be written with hash markers:
 
-> A quote in a document.
+```carve
+{#setup .lead}
+## Setup
+```
+
+== Inline formatting
+
+Use /emphasis/, *strong text*, {_underline_}, {~strike~}, and {=highlight=}.
+Use `inline code`, H{,2,}O and x{^2^}. An escaped * is literal.
+
+An [inline link](https://example.com), an <https://example.com> autolink, and a reference [link][site] all work.
+A cross-reference points to </#section>.
+
+[site]: https://example.com "Reference definition"
+
+An image can carry alt text and a caption:
+
+![A simple diagram](images/diagram.png)
+^ Figure #: A diagram in the documentation.
+
+A raw inline span can contain `<kbd>Enter</kbd>`{=html}; it remains escaped while raw HTML is off.
+Editorial marks can show {+inserted words+} and {-deleted words-}.
+
+== Lists and tasks
+
+- apples
+- oranges
+  - clementines
+  - blood oranges
+- pears
+
+. clone the repo
+. preview the result
+. share a link
+
+- [x] write the grammar
+- [ ] try an edit
+
+== Descriptions and quotes
+
+:: Carve
+: A markup language for documents and the web.
+:: 0.2
+: The version this playground renders.
+
+> A quote keeps its own paragraph.
+> Another line follows it.
+
+== Tables
+
+|= Fruit |={>} Price |={~} Stock |
+| Apple  | 1.20      | In        |
+| Banana | 0.50      | In        |
+| Pear   | 2.00      | Out       |
+^ A compact table with aligned columns.
+
+A CSV fence can also provide tabular data:
+
+{table}
+```csv
+Fruit,Quantity
+Apple,3
+Pear,5
+```
+
+== Code, math, and callouts
+
+```js
+const greeting = 'Hello, Carve!'
+console.log(greeting)
+```
+
+A title on a code fence names the example:
+
+```python "greet.py"
+def greet(name):
+    return f"Hello, {name}!"
+```
+
+A Mermaid fence becomes a diagram in the browser:
+
+```mermaid
+flowchart LR
+  A[Write] --> B[Preview]
+  B --> C[Share]
+```
+
+Inline math can be written as $`e = mc^2`, and display math as:
+
+$$`e^{i\pi} + 1 = 0`
+
+::: note "A note"
+This callout is a container with a title.
+:::
+
+::: tip
+Try the Format button to rewrite this document with the 0.2 writer.
+:::
+
+== Footnotes and raw HTML
+
+A footnote can explain a detail.[^note]
+
+[^note]: Footnotes render after the document.
+
+A block comment is visible in the editor and absent from HTML:
+
+%%%
+This note does not render.
+%%%
+
+Raw HTML is off by default. The option can be enabled for trusted local source.
+
+```=html
+<details><summary>Raw HTML example</summary>Only trusted source should enable this.</details>
+```
+
+***
+
+The end of the demo.
