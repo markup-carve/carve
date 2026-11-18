@@ -722,3 +722,11 @@
     gap: 16px;
   }
 }
+/* Keep the status visible above the documentation navigation. */
+.docs-dev-banner {
+  padding: 0.4rem 1rem;
+  text-align: center;
+  color: #fff;
+  background: #8b4513;
+  font-weight: 600;
+}
