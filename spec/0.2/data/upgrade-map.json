@@ -2863,11 +2863,11 @@
     },
     {
       "id": "U-392",
-      "kind": "report",
+      "kind": "none",
       "group": "HTML attribute spelling",
       "from": "{CLASS=z}\n::: |\nverse\n:::\n",
-      "to": "",
-      "meaning02": "<div class=\"z line-block\">\n  <p>verse</p>\n</div> Attribute names are written once in their canonical case under C2-H-012 and C2-H-013. No source spelling yields the old uppercase `CLASS` output on this generated line-block class. Report the source range from the authored uppercase attribute key.",
+      "to": "{CLASS=z}\n::: |\nverse\n:::\n",
+      "meaning02": "<div class=\"z line-block\">\n  <p>verse</p>\n</div> Attribute names are written once in their canonical case under C2-H-012 and C2-H-013. HTML attribute names are not case-sensitive, so the tool compares them lowercased and the old `CLASS` output is the same attribute.",
       "toolEntry": "U-392",
       "silent": true
     },
