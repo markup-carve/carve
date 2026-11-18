@@ -64,27 +64,6 @@ const tokenField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 })
 
-// The pinned 0.1 TextMate grammar predates 0.2 equals headings. Read the
-// 0.2 tree so a heading-shaped line inside a code fence stays code colored.
-function headingDecorations(doc: Text): DecorationSet {
-  const lineNumbers = new Set<number>()
-  const visit = (node: { type?: string; pos?: { endLine?: number }; children?: unknown[] }): void => {
-    if (node.type === 'heading' && node.pos?.endLine) lineNumbers.add(node.pos.endLine)
-    for (const child of node.children ?? []) {
-      if (child && typeof child === 'object') visit(child as typeof node)
-    }
-  }
-  try { visit(parse(doc.toString())) } catch { return Decoration.none }
-  const lines = [...lineNumbers].sort((a, b) => a - b).map(number =>
-    Decoration.line({ class: 'cm-v2-heading' }).range(doc.line(number).from))
-  return Decoration.set(lines)
-}
-const headingField = StateField.define<DecorationSet>({
-  create: state => headingDecorations(state.doc),
-  update: (decorations, transaction) => transaction.docChanged ? headingDecorations(transaction.state.doc) : decorations,
-  provide: field => EditorView.decorations.from(field),
-})
-
 const markCache = new Map<string, Decoration>()
 const diffAddMark = Decoration.mark({ class: 'cm-carve-diff-add' })
 const diffRemoveMark = Decoration.mark({ class: 'cm-carve-diff-remove' })
@@ -403,7 +382,6 @@ const theme = EditorView.theme({
   },
   '.cm-gutter.cm-lineNumbers .cm-gutterElement': { padding: '0 0.5rem 0 0' },
   '.cm-activeLine': { background: 'var(--vp-c-default-soft)' },
-  '.cm-v2-heading': { color: 'var(--vp-c-brand-1)', fontWeight: '700' },
   '.cm-activeLineGutter': { background: 'transparent', color: 'var(--vp-c-text-2)' },
   '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': {
     background: 'var(--vp-c-brand-soft) !important',
@@ -445,7 +423,6 @@ onMounted(() => {
         wrapping.of(props.wrap ? EditorView.lineWrapping : []),
         EditorView.contentAttributes.of({ spellcheck: 'false', 'aria-label': 'Carve source' }),
         tokenField,
-        headingField,
         theme,
         carveDiagnostics,
         carveCompletion,
@@ -577,11 +554,6 @@ defineExpose({
   color: var(--shiki-dark) !important;
   font-style: var(--shiki-dark-font-style, inherit) !important;
   font-weight: var(--shiki-dark-font-weight, inherit) !important;
-}
-.carve-editor .cm-v2-heading span[style],
-.dark .carve-editor .cm-v2-heading span[style*='--shiki-dark'] {
-  color: var(--vp-c-brand-1) !important;
-  font-weight: 700 !important;
 }
 .carve-editor .cm-carve-diff-add {
   color: #22863a;
