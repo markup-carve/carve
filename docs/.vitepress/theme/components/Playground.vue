@@ -405,8 +405,8 @@ function getHighlighter(): Promise<unknown> {
   if (!highlighterPromise) {
     highlighterPromise = (async () => {
       const { createHighlighter } = await import('shiki')
-      // The repo's Carve TextMate grammar, so `language-carve` blocks highlight too.
-      const carveGrammar = (await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default
+      // The playground and the docs use the same 0.2 TextMate grammar.
+      const carveGrammar = { ...(await import('@markup-carve/carve-grammars/textmate/carve2.tmLanguage.json')).default, name: 'carve', aliases: ['crv', 'Carve'] }
       const csvGrammar = (await import('@markup-carve/carve-grammars/textmate/csv.tmLanguage.json')).default
       const tsvGrammar = (await import('@markup-carve/carve-grammars/textmate/tsv.tmLanguage.json')).default
       // The same Carve theme rules the docs code blocks get from carveMarkdown().
@@ -429,6 +429,7 @@ async function highlightCode(): Promise<void> {
   if (!codes.length) return
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const hl = (await getHighlighter()) as any
+  const { carveBlankLineTransformer } = await import('@markup-carve/carve-grammars/shiki/themes')
   const loaded: string[] = hl.getLoadedLanguages()
   for (const code of codes) {
     const pre = code.parentElement
@@ -441,7 +442,10 @@ async function highlightCode(): Promise<void> {
       const out = hl.codeToHtml(code.textContent ?? '', {
         lang,
         themes: { light: 'github-light', dark: 'github-dark' },
-        transformers: isLanguageDiff ? [diffCodeTransformer()] : [],
+        transformers: [
+          ...(isLanguageDiff ? [diffCodeTransformer()] : []),
+          ...(['carve', 'crv'].includes(lang.toLowerCase()) ? [carveBlankLineTransformer] : []),
+        ],
       }) as string
       const tmp = document.createElement('div')
       tmp.innerHTML = out
