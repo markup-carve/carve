@@ -43,13 +43,16 @@ const caseStudySidebar = [
   { text: '← Back to docs', link: '/get-started' },
 ]
 
-// If the repo is published at https://markup-carve.github.io/carve/
-// keep `base: '/carve/'`. If you publish from an org page repo named
-// `markup-carve.github.io`, change `base` to '/'.
+const docsBase = process.env.DOCS_BASE ?? '/carve/'
+const docsVersionText = process.env.DOCS_VERSION_TEXT
+const docsLatestBase = process.env.DOCS_LATEST_BASE ?? '/carve/'
+const docsOtherBase = process.env.DOCS_OTHER_BASE ?? '/carve/0.2/'
+const siteUrl = (base: string) => `https://markup-carve.github.io${base}`
+
 export default defineConfig({
   title: 'Carve',
   description: 'A markup language for structured documents.',
-  base: '/carve/',
+  base: docsBase,
   lang: 'en-US',
   // README.md is a GitHub-facing orientation file for people browsing the
   // docs/ source on GitHub; it is not a site page.
@@ -115,23 +118,30 @@ export default defineConfig({
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] })
 })()`,
     ],
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/carve/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${docsBase}logo.svg` }],
     ['meta', { name: 'theme-color', content: '#3c8772' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Carve' }],
     ['meta', { property: 'og:description', content: 'A markup language for structured documents.' }],
-    ['meta', { property: 'og:url', content: 'https://markup-carve.github.io/carve/' }],
-    ['meta', { property: 'og:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
+    ['meta', { property: 'og:url', content: siteUrl(docsBase) }],
+    ['meta', { property: 'og:image', content: `${siteUrl(docsBase)}og-image.svg` }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Carve' }],
     ['meta', { name: 'twitter:description', content: 'A markup language for structured documents.' }],
-    ['meta', { name: 'twitter:image', content: 'https://markup-carve.github.io/carve/og-image.svg' }],
+    ['meta', { name: 'twitter:image', content: `${siteUrl(docsBase)}og-image.svg` }],
   ],
 
   themeConfig: {
     nav: [
       { text: 'Get Started', link: '/get-started' },
       { text: 'Playground', link: '/playground' },
+      ...(docsVersionText ? [{
+        text: docsVersionText,
+        items: [
+          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase) },
+          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase) },
+        ],
+      }] : []),
       {
         text: 'Reference',
         items: [
@@ -318,7 +328,7 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: 'https://github.com/markup-carve/carve/edit/main/docs/:path',
+      pattern: `https://github.com/markup-carve/carve/edit/${process.env.DOCS_EDIT_BRANCH ?? 'main'}/docs/:path`,
       text: 'Edit this page on GitHub',
     },
 
