@@ -54877,7 +54877,7 @@
       "column": 1,
       "endLine": 2,
       "endColumn": 2,
-      "messageWhen": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter"
+      "messageWhen": "the line is inside frontmatter"
      }
     ]
    },
