@@ -178,11 +178,13 @@ marker must never show up in the file that holds it.
   comment, which renders nothing:
 
   ```carve
-  # Project
+  = Project
 
   %% #region requirements
+
   - PHP 8.3 or later
   - Composer 2.7
+
   %% #endregion requirements
   ```
 
@@ -248,7 +250,7 @@ server.listen(3000)
 the directive
 
 ```carve
-{{ src/server.js@region:start @code:js }}
+{{ src/server.js @region:start @code:js }}
 ```
 
 renders
@@ -279,8 +281,8 @@ server.listen(3000)
   code block exactly as it does to an authored fence:
 
   ```carve
-  {.diff title="server.js"}
-  {{ src/server.js@region:start @code:js }}
+  {.diff title=server.js}
+  {{ src/server.js @region:start @code:js }}
   ```
 
   renders `<pre class="diff" title="server.js">`. Extensions that read a code
@@ -317,8 +319,8 @@ server.listen(3000)
   </table>
   ```
 
-  Data with malformed quoting stays a code block, as it does in an authored
-  fence. Given an include root, `carve lint` reports the `delimited-table-*`
+  Data with an unclosed quote stays a table, as it does in an authored fence,
+  and `delimited-table-malformed` reports it. Given an include root, `carve lint` reports the `delimited-table-*`
   diagnostics for included data too (see
   [Linting included content](#linting-included-content)).
 - **Table rows and columns.** On a `{table}` CSV or TSV code include,
@@ -359,7 +361,7 @@ includes expand. The first step that matches wins:
 with `recipes.crv` containing
 
 ````carve
-# Pizza
+= Pizza
 
 {#dough}
 ```text
@@ -391,7 +393,7 @@ never both. `@shift:N` increases the level of **every** heading in the included
 content by `N`:
 
 ```carve
-{{ chapter.dj @shift:2 }}
+{{ chapter.crv @shift:2 }}
 ```
 
 - With `@shift:2`, an included `h1` becomes an `h3`, an `h2` becomes an `h4`, and
@@ -435,18 +437,18 @@ resulting level is clamped to `[1, 6]` with a Warning on clamp, the heading is
 kept and never dropped, ids and slugs are unchanged so cross-references still
 resolve, and section auto-numbering renumbers at the new level.
 
-Worked example - the including document has a `## Chapters` heading before the
+Worked example - the including document has a `== Chapters` heading before the
 directive, so `C = 2`:
 
 ```carve
-## Chapters
+== Chapters
 
 {{ chapter-one.crv @shift:auto }}
 ```
 
-`chapter-one.crv` starts at `# Chapter One`, so `T = 1` and
+`chapter-one.crv` starts at `= Chapter One`, so `T = 1` and
 `N = (2 + 1) - 1 = 2`. The child's `h1` renders as an `h3`, one level below the
-`## Chapters` heading that contains it.
+`== Chapters` heading that contains it.
 
 - **Content with no headings.** If the resolved content contains no headings,
   `auto` is a **no-op** (`N = 0`) and emits **no** Warning.
@@ -611,25 +613,25 @@ What runs:
 
 A finding in included content names the included file and a line and column in
 that file, plus the include chain that reached it, top-level directive first. A
-payload finding points at column 1 of the line where the offending record
-starts. Given `data/plans.csv`:
+payload finding points at the character it reports: for malformed quoting, the
+quote that is never closed. Given `data/plans.csv`:
 
 ~~~text
 Plan,Seats,Price
 Starter,1,"$0"
-Team,10,"$49" billed yearly
+Team,10,"$49 billed yearly
 ~~~
 
 and `doc.crv`:
 
+<!-- carve-sample {"includes":"malformed-csv","lint":"shows delimited-table-malformed in an included file"} -->
 ~~~carve
 {table}
 {{ data/plans.csv @code:csv }}
 ~~~
 
-the linter reports `delimited-table-malformed` at `data/plans.csv:3:1`, reached
-from the directive at `doc.crv:2:1`. Line 3 is the record whose quoting cannot
-be read.
+the linter reports `delimited-table-malformed` at `data/plans.csv:3:9`, the
+quote that is never closed, reached from the directive at `doc.crv:2:1`.
 
 A finding in included content is reported once per distinct file, line, column
 and rule; the first reach in document order supplies the chain. A file included
@@ -805,6 +807,7 @@ The specification is normative on the **outcome** and permissive on the
 
 Worked example - `snippet.crv` ends inside an unclosed fence:
 
+<!-- carve-sample {"skip":"the included file is unclosed on purpose"} -->
 ~~~carve
 Some text.
 
@@ -917,8 +920,10 @@ A reference in any **other** file keeps the name as written and reaches the
 first occurrence, which is how a child links to a target the parent defines. A
 fragment link to an id its own file does not define is never rewritten.
 
+<!-- carve-sample {"lint":"the child repeats the parent's id on purpose"} -->
 ```carve
 %% parent.crv
+
 {#tip}
 Keep the dough cold.
 
@@ -927,6 +932,7 @@ Keep the dough cold.
 
 ```carve
 %% child.crv
+
 {#tip}
 Rest it overnight.
 
@@ -961,6 +967,7 @@ file's references resolve to its own definition:
 
 ```carve
 %% parent.crv
+
 See [a][].
 
 [a]: /PARENT
@@ -968,6 +975,7 @@ See [a][].
 
 ```carve
 %% child.crv
+
 See [a][].
 
 [a]: /CHILD

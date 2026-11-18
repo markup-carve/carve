@@ -23,6 +23,8 @@
     "docs:dev": "node scripts/publish-schema.mjs && npm run docs:pages && vitepress dev docs",
     "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs tests/ast-schema.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "docs:samples:check": "node scripts/docs-samples-check.mjs",
+    "docs:layout:check": "node scripts/docs-layout-check.mjs",
     "corpus:build": "node scripts/generate-corpus.mjs",
     "docs:pages": "node scripts/generate-example-pages.mjs && node scripts/spec-rule-index.mjs --write",
     "deps:map": "node tools/dependency-map.mjs",
