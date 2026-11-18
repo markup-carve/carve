@@ -1,109 +1,15 @@
 ---
-description: Where the three reference engines stand on render speed, and how the benchmark is measured.
+description: How 0.2 performance will be measured.
 ---
 
 # Performance
 
-Where the three engine implementations stand on raw HTML-rendering
-throughput, and how they compare to their Markdown / CommonMark / Djot
-counterparts in the same language.
+The 0.2 reference engine and specification are still changing. The 0.1 throughput figures previously published here used different syntax and implementations, so they are not 0.2 results. New numbers will follow a 0.2 benchmark rerun.
 
-This page is about **speed**. For **correctness and conformance** across the
-implementations, see [Implementation Comparison](/implementation-comparison-methodology),
-which is a different axis (corpus pass rate, cross-implementation diffs,
-extension-hook surface).
+## Benchmark method
 
-> [!NOTE]
-> Throughput numbers are **machine- and load-dependent**. Absolute MB/s drift
-> between runs on a loaded machine; the **ratios** between engines on the same
-> run are the stable signal. Treat the tables as "carve is roughly X% of
-> engine Y", not as a fixed MB/s guarantee.
+Measure the same valid 0.2 source across implementations at the same spec pin. Record the source size in bytes, engine commit, runtime version, machine, command or API used, warmup, trial count and summary statistic. Keep process startup separate from in-process render time. Measure parse, HTML render and canonical formatting separately. For import, use the same HTML source and importer options.
 
-## Methodology
+For growth checks, use several input sizes and report both elapsed time and output agreement with the [0.2 corpus](./conformance). A fast renderer that produces a different result is not a comparable implementation. The [writer's work bound](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#the-writer-and-its-two-gates) and the [specified limits](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/limits.json) are separate conformance requirements, not throughput claims.
 
-- **Input:** a ~48 KB document of core syntax (headings, nested lists,
-  `**bold**` / `*italic*` / `` `code` ``, links, a GFM table, a blockquote,
-  a fenced code block, reference links) repeated to size. The same logical
-  content is used for every language so the comparison is apples-to-apples.
-- **Measurement:** in-process, warm (discard the first iterations), then
-  min-of-5-trials of an N-iteration loop. Minimum (not mean) is used to reject
-  scheduler noise on a loaded machine.
-- **Metric:** `MB/s = input_bytes / wall_time`.
-- **carve config:** core conversion (no extensions). Extensions add a small,
-  measurable overhead.
-- The throughput benchmark harnesses are kept out of this repo (they pull in
-  every competing engine as a dependency). Each implementation ships its own
-  regression guard instead, listed under [Regression guards](#regression-guards).
-  For cross-engine render-speed comparisons (carve-js / carve-php / carve-rs), see
-  [carve-bench](https://github.com/markup-carve/carve-bench).
-
-## Inline pairing growth probe
-
-Run `npm run bench:inline` from this repo to measure the PART 9 §9 model on
-five generated families: unclosed combined, braced, and bracket candidates;
-nested braced spans; and combined tokens split and read again. Each family runs
-at 2,048, 8,192, and 32,768 lines. The script also runs any built sibling
-`carve-js`, `carve-php`, and `carve-rs` checkouts and compares their HTML with
-the model. Set `CARVE_JS_DIR`, `CARVE_PHP_DIR`, or `CARVE_RS_DIR` for checkouts
-elsewhere. JS needs `dist/cli.js`, PHP needs `vendor/autoload.php`, and Rust
-needs a checkout-matching binary. Missing checkouts are skipped.
-
-For a fast smoke run, use `npm run bench:inline -- --quick`; `--model-only`
-skips engines and `--family=split-combined` selects one family. Times are wall
-milliseconds for parse plus HTML render; engine times also include CLI startup.
-This probe records growth and output agreement, while the throughput figures
-above use a separate warm in-process methodology.
-
-## Snapshot (2026-06-22)
-
-Each carve engine against the Djot and CommonMark engine in the same language.
-
-| Language | carve | Djot | CommonMark |
-| --- | --- | --- | --- |
-| **Rust** | carve-rs **24.3** | jotdown 55.7 | comrak 58.7 / pulldown-cmark 181.4 |
-| **JS** | carve-js **4.5** | djot.js 9.1 | markdown-it 19.6 |
-| **PHP** | carve-php **1.08** | djot-php 1.48 | league/commonmark (GFM) 0.68 |
-
-*MB/s, ~48 KB input, min-of-5, same machine (variable load).*
-
-Ratios on this run:
-
-- **carve-rs** = ~44% of jotdown, ~13% of pulldown-cmark.
-- **carve-js** = ~49% of djot.js, ~23% of markdown-it.
-- **carve-php** = ~73% of djot-php, and **~1.6x league/commonmark** (the one
-  pairing where a carve engine is faster than the same-language CommonMark
-  engine, because league/commonmark is itself comparatively heavy).
-
-## Why carve trails the fastest engines
-
-carve builds a **full owned AST** (parse to a node tree, optionally transform
-it, then render), which is the architecture that makes the security defenses
-and the extension contract clean to implement. The fastest reference engines
-take a different shape:
-
-- **jotdown** and **pulldown-cmark** are near-zero-allocation event / pull
-  parsers: they stream tokens straight to the renderer and never materialize a
-  tree. That is structurally cheaper, and it is why pulldown-cmark is ~7x
-  carve-rs.
-- carve's parse phase allocates one owned `String` per text run, attribute,
-  and identifier, plus a `Vec` per container node. That allocation count, not
-  copy volume, is the dominant cost once the render hot path is tuned.
-
-The default path therefore remains more expensive than a pull parser. carve-rs
-and carve-js also expose a conservative streaming boundary
-(`try_render_html_streaming` / `tryRenderHtmlStreaming`) for render-only callers.
-It reports when a document needs the full AST and falls back without emitting
-partial output. The initial API returns one completed HTML chunk, so it defines
-the safe fast-path boundary but does not yet improve time to first byte.
-
-## Regression guards
-
-Each implementation guards against perf regressions in its own test suite
-(thresholds, not recorded MB/s):
-
-- **carve-rs:** `tests/perf_regressions.rs`
-- **carve-js:** `test/inline-position-perf.test.ts`,
-  `test/table-rowspan-perf.test.ts`
-- **carve-php:** `tests/benchmark/` (a runnable cross-language harness with its
-  own `README.md`; produces numbers on demand rather than a checked-in
-  snapshot)
+Results from released 0.1 engines remain useful only as 0.1 history. See [carve-bench](https://github.com/markup-carve/carve-bench) for benchmark harness work.
