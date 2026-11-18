@@ -372,6 +372,21 @@ jobs:
 
   # The generated conformance pack every engine runs at its spec pin
   # (docs/development.md). A model change that moves a pack case regenerates it.
+  next2-spec-sources:
+    name: Spec sources match their generated artifacts (next2)
+    # The conformance job skips next2, which also skipped these audits; the 0.1 sources and docs still ship there.
+    if: ${{ github.ref_name == 'next2' || github.base_ref == 'next2' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - run: npm run spec:check
+      - run: npm run spec:rules:check
+      - run: npm run roles:check
+
   conformance-pack:
     name: Conformance pack is current against the spec model
     runs-on: ubuntu-latest

@@ -93,7 +93,9 @@ export function updateFallbackViews(repo, write = false) {
   const path = resolve(repo, 'docs/ast-json-contract.md')
   const current = readFileSync(path, 'utf8')
   const marker = /<!-- BEGIN GENERATED AST FALLBACK MATRIX -->[\s\S]*?<!-- END GENERATED AST FALLBACK MATRIX -->/
-  const expected = marker.test(current) ? current.replace(marker, () => block) : `${current}\n${block}\n`
+  // On next2 the page documents the 0.2 tree, which has no PART 12 matrix; only a page with the markers carries it.
+  if (!marker.test(current)) return
+  const expected = current.replace(marker, () => block)
   if (current !== expected) {
     if (!write) throw new Error('AST fallback docs are stale; run npm run spec:write')
     writeFileSync(path, expected)
