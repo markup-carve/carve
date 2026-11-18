@@ -6,6 +6,7 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
+import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed } from './next2-readiness-classify.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -14,6 +15,7 @@ const limit = Number(process.argv.find(a => a.startsWith('--limit='))?.slice(8) 
 const jsonPath = resolve(root, process.argv.find(a => a.startsWith('--json='))?.slice(7) ?? '_readiness.json')
 const mdPath = resolve(root, process.argv.find(a => a.startsWith('--markdown='))?.slice(11) ?? '_readiness.md')
 const baselinePath = resolve(root, 'scripts/next2-readiness-baseline.json')
+const baselineOut = process.argv.find(a => a.startsWith('--baseline-out='))?.slice(15)
 const read = path => JSON.parse(readFileSync(resolve(spec, path), 'utf8'))
 const clauses = read('conformance/clause-cases.json').cases
 const examples = read('conformance/examples.json').examples
@@ -323,6 +325,7 @@ async function replay() {
   const all = [...sources]
   const selected = Number.isFinite(limit) ? all.slice(0, limit) : all
   const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, blockedIds: [], noMappedIds: [], samples: [] }
+  out.sourceDigests = groupDigests(all)
   for (const [id, source] of selected) {
     try {
       const r = upgrade(source)
@@ -369,58 +372,53 @@ for (const [engine, rows] of Object.entries(results)) {
 lines.push('', `Upgrade replay: ${upgrade.total} sources, ${upgrade.mismatches} mismatches, ${upgrade.noMappedRow} with no mapped row (${upgrade.noMappedShare}%), ${upgrade.blocked} blocked.`, '', `Runner wall time: ${report.durationSeconds} seconds.`)
 lines.push('', '| Engine | Lint ID | Range | Message |', '|---|---:|---:|---:|')
 for (const [engine, item] of Object.entries(lintAgreement)) lines.push(`| ${engine} | ${item.idPercent}% | ${item.rangePercent}% | ${item.messagePercent}% |`)
+
+// Gate: compare per case against the baseline. Counts, rule percentages and lint agreement are reported only.
+const sampled = Number.isFinite(limit)
+const stored = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, 'utf8')) : null
+if (stored && !stored.cases && !args.has('--write-baseline')) throw new Error('The readiness baseline has no per-case fingerprints (schema 1); regenerate it with --write-baseline')
+const baseline = stored?.cases ? stored : null
+const currentCases = Object.fromEntries(work.map(c => [caseKey(c), caseFingerprint(c, ruleById)]))
+const caseByKey = new Map(work.map(c => [caseKey(c), c]))
+const statusIds = listedGaps(readFileSync(resolve(spec, 'STATUS.md'), 'utf8'))
+const verdicts = {}
+if (baseline) for (const engine of ['js', 'php', 'rs']) {
+  verdicts[engine] = classify({ baselineCases: baseline.cases, baselineFailures: baseline.caseFailures[engine], currentCases, currentFailures: caseFailures[engine], listed: key => isListed(statusIds, caseByKey.get(key)) })
+  if (sampled) verdicts[engine].regressions = []
+}
+const upgradeVerdict = baseline && !sampled
+  ? classifyUpgrade({ baselineDigests: baseline.upgrade.sourceDigests, currentDigests: upgrade.sourceDigests, baselineIds: baseline.upgrade.blockedIds, currentIds: upgrade.blockedIds })
+  : { regressions: [], gaps: [] }
+const headMismatch = args.has('--baseline-heads') && baseline ? Object.keys(engineHeads).filter(engine => engineHeads[engine] !== baseline.engineHeads[engine]) : []
+const regressions = [
+  ...headMismatch.map(engine => `${engine}: checked out ${engineHeads[engine]}, the baseline names ${baseline.engineHeads[engine]}`),
+  ...Object.entries(verdicts).flatMap(([engine, v]) => v.regressions.map(r => `${engine}/${r.key}: ${r.old} became ${r.now}`)),
+  ...upgradeVerdict.regressions.map(id => `upgrade: newly blocked source ${id}`),
+]
+report.verdict = { regressions, engines: verdicts, upgrade: upgradeVerdict, listedIds: [...statusIds].sort() }
+if (baseline) {
+  const sample = (rows, n = 40) => rows.slice(0, n).map(r => '`' + r.key + '` (' + (r.reason ?? r.old) + (r.now ? ', ' + r.now : '') + ')').join(', ') + (rows.length > n ? `, and ${rows.length - n} more` : '')
+  lines.push('', '## Baseline comparison', '', 'Regressions fail the job: a case whose input and expectation match the baseline and that now does worse. New cases and cases whose expectation changed are expected engine gaps. Listed gaps are named in the "Engine gaps" sections of `spec/0.2/STATUS.md`.', '')
+  lines.push('| Engine | Regressions | Gaps listed | Gaps unlisted | Known failures | Newly passing | New cases | Changed cases |', '|---|---:|---:|---:|---:|---:|---:|---:|')
+  for (const [engine, v] of Object.entries(verdicts)) lines.push(`| ${engine} | ${v.regressions.length} | ${v.gaps.listed.length} | ${v.gaps.unlisted.length} | ${v.known.length} | ${v.improved.length} | ${v.added} | ${v.changed} |`)
+  lines.push('', `Upgrade replay: ${upgradeVerdict.regressions.length} regressions, ${upgradeVerdict.gaps.length} newly blocked sources in new or changed files.`)
+  for (const [engine, v] of Object.entries(verdicts)) {
+    if (v.regressions.length) lines.push('', `${engine} regressions: ${sample(v.regressions)}.`)
+    if (v.gaps.listed.length) lines.push('', `${engine} listed gaps: ${sample(v.gaps.listed)}.`)
+    if (v.gaps.unlisted.length) lines.push('', `${engine} unlisted gaps: ${sample(v.gaps.unlisted)}.`)
+    if (v.improved.length) lines.push('', `${engine} newly passing: ${sample(v.improved)}.`)
+  }
+  if (headMismatch.length) lines.push('', `Engine checkout differs from the baseline heads: ${headMismatch.join(', ')}.`)
+}
 writeFileSync(jsonPath, JSON.stringify(report, null, 2) + '\n')
 writeFileSync(mdPath, lines.join('\n') + '\n')
 console.log(lines.join('\n'))
-const statusRank = { unsupported: 0, fail: 1, pass: 2 }
-function baselineDrops(baseline, allowLegacy = false) {
-  const drops = []
-  for (const engine of ['js', 'php', 'rs']) for (const area of Object.keys(counts[engine])) {
-    const now = counts[engine][area], old = baseline.counts[engine][area]
-    if (!old) { drops.push(`${engine}/${area}: absent from baseline`); continue }
-    if (now.pass < old.pass || now.fail > old.fail || now.unsupported > old.unsupported) drops.push(`${engine}/${area}: ${JSON.stringify(now)} below ${JSON.stringify(old)}`)
-  }
-  for (const engine of ['js', 'php', 'rs']) for (const key of ['idPercent', 'rangePercent', 'messagePercent']) {
-    if (lintAgreement[engine][key] < baseline.lintAgreement[engine][key]) drops.push(`${engine} lint ${key} fell below baseline`)
-  }
-  if (upgrade.total < baseline.upgrade.total || upgrade.blocked > baseline.upgrade.blocked || upgrade.mismatches > baseline.upgrade.mismatches || upgrade.noMappedRow > baseline.upgrade.noMappedRow) drops.push('upgrade replay dropped below baseline')
-  for (const engine of ['js', 'php', 'rs']) {
-    const oldFailures = baseline.caseFailures?.[engine]
-    if (!oldFailures) { if (!allowLegacy) drops.push(`${engine}: case outcomes absent from baseline`); continue }
-    for (const [key, status] of Object.entries(caseFailures[engine])) {
-      const old = oldFailures[key] ?? 'pass'
-      if (statusRank[status] < statusRank[old]) drops.push(`${engine}/${key}: ${old} became ${status}`)
-    }
-    const oldRules = baseline.catalogRules?.[engine]
-    if (!oldRules) { if (!allowLegacy) drops.push(`${engine}: rule outcomes absent from baseline`); continue }
-    for (const [id, now] of Object.entries(catalogRules[engine])) {
-      const old = oldRules[id]
-      if (!old) continue
-      if (statusRank[now.status] < statusRank[old.status]) drops.push(`${engine}/catalog/${id}: ${old.status} became ${now.status}`)
-      for (const key of ['idPercent', 'rangePercent', 'messagePercent']) {
-        if (old[key] !== null && now[key] !== null && now[key] < old[key]) drops.push(`${engine}/catalog/${id}: ${key} fell below baseline`)
-      }
-    }
-  }
-  for (const [name, current] of [['blocked', upgrade.blockedIds], ['no mapped row', upgrade.noMappedIds]]) {
-    const prior = baseline.upgrade[name === 'blocked' ? 'blockedIds' : 'noMappedIds']
-    if (!prior) { if (!allowLegacy) drops.push(`upgrade ${name} source IDs absent from baseline`); continue }
-    const old = new Set(prior)
-    for (const id of current) if (!old.has(id)) drops.push(`upgrade ${name}: new source ${id}`)
-  }
-  return drops
-}
-if (args.has('--write-baseline')) {
-  if (existsSync(baselinePath)) {
-    const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
-    const drops = baselineDrops(baseline, true)
-    if (drops.length) throw new Error(`Cannot lower readiness baseline:\n${drops.join('\n')}`)
-  }
-  writeFileSync(baselinePath, JSON.stringify({ schema: 1, engineHeads, counts, lintAgreement, caseFailures, catalogRules, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow, blockedIds: upgrade.blockedIds, noMappedIds: upgrade.noMappedIds } }, null, 2) + '\n')
-} else if (Number.isFinite(limit)) {
-  console.log('Sampled run; baseline comparison skipped.')
-} else {
-  const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
-  const drops = baselineDrops(baseline)
-  if (drops.length) { console.error(drops.join('\n')); process.exitCode = 1 }
-}
+const nextBaseline = () => JSON.stringify({ schema: 2, engineHeads, cases: currentCases, caseFailures, counts, lintAgreement, catalogRules, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow, blockedIds: upgrade.blockedIds, noMappedIds: upgrade.noMappedIds, sourceDigests: upgrade.sourceDigests } }, null, 2) + '\n'
+if (sampled) console.log('Sampled run; baseline comparison skipped.')
+else if (baselineOut) writeFileSync(resolve(root, baselineOut), nextBaseline())
+if (regressions.length) console.error(`Readiness regressions:\n${regressions.join('\n')}`)
+if (regressions.length && args.has('--report-only') && process.env.GITHUB_ACTIONS) for (const line of regressions) console.log(`::warning title=Readiness regression::${line}`)
+if (args.has('--write-baseline') && !sampled) {
+  if (regressions.length && !args.has('--force')) throw new Error('Cannot write the readiness baseline over regressions; fix them, or pass --force and give the reason in the commit')
+  writeFileSync(baselinePath, nextBaseline())
+} else if (regressions.length && !args.has('--report-only')) process.exitCode = 1

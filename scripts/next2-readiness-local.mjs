@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // One local command to fetch the three next2 heads, build them, and run the readiness gate.
-import { existsSync, mkdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
@@ -9,6 +9,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
 const prepared = args.includes('--prepared')
 const forwarded = args.filter(arg => arg !== '--prepared')
+const pinned = args.includes('--baseline-heads')
+const baselineHeads = JSON.parse(readFileSync(resolve(root, 'scripts/next2-readiness-baseline.json'), 'utf8')).engineHeads
 const engines = [
   ['js', 'carve-js', 'CARVE_JS_DIR'],
   ['php', 'carve-php', 'CARVE_PHP_DIR'],
@@ -31,14 +33,14 @@ if (!prepared) {
     if (!existsSync(resolve(dir, '.git'))) {
       mkdirSync(dirname(dir), { recursive: true })
       run('git', ['clone', '--depth', '1', '--branch', 'next2', `https://github.com/markup-carve/${repository}.git`, dir])
-    } else {
-      const dirty = output('git', ['-C', dir, 'status', '--porcelain'])
-      if (dirty) throw new Error(`${dir} has local changes; use a clean checkout or set its CARVE_*_DIR variable`)
-      run('git', ['-C', dir, 'fetch', '--depth', '1', 'origin', 'next2'])
-      const head = output('git', ['-C', dir, 'rev-parse', 'HEAD'])
-      const next = output('git', ['-C', dir, 'rev-parse', 'FETCH_HEAD'])
-      if (head !== next) run('git', ['-C', dir, 'switch', '--detach', next])
     }
+    const dirty = output('git', ['-C', dir, 'status', '--porcelain'])
+    if (dirty) throw new Error(`${dir} has local changes; use a clean checkout or set its CARVE_*_DIR variable`)
+    // --baseline-heads replays the engine commits the baseline was measured on, as pull requests do.
+    run('git', ['-C', dir, 'fetch', '--depth', '1', 'origin', pinned ? baselineHeads[name] : 'next2'])
+    const head = output('git', ['-C', dir, 'rev-parse', 'HEAD'])
+    const next = output('git', ['-C', dir, 'rev-parse', 'FETCH_HEAD'])
+    if (head !== next) run('git', ['-C', dir, 'switch', '--detach', next])
   }
   run('npm', ['ci'], { cwd: dirs.js })
   run('npm', ['run', 'build'], { cwd: dirs.js })
