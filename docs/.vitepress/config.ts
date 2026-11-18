@@ -195,8 +195,8 @@ export default defineConfig({
       ...(docsVersionText ? [{
         text: docsVersionText,
         items: [
-          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase) },
-          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase) },
+          { text: process.env.DOCS_LATEST_LABEL ?? '0.1 (latest)', link: siteUrl(docsLatestBase), target: '_self' },
+          { text: process.env.DOCS_OTHER_LABEL ?? '0.2 (dev)', link: siteUrl(docsOtherBase), target: '_self' },
         ],
       }] : []),
     ],
