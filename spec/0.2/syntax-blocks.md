@@ -968,11 +968,11 @@ Example 29 (generated)
 
 **C2-B-041** The list starts at the value of its first marker.
 
-**C2-B-042** The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. A later marker of another style starts another list (C2-B-049).
+**C2-B-042** The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. Later markers are tested in the open list's style (C2-B-038, C2-B-039); a marker that does not match it starts another list (C2-B-049).
 
 **C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot is no marker when the text behind its required space starts with another dot and a space, so `. . . and then silence` is a paragraph. A task box behind the space is read only after this test (C2-B-229).
 
-**C2-B-044** A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024). `ordered-list-kind-split` reports a split after a one-letter first marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, when the next list begins with fewer than three blank lines between them. Three or more blank lines end the list on purpose (C2-B-052) and are not reported.
+**C2-B-044** A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024). `ordered-list-kind-split` reports a split after a one-letter first marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, when the next list begins with fewer than three blank lines between them. Three or more blank lines end the list on purpose (C2-B-052) and are not reported.
 
 The first marker is alphabetic, so the roman marker begins another list (C2-B-042).
 

@@ -15803,7 +15803,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first x. marker fixes its style and the next style splits the list",
    "input": "x.  a\nxi.  b",
    "options": {},
@@ -15872,7 +15872,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first i. marker fixes its style and the next style splits the list",
    "input": "i.  x\nj.  y",
    "options": {},
@@ -15940,7 +15940,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first c. marker fixes its style and the next style splits the list",
    "input": "c.  x\nci.  y",
    "options": {},
@@ -16009,7 +16009,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first V. marker fixes its style and the next style splits the list",
    "input": "V.  x\nVI.  y",
    "options": {},
@@ -16146,7 +16146,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "three blank lines keep v alphabetic and vi apart",
    "input": "v.  x\n\n\n\nvi.  y",
    "options": {},
@@ -16215,7 +16215,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "v.  x\n\n\nvi.  y",
    "options": {},
@@ -16365,7 +16365,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "v.  x\n    - n\nvi.  y",
    "options": {},
@@ -16525,7 +16525,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "a lazy line before vi leaves v alphabetic",
    "input": "v.  x\nlazy\nvi.  y",
    "options": {},
@@ -16600,7 +16600,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "v then vii splits into two lists",
    "input": "v.  x\nvii.  y",
    "options": {},
@@ -16669,7 +16669,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first i. marker fixes its style and the next style splits the list",
    "input": "> i.  x\n> j.  y",
    "options": {},
@@ -16742,7 +16742,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first v. marker fixes its style and the next style splits the list",
    "input": "- v.  x\n  vi.  y",
    "options": {},
@@ -16826,7 +16826,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "the first l) marker fixes its style and the next style splits the list",
    "input": "l)  x\nli)  y",
    "options": {},
@@ -46703,7 +46703,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "v then vii splits into an alphabetic and a roman list",
    "kind": "lint",
    "input": "v. a\nvii. b\n",
@@ -46726,7 +46726,7 @@
    "clauses": [
     "C2-B-044"
    ],
-   "why": "C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "v then vi splits into alphabetic and roman lists",
    "kind": "lint",
    "input": "v. a\nvi. b\n",
@@ -56140,7 +56140,7 @@
     "C2-B-042",
     "C2-B-044"
    ],
-   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker of another style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
+   "why": "C2-B-042: The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. C2-B-044: A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024).",
    "summary": "m then mi splits alphabetic and roman lists",
    "kind": "render",
    "input": "m. one\nmi. two",
@@ -56238,6 +56238,177 @@
          {
           "type": "text",
           "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1209",
+   "clauses": [
+    "C2-B-038",
+    "C2-B-042"
+   ],
+   "why": "C2-B-038: In a roman list a single roman letter is a sibling.",
+   "summary": "later v stays in a roman list",
+   "kind": "render",
+   "input": "i. one\nii. two\niii. three\niv. four\nv. five",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"i\">\n  <li>one</li>\n  <li>two</li>\n  <li>three</li>\n  <li>four</li>\n  <li>five</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "i",
+       "delimiter": "."
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "one"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "two"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "three"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "four"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "five"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1210",
+   "clauses": [
+    "C2-B-039",
+    "C2-B-042"
+   ],
+   "why": "C2-B-039: In an alphabetic list every single letter is a sibling, `i` included.",
+   "summary": "later i stays in an alphabetic list",
+   "kind": "render",
+   "input": "g. one\nh. two\ni. three",
+   "options": {},
+   "expected": {
+    "html": "<ol type=\"a\" start=\"7\">\n  <li>one</li>\n  <li>two</li>\n  <li>three</li>\n</ol>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "ordered",
+       "style": "a",
+       "delimiter": ".",
+       "start": 7
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "one"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "two"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "three"
+           }
+          ]
          }
         ]
        }
