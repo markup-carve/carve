@@ -641,8 +641,8 @@ each report their own range, and `@shift` does not make a range distinct.
 Every include Warning that leaves a directive literal is a finding under its
 own rule id (`include-unresolved`, `include-non-text`, `include-region-invalid`,
 `include-selection-conflict`, `include-cycle` and the rest), at the directive in
-the file that wrote it. Renames and heading clamps do not leave a directive
-literal and are not lint findings. The shared vectors in
+the file that wrote it. Heading clamps do not leave a directive literal and
+are not lint findings. The shared vectors in
 `tests/lint-include-conformance/` pin all of the above across engines.
 
 ## The host resolver
@@ -856,69 +856,37 @@ correctly - see
 
 ## Cross-file collisions
 
-How an identifier behaves when expansion merges files depends on whether it is
-**document-visible** or **file-local**.
+Expansion merges every file into one tree, and ids and definitions follow the
+rules of a single document over that tree. Nothing is renamed: Carve 0.1
+renamed a repeated id or footnote label to `-2` with a Warning, and 0.2 dropped
+that rename (see the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md)).
+The clauses are C2-N-053 to C2-N-060 in the
+[includes specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/includes.md#references-across-files).
 
-### Document-visible identifiers are renamed on collision
+### Authored ids are never renamed
 
-Two kinds of identifier are exposed by the assembled document and can be
-targeted across file boundaries:
+An authored `{#id}` keeps its spelling in every file (C2-N-057). An id that
+stands in two files is a duplicate id, the same as one that stands twice in one
+file (C2-N-058):
 
-- **Explicit element ids.** Every `{#id}` an author writes, on **any** element:
-  a heading, a paragraph, a list, a table, a code block, a div, a list item, a
-  table cell, an inline span or link. They are **one** namespace, because HTML
-  has one `id` namespace per document, so a heading `{#tip}` and a paragraph
-  `{#tip}` collide just as two headings do.
-  Names are compared **exactly**, case included, as HTML compares ids: `{#Tip}`
-  and `{#tip}` do not collide, and `</#tip>` reaches only the lowercase one.
-- **Footnote labels.** Footnotes are collected and numbered globally in the
-  assembled document. Labels are a **separate** namespace: `[^tip]` never
-  collides with `{#tip}`.
+- both elements are written with the id;
+- `duplicate-id` reports the later occurrence (C2-A-039);
+- a cross-reference `</#id>`, a link to `#id` and a link reference that
+  resolves to a heading reach the **first** occurrence in document order, also
+  when they stand in the file that holds the later one.
 
-The processor MUST resolve duplicates **deterministically** by
-**rename-on-collision**:
+Ids are one namespace across element types, as HTML has one `id` namespace per
+document, and they compare exactly, case included: `{#Tip}` and `{#tip}` are
+two ids.
 
-1. **Ordering.** Read the fully expanded document top to bottom: parent before
-   child, and an earlier include before a later include. An occurrence is
-   renamed when an **earlier** occurrence of the same name came from a
-   **different** file inclusion (another file, or another inclusion of the same
-   file). The first occurrence keeps its name. Duplicates a single file already
-   held on its own are not created by expansion and are not renamed here.
-2. **Rename scheme.** Every renamed occurrence gets its own suffix: the least
-   `-N` (integer `N >= 2`) that no explicit name of the same namespace uses
-   **anywhere in the assembled document** (the parent, earlier and later
-   includes, and the child itself) and that no earlier rename took. A child
-   holding a colliding `{#d}` twice yields `d-2` and `d-3`, and a `{#d-2}`
-   written after the include pushes the rename to `d-3`.
-3. **Warning per rename.** Every renamed occurrence emits its own Warning so
-   the collision is visible and debuggable.
-4. **Automatic ids are out of scope.** An id the author did not write - the slug
-   a heading derives from its own text - is disambiguated the way it already is
-   inside a single document, and **without** a Warning. Two chapters opening
-   `# Overview` collide on an id nobody asked for, and that is one of the most
-   common shapes a book has; reporting it as a collision would make the warning
-   channel useless for the ones that matter. A processor that parses each child
-   as its own document (I4) still has to RENAME here, because each child stamps
-   its own slug independently and nothing re-stamps after the merge - the rule
-   is about what is REPORTED, not about letting duplicate ids reach the output.
+```carve
+%% child.crv
 
-### References follow the rename
+{#tip}
+Rest it overnight.
 
-A reference follows a rename when it is written in the **same file inclusion**
-as the renamed target and resolves to that target when the file is read on its
-own:
-
-- a `</#id>` cross-reference;
-- a link or image destination that is exactly `#` followed by the id, written
-  inline or reached through that file's own reference definition;
-- a footnote reference, for a renamed footnote label.
-
-Where the file held several renamed copies of one name, its references follow
-the first (`d-2`), the copy the file reaches first when read on its own.
-
-A reference in any **other** file keeps the name as written and reaches the
-first occurrence, which is how a child links to a target the parent defines. A
-fragment link to an id its own file does not define is never rewritten.
+[The tip above](#tip) is the one this file wrote.
+```
 
 <!-- carve-sample {"lint":"the child repeats the parent's id on purpose"} -->
 ```carve
@@ -930,78 +898,110 @@ Keep the dough cold.
 {{ child.crv }}
 ```
 
+```html
+<p id="tip">Keep the dough cold.</p>
+<p id="tip">Rest it overnight.</p>
+<p><a href="#tip">The tip above</a> is the one this file wrote.</p>
+```
+
+`id="tip"` appears twice, `duplicate-id` reports the paragraph of `child.crv`,
+and the child's link reaches the parent's paragraph, not the one the child
+wrote. The output is invalid HTML until the author gives each id one name across
+the files.
+
+### Generated heading ids get suffixes
+
+A heading id that comes from the heading's text is not an authored id. After
+expansion the authored ids of every file are reserved first, in document order,
+and then the generated ids follow in document order with the suffixes `-2`,
+`-3` and so on (C2-N-057, C2-H-024). No Warning is reported: two chapters
+opening with the same heading text are an ordinary shape for a book.
+`chapter.crv` opens with `= Chapter`:
+
+```carve
+= Chapter
+
+{{ chapter.crv }}
+```
+
+```html
+<section id="Chapter">
+  <h1>Chapter</h1>
+</section>
+<section id="Chapter-2">
+  <h1>Chapter</h1>
+  <section id="Section">
+    <h2>Section</h2>
+    <p>Text of the chapter.</p>
+  </section>
+</section>
+```
+
+A section include selects by the id the heading has in its own file, before it
+meets the ids of other files (C2-N-027), so a heading selected as `#Chapter`
+may be written as `Chapter-2` after expansion (C2-N-032).
+
+### Definitions resolve in their own file, then outward
+
+Link reference definitions, footnotes and abbreviations are never renamed
+either. A reference looks up its definition in its own file first, then in the
+file that includes it, then in each file further out up to the top-level
+document (C2-N-054, C2-N-055, C2-N-023). The first file that defines the key
+decides. A link reference that no file defines then falls back to the headings
+of the whole tree (C2-N-054).
+
+A definition never reaches **inward**: a reference in the including file does
+not see a definition of a file it includes. Define a note in the document that
+cites it, or in a file that includes that document.
+
+Two files may each define the same key. They are two definitions, not a
+duplicate, and nothing is reported (C2-N-060). `child.crv`:
+
+<!-- carve-sample {"includes":"definitions"} -->
 ```carve
 %% child.crv
 
-{#tip}
-Rest it overnight.
+See [a][] and the note.[^n]
 
-[The tip above](#tip) is the one this file wrote.
+[a]: /CHILD
+
+[^n]: The child's note.
 ```
 
-The child's paragraph is renamed to `tip-2` with a Warning, and its
-`[The tip above](#tip)` follows it to `#tip-2`. Without the rename the output
-would carry `id="tip"` twice, which is invalid HTML.
-
-### Footnotes are answered in the assembled document
-
-A footnote reference is judged against the **assembled** document, not against
-the file it was written in. A child referring to a note the parent defines
-resolves, and so does a parent referring to one a child brings in. An engine
-that decides "undefined" while parsing a single file, and does not revisit it
-after the merge, freezes both as literal text.
-
-Definitions an include brings in are **collected the same way the document's own
-are**. A definition written mid-document is collected by an ordinary parse; a
-merged child's definition must end up where parsing the equivalent flat file
-would put it, or the assembled tree - and any Carve written from it - disagrees
-with the same document typed by hand. This is invisible in rendered HTML, since
-footnotes are collected globally at render time either way.
-
-### File-local identifiers are scoped, not renamed
-
-A **reference-definition label** is file-local metadata: it is resolved **within
-the document that defines it, before that document is merged** into its parent.
-Two files may therefore use the same label with different destinations, and each
-file's references resolve to its own definition:
-
+<!-- carve-sample {"includes":"definitions"} -->
 ```carve
 %% parent.crv
 
-See [a][].
+See [a][] and the note.[^n]
 
 [a]: /PARENT
+
+[^n]: The parent's note.
+
+{{ child.crv }}
 ```
 
-```carve
-%% child.crv
-
-See [a][].
-
-[a]: /CHILD
+```html
+<p>See <a href="/PARENT">a</a> and the note.<a id="fnref1" href="#fn1" role="doc-noteref"><sup>1</sup></a></p>
+<p>See <a href="/CHILD">a</a> and the note.<a id="fnref2" href="#fn2" role="doc-noteref"><sup>2</sup></a></p>
+<section role="doc-endnotes" aria-label="Footnotes">
+  <hr>
+  <ol>
+    <li id="fn1">
+      <p>The parent’s note.<a href="#fnref1" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+    <li id="fn2">
+      <p>The child’s note.<a href="#fnref2" role="doc-backlink" aria-label="Back to reference">↩</a></p>
+    </li>
+  </ol>
+</section>
 ```
 
-The parent's `[a][]` resolves to `/PARENT` and the child's to `/CHILD`. This is
-**not** a collision: it MUST NOT emit a Warning and MUST NOT rename anything.
-
-**Rationale.** A reference-definition label is never addressable from another
-file, so renaming it would be pure churn plus a spurious warning. An explicit
-element id or a footnote label is visible in the document, so a duplicate
-there must be resolved and surfaced.
-
-### Scope and ordering
-
-The include-time rename pass is scoped to **explicit element ids (headings
-included) and footnote labels only**. Auto-generated (slug) heading-id collisions are **not** part of
-this pass: they continue to be de-duplicated by the existing heading-id tracker
-(PART 9 §13, which already appends `-2`, `-3`, … to duplicate slugs once the
-files are merged into one document). Two `## Introduction` headings from
-different included files are therefore suffixed by §13, not here.
-
-**Ordering.** The include-time explicit-id / footnote rename runs **before** the
-§13 slug dedup. Fixing this order keeps ids deterministic: the explicit-id
-namespace is settled first, and §13 then dedups the auto-slug ids against the
-already-final set. See PART 9 §13.
+Each `[a][]` resolves to its own file's definition, and each footnote reference
+reaches the note of its own file. Footnotes are numbered once over the expanded
+tree, in the order of their first reference, and one footnote section collects
+the notes of every file (C2-N-056). Caption and equation numbers are counted
+over the expanded tree the same way (C2-N-059).
 
 ## Limits
 
