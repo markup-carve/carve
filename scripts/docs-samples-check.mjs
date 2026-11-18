@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+// Lints and fmt-checks every crv/carve fence and component .crv in docs/.
+// A marker comment directly above a sample adjusts the check:
+//   <!-- carve-sample {"skip":"reason"} -->      not checked
+//   <!-- carve-sample {"lint":"reason"} -->      must have a lint finding
+//   <!-- carve-sample {"includes":"name"} -->    include root other than "default"
+// Includes resolve against tests/fixtures/docs-samples-includes/<name>.
 import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { resolve, relative, join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -8,6 +14,7 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const docs = join(root, 'docs')
 const cli = join(root, 'node_modules/@markup-carve/carve/dist/cli2.js')
 if (!existsSync(cli)) throw new Error('Install the pinned carve-js package with npm ci first')
+const includeRoots = join(root, 'tests/fixtures/docs-samples-includes')
 const failures = []
 const counts = new Map()
 let checked = 0
@@ -46,13 +53,30 @@ function checkSample(page, line, source, options = {}) {
     if (typeof options.skip !== 'string' || !options.skip.trim()) fail(page, line, 'opt-out needs a reason')
     return
   }
-  const lint = run(['lint', '--json'], source)
+  const includeRoot = join(includeRoots, options.includes ?? 'default')
+  if (!existsSync(includeRoot)) {
+    fail(page, line, `include root missing: ${relative(root, includeRoot)}`)
+    return
+  }
+  const includeFlags = ['--includes', '--include-root', includeRoot]
+  // Lint must report every parse finding of the expansion (C2-N-085), but the pinned lint drops
+  // those of included files and unresolved targets, so the diagnostics command supplies them.
+  const lint = run(['lint', '--json', ...includeFlags], source)
+  const parse = run(['diagnostics', '--json', ...includeFlags], source)
   if (lint.status === null || (!lint.output && lint.status !== 0)) {
     fail(page, line, `lint command failed: ${lint.error.trim()}`)
+  } else if (parse.status !== 0) {
+    fail(page, line, `diagnostics command failed: ${parse.error.trim()}`)
   } else {
     try {
-      const entries = JSON.parse(lint.output).files.flatMap((file) => file.diagnostics)
-      if (entries.length && !options.lint) fail(page, line, `lint: ${entries.map((entry) => `${entry.code}: ${entry.message}`).join('; ')}`)
+      const found = new Map()
+      for (const report of [lint, parse]) {
+        for (const entry of JSON.parse(report.output).files.flatMap((file) => file.diagnostics)) {
+          found.set(JSON.stringify([entry.code, entry.file, entry.range?.startOffset]), entry)
+        }
+      }
+      const entries = [...found.values()]
+      if (entries.length && !options.lint) fail(page, line, `lint: ${entries.map((entry) => `${entry.file ? `${entry.file}: ` : ''}${entry.code}: ${entry.message}`).join('; ')}`)
       if (!entries.length && options.lint) fail(page, line, 'marked as a lint demonstration but has no finding')
     } catch (error) {
       fail(page, line, `invalid lint report: ${error.message}`)
@@ -65,7 +89,7 @@ function checkSample(page, line, source, options = {}) {
       const flag = `--${key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`
       return value === true ? [flag] : value === false ? [] : [flag, String(value)]
     })
-    const rendered = run(['render', ...flags], source)
+    const rendered = run(['render', ...includeFlags, ...flags], source)
     if (rendered.status !== 0) fail(page, line, `render command failed: ${rendered.error.trim()}`)
     else if (options.html.replace(/\r\n/g, '\n').trimEnd() !== rendered.output.replace(/\r\n/g, '\n').trimEnd()) {
       fail(page, line, difference(options.html, rendered.output))
@@ -77,10 +101,11 @@ function fences(text, page) {
   const lines = text.split(/\r?\n/)
   const blocks = []
   for (let i = 0; i < lines.length; i++) {
-    const open = /^ {0,3}(`{3,}|~{3,})(carve|crv|html)(?:\s.*)?$/i.exec(lines[i])
+    const open = /^( {0,3})(`{3,}|~{3,})(carve|crv|html)(?:\s.*)?$/i.exec(lines[i])
     if (!open) continue
     const start = i
-    const marker = open[1]
+    const indent = open[1].length
+    const marker = open[2]
     let end = i + 1
     for (; end < lines.length; end++) {
       const close = /^ {0,3}(`+|~+)\s*$/.exec(lines[end])
@@ -90,7 +115,9 @@ function fences(text, page) {
       fail(page, start + 1, 'unclosed Carve or HTML fence')
       continue
     }
-    blocks.push({ type: open[2].toLowerCase(), line: start + 1, start, end, source: lines.slice(start + 1, end).join('\n') + '\n' })
+    // A fence in a list item is indented; its body loses up to that many spaces, as in CommonMark.
+    const body = lines.slice(start + 1, end).map((line) => line.replace(new RegExp(`^ {0,${indent}}`), ''))
+    blocks.push({ type: open[3].toLowerCase(), line: start + 1, start, end, source: body.join('\n') + '\n' })
     i = end
   }
   return { blocks, lines }
