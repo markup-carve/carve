@@ -18,9 +18,9 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 ### Replay gap rulings
 
-The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; U-399 to U-402 rewrite only the four sources whose full 0.1 and 0.2 HTML was checked. U-393 now needs no change. A comment inside a raw image alt is still source text (C2-I-074).
+The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 rewrite only the seven sources whose full 0.1 and 0.2 HTML was checked. U-390 and U-393 now need no change. A comment inside a raw image alt is still source text (C2-I-074).
 
-For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-404, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
+For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-407, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
 
 | ID | 0.1 cause | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
@@ -39,7 +39,7 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-387 | A list indented one column past a definition description in a list item: `- :: t`, `  : para`, `   - li`. 0.1 puts the list in the item after the definition list; 0.2 puts it in the description. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the description marker through the shifted list line; report |
 | U-388 | A footnote-shaped run inside an insertion inside an inline note: `^[{+[^[g]+}] b+}]`. 0.1 keeps `[^[g]+}] b` in the insertion; 0.2 closes the insertion at the first `+}`. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the inline footnote opener through its closing bracket; report |
 | U-389 | A braced underline right after an equals sign: `={_a=b_}`. 0.1 writes `=<u>a=b</u>`; 0.2 writes the whole run as text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the outer equals sign through the final closing brace; report |
-| U-390 | A comment marker at the start of a deletion: `{-%% b-}`. 0.1 writes `%% b` as deleted text; 0.2 takes the closer into the comment and writes literal `{-`. **SILENT** | The old HTML is restored by the verified source spelling. | Escape both percent signs inside the deletion; rewrite |
+| U-390 | A comment marker at the start of a deletion: `{-%% b-}`. | Both versions keep `%%` as text after the braced opener and write `<del>%% b</del>`. | No change; none |
 | U-391 | A comment fence with no closer in a footnote body: `[^n]: head`, then an indented `%%%`. 0.1 hides the rest of the body, including a later indented `tail`; 0.2 ends the footnote and writes `tail` as a paragraph. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment fence opener through the following unhidden line; report |
 | U-392 | An uppercase attribute name: `{CLASS=z}` on a line block. 0.1 writes `CLASS="z line-block"`; 0.2 writes `class="z line-block"`, the same HTML attribute. **SILENT** | Attribute names compare without case, so the HTML is the same. | Nothing to change; none |
 | U-393 | A line comment inside a substitution: `{~a %% b~>c~} d`. | Both versions let the comment hide the arrow and closer and write `{~a d`. | No change; none |
@@ -54,6 +54,9 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-402 | A line comment takes an extension closer: `:foo[a %% c] d`. **SILENT** | The extension does not form. | Write `:foo[a{% c %}] d`; rewrite |
 | U-403 | `i)` followed by `j)`: 0.1 makes one alphabetic list; 0.2 makes a roman list then an alphabetic list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
 | U-404 | `v)` followed by `vi)`: 0.1 makes one roman list; 0.2 makes an alphabetic list then a roman list. | `ordered-list-kind-split` reports the boundary. | Report both lists for review; report |
+| U-405 | A line comment at the start of a bracket: `[%% c] d`. 0.1 hides the comment and writes `[] d`; 0.2 writes `%% c` as text. **SILENT** | The old HTML is restored by the verified source spelling. | Write `[{% c %}] d`; rewrite |
+| U-406 | A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note. **SILENT** | The old HTML is restored by the verified source spelling. | Write `^[{% c %}] d`; rewrite |
+| U-407 | A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it. **SILENT** | The old HTML is restored by the verified source spelling. | Write `:f[{% %}]`; rewrite |
 
 ### Source change index
 

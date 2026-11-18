@@ -130,7 +130,7 @@
       "name": "line_comment",
       "opener": "%%",
       "closer": "line_end",
-      "at": ["line_start", "after_whitespace", "content_start"],
+      "at": ["line_start", "after_whitespace"],
       "content": "hidden",
       "reads_escapes": false,
       "crosses_lines": false,

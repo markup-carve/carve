@@ -11039,12 +11039,12 @@
     "C2-I-023",
     "C2-I-089"
    ],
-   "why": "C2-I-023: `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment.",
-   "summary": "a line comment at the start of an inline footnote hides the whole note body",
+   "why": "C2-I-023: Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.",
+   "summary": "`%%` directly after the opener of an inline footnote is text in the note",
    "input": "^[%% c] d",
    "options": {},
    "expected": {
-    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
+    "html": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>%% c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section>",
     "children": [
      {
       "type": "paragraph",
@@ -11053,9 +11053,8 @@
         "type": "inline_footnote",
         "children": [
          {
-          "type": "comment",
-          "form": "line",
-          "value": "c"
+          "type": "text",
+          "value": "%% c"
          }
         ],
         "number": 1
@@ -11338,7 +11337,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: A bracket or braced opener left unclosed by the comment is text; a closer on a later line may still close an open form.",
+   "why": "C2-I-024: A form that is open at the comment stays open: a matching closer on a later line of the same paragraph closes it, and an opener that never closes is text.",
    "summary": "where the note closes on a later line the comment takes the rest of its line",
    "input": "^[a %% c\nd] e",
    "options": {},
@@ -17964,24 +17963,25 @@
     "C2-I-023",
     "C2-I-024"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
-   "summary": "a comment at the start of extension content takes its closer",
+   "why": "C2-I-023: Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.",
+   "summary": "`%%` at the start of extension content is text",
    "input": ":f[%%]",
    "options": {},
    "expected": {
-    "html": "<p>:f[</p>",
+    "html": "<p><span class=\"ext-f\">%%</span></p>",
     "children": [
      {
       "type": "paragraph",
       "children": [
        {
-        "type": "text",
-        "value": ":f["
-       },
-       {
-        "type": "comment",
-        "form": "line",
-        "value": "]"
+        "type": "inline_extension",
+        "name": "f",
+        "children": [
+         {
+          "type": "text",
+          "value": "%%"
+         }
+        ]
        }
       ]
      }
@@ -56209,7 +56209,7 @@
    "clauses": [
     "C2-I-024"
    ],
-   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included. C2-I-024: A bracket or braced opener left unclosed by the comment is text; a closer on a later line may still close an open form.",
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included. C2-I-024: A form that is open at the comment stays open: a matching closer on a later line of the same paragraph closes it, and an opener that never closes is text.",
    "summary": "braced span closes on a later line after a comment takes the first closer",
    "kind": "render",
    "input": "{_a %% note_}\nb_}",
@@ -56720,6 +56720,96 @@
    "options": {},
    "expected": {
     "carve": "a. first\nii. second\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1216",
+   "clauses": [
+    "C2-I-023",
+    "C2-I-055"
+   ],
+   "why": "C2-I-023: Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.",
+   "summary": "`%%` directly after a braced deletion opener is text",
+   "kind": "render",
+   "input": "{-%% b-}",
+   "options": {},
+   "expected": {
+    "html": "<p><del>%% b</del></p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "delete",
+        "children": [
+         {
+          "type": "text",
+          "value": "%% b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1217",
+   "clauses": [
+    "C2-I-023"
+   ],
+   "why": "C2-I-023: Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.",
+   "summary": "`%%` directly after a bracket is text, so the bracket keeps its closer",
+   "kind": "render",
+   "input": "[%% c] d",
+   "options": {},
+   "expected": {
+    "html": "<p>[%% c] d</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "[%% c] d"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1218",
+   "clauses": [
+    "C2-I-023",
+    "C2-I-024"
+   ],
+   "why": "C2-I-024: A line comment takes the rest of its line, every closer on it included.",
+   "summary": "whitespace after a bracket lets `%%` start a comment that takes the closer",
+   "kind": "render",
+   "input": "[ %% c] d",
+   "options": {},
+   "expected": {
+    "html": "<p>[</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "["
+       },
+       {
+        "type": "comment",
+        "form": "line",
+        "value": "c] d"
+       }
+      ]
+     }
+    ]
    },
    "from": []
   }

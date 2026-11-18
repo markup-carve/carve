@@ -107,9 +107,9 @@
           },
           "at": {
             "type": "array",
-            "items": { "enum": ["line_start", "after_whitespace", "glued_to_closing_bracket_of_pair", "content_start"] },
+            "items": { "enum": ["line_start", "after_whitespace", "glued_to_closing_bracket_of_pair"] },
             "uniqueItems": true,
-            "description": "Where the opener must stand. One of the entries is enough. content_start: at the start of the content of a bracket or a braced opener (C2-I-023)."
+            "description": "Where the opener must stand. One of the entries is enough."
           },
           "content": {
             "enum": ["verbatim", "literal", "hidden", "id", "url_or_email", "destination_and_title"],

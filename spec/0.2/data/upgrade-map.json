@@ -2843,13 +2843,13 @@
     },
     {
       "id": "U-390",
-      "kind": "rewrite",
+      "kind": "none",
       "group": "editorial comments",
       "from": "{-%% b-}\n",
-      "to": "{-\\%\\% b-}\n",
-      "meaning02": "<p>{-</p> C2-I-024 makes the line comment take the deletion closer, so the deletion opener is text. Escape both percent signs to keep the old deletion HTML. Rewrite the source range from the two percent signs in the deletion.",
+      "to": "{-%% b-}\n",
+      "meaning02": "<p><del>%% b</del></p> Under C2-I-023 `%%` directly after a braced opener is text, as in 0.1. No source edit is needed.",
       "toolEntry": "U-390",
-      "silent": true
+      "silent": false
     },
     {
       "id": "U-391",
@@ -2990,6 +2990,36 @@
       "meaning02": "<ol type=\"a\" start=\"22\" data-delim=\")\">\n  <li>one</li>\n</ol>\n<ol type=\"i\" start=\"6\" data-delim=\")\">\n  <li>two</li>\n</ol> C2-B-042 fixes `v)` as alphabetic; C2-B-044 splits at `vi)`. Report the two-list boundary for review.",
       "toolEntry": "U-404",
       "silent": false
+    },
+    {
+      "id": "U-405",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "[%% c] d\n",
+      "to": "[{% c %}] d\n",
+      "meaning02": "<p>[%% c] d</p> C2-I-023 keeps `%%` directly after a bracket as text; 0.1 read it as a line comment that ended before the bracket. The proposed braced comment restores the 0.1 HTML.",
+      "toolEntry": "U-405",
+      "silent": true
+    },
+    {
+      "id": "U-406",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": "^[%% c] d\n",
+      "to": "^[{% c %}] d\n",
+      "meaning02": "<p><a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a> d</p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>%% c<a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-I-023 keeps `%%` at the start of an inline footnote as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 footnote HTML.",
+      "toolEntry": "U-406",
+      "silent": true
+    },
+    {
+      "id": "U-407",
+      "kind": "rewrite",
+      "group": "inline comments",
+      "from": ":f[%%]\n",
+      "to": ":f[{% %}]\n",
+      "meaning02": "<p><span class=\"ext-f\">%%</span></p> C2-I-023 keeps `%%` at the start of extension content as text; 0.1 read it as a line comment. The proposed braced comment restores the 0.1 extension HTML.",
+      "toolEntry": "U-407",
+      "silent": true
     }
   ],
   "tree": [

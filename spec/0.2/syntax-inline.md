@@ -378,9 +378,9 @@ Example 15 (generated)
 
 Carve has three comment forms. The block form `%%%` is defined in the block chapter. The line form and the braced form are inline atoms.
 
-**C2-I-023** `%%` at the start of a line of the content, at the start of the content of a bracket or a braced opener (C2-I-024), or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text.
+**C2-I-023** `%%` at the start of a line of the content or after whitespace starts a line comment. It runs to the end of that line and renders nothing, and the spaces before it are dropped with it. Elsewhere `%%` is text, also directly after the opener of a bracket or a braced form: the start of their content is neither a line start nor whitespace.
 
-**C2-I-024** A line comment takes the rest of its line, every closer on it included. A bracket or braced opener left unclosed by the comment is text; a closer on a later line may still close an open form.
+**C2-I-024** A line comment takes the rest of its line, every closer on it included. A form that is open at the comment stays open: a matching closer on a later line of the same paragraph closes it, and an opener that never closes is text.
 
 Example 128 (unverified)
 
