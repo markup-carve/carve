@@ -322,7 +322,7 @@ async function replay() {
   exampleFiles(resolve(root, 'resources/examples'))
   const all = [...sources]
   const selected = Number.isFinite(limit) ? all.slice(0, limit) : all
-  const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, samples: [] }
+  const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, blockedIds: [], noMappedIds: [], samples: [] }
   for (const [id, source] of selected) {
     try {
       const r = upgrade(source)
@@ -330,12 +330,12 @@ async function replay() {
       if (r.check === 'mismatch') {
         out.mismatches++
         const noMapped = r.records.some(rec => rec.entry === 'upgrade-mismatch' && /no mapped row/i.test(rec.message ?? ''))
-        if (noMapped) out.noMappedRow++
+        if (noMapped) { out.noMappedRow++; out.noMappedIds.push(id) }
         if (out.samples.length < 15) out.samples.push({ id, records: r.records.filter(rec => rec.class === 'mismatch').slice(0, 2) })
       }
-      if (!canWriteUpgrade(r)) out.blocked++
+      if (!canWriteUpgrade(r)) { out.blocked++; out.blockedIds.push(id) }
     } catch (error) {
-      out.mismatches++; out.blocked++
+      out.mismatches++; out.blocked++; out.blockedIds.push(id)
       if (out.samples.length < 15) out.samples.push({ id, error: String(error) })
     }
   }
@@ -351,6 +351,8 @@ for (const engine of ['js', 'php', 'rs']) {
   counts[engine].catalog = tally(catalog[engine])
 }
 counts.js.upgrade = { pass: upgrade.total - upgrade.blocked, fail: upgrade.blocked, unsupported: 0 }
+const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries(rows.filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
+const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
 const lines = ['# Carve 0.2 engine readiness', '', '| Engine | Area | Pass | Fail | Unsupported | Agreement | Ready |', '|---|---|---:|---:|---:|---:|---|']
 for (const [engine, areas] of Object.entries(counts)) for (const [area, row] of Object.entries(areas)) {
@@ -370,23 +372,8 @@ for (const [engine, item] of Object.entries(lintAgreement)) lines.push(`| ${engi
 writeFileSync(jsonPath, JSON.stringify(report, null, 2) + '\n')
 writeFileSync(mdPath, lines.join('\n') + '\n')
 console.log(lines.join('\n'))
-if (args.has('--write-baseline')) {
-  if (existsSync(baselinePath)) {
-    const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
-    for (const engine of ['js', 'php', 'rs']) for (const [area, now] of Object.entries(counts[engine])) {
-      const old = baseline.counts[engine][area]
-      if (old && (now.pass < old.pass || now.fail > old.fail || now.unsupported > old.unsupported)) throw new Error(`Cannot lower readiness baseline: ${engine}/${area}`)
-    }
-    for (const engine of ['js', 'php', 'rs']) for (const key of ['idPercent', 'rangePercent', 'messagePercent']) {
-      if (lintAgreement[engine][key] < baseline.lintAgreement[engine][key]) throw new Error(`Cannot lower readiness baseline: ${engine}/${key}`)
-    }
-    if (upgrade.total < baseline.upgrade.total || upgrade.blocked > baseline.upgrade.blocked || upgrade.mismatches > baseline.upgrade.mismatches || upgrade.noMappedRow > baseline.upgrade.noMappedRow) throw new Error('Cannot lower upgrade baseline')
-  }
-  writeFileSync(baselinePath, JSON.stringify({ schema: 1, engineHeads, counts, lintAgreement, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow } }, null, 2) + '\n')
-} else if (Number.isFinite(limit)) {
-  console.log('Sampled run; baseline comparison skipped.')
-} else {
-  const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
+const statusRank = { unsupported: 0, fail: 1, pass: 2 }
+function baselineDrops(baseline, allowLegacy = false) {
   const drops = []
   for (const engine of ['js', 'php', 'rs']) for (const area of Object.keys(counts[engine])) {
     const now = counts[engine][area], old = baseline.counts[engine][area]
@@ -397,5 +384,43 @@ if (args.has('--write-baseline')) {
     if (lintAgreement[engine][key] < baseline.lintAgreement[engine][key]) drops.push(`${engine} lint ${key} fell below baseline`)
   }
   if (upgrade.total < baseline.upgrade.total || upgrade.blocked > baseline.upgrade.blocked || upgrade.mismatches > baseline.upgrade.mismatches || upgrade.noMappedRow > baseline.upgrade.noMappedRow) drops.push('upgrade replay dropped below baseline')
+  for (const engine of ['js', 'php', 'rs']) {
+    const oldFailures = baseline.caseFailures?.[engine]
+    if (!oldFailures) { if (!allowLegacy) drops.push(`${engine}: case outcomes absent from baseline`); continue }
+    for (const [key, status] of Object.entries(caseFailures[engine])) {
+      const old = oldFailures[key] ?? 'pass'
+      if (statusRank[status] < statusRank[old]) drops.push(`${engine}/${key}: ${old} became ${status}`)
+    }
+    const oldRules = baseline.catalogRules?.[engine]
+    if (!oldRules) { if (!allowLegacy) drops.push(`${engine}: rule outcomes absent from baseline`); continue }
+    for (const [id, now] of Object.entries(catalogRules[engine])) {
+      const old = oldRules[id]
+      if (!old) continue
+      if (statusRank[now.status] < statusRank[old.status]) drops.push(`${engine}/catalog/${id}: ${old.status} became ${now.status}`)
+      for (const key of ['idPercent', 'rangePercent', 'messagePercent']) {
+        if (old[key] !== null && now[key] !== null && now[key] < old[key]) drops.push(`${engine}/catalog/${id}: ${key} fell below baseline`)
+      }
+    }
+  }
+  for (const [name, current] of [['blocked', upgrade.blockedIds], ['no mapped row', upgrade.noMappedIds]]) {
+    const prior = baseline.upgrade[name === 'blocked' ? 'blockedIds' : 'noMappedIds']
+    if (!prior) { if (!allowLegacy) drops.push(`upgrade ${name} source IDs absent from baseline`); continue }
+    const old = new Set(prior)
+    for (const id of current) if (!old.has(id)) drops.push(`upgrade ${name}: new source ${id}`)
+  }
+  return drops
+}
+if (args.has('--write-baseline')) {
+  if (existsSync(baselinePath)) {
+    const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
+    const drops = baselineDrops(baseline, true)
+    if (drops.length) throw new Error(`Cannot lower readiness baseline:\n${drops.join('\n')}`)
+  }
+  writeFileSync(baselinePath, JSON.stringify({ schema: 1, engineHeads, counts, lintAgreement, caseFailures, catalogRules, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow, blockedIds: upgrade.blockedIds, noMappedIds: upgrade.noMappedIds } }, null, 2) + '\n')
+} else if (Number.isFinite(limit)) {
+  console.log('Sampled run; baseline comparison skipped.')
+} else {
+  const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'))
+  const drops = baselineDrops(baseline)
   if (drops.length) { console.error(drops.join('\n')); process.exitCode = 1 }
 }
