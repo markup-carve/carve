@@ -1,0 +1,84 @@
+name: Carve 0.2 readiness
+
+on:
+  push:
+    branches: [next2]
+  pull_request:
+    branches: [next2]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: next2-readiness-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine-readiness:
+    name: Engine readiness parity and upgrade replay
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CARGO_BUILD_JOBS: 4
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.cargo-next2-target
+      CARVE_JS_DIR: ${{ github.workspace }}/engines/carve-js
+      CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
+      CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
+      CARVE_RS_READINESS_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve-next2-readiness
+      CARVE_RS_02_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve2
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-js
+          ref: next2
+          path: engines/carve-js
+          submodules: recursive
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-php
+          ref: next2
+          path: engines/carve-php
+      - uses: actions/checkout@v6
+        with:
+          repository: markup-carve/carve-rs
+          ref: next2
+          path: engines/carve-rs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: engines/carve-js/package-lock.json
+      - name: Build JavaScript 0.2 engine and upgrade tool
+        working-directory: engines/carve-js
+        run: npm ci && npm run build
+      - name: Install PHP 0.2 engine
+        working-directory: engines/carve-php
+        run: composer install --no-interaction --no-progress
+      - uses: actions/cache@v6
+        with:
+          path: ${{ github.workspace }}/.cargo-next2-target
+          key: carve-next2-readiness-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/v2/Cargo.toml', 'engines/carve-rs/v2/src/**') }}
+          restore-keys: carve-next2-readiness-${{ runner.os }}-
+      - name: Build Rust 0.2 engine and batch adapter
+        run: |
+          cargo build --manifest-path engines/carve-rs/v2/Cargo.toml --bin carve2
+          cargo build --manifest-path scripts/next2-readiness-rs/Cargo.toml
+      - name: Replay the 0.2 contract and check the baseline
+        run: npm --prefix scripts run readiness:next2 -- --prepared --json=_readiness.json --markdown=_readiness.md
+      - name: Write job summary
+        if: always()
+        run: |
+          if test -f _readiness.md; then cat _readiness.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - name: Upload readiness measurement
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: next2-readiness
+          path: |
+            _readiness.json
+            _readiness.md
+          if-no-files-found: warn

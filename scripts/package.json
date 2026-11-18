@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "readiness:next2": "node next2-readiness-local.mjs"
+  }
+}
