@@ -23,7 +23,7 @@ Terms:
 - The *indent* of a line is the column of its first character that is not a space or a tab. Indent that remains after the prefixes of the open containers is skipped before the shape of a line is tested, so a heading, a quote, a table row or a list marker may stand at any indent. The clauses that pin a column say so: a definition and a frontmatter opener stand at column 0 (C2-B-081, C2-B-161).
 - A marker, a mark or an opener that needs *content* needs at least one character that is not a space or a tab behind it on its line. Spaces and tabs alone are no content, since they are dropped at the end of a line (C2-I-002).
 
-**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). Two facts are settled by a later line, and no rule reads further than they do: a pending attribute line waits for the next line (C2-B-092), and the style of an ordered list whose first marker is one of the seven roman letters waits for the next marker of C2-B-042. That wait ends at the first later line of the container that is neither blank nor indented past the column of the first marker, at a run of three or more blank lines, or at the end of the container; the roles of the lines in between are decided as they are read, and only the style of the list is set when the wait ends.
+**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). A pending attribute line waits for the next line (C2-B-092); no other block fact waits for a later line.
 
 **C2-B-003** Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space.
 
@@ -968,13 +968,13 @@ Example 29 (generated)
 
 **C2-B-041** The list starts at the value of its first marker.
 
-**C2-B-042** The first marker fixes the style: digits and the bare dot are one style, decimal, two or more roman letters are roman, and a single letter is alphabetic, except one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, which takes its style from the next marker. The next marker is the ordered marker that starts the first later line of the container that is neither blank nor indented past the column of the first marker, when that line starts with one, at that column or left of it as C2-B-030 allows, in the letter case of the first marker and with no run of three or more blank lines in between; its delimiter does not count. The letter is roman when the next marker is the roman numeral one higher, as `v.` then `vi.`, `x.` then `xi.` and `c.` then `ci.`, and alphabetic when it is the next letter of the alphabet, as `i.` then `j.` and `c.` then `d.`. With no next marker, or one that is neither, a lone `i` or `I` is roman and the other six letters are alphabetic. This is the reading of 0.1.
+**C2-B-042** The first marker fixes the style without reading a later line: digits and the bare dot are decimal, two or more roman letters are roman, a single `i` or `I` is roman, and every other single letter is alphabetic. Later markers are tested in the open list's style (C2-B-038, C2-B-039); a marker that does not match it starts another list (C2-B-049).
 
 **C2-B-043** The bare dot numbers automatically: it takes the next number, so digits with a dot and the bare dot are siblings in one list. A bare dot is no marker when the text behind its required space starts with another dot and a space, so `. . . and then silence` is a paragraph. A task box behind the space is read only after this test (C2-B-229).
 
-**C2-B-044** Where the next marker does not settle a one-letter first marker (C2-B-042), a list meant as alphabetic that starts at `i` and a list meant as roman that starts at `v`, `x`, `l`, `c`, `d` or `m` split into two lists at the second item: `i.` then `k.` gives a roman list of one item and an alphabetic list, `v.` then `vii.` an alphabetic list of one item and a roman list, and so does `v.` then `vi.` with a lazy line of the first item between them (C2-B-024). `ordered-list-kind-split` reports the split once, at the list of one item. Three or more blank lines between the two items end the list on purpose (C2-B-052) and are not reported.
+**C2-B-044** A later marker that does not match the open list's style splits an ordered list: `i.` then `j.` gives a roman list of one item and an alphabetic list, and `v.` then `vi.` gives an alphabetic list of one item and a roman list, also with a lazy line of the first item between them (C2-B-024). `ordered-list-kind-split` reports a split after a one-letter first marker that is one of the seven roman letters `i`, `v`, `x`, `l`, `c`, `d` and `m` in either case, when the next list has the other letter style in the same case and begins with fewer than three blank lines between them. Three or more blank lines end the list on purpose (C2-B-052) and are not reported.
 
-The second marker settles a one-letter first marker: `vi.` is the numeral after `v`, so both items are one roman list (C2-B-042).
+The first marker is alphabetic, so the roman marker begins another list (C2-B-042).
 
 Example 284 (unverified)
 
@@ -986,15 +986,17 @@ vi.  y
 ```
 
 ```html
-<ol type="i" start="5">
+<ol type="a" start="22">
   <li>x</li>
+</ol>
+<ol type="i" start="6">
   <li>y</li>
 </ol>
 ```
 
 :::
 
-`k` is neither the numeral after `i` nor the letter after it, so the lone `i` is roman and `k.` starts an alphabetic list (C2-B-044).
+The lone `i` is roman and `k.` starts an alphabetic list (C2-B-044).
 
 Example 285 (unverified)
 
