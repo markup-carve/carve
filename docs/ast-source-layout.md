@@ -1,45 +1,7 @@
----
-title: Source Locations in Parsed Document JSON
-description: Optional source text and location data for editors and formatters.
----
+# Source layout beside parsed document JSON
 
-# Source locations in parsed document JSON
+`parseWithLayout` returns a semantic tree and a source-layout sidecar. The tree records meaning; the sidecar records spelling and measured source ranges. AST JSON and rendering are the same whether or not a sidecar was requested. See [the source-layout contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md#what-the-sidecar-is).
 
-The [parsed document JSON](./ast-json.md) records document structure, not every
-choice in the original source. An editor or formatter can request a second JSON
-object containing the source text and locations. The API calls this object a
-**source layout sidecar**. It is separate from the parsed document, whose root
-still contains only `type`, `children`, and `srcByteLength`.
+The sidecar has `version: 2`, `encoding`, original `source`, `lineEndings`, `bom`, and a `nodes` list. Each entry has an RFC 6901 `path` and byte range. Entries may record facts such as a list's bare-dot spelling, a quote's fence form, table continuation wraps, or a reference's written form. Missing optional facts mean unknown; they do not assert a default. The [layout schema](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/layout-schema.json) defines the closed shape.
 
-The machine-readable contract is
-[`ast-source-layout-schema.json`](https://markup-carve.github.io/carve/ast-source-layout-schema.json).
-Paths are RFC 6901 JSON Pointers into the accompanying canonical AST. Byte
-ranges address the original UTF-8 input, start-inclusive and end-exclusive.
-Entries are sorted by path and ranges must not exceed the UTF-8 source length.
-
-Version 1 carries the original source, BOM and line-ending facts, plus ranges
-for every accurately positioned node. Everything else a node may carry is an
-optional measured fact. Missing means unknown, never a guessed default: a
-producer that did not measure a fact omits it, and a consumer must not read an
-omission as a default value.
-
-| fact | clause | what it measures |
-| --- | --- | --- |
-| `markerRaw` | §13 F1 | the marker that opened the node, as authored, separator excluded |
-| `markerColumn` | §13 F2 | zero-based visual column of the marker, in PART 9 §24 C1 arithmetic - not `pos.startColumn`, which is 1-based and counts codepoints |
-| `contentColumn` | §13 F3 | `content_column(node)` per PART 9 §24 C3, same zero-based arithmetic, so `- ` is 2 |
-| `continuationStyle` | §13 F4 | how later lines reached the node, one value by precedence `explicit` > `lazy` (below the content column) > `indent` (reaching it) > `marker_line` > `none` |
-| `blankLinesBefore`, `blankLinesAfter` | §13 F5 | authored count of whitespace-only lines around the node, inside its container |
-| `openerRaw`, `closerRaw` | §13 F6 | the fence delimiter runs as authored. An unterminated block is `closerRaw` present and empty, never `closerRaw` omitted |
-| `metadataSeparatorRaw` | §13 F7 | the separator run between a label or term and its body, whitespace included |
-| `leadingPipe`, `trailingPipe` | §13 F8 | whether the row was authored with the optional pipes |
-| `attachment` | §13 F9 | how the node reached its host: `preceding`, `continuation`, `detached`, `none` |
-
-All producers consume the shared cases in
-[`resources/ast-source-layout-fixtures.json`](https://github.com/markup-carve/carve/blob/main/resources/ast-source-layout-fixtures.json).
-`exact` compares complete sidecars; `sourceFacts` pins encoding facts while AST
-position conformance independently tracks range agreement.
-
-Default parsing, AST JSON, CLI JSON, and rendering do not change. An AST decoder
-does not accept a sidecar as an AST, and a sidecar reader rejects versions it
-does not implement.
+A sidecar belongs to the one tree returned with it. An edit can invalidate its paths. It does not survive a write; the new source has its own layout. If a sidecar contradicts the tree, the tree wins. A writer without a measured fact follows the defaults in the [source-layout specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md#defaults). See [shape](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md#shape) and [writer behavior](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#the-sidecar).
