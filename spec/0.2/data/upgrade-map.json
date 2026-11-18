@@ -2167,7 +2167,7 @@
       "group": "rulings of 16 November",
       "from": "a `b c\n",
       "to": "a `b c`\n",
-      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>. Exception: an empty unclosed math run, `$` followed by one backtick or `$$` followed by two at the end of inline content, is reported at the parsed math range and not rewritten. An adjacent closer forms a wider run, and a separator changes the empty value.",
+      "meaning02": "C2-I-017 reads a backtick run with no closer of its length as text; a closing run where the 0.1 code ended keeps <p>a <code>b c</code></p>. An empty unclosed math run is U-396.",
       "toolEntry": "U-258",
       "silent": true
     },
@@ -2899,6 +2899,16 @@
       "to": "",
       "meaning02": "<ul>\n  <li>p\n{% a</li>\n</ul>\n<p>plain</p> A comment-fence-shaped line inside a braced comment changes which lines the list retains under C2-B-108 and C2-I-025. Report the source range from the braced comment opener through its closing mark.",
       "toolEntry": "U-395",
+      "silent": true
+    },
+    {
+      "id": "U-396",
+      "kind": "report",
+      "group": "rulings of 16 November",
+      "from": "a $`\n",
+      "to": "",
+      "meaning02": "<p>a $`</p> C2-I-017 reads a backtick run with no closer of its length as text, and 0.1 wrote an empty math span. An adjacent closer joins the opener into a wider run, and a separator changes the empty value, so no spelling keeps the empty span. Report the parsed math range, `$` or `$$` with its backticks, at the end of inline content; do not rewrite.",
+      "toolEntry": "U-396",
       "silent": true
     }
   ],
