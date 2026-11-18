@@ -1,6 +1,7 @@
-// The single source of truth for which carve-js extensions the docs surfaces
-// turn on. Shared by the runtime Playground render and the build-time
-// vite-plugin-carve render so both surfaces match.
+// Compatibility list for the 0.1 Vite plugin still configured in config.ts.
+// The 0.2 Playground and build-time snippet call renderDocsCarve below, so
+// neither consumes this list's rendered HTML. The plugin only supplies the
+// source of the two imported .crv examples.
 //
 // carve-js ships a growing set of extension factories. To keep this list from
 // silently falling out of date as new ones land, EVERY exported extension
@@ -29,9 +30,15 @@ import {
 } from '@markup-carve/carve'
 
 import * as lib from '@markup-carve/carve'
+import { render as renderV2 } from './engine-v2.js'
 
-// The showcase set: authoring features a visitor actually writes, each of
-// which works zero-config and has a visible effect on the demo render.
+// Build-time snippets use the 0.2 renderer. The legacy extension list below
+// remains for the configured Vite plugin, which has no .crv imports on next2.
+export function renderDocsCarve(source, options = {}) {
+  return renderV2(source, { rawHtml: false, ...options })
+}
+
+// Legacy extension set kept for the configured Vite plugin and its tests.
 //
 //   - details, mermaid, mathBlock, codeGroup, tabs: block authoring constructs.
 //   - wikilinks, autolink: inline link sugar.
