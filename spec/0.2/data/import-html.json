@@ -82,7 +82,7 @@
     {"name": "progress", "treatment": "raw", "node": "raw_block or raw_inline; nothing with `rawHtml` off", "clauses": ["C2-M-056", "C2-M-057", "C2-M-065", "C2-M-066"]},
     {"name": "q", "treatment": "span", "node": "span", "clauses": ["C2-M-014", "C2-M-056", "C2-M-057"]},
     {"name": "rb", "treatment": "map", "node": "ruby", "clauses": ["C2-M-048"]},
-    {"name": "rp", "treatment": "drop", "clauses": ["C2-M-048", "C2-M-056", "C2-M-057"], "note": "not reported"},
+    {"name": "rp", "treatment": "drop", "clauses": ["C2-M-048", "C2-M-056"], "note": "not reported"},
     {"name": "rt", "treatment": "map", "node": "ruby", "clauses": ["C2-M-048"]},
     {"name": "ruby", "treatment": "map", "node": "ruby", "clauses": ["C2-M-048"]},
     {"name": "s", "treatment": "map", "node": "strike", "clauses": ["C2-M-044"]},
