@@ -1,8 +1,8 @@
 # Carve 0.2: status
 
-**Freeze candidate 16.** The candidate is the text of `spec/0.2/` on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
+**Freeze candidate 17.** The candidate is the text of `spec/0.2/` on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
-Freeze candidate 16 content commit: `9f9aff4c7`, the option rulings of 19 November 2026 (`softBreak`, `allowLosses`, `maxLosses`, `codeBlockRenderer`, `positionOf`; #6091) and the clause case fixes CC-1223 (#6082) and CC-1227 (#6088), with the release names of #6086. This status-only commit follows it. Freeze candidate 15 content commit: `4304a0c97`, the rulings D1 to D8 of 18 November 2026 (#6074, #6070). Freeze candidate 14 content commit: `f2be82f57`. Freeze candidate 13 content commit: `786e2821c`.
+Freeze candidate 17 content commit: `f22c19b9f`, the maintainer rulings of 19 November 2026, 12:00 (#6114), with the tabs `mode` ruling of 12:10 (`821d5d274`, #6113). This status-only commit follows it. Freeze candidate 16 content commit: `9f9aff4c7`, the option rulings of 19 November 2026 (`softBreak`, `allowLosses`, `maxLosses`, `codeBlockRenderer`, `positionOf`; #6091) and the clause case fixes CC-1223 (#6082) and CC-1227 (#6088), with the release names of #6086. Freeze candidate 15 content commit: `4304a0c97`, the rulings D1 to D8 of 18 November 2026 (#6074, #6070). Freeze candidate 14 content commit: `f2be82f57`. Freeze candidate 13 content commit: `786e2821c`.
 
 Freeze candidate 12 commit: `7c9de4372`. The older `eda35624` commit is freeze candidate 10.
 
