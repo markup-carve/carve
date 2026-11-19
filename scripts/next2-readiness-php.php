@@ -43,7 +43,10 @@ function optionsOf(array $case): array
         }];
     }
     if (in_array('carve.tabs', $options['extensions'] ?? [], true)) {
-        $options['extensions'] = Tabs::extensions(($options['renderers']['carve.tabs'] ?? null) === 'standard');
+        $renderer = $options['renderers']['carve.tabs'] ?? null;
+        $standard = $renderer === 'standard' || is_array($renderer) && isset($renderer['standard']);
+        $mode = is_array($renderer) ? ($renderer['standard']['mode'] ?? 'css') : 'css';
+        $options['extensions'] = Tabs::extensions($standard, $mode);
         unset($options['renderers']);
     }
     // The harness function of conformance/README.md ("Options").
@@ -112,6 +115,21 @@ function lintOptions(array $options): array
     return array_intersect_key($options, array_flip(['includes', 'extensions', 'rules', 'platforms', 'headingIds']));
 }
 
+function positionlessTree(string $source): \MarkupCarve\Carve\Node
+{
+    $tree = json_decode(Carve2::encodeTree(Carve2::parse($source)), true, 4096, JSON_THROW_ON_ERROR);
+    $withoutPositions = static function (array $node) use (&$withoutPositions): array {
+        unset($node['pos']);
+        foreach ($node as $key => $value) {
+            if (is_array($value)) {
+                $node[$key] = $withoutPositions($value);
+            }
+        }
+        return $node;
+    };
+    return Carve2::decodeTree(json_encode($withoutPositions($tree), JSON_THROW_ON_ERROR));
+}
+
 function runCase(array $case): array
 {
     $kind = $case['kind'] ?? 'render';
@@ -120,7 +138,7 @@ function runCase(array $case): array
         $source = hex2bin(str_replace(' ', '', $case['inputBytes']));
     }
     foreach ($case['options']['renderers'] ?? [] as $renderer) {
-        if ($renderer !== 'standard') {
+        if ($renderer !== 'standard' && !(is_array($renderer) && isset($renderer['standard']))) {
             return ['unsupported' => 'standard renderer host options are not offered'];
         }
     }
@@ -205,13 +223,27 @@ function runCase(array $case): array
                     $path = preg_match('/^option (\w+):/', $error->getMessage(), $m) ? '/' . $m[1] : null;
                     return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $path];
                 }
+            case 'fingerprint':
+                return ['fingerprint' => ($case['of'] ?? null) === 'tree'
+                    ? Carve2::treeFingerprint(positionlessTree($source))
+                    : Carve2::sourceFingerprint($source)];
+            case 'diff':
+                $before = positionlessTree($source);
+                $after = positionlessTree($case['inputAfter']);
+                $patch = Carve2::diffTree($before, $after);
+                return ['patch' => $patch, 'applies' => Carve2::encodeTree(Carve2::applyPatch($before, $patch)) === Carve2::encodeTree($after)];
+            case 'patch':
+                $fingerprint = isset($case['fingerprintOf'])
+                    ? ['fingerprint' => Carve2::treeFingerprint(positionlessTree($case['fingerprintOf']))] : [];
+                $tree = Carve2::applyPatch(positionlessTree($source), $case['patch'], $fingerprint);
+                return ['tree' => json_decode(Carve2::encodeTree($tree), true, 4096, JSON_THROW_ON_ERROR)];
             case 'tree-fixture':
                 return ['accepted' => true, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR)];
             default:
                 return ['unsupported' => $kind . ' has no 0.2 PHP API'];
         }
     } catch (Throwable $error) {
-        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $error->path ?? null];
+        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $error->pointer ?? $error->path ?? null];
     }
 }
 

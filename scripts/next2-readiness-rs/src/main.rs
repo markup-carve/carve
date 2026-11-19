@@ -92,11 +92,53 @@ fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
     } else {
         req["source"] = json!(c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or(""));
     }
+    invoke(req)
+}
+
+fn invoke(req: Value) -> Result<Value, Value> {
     let out: Value = serde_json::from_str(&carve::api::json::call(&req.to_string())).unwrap_or(Value::Null);
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
         None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"],"path":out["error"]["path"]})),
     }
+}
+
+fn strip_positions(tree: &mut Value) {
+    match tree {
+        Value::Object(fields) => {
+            fields.remove("pos");
+            for value in fields.values_mut() { strip_positions(value); }
+        }
+        Value::Array(items) => for value in items { strip_positions(value); },
+        _ => {}
+    }
+}
+
+fn tree_from(source: &str) -> Result<Value, Value> {
+    let mut tree = call(&json!({"input":source}), "parse", json!({}))?["tree"].clone();
+    strip_positions(&mut tree);
+    Ok(tree)
+}
+
+fn patch_case(c: &Value, kind: &str) -> Result<Value, Value> {
+    let source = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
+    if kind == "fingerprint" {
+        return if c["of"] == "tree" {
+            invoke(json!({"call":"treeFingerprint","tree":tree_from(source)?}))
+        } else { call(c, "sourceFingerprint", json!({})) };
+    }
+    let tree = tree_from(source)?;
+    if kind == "diff" {
+        let after = tree_from(c["inputAfter"].as_str().unwrap_or(""))?;
+        let patch = invoke(json!({"call":"diffTree","a":tree,"b":after}))?["patch"].clone();
+        let applied = invoke(json!({"call":"applyPatch","tree":tree,"patch":patch}))?["tree"].clone();
+        return Ok(json!({"patch":patch,"applies":applied == after}));
+    }
+    let mut request = json!({"call":"applyPatch","tree":tree,"patch":c["patch"]});
+    if let Some(fingerprint_source) = c["fingerprintOf"].as_str() {
+        request["fingerprint"] = invoke(json!({"call":"treeFingerprint","tree":tree_from(fingerprint_source)?}))?["fingerprint"].clone();
+    }
+    invoke(request)
 }
 
 fn parse_options(v: &Value) -> Value {
@@ -169,16 +211,24 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
-    let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position")
+    let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint")
         || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
-        return json!({"unsupported":"standard renderer host options are not offered"});
+        // Let the JSON boundary accept renderer host options when the pinned engine offers them.
+        // Its current renderers option takes only the string "standard".
+        return run_boundary(c, kind).unwrap_or_else(|refused| {
+            if refused["error"] == "CarveOptionError" && refused["path"] == "/renderers" {
+                json!({"unsupported":"standard renderer host options are not offered"})
+            } else { refused }
+        });
     }
     if boundary && c.get("files").is_none() {
         if c["options"].get("codeBlockRenderer").is_some() {
             return json!({"unsupported":"codeBlockRenderer is a host function"});
         }
-        return run_boundary(c, kind).unwrap_or_else(|refused| refused);
+        return if matches!(kind, "diff" | "patch" | "fingerprint") {
+            patch_case(c, kind).unwrap_or_else(|refused| refused)
+        } else { run_boundary(c, kind).unwrap_or_else(|refused| refused) };
     }
     let o = options(&c["options"], c.get("files"));
     match kind {
