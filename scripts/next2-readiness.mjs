@@ -161,7 +161,9 @@ const revision = dir => {
   return result.stdout.trim()
 }
 const engineHeads = { js: revision(jsDir), php: revision(phpDir), rs: revision(rsDir) }
-const js = await import(pathToFileURL(resolve(jsDir, 'v2/src/index.ts')))
+// carve-js next2 moved the 0.2 engine from v2/ to the package root (carve-js#5248).
+const jsV2 = existsSync(resolve(jsDir, 'v2/src/index.ts'))
+const js = await import(pathToFileURL(resolve(jsDir, jsV2 ? 'v2/src/index.ts' : 'src/index.ts')))
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
 function jsOptions(c) {
   const options = { ...(c.options ?? {}) }
@@ -177,6 +179,15 @@ function jsOptions(c) {
     }
   }
   return options
+}
+// conformance/schema.json `host.documentTransforms`: insert a node after the node at a pointer.
+function hostTransforms(host) {
+  return (host?.documentTransforms ?? []).map(({ name, after, insert }) => ({ name, transform: view => {
+    const steps = after.split('/').slice(1)
+    const index = Number(steps.pop())
+    steps.reduce((node, step) => node[step], view).splice(index + 1, 0, structuredClone(insert))
+    return view
+  } }))
 }
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
 const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms'].includes(key)))
@@ -214,7 +225,8 @@ function jsRun(c) {
     if (kind === 'parse') { const r = js.parseWithDiagnostics(input, options); return { tree: r.document, diagnostics: r.diagnostics, suppressed: r.suppressedDiagnostics } }
     if (kind === 'lint') return { diagnostics: js.lint(typeof input === 'string' ? input : input.toString('utf8'), options), ...(c.area === 'examples' ? { tree: js.parse(input, parseOptions(options)) } : {}) }
     if (kind === 'render' || kind === 'include') {
-      const r = js.renderWithDiagnostics(c.tree ?? input, options)
+      if (c.host && typeof js.renderWithDocumentTransforms !== 'function') return { unsupported: 'renderWithDocumentTransforms is not offered' }
+      const r = c.host ? js.renderWithDocumentTransforms(c.tree ?? input, hostTransforms(c.host), options) : js.renderWithDiagnostics(c.tree ?? input, options)
       const diagnostics = c.area === 'examples' && c.expected?.diagnostics ? [...r.diagnostics, ...js.lint(input, lintOptions(options))] : r.diagnostics
       return { html: r.html, diagnostics, suppressed: r.suppressedDiagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
     }
@@ -232,8 +244,8 @@ function cliRun(c, engine) {
     writeFileSync(path, content.text ?? Buffer.from(content.bytes.replaceAll(' ', ''), 'hex'))
   }
   const commands = {
-    js: [process.execPath, resolve(jsDir, 'dist/cli2.js')],
-    php: ['php', resolve(phpDir, 'v2/bin/carve2')],
+    js: [process.execPath, resolve(jsDir, jsV2 ? 'dist/cli2.js' : 'dist/cli.js')],
+    php: ['php', resolve(phpDir, existsSync(resolve(phpDir, 'v2/bin/carve2')) ? 'v2/bin/carve2' : 'bin/carve')],
     rs: [resolve(process.env.CARVE_RS_02_BIN ?? resolve(root, 'target/debug/carve2'))],
   }
   const [file, ...prefix] = commands[engine]
