@@ -45,10 +45,24 @@ const noPositions = value => {
 }
 // C2-A-162: tree equality skips srcByteLength, so it is compared only where the case states it.
 const noLength = value => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).filter(([k]) => k !== 'srcByteLength')) : value
+// C2-N-017 and C2-N-081: an include's expansion is a resolution result, not tree content.
+const noIncludeResolution = value => {
+  if (Array.isArray(value)) return value.map(noIncludeResolution)
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value)
+    .filter(([key]) => value.type !== 'include' || !['children', 'file'].includes(key))
+    .map(([key, child]) => [key, noIncludeResolution(child)]))
+  return value
+}
 const matchTree = (actual, expected) => {
-  const text = JSON.stringify(expected)
-  const shown = text.includes('"pos"') ? actual : noPositions(actual)
-  return same(text.includes('"srcByteLength"') ? shown : noLength(shown), expected)
+  const text = JSON.stringify(noIncludeResolution(expected))
+  const keepPositions = text.includes('"pos"')
+  const keepLength = text.includes('"srcByteLength"')
+  const comparable = value => {
+    const withoutResolution = noIncludeResolution(value)
+    const withoutPositions = keepPositions ? withoutResolution : noPositions(withoutResolution)
+    return keepLength ? withoutPositions : noLength(withoutPositions)
+  }
+  return same(comparable(actual), comparable(expected))
 }
 function sourceOf(c) { return c.inputBytes ? Buffer.from(c.inputBytes.replaceAll(' ', ''), 'hex') : c.input ?? '' }
 function resolver(files) {

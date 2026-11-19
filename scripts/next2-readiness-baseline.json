@@ -3,7 +3,7 @@
   "engineHeads": {
     "js": "a2f3334f393c88b0e5b36e339c615b2460a91025",
     "php": "1bee876c6f618f3ac5f646fcfe67ce3a5af449f1",
-    "rs": "e757891ff1613d046bb693d78286ce44dbc566b4"
+    "rs": "74919d4e5f847817f8c378ce770746bde154f32c"
   },
   "cases": {
     "clauses/render/CC-001": "9472afcc6dd08244",
@@ -467,7 +467,7 @@
     "clauses/render/CC-510": "f3f6d6f770ddfede",
     "clauses/render/CC-511": "54465a369dde90e2",
     "clauses/render/CC-512": "ca389f0292ff2759",
-    "clauses/render/CC-513": "73660939050339f8",
+    "clauses/render/CC-513": "4734f2e09d98fb57",
     "clauses/render/CC-514": "08235884cda59f18",
     "clauses/write/CC-515": "e45c7e99d17abdee",
     "clauses/import/CC-516": "53315f8b8c4e0e7d",
@@ -1200,7 +1200,7 @@
     "clauses/cli/CC-1249": "83ea06d0fedc88f4",
     "clauses/render/CC-1250": "5c44c424fb9fd0fa",
     "clauses/render/CC-1251": "58f01cfe23ec617d",
-    "clauses/render/CC-1252": "b745cd5e2cc24b11",
+    "clauses/render/CC-1252": "3d41291d22edf60f",
     "clauses/render/CC-1253": "08990b71a5ec0353",
     "clauses/render/CC-1254": "e62e50fe9e8390f0",
     "clauses/render/CC-1255": "f2af71c20f970b02",
@@ -1214,7 +1214,7 @@
     "clauses/render/CC-1263": "d5b7324dfc92cb2f",
     "clauses/render/CC-1264": "f07aa24ef2959bba",
     "clauses/render/CC-1265": "6fac2757c2d3ca11",
-    "clauses/render/CC-1266": "6d0191ea7cdcd5fe",
+    "clauses/render/CC-1266": "b8fffea79cef6a9b",
     "clauses/render/CC-1267": "66ad35dca2230bb0",
     "clauses/render/CC-1268": "b6ff23eff210031b",
     "clauses/render/CC-1269": "56eb2f8701440b4b",
@@ -2691,7 +2691,6 @@
       "clauses/write/CC-466": "fail",
       "clauses/write/CC-478": "fail",
       "clauses/write/CC-479": "fail",
-      "clauses/parse/CC-482": "fail",
       "clauses/write/CC-500": "fail",
       "clauses/render/CC-506": "fail",
       "clauses/format/CC-507": "fail",
@@ -2699,7 +2698,6 @@
       "clauses/parse/CC-509": "fail",
       "clauses/render/CC-510": "fail",
       "clauses/render/CC-511": "fail",
-      "clauses/render/CC-513": "fail",
       "clauses/render/CC-655": "fail",
       "clauses/write/CC-665": "fail",
       "clauses/write/CC-667": "fail",
@@ -2712,11 +2710,9 @@
       "clauses/lint/CC-1144": "fail",
       "clauses/render/CC-1246": "fail",
       "clauses/render/CC-1248": "fail",
-      "clauses/render/CC-1252": "fail",
       "clauses/render/CC-1257": "fail",
       "clauses/render/CC-1258": "fail",
       "clauses/render/CC-1259": "fail",
-      "clauses/render/CC-1266": "fail",
       "clauses/render/CC-1267": "fail",
       "clauses/render/CC-1268": "fail",
       "clauses/render/CC-1282": "fail",
@@ -2749,11 +2745,6 @@
       "clauses/layout/CC-432": "fail",
       "clauses/layout/CC-433": "fail",
       "clauses/layout/CC-434": "fail",
-      "clauses/render/CC-454": "fail",
-      "clauses/render/CC-455": "fail",
-      "clauses/render/CC-456": "fail",
-      "clauses/render/CC-457": "fail",
-      "clauses/render/CC-458": "fail",
       "clauses/render/CC-459": "fail",
       "clauses/write/CC-462": "fail",
       "clauses/write/CC-465": "fail",
@@ -2762,7 +2753,6 @@
       "clauses/write/CC-478": "fail",
       "clauses/write/CC-479": "fail",
       "clauses/import/CC-480": "fail",
-      "clauses/parse/CC-482": "fail",
       "clauses/write/CC-499": "fail",
       "clauses/write/CC-500": "fail",
       "clauses/migrate/CC-502": "unsupported",
@@ -2775,7 +2765,6 @@
       "clauses/parse/CC-509": "fail",
       "clauses/render/CC-510": "fail",
       "clauses/render/CC-511": "fail",
-      "clauses/render/CC-513": "fail",
       "clauses/write/CC-515": "fail",
       "clauses/cli/CC-519": "fail",
       "clauses/cli/CC-520": "fail",
@@ -2809,8 +2798,6 @@
       "clauses/parse/CC-617": "fail",
       "clauses/parse/CC-618": "fail",
       "clauses/render/CC-661": "fail",
-      "clauses/render/CC-663": "fail",
-      "clauses/render/CC-664": "fail",
       "clauses/write/CC-665": "fail",
       "clauses/write/CC-667": "fail",
       "clauses/import/CC-669": "fail",
@@ -2821,7 +2808,6 @@
       "clauses/import/CC-679": "fail",
       "clauses/import/CC-681": "fail",
       "clauses/cli/CC-910": "fail",
-      "clauses/render/CC-1033": "fail",
       "clauses/cli/CC-1035": "fail",
       "clauses/cli/CC-1036": "fail",
       "clauses/write/CC-1041": "fail",
@@ -2834,11 +2820,9 @@
       "clauses/cli/CC-1105": "fail",
       "clauses/write/CC-1184": "fail",
       "clauses/render/CC-1248": "fail",
-      "clauses/render/CC-1252": "fail",
       "clauses/render/CC-1257": "fail",
       "clauses/render/CC-1258": "fail",
       "clauses/render/CC-1259": "fail",
-      "clauses/render/CC-1266": "fail",
       "clauses/render/CC-1267": "fail",
       "clauses/render/CC-1268": "fail",
       "clauses/render/CC-1285": "fail",
@@ -2873,7 +2857,6 @@
       "clauses/write/CC-466": "fail",
       "clauses/write/CC-478": "fail",
       "clauses/write/CC-479": "fail",
-      "clauses/parse/CC-482": "fail",
       "clauses/write/CC-500": "fail",
       "clauses/render/CC-506": "fail",
       "clauses/lint/CC-508": "fail",
@@ -2881,7 +2864,6 @@
       "clauses/render/CC-510": "fail",
       "clauses/render/CC-511": "fail",
       "clauses/render/CC-512": "fail",
-      "clauses/render/CC-513": "fail",
       "clauses/render/CC-514": "fail",
       "clauses/write/CC-515": "fail",
       "clauses/parse/CC-557": "fail",
@@ -2890,10 +2872,8 @@
       "clauses/render/CC-663": "fail",
       "clauses/write/CC-665": "fail",
       "clauses/write/CC-667": "fail",
-      "clauses/lint/CC-1076": "fail",
       "clauses/lint/CC-1170": "fail",
       "clauses/render/CC-1248": "fail",
-      "clauses/render/CC-1252": "fail",
       "clauses/render/CC-1257": "fail",
       "clauses/render/CC-1258": "fail",
       "clauses/render/CC-1259": "fail",
@@ -2901,7 +2881,6 @@
       "clauses/render/CC-1262": "fail",
       "clauses/render/CC-1263": "fail",
       "clauses/render/CC-1264": "fail",
-      "clauses/render/CC-1266": "fail",
       "clauses/render/CC-1267": "fail",
       "clauses/render/CC-1268": "fail",
       "clauses/render/CC-1270": "fail",
@@ -2928,8 +2907,8 @@
   "counts": {
     "js": {
       "clauses": {
-        "pass": 1276,
-        "fail": 40,
+        "pass": 1280,
+        "fail": 36,
         "unsupported": 0
       },
       "examples": {
@@ -2955,8 +2934,8 @@
     },
     "php": {
       "clauses": {
-        "pass": 1207,
-        "fail": 104,
+        "pass": 1219,
+        "fail": 92,
         "unsupported": 5
       },
       "examples": {
@@ -2970,15 +2949,15 @@
         "unsupported": 0
       },
       "catalog": {
-        "pass": 143,
-        "fail": 13,
+        "pass": 144,
+        "fail": 12,
         "unsupported": 21
       }
     },
     "rs": {
       "clauses": {
-        "pass": 1258,
-        "fail": 58,
+        "pass": 1263,
+        "fail": 53,
         "unsupported": 0
       },
       "examples": {
@@ -3002,26 +2981,26 @@
     "js": {
       "idPercent": 99.76,
       "rangePercent": 100,
-      "messagePercent": 92.21,
-      "probes": 409,
+      "messagePercent": 92.25,
+      "probes": 411,
       "rangeProbes": 271,
-      "messageProbes": 385
+      "messageProbes": 387
     },
     "php": {
-      "idPercent": 98.04,
+      "idPercent": 98.05,
       "rangePercent": 97.05,
-      "messagePercent": 96.62,
-      "probes": 409,
+      "messagePercent": 96.64,
+      "probes": 411,
       "rangeProbes": 271,
-      "messageProbes": 385
+      "messageProbes": 387
     },
     "rs": {
       "idPercent": 100,
       "rangePercent": 100,
-      "messagePercent": 97.14,
-      "probes": 409,
+      "messagePercent": 97.16,
+      "probes": 411,
       "rangeProbes": 271,
-      "messageProbes": 385
+      "messageProbes": 387
     }
   },
   "catalogRules": {
@@ -4451,7 +4430,7 @@
         "messagePercent": 100
       },
       "extension-fallback-rendered": {
-        "status": "fail",
+        "status": "pass",
         "idPercent": 100,
         "rangePercent": 0,
         "messagePercent": 100
