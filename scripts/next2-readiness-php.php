@@ -162,15 +162,8 @@ function runCase(array $case): array
                 }
                 if (isset($case['tree']) && !isset($case['source']) && !isset($case['input'])) {
                     $doc = \MarkupCarve\Carve2\Json\TreeReader::read(json_encode($case['tree'], JSON_THROW_ON_ERROR), $options);
-                    [$html, $log] = \MarkupCarve\Carve2\Html\HtmlRenderer::renderWithLog(
-                        $doc,
-                        \MarkupCarve\Carve2\Options::from($options, ['resolve', 'render']),
-                    );
-                    $diagnostics = array_map(static fn (array $entry): array => [
-                        'code' => $entry['code'], 'channel' => $entry['channel'],
-                        'severity' => $entry['severity'], 'message' => $entry['message'],
-                    ], $log->entries);
-                    return ['html' => $html, 'diagnostics' => $diagnostics];
+                    $result = Carve2::renderWithDiagnostics($doc, $options);
+                    return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
                 }
                 $result = Carve2::renderWithDiagnostics($source, $options);
                 $diagnostics = $result->diagnostics;
