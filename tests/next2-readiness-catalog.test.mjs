@@ -15,7 +15,7 @@ test('historical diagnostics on clause cases fail for every engine output channe
   const outputs = {
     js: [{ diagnostics: [{ code: 'old' }] }, { diagnostics: [{ code: 'old' }] }],
     php: [{ stdoutDiagnostics: [{ code: 'empty' }] }, {}],
-    rs: [{ stderrDiagnostics: [{ code: 'old' }, { code: 'writer-refused' }] }, {}],
+    rs: [{ stderrDiagnostics: [{ code: 'old' }, { code: 'writer-refused' }], stdoutJson: { files: [{ diagnostics: [{ code: 'empty' }] }] } }, {}],
   }
-  assert.deepEqual(forbiddenCatalogReports(cases, outputs, rules), ['js/CC-1: old', 'php/CC-1: empty', 'rs/CC-1: old'])
+  assert.deepEqual(forbiddenCatalogReports(cases, outputs, rules), ['js/CC-1: old', 'php/CC-1: empty', 'rs/CC-1: old', 'rs/CC-1: empty'])
 })

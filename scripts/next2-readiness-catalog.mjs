@@ -9,7 +9,9 @@ export function forbiddenCatalogReports(cases, outputs, rules) {
   const found = []
   for (const [engine, rows] of Object.entries(outputs)) cases.forEach((c, index) => {
     if (c.area !== 'clauses') return
-    for (const diagnostic of [...(rows[index]?.diagnostics ?? []), ...(rows[index]?.stdoutDiagnostics ?? []), ...(rows[index]?.stderrDiagnostics ?? [])]) {
+    const actual = rows[index] ?? {}
+    const jsonDiagnostics = [...(actual.stdoutJson?.diagnostics ?? []), ...(actual.stdoutJson?.files ?? []).flatMap(file => file.diagnostics ?? [])]
+    for (const diagnostic of [...(actual.diagnostics ?? []), ...(actual.stdoutDiagnostics ?? []), ...(actual.stderrDiagnostics ?? []), ...jsonDiagnostics]) {
       if (excluded.has(diagnostic.code)) found.push(`${engine}/${c.id}: ${diagnostic.code}`)
     }
   })
