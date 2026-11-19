@@ -68,7 +68,7 @@ function sourceOf(c) { return c.inputBytes ? Buffer.from(c.inputBytes.replaceAll
 function resolver(files) {
   return request => {
     const file = files[request.path]
-    return file ? { text: typeof file === 'string' ? file : file.text ?? Buffer.from(file.bytes.replaceAll(' ', ''), 'hex'), id: request.path } : { error: 'not_found' }
+    return file ? file.error ? { error: file.error } : { text: typeof file === 'string' ? file : file.text ?? Buffer.from(file.bytes.replaceAll(' ', ''), 'hex'), id: request.path } : { error: 'not_found' }
   }
 }
 function point(source, offset) {
@@ -293,7 +293,7 @@ function jsRun(c) {
       return { html: r.html, diagnostics, suppressed: r.suppressedDiagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
     }
     return { unsupported: `unknown kind ${kind}` }
-  } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path } }
+  } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path, diagnostics: e.diagnostics } }
 }
 function cliRun(c, engine) {
   const dir = mkdtempSync(join(tmpdir(), `carve-next2-${engine}-`))

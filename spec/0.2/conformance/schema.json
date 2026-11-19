@@ -66,10 +66,11 @@
     },
     "file": {
       "type": "object",
-      "description": "A file the resolver serves: its text, or its bytes in hex where they are not text.",
+      "description": "A file the resolver serves as text or bytes, or a resolver failure for that path.",
       "oneOf": [
         { "required": ["text"], "properties": { "text": { "type": "string" } }, "additionalProperties": false },
-        { "required": ["bytes"], "properties": { "bytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$" } }, "additionalProperties": false }
+        { "required": ["bytes"], "properties": { "bytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$" } }, "additionalProperties": false },
+        { "required": ["error"], "properties": { "error": { "enum": ["outside_root", "unreadable"] } }, "additionalProperties": false }
       ]
     },
     "code": { "type": "string", "pattern": "^[a-z0-9/-]+$" },

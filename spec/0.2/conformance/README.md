@@ -66,7 +66,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `patch` | `input`, parsed with positions off, `patch`, and `fingerprintOf`, a source whose tree gives the `fingerprint` | `applyPatch` | `children`, `refusal` |
 | `fingerprint` | `input` or `inputBytes`; `of: "tree"` hashes its tree parsed with positions off | `sourceFingerprint`, or `treeFingerprint` | `fingerprint` |
 
-`inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
+`inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options"). A file entry with `{"error":"outside_root"}` or `{"error":"unreadable"}` makes the resolver return that cause for the path, so include failure cases do not depend on filesystem permissions or the runner's directory.
 
 ### Diagnostics
 
