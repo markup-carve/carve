@@ -174,14 +174,29 @@ const engineHeads = { js: revision(jsDir), php: revision(phpDir), rs: revision(r
 // carve-js next2 moved the 0.2 engine from v2/ to the package root (carve-js#5064).
 const jsV2 = existsSync(resolve(jsDir, 'v2/src/index.ts'))
 const js = await import(pathToFileURL(resolve(jsDir, jsV2 ? 'v2/src/index.ts' : 'src/index.ts')))
+const standard = await import(pathToFileURL(resolve(jsDir, 'public/extensions.ts')))
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
 // diffTree, applyPatch and the fingerprints (C2-T-043 to C2-T-046) are not exported from src/index.ts.
 const treePatch = existsSync(resolve(jsDir, 'src/tree-patch.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/tree-patch.ts'))) : null
+const bundles = [standard.mermaid, standard.imgFence, standard.mathBlock, standard.codeGroup, standard.details,
+  standard.spoiler].filter(Boolean).map(create => create())
+const standardDefinitions = new Map([
+  js.tabExtension, js.tabsExtension, js.wikiExtension, js.citeExtension,
+  ...bundles.flatMap(bundle => bundle.extensions),
+].filter(Boolean).map(definition => [definition.name, definition]))
+const standardRenderers = Object.assign({}, ...bundles.map(bundle => bundle.renderers))
 function jsOptions(c) {
   const options = { ...(c.options ?? {}) }
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
-  if (options.extensions?.includes('carve.tabs')) options.extensions = js.tabsExtensions
-  if (options.renderers?.['carve.tabs'] === 'standard') options.renderers = { 'carve.tabs': js.tabsRenderer }
+  if (options.extensions) {
+    const names = new Set(options.extensions)
+    if (names.has('carve.tabs')) names.add('carve.tab')
+    options.extensions = [...names].map(name => standardDefinitions.get(name) ?? name)
+  }
+  if (options.renderers) options.renderers = Object.fromEntries(Object.entries(options.renderers).map(([name, choice]) => [
+    name, name === 'carve.tabs' && js.standardTabsRenderer ? js.standardTabsRenderer(choice === 'standard' ? {} : choice.standard) :
+      choice === 'standard' ? standardRenderers[name] ?? choice : choice,
+  ]))
   // The harness function of conformance/README.md ("Options").
   if (options.codeBlockRenderer) {
     const { syntax, result } = options.codeBlockRenderer
@@ -204,13 +219,11 @@ function hostTransforms(host) {
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
 const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms', 'headingIds'].includes(key)))
 function jsRun(c) {
-  // conformance/README.md: `{ standard: {...} }` creates the standard renderer with host options.
-  if (Object.values(c.options?.renderers ?? {}).some(renderer => renderer !== 'standard')) return { unsupported: 'standard renderer host options are not offered' }
   const input = sourceOf(c), options = jsOptions(c)
   const kind = c.kind
   try {
     if (kind === 'refused-tree' || kind === 'supplied-tree' || kind === 'tree') {
-      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree))
+      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions)
       return { accepted: true, tree }
     }
     if (kind === 'layout-fixture') {
@@ -241,7 +254,12 @@ function jsRun(c) {
       return { tree: treePatch.applyPatch(tree(input), c.patch, { fingerprint }) }
     }
     if (kind === 'tree-fixture') return { tree: js.parse(input, parseOptions(options)), accepted: true }
-    if (kind === 'write') { const r = js.writeWithDiagnostics(c.tree, { ...options, ...(c.layout ? { layout: c.layout } : {}) }); return { carve: r.source, diagnostics: r.diagnostics } }
+    if (kind === 'write') {
+      const writeOptions = { ...options, ...(c.layout ? { layout: c.layout } : {}) }
+      if (c.expected?.refusal) return { carve: js.write(c.tree, writeOptions) }
+      const r = js.writeWithDiagnostics(c.tree, writeOptions)
+      return { carve: r.source, diagnostics: r.diagnostics }
+    }
     if (kind === 'format' || kind === 'write-example') {
       const r = js.formatWithDiagnostics(typeof input === 'string' ? input : new TextDecoder().decode(input), options)
       return { carve: r.source, diagnostics: r.diagnostics, ...(kind === 'write-example' ? { ...(c.expected.html !== undefined ? { html: js.render(input, parseOptions(options)) } : {}), tree: js.parse(input, parseOptions(options)) } : {}) }
