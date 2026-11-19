@@ -91,6 +91,15 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | U-425 | Type :samp[ls -l]. (former samp host extension) **SILENT** | Sample output is a span with the key `samp`, an ordinary attribute of the core that a registered semantic span extension writes as `<samp>` (C2-X-066). | Write `Type [ls -l]{samp}.`; rewrite |
 | U-429 | # Intro ⏎ ⏎ See </#intro>. (`carve upgrade --migrate`) **SILENT** | A cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the 0.1 `fmt --migrate` repair; the record is `case-reference`. An id is matched exactly (C2-I-097). A reference with several candidates is left for `lint`. | Write `See </#Intro>.`; rewrite |
 
+### Upgrade replay rows of 19 November
+
+The upgrade replay of the 0.1 conformance pack and examples found two more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
+
+| ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
+| --- | --- | --- | --- |
+| U-430 | a /b {+c/ d+} **SILENT** | 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), also across a braced opener or an attribute block, where 0.1 kept it text: `<p>a <em>b {+c</em> d+}</p>`. | Write `a \/b {+c/ d+}` (C2-I-010); escape |
+| U-431 | a ----------- b **SILENT** | C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again, `—––––`; 0.1 wrote as many em dashes as leave an even rest, `———–`. | Write the dashes 0.1 wrote, `a ———– b`; rewrite |
+
 ### Source change index
 
 
