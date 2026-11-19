@@ -17,6 +17,15 @@ Expected gaps are split into those listed in the "Engine gaps" sections of `spec
 
 Upgrade replay sources are grouped by file. A newly blocked source is a regression only when its file is unchanged since the baseline.
 
+Each blocked upgrade source gets a class (carve#6163, carve#6164):
+
+- **(b) tool defect**: the upgrade threw, or a `rewrite` or `escape` row of `spec/0.2/data/upgrade-map.json` is cited on the line of the residual mismatch.
+- **(d) unmapped**: no row explains the difference.
+- **(a) report row**: only `report` or `none` rows are cited on the mismatch line; a person decides.
+- **(c) malformed 0.1 source**: the frozen 0.1 lint reports a rule from `next2-readiness-malformed.json` on the mismatch line, or anywhere in a source with no mapped row.
+
+Only (b) and (d) count against the carve-js upgrade bar. All four are listed in the report, and all four are in the regression gate: a blocked source of an unchanged file that moves from (a) or (c) to (b) or (d) is a regression too.
+
 Aggregate counts, per-rule catalog percentages and lint agreement are reported in the summary but do not fail the job: adding a case moves them without anything regressing.
 
 Catalog rows with status `obsolete` or `void` remain in the historical data but are excluded from the shared trigger denominator. The report counts them separately as "Excluded: obsolete/void". The job fails if an engine emits either kind on a clause case. A rule with status `engine-local`, such as the C2-W-133 `writer-refused` repair guard, is counted separately and verified by engine implementation tests rather than a shared clause case.

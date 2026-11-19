@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed } from '../scripts/next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass } from '../scripts/next2-readiness-classify.mjs'
 
 const base = { area: 'clauses', kind: 'render', id: 'CC-010', clauses: ['C2-B-001'], why: 'w', input: 'a\n', expected: { html: '<p>a</p>\n' } }
 const fp = c => caseFingerprint(c)
@@ -102,4 +102,55 @@ test('upgrade: a newly blocked source is a regression only while its file is unc
   const v = classifyUpgrade({ baselineDigests: before, currentDigests: after, baselineIds: [], currentIds: ['pack/a.json/1', 'pack/b.json/1', 'pack/c.json/1'] })
   assert.deepEqual(v.regressions, ['pack/a.json/1'])
   assert.deepEqual(v.gaps, ['pack/b.json/1', 'pack/c.json/1'])
+})
+
+const kinds = new Map([['U-068', 'rewrite'], ['U-106', 'escape'], ['U-145', 'report'], ['X-001', 'none']])
+const malformed = new Set(['unclosed-code-fence'])
+const mismatch = (line, extra = {}) => ({ entry: 'upgrade-mismatch', class: 'mismatch', line, message: 'differs', ...extra })
+const cls = (records, lint = [], error) => upgradeClass({ records, lint, error, kinds, malformed })
+
+test('a thrown upgrade is a tool defect', () => {
+  assert.equal(cls([], [], 'boom'), 'b')
+})
+
+test('a rewrite or escape row on the mismatch line is a tool defect', () => {
+  assert.equal(cls([{ entry: 'U-068', line: 2 }, { entry: 'U-145', line: 2 }, mismatch(2)]), 'b')
+  assert.equal(cls([{ entry: 'U-106', line: 3 }, mismatch(3)]), 'b')
+})
+
+test('only report and none rows on the mismatch line make a report-row source', () => {
+  assert.equal(cls([{ entry: 'U-068', line: 1 }, { entry: 'U-145', line: 2 }, mismatch(2)]), 'a')
+  assert.equal(cls([{ entry: 'X-001', line: 4 }, mismatch(4)]), 'a')
+})
+
+test('with no row on the mismatch line, the source rows decide', () => {
+  assert.equal(cls([{ entry: 'U-068', line: 1 }, mismatch(5)]), 'b')
+  assert.equal(cls([{ entry: 'U-145', line: 1 }, mismatch(5)]), 'a')
+})
+
+test('a malformed 0.1 finding on the mismatch line makes a malformed source', () => {
+  assert.equal(cls([{ entry: 'U-068', line: 2 }, mismatch(2)], [{ rule: 'unclosed-code-fence', line: 2 }]), 'c')
+  assert.equal(cls([{ entry: 'U-068', line: 2 }, mismatch(2)], [{ rule: 'unclosed-code-fence', line: 1 }]), 'b')
+  assert.equal(cls([{ entry: 'U-068', line: 2 }, mismatch(2)], [{ rule: 'unused-footnote-definition', line: 2 }]), 'b')
+})
+
+test('a difference with no mapped row is malformed when the source has any malformed finding, else unmapped', () => {
+  const none = [mismatch(6, { status: 'no mapped row' })]
+  assert.equal(cls(none), 'd')
+  assert.equal(cls(none, [{ rule: 'unclosed-code-fence', line: 2 }]), 'c')
+  assert.equal(cls(none, [{ rule: 'broken-crossref', line: 6 }]), 'd')
+  assert.equal(cls([{ entry: 'U-145', line: 6 }, ...none]), 'd')
+})
+
+test('a blocked source of an unchanged file that moves to a readiness class is a regression', () => {
+  const digests = { 'pack/a.json': 'x', 'pack/b.json': 'y' }
+  const v = classifyUpgrade({ baselineDigests: digests, currentDigests: digests, baselineIds: ['pack/a.json/1', 'pack/a.json/2', 'pack/b.json/1'], currentIds: ['pack/a.json/1', 'pack/a.json/2', 'pack/b.json/1'],
+    baselineClasses: { 'pack/a.json/1': 'a', 'pack/a.json/2': 'b', 'pack/b.json/1': 'c' }, currentClasses: { 'pack/a.json/1': 'b', 'pack/a.json/2': 'd', 'pack/b.json/1': 'a' } })
+  assert.deepEqual(v.regressions, ['pack/a.json/1'])
+})
+
+test('a baseline without classes compares blocked ids only', () => {
+  const digests = { 'pack/a.json': 'x' }
+  const v = classifyUpgrade({ baselineDigests: digests, currentDigests: digests, baselineIds: ['pack/a.json/1'], currentIds: ['pack/a.json/1'], currentClasses: { 'pack/a.json/1': 'b' } })
+  assert.deepEqual(v.regressions, [])
 })

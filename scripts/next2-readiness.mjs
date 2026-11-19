@@ -6,7 +6,7 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed } from './next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeBarClasses, upgradeClass } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -394,6 +394,10 @@ for (const engine of Object.keys(outputs)) {
 
 async function replay() {
   const { upgrade, canWriteUpgrade } = await import(pathToFileURL(resolve(jsDir, 'upgrade/src/index.ts')))
+  const { lintCarve } = await import(pathToFileURL(resolve(jsDir, 'build/engine-0.1/lint.js')))
+  const kinds = new Map([...JSON.parse(readFileSync(resolve(jsDir, 'upgrade/data/entries.json'), 'utf8')).extensions, ...read('data/upgrade-map.json').source.map(row => ({ id: row.toolEntry ?? row.id, class: row.kind }))].map(row => [row.id, row.class]))
+  const malformed = new Set(Object.keys(JSON.parse(readFileSync(resolve(root, 'scripts/next2-readiness-malformed.json'), 'utf8')).rules))
+  const lintOf = source => { try { return lintCarve(source) } catch { return [] } }
   const sources = new Map()
   for (const name of readdirSync(resolve(root, 'tests/upgrade-replay/pack')).filter(n => n.endsWith('.json'))) {
     const rows = JSON.parse(readFileSync(resolve(root, 'tests/upgrade-replay/pack', name), 'utf8'))
@@ -413,7 +417,8 @@ async function replay() {
   exampleFiles(resolve(root, 'tests/upgrade-replay/examples'))
   const all = [...sources]
   const selected = Number.isFinite(limit) ? all.slice(0, limit) : all
-  const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, blockedIds: [], noMappedIds: [], samples: [] }
+  const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, blockedIds: [], noMappedIds: [], classes: { a: 0, b: 0, c: 0, d: 0 }, blockedClasses: {}, samples: [] }
+  const block = (id, cls) => { out.blocked++; out.blockedIds.push(id); out.classes[cls]++; out.blockedClasses[id] = cls }
   out.sourceDigests = groupDigests(all)
   for (const [id, source] of selected) {
     try {
@@ -425,9 +430,9 @@ async function replay() {
         if (noMapped) { out.noMappedRow++; out.noMappedIds.push(id) }
         if (out.samples.length < 15) out.samples.push({ id, records: r.records.filter(rec => rec.class === 'mismatch').slice(0, 2) })
       }
-      if (!canWriteUpgrade(r)) { out.blocked++; out.blockedIds.push(id) }
+      if (!canWriteUpgrade(r)) block(id, upgradeClass({ records: r.records, lint: lintOf(source), kinds, malformed }))
     } catch (error) {
-      out.mismatches++; out.blocked++; out.blockedIds.push(id)
+      out.mismatches++; block(id, upgradeClass({ error: String(error), kinds, malformed }))
       if (out.samples.length < 15) out.samples.push({ id, error: String(error) })
     }
   }
@@ -442,7 +447,8 @@ for (const engine of ['js', 'php', 'rs']) {
   for (const area of ['clauses', 'examples', 'trees']) counts[engine][area] = tally(results[engine].filter(r => r.area === area))
   counts[engine].catalog = tally(catalog[engine])
 }
-counts.js.upgrade = { pass: upgrade.total - upgrade.blocked, fail: upgrade.blocked, unsupported: 0, excluded: 0, engineLocal: 0 }
+const upgradeFail = [...upgradeBarClasses].reduce((sum, cls) => sum + upgrade.classes[cls], 0)
+counts.js.upgrade = { pass: upgrade.total - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
 const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries(rows.filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
@@ -459,7 +465,10 @@ for (const [engine, rows] of Object.entries(results)) {
   for (const row of rows.filter(r => r.status === 'unsupported')) kinds.set(row.kind, (kinds.get(row.kind) ?? 0) + 1)
   for (const [kind, count] of [...kinds].sort(([a], [b]) => a.localeCompare(b))) lines.push(`| ${engine} | ${kind} | ${count} |`)
 }
-lines.push('', `Upgrade replay: ${upgrade.total} sources, ${upgrade.mismatches} mismatches, ${upgrade.noMappedRow} with no mapped row (${upgrade.noMappedShare}%), ${upgrade.blocked} blocked.`, '', `Runner wall time: ${report.durationSeconds} seconds.`)
+lines.push('', `Upgrade replay: ${upgrade.total} sources, ${upgrade.mismatches} mismatches, ${upgrade.noMappedRow} with no mapped row (${upgrade.noMappedShare}%), ${upgrade.blocked} blocked.`)
+lines.push('', 'Blocked upgrade sources by class. Only tool defects and unmapped sources count against readiness (carve#6163); every class is in the regression gate.', '', '| Class | Meaning | Blocked | Counts against readiness |', '|---|---|---:|---|')
+for (const [cls, meaning] of [['b', 'tool defect: a rewrite or escape row is cited where the HTML still differs'], ['d', 'unmapped: no row explains the difference'], ['a', 'report row: a person decides'], ['c', 'malformed 0.1 source: the 0.1 lint flags it']]) lines.push(`| (${cls}) | ${meaning} | ${upgrade.classes[cls]} | ${upgradeBarClasses.has(cls) ? 'yes' : 'no'} |`)
+lines.push('', `Runner wall time: ${report.durationSeconds} seconds.`)
 lines.push('', '| Engine | Lint ID | Range | Message |', '|---|---:|---:|---:|')
 for (const [engine, item] of Object.entries(lintAgreement)) lines.push(`| ${engine} | ${item.idPercent}% | ${item.rangePercent}% | ${item.messagePercent}% |`)
 
@@ -477,14 +486,14 @@ if (baseline) for (const engine of ['js', 'php', 'rs']) {
   if (sampled) verdicts[engine].regressions = []
 }
 const upgradeVerdict = baseline && !sampled
-  ? classifyUpgrade({ baselineDigests: baseline.upgrade.sourceDigests, currentDigests: upgrade.sourceDigests, baselineIds: baseline.upgrade.blockedIds, currentIds: upgrade.blockedIds })
+  ? classifyUpgrade({ baselineDigests: baseline.upgrade.sourceDigests, currentDigests: upgrade.sourceDigests, baselineIds: baseline.upgrade.blockedIds, currentIds: upgrade.blockedIds, baselineClasses: baseline.upgrade.blockedClasses, currentClasses: upgrade.blockedClasses })
   : { regressions: [], gaps: [] }
 const headMismatch = args.has('--baseline-heads') && baseline ? Object.keys(engineHeads).filter(engine => engineHeads[engine] !== baseline.engineHeads[engine]) : []
 const regressions = [
   ...forbiddenReports.map(report => `excluded catalog diagnostic on clause case: ${report}`),
   ...headMismatch.map(engine => `${engine}: checked out ${engineHeads[engine]}, the baseline names ${baseline.engineHeads[engine]}`),
   ...Object.entries(verdicts).flatMap(([engine, v]) => v.regressions.map(r => `${engine}/${r.key}: ${r.old} became ${r.now}`)),
-  ...upgradeVerdict.regressions.map(id => `upgrade: newly blocked source ${id}`),
+  ...upgradeVerdict.regressions.map(id => `upgrade: source ${id} is newly blocked or moved to a readiness class (${upgrade.blockedClasses[id]})`),
 ]
 report.verdict = { regressions, forbiddenReports, engines: verdicts, upgrade: upgradeVerdict, listedIds: [...statusIds].sort() }
 if (baseline) {
@@ -504,7 +513,7 @@ if (baseline) {
 writeFileSync(jsonPath, JSON.stringify(report, null, 2) + '\n')
 writeFileSync(mdPath, lines.join('\n') + '\n')
 console.log(lines.join('\n'))
-const nextBaseline = () => JSON.stringify({ schema: 2, engineHeads, cases: currentCases, caseFailures, counts, lintAgreement, catalogRules, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow, blockedIds: upgrade.blockedIds, noMappedIds: upgrade.noMappedIds, sourceDigests: upgrade.sourceDigests } }, null, 2) + '\n'
+const nextBaseline = () => JSON.stringify({ schema: 2, engineHeads, cases: currentCases, caseFailures, counts, lintAgreement, catalogRules, upgrade: { total: upgrade.total, blocked: upgrade.blocked, mismatches: upgrade.mismatches, noMappedRow: upgrade.noMappedRow, blockedIds: upgrade.blockedIds, classes: upgrade.classes, blockedClasses: upgrade.blockedClasses, noMappedIds: upgrade.noMappedIds, sourceDigests: upgrade.sourceDigests } }, null, 2) + '\n'
 if (sampled) console.log('Sampled run; baseline comparison skipped.')
 else if (baselineOut) writeFileSync(resolve(root, baselineOut), nextBaseline())
 if (regressions.length) console.error(`Readiness regressions:\n${regressions.join('\n')}`)

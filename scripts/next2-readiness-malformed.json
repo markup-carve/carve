@@ -1,0 +1,25 @@
+{
+  "description": "Frozen 0.1 lint rules whose finding marks a malformed or ambiguous 0.1 source. A blocked upgrade source with such a finding is class (c) in the readiness report (carve#6163, carve#6164): it has no single 0.1 meaning to preserve.",
+  "rules": {
+    "unclosed-code-fence": "a code fence with no closer; 0.1 recovers by its own ownership rules",
+    "unclosed-container-fence": "a container fence with no closer",
+    "unclosed-comment-fence": "a comment fence with no closer",
+    "unclosed-inline-emphasis": "an emphasis opener that never closes",
+    "block-opener-overindented": "a block opener past its container's content column",
+    "list-item-block-overindented": "a list item block past the item's content column",
+    "list-marker-below-content-column": "a list marker below its owner's content column",
+    "description-separator-below-content-column": "a description separator below its owner's content column",
+    "list-item-body-detached": "a list item body separated from its marker",
+    "continuation-marker-refused": "a continuation marker 0.1 refused",
+    "refused-continuation-marker": "a continuation marker 0.1 refused (older rule id)",
+    "table-span-marker-blocked": "a table span marker 0.1 could not apply",
+    "table-marker-run-padding": "a table marker run with padding inside it",
+    "table-shaped-paragraph": "a table-shaped line 0.1 read as a paragraph",
+    "unattached-block-attribute": "a block attribute with no block to attach to",
+    "block-marker-as-text": "a block marker 0.1 read as text because the block never opened",
+    "fence-opener-fallback": "a fence opener 0.1 read through its fallback",
+    "empty-link-destination": "a link with an empty destination",
+    "empty-reference-definition": "a reference definition with no destination",
+    "duplicate-footnote-definition": "two definitions of one footnote label"
+  }
+}
