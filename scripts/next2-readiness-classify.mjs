@@ -46,17 +46,38 @@ export function classify({ baselineCases, baselineFailures = {}, currentCases, c
 const sourceGroup = id => id.slice(0, id.lastIndexOf('/'))
 
 // A source is compared only while its file is unchanged; an edited or new file holds expected gaps.
-export function classifyUpgrade({ baselineDigests, currentDigests, baselineIds, currentIds }) {
+// A blocked source that moves from (a) or (c) to (b) or (d) gets worse too.
+export function classifyUpgrade({ baselineDigests, currentDigests, baselineIds, currentIds, baselineClasses, currentClasses = {} }) {
   const old = new Set(baselineIds)
   const regressions = [], gaps = []
   for (const id of currentIds) {
-    if (old.has(id)) continue
+    const worse = old.has(id) && baselineClasses?.[id] !== undefined && upgradeRank(currentClasses[id]) < upgradeRank(baselineClasses[id])
+    if (old.has(id) && !worse) continue
     const group = sourceGroup(id)
     if (baselineDigests[group] !== undefined && baselineDigests[group] === currentDigests[group]) regressions.push(id)
     else gaps.push(id)
   }
   return { regressions, gaps }
 }
+
+// carve#6163: (b) tool defect and (d) unmapped count against readiness; (a) report row and (c) malformed 0.1 are listed apart.
+export const upgradeBarClasses = new Set(['b', 'd'])
+
+// `kinds` maps an upgrade row id to its map kind; `malformed` holds the 0.1 lint rules that mark a malformed source.
+export function upgradeClass({ records = [], error, lint = [], kinds, malformed }) {
+  if (error !== undefined) return 'b'
+  const rows = records.filter(r => kinds.has(r.entry))
+  const mismatch = records.filter(r => r.class === 'mismatch').at(-1)
+  const line = mismatch?.line ?? 0
+  const flagged = lint.filter(w => malformed.has(w.rule))
+  // carve#6164: a difference no row explains is read against the whole source.
+  if (!rows.length || records.some(r => r.status === 'no mapped row')) return flagged.length ? 'c' : 'd'
+  if (flagged.some(w => line === 0 || w.line === line)) return 'c'
+  const onLine = rows.filter(r => line === 0 || r.line === line || r.line === 0)
+  return (onLine.length ? onLine : rows).some(r => ['rewrite', 'escape'].includes(kinds.get(r.entry))) ? 'b' : 'a'
+}
+
+const upgradeRank = id => id === undefined ? 2 : upgradeBarClasses.has(id) ? 0 : 1
 
 export function groupDigests(sources) {
   const groups = new Map()
