@@ -110,6 +110,26 @@ The extension mechanism and the standard extensions: `extensions.md` as a whole.
 - D1, C2-B-042 and C2-B-044: the reference engine still makes one list for `v. x` followed by `vi. y`; the first marker fixes alphabetic style, so the second begins a roman list. CC-1207 tests the same rule with `m.` and `mi.`.
 - D2, C2-I-023 and C2-I-024: the reference engine still lets a line comment stop before a bracket or braced closer; `^[a %% c] d` must render `<p>^[a</p>`. CC-1208 tests a closer on a later line. It also still reads `%%` directly after `[`, `^[` or `:name[` as a line comment; `[%% c] d` must render `<p>[%% c] d</p>`. Directly after a braced opener it already keeps `%%` as text (CC-1216). The engine fails CC-145 to CC-152, CC-316 to CC-320, CC-1208, CC-1217 and CC-1218.
 
+### `carve-js` and `carve-php`
+
+- D1, C2-W-028 with C2-B-038, C2-B-039 and C2-B-049: CC-1215 writes adjacent ordered lists of different styles without the required separation. The changed `syntax-blocks-284` tree fixture also expects the `v.` and `vi.` markers to make separate lists under C2-B-042 and C2-B-044.
+- D2, C2-I-023 and C2-I-024: the changed `syntax-inline-128` and `syntax-inline-18` tree fixtures expect a line comment to take the bracket closer and the rest of its line.
+- D3, C2-X-052 and C2-X-043: CC-1219 and CC-1234 require the registered build-time tabs renderer in static mode.
+- D4, C2-X-053 and C2-X-055: CC-1221, CC-1229 and CC-1230 require the ordered document transforms and transformed-view id checks.
+- D5, C2-X-057 and C2-X-058: CC-1222 and CC-1223 require the registered `wiki` and `cite` inline matchers.
+- D6, C2-X-056 and C2-X-043: CC-1231 and CC-1232 require the first marked tab to be selected.
+- D7, C2-X-059 and C2-X-060: CC-1225 to CC-1228 require the `imgFence` matchers, trusted sanitizer and narrow URL-policy exception.
+
+### `carve-rs`
+
+- D1, C2-W-028 with C2-B-038, C2-B-039 and C2-B-049: CC-1213 and CC-1215 need ordered-list style separation in the writer. The changed `syntax-blocks-284` tree fixture also expects the `v.` and `vi.` markers to make separate lists under C2-B-042 and C2-B-044.
+- D2, C2-I-023 and C2-I-024: the changed `syntax-inline-128` and `syntax-inline-18` tree fixtures expect a line comment to take the bracket closer and the rest of its line.
+- D3, C2-X-052 and C2-X-043: CC-1219, CC-1220 and CC-1234 require both renderer channels and the static tabs output.
+- D4, C2-X-053 and C2-X-055: CC-1221, CC-1229 and CC-1230 require the ordered document transforms and transformed-view id checks.
+- D5, C2-X-057 and C2-X-058: CC-1222 and CC-1223 require the registered `wiki` and `cite` inline matchers.
+- D6, C2-X-056 and C2-X-043: CC-1224 and CC-1231 to CC-1233 require quoted tab titles and the first marked tab selection rule.
+- D7, C2-X-059 and C2-X-060: CC-1225 to CC-1228 require the `imgFence` matchers, trusted sanitizer and narrow URL-policy exception.
+
 ## What the reviews covered
 
 - The first review's findings F1 to F20 were fixed before the commit the second review read, and the second review found those fixes held in the cases it checked. Its scope is not recorded here.

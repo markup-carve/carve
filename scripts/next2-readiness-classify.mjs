@@ -68,7 +68,7 @@ export function groupDigests(sources) {
   return Object.fromEntries([...groups].sort(([a], [b]) => a.localeCompare(b)).map(([group, rows]) => [group, digest(rows)]))
 }
 
-// Case and clause IDs named in the STATUS.md "Engine gaps" sections, with "X-1 to X-9" ranges expanded.
+// Case, clause and tree fixture IDs named in the STATUS.md "Engine gaps" sections, with "X-1 to X-9" ranges expanded.
 export function listedGaps(markdown) {
   const ids = new Set()
   let level = 0
@@ -86,6 +86,7 @@ export function listedGaps(markdown) {
       return range.join(' ')
     })
     for (const match of text.matchAll(/\b(?:CC|C2-[A-Z])-\d+\b/g)) ids.add(match[0])
+    for (const match of text.matchAll(/`([a-z]+(?:-[a-z]+)*-\d+)`/g)) ids.add(match[1])
   }
   return ids
 }
