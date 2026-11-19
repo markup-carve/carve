@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use MarkupCarve\Carve2\Carve2;
+use MarkupCarve\Carve2\Extension\DocumentTransform;
 use MarkupCarve\Carve2\Extension\Tabs;
 use MarkupCarve\Carve2\Json\TreeEncoder;
+use MarkupCarve\Carve2\Json\TreeReader;
 
 $engine = getenv('CARVE_PHP_DIR');
 if (!$engine || !is_file($engine . '/vendor/autoload.php')) {
@@ -12,6 +14,20 @@ if (!$engine || !is_file($engine . '/vendor/autoload.php')) {
     exit(2);
 }
 require $engine . '/vendor/autoload.php';
+// carve-php next2 moved the 0.2 engine to the package root as MarkupCarve\Carve (carve-php#5248).
+if (!class_exists(Carve2::class)) {
+    spl_autoload_register(static function (string $class): void {
+        if (str_starts_with($class, 'MarkupCarve\\Carve2\\')) {
+            $target = 'MarkupCarve\\Carve\\' . substr($class, strlen('MarkupCarve\\Carve2\\'));
+            if ($target === 'MarkupCarve\\Carve\\Carve2') {
+                $target = 'MarkupCarve\\Carve\\Carve';
+            }
+            if (class_exists($target)) {
+                class_alias($target, $class);
+            }
+        }
+    });
+}
 
 function optionsOf(array $case): array
 {
@@ -31,6 +47,28 @@ function optionsOf(array $case): array
         unset($options['renderers']);
     }
     return $options;
+}
+
+/**
+ * conformance/schema.json `host.documentTransforms`: insert a node after the node at a pointer.
+ */
+function hostTransforms(array $host): array
+{
+    return array_map(static function (array $entry): DocumentTransform {
+        return new DocumentTransform($entry['name'], static function ($view) use ($entry) {
+            $tree = (new TreeEncoder())->encode($view, null);
+            $steps = explode('/', substr($entry['after'], 1));
+            $index = (int)array_pop($steps);
+            $list = &$tree;
+            foreach ($steps as $step) {
+                $list = &$list[$step];
+            }
+            array_splice($list, $index + 1, 0, [$entry['insert']]);
+            unset($list);
+
+            return TreeReader::read(json_encode($tree, JSON_THROW_ON_ERROR));
+        });
+    }, $host['documentTransforms'] ?? []);
 }
 
 function findings(array $items): array
@@ -67,6 +105,13 @@ function runCase(array $case): array
         switch ($kind) {
             case 'render':
             case 'include':
+                if (isset($case['host'])) {
+                    if (!method_exists(Carve2::class, 'renderWithDocumentTransforms')) {
+                        return ['unsupported' => 'renderWithDocumentTransforms is not offered'];
+                    }
+                    $result = Carve2::renderWithDocumentTransforms($case['tree'] ?? $source, hostTransforms($case['host']), $options);
+                    return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
+                }
                 if (isset($case['tree']) && !isset($case['source']) && !isset($case['input'])) {
                     $doc = \MarkupCarve\Carve2\Json\TreeReader::read(json_encode($case['tree'], JSON_THROW_ON_ERROR), $options);
                     [$html, $log] = \MarkupCarve\Carve2\Html\HtmlRenderer::renderWithLog(

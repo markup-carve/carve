@@ -56899,7 +56899,6 @@
        "name": "sample.insert",
        "version": "1",
        "children": [],
-       "slots": {},
        "fallback": [
         {
          "type": "paragraph",
@@ -57109,7 +57108,6 @@
        "name": "sample.first",
        "version": "1",
        "children": [],
-       "slots": {},
        "fallback": [
         {
          "type": "paragraph",
@@ -57131,7 +57129,6 @@
        "name": "sample.second",
        "version": "1",
        "children": [],
-       "slots": {},
        "fallback": [
         {
          "type": "paragraph",
@@ -57197,7 +57194,6 @@
        "name": "sample.first",
        "version": "1",
        "children": [],
-       "slots": {},
        "fallback": [
         {
          "type": "paragraph",

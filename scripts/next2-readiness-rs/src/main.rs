@@ -31,6 +31,13 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
         o.profile = p;
     }
     if v["mode"] == "static" { o.mode = carve2::options::Mode::Static; }
+    if let Some(s) = v["softBreak"].as_str().and_then(carve2::options::SoftBreak::from_name) {
+        o.soft_break = s;
+    }
+    if let Some(codes) = v["allowLosses"].as_array() {
+        o.allow_losses = codes.iter().filter_map(Value::as_str).map(str::to_owned).collect();
+    }
+    if let Some(n) = v["maxLosses"].as_u64() { o.max_losses = n as usize; }
     if let Some(social) = v["social"].as_object() {
         o.social = Some(carve2::options::Social {
             mention_url: social.get("mentionUrl").and_then(Value::as_str).map(str::to_owned),
@@ -68,9 +75,99 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
     o
 }
 
+/// One request through the binding boundary (`carve2::api::json::call`):
+/// `Ok` with the result, or `Err` with the case record of a refusal.
+fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
+    let mut req = json!({"call": name, "options": options});
+    if let Some(host) = c.get("host") { req["host"] = host.clone(); }
+    if name == "importDocument" {
+        req["from"] = json!("html");
+        req["source"] = c["html"].clone();
+    } else if c.get("tree").is_some() && !name.starts_with("parse") && !name.starts_with("format") {
+        req["tree"] = c["tree"].clone();
+    } else if let Some(hex) = c["inputBytes"].as_str() {
+        let hex = hex.replace(' ', "");
+        req["sourceBytes"] = (0..hex.len() / 2).filter_map(|i| u8::from_str_radix(hex.get(i*2..i*2+2)?, 16).ok()).collect();
+    } else {
+        req["source"] = json!(c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or(""));
+    }
+    let out: Value = serde_json::from_str(&carve2::api::json::call(&req.to_string())).unwrap_or(Value::Null);
+    match out.get("ok") {
+        Some(ok) => Ok(ok.clone()),
+        None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"]})),
+    }
+}
+
+fn parse_options(v: &Value) -> Value {
+    Value::Object(v.as_object().into_iter().flatten()
+        .filter(|(k, _)| ["includes", "extensions", "headingIds"].contains(&k.as_str()))
+        .map(|(k, v)| (k.clone(), v.clone())).collect())
+}
+
+/// Kinds and options the direct calls below cannot express: the writer, the
+/// importer, standard extensions and host document transforms.
+fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
+    let opts = c.get("options").cloned().unwrap_or_else(|| json!({}));
+    Ok(match kind {
+        "format" | "write-example" => {
+            let r = call(c, "formatWithDiagnostics", opts.clone())?;
+            let mut out = json!({"carve": r["source"], "diagnostics": r["diagnostics"]});
+            if kind == "write-example" {
+                out["tree"] = call(c, "parse", parse_options(&opts))?["tree"].take();
+                if c["expected"].get("html").is_some() {
+                    out["html"] = call(c, "render", parse_options(&opts))?["html"].take();
+                }
+            }
+            out
+        }
+        "write" if c.get("layout").is_some() => {
+            // The boundary has no layout field (C2-W-001), so this case writes through the library.
+            let refused = |e: carve2::api::Error| json!({"accepted":false,"error":e.spec_name(),"message":e.to_string()});
+            let mut host = carve2::api::Carve::default();
+            let mut w = carve2::api::WriteOptions::default();
+            for ext in opts["extensions"].as_array().into_iter().flatten().filter_map(Value::as_str) {
+                host.enable_standard(ext, false).map_err(refused)?;
+                w.extensions.push(ext.to_owned());
+            }
+            w.layout = Some(c["layout"].clone());
+            let tree = carve2::api::decode_tree(&c["tree"].to_string()).map_err(refused)?;
+            let r = host.write_with_diagnostics(&tree, &w).map_err(refused)?;
+            json!({"carve": r.output, "diagnostics": r.diagnostics})
+        }
+        "write" => {
+            let r = call(c, "writeWithDiagnostics", opts)?;
+            json!({"carve": r["output"], "diagnostics": r["diagnostics"]})
+        }
+        "import" => {
+            let r = call(c, "importDocument", opts)?;
+            json!({"tree": r["tree"], "carve": r["source"], "diagnostics": r["diagnostics"]})
+        }
+        "parse" => {
+            let mut r = call(c, "parseWithDiagnostics", opts)?;
+            let parse = r["diagnostics"].as_array().into_iter().flatten().filter(|d| d["channel"] == "parse").cloned().collect::<Vec<_>>();
+            json!({"tree": r["tree"].take(), "diagnostics": parse})
+        }
+        "lint" => json!({"diagnostics": call(c, "lint", opts)?["diagnostics"]}),
+        _ => {
+            let mut r = call(c, "renderWithDiagnostics", opts.clone())?;
+            let mut out = json!({"html": r["html"].take(), "diagnostics": r["diagnostics"].take(), "suppressed": r["suppressedDiagnostics"]});
+            if c.get("tree").is_none() { out["tree"] = call(c, "parse", parse_options(&opts))?["tree"].take(); }
+            out
+        }
+    })
+}
+
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
+    let boundary = matches!(kind, "format" | "write" | "write-example" | "import")
+        || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
+    if boundary && c.get("files").is_none() {
+        if c["options"].get("codeBlockRenderer").is_some() {
+            return json!({"unsupported":"codeBlockRenderer is a host function"});
+        }
+        return run_boundary(c, kind).unwrap_or_else(|refused| refused);
+    }
     let o = options(&c["options"], c.get("files"));
     match kind {
         "render" | "include" | "parse" => {

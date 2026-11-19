@@ -55,6 +55,8 @@ version = "0.0.0"
 dependencies = [
  "bumpalo",
  "carve-lang",
+ "html5ever",
+ "markup5ever_rcdom",
  "regex",
  "serde",
  "serde_json",
