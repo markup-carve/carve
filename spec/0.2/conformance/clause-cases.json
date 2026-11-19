@@ -56944,7 +56944,7 @@
    "clauses": [
     "C2-X-058"
    ],
-   "why": "C2-X-058: A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback.",
+   "why": "C2-X-058: A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback; C2-X-024 carries the locator attribute to the extension node and C2-X-035 writes its fallback inside a span that carries it.",
    "summary": "citation locator remains an attribute and the fallback keeps the key",
    "kind": "render",
    "input": ":cite[doe]{locator=\"p. 4\"}\n",
@@ -56954,7 +56954,7 @@
     ]
    },
    "expected": {
-    "html": "<p>doe</p>"
+    "html": "<p><span locator=\"p. 4\">doe</span></p>"
    },
    "from": []
   },
