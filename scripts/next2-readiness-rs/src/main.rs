@@ -267,7 +267,6 @@ fn run(c: &Value) -> Value {
             || c["expected"].get("refusal").is_some()
             || c["expected"].get("suppressed").is_some()
             || unhandled_option
-            || (kind == "render" && c.get("tree").is_some())
             || c.get("host").is_some()));
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
         // Let the JSON boundary accept renderer host options when the pinned engine offers them.
