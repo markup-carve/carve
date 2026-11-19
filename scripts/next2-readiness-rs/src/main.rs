@@ -129,7 +129,14 @@ fn invoke(req: Value) -> Result<Value, Value> {
     let out: Value = serde_json::from_str(&carve::api::json::call(&req.to_string())).unwrap_or(Value::Null);
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
-        None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"],"path":out["error"]["path"]})),
+        None => {
+            let mut refused = json!({"accepted":false,"error":out["error"]["name"],
+                "message":out["error"]["message"],"path":out["error"]["path"]});
+            if let Some(diagnostics) = out["error"]["diagnostics"].as_array() {
+                refused["diagnostics"] = Value::Array(diagnostics.clone());
+            }
+            Err(refused)
+        },
     }
 }
 
@@ -404,6 +411,19 @@ mod tests {
             "options":{"codeBlockRenderer":{"syntax":"ts","result":"<pre>{syntax}:{default}</pre>"}}
         }));
         assert!(output["html"].as_str().unwrap().starts_with("<pre>ts:<pre>"), "{output}");
+    }
+
+    #[test]
+    fn strict_write_refusal_keeps_its_loss_diagnostic() {
+        let tree = json!({"type":"document","astVersion":"2.0","children":[
+            {"type":"paragraph","role":"image","children":[
+                {"type":"image","src":"i.png","decorative":true}
+            ]}
+        ]});
+        let output = run(&json!({"kind":"write","tree":tree,
+            "expected":{"refusal":{"error":"CarveWriteError"}}}));
+        assert_eq!(output["error"], "CarveWriteError");
+        assert_eq!(output["diagnostics"][0]["code"], "field-unspellable");
     }
 
     #[test]
