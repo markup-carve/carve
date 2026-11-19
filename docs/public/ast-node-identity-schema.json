@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://markup-carve.github.io/carve/ast-node-identity-schema.json",
+  "title": "Carve AST node-identity sidecar",
+  "type": "object",
+  "required": ["version", "session", "nodes"],
+  "properties": {
+    "version": { "const": 1 },
+    "session": { "type": "string", "minLength": 1, "description": "PART 12 §38: opaque token naming the minting these ids belong to. Ids from two sidecars whose session differs are unrelated." },
+    "nodes": { "type": "array", "items": { "$ref": "#/$defs/nodeIdentity" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "nodeIdentity": {
+      "type": "object",
+      "required": ["id", "path"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "description": "PART 12 §38: the ephemeral node id. Not attrs.id, which is the author's, and unique within a sidecar." },
+        "path": { "type": "string", "pattern": "^(?:|(?:/(?:[^~/]|~[01])*)+)$", "description": "PART 12 §38: RFC 6901 pointer into the accompanying canonical AST, the binding for THIS tree only. Unique within a sidecar." }
+      },
+      "additionalProperties": false
+    }
+  }
+}

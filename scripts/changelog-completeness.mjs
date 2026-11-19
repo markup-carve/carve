@@ -31,53 +31,30 @@
  *
  * WHAT COUNTS AS SHIPPED SOURCE HERE. An engine's answer is `src/`, the code
  * its tarball is built from. This repository publishes no package - what it
- * ships is the language: the clauses, the grammar they are written in, and the
- * fixtures that decide whether an engine obeys them. So shipped source is the
- * AUTHORED half of those:
- *
- *   resources/spec/*.ebnf    the normative clauses
- *   resources/grammar.ebnf, resources/carve-core.ohm
- *                            the formal and executable grammar
- *   resources/examples/      the corpus source every fixture is generated from
- *   resources/*.json         the AST schema, the binding and import contracts,
- *                            the shared fixtures an implementer builds against
- *   tests/<fixture dir>/     the convert, escape, optional and round-trip
- *                            corpora, the HTML-import and importer-fidelity
- *                            fixtures, the include-security vectors
+ * ships is the language, and the language is `spec/0.2/`: the clause documents,
+ * the data files an implementer reads (`data/`, the AST schema among them), the
+ * hand-curated conformance cases and the tree fixtures in `trees/`.
  *
  * The cut is drawn at the path rather than at the commit prefix on purpose: a
  * `fix:` prefix is a convention people drift from, and a `chore:`-prefixed
- * merge can still move a corpus row.
+ * merge can still move a clause.
  *
  * WHAT IS DELIBERATELY NOT SHIPPED, and why each exclusion is not a hole:
  *
- *   scripts/, tools/, tests/*.mjs   This repository's own machinery: the
- *     comparison harness, the dependency map, the corpus generator, this gate.
- *     Nothing downstream reads them.
+ *   scripts/, tools/, tests/   This repository's own machinery. Nothing
+ *     downstream reads them.
  *
- *   generated views   `tests/corpus` and `tests/spec` are generated from
- *     `resources/examples`, `tests/include-conformance` from the include
- *     generator, `docs/rules` from `resources/spec`. They move when their
- *     source moves, so counting them adds no coverage - and does add a finding
- *     every time a regeneration is committed on its own.
+ *   generated views   `conformance/examples.json`, `conformance/refused-trees.json`
+ *     and `trees/examples-*.json` are generated from the clause documents and
+ *     `trees/refused.json` (`npm run spec2:data` fails when they are stale). They
+ *     move when their source moves, so counting them adds no coverage.
  *
- *   measurement ledgers   `resources/*.txt`, the corpus sidecar lock and the
- *     round-trip baseline record what the pinned engines currently do. A pin
- *     bump rewrites them and owes a reader nothing: six of the 67 merges in
- *     0.1.6 were exactly that, and they are the noise that gets a gate turned
- *     off.
+ *   `spec/0.2/STATUS.md`   the freeze-candidate log. A status-only commit owes
+ *     a reader nothing.
  *
- *   docs/   The pages are prose ABOUT the language; the rule pages under
- *     docs/rules are generated from the clause source. Measured over 0.1.6,
- *     every merge the section documented had moved `resources/`, and nine
- *     docs-only merges (a README trim, an American-spelling sweep, an
- *     AI-writing pass) had no entry and needed none. The one page this
- *     repository declares normative, `docs/includes.md`, is audited against
- *     the clause source by scripts/normative-page-audit.mjs, so an obligation
- *     cannot move there while `resources/spec` stands still.
- *
- * That last one is the exclusion to revisit first: if an obligation ever does
- * land in a docs page alone, this gate will not see it.
+ *   docs/   The pages are prose ABOUT the language and must not contradict
+ *     `spec/0.2/`, so an obligation cannot move there alone. If one ever does,
+ *     this gate will not see it.
  *
  * WHY IT ASKS GITHUB WHAT A PULL REQUEST CLOSES. The entries here cite the
  * ISSUE a ruling answers, not the pull request that carried it. A gate that
@@ -148,38 +125,18 @@ import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 
 const SHIPPED = [
-    // The clause source and the formal grammar, plus the interchange schemas
-    // and shared fixtures an implementer builds against.
-    /^resources\//,
-    // The fixture and vector sets an engine vendors and runs: the convert,
-    // escape, optional and round-trip corpora, the HTML-import and
-    // importer-fidelity fixtures, the include-security vectors, the profile
-    // fixtures. Authored here; see NOT_SHIPPED for the generated siblings.
-    /^tests\/[^/]+\//,
-    /^tests\/profile-fixtures\.json$/,
+    /^spec\/0\.2\//,
 ];
 const NOT_SHIPPED = [
-    // GENERATED VIEWS of the sources above. They move whenever their source
-    // moves, so counting them adds no coverage and does add a finding every
-    // time someone commits a regeneration on its own.
-    //   tests/corpus, tests/spec  <- resources/examples, via generate-corpus
-    //   tests/include-conformance <- gen-include-conformance
-    /^tests\/corpus\//,
-    /^tests\/spec\//,
-    /^tests\/include-conformance\//,
-    /^tests\/examples\//,
-    // MEASUREMENT LEDGERS. Every `.txt` in resources/ is a declaration list or
-    // an inventory - engine pin drift, fmt drift, AST divergence, the oracle
-    // and converter ledgers, the round-trip exception lists, the page and
-    // clause inventories - and the corpus sidecar lock is the same thing in JSON.
-    // A pin bump rewrites them all and owes the reader nothing; six of the 67
-    // merges in 0.1.6 were exactly that.
-    /^resources\/.*\.txt$/,
-    // The same ledgers stored one file per row.
-    /^resources\/engine-pin-drift\//,
-    /^resources\/roundtrip\//,
-    /^resources\/corpus-sidecars\.lock\.json$/,
+    // Generated from the clause documents and trees/refused.json.
+    /^spec\/0\.2\/conformance\/examples\.json$/,
+    /^spec\/0\.2\/conformance\/refused-trees\.json$/,
+    /^spec\/0\.2\/trees\/examples-[^/]+\.json$/,
+    /^spec\/0\.2\/STATUS\.md$/,
 ];
+
+/** Whether a changed path is part of the shipped language surface. */
+export const isShipped = (path) => SHIPPED.some((re) => re.test(path)) && !NOT_SHIPPED.some((re) => re.test(path));
 
 const EXEMPT_FILE = '.changelog-exempt';
 
@@ -284,7 +241,7 @@ export const verdict = ({ shipped, exempt, missing, unattributed, sections, from
 export const pullRequest = (subject) =>
     (String(subject).match(/\(#(\d+)\)\s*$/) ?? String(subject).match(/^Merge pull request #(\d+) from /) ?? [])[1];
 
-export const __internals = { VERSION_TAG, sectionHeadings, unreleasedSections, parseExemptions, exemptionForCommit, verdict, pullRequest };
+export const __internals = { isShipped, VERSION_TAG, sectionHeadings, unreleasedSections, parseExemptions, exemptionForCommit, verdict, pullRequest };
 
 if (process.env.CARVE_CHANGELOG_LIB === '1') {
   // Imported for its helpers by the self-test; do not run the gate.
@@ -378,7 +335,7 @@ const commits = git('log', '--first-parent', `--format=%H${RECORD}%s`, range).sp
 const touchesShipped = (sha) =>
     git('diff-tree', '--no-commit-id', '--name-only', '-r', '-m', '--first-parent', '--root', sha)
         .split('\n').filter(Boolean)
-        .some((f) => SHIPPED.some((re) => re.test(f)) && !NOT_SHIPPED.some((re) => re.test(f)));
+        .some(isShipped);
 
 // A reference is to THIS repository when it carries no qualifier, the bare
 // repository name (`carve#2094`, how the changelog here writes it), or the

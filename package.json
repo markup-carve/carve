@@ -11,7 +11,7 @@
     "spec2:data": "node scripts/spec2-data-check.mjs",
     "spec2:unicode": "node scripts/spec2-unicode.mjs --check",
     "docs:dev": "npm run docs:pages && vitepress dev docs",
-    "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs && npm run docs:pages && vitepress build docs",
+    "docs:build": "node --test tests/docs-controlled-vocabulary.test.mjs && node scripts/publish-schema.mjs && npm run docs:pages && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:samples:check": "node scripts/docs-samples-check.mjs",
     "docs:layout:check": "node scripts/docs-layout-check.mjs",

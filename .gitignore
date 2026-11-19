@@ -19,3 +19,6 @@ screenshots/
 docs/examples/
 docs/.vitepress/generated-examples.json
 _*.crv
+
+# 0.2 schemas published by scripts/publish-schema.mjs
+docs/public/spec/
