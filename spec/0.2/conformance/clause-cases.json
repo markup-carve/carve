@@ -56942,7 +56942,8 @@
   {
    "id": "CC-1223",
    "clauses": [
-    "C2-X-058"
+    "C2-X-058",
+    "C2-X-035"
    ],
    "why": "C2-X-058: A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback.",
    "summary": "citation locator remains an attribute and the fallback keeps the key",
@@ -56954,7 +56955,7 @@
     ]
    },
    "expected": {
-    "html": "<p>doe</p>"
+    "html": "<p><span locator=\"p. 4\">doe</span></p>"
    },
    "from": []
   },
