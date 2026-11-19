@@ -48401,7 +48401,7 @@
     "C2-W-106",
     "C2-B-146"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "a figure label paragraph below an image",
    "kind": "lint",
    "input": "![a](a.png)\n\nFigure 1: A cat\n",
@@ -48425,7 +48425,7 @@
     "C2-W-106",
     "C2-B-146"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "near miss: a caption line below the image",
    "kind": "lint",
    "input": "![a](a.png)\n^ Figure 1: A cat\n",
@@ -55843,7 +55843,7 @@
    "clauses": [
     "C2-B-146"
    ],
-   "why": "C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "spaces alone do not make a caption",
    "kind": "render",
    "input": "![](a)\n^  ",
@@ -60625,6 +60625,22 @@
     "notReported": [
      "extension-transform-failed"
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1371",
+   "clauses": [
+    "C2-B-146",
+    "C2-B-149"
+   ],
+   "why": "C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches C2-B-149: A caption line with no host block is text under the same rule.",
+   "summary": "a hostless caret line stays unattached after an attribute line closes as text",
+   "kind": "render",
+   "input": "{.x}\n^ cap\n",
+   "options": {},
+   "expected": {
+    "html": "<p>{.x}</p>\n<p>^ cap</p>"
    },
    "from": []
   }
