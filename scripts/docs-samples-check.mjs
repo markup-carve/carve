@@ -12,7 +12,9 @@ import { spawnSync } from 'node:child_process'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const docs = join(root, 'docs')
-const cli = join(root, 'node_modules/@markup-carve/carve/dist/cli2.js')
+// Pins from before the 0.2 rename ship the 0.2 CLI as dist/cli2.js beside the 0.1 dist/cli.js.
+const pinned = join(root, 'node_modules/@markup-carve/carve/dist')
+const cli = existsSync(join(pinned, 'cli2.js')) ? join(pinned, 'cli2.js') : join(pinned, 'cli.js')
 if (!existsSync(cli)) throw new Error('Install the pinned carve-js package with npm ci first')
 const includeRoots = join(root, 'tests/fixtures/docs-samples-includes')
 const failures = []

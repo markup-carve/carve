@@ -5,7 +5,7 @@ Use static mode when a page must work without client scripts or external renderi
 ## Render a document
 
 ```sh
-carve2 render --mode static --strict-losses document.crv > document.html
+carve render --mode static --strict-losses document.crv > document.html
 ```
 
 `--strict-losses` fails on unallowed render losses and writes no HTML for the affected file. Save a report with `--report-losses FILE` when a build needs machine-readable diagnostics. See [render flags and loss handling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-render).

@@ -259,7 +259,7 @@ const fixtureResolver = (files) => (request) => Object.hasOwn(files, request.pat
 if (process.argv[2] === '--write') {
   const engineRoot = resolve(process.argv[3] ?? '')
   if (!process.argv[3]) throw new Error('pass the path of a carve-js next2 checkout')
-  const { parse, encodeTree } = await import(pathToFileURL(join(engineRoot, 'v2/src/index.ts')).href)
+  const { parse, encodeTree } = await import(pathToFileURL(join(engineRoot, existsSync(join(engineRoot, 'v2/src/index.ts')) ? 'v2/src/index.ts' : 'src/index.ts')).href)
   for (const chapter of CHAPTERS) {
     const path = join(dir, exampleFile(chapter))
     const kept = existsSync(path) ? new Map(read(exampleFile(chapter)).trees.map(entry => [entry.id, entry])) : new Map()

@@ -22,4 +22,4 @@ Carve header cells use `|=`. A GFM-style separator row is data in 0.2. HTML outp
 
 ## Porting
 
-Convert Djot to HTML with a trusted tool, then import the HTML into Carve with `carve2 import --from html`. Inspect diagnostics and compare the rendered page. The [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) contract describes what can be represented. The [Markdown migration guide](./migrate-from-markdown) explains the same hub workflow for Markdown.
+Convert Djot to HTML with a trusted tool, then import the HTML into Carve with `carve import --from html`. Inspect diagnostics and compare the rendered page. The [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) contract describes what can be represented. The [Markdown migration guide](./migrate-from-markdown) explains the same hub workflow for Markdown.

@@ -30,12 +30,12 @@ import {
 } from '@markup-carve/carve'
 
 import * as lib from '@markup-carve/carve'
-import { render as renderV2 } from './engine-v2.js'
+import { render as renderEngine } from './engine.js'
 
 // Build-time snippets use the 0.2 renderer. The legacy extension list below
 // remains for the configured Vite plugin, which has no .crv imports on next2.
 export function renderDocsCarve(source, options = {}) {
-  return renderV2(source, { rawHtml: false, ...options })
+  return renderEngine(source, { rawHtml: false, ...options })
 }
 
 // Legacy extension set kept for the configured Vite plugin and its tests.

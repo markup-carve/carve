@@ -14,7 +14,7 @@ Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `n
 
 Run `npm run spec2:data` after changing a 0.2 document, data row, example or conformance case. It checks schemas, clause references, generated examples and tree fixtures. See [Conformance](./conformance) for what an engine must run. When changing a clause, add or adjust the case that demonstrates it and update the [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) when 0.1 source changes meaning.
 
-The reference implementation lives in [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2/v2). Its `carve2` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
+The reference implementation lives in [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2). Its `carve` program exposes render, AST, format, diagnostics, lint, import and migration commands. The required surface is in the [tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands); its `upgrade` command is specific to the JavaScript reference engine.
 
 ## Investigate a mismatch
 

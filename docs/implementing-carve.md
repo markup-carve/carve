@@ -19,4 +19,4 @@ Pin a specific `next2` commit and record that pin in your engine. Read the three
 
 Run `npm run spec2:data` in the spec checkout to verify the corpus before interpreting a mismatch. Examples marked unverified are provisional evidence from the clauses; check the clause before treating a mismatch as an engine defect. The [comparison methodology](./implementation-comparison-methodology) explains the limits of a pass rate.
 
-The required API and command surface are in [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library). A port may use its language's naming conventions for calls and errors. The reference TypeScript engine is [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2/v2); its CLI is named `carve2` so it can coexist with 0.1.
+The required API and command surface are in [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library). A port may use its language's naming conventions for calls and errors. The reference TypeScript engine is [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2); its CLI is named `carve`.

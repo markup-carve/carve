@@ -15,4 +15,4 @@ The site uses VitePress frontmatter, containers and components, so some source p
 
 ## Writing pages
 
-Use plain language for authors. Define a term at first use, distinguish parsing, formatting, rendering and importing, and link a 0.2 rule to `spec/0.2/` on `next2`. Check Carve examples with the `carve2` reference engine's lint, format check and render commands. Keep measured results tied to a version, commit and method. This README is excluded from the VitePress build.
+Use plain language for authors. Define a term at first use, distinguish parsing, formatting, rendering and importing, and link a 0.2 rule to `spec/0.2/` on `next2`. Check Carve examples with the reference engine's `carve` lint, format check and render commands. Keep measured results tied to a version, commit and method. This README is excluded from the VitePress build.

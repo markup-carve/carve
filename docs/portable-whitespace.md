@@ -25,4 +25,4 @@ A quote marker needs a following space or the end of its line. Use the marker on
 
 ## Format the result
 
-`carve2 fmt --check file.crv` checks whether the source is in the writer's canonical form. It does not replace a render check when changing indentation or blank lines; compare the HTML of representative pages after a migration. See [writer and fmt](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md).
+`carve fmt --check file.crv` checks whether the source is in the writer's canonical form. It does not replace a render check when changing indentation or blank lines; compare the HTML of representative pages after a migration. See [writer and fmt](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md).
