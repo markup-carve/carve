@@ -46970,9 +46970,10 @@
    "id": "CC-813",
    "clauses": [
     "C2-W-106",
-    "C2-H-075"
+    "C2-H-075",
+    "C2-W-138"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "a value on kbd is reported as discarded",
    "kind": "lint",
    "input": "[x]{kbd=a}\n",
@@ -46982,7 +46983,9 @@
      {
       "code": "semantic-attribute-value-ignored",
       "line": 1,
-      "column": 1,
+      "column": 5,
+      "endLine": 1,
+      "endColumn": 10,
       "channel": "lint",
       "severity": "warning"
      }
@@ -48612,9 +48615,10 @@
    "clauses": [
     "C2-W-106",
     "C2-B-180",
-    "C2-B-226"
+    "C2-B-226",
+    "C2-W-138"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-180: A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table C2-B-226: The separator is a comma for `csv` and a tab for `tsv`. ... A separator always starts another cell",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-180: A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table C2-B-226: The separator is a comma for `csv` and a tab for `tsv`. ... A separator always starts another cell C2-W-138: The range of an entry is the source span of the construct that the catalog row of its code names",
    "summary": "a csv record with more fields than the first",
    "kind": "lint",
    "input": "{table}\n```csv\na\nb,c\n```\n",
@@ -48623,8 +48627,10 @@
     "diagnostics": [
      {
       "code": "delimited-table-wide-row",
-      "line": 2,
+      "line": 1,
       "column": 1,
+      "endLine": 5,
+      "endColumn": 4,
       "channel": "lint",
       "severity": "warning"
      }
@@ -58182,7 +58188,7 @@
       "code": "destination-denied",
       "file": "a.crv",
       "line": 1,
-      "column": 1
+      "column": 5
      }
     ],
     "stderrCategory": null
@@ -59935,6 +59941,689 @@
     ],
     "notReported": [
      "import-attribute-dropped"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1348",
+   "clauses": [
+    "C2-X-024",
+    "C2-X-059",
+    "C2-X-035"
+   ],
+   "why": "C2-X-024: Where the fallback is the claimed core node, it is that node without these attributes, which the extension node holds, so the fallback HTML of C2-X-035 writes each of them once. C2-X-059: Its fallback is that core code block without its attributes (C2-X-024).",
+   "summary": "an attributed imgFence fallback writes its id and class once, on the wrapper",
+   "kind": "render",
+   "input": "{#pic .x}\n```img\n<svg></svg>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ]
+   },
+   "expected": {
+    "html": "<div id=\"pic\" class=\"x\">\n  <pre><code class=\"language-img\">&lt;svg&gt;&lt;/svg&gt;\n</code></pre>\n</div>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ],
+    "notReported": [
+     "duplicate-id"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1349",
+   "clauses": [
+    "C2-X-024",
+    "C2-X-061",
+    "C2-X-035"
+   ],
+   "why": "C2-X-024: Where the fallback is the claimed core node, it is that node without these attributes, which the extension node holds, so the fallback HTML of C2-X-035 writes each of them once. C2-X-061: A diagram extension of the fenced renderers, as `carve.fencedRender.mermaid`, and `carve.mathBlock` claim a code block by its language (C2-X-010), and their fallback is that core code block without its attributes (C2-X-024).",
+   "summary": "an attributed static mermaid fallback writes its id once, on the wrapper",
+   "kind": "render",
+   "input": "{#m}\n```mermaid\ngraph TD\n```\n",
+   "options": {
+    "extensions": [
+     "carve.fencedRender.mermaid"
+    ],
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<div id=\"m\">\n  <pre><code class=\"language-mermaid\">graph TD\n</code></pre>\n</div>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ],
+    "notReported": [
+     "duplicate-id"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1350",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes, and later groups count on from it. The ids of a group are the ids it writes in its mode.",
+   "summary": "in css mode an authored id that only starts with the group's id prefix does not move the group",
+   "kind": "render",
+   "input": "{#tabs-1-0-panel}\np\n\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1351",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: In `aria` mode each button takes the id its input would take, and the panel of button `tabs-N-K` the id `tabs-N-K-panel`. Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes, and later groups count on from it. The ids of a group are the ids it writes in its mode.",
+   "summary": "in aria mode the same authored id is a panel id of group 1, so the group takes N 2",
+   "kind": "render",
+   "input": "{#tabs-1-0-panel}\np\n\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-2-0\" aria-selected=\"true\" aria-controls=\"tabs-2-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-2-0-panel\" aria-labelledby=\"tabs-2-0\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1352",
+   "clauses": [
+    "C2-T-049",
+    "C2-T-050"
+   ],
+   "why": "C2-T-049: The command `fix` is `lint --fix` with the same flags. C2-T-050: Without `--write`, `lint --fix` writes the fixed source of each file on standard output and the entries that remain as lines on standard error.",
+   "summary": "fix rewrites a double-star strong, a double-tilde strike and a plus bullet",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "a **b** ~~c~~\n\n+ x\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a *b* {~c~}\n\n- x\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1353",
+   "clauses": [
+    "C2-T-049"
+   ],
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
+   "summary": "a tilde pair that two fixes disagree on stays as written",
+   "kind": "cli",
+   "args": [
+    "lint",
+    "--fix"
+   ],
+   "stdin": "a ~s~ b\n",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "a ~s~ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1354",
+   "clauses": [
+    "C2-T-049"
+   ],
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
+   "summary": "turning the subscript rule off picks the braced strike",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"djot-subscript-tilde\":\"off\"}"
+   ],
+   "stdin": "a ~s~ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a {~s~} b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1355",
+   "clauses": [
+    "C2-T-050",
+    "C2-T-016"
+   ],
+   "why": "C2-T-050: With `--write` it replaces each file whose fixed source differs from it (C2-T-016), and the entries that remain are its product, as lines or, with `--json`, as a report.",
+   "summary": "fix with write replaces the file",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "fix",
+    "--write",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "",
+    "filesAfter": {
+     "a.crv": {
+      "text": "a *b*\n"
+     }
+    },
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1356",
+   "clauses": [
+    "C2-T-050"
+   ],
+   "why": "C2-T-050: `--write` without `--fix`, and `--json` with `--fix` but without `--write`, are refused with the category `usage`.",
+   "summary": "lint fix with json but without write is refused",
+   "kind": "cli",
+   "args": [
+    "lint",
+    "--fix",
+    "--json"
+   ],
+   "stdin": "a **b**\n",
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1357",
+   "clauses": [
+    "C2-T-050"
+   ],
+   "why": "C2-T-050: `--write` without `--fix`, and `--json` with `--fix` but without `--write`, are refused with the category `usage`.",
+   "summary": "lint write without fix is refused",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--write",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "a.crv": {
+      "text": "a **b**\n"
+     }
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1358",
+   "clauses": [
+    "C2-T-047",
+    "C2-N-005"
+   ],
+   "why": "C2-T-047: `flatten` writes each file as one Carve document: it expands includes as `render` does (C2-T-018) and writes the expanded tree through the canonical writer (C2-W-100), so every include directive is replaced by the blocks it expanded to. C2-N-005: `carve flatten`, whose product is the expanded tree, is the one command that expands (C2-T-047).",
+   "summary": "flatten replaces an include with the blocks it expands to",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n\nend\n"
+    },
+    "b.crv": {
+     "text": "= B\n\nbody\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "= B\n\nbody\n\nend\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1359",
+   "clauses": [
+    "C2-T-048"
+   ],
+   "why": "C2-T-048: with the category `include-unresolved` when an include did not expand, and the entries of its causes follow as lines on standard error",
+   "summary": "flatten of an include that does not expand fails with include-unresolved",
+   "kind": "cli",
+   "files": {
+    "u.crv": {
+     "text": "{{ missing.crv }}\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "u.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "",
+    "stderrCategory": "include-unresolved",
+    "stderrDiagnostics": [
+     {
+      "code": "include-not-found",
+      "file": "u.crv",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1360",
+   "clauses": [
+    "C2-T-048",
+    "C2-N-054"
+   ],
+   "why": "C2-T-048: with `flatten-changed` when the HTML of the flattened source with the default options differs from that of the expanded tree, as when two included files each define one footnote, link reference or abbreviation key, which are looked up per file (C2-N-054, C2-N-055)",
+   "summary": "flatten of two files that define one footnote key fails with flatten-changed",
+   "kind": "cli",
+   "files": {
+    "m.crv": {
+     "text": "{{ n1.crv }}\n\n{{ n2.crv }}\n"
+    },
+    "n1.crv": {
+     "text": "x[^n]\n\n[^n]: one\n"
+    },
+    "n2.crv": {
+     "text": "y[^n]\n\n[^n]: two\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "m.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "",
+    "stderrCategory": "flatten-changed"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1361",
+   "clauses": [
+    "C2-T-051"
+   ],
+   "why": "C2-T-051: `--strict` on `render` and `lint` ends a file that wrote any entry with status 1 and no category, a hint included.",
+   "summary": "lint strict fails a file on a hint",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n\n# B\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--strict",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdoutDiagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "file": "a.crv",
+      "severity": "hint"
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1362",
+   "clauses": [
+    "C2-T-051"
+   ],
+   "why": "C2-T-051: `render --strict` still writes the HTML; `--strict-losses` is the flag that withholds it (C2-T-026).",
+   "summary": "render strict writes the HTML and fails on a loss",
+   "kind": "cli",
+   "args": [
+    "render",
+    "--strict"
+   ],
+   "stdin": "[a](javascript:x)\n",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "<p><a href=\"\">a</a></p>\n",
+    "stderrDiagnostics": [
+     {
+      "code": "destination-denied",
+      "file": "<stdin>",
+      "line": 1,
+      "column": 5
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1363",
+   "clauses": [
+    "C2-T-052",
+    "C2-T-009"
+   ],
+   "why": "C2-T-052: `lint --ignore` takes a file and drops every entry whose `file` (C2-N-063) is that id, and every entry of an entry file whose name as given (C2-T-013) is that value.",
+   "summary": "lint ignore drops the entries of the named entry file",
+   "kind": "cli",
+   "files": {
+    "i.crv": {
+     "text": "x **y**\n"
+    },
+    "s.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--ignore",
+    "i.crv",
+    "i.crv",
+    "s.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdoutDiagnostics": [
+     {
+      "code": "markdown-strong-double-star",
+      "file": "s.crv",
+      "line": 1,
+      "column": 3
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1364",
+   "clauses": [
+    "C2-T-053"
+   ],
+   "why": "C2-T-053: `--output` (`-o`) on `render`, `fmt`, `import` and `flatten` takes a path and writes the product of the run to that file instead of standard output",
+   "summary": "render with o writes the HTML to the file",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "-o",
+    "out.html",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "",
+    "filesAfter": {
+     "out.html": {
+      "text": "<p>a</p>\n"
+     }
+    },
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1365",
+   "clauses": [
+    "C2-T-053"
+   ],
+   "why": "C2-T-053: `fmt` refuses it with `--write`, `--check` or `--diff`, and a run whose output path resolves to the path of a report flag, as C2-T-015 compares two report paths, is refused, both with the category `usage` before any input is read.",
+   "summary": "fmt refuses output with check",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "fmt",
+    "--output",
+    "x.crv",
+    "--check",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "x.crv": null
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1366",
+   "clauses": [
+    "C2-T-053",
+    "C2-T-015"
+   ],
+   "why": "C2-T-053: a run whose output path resolves to the path of a report flag, as C2-T-015 compares two report paths, is refused",
+   "summary": "an output path that is also a report path is refused",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "-o",
+    "r.json",
+    "--report-losses",
+    "r.json",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "r.json": null
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1367",
+   "clauses": [
+    "C2-B-034"
+   ],
+   "why": "Catalog djot-plus-bullet: a parsed paragraph line whose first character after its container prefixes and optional spaces and tabs is `+`, followed by spaces or tabs and a further character",
+   "summary": "a plus bullet after a quote marker is reported at the plus",
+   "kind": "lint",
+   "input": "> + x\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 1,
+      "column": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1368",
+   "clauses": [
+    "C2-B-034"
+   ],
+   "why": "Catalog djot-plus-bullet: a parsed paragraph line whose first character after its container prefixes and optional spaces and tabs is `+`, followed by spaces or tabs and a further character",
+   "summary": "a plus bullet in a list item body is reported at the plus",
+   "kind": "lint",
+   "input": "- a\n\n  + x\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 3,
+      "column": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1369",
+   "clauses": [
+    "C2-B-109"
+   ],
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
+   "summary": "a comment fence in a double quote closes at a line that carries only the outer quote mark",
+   "kind": "render",
+   "input": "> > %%%\n> > hidden\n> %%%\n> > after\n",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <blockquote><p>after</p></blockquote>\n</blockquote>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1370",
+   "clauses": [
+    "C2-X-055"
+   ],
+   "why": "C2-X-055: A duplicate authored id that the view held before the transform ran, which C2-A-039 reports, fails no transform: only the nodes a transform inserted, replaced or edited are checked.",
+   "summary": "a duplicate id the input view already held does not fail a transform that inserts a node without one",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "sample.first",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ],
+      "attrs": {
+       "id": "a"
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "C"
+       }
+      ],
+      "attrs": {
+       "id": "a"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.first",
+      "after": "/children/1",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.first",
+       "version": "1",
+       "children": [],
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "B"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<p id=\"a\">A</p>\n<p id=\"a\">C</p>\n<p>B</p>",
+    "notReported": [
+     "extension-transform-failed"
     ]
    },
    "from": []

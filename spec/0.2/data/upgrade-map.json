@@ -2873,13 +2873,13 @@
     },
     {
       "id": "U-393",
-      "kind": "none",
+      "kind": "report",
       "group": "inline comments",
       "from": "{~a %% b~>c~} d\n",
-      "to": "{~a %% b~>c~} d\n",
-      "meaning02": "<p>{~a d</p> C2-I-024 makes the line comment take the substitution arrow and closer, as 0.1 did. No source edit is needed.",
+      "to": "",
+      "meaning02": "<p>{~a</p> C2-I-024 makes the line comment take the rest of its line, the substitution arrow, the closer and ` d` included; 0.1 ended the comment at the first raw closer of its frame and wrote `{~a d`. A line comment in any bracket or braced frame whose closer follows on its line changes the same way; U-399 to U-402 rewrite only their own verified sources. Report the source range from the comment marker through the end of its line.",
       "toolEntry": "U-393",
-      "silent": false
+      "silent": true
     },
     {
       "id": "U-394",
@@ -3199,6 +3199,46 @@
       "to": "Type [ls -l]{samp}.\n",
       "meaning02": "Sample output is a span with the key `samp`, which a registered semantic span extension writes as `<samp>`; the key is an ordinary attribute of the core (C2-X-066). Rewrite only where the 0.1 host registered the `samp` extension.",
       "toolEntry": "U-425",
+      "silent": true
+    },
+    {
+      "id": "U-426",
+      "kind": "report",
+      "group": "inline comments",
+      "from": "[%% hidden](/u)\n",
+      "to": "",
+      "meaning02": "<p><a href=\"/u\">%% hidden</a></p> C2-I-023 keeps `%%` directly after the opener of a bracket, an inline note or extension content as text; 0.1 read it as a line comment that ended at the closer and wrote an empty link. U-405 to U-407 rewrite only their own verified sources. Report the source range from the `%%` through the closer of its frame.",
+      "toolEntry": "U-426",
+      "silent": true
+    },
+    {
+      "id": "U-427",
+      "kind": "rewrite",
+      "group": "tabs structure",
+      "from": "{.tabs}\n::::\n{.tab}\n::: [Install]\nRun it.\n:::\n::::\n",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun it.\n:::\n::::\n",
+      "meaning02": "The 0.2 tabs extension matches the div names `tabs` and `tab`, not the classes (C2-X-039, C2-X-040), so a class-form group or tab stays a core div. Write the class as the div name; the label moves to the quoted title as in U-412. A class beside `tabs` or `tab` stays in the attribute block.",
+      "toolEntry": "U-427",
+      "silent": true
+    },
+    {
+      "id": "U-428",
+      "kind": "report",
+      "group": "tabs structure",
+      "from": ":::: tabs\n::: tab \"A\"\na\n:::\n\nstray\n::::\n",
+      "to": "",
+      "meaning02": "0.1 left a block that is not a tab out of the tabs output; 0.2 claims a group only when every block in it is a tab (C2-X-040), so the whole group stays a core div and its default render does not change. Report the block: moving it out of the group or into a tab changes the document.",
+      "toolEntry": "U-428",
+      "silent": true
+    },
+    {
+      "id": "U-429",
+      "kind": "rewrite",
+      "group": "case-only references",
+      "from": "# Intro\n\nSee </#intro>.\n",
+      "to": "# Intro\n\nSee </#Intro>.\n",
+      "meaning02": "Under `carve upgrade --migrate`, a cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the `fmt --migrate` repair of 0.1. An id is matched exactly, without case folding (C2-I-097). A reference with several candidates is left for `lint`.",
+      "toolEntry": "U-429",
       "silent": true
     }
   ],
