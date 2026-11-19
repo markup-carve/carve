@@ -21,6 +21,7 @@
     "sync-carve-wasm": "node scripts/sync-carve-wasm.mjs",
     "links:check": "node scripts/check-external-links.mjs",
     "lint:mermaid": "mermaid-lint --quiet",
+    "lint:parity": "node scripts/lint-parity.mjs",
     "test": "node scripts/run-tests.mjs"
   },
   "devDependencies": {
