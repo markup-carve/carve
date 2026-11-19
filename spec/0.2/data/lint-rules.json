@@ -2041,7 +2041,7 @@
       "id": "writer-refused",
       "severity": "warning",
       "channel": "render-loss",
-      "status": "new",
+      "status": "engine-local",
       "reports": "the writer reached a repeated repair state or its repair limit (C2-W-133)",
       "clauses": ["C2-W-133"]
     }

@@ -19,6 +19,8 @@ Upgrade replay sources are grouped by file. A newly blocked source is a regressi
 
 Aggregate counts, per-rule catalog percentages and lint agreement are reported in the summary but do not fail the job: adding a case moves them without anything regressing.
 
+Catalog rows with status `obsolete` or `void` remain in the historical data but are excluded from the shared trigger denominator. The report counts them separately as "Excluded: obsolete/void". The job fails if an engine emits either kind on a clause case. A rule with status `engine-local`, such as the C2-W-133 `writer-refused` repair guard, is counted separately and verified by engine implementation tests rather than a shared clause case.
+
 ## Which engines are replayed
 
 - **Pull requests** (`baseline` mode) replay the engine commits named in `engineHeads` of the baseline, so a red run means this PR regressed spec data, a generator or the runner.

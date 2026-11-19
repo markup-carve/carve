@@ -32,7 +32,7 @@
             "description": "The one channel of the code (C2-W-104, C2-W-113). Absent for a retired id."
           },
           "status": {
-            "enum": ["kept", "new", "renamed", "obsolete", "void"],
+            "enum": ["kept", "new", "renamed", "obsolete", "void", "engine-local"],
             "description": "`kept`: an id of 0.1. `new`: new in 0.2. `renamed`: a rule of 0.1 under a new id, with the old one in `renamed_from`. `obsolete`: an id of 0.1 that 0.2 retires. `void`: a rule of the 0.2 design that a later ruling emptied."
           },
           "renamed_from": {
