@@ -173,7 +173,11 @@ function runCase(array $case): array
                 return ['html' => $result->html, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR), 'diagnostics' => findings($diagnostics), 'suppressed' => suppressedOf($result)];
             case 'parse':
                 $result = Carve2::parseWithDiagnostics($source, $options);
-                return ['tree' => (new TreeEncoder())->encode($result->tree, $source), 'diagnostics' => findings($result->diagnostics)];
+                return [
+                    'tree' => (new TreeEncoder())->encode($result->tree, $source),
+                    'diagnostics' => findings($result->diagnostics),
+                    'suppressed' => suppressedOf($result),
+                ];
             case 'lint':
                 return ['diagnostics' => findings(Carve2::lint($source, $options))];
             case 'format':
@@ -188,6 +192,9 @@ function runCase(array $case): array
                 }
                 return $out;
             case 'write':
+                if (isset($case['expected']['refusal'])) {
+                    return ['carve' => Carve2::write($case['tree'], $case['layout'] ?? null, $options)];
+                }
                 $result = Carve2::writeWithDiagnostics($case['tree'], $case['layout'] ?? null, $options);
                 return ['carve' => $result->source, 'diagnostics' => findings($result->diagnostics)];
             case 'layout':
@@ -249,7 +256,13 @@ function runCase(array $case): array
             && preg_match('/^option ([A-Za-z][A-Za-z0-9]*)(?::|\\b)/', $error->getMessage(), $match)) {
             $path = '/' . $match[1];
         }
-        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $path];
+        return [
+            'accepted' => false,
+            'error' => $error::class,
+            'message' => $error->getMessage(),
+            'path' => $path,
+            'diagnostics' => isset($error->diagnostics) ? findings($error->diagnostics) : [],
+        ];
     }
 }
 
