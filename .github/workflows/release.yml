@@ -177,13 +177,34 @@ jobs:
             exit 1
           fi
 
+  pre-tag:
+    name: The 0.2 spec checks pass on the dispatched commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: ./.github/actions/npm-ci
+        with:
+          node-version: 24
+      - name: main has not moved since the dispatch
+        run: |
+          [ "$(git rev-parse HEAD)" = "$GITHUB_SHA" ] || {
+            echo "::error::main moved after dispatch; rerun the release workflow."
+            exit 1
+          }
+      - run: npm run spec2:data
+      - run: npm test
+
   tag:
     name: Create the tag
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [guard, release-notes]
+    needs: [guard, release-notes, pre-tag]
     # THE APPROVAL GATE, and the ONLY job that declares an environment. `needs:`
-    # makes this unreachable until both gate jobs pass, and the environment holds
+    # makes this unreachable until the gate jobs pass, and the environment holds
     # it until a required reviewer approves, so whoever approves is looking at a
     # green gate rather than at nothing.
     #
