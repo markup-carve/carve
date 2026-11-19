@@ -145,6 +145,12 @@ function runCase(array $case): array
     $options = optionsOf($case);
     try {
         switch ($kind) {
+            case 'migrate':
+                if (!method_exists(Carve2::class, 'migrateTree')) {
+                    return ['unsupported' => 'migrate has no 0.2 PHP API'];
+                }
+                $result = Carve2::migrateTree($case['tree'], $options);
+                return ['tree' => $result['document'], 'diagnostics' => $result['diagnostics']];
             case 'render':
             case 'include':
                 if (isset($case['host'])) {
