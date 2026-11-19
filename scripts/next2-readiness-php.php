@@ -179,7 +179,12 @@ function runCase(array $case): array
                     'suppressed' => suppressedOf($result),
                 ];
             case 'lint':
-                return ['diagnostics' => findings(Carve2::lint($source, $options))];
+                return [
+                    'diagnostics' => findings(Carve2::lint($source, $options)),
+                    ...(($case['area'] ?? null) === 'examples'
+                        ? ['tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR)]
+                        : []),
+                ];
             case 'format':
             case 'write-example':
                 $result = Carve2::formatWithDiagnostics($source, $options);
