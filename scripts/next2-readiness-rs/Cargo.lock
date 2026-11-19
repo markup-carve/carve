@@ -26,6 +26,21 @@ checksum = "87a0cf66fd1eb2fb7b822cb78370d82303750809bc6ba855f3f58e517d3238db"
 [[package]]
 name = "carve-lang"
 version = "0.1.14"
+dependencies = [
+ "bumpalo",
+ "carve-lang 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
+ "html5ever",
+ "markup5ever_rcdom",
+ "regex",
+ "serde",
+ "serde_json",
+ "typed-arena",
+ "unicode-normalization",
+]
+
+[[package]]
+name = "carve-lang"
+version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "88eea74f39e1bd6187a0150d6d61d955cfc777b8871696966dbe3cafc29635f9"
 dependencies = [
@@ -44,24 +59,9 @@ dependencies = [
 name = "carve-next2-readiness"
 version = "0.0.0"
 dependencies = [
- "carve2",
+ "carve-lang 0.1.14",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "carve2"
-version = "0.0.0"
-dependencies = [
- "bumpalo",
- "carve-lang",
- "html5ever",
- "markup5ever_rcdom",
- "regex",
- "serde",
- "serde_json",
- "typed-arena",
- "unicode-normalization",
 ]
 
 [[package]]

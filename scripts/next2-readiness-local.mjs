@@ -46,11 +46,11 @@ if (!prepared) {
   run('npm', ['run', 'build'], { cwd: dirs.js })
   run('composer', ['install', '--no-interaction', '--no-progress'], { cwd: dirs.php })
   const env = { ...process.env, CARGO_BUILD_JOBS: '4', CARGO_TARGET_DIR: target }
-  run('cargo', ['build', '--manifest-path', resolve(dirs.rs, 'v2/Cargo.toml'), '--bin', 'carve2'], { env })
+  run('cargo', ['build', '--manifest-path', resolve(dirs.rs, 'Cargo.toml'), '--bin', 'carve'], { env })
   run('cargo', ['build', '--manifest-path', resolve(root, 'scripts/next2-readiness-rs/Cargo.toml')], { env })
 }
 run(process.execPath, [resolve(root, 'scripts/next2-readiness.mjs'), ...forwarded], {
   env: { ...process.env, CARVE_JS_DIR: dirs.js, CARVE_PHP_DIR: dirs.php, CARVE_RS_DIR: dirs.rs,
-    CARVE_RS_02_BIN: process.env.CARVE_RS_02_BIN ?? resolve(target, 'debug/carve2'),
+    CARVE_RS_BIN: process.env.CARVE_RS_BIN ?? resolve(target, 'debug/carve'),
     CARVE_RS_READINESS_BIN: process.env.CARVE_RS_READINESS_BIN ?? resolve(target, 'debug/carve-next2-readiness') },
 })
