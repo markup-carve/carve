@@ -161,7 +161,7 @@ const revision = dir => {
   return result.stdout.trim()
 }
 const engineHeads = { js: revision(jsDir), php: revision(phpDir), rs: revision(rsDir) }
-// carve-js next2 moved the 0.2 engine from v2/ to the package root (carve-js#5248).
+// carve-js next2 moved the 0.2 engine from v2/ to the package root (carve-js#5064).
 const jsV2 = existsSync(resolve(jsDir, 'v2/src/index.ts'))
 const js = await import(pathToFileURL(resolve(jsDir, jsV2 ? 'v2/src/index.ts' : 'src/index.ts')))
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
