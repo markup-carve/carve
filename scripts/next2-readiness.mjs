@@ -43,7 +43,13 @@ const noPositions = value => {
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([k]) => !['pos', 'segments'].includes(k)).map(([k, v]) => [k, noPositions(v)]))
   return value
 }
-const matchTree = (actual, expected) => same(JSON.stringify(expected).includes('"pos"') ? actual : noPositions(actual), expected)
+// C2-A-162: tree equality skips srcByteLength, so it is compared only where the case states it.
+const noLength = value => value && typeof value === 'object' && !Array.isArray(value) ? Object.fromEntries(Object.entries(value).filter(([k]) => k !== 'srcByteLength')) : value
+const matchTree = (actual, expected) => {
+  const text = JSON.stringify(expected)
+  const shown = text.includes('"pos"') ? actual : noPositions(actual)
+  return same(text.includes('"srcByteLength"') ? shown : noLength(shown), expected)
+}
 function sourceOf(c) { return c.inputBytes ? Buffer.from(c.inputBytes.replaceAll(' ', ''), 'hex') : c.input ?? '' }
 function resolver(files) {
   return request => {
@@ -235,7 +241,8 @@ function jsRun(c) {
 }
 function cliRun(c, engine) {
   const command = c.args?.[0] ?? 'render'
-  if (engine === 'rs' && command !== 'lint') return { unsupported: `Rust carve CLI has no ${command} command` }
+  // The Rust CLI offers `lint` and `render`; a file argument first is the default `render`.
+  if (engine === 'rs' && !['lint', 'render'].includes(command) && !/^[^-].*\.crv$/.test(command)) return { unsupported: `Rust carve CLI has no ${command} command` }
   const dir = mkdtempSync(join(tmpdir(), `carve-next2-${engine}-`))
   for (const [name, content] of Object.entries(c.files ?? {})) {
     const path = resolve(dir, name)
