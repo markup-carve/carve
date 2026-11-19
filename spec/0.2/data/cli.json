@@ -97,7 +97,8 @@
       "channel": "render-loss",
       "repeatable": true,
       "clauses": [
-        "C2-T-027"
+        "C2-T-027",
+        "C2-H-204"
       ]
     },
     {
@@ -262,7 +263,8 @@
       "kind": "count",
       "default": 100,
       "clauses": [
-        "C2-T-029"
+        "C2-T-029",
+        "C2-H-205"
       ]
     },
     {
@@ -429,6 +431,23 @@
       "clauses": [
         "C2-T-010",
         "C2-H-137"
+      ]
+    },
+    {
+      "name": "soft-break",
+      "commands": [
+        "render"
+      ],
+      "kind": "enum",
+      "values": [
+        "newline",
+        "space",
+        "br"
+      ],
+      "option": "softBreak",
+      "clauses": [
+        "C2-T-010",
+        "C2-H-203"
       ]
     },
     {
@@ -686,6 +705,13 @@
       "name": "parseWithLayout",
       "clauses": [
         "C2-A-003"
+      ]
+    },
+    {
+      "name": "positionOf",
+      "clauses": [
+        "C2-T-019",
+        "C2-T-041"
       ]
     },
     {

@@ -167,6 +167,14 @@ function jsOptions(c) {
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
   if (options.extensions?.includes('carve.tabs')) options.extensions = js.tabsExtensions
   if (options.renderers?.['carve.tabs'] === 'standard') options.renderers = { 'carve.tabs': js.tabsRenderer }
+  // The harness function of conformance/README.md ("Options").
+  if (options.codeBlockRenderer) {
+    const { syntax, result } = options.codeBlockRenderer
+    options.codeBlockRenderer = (node, defaultHtml) => {
+      if ((syntax !== undefined && node.syntax !== syntax) || result === null) return undefined
+      return typeof result === 'string' ? result.replaceAll('{default}', defaultHtml).replaceAll('{syntax}', node.syntax ?? '') : result
+    }
+  }
   return options
 }
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))

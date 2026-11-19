@@ -24,9 +24,17 @@
     "clauses": { "type": "array", "items": { "$ref": "#/$defs/clauseId" } },
     "options": {
       "type": "object",
-      "description": "The options of data/options.json by their names. extensions and renderers take host code, so a case names a standard extension and its standard renderer instead. scripts/spec2-conformance.mjs checks each value against data/options.json, except a value the case expects to be refused.",
+      "description": "The options of data/options.json by their names. extensions, renderers and codeBlockRenderer take host code, so a case names a standard extension and its standard renderer, and describes the code block function (README.md). scripts/spec2-conformance.mjs checks each value against data/options.json, except a value the case expects to be refused.",
       "properties": {
         "alignTables": { "type": "boolean" },
+        "allowLosses": { "type": "array", "items": { "type": "string" } },
+        "codeBlockRenderer": {
+          "type": "object",
+          "description": "The host function of C2-H-206: for a code block whose syntax is syntax, or for every block where syntax is absent, it returns result; a string result is a template in which {default} is the default HTML and {syntax} the language or the empty string, null returns nothing, and a number returns a value that is not text. Every other block gets nothing.",
+          "required": ["result"],
+          "properties": { "syntax": { "type": "string" }, "result": { "oneOf": [{ "type": "string" }, { "type": "null" }, { "type": "number" }] } },
+          "additionalProperties": false
+        },
         "extensions": { "type": "array", "items": { "type": "string" } },
         "headingIds": { "type": "string" },
         "includes": {
@@ -36,6 +44,7 @@
           "additionalProperties": false
         },
         "labels": { "type": "object", "additionalProperties": { "type": "string" } },
+        "maxLosses": { "type": "number" },
         "mode": { "type": "string" },
         "normalize": { "type": "boolean" },
         "platforms": { "type": "array", "items": { "type": "string" } },
@@ -47,6 +56,7 @@
         "sections": { "type": "boolean" },
         "smartTypography": { "type": "boolean" },
         "social": { "type": "object" },
+        "softBreak": { "type": "string" },
         "sourceLines": { "type": "boolean" },
         "strictLosses": { "type": "boolean" },
         "symbols": { "type": "object", "additionalProperties": { "type": "string" } },
@@ -125,7 +135,7 @@
         "clauses": { "$ref": "#/$defs/clauses" },
         "why": { "type": "string", "description": "The deciding sentence, quoted from the first clause it names: CLAUSE-ID, a colon, a space, the sentence; ' ... ' joins two pieces." },
         "summary": { "type": "string" },
-        "kind": { "enum": ["render", "parse", "lint", "format", "tree", "migrate", "layout", "write", "import", "cli"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
+        "kind": { "enum": ["render", "parse", "lint", "format", "tree", "migrate", "layout", "write", "import", "cli", "position"], "description": "The call the case runs; absent is a render whose expected html and children are both stated. See README.md." },
         "input": { "type": "string" },
         "inputBytes": { "type": "string", "pattern": "^[0-9A-F]{2}( [0-9A-F]{2})*$", "description": "The input as bytes in hex, for a source that is not a string." },
         "files": { "type": "object", "additionalProperties": { "$ref": "#/$defs/file" }, "description": "The files a resolver serves, each under its name, which is also its id." },
@@ -135,6 +145,7 @@
         "html": { "type": "string", "description": "The HTML an import case reads." },
         "args": { "type": "array", "items": { "type": "string" }, "description": "The arguments of a command line case, after the program name (C2-T-007)." },
         "stdin": { "type": "string", "description": "What a command line case reads on standard input; absent is empty." },
+        "offset": { "type": "integer", "description": "The UTF-8 byte offset a position case gives positionOf (C2-T-041)." },
         "options": { "$ref": "#/$defs/options" },
         "host": { "type": "object", "description": "Conformance harness registrations, not a Carve option.", "properties": { "documentTransforms": { "type": "array", "items": { "type": "object", "required": ["name", "after", "insert"], "properties": { "name": { "type": "string" }, "after": { "type": "string" }, "insert": { "type": "object" } }, "additionalProperties": false } } }, "additionalProperties": false },
         "expected": {
@@ -146,6 +157,8 @@
             "diagnostics": { "$ref": "#/$defs/diagnostics" },
             "diagnosticsComplete": { "type": "boolean", "description": "true: the record holds these entries and no other; false or absent: it holds at least these." },
             "notReported": { "type": "array", "items": { "$ref": "#/$defs/code" }, "description": "Codes the record holds no entry of." },
+            "line": { "type": "integer", "minimum": 1, "description": "The line positionOf returns (C2-T-041)." },
+            "column": { "type": "integer", "minimum": 1, "description": "The column positionOf returns (C2-T-041)." },
             "suppressed": { "type": "integer", "minimum": 0, "description": "suppressedDiagnostics of the result (C2-T-024)." },
             "status": { "enum": [0, 1, 2], "description": "The exit status of a command line case (C2-T-037 to C2-T-040)." },
             "stdout": { "type": "string", "description": "Standard output, byte for byte." },
@@ -182,7 +195,8 @@
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["tree"] } } }, "then": { "oneOf": [{ "required": ["tree"], "properties": { "tree": true } }, { "required": ["json"], "properties": { "json": true } }] } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["migrate", "write"] } } }, "then": { "oneOf": [{ "required": ["tree"], "properties": { "tree": true } }] } },
         { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["import"] } } }, "then": { "oneOf": [{ "required": ["html"], "properties": { "html": true } }] } },
-        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["cli"] } } }, "then": { "oneOf": [{ "required": ["args"], "properties": { "args": true } }] } }
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["cli"] } } }, "then": { "oneOf": [{ "required": ["args"], "properties": { "args": true } }] } },
+        { "if": { "required": ["kind"], "properties": { "kind": { "enum": ["position"] } } }, "then": { "required": ["offset"], "properties": { "offset": true }, "oneOf": [{ "required": ["input"], "properties": { "input": true } }, { "required": ["inputBytes"], "properties": { "inputBytes": true } }] } }
       ],
       "additionalProperties": false
     },

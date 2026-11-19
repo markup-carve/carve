@@ -61,6 +61,7 @@ Each entry has `id` (`CC-nnn`), `clauses`, `why`, `summary`, `options`, `expecte
 | `migrate` | `tree`, a 1.x or draft tree | `migrateTree` | `tree`, diagnostics, `refusal` |
 | `import` | `html` | `importDocument` with `from: "html"` | `children`, `carve`, diagnostics, `refusal` |
 | `cli` | `args`, `stdin`, `files` | the program `carve` | `status`, `stdout`, `stdoutJson`, `stdoutDiagnostics`, `stderrCategory`, `stderrDiagnostics`, `filesAfter` |
+| `position` | `input` or `inputBytes`, `offset` | `positionOf` | `line`, `column`, `refusal` |
 
 `inputBytes` is the input as bytes in hex, for a source that is not well-formed UTF-8 (C2-B-218). `files` holds the files a resolver serves, as for an include example; a case with `files` is parsed with that resolver and one without `files` with none (see "Options").
 
@@ -128,6 +129,22 @@ A `cli` case runs the program (`tooling.md`, C2-T-002) with `args`, the argument
 
 The check fails a command or a flag that `data/cli.json` does not list for the command, unless the case expects the category `usage`; a category whose status differs from the one `data/cli.json` gives it; and a field of a command line expected from a library call, or the other way round.
 
+### Positions
+
+A `position` case calls `positionOf` (C2-T-041) with the input and `offset`, a UTF-8 byte offset into it, and compares `expected.line` and `expected.column` with the result, or expects the refusal `CarveOptionError` with the path `/offset`. Its `options` are `{}`.
+
+```json
+{
+  "kind": "position",
+  "input": "a\nbé c",
+  "offset": 6,
+  "options": {},
+  "expected": { "line": 2, "column": 4 }
+}
+```
+
+The check fails `line`, `column` or `offset` on a case of another kind, and a position case that sets options or expects anything else.
+
 ### Refusals
 
 `expected.refusal` says that the call throws: `error`, the typed error of the table of C2-T-040 (`tooling.md`), and `path`, the RFC 6901 pointer of what the error names, into the tree, the sidecar or the options the call was given (C2-A-167). An error that names the node at `path` or a field below it agrees. A refusal stands alone in `expected`, except for the diagnostics a `CarveWriteError` carries (C2-W-134). `expected.accepted` says that the reader accepts the input, and `expected.tree` gives the tree the call returns, compared under C2-A-161 and with positions where the case states them.
@@ -145,7 +162,7 @@ The check fails an error that no category of `data/cli.json` names or that the c
 
 ## Options
 
-`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Two options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, also for `decodeTree` and `validateTree`, and `renderers` maps such a name to `"standard"`, its standard renderer, which under the `mode` `static` is its build-time renderer (C2-X-052). `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
+`options` takes every option of `data/options.json` by its name, and `{}` is every default. The check fails a value that the row of the option does not allow, except a value the case expects to be refused (`expected.refusal` with `CarveOptionError` and the path of that option). Three options take host code, which JSON cannot hold, so a case names it: `extensions` lists standard extensions by their names in `data/extensions.json`, also for `decodeTree` and `validateTree`, and `renderers` maps such a name to `"standard"`, its standard renderer, which under the `mode` `static` is its build-time renderer (C2-X-052). `codeBlockRenderer` (C2-H-206) is an object that the runner turns into a function: for a code block whose `syntax` is the field `syntax`, or for every code block where the field is absent, the function returns `result`, and for every other block it returns nothing. A string `result` is a template in which `{default}` stands for the default HTML and `{syntax}` for the language of the block, or the empty string where it has none; `null` returns nothing, and a number returns that number, a value that is not text. `allowLosses` lists codes of the render-loss channel, and `maxLosses` is a count. `includes` holds `file`, the id of the top-level document, and the lowered limits `depth` and `bytes`; a case with `files` is parsed with a resolver over them, and a case without `files` with no resolver. `rules` maps a code to `on` or `off`, and `platforms` lists platform names.
 
 ```json
 { "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }

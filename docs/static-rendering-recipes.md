@@ -20,6 +20,14 @@ Register a trusted renderer for the extension's qualified name and version. It r
 
 For a diagram, the host can run a local renderer during the build, sanitize its result for the site's trust model, and return HTML. Keep the diagram's source as a readable fallback. Do not let untrusted document text choose a command line or remote endpoint. [Writing an extension](./extension-tutorial.md) shows the registration surface.
 
+## Highlight code blocks
+
+A host passes `codeBlockRenderer(node, defaultHtml)` to the render call. It runs once for every code block the renderer writes, in both modes, and gets the block's `syntax` and `value` with the default `<pre>` HTML. It returns HTML to write in its place, or nothing to keep the default. The returned HTML is trusted and inserted unchanged, so a highlighter must escape the code itself. See [the code block renderer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#code-and-raw-content).
+
+## Soft breaks for chat output
+
+`softBreak` writes a line break inside a paragraph as a line break (`newline`, the default), one space (`space`), or `<br>` (`br`) for output that shows source line breaks. The command line flag is `--soft-break`. See [render options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
+
 ## Core math
 
 Core math stays TeX-delimited HTML in static mode. A site that needs server-rendered math applies a separate postprocess or host integration. See [C2-H-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).

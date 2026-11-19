@@ -676,7 +676,7 @@ b</p>
 
 **C2-H-044** A hard-break block is a `<div>` around its blocks, with the classes of the tree in their order (C2-A-068). Every `hard_break` inside the block is `<br>`; a soft break of a supplied tree is written by C2-H-045.
 
-**C2-H-045** A hard break is `<br>` followed by a line break. A soft break is a line break.
+**C2-H-045** A hard break is `<br>` followed by a line break. A soft break is written as `softBreak` says (C2-H-203): a line break by default.
 
 **C2-H-046** A thematic break is `<hr>`.
 
@@ -915,6 +915,10 @@ Example 49 (unverified, `--roundtrip`)
 
 **C2-H-134** With `rawHtml` on, a raw HTML block whose payload has no line and one whose payload is one blank line both write one empty line. HTML does not show the difference that `value` keeps (C2-A-048).
 
+**C2-H-206** `codeBlockRenderer` is a host function that writes code blocks, for a host that highlights them. The renderer calls it once for each `code_block` it writes, in the order of the output, wherever the block stands: in a container, in a caption figure, in a code group, in the fallback of an extension node and in the children of an expanded include. It is called in both modes and under every profile, but not for a code block outside the profile, which is written in its degraded form (C2-H-165). It is not called for any other node: not for a raw block, also where `rawHtml` off writes it as a code block (C2-H-050), not for a code span, a math node or an extension node that a renderer writes. It takes two arguments: the node, which it reads and does not change, with the language in `syntax`, the text in `value` and, where the tree has them, `title`, `groupLabel` and `attrs`; and the default HTML, the `<pre>` element that C2-H-047 and C2-H-048 give for the block, with its attributes, the carriers of `roundtrip` and the line of `sourceLines`. For a code block with a caption it is called for the block inside the `<figure>` (C2-H-062), so the node has no `caption`, `attrs`, `lang` or `dir` and the default HTML none of their attributes; the figure and its caption are written as without the function.
+
+**C2-H-207** The function returns HTML as text, or nothing. Text is written in place of the default HTML, after the same indentation and otherwise as it is: it is trusted host HTML, which the URL filter (C2-H-161), the character replacement (C2-H-176) and the profile do not touch, and the host answers for its safety and, in static mode, for its being self-contained (C2-H-122). Nothing writes the default HTML. A value that is neither text nor nothing is refused with an option error that names `codeBlockRenderer`, and the render returns no output. An error the function throws is the host's own and leaves the call unchanged; it is no refusal of C2-T-006. The tree does not change, and no entry of the record reports a replaced block. Without the option every code block is written as C2-H-047 says.
+
 ## Tables
 
 **C2-H-055** A table is `<table>` with `<thead>`, one `<tbody>` for each body and `<tfoot>` for its groups. Each group tag stands on its own line and each row is one line: `<tr>`, its cells, `</tr>`. An empty group is not written.
@@ -1008,7 +1012,7 @@ Example 12 (generated)
 
 **C2-H-064** A figure group is `<figure class="carve-figure-group">`. Each panel in it (C2-A-084) is `<figure class="carve-figure-panel">` in place of the `<figure>` of C2-H-062, and the caption of the group is the last child of the group. A table panel is wrapped too: the panel figure holds the `<table>`, which keeps its caption as `<caption>` (C2-H-061) and has no `<figcaption>`.
 
-**C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks. In a supplied caption with several blocks every paragraph gets `<p>`.
+**C2-H-065** A caption holds blocks (C2-A-081). A caption with one paragraph, which is every parsed caption, writes that paragraph bare inside `<figcaption>` or `<caption>`, and line breaks in it are soft breaks, written as `softBreak` says (C2-H-203). In a supplied caption with several blocks every paragraph gets `<p>`.
 
 **C2-H-066** The caption number mark `#` in a caption is replaced by the number of the caption in its sequence. The sequences, the label word that selects one, and the numbering of equations are as in 0.1. C2-B-207, C2-B-208 and C2-H-149 to C2-H-151 state them. A panel caption takes no number. The number mark of a caption that takes no number, such as the caption of a panel, is written as the character `#`.
 
@@ -2285,7 +2289,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 ## Options
 
-**C2-H-121** Fourteen of the 20 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
+**C2-H-121** Eighteen of the 24 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
@@ -2638,9 +2642,15 @@ Example 34 (unverified, `--profile comment`)
 
 Reported: `profile-construct-degraded`.
 
+**C2-H-203** `softBreak` sets how a `soft_break` is written: `newline`, the default, writes a line break; `space` writes one space; `br` writes `<br>` followed by a line break, the form of a hard break (C2-H-045), for output such as chat that shows no line break of the source. These are the three values of the 0.1 soft break mode of the PHP engine. An unknown value is refused. The option holds wherever a soft break is written, in a paragraph, a heading and a caption (C2-H-065), and for a soft break of a supplied tree in a hard-break block (C2-H-044), in both modes. Every profile admits `soft_break` (C2-H-163), so it holds under each of them. It does not change a break that C2-H-069 leaves out beside a comment line, nor the one space that a soft break gives in a degraded form (C2-H-165) and in plain text (C2-H-143). The tree does not change. The HTML importer reads the output of `space` as text and that of `br` as a `hard_break` (C2-M-046), and `roundtrip` writes no carrier for either.
+
+**C2-H-204** `allowLosses` lists the codes of the render-loss channel of `data/lint-rules.json` that a host accepts. An entry whose code is on the list is left out of the record (C2-A-172) and counts for neither `strictLosses` (C2-H-130) nor `maxLosses` (C2-H-205), so an allowed code alone never makes a render fail. A value that is no code of that channel is refused with an option error before the render starts. The default is the empty list. The HTML importer reads the option in the same way, for its own entries and for those of the writer that spells its tree (C2-M-082, C2-W-134). It is the allow list of the 0.1 command line, which `--allow-loss` still sets (C2-T-027).
+
+**C2-H-205** `maxLosses` caps the render-loss entries the record keeps: the first `maxLosses` of them in the order they occur stay, and the number of the others is added to `suppressedDiagnostics` of the result (C2-T-024). The value is a count, a decimal integer of at least 0, and its default is 100, the default of the 0.1 cap `maxRenderLosses`; any other value is refused with an option error. Entries of the parse and lint channels and allowed entries (C2-H-204) are not counted. The cap changes no output: `strictLosses` counts every loss that is not allowed, kept or not, so a render under `strictLosses` with `maxLosses` 0 still fails on a loss. The HTML importer reads the option in the same way. The command line sets it with `--max-render-losses` (C2-T-029).
+
 ## The option list
 
-**C2-H-137** These are the 20 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+**C2-H-137** These are the 24 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
 
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
@@ -2660,12 +2670,16 @@ Reported: `profile-construct-degraded`.
 | `urlPolicy` | render | deny list or allow list of URL schemes | the 0.1 deny list, listed in `data/options.json` | C2-H-128 |
 | `profile` | render | `full`, `article`, `comment` or `minimal` | `full` | C2-H-129 |
 | `strictLosses` | render, import | boolean | off | C2-H-130, C2-M-082 |
+| `allowLosses` | render, import | list of render-loss codes | empty | C2-H-204 |
+| `maxLosses` | render, import | count | 100 | C2-H-205 |
+| `softBreak` | render | `newline`, `space` or `br` | `newline` | C2-H-203 |
+| `codeBlockRenderer` | render | host function for code blocks | none | C2-H-206, C2-H-207 |
 | `alignTables` | format | boolean | off | C2-W-068 |
 | `normalize` | format | boolean | off | C2-W-127 |
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
 
-Fourteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml` and `strictLosses` are read by the HTML importer as well (C2-M-066, C2-M-082).
+Eighteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml`, `strictLosses`, `allowLosses` and `maxLosses` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
 
 ## The clauses of PART 10
 
@@ -2762,7 +2776,7 @@ ab
 | Lists | 9 | 0 | 1 | 4 |
 | Description lists | 3 | 0 | 2 | 0 |
 | Quotes, divs and their sigil forms | 13 | 0 | 4 | 1 |
-| Code and raw content | 9 | 0 | 1 | 1 |
+| Code and raw content | 11 | 0 | 1 | 1 |
 | Tables | 8 | 0 | 2 | 1 |
 | Captions and figures | 11 | 0 | 4 | 1 |
 | Comments, frontmatter and definitions | 5 | 0 | 1 | 3 |
@@ -2774,9 +2788,9 @@ ab
 | State beyond the current block | 10 | 0 | 0 | 0 |
 | Roundtrip carriers | 14 | 0 | 0 | 8 |
 | Import | 18 | 1 | 0 | 2 |
-| Options | 24 | 0 | 3 | 11 |
+| Options | 27 | 0 | 3 | 11 |
 | The option list | 1 | 0 | 0 | 0 |
 | Further clauses | 4 | 0 | 0 | 3 |
-| **Total** | **194** | **6** | **33** | **53** |
+| **Total** | **199** | **6** | **33** | **53** |
 
-The document has 194 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.
+The document has 199 clauses, 6 of them marked with the word "Exception", and 86 examples, 33 generated and 53 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted C2-H-028, C2-H-059, Exception C2-H-084, C2-H-097, C2-H-118 and C2-H-135, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-H-023, whose rule other clauses state or give; its id is not reused.

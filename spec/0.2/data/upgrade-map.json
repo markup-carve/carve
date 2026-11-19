@@ -3140,6 +3140,36 @@
       "meaning02": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section></div> Static mode keeps the 0.1 static elements and classes (C2-X-043) but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. Report so a host that processes static HTML can check it.",
       "toolEntry": "U-419",
       "silent": true
+    },
+    {
+      "id": "U-420",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 PHP render option softBreakMode)",
+      "to": "(render option softBreak)",
+      "meaning02": "A soft break is a line break unless `softBreak` is `space`, one space, or `br`, `<br>` and a line break (C2-H-203). The 0.1 values `Newline`, `Space` and `Break` are `newline`, `space` and `br`.",
+      "toolEntry": "U-420",
+      "silent": false
+    },
+    {
+      "id": "U-421",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 command line --allow-loss CODE)",
+      "to": "(option allowLosses)",
+      "meaning02": "`--allow-loss` stays and sets `allowLosses`, which the render and the HTML importer read: an allowed code is left out of the record and never fails `strictLosses` (C2-H-204, C2-T-027).",
+      "toolEntry": "U-421",
+      "silent": false
+    },
+    {
+      "id": "U-422",
+      "kind": "none",
+      "group": "host options",
+      "from": "(0.1 maxRenderLosses and --max-render-losses)",
+      "to": "(option maxLosses)",
+      "meaning02": "`--max-render-losses` stays and sets `maxLosses`, default 100 as in 0.1: the record keeps the first losses and counts the others in `suppressedDiagnostics` (C2-H-205, C2-T-029).",
+      "toolEntry": "U-422",
+      "silent": false
     }
   ],
   "tree": [
