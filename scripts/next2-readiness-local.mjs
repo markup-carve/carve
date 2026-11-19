@@ -44,7 +44,7 @@ if (!prepared) {
   }
   run('npm', ['ci'], { cwd: dirs.js })
   run('npm', ['run', 'build'], { cwd: dirs.js })
-  run('composer', ['install', '--no-interaction', '--no-progress'], { cwd: dirs.php })
+  run('composer', ['install', '--no-dev', '--no-interaction', '--no-progress'], { cwd: dirs.php })
   const env = { ...process.env, CARGO_BUILD_JOBS: '4', CARGO_TARGET_DIR: target }
   run('cargo', ['build', '--manifest-path', resolve(dirs.rs, 'Cargo.toml'), '--bin', 'carve'], { env })
   run('cargo', ['build', '--manifest-path', resolve(root, 'scripts/next2-readiness-rs/Cargo.toml')], { env })

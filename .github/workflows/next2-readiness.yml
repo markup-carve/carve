@@ -88,7 +88,7 @@ jobs:
         run: npm ci && npm run build
       - name: Install PHP 0.2 engine
         working-directory: engines/carve-php
-        run: composer install --no-interaction --no-progress
+        run: composer install --no-dev --no-interaction --no-progress
       - uses: actions/cache@v6
         with:
           path: ${{ github.workspace }}/.cargo-next2-target
