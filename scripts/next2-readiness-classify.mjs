@@ -63,6 +63,25 @@ export function classifyUpgrade({ baselineDigests, currentDigests, baselineIds, 
 // carve#6163: (b) tool defect and (d) unmapped count against readiness; (a) report row and (c) malformed 0.1 are listed apart.
 export const upgradeBarClasses = new Set(['b', 'd'])
 
+export const upgradeOrigins = ['example', 'pack']
+export const upgradeClasses = ['a', 'b', 'c', 'd']
+
+export function upgradeOrigin(id) {
+  const origin = id.slice(0, id.indexOf('/'))
+  if (!upgradeOrigins.includes(origin)) throw new Error(`Unknown upgrade source origin: ${id}`)
+  return origin
+}
+
+export function upgradeClassCounts(blockedClasses) {
+  const counts = Object.fromEntries(upgradeOrigins.map(origin => [origin, Object.fromEntries(upgradeClasses.map(cls => [cls, 0]))]))
+  for (const [id, cls] of Object.entries(blockedClasses)) counts[upgradeOrigin(id)][cls]++
+  return counts
+}
+
+export function upgradeBarFail(originClasses) {
+  return [...upgradeBarClasses].reduce((sum, cls) => sum + originClasses.example[cls], 0)
+}
+
 // `kinds` maps an upgrade row id to its map kind; `malformed` holds the 0.1 lint rules that mark a malformed source.
 export function upgradeClass({ records = [], error, lint = [], kinds, malformed }) {
   if (error !== undefined) return 'b'

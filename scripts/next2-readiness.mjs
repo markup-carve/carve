@@ -6,7 +6,7 @@ import { resolve, dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeBarClasses, upgradeClass } from './next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -437,6 +437,8 @@ async function replay() {
     }
   }
   out.noMappedShare = out.mismatches ? Number((out.noMappedRow / out.mismatches * 100).toFixed(2)) : 0
+  out.originClasses = upgradeClassCounts(out.blockedClasses)
+  out.originTotals = Object.fromEntries(upgradeOrigins.map(origin => [origin, selected.filter(([id]) => id.startsWith(`${origin}/`)).length]))
   return out
 }
 const upgrade = await replay()
@@ -447,8 +449,8 @@ for (const engine of ['js', 'php', 'rs']) {
   for (const area of ['clauses', 'examples', 'trees']) counts[engine][area] = tally(results[engine].filter(r => r.area === area))
   counts[engine].catalog = tally(catalog[engine])
 }
-const upgradeFail = [...upgradeBarClasses].reduce((sum, cls) => sum + upgrade.classes[cls], 0)
-counts.js.upgrade = { pass: upgrade.total - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
+const upgradeFail = upgradeBarFail(upgrade.originClasses)
+counts.js.upgrade = { pass: upgrade.originTotals.example - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
 const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries(rows.filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
@@ -458,7 +460,7 @@ for (const [engine, areas] of Object.entries(counts)) for (const [area, row] of 
   const total = row.pass + row.fail + row.unsupported
   lines.push(`| ${engine} | ${area} | ${row.pass} | ${row.fail} | ${row.unsupported} | ${row.excluded} | ${row.engineLocal} | ${total ? (row.pass / total * 100).toFixed(1) : '0.0'}% | ${row.fail + row.unsupported === 0 && (area !== 'catalog' || !forbiddenReports.some(item => item.startsWith(`${engine}/`))) ? 'yes' : 'no'} |`)
 }
-lines.push('', `Engine ready: ${Object.entries(counts).map(([engine, areas]) => `${engine} ${ready(engine, areas) ? 'yes' : 'no'}`).join(', ')}.`)
+lines.push('', `Engine ready (upgrade bar counts only real example (b) tool defects and (d) unmapped sources; all origins remain in the regression gate): ${Object.entries(counts).map(([engine, areas]) => `${engine} ${ready(engine, areas) ? 'yes' : 'no'}`).join(', ')}.`)
 lines.push('', '| Engine | Unsupported kind | Cases |', '|---|---|---:|')
 for (const [engine, rows] of Object.entries(results)) {
   const kinds = new Map()
@@ -466,8 +468,8 @@ for (const [engine, rows] of Object.entries(results)) {
   for (const [kind, count] of [...kinds].sort(([a], [b]) => a.localeCompare(b))) lines.push(`| ${engine} | ${kind} | ${count} |`)
 }
 lines.push('', `Upgrade replay: ${upgrade.total} sources, ${upgrade.mismatches} mismatches, ${upgrade.noMappedRow} with no mapped row (${upgrade.noMappedShare}%), ${upgrade.blocked} blocked.`)
-lines.push('', 'Blocked upgrade sources by class. Only tool defects and unmapped sources count against readiness (carve#6163); every class is in the regression gate.', '', '| Class | Meaning | Blocked | Counts against readiness |', '|---|---|---:|---|')
-for (const [cls, meaning] of [['b', 'tool defect: a rewrite or escape row is cited where the HTML still differs'], ['d', 'unmapped: no row explains the difference'], ['a', 'report row: a person decides'], ['c', 'malformed 0.1 source: the 0.1 lint flags it']]) lines.push(`| (${cls}) | ${meaning} | ${upgrade.classes[cls]} | ${upgradeBarClasses.has(cls) ? 'yes' : 'no'} |`)
+lines.push('', 'Blocked upgrade sources by origin and class. Only real example sources in (b) tool defect or (d) unmapped count against Engine ready; generated-pack sources remain in the regression gate.', '', '| Origin | Sources | (a) Report row | (b) Tool defect | (c) Malformed 0.1 | (d) Unmapped | Counts against Engine ready |', '|---|---:|---:|---:|---:|---:|---|')
+for (const origin of upgradeOrigins) lines.push(`| ${origin} | ${upgrade.originTotals[origin]} | ${upgradeClasses.map(cls => upgrade.originClasses[origin][cls]).join(' | ')} | ${origin === 'example' ? '(b), (d)' : 'none'} |`)
 lines.push('', `Runner wall time: ${report.durationSeconds} seconds.`)
 lines.push('', '| Engine | Lint ID | Range | Message |', '|---|---:|---:|---:|')
 for (const [engine, item] of Object.entries(lintAgreement)) lines.push(`| ${engine} | ${item.idPercent}% | ${item.rangePercent}% | ${item.messagePercent}% |`)

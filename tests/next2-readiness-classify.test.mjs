@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass } from '../scripts/next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeClassCounts, upgradeBarFail } from '../scripts/next2-readiness-classify.mjs'
 
 const base = { area: 'clauses', kind: 'render', id: 'CC-010', clauses: ['C2-B-001'], why: 'w', input: 'a\n', expected: { html: '<p>a</p>\n' } }
 const fp = c => caseFingerprint(c)
@@ -153,4 +153,28 @@ test('a baseline without classes compares blocked ids only', () => {
   const digests = { 'pack/a.json': 'x' }
   const v = classifyUpgrade({ baselineDigests: digests, currentDigests: digests, baselineIds: ['pack/a.json/1'], currentIds: ['pack/a.json/1'], currentClasses: { 'pack/a.json/1': 'b' } })
   assert.deepEqual(v.regressions, [])
+})
+
+test('only example tool defects and unmapped sources decide the upgrade bar', () => {
+  const counts = upgradeClassCounts({
+    'example/tests/upgrade-replay/examples/a.md/1': 'b',
+    'example/tests/upgrade-replay/examples/a.md/2': 'd',
+    'example/tests/upgrade-replay/examples/a.md/3': 'a',
+    'pack/a.json/1': 'b',
+    'pack/a.json/2': 'd',
+    'pack/a.json/3': 'c',
+  })
+  assert.deepEqual(counts.example, { a: 1, b: 1, c: 0, d: 1 })
+  assert.deepEqual(counts.pack, { a: 0, b: 1, c: 1, d: 1 })
+  assert.equal(upgradeBarFail(counts), 2)
+  assert.equal(upgradeBarFail(upgradeClassCounts({ 'pack/a.json/1': 'b', 'pack/a.json/2': 'd' })), 0)
+})
+
+test('a generated-pack class worsening remains a regression outside the bar', () => {
+  const id = 'pack/a.json/1'
+  const digests = { 'pack/a.json': 'x' }
+  const verdict = classifyUpgrade({ baselineDigests: digests, currentDigests: digests, baselineIds: [id], currentIds: [id],
+    baselineClasses: { [id]: 'a' }, currentClasses: { [id]: 'b' } })
+  assert.deepEqual(verdict.regressions, [id])
+  assert.equal(upgradeBarFail(upgradeClassCounts({ [id]: 'b' })), 0)
 })
