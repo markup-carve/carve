@@ -1297,7 +1297,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `ordered-marker-right-aligned` | warning | an ordered marker left of its list that ends at the column where the list's markers end | unchanged |
 | `tight-list-item-with-blank-line` | hint, opt-in | a tight list in which an item holds a blank line and a paragraph | unchanged |
 | `deprecated-loose-attribute` | warning | a list that carries the key `loose` | unchanged |
-| `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once | unchanged |
+| `heading-marker-mixed` | hint | a document with `=` headings and `#` headings, once, at its first heading | unchanged |
 | `comment-line-in-line-block` | hint | a line of a line block that starts with `%%` and opens no comment block | unchanged |
 | `fence-closer-indented` | hint | a closer whose indent differs from its opener's | unchanged |
 | `ordered-list-kind-split` | warning | a one-item list whose marker is one of the seven roman letters, directly followed by an ordered list of the other letter style in the same case, with fewer than three blank lines between them | the first marker fixes its style (C2-B-042) |
@@ -1315,7 +1315,7 @@ The 29 rules of the migrate and lint design and one rule added since, with the r
 | `deprecated-bare-highlight` | warning | an equals pair that 0.1 read as highlight | unchanged |
 | `deprecated-substitution-arrow` | warning | a braced strike span that holds `~>` | unchanged |
 | `braced-span-opener-as-text` | warning | a braced opener left as text because a bare delimiter inside it closed an outer span | unchanged |
-| `unattached-inline-attribute` | hint | an attribute block in a paragraph that is glued to no host | unchanged |
+| `unattached-inline-attribute` | hint | an attribute block in an inline content that is glued to no host | unchanged |
 | `sigil-after-letter` | hint | a mention or tag shape directly after a letter or number outside ASCII | unchanged |
 | `unclosed-frontmatter` | error | frontmatter with no closer | unchanged (C2-B-163) |
 | `frontmatter-shaped-thematic-break` | warning | frontmatter whose first line is blank or that holds no key line | unchanged |

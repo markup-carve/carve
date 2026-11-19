@@ -87,7 +87,7 @@
       ],
       "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition."],
       "message_origin": "design",
-      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200)",
+      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025)",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
       "clauses": ["C2-B-019", "C2-B-200"]
     },
@@ -208,7 +208,7 @@
       ],
       "message_notes": ["`${kind}` names the innermost open colon container: `div`, `admonition`, `figure group`, `line block` or `hard-break block` (C2-B-119, C2-B-125)."],
       "message_origin": "engine_0_1",
-      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div, an admonition, a figure group, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
+      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
       "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
     },
     {
@@ -449,7 +449,7 @@
         "A spaced thematic break was removed in 0.2; this line is a list item (or text). Write the unspaced star form."
       ],
       "message_origin": "design",
-      "reports": "a line of three or more stars, hyphens or underscores with spaces between them",
+      "reports": "a line that after its container prefixes and indent holds only three or more stars, hyphens or underscores with spaces between them, the container prefixes being quote marks and the markers of items, descriptions and footnote bodies up to their content column (C2-B-027); markers that the run itself makes, as `- - -` reads as nested items (C2-B-058), belong to the run and not to the prefixes, so `- - -` and `a. - - -` both report the whole spaced run; the range is the run",
       "change": "unchanged; `- - -` is this case",
       "clauses": ["C2-B-160"]
     },
@@ -739,7 +739,7 @@
       "messages": [{"when": "the empty definition has a link label without a leading `^`", "text": "This line is a label and colon with no destination, so it is text and defines no link. Add a destination after the colon, or remove the line."}, {"when": "the empty definition has a footnote label beginning with `^`", "text": "This line is a footnote label and colon with no body, so it is text and defines no footnote. Add body content after the colon, or remove the line."}],
       "message_origin": "data_file",
       "change": "re-scoped: a line of the shape `[label]:` with nothing after it, which is text in 0.2 (C2-B-083); new message text",
-      "reports": "a line of text that holds, after its quote marks and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts only if at least one non-whitespace character follows the caret, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
+      "reports": "a line of text that holds, after its container prefixes and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts only if at least one non-whitespace character follows the caret, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
       "clauses": ["C2-B-083", "C2-B-082", "C2-I-079"]
     },
     {
@@ -978,7 +978,7 @@
       "default": "on",
       "messages": ["This document mixes the two heading markers. carve fmt rewrites the hash to the equals sign."],
       "message_origin": "design",
-      "reports": "a document with `=` headings and `#` headings, once",
+      "reports": "a document with `=` headings and `#` headings, once; the range is the first heading of the document",
       "clauses": ["C2-B-155"]
     },
     {
@@ -1845,7 +1845,7 @@
       "messages": ["This line of \"${raw}\" is text in Carve 0.2. Write \"***\" for a thematic break."],
       "message_origin": "engine_0_1",
       "change": "new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2",
-      "reports": "a line of text that after its quote marks and indent holds only a run of three or more hyphens or of three or more underscores and trailing spaces and tabs, which is no thematic break in 0.2, once per line; a hyphen run directly below a line of paragraph text is reported by `setext-heading-underline` instead, and three hyphens on line 1 open frontmatter; the range is the run (C2-B-160, C2-B-161)",
+      "reports": "a line of text that after its container prefixes and indent holds only a run of three or more hyphens or of three or more underscores and trailing spaces and tabs, which is no thematic break in 0.2, once per line; a hyphen run directly below a line of paragraph text is reported by `setext-heading-underline` instead, and three hyphens on line 1 open frontmatter; the range is the run (C2-B-160, C2-B-161)",
       "clauses": ["C2-B-160", "C2-B-161"]
     },
     {
@@ -1897,7 +1897,7 @@
         "This attribute block is attached to nothing and renders as text. Glue it to a span, link or code span, or escape the brace."
       ],
       "message_origin": "design",
-      "reports": "a valid attribute block, or a run of glued ones, in the inline content of a paragraph that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
+      "reports": "a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host (C2-I-036), so it is printed as written (C2-I-035); `{}`, an escaped brace, a line that holds nothing but blocks (an attribute line), a run at the start of a paragraph that `block-marker-as-text` reports and a table cell that `table-row-attribute-as-cell` reports are not reported; once per run, the range is the run (C2-I-028, C2-I-035, C2-I-036)",
       "clauses": ["C2-I-028", "C2-I-035", "C2-I-036"]
     },
     {

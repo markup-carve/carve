@@ -55138,7 +55138,7 @@
     "C2-B-082",
     "C2-I-079"
    ],
-   "why": "Catalog empty-reference-definition: a line of text that holds, after its quote marks and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts only if at least one non-whitespace character follows the caret, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
+   "why": "Catalog empty-reference-definition: a line of text that holds, after its container prefixes and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon, as `[a]:`, which defines nothing, once per line; a label that starts with `^` counts only if at least one non-whitespace character follows the caret, since `[^a]:` with no content is no footnote definition, and brackets that hold only spaces or nothing hold no label and are not reported; the range is the label and the colon (C2-B-083, C2-B-082, C2-I-079)",
    "summary": "empty footnote definition selects footnote advice",
    "kind": "lint",
    "input": "x[^f]\n\n[^f]:\n",
@@ -60785,6 +60785,240 @@
       "severity": "warning",
       "line": 1,
       "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1377",
+   "clauses": [
+    "C2-B-160",
+    "C2-B-027"
+   ],
+   "why": "Catalog thematic-break-spelling: a line of text that after its container prefixes and indent holds only a run of three or more hyphens or of three or more underscores C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "an underscore run on a task item's marker line is reported at the run",
+   "kind": "lint",
+   "input": "- [ ] ___\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "thematic-break-spelling",
+      "line": 1,
+      "column": 7,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1378",
+   "clauses": [
+    "C2-B-160",
+    "C2-B-027"
+   ],
+   "why": "Catalog deprecated-spaced-thematic-break: a line that after its container prefixes and indent holds only three or more stars, hyphens or underscores with spaces between them C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "a spaced hyphen run behind an ordered marker is reported at the run",
+   "kind": "lint",
+   "input": "a. - - -\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "deprecated-spaced-thematic-break",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1379",
+   "clauses": [
+    "C2-B-083",
+    "C2-B-027"
+   ],
+   "why": "Catalog empty-reference-definition: a line of text that holds, after its container prefixes and indent, only a bracketed label with no `]` in it, a colon and nothing or only spaces and tabs after the colon C2-B-027: The content of an item, a description or a footnote body is stripped by at most its content column.",
+   "summary": "an empty definition behind an ordered marker is reported at the label",
+   "kind": "lint",
+   "input": "2) [a]:\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "empty-reference-definition",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1380",
+   "clauses": [
+    "C2-B-127",
+    "C2-B-125"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length C2-B-127: The name of a div decides what it is: ... `references` and `toc` give a directive",
+   "summary": "a three-colon run under an open four-colon directive is reported",
+   "kind": "lint",
+   "input": ":::: references\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "colon-fence-length-mismatch",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1381",
+   "clauses": [
+    "C2-B-127",
+    "C2-B-125"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length C2-B-125: A bare colon run closes the innermost open div it is long enough for",
+   "summary": "near miss: a three-colon run closes the three-colon directive inside a four-colon div",
+   "kind": "lint",
+   "input": "::::\n::: glossary\n:::\n::::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "colon-fence-length-mismatch"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1382",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block in a heading glued to no host is reported",
+   "kind": "lint",
+   "input": "# x {#id} y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1383",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block in a term glued to no host is reported",
+   "kind": "lint",
+   "input": ":: x {#id}\n\n: y\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 6,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1384",
+   "clauses": [
+    "C2-I-035",
+    "C2-I-036"
+   ],
+   "why": "Catalog unattached-inline-attribute: a valid attribute block, or a run of glued ones, in an inline content (a paragraph, heading, term, description or table cell) that is glued to the end of no formed host C2-I-035: One that attaches to nothing is printed as written",
+   "summary": "an attribute block inside a table cell glued to no host is reported",
+   "kind": "lint",
+   "input": "| x {#id} y |\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-inline-attribute",
+      "line": 1,
+      "column": 5,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1385",
+   "clauses": [
+    "C2-B-155"
+   ],
+   "why": "Catalog heading-marker-mixed: once; the range is the first heading of the document C2-B-155: `=` and `#` may mix in one document, and `heading-marker-mixed` reports it.",
+   "summary": "mixed heading markers are reported at the first heading, not at the start of the document",
+   "kind": "lint",
+   "input": "Text.\n\n= A\n\n# B\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "line": 3,
+      "column": 1,
+      "channel": "lint",
+      "severity": "hint"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1386",
+   "clauses": [
+    "C2-B-024",
+    "C2-B-025",
+    "C2-B-019"
+   ],
+   "why": "Catalog block-opener-without-blank-line: a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025) C2-B-025: With no paragraph open, a line belongs to the innermost open item, description or footnote body whose marker it is indented past",
+   "summary": "a quote line left of the item that holds the quote is a lazy line and is reported at its quote mark",
+   "kind": "lint",
+   "input": "    i) > $$x$$\n   > ## H\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 2,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning"
      }
     ]
    },
