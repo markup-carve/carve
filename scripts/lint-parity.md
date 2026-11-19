@@ -27,10 +27,14 @@ Options:
 
 ## What it compares
 
-Per input and rule, findings are compared in three steps: the number of findings, then their ranges
-(`startOffset`, `endOffset`), then their messages. The first step that differs gives the difference
-kind (`count`, `range` or `message`). Its pattern partitions the engines by result, so `js=php<rs` means
-carve-js and carve-php agree and carve-rs reports more.
+Per input and rule, findings are compared in four steps: the number of findings, the start of their
+ranges, the ends of their ranges, then their messages. The first step that differs gives the difference
+kind (`count`, `start`, `end` or `message`). Only `count` and `start` are defects by the text alone:
+C2-T-019 places a finding by the start of its range, and C2-T-020 does not compare messages. An `end`
+difference is a defect where the catalog row states the range.
+
+The pattern of a difference partitions the engines by result, so `js=php<rs` means carve-js and
+carve-php agree and carve-rs reports more.
 
 A signature is a rule, a kind and a pattern. The shortest inputs of each signature are minimized by
 greedy line deletion while the signature still holds, and a cause class is a signature plus the

@@ -217,8 +217,10 @@ export function differences(results) {
   for (const code of [...codes].sort()) {
     const counts = tallies.map((t) => t.get(code) ?? 0)
     if (new Set(counts).size > 1) { out.push({ rule: code, kind: 'count', pattern: pattern(counts.map((n) => String(n).padStart(4, '0'))) }); continue }
+    const starts = results.map((list) => list.filter((d) => d.code === code).map((d) => d.start).sort((a, b) => a - b).join(' '))
+    if (new Set(starts).size > 1) { out.push({ rule: code, kind: 'start', pattern: pattern(starts) }); continue }
     const ranges = results.map((list) => list.filter((d) => d.code === code).map(key).sort().join(' '))
-    if (new Set(ranges).size > 1) { out.push({ rule: code, kind: 'range', pattern: pattern(ranges) }); continue }
+    if (new Set(ranges).size > 1) { out.push({ rule: code, kind: 'end', pattern: pattern(ranges) }); continue }
     const messages = results.map((list) => list.filter((d) => d.code === code).map((d) => key(d) + ':' + d.message).sort().join('\n'))
     if (new Set(messages).size > 1) out.push({ rule: code, kind: 'message', pattern: pattern(messages) })
   }
@@ -319,10 +321,13 @@ async function main() {
   }
   const list = [...classes.values()].map((c) => ({ ...c, modes: [...c.modes] })).sort((a, b) => b.signatureCount - a.signatureCount || b.samples - a.samples)
   const errors = cases.filter((c, i) => engineNames.some((e) => results[e][i].some((d) => d.code.startsWith('ERROR')))).length
-  const report = { seed, count: sources.length, modes, runs: cases.length, errors, differingRuns: new Set(items.map((it) => it.mode + it.index)).size,
+  // C2-T-020: messages are not compared, and C2-T-019 places a finding by the start of its range only.
+  const blocking = (it) => it.kind === 'count' || it.kind === 'start'
+  const blockingSignatures = [...bySignature.entries()].filter(([, list]) => blocking(list[0])).length
+  const report = { seed, blockingSignatures, count: sources.length, modes, runs: cases.length, errors, differingRuns: new Set(items.map((it) => it.mode + it.index)).size,
     differences: items.length, signatures: bySignature.size, perRule, classes: list }
   if (args.out) writeFileSync(args.out, JSON.stringify(report, null, 2) + '\n')
-  console.log(`seed ${seed}: ${sources.length} inputs x ${modes.length} modes, ${report.differingRuns} runs differ, ${items.length} rule differences, ${bySignature.size} signatures, ${list.length} classes, ${errors} errors`)
+  console.log(`seed ${seed}: ${sources.length} inputs x ${modes.length} modes, ${report.differingRuns} runs differ, ${items.length} rule differences, ${bySignature.size} signatures (${blockingSignatures} on count or start), ${list.length} classes, ${errors} errors`)
   for (const [rule, row] of Object.entries(perRule).sort((a, b) => b[1].total - a[1].total)) console.log(`  ${rule}: ${row.total} (core ${row.core}, ext ${row.ext})`)
   for (const c of list) console.log(`\n[${c.signatureCount}/${c.samples}] ${c.rule} ${c.kind} ${c.pattern} (${c.modes.join(',')})\n${c.examples[0].minimal.replace(/^/gm, '    | ')}`)
 }

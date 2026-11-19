@@ -14,10 +14,11 @@ test('the generator produces every listed block construct', () => {
   }
 })
 
-test('differences are classified by count, then range, then message', () => {
+test('differences are classified by count, then range start, then range end, then message', () => {
   const d = (code, start, end, message = 'm') => ({ code, start, end, message })
   assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 0, 1)], []]), [{ rule: 'a', kind: 'count', pattern: 'rs<js=php' }])
-  assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 0, 2)], [d('a', 0, 1)]]), [{ rule: 'a', kind: 'range', pattern: 'js=rs<php' }])
+  assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 1, 2)], [d('a', 0, 1)]]), [{ rule: 'a', kind: 'start', pattern: 'js=rs<php' }])
+  assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 0, 2)], [d('a', 0, 1)]]), [{ rule: 'a', kind: 'end', pattern: 'js=rs<php' }])
   assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 0, 1)], [d('a', 0, 1, 'n')]]), [{ rule: 'a', kind: 'message', pattern: 'js=php<rs' }])
   assert.deepEqual(differences([[d('a', 0, 1)], [d('a', 0, 1)], [d('a', 0, 1)]]), [])
 })
