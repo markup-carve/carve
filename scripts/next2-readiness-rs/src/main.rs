@@ -214,7 +214,13 @@ fn run(c: &Value) -> Value {
     let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint")
         || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
-        return json!({"unsupported":"standard renderer host options are not offered"});
+        // Let the JSON boundary accept renderer host options when the pinned engine offers them.
+        // Its current renderers option takes only the string "standard".
+        return run_boundary(c, kind).unwrap_or_else(|refused| {
+            if refused["error"] == "CarveOptionError" && refused["path"] == "/renderers" {
+                json!({"unsupported":"standard renderer host options are not offered"})
+            } else { refused }
+        });
     }
     if boundary && c.get("files").is_none() {
         if c["options"].get("codeBlockRenderer").is_some() {
