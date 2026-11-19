@@ -190,6 +190,11 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
             let parse = r["diagnostics"].as_array().into_iter().flatten().filter(|d| d["channel"] == "parse").cloned().collect::<Vec<_>>();
             json!({"tree": r["tree"].take(), "diagnostics": parse})
         }
+        "layout" => {
+            let mut r = call(c, "parseWithLayout", opts)?;
+            json!({"tree": r["tree"].take(), "layout": r["layout"].take(),
+                "diagnostics": r["diagnostics"].take()})
+        }
         "lint" => json!({"diagnostics": call(c, "lint", opts)?["diagnostics"]}),
         "migrate" => {
             let mut r = call(c, "migrateTree", opts)?;
@@ -211,7 +216,7 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
-    let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint")
+    let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint" | "layout")
         || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
         // Let the JSON boundary accept renderer host options when the pinned engine offers them.
@@ -232,6 +237,29 @@ fn run(c: &Value) -> Value {
     }
     let o = options(&c["options"], c.get("files"));
     match kind {
+        "layout" => match carve::api::parse_with_layout(input, &o) {
+            Ok(result) => json!({"tree":serde_json::from_str::<Value>(&carve::api::encode_tree(&result.tree)).unwrap_or(Value::Null),
+                "layout":result.layout,"diagnostics":result.diagnostics}),
+            Err(error) => json!({"accepted":false,"error":error.spec_name(),"path":error.path()}),
+        },
+        "layout-fixture" => {
+            if let Err(error) = carve::api::validate_layout(&c["layout"]) {
+                return json!({"accepted":false,"error":error.spec_name(),"path":error.path()});
+            }
+            let parsed = if let Some(hex) = c["input"].as_str() {
+                let hex = hex.replace(' ', "");
+                let bytes: Vec<u8> = (0..hex.len() / 2)
+                    .filter_map(|i| u8::from_str_radix(hex.get(i * 2..i * 2 + 2)?, 16).ok())
+                    .collect();
+                carve::api::parse_with_layout(&bytes, &o)
+            } else {
+                carve::api::parse_with_layout(c["layout"]["source"].as_str().unwrap_or(""), &o)
+            };
+            match parsed {
+                Ok(result) => json!({"accepted":true,"layout":result.layout}),
+                Err(error) => json!({"accepted":false,"error":error.spec_name(),"path":error.path()}),
+            }
+        }
         "render" | "include" | "parse" => {
             if c.get("inputBytes").is_some() || c["options"].get("extensions").is_some() {
                 return json!({"unsupported":"case options need a resolver or host configuration"});
@@ -260,9 +288,11 @@ fn run(c: &Value) -> Value {
             json!({"tree":tree,"html":output.html,"diagnostics":diagnostics(found)})
         }
         "lint" => {
-            if c["options"].get("extensions").is_some() { return json!({"unsupported":"lint extension"}); }
             let mut opts = carve::lint::LintOptions::default();
             opts.includes = o.includes.clone();
+            opts.heading_ids = o.heading_ids;
+            opts.extensions = c["options"]["extensions"].as_array().into_iter().flatten()
+                .filter_map(Value::as_str).map(str::to_owned).collect();
             if let Some(rules) = c["options"]["rules"].as_object() {
                 opts.rules = rules.iter().filter_map(|(k,v)| v.as_str().map(|s|(k.clone(),s.to_string()))).collect();
             }
