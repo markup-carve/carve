@@ -18,7 +18,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 ### Replay gap rulings
 
-The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 rewrite only the seven sources whose full 0.1 and 0.2 HTML was checked. U-390 and U-393 now need no change. A comment inside a raw image alt is still source text (C2-I-074).
+The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 rewrite only the seven sources whose full 0.1 and 0.2 HTML was checked. U-390 now needs no change. U-393 and U-426 report every other line comment in a frame, which the verified rewrites do not cover. A comment inside a raw image alt is still source text (C2-I-074).
 
 For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-407, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
 
@@ -42,7 +42,7 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-390 | A comment marker at the start of a deletion: `{-%% b-}`. | Both versions keep `%%` as text after the braced opener and write `<del>%% b</del>`. | No change; none |
 | U-391 | A comment fence with no closer in a footnote body: `[^n]: head`, then an indented `%%%`. 0.1 hides the rest of the body, including a later indented `tail`; 0.2 ends the footnote and writes `tail` as a paragraph. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment fence opener through the following unhidden line; report |
 | U-392 | An uppercase attribute name: `{CLASS=z}` on a line block. 0.1 writes `CLASS="z line-block"`; 0.2 writes `class="z line-block"`, the same HTML attribute. **SILENT** | Attribute names compare without case, so the HTML is the same. | Nothing to change; none |
-| U-393 | A line comment inside a substitution: `{~a %% b~>c~} d`. | Both versions let the comment hide the arrow and closer and write `{~a d`. | No change; none |
+| U-393 | A line comment inside a substitution, ended in 0.1 at the first raw closer of its frame: `{~a %% b~>c~} d`. 0.1 writes `{~a d`; 0.2 writes `{~a`. **SILENT** | The comment takes every closer on its line and the rest of the line (C2-I-024). Any bracket or braced frame changes the same way; U-399 to U-402 rewrite only their own verified sources. | Report from the comment marker through the end of its line; report |
 | U-394 | A comment fence opened in a quote, an unquoted `%%` line, and a quoted closer: `> %%%`, `%%`, `> %%%`, `z`. 0.1 writes one empty quote; 0.2 writes two. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the quoted opener through its matching closer; report |
 | U-395 | A comment fence line inside a braced comment in a list item: `- p`, `  {% a`, `   %%%`, `   z %}`, `plain`. 0.1 hides the braced comment and keeps `plain` in the item; 0.2 writes `{% a` as text and `plain` as a paragraph after the list. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the braced comment opener through its closing mark; report |
 | U-396 | An empty unclosed math run at the end of inline content: <code>a $&#96;</code> or <code>$$&#96;&#96;</code>. 0.1 writes an empty math span; 0.2 writes the run as text (C2-I-017). **SILENT** | The old HTML differs; no preserving spelling exists: an adjacent closer joins the opener into a wider run, and a separator changes the empty value. | Report at the parsed math range; report |
@@ -57,6 +57,7 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-405 | A line comment at the start of a bracket: `[%% c] d`. 0.1 hides the comment and writes `[] d`; 0.2 writes `%% c` as text. **SILENT** | The old HTML is restored by the verified source spelling. | Write `[{% c %}] d`; rewrite |
 | U-406 | A line comment at the start of an inline footnote: `^[%% c] d`. 0.1 writes an empty note; 0.2 writes `%% c` in the note. **SILENT** | The old HTML is restored by the verified source spelling. | Write `^[{% c %}] d`; rewrite |
 | U-407 | A line comment at the start of extension content: `:f[%%]`. 0.1 writes an empty extension; 0.2 writes `%%` in it. **SILENT** | The old HTML is restored by the verified source spelling. | Write `:f[{% %}]`; rewrite |
+| U-426 | A line comment directly after the opener of a bracket, an inline note or extension content: `[%% hidden](/u)`. 0.1 hides the comment and writes an empty link; 0.2 writes `%% hidden` as the link text (C2-I-023). **SILENT** | The old HTML differs; U-405 to U-407 rewrite only their own verified sources. | Report from the `%%` through the closer of its frame; report |
 
 ### Extension rulings of 18 November
 
@@ -76,6 +77,8 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | U-417 | {.custom-tabs} ⏎ :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (former per-instance host class) **SILENT** | A per-instance host class is not a standard tabs mode (C2-X-056). Report so the host can place its styling outside the standard renderer. | Review by hand; report |
 | U-418 | :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ {selected} ⏎ ::: tab "B" ⏎ b ⏎ ::: ⏎ :::: | `selected` keeps choosing the initially selected tab: the first marked tab, or the first tab with no mark, as in 0.1 (C2-X-056). The renderer markup around it is covered by U-416 and U-419. | No source edit; none |
 | U-419 | :::: tabs ⏎ ::: tab "Install" ⏎ Run. ⏎ ::: ⏎ :::: (static mode) **SILENT** | Static mode keeps the 0.1 static elements and classes, a `section` with an `h3` per tab and no controls (C2-X-043), but writes no line breaks between them and no 0.1 roundtrip carrier attributes, and the heading holds the title with its inline markup. | Review the host's static HTML processing; report |
+| U-427 | {.tabs} ⏎ :::: ⏎ {.tab} ⏎ ::: [Install] ⏎ Run it. ⏎ ::: ⏎ :::: **SILENT** | The tabs extension matches the div names `tabs` and `tab`, not the classes (C2-X-039, C2-X-040), so a class-form group or tab stays a core div. A class beside `tabs` or `tab` stays in the attribute block; the label moves to the quoted title as in U-412. | Write `:::: tabs` ⏎ `::: tab "Install"`; rewrite |
+| U-428 | :::: tabs ⏎ ::: tab "A" ⏎ a ⏎ ::: ⏎ ⏎ stray ⏎ :::: **SILENT** | 0.1 left a block that is not a tab out of the tabs output; 0.2 claims a group only when every block in it is a tab (C2-X-040), so the group stays a core div. Moving the block out of the group or into a tab changes the document. | Review by hand; report |
 
 ### Extension rulings of 19 November
 
@@ -86,6 +89,7 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | U-423 | See [[Main Page]]. (former wikilinks host extension) **SILENT** | The wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). | Write `See :wiki[Main Page].`; rewrite |
 | U-424 | See [[Main Page\|home]]. (former wikilinks host extension) **SILENT** | The display text after the first `\|` stays the display text and the fallback (C2-X-057). | Write `See :wiki[Main Page\|home].`; rewrite |
 | U-425 | Type :samp[ls -l]. (former samp host extension) **SILENT** | Sample output is a span with the key `samp`, an ordinary attribute of the core that a registered semantic span extension writes as `<samp>` (C2-X-066). | Write `Type [ls -l]{samp}.`; rewrite |
+| U-429 | # Intro ⏎ ⏎ See </#Intro>. (`carve upgrade --migrate`) **SILENT** | A cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the 0.1 `fmt --migrate` repair; the record is `case-reference`. An id is matched exactly (C2-I-097). A reference with several candidates is left for `lint`. | Write `See </#intro>.`; rewrite |
 
 ### Source change index
 
@@ -1042,6 +1046,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `lint --from-djot` | turn on the `djot-` rules by their ids in `--rules` (C2-T-031) |
 | `lint --caption-hints` | none needed: `caption-looking-paragraph` is on by default |
 | `lint --ignore ID` | no counterpart |
+| `fmt --migrate` | `carve upgrade --migrate`, the upgrade tool's repair of a reference whose only target differs in case; each respelled line is a record `case-reference` of entry U-429 |
 | `lint` exits with 1 on any finding, a hint included | `carve lint` exits with 1 only for a warning or an error, and with 0 for hints alone, so a hint rule never fails a CI job (C2-T-031) |
 | include option `maxWarnings` (default 100) and `suppressedWarnings` | the fixed cap `include_diagnostics` of 100 and `suppressedDiagnostics` (C2-T-024) |
 | `-h`, `-V` | `--help`, `--version` |
@@ -1050,7 +1055,6 @@ Not carried over:
 
 - `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
 - `-o FILE` and `--output FILE` of the PHP engine. Every 0.2 command writes its product on standard output (C2-T-014); redirect it to a file.
-- `fmt --migrate`, the repair of a reference whose only target differs in case. The upgrade tool rewrites 0.1 sources for 0.2 (Part 1, "Running the rewrite tool").
 
 The 0.2 engine lacks Markdown, plain text and ANSI renderers and patch and editor APIs. Do not switch a caller that depends on these features without another implementation.
 
