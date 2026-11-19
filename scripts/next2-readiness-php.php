@@ -109,7 +109,7 @@ function parseOptions(array $options): array
 
 function lintOptions(array $options): array
 {
-    return array_intersect_key($options, array_flip(['includes', 'extensions', 'rules', 'platforms']));
+    return array_intersect_key($options, array_flip(['includes', 'extensions', 'rules', 'platforms', 'headingIds']));
 }
 
 function runCase(array $case): array

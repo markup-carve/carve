@@ -3170,6 +3170,36 @@
       "meaning02": "`--max-render-losses` stays and sets `maxLosses`, default 100 as in 0.1: the record keeps the first losses and counts the others in `suppressedDiagnostics` (C2-H-205, C2-T-029).",
       "toolEntry": "U-422",
       "silent": false
+    },
+    {
+      "id": "U-423",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page]].\n",
+      "to": "See :wiki[Main Page].\n",
+      "meaning02": "The 0.1 wikilinks extension read `[[Page]]`; 0.2 adds no delimiter for an extension, and the wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-423",
+      "silent": true
+    },
+    {
+      "id": "U-424",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "See [[Main Page|home]].\n",
+      "to": "See :wiki[Main Page|home].\n",
+      "meaning02": "The display text after the first `|` stays the display text and the fallback (C2-X-057). Rewrite only where the 0.1 host registered wikilinks.",
+      "toolEntry": "U-424",
+      "silent": true
+    },
+    {
+      "id": "U-425",
+      "kind": "rewrite",
+      "group": "extension respellings",
+      "from": "Type :samp[ls -l].\n",
+      "to": "Type [ls -l]{samp}.\n",
+      "meaning02": "Sample output is a span with the key `samp`, which a registered semantic span extension writes as `<samp>`; the key is an ordinary attribute of the core (C2-X-066). Rewrite only where the 0.1 host registered the `samp` extension.",
+      "toolEntry": "U-425",
+      "silent": true
     }
   ],
   "tree": [

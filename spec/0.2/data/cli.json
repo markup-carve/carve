@@ -166,6 +166,7 @@
     {
       "name": "heading-ids",
       "commands": [
+        "lint",
         "render"
       ],
       "kind": "enum",
@@ -537,12 +538,14 @@
       "status": 2,
       "errors": [
         "CarveLayoutError",
+        "CarvePatchError",
         "CarveTreeError"
       ],
       "clauses": [
         "C2-W-101",
         "C2-A-188",
-        "C2-T-040"
+        "C2-T-040",
+        "C2-T-045"
       ]
     },
     {
@@ -628,9 +631,22 @@
   ],
   "library": [
     {
+      "name": "applyPatch",
+      "clauses": [
+        "C2-T-044",
+        "C2-T-045"
+      ]
+    },
+    {
       "name": "decodeTree",
       "clauses": [
         "C2-A-188"
+      ]
+    },
+    {
+      "name": "diffTree",
+      "clauses": [
+        "C2-T-043"
       ]
     },
     {
@@ -642,7 +658,8 @@
     {
       "name": "encodeTree",
       "clauses": [
-        "C2-A-012"
+        "C2-A-012",
+        "C2-A-217"
       ]
     },
     {
@@ -663,7 +680,8 @@
       "clauses": [
         "C2-M-001",
         "C2-M-066",
-        "C2-M-082"
+        "C2-M-082",
+        "C2-M-100"
       ]
     },
     {
@@ -677,7 +695,8 @@
       "clauses": [
         "C2-W-103",
         "C2-W-109",
-        "C2-N-085"
+        "C2-N-085",
+        "C2-T-042"
       ]
     },
     {
@@ -725,6 +744,18 @@
       "clauses": [
         "C2-A-172",
         "C2-H-130"
+      ]
+    },
+    {
+      "name": "sourceFingerprint",
+      "clauses": [
+        "C2-T-046"
+      ]
+    },
+    {
+      "name": "treeFingerprint",
+      "clauses": [
+        "C2-T-046"
       ]
     },
     {
@@ -786,6 +817,15 @@
       "library": true,
       "clauses": [
         "C2-M-081"
+      ]
+    },
+    {
+      "name": "includedBy",
+      "always": false,
+      "library": true,
+      "clauses": [
+        "C2-N-063",
+        "C2-T-020"
       ]
     },
     {
