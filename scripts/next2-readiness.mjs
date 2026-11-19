@@ -282,9 +282,6 @@ function jsRun(c) {
   } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path } }
 }
 function cliRun(c, engine) {
-  const command = c.args?.[0] ?? 'render'
-  // The Rust CLI offers `lint` and `render`; a file argument first is the default `render`.
-  if (engine === 'rs' && !['lint', 'render'].includes(command) && !/^[^-].*\.crv$/.test(command)) return { unsupported: `Rust carve CLI has no ${command} command` }
   const dir = mkdtempSync(join(tmpdir(), `carve-next2-${engine}-`))
   for (const [name, content] of Object.entries(c.files ?? {})) {
     const path = resolve(dir, name)
