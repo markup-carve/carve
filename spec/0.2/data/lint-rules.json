@@ -449,7 +449,7 @@
         "A spaced thematic break was removed in 0.2; this line is a list item (or text). Write the unspaced star form."
       ],
       "message_origin": "design",
-      "reports": "a line that after its container prefixes and indent holds only three or more stars, hyphens or underscores with spaces between them, the container prefixes being quote marks and the markers of items, descriptions and footnote bodies up to their content column (C2-B-027); the range is the run",
+      "reports": "a line that after its container prefixes and indent holds only three or more stars, hyphens or underscores with spaces between them, the container prefixes being quote marks and the markers of items, descriptions and footnote bodies up to their content column (C2-B-027); markers that the run itself makes, as `- - -` reads as nested items (C2-B-058), belong to the run and not to the prefixes, so `- - -` and `a. - - -` both report the whole spaced run; the range is the run",
       "change": "unchanged; `- - -` is this case",
       "clauses": ["C2-B-160"]
     },
