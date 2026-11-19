@@ -164,3 +164,7 @@ What stays unverified: the 328 unverified examples (written by hand from the cla
 
 - `carve-js`: `softBreak`, `allowLosses`, `maxLosses` and `positionOf` are not offered (CC-1235 to CC-1249, CC-1250 to CC-1271, CC-1287 to CC-1301). `codeBlockRenderer` is offered, but a result that is neither text nor nothing throws a `TypeError` where C2-H-207 asks for `CarveOptionError` (CC-1285). The option table of the engine names `codeBlockRenderer` outside `data/options.json`; it is a row there now. The upgrade tool has no entry for U-420 to U-422.
 - `carve-php` and `carve-rs`: all four features, on the reference engine's lead.
+
+## Engine gaps from the tabs mode ruling of 19 November
+
+- All three engines, C2-X-043, C2-X-047, C2-X-048 and C2-X-056: the standard tabs renderer takes no host option `mode`, so the `aria` cases CC-1302 to CC-1306, CC-1308 and CC-1309 are unsupported in the readiness runners until an engine offers it. CC-1307 fails: the `css` wrapper drops an authored `role` and `aria-labelledby` of the `carve.tabs` node instead of writing them in place of the generated ones.

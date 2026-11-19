@@ -162,6 +162,7 @@ for (const name of optionRows.keys()) if (!schemaOptions.includes(name)) fail(`s
 for (const name of schemaOptions) if (!optionRows.has(name)) fail(`schema.json: options names ${name}, which data/options.json does not list`)
 const matchers = new Set(extensionRows.filter(row => row.matcher).map(row => row.name))
 const extensionNames = new Set(extensionRows.map(row => row.name))
+const rendererOptions = new Map(extensionRows.map(row => [row.name, row.rendererOptions ?? {}]))
 const OPTION_VALUE = {
   allowLosses: (value) => value.every(code => ruleChannel.get(code) === 'render-loss'),
   codeBlockRenderer: (value) => typeof value.result !== 'number' || Number.isFinite(value.result),
@@ -170,7 +171,8 @@ const OPTION_VALUE = {
   maxLosses: (value) => Number.isInteger(value) && value >= 0,
   labels: (value) => Object.keys(value).every(key => Object.hasOwn(optionRows.get('labels').default, key)),
   platforms: (value) => value.every(name => optionRows.get('platforms').values.includes(name)),
-  renderers: (value) => Object.keys(value).every(name => extensionNames.has(name)),
+  renderers: (value) => Object.entries(value).every(([name, renderer]) => extensionNames.has(name) &&
+    (renderer === 'standard' || Object.entries(renderer.standard).every(([key, setting]) => rendererOptions.get(name)?.[key]?.values.includes(setting)))),
   rules: (value) => Object.keys(value).every(code => codes.has(code)),
   social: (value) => Object.keys(value).every(key => ['mentionUrl', 'tagUrl', 'context'].includes(key)),
   urlPolicy: (value) => Object.keys(value).every(key => ['allow', 'deny'].includes(key) && Array.isArray(value[key])) && !(value.allow && value.deny),

@@ -122,6 +122,41 @@
               "type": "string",
               "pattern": "^[a-z][a-z0-9_]*$"
             }
+          },
+          "rendererOptions": {
+            "description": "Host options of the standard renderer, set when the host creates it; they are not render options of data/options.json.",
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "values",
+                "default",
+                "clauses"
+              ],
+              "properties": {
+                "values": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "default": {
+                  "type": "string"
+                },
+                "clauses": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^C2-X-[0-9]{3}$"
+                  }
+                }
+              }
+            }
           }
         },
         "oneOf": [

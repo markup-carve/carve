@@ -58792,6 +58792,217 @@
     }
    },
    "from": []
+  },
+  {
+   "id": "CC-1302",
+   "clauses": [
+    "C2-X-056",
+    "C2-X-043",
+    "C2-X-048"
+   ],
+   "why": "C2-X-056: The standard tabs renderer takes the host option `mode`, `css` or `aria`, with `css` the default C2-X-043: In `aria` mode it writes the WAI-ARIA tab pattern inside the same wrapper `div` instead: per item in order one `button` element with, in this order, `type=\"button\"`, `role=\"tab\"`, its `id`, `aria-selected` (`true` for the selected tab and `false` for the others) and `aria-controls` with the id of its panel, plus `tabindex=\"-1\"` on every button but the selected tab's, holding the content the label would hold; then per item in order one panel, a `div` with, in this order, `class=\"tab-panel\"`, `role=\"tabpanel\"`, its `id` and `aria-labelledby` with the id of its button, plus `hidden` on every panel but the selected tab's. C2-X-048: In `aria` mode each button takes the id its input would take, and the panel of button `tabs-N-K` the id `tabs-N-K-panel`.",
+   "summary": "the tabs renderer in aria mode writes tab buttons and tab panels",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun setup.\n:::\n\n::: tab \"Use\"\nOpen the app.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">Install</button><button type=\"button\" role=\"tab\" id=\"tabs-1-1\" aria-selected=\"false\" aria-controls=\"tabs-1-1-panel\" tabindex=\"-1\">Use</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\"><p>Run setup.</p></div><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-1-panel\" aria-labelledby=\"tabs-1-1\" hidden><p>Open the app.</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1303",
+   "clauses": [
+    "C2-X-056",
+    "C2-X-043"
+   ],
+   "why": "C2-X-056: A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. C2-X-043: In `aria` mode it writes the WAI-ARIA tab pattern inside the same wrapper `div` instead: per item in order one `button` element with, in this order, `type=\"button\"`, `role=\"tab\"`, its `id`, `aria-selected` (`true` for the selected tab and `false` for the others) and `aria-controls` with the id of its panel, plus `tabindex=\"-1\"` on every button but the selected tab's, holding the content the label would hold; then per item in order one panel, a `div` with, in this order, `class=\"tab-panel\"`, `role=\"tabpanel\"`, its `id` and `aria-labelledby` with the id of its button, plus `hidden` on every panel but the selected tab's.",
+   "summary": "in aria mode a selected mark on the second tab selects its button and shows its panel",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected}\n::: tab \"B\"\nb\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"false\" aria-controls=\"tabs-1-0-panel\" tabindex=\"-1\">A</button><button type=\"button\" role=\"tab\" id=\"tabs-1-1\" aria-selected=\"true\" aria-controls=\"tabs-1-1-panel\">B</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\" hidden><p>a</p></div><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-1-panel\" aria-labelledby=\"tabs-1-1\"><p>b</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1304",
+   "clauses": [
+    "C2-X-056",
+    "C2-X-043"
+   ],
+   "why": "C2-X-056: A tab whose attributes hold the key `selected`, with any value, is marked. The first marked tab is the selected tab, and with no mark the first tab is, so exactly one tab is selected; a later mark is ignored without a diagnostic. C2-X-043: In `aria` mode it writes the WAI-ARIA tab pattern inside the same wrapper `div` instead: per item in order one `button` element with, in this order, `type=\"button\"`, `role=\"tab\"`, its `id`, `aria-selected` (`true` for the selected tab and `false` for the others) and `aria-controls` with the id of its panel, plus `tabindex=\"-1\"` on every button but the selected tab's, holding the content the label would hold; then per item in order one panel, a `div` with, in this order, `class=\"tab-panel\"`, `role=\"tabpanel\"`, its `id` and `aria-labelledby` with the id of its button, plus `hidden` on every panel but the selected tab's.",
+   "summary": "in aria mode a selected key with a value marks the tab, a later mark is ignored and the key is not written",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"A\"\na\n:::\n\n{selected=no}\n::: tab \"B\"\nb\n:::\n\n{selected}\n::: tab \"C\"\nc\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"false\" aria-controls=\"tabs-1-0-panel\" tabindex=\"-1\">A</button><button type=\"button\" role=\"tab\" id=\"tabs-1-1\" aria-selected=\"true\" aria-controls=\"tabs-1-1-panel\">B</button><button type=\"button\" role=\"tab\" id=\"tabs-1-2\" aria-selected=\"false\" aria-controls=\"tabs-1-2-panel\" tabindex=\"-1\">C</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\" hidden><p>a</p></div><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-1-panel\" aria-labelledby=\"tabs-1-1\"><p>b</p></div><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-2-panel\" aria-labelledby=\"tabs-1-2\" hidden><p>c</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1305",
+   "clauses": [
+    "C2-X-048",
+    "C2-X-047"
+   ],
+   "why": "C2-X-048: The groups are counted in document order from 1 ... In `aria` mode each button takes the id its input would take, and the panel of button `tabs-N-K` the id `tabs-N-K-panel`. C2-X-047: In `aria` mode the wrapper takes `role=\"tablist\"` instead, and a panel takes its name from its button through `aria-labelledby` and carries no `aria-label`",
+   "summary": "nested tabs in aria mode count the outer group first",
+   "kind": "render",
+   "input": ":::::: tabs\n::::: tab \"Outer\"\n:::: tabs\n::: tab \"Inner\"\nx\n:::\n::::\n:::::\n::::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">Outer</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\"><div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-2-0\" aria-selected=\"true\" aria-controls=\"tabs-2-0-panel\">Inner</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-2-0-panel\" aria-labelledby=\"tabs-2-0\"><p>x</p></div></div></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1306",
+   "clauses": [
+    "C2-X-047"
+   ],
+   "why": "C2-X-047: An authored `role` of the `carve.tabs` node takes the place of the generated role, and an authored `aria-label` or `aria-labelledby` the place of the generated name, in every mode: the wrapper writes the authored ones of these three attributes after its class, in their authored order, then the generated role and name that no authored attribute replaced. C2-X-047: In `aria` mode the wrapper takes `role=\"tablist\"` instead, and a panel takes its name from its button through `aria-labelledby` and carries no `aria-label`",
+   "summary": "in aria mode an authored aria-label on the tabs replaces the group label and the tablist role is appended",
+   "kind": "render",
+   "input": "{aria-label=\"Setup steps\"}\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" aria-label=\"Setup steps\" role=\"tablist\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-1-0-panel\" aria-labelledby=\"tabs-1-0\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1307",
+   "clauses": [
+    "C2-X-047"
+   ],
+   "why": "C2-X-047: An authored `role` of the `carve.tabs` node takes the place of the generated role, and an authored `aria-label` or `aria-labelledby` the place of the generated name, in every mode: the wrapper writes the authored ones of these three attributes after its class, in their authored order, then the generated role and name that no authored attribute replaced.",
+   "summary": "in css mode an authored role and aria-labelledby on the tabs replace the generated role and name",
+   "kind": "render",
+   "input": "{role=region aria-labelledby=h}\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"region\" aria-labelledby=\"h\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1308",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes ... The ids of a group are the ids it writes in its mode. C2-X-048: In `aria` mode each button takes the id its input would take, and the panel of button `tabs-N-K` the id `tabs-N-K-panel`.",
+   "summary": "in aria mode an authored id equal to a panel id moves the group to tabs-2",
+   "kind": "render",
+   "input": "{#tabs-1-0-panel}\np\n\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-2-0\" aria-selected=\"true\" aria-controls=\"tabs-2-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-2-0-panel\" aria-labelledby=\"tabs-2-0\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1309",
+   "clauses": [
+    "C2-X-043",
+    "C2-X-052"
+   ],
+   "why": "C2-X-043: The selection does not change static output. Nor does the host option `mode`: the build-time renderer writes no button either. C2-X-052: In `static` mode an explicitly registered build-time renderer handles it",
+   "summary": "static tabs output is the same in aria mode",
+   "kind": "render",
+   "input": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n\n{selected}\n::: tab \"Use\"\nOpen.\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    },
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Use</h3><p>Open.</p></section></div>"
+   },
+   "from": []
   }
  ]
 }

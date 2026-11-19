@@ -50,7 +50,7 @@
         "platforms": { "type": "array", "items": { "type": "string" } },
         "profile": { "type": "string" },
         "rawHtml": { "type": "boolean" },
-        "renderers": { "type": "object", "additionalProperties": { "const": "standard" } },
+        "renderers": { "type": "object", "additionalProperties": { "oneOf": [{ "const": "standard" }, { "type": "object", "required": ["standard"], "additionalProperties": false, "properties": { "standard": { "type": "object", "additionalProperties": { "type": "string" } } } }] } },
         "roundtrip": { "type": "boolean" },
         "rules": { "type": "object", "additionalProperties": { "enum": ["on", "off"] } },
         "sections": { "type": "boolean" },

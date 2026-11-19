@@ -198,6 +198,8 @@ function hostTransforms(host) {
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
 const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms'].includes(key)))
 function jsRun(c) {
+  // conformance/README.md: `{ standard: {...} }` creates the standard renderer with host options.
+  if (Object.values(c.options?.renderers ?? {}).some(renderer => renderer !== 'standard')) return { unsupported: 'standard renderer host options are not offered' }
   const input = sourceOf(c), options = jsOptions(c)
   const kind = c.kind
   try {

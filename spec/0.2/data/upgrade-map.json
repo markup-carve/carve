@@ -3103,11 +3103,11 @@
     },
     {
       "id": "U-416",
-      "kind": "report",
+      "kind": "none",
       "group": "tabs modes",
       "from": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
-      "to": "",
-      "meaning02": "A host using the former aria mode must review its integration: the standard renderer writes radio controls in interactive mode and control-free sections in static mode (C2-X-043, C2-X-056).",
+      "to": ":::: tabs\n::: tab \"Install\"\nRun.\n:::\n::::\n",
+      "meaning02": "<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-1-0\" aria-selected=\"true\" aria-controls=\"tabs-1-0-panel\">Install</button>… The 0.1 host setting `mode: 'aria'` maps onto the option `mode: 'aria'` of the 0.2 tabs renderer (C2-X-043, C2-X-056), which writes the same WAI-ARIA tab pattern and leaves the switching script to the host. The ids are `tabs-N-K` and `tabs-N-K-panel` (C2-X-048), not `tabset-N-tab-K` and `tabset-N-panel-K`, and a tab id does not supply them; the buttons carry no class, the panels the class `tab-panel`, and no line break separates the elements. No source edit; set the option and check host scripts and styles that select the 0.1 ids or classes.",
       "toolEntry": "U-416",
       "silent": true
     },
