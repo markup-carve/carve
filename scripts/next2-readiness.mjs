@@ -509,6 +509,7 @@ if (sampled) console.log('Sampled run; baseline comparison skipped.')
 else if (baselineOut) writeFileSync(resolve(root, baselineOut), nextBaseline())
 if (regressions.length) console.error(`Readiness regressions:\n${regressions.join('\n')}`)
 if (regressions.length && args.has('--report-only') && process.env.GITHUB_ACTIONS) for (const line of regressions) console.log(`::warning title=Readiness regression::${line}`)
+if (forbiddenReports.length) process.exitCode = 1
 if (args.has('--write-baseline') && !sampled) {
   if (regressions.length && !args.has('--force')) throw new Error('Cannot write the readiness baseline over regressions; fix them, or pass --force and give the reason in the commit')
   writeFileSync(baselinePath, nextBaseline())
