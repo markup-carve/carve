@@ -31,6 +31,8 @@ The root is a `document` with `astVersion: "2.0"` and block `children`. Each nod
 
 The schema is [`ast-schema.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/ast-schema.json). Walk child slots in the order of [`node-slots.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/node-slots.json). Searching every JSON object for `children` misses captions, metadata, extension slots, and other declared content.
 
+The site serves each schema at its `$id`. The 0.2 tree schema is at `https://markup-carve.github.io/carve/spec/0.2/data/ast-schema.json`, beside the layout schema (`spec/0.2/data/layout-schema.json`) and the conformance schema (`spec/0.2/conformance/schema.json`). The 0.1 schema stays at `https://markup-carve.github.io/carve/ast-schema.json`, together with the other 0.1 schemas at the site root, so tools that validate 0.1 trees keep working. Those 0.1 files are frozen copies from the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1) and describe AST 1.x, not 2.0.
+
 ## Meaning, positions, and spelling
 
 Authored attributes are in `attrs`. Generated heading ids and resolved destinations are result fields on the resolved tree. Positions use one-based lines and Unicode code point columns, with zero-based UTF-8 byte offsets and exclusive ends. A position can be absent where the source has no single contiguous span. See [resolution results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#resolution-results) and [positions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#positions).

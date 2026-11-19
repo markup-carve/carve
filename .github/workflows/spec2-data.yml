@@ -4,7 +4,7 @@ name: 0.2 spec data
 # push as well as by pull request, so the check runs on both.
 on:
   push:
-    branches: [next2]
+    branches: [main, next2]
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'
@@ -14,7 +14,7 @@ on:
       - 'scripts/lib/spec2-examples.mjs'
       - '.github/workflows/spec2-data.yml'
   pull_request:
-    branches: [next2]
+    branches: [main, next2]
     paths:
       - 'spec/0.2/**'
       - 'scripts/spec2-data-check.mjs'

@@ -42,7 +42,7 @@ Parse in this precedence order:
 
 This is *not* "shortest span / earliest opening wins": that rule would break nested
 emphasis. See
-`resources/grammar.ebnf` PART 8 and PART 9 §9, and `docs/parsing-ambiguities.md` §1, §8.
+the 0.1 `resources/grammar.ebnf` PART 8 and PART 9 §9 (on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1)), and `docs/parsing-ambiguities.md` §1, §8.
 
 ### 5.4 Whitespace Rules
 
