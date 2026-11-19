@@ -320,8 +320,8 @@ for (const engine of Object.keys(outputs)) {
 async function replay() {
   const { upgrade, canWriteUpgrade } = await import(pathToFileURL(resolve(jsDir, 'upgrade/src/index.ts')))
   const sources = new Map()
-  for (const name of readdirSync(resolve(root, 'resources/conformance-pack')).filter(n => n.endsWith('.json') && !['index.json', 'seeds.json'].includes(n))) {
-    const rows = JSON.parse(readFileSync(resolve(root, 'resources/conformance-pack', name), 'utf8'))
+  for (const name of readdirSync(resolve(root, 'tests/upgrade-replay/pack')).filter(n => n.endsWith('.json'))) {
+    const rows = JSON.parse(readFileSync(resolve(root, 'tests/upgrade-replay/pack', name), 'utf8'))
     for (const row of rows) if (typeof row.source === 'string') sources.set(`pack/${name}/${row.id}`, row.source)
   }
   function exampleFiles(dir) {
@@ -335,7 +335,7 @@ async function replay() {
       }
     }
   }
-  exampleFiles(resolve(root, 'resources/examples'))
+  exampleFiles(resolve(root, 'tests/upgrade-replay/examples'))
   const all = [...sources]
   const selected = Number.isFinite(limit) ? all.slice(0, limit) : all
   const out = { total: selected.length, pass: 0, explained: 0, blocked: 0, mismatches: 0, noMappedRow: 0, blockedIds: [], noMappedIds: [], samples: [] }

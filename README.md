@@ -161,6 +161,9 @@ model](https://markup-carve.github.io/carve/security).
 
 Carve 0.2 is specified in [`spec/0.2/`](spec/0.2/README.md). Before 1.0, minor
 releases may change the grammar.
+The 0.1 specification, its executable model and its corpus live on the
+[`0.1` branch](https://github.com/markup-carve/carve/tree/0.1) for 0.1.x patch
+releases.
 
 - [Conformance examples](spec/0.2/conformance/README.md)
 - [Upgrading from 0.1](spec/0.2/UPGRADING.md)

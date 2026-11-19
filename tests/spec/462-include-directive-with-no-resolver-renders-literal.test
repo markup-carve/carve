@@ -1,7 +1,0 @@
-Include directive with no resolver renders literal
-
-```
-See {{ chapter-2.crv }} here.
-.
-<p>See {{ chapter-2.crv }} here.</p>
-```

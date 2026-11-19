@@ -1,7 +1,0 @@
-Unresolved reference link
-
-```
-A [missing][nope] ref stays literal.
-.
-<p>A [missing][nope] ref stays literal.</p>
-```

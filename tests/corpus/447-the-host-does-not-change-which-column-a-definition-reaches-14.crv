@@ -1,6 +1,0 @@
-[^f]: b
-
-  [^g]: c
-   [^n]: note text
-
-See [^n] and [^f] and [^g].

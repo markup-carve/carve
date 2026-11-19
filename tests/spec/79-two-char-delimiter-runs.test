@@ -1,7 +1,0 @@
-Two-char delimiter runs
-
-```
-==x== ~~y~~ =z= ~w~
-.
-<p>==x== ~~y~~ <mark>z</mark> <s>w</s></p>
-```

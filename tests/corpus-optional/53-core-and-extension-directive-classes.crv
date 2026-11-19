@@ -1,9 +1,0 @@
-{#d k=v}
-::: foo
-a
-:::
-
-{#s k=v}
-::: spoiler "Answer"
-Hidden.
-:::

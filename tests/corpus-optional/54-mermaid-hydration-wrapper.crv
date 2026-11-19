@@ -1,3 +1,0 @@
-``` mermaid
-graph LR; A -->|a<b & c| B
-```

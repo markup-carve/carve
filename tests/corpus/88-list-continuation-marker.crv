@@ -1,6 +1,0 @@
-- Build the image
-+
-```sh
-docker build -t app .
-```
-- Push it

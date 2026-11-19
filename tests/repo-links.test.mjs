@@ -45,7 +45,7 @@ test('the scanned file list is not empty', () => {
   assert.ok(files.length > 20, `expected tracked Markdown, found ${files.length}`)
 })
 
-const SELF_LINK = /https:\/\/github\.com\/markup-carve\/carve\/(?:blob|tree)\/main\/([^)\s"'<>]+)/g
+const SELF_LINK = /https:\/\/github\.com\/markup-carve\/carve\/(?:blob|tree)\/(?:main|next2)\/([^)\s"'<>]+)/g
 
 test('every link into this repo resolves to a real path', () => {
   const broken = []

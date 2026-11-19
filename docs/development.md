@@ -8,7 +8,7 @@ The `next2` branch contains the 0.2 specification in [`spec/0.2/`](https://githu
 
 ## Set up the repository
 
-Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `npm run docs:build` for the site. Read the [specification map](./grammar) before changing normative text. The 0.1 `resources/spec/`, `scripts/spec/` and `resources/conformance-pack/` remain on this branch for 0.1 work; they are not the 0.2 oracle.
+Use the Node version in `.nvmrc`, install dependencies with `npm ci`, and run `npm run docs:build` for the site. Read the [specification map](./grammar) before changing normative text. The 0.1 oracle (`resources/spec/`, `scripts/spec/`, `resources/conformance-pack/` and the 0.1 corpus) lives on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1); it is not the 0.2 oracle.
 
 ## Check the 0.2 spec
 

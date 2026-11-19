@@ -10,7 +10,7 @@ re-vendoring rules, corpus generation, and downstream coordination.
 
 The core repos currently move together:
 
-- `carve`: the specification and conformance corpus
+- `carve`: the specification (`spec/0.2/`) and its conformance corpus
 - `carve-js`: the reference TypeScript implementation
 - `carve-php`: the PHP implementation
 
@@ -30,33 +30,14 @@ one repo.
 For this repo in particular:
 
 - Node.js 24 is the minimum (`package.json` `engines`, and `.nvmrc` selects it).
-  Pull requests run the conformance corpus on Node 24; main pushes and the
-  nightly run add Node 26.
-- Spec or examples changes should normally keep `npm test` green.
-- If you change `resources/examples/`, regenerate the corpus and verify the
-  resulting fixture diff is intentional.
-- A new corpus section is a new file, `resources/examples/edge-cases/NNNN-slug.md`:
-  one `##` section, `NNNN` the highest number in that directory plus one, `slug`
-  the title slugified. It names its docs page in front matter (`page: edge-lists`)
-  instead of an entry in `resources/example-pages.txt`, so it touches no shared
-  file. If another PR takes the same number first, keep yours: the number only
-  orders, the slug identifies, and neither section is renumbered. See
-  `resources/examples/edge-cases/README.md`.
-- Round trips are gated by per-document exception lists in
-  `resources/roundtrip/`, not by committed totals. Each list is a directory
-  with one empty file per corpus id (the corpus file name without `.crv`) and a
-  `.keep` file. A corpus document that fails a round trip gets its file in the
-  PR that adds it; one that passes after an engine change loses it. Rewrite the
-  lists with
-  `CARVE_ROUNDTRIP_WRITE=1 npm run html-import:check` and
-  `npm run roundtrip:structure -- --write`, then inspect the diff. Explain the
-  changes in the commit message, not in the lists.
+- After changing a 0.2 document, data row, example or conformance case, run
+  `npm run spec2:data`. See the [development guide](../docs/development.md).
+- Keep `npm test` and `npm run docs:build` green.
 - If you move the pinned `@markup-carve/carve` commit (`npm run bump-carve-pin`),
-  pin only a commit merged to `carve-js` `main`, not a local branch build.
-- Issues titled `fuzz: ...` come from the nightly fuzz differential. Keep the
-  `fuzz-signature:` line in the body: it is how the next night finds the issue
-  instead of filing a duplicate. See the
-  [development guide](../docs/development.md#nightly-fuzz-differential).
+  pin only a commit merged to `carve-js`, not a local branch build.
+- The 0.1 oracle (`resources/`, `scripts/spec`, `tests/corpus` and their
+  checks) lives on the [`0.1` branch](https://github.com/markup-carve/carve/tree/0.1).
+  0.1.x patch work goes there.
 
 ## Every new guard ships with a demonstrated failure
 

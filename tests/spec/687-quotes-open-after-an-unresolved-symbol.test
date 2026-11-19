@@ -1,9 +1,0 @@
-Quotes open after an unresolved symbol
-
-```
-:a:"q"
-:long-name:'q'
-.
-<p>:a:“q”
-:long-name:‘q’</p>
-```

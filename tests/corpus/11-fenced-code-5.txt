@@ -1,3 +1,0 @@
-NPM
-
-npm install x

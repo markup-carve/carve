@@ -14,6 +14,7 @@ Releases before 0.1.6 are archived in
 
 - Carve 0.2 replaces 0.1 as the current language: the README, docs and specification name the reference program `carve` (was `carve2`) and the carve-js package root as the 0.2 entry point (was `v2/src/index.ts`). C2-T-002 no longer allows a second program name beside 0.1.
 - Docs highlight `carve` and `crv` fences with the carve-grammars `carve` grammar; the `carve2` grammar alias is gone.
+- The 0.1 oracle is gone from this line: `resources/` (grammar, clauses, schemas, conformance pack, drift ledgers), the `scripts/spec` model, the 0.1 corpus and fixtures under `tests/`, their scripts and npm scripts, and their CI jobs. The docs no longer publish the 0.1 rule index or the 0.1 JSON schemas. The 0.1 oracle stays on branch `0.1` for 0.1.x patch releases.
 
 ## [0.1.14] - 2026-11-12
 
