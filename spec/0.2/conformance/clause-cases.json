@@ -57025,7 +57025,8 @@
   {
    "id": "CC-1227",
    "clauses": [
-    "C2-X-060"
+    "C2-X-060",
+    "C2-H-020"
    ],
    "why": "C2-X-060: Only the `imgFence` sanitizer's own result, passed directly to that `<img>` sink with its provenance intact, receives the URL-policy exception of C2-H-159.",
    "summary": "an authored SVG data URL remains denied",
@@ -57033,7 +57034,7 @@
    "input": "![x](data:image/svg+xml,%3Csvg%2F%3E)\n",
    "options": {},
    "expected": {
-    "html": "<p><img src=\"\" alt=\"x\"></p>"
+    "html": "<img src=\"\" alt=\"x\">"
    },
    "from": []
   },
