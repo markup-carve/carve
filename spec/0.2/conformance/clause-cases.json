@@ -59999,6 +59999,54 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1350",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes, and later groups count on from it. The ids of a group are the ids it writes in its mode.",
+   "summary": "in css mode an authored id that only starts with the group's id prefix does not move the group",
+   "kind": "render",
+   "input": "{#tabs-1-0-panel}\np\n\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1351",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: In `aria` mode each button takes the id its input would take, and the panel of button `tabs-N-K` the id `tabs-N-K-panel`. Where any authored id or any generated heading id is one of the ids of a group, that group takes the next N whose ids no authored id or generated heading id takes, and later groups count on from it. The ids of a group are the ids it writes in its mode.",
+   "summary": "in aria mode the same authored id is a panel id of group 1, so the group takes N 2",
+   "kind": "render",
+   "input": "{#tabs-1-0-panel}\np\n\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": {
+      "standard": {
+       "mode": "aria"
+      }
+     }
+    }
+   },
+   "expected": {
+    "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-2-0\" aria-selected=\"true\" aria-controls=\"tabs-2-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-2-0-panel\" aria-labelledby=\"tabs-2-0\"><p>a</p></div></div>"
+   },
+   "from": []
   }
  ]
 }
