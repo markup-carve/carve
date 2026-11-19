@@ -84,6 +84,18 @@ test('STATUS.md engine gap sections yield case and clause ids with ranges expand
   assert.ok(isListed(new Set(['CC-1']), { id: 'CC-001' }))
 })
 
+test('STATUS.md engine gap sections recognize named tree fixture ids', () => {
+  const ids = listedGaps([
+    '## Engine gaps from the rulings',
+    '- The changed `syntax-blocks-284` and `syntax-inline-128` tree fixtures still differ.',
+    '- The `html-7` fixture also differs.',
+    '## What the reviews covered',
+    '- The `syntax-inline-18` fixture is not a gap.',
+  ].join('\n'))
+  for (const id of ['syntax-blocks-284', 'syntax-inline-128', 'html-7']) assert.ok(isListed(ids, { id }))
+  assert.ok(!isListed(ids, { id: 'syntax-inline-18' }))
+})
+
 test('upgrade: a newly blocked source is a regression only while its file is unchanged', () => {
   const before = groupDigests([['pack/a.json/1', 'x'], ['pack/b.json/1', 'y']])
   const after = groupDigests([['pack/a.json/1', 'x'], ['pack/b.json/1', 'y2'], ['pack/c.json/1', 'z']])
