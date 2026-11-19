@@ -60700,6 +60700,95 @@
     "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">NPM</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"NPM\"><pre><code class=\"language-js\">npm i\n</code></pre></div></div>"
    },
    "from": []
+  },
+  {
+   "id": "CC-1374",
+   "clauses": [
+    "C2-X-050",
+    "C2-X-059"
+   ],
+   "why": "C2-X-050: When a renderer throws or returns a value that is not a string, the engine renders the extension fallback and reports a diagnostic that names the extension. C2-X-059: If it cannot, the renderer writes the fallback and reports its failure under C2-X-050.",
+   "summary": "malformed SVG reports its renderer failure",
+   "kind": "render",
+   "input": "```img\n<svg><script>x</script>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ],
+    "renderers": {
+     "carve.imgFence.img": "standard"
+    }
+   },
+   "expected": {
+    "html": "<pre><code class=\"language-img\">&lt;svg&gt;&lt;script&gt;x&lt;/script&gt;\n</code></pre>",
+    "diagnostics": [
+     {
+      "code": "extension-renderer-failed",
+      "channel": "render-loss",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1375",
+   "clauses": [
+    "C2-N-007",
+    "C2-N-061"
+   ],
+   "why": "C2-N-007: It returns either the text of the target and an id for it, or one error cause: `not_found`, `outside_root`, `unreadable` or `non_text`. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a resolver outside-root result reports its include cause",
+   "kind": "parse",
+   "input": "{{ remote.crv }}\n",
+   "files": {
+    "remote.crv": {
+     "error": "outside_root"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-outside-root",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1376",
+   "clauses": [
+    "C2-N-007",
+    "C2-N-013",
+    "C2-N-061"
+   ],
+   "why": "C2-N-007: It returns either the text of the target and an id for it, or one error cause: `not_found`, `outside_root`, `unreadable` or `non_text`. C2-N-013: Inside the root, a missing target is `not_found` and a file that cannot be read is `unreadable`. C2-N-061: Every failure leaves the include unexpanded and reports one code, the code of its cause, at the include node in the parse channel with severity warning.",
+   "summary": "a resolver unreadable result reports its include cause",
+   "kind": "parse",
+   "input": "{{ unreadable.crv }}\n",
+   "files": {
+    "unreadable.crv": {
+     "error": "unreadable"
+    }
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "include-unreadable",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

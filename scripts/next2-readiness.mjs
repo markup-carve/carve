@@ -68,7 +68,7 @@ function sourceOf(c) { return c.inputBytes ? Buffer.from(c.inputBytes.replaceAll
 function resolver(files) {
   return request => {
     const file = files[request.path]
-    return file ? { text: typeof file === 'string' ? file : file.text ?? Buffer.from(file.bytes.replaceAll(' ', ''), 'hex'), id: request.path } : { error: 'not_found' }
+    return file ? file.error ? { error: file.error } : { text: typeof file === 'string' ? file : file.text ?? Buffer.from(file.bytes.replaceAll(' ', ''), 'hex'), id: request.path } : { error: 'not_found' }
   }
 }
 function point(source, offset) {
@@ -115,6 +115,10 @@ function compare(c, actual) {
     }
     // An empty pointer names the whole input (C2-T-045), so it is compared exactly.
     if (expected.refusal.path === '' ? actual.path !== '' : expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
+    for (const item of expected.diagnostics ?? []) {
+      const wanted = typeof item === 'string' ? { code: item } : item
+      if (!actual?.diagnostics?.some(d => diagMatches(d, wanted, c))) fields.push(`diagnostic:${wanted.code}`)
+    }
     return { status: fields.length ? 'fail' : 'pass', fields }
   }
   if (c.kind === 'cli') {
@@ -293,7 +297,7 @@ function jsRun(c) {
       return { html: r.html, diagnostics, suppressed: r.suppressedDiagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
     }
     return { unsupported: `unknown kind ${kind}` }
-  } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path } }
+  } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path, diagnostics: e.diagnostics } }
 }
 function cliRun(c, engine) {
   const dir = mkdtempSync(join(tmpdir(), `carve-next2-${engine}-`))

@@ -87,15 +87,27 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
     }
     if let Some(files) = files {
         let mut map = BTreeMap::new();
+        let mut errors = BTreeMap::new();
         for (name, file) in files.as_object().into_iter().flatten() {
+            if let Some(error) = file["error"].as_str() {
+                errors.insert(name.clone(), match error {
+                    "outside_root" => carve::include::Cause::OutsideRoot,
+                    "unreadable" => carve::include::Cause::Unreadable,
+                    _ => carve::include::Cause::NotFound,
+                });
+                continue;
+            }
             let bytes = file.as_str().or_else(|| file["text"].as_str()).map(str::as_bytes).map(<[u8]>::to_vec).unwrap_or_else(|| {
                 let hex = file["bytes"].as_str().unwrap_or("").replace(' ', "");
                 (0..hex.len()/2).filter_map(|i| u8::from_str_radix(hex.get(i*2..i*2+2)?, 16).ok()).collect()
             });
             map.insert(name.clone(), bytes);
         }
-        let resolver: carve::include::Resolver = Arc::new(move |request| map.get(request.path)
-            .map(|bytes| (bytes.clone(), request.path.to_string())).ok_or(carve::include::Cause::NotFound));
+        let resolver: carve::include::Resolver = Arc::new(move |request| {
+            if let Some(cause) = errors.get(request.path) { return Err(*cause); }
+            map.get(request.path).map(|bytes| (bytes.clone(), request.path.to_string()))
+                .ok_or(carve::include::Cause::NotFound)
+        });
         let mut includes = carve::include::Includes::new(resolver);
         includes.file = v["includes"]["file"].as_str().map(str::to_owned);
         if let Some(depth) = v["includes"]["depth"].as_u64() { includes.depth = depth as usize; }

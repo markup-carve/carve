@@ -39,6 +39,9 @@ function optionsOf(array $case): array
             if ($file === null) {
                 return ['error' => 'not_found'];
             }
+            if (isset($file['error'])) {
+                return ['error' => $file['error']];
+            }
             return ['text' => is_string($file) ? $file : ($file['text'] ?? hex2bin(str_replace(' ', '', $file['bytes'] ?? ''))), 'id' => $request['path']];
         }];
     }
