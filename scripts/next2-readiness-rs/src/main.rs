@@ -4,7 +4,7 @@ use std::io::{self, Read};
 use std::sync::Arc;
 use std::collections::BTreeMap;
 
-fn diagnostics(items: Vec<carve2::diagnostic::Diagnostic>) -> Value {
+fn diagnostics(items: Vec<carve::diagnostic::Diagnostic>) -> Value {
     Value::Array(items.into_iter().map(|d| json!({
         "code": d.code, "channel": d.channel, "severity": d.severity,
         "message": d.message, "path": d.path, "file": d.file,
@@ -15,8 +15,8 @@ fn diagnostics(items: Vec<carve2::diagnostic::Diagnostic>) -> Value {
     })).collect())
 }
 
-fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
-    let mut o = carve2::Options::default();
+fn options(v: &Value, files: Option<&Value>) -> carve::Options {
+    let mut o = carve::Options::default();
     for (name, slot) in [
         ("roundtrip", &mut o.roundtrip), ("rawHtml", &mut o.raw_html),
         ("sections", &mut o.sections), ("smartTypography", &mut o.smart_typography),
@@ -24,14 +24,14 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
     ] {
         if let Some(value) = v[name].as_bool() { *slot = value; }
     }
-    if let Some(h) = v["headingIds"].as_str().and_then(carve2::options::HeadingIds::from_name) {
+    if let Some(h) = v["headingIds"].as_str().and_then(carve::options::HeadingIds::from_name) {
         o.heading_ids = h;
     }
-    if let Some(p) = v["profile"].as_str().and_then(carve2::options::Profile::from_name) {
+    if let Some(p) = v["profile"].as_str().and_then(carve::options::Profile::from_name) {
         o.profile = p;
     }
-    if v["mode"] == "static" { o.mode = carve2::options::Mode::Static; }
-    if let Some(s) = v["softBreak"].as_str().and_then(carve2::options::SoftBreak::from_name) {
+    if v["mode"] == "static" { o.mode = carve::options::Mode::Static; }
+    if let Some(s) = v["softBreak"].as_str().and_then(carve::options::SoftBreak::from_name) {
         o.soft_break = s;
     }
     if let Some(codes) = v["allowLosses"].as_array() {
@@ -39,15 +39,15 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
     }
     if let Some(n) = v["maxLosses"].as_u64() { o.max_losses = n as usize; }
     if let Some(social) = v["social"].as_object() {
-        o.social = Some(carve2::options::Social {
+        o.social = Some(carve::options::Social {
             mention_url: social.get("mentionUrl").and_then(Value::as_str).map(str::to_owned),
             tag_url: social.get("tagUrl").and_then(Value::as_str).map(str::to_owned),
         });
     }
     if let Some(allow) = v["urlPolicy"]["allow"].as_array() {
-        o.url_policy = carve2::options::UrlPolicy::Allow(allow.iter().filter_map(Value::as_str).map(str::to_owned).collect());
+        o.url_policy = carve::options::UrlPolicy::Allow(allow.iter().filter_map(Value::as_str).map(str::to_owned).collect());
     } else if let Some(deny) = v["urlPolicy"]["deny"].as_array() {
-        o.url_policy = carve2::options::UrlPolicy::Deny(deny.iter().filter_map(Value::as_str).map(str::to_owned).collect());
+        o.url_policy = carve::options::UrlPolicy::Deny(deny.iter().filter_map(Value::as_str).map(str::to_owned).collect());
     }
     if let Some(symbols) = v["symbols"].as_object() {
         o.symbols = symbols.iter().filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_owned()))).collect();
@@ -64,9 +64,9 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
             });
             map.insert(name.clone(), bytes);
         }
-        let resolver: carve2::include::Resolver = Arc::new(move |request| map.get(request.path)
-            .map(|bytes| (bytes.clone(), request.path.to_string())).ok_or(carve2::include::Cause::NotFound));
-        let mut includes = carve2::include::Includes::new(resolver);
+        let resolver: carve::include::Resolver = Arc::new(move |request| map.get(request.path)
+            .map(|bytes| (bytes.clone(), request.path.to_string())).ok_or(carve::include::Cause::NotFound));
+        let mut includes = carve::include::Includes::new(resolver);
         includes.file = v["includes"]["file"].as_str().map(str::to_owned);
         if let Some(depth) = v["includes"]["depth"].as_u64() { includes.depth = depth as usize; }
         if let Some(bytes) = v["includes"]["bytes"].as_u64() { includes.bytes = bytes as usize; }
@@ -75,7 +75,7 @@ fn options(v: &Value, files: Option<&Value>) -> carve2::Options {
     o
 }
 
-/// One request through the binding boundary (`carve2::api::json::call`):
+/// One request through the binding boundary (`carve::api::json::call`):
 /// `Ok` with the result, or `Err` with the case record of a refusal.
 fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
     let mut req = json!({"call": name, "options": options});
@@ -91,7 +91,7 @@ fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
     } else {
         req["source"] = json!(c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or(""));
     }
-    let out: Value = serde_json::from_str(&carve2::api::json::call(&req.to_string())).unwrap_or(Value::Null);
+    let out: Value = serde_json::from_str(&carve::api::json::call(&req.to_string())).unwrap_or(Value::Null);
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
         None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"]})),
@@ -122,15 +122,15 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
         }
         "write" if c.get("layout").is_some() => {
             // The boundary has no layout field (C2-W-001), so this case writes through the library.
-            let refused = |e: carve2::api::Error| json!({"accepted":false,"error":e.spec_name(),"message":e.to_string()});
-            let mut host = carve2::api::Carve::default();
-            let mut w = carve2::api::WriteOptions::default();
+            let refused = |e: carve::api::Error| json!({"accepted":false,"error":e.spec_name(),"message":e.to_string()});
+            let mut host = carve::api::Carve::default();
+            let mut w = carve::api::WriteOptions::default();
             for ext in opts["extensions"].as_array().into_iter().flatten().filter_map(Value::as_str) {
                 host.enable_standard(ext, false).map_err(refused)?;
                 w.extensions.push(ext.to_owned());
             }
             w.layout = Some(c["layout"].clone());
-            let tree = carve2::api::decode_tree(&c["tree"].to_string()).map_err(refused)?;
+            let tree = carve::api::decode_tree(&c["tree"].to_string()).map_err(refused)?;
             let r = host.write_with_diagnostics(&tree, &w).map_err(refused)?;
             json!({"carve": r.output, "diagnostics": r.diagnostics})
         }
@@ -175,31 +175,31 @@ fn run(c: &Value) -> Value {
                 return json!({"unsupported":"case options need a resolver or host configuration"});
             }
             let tree = if c.get("tree").is_some() && kind == "render" {
-                match carve2::reader::read_tree_value(c["tree"].clone()) {
-                    Ok(read) => match carve2::render_tree_with_diagnostics(read.document(), &o) {
+                match carve::reader::read_tree_value(c["tree"].clone()) {
+                    Ok(read) => match carve::render_tree_with_diagnostics(read.document(), &o) {
                         Ok(out) => return json!({"html":out.html,"diagnostics":diagnostics(out.diagnostics)}),
                         Err(e) => return json!({"error":e.to_string()}),
                     },
                     Err(e) => return json!({"error":e.to_string()}),
                 }
-            } else { carve2::tree_json(input, &o) };
+            } else { carve::tree_json(input, &o) };
             let tree: Value = serde_json::from_str(&tree).unwrap_or(Value::Null);
             if kind == "parse" {
-                let parsed = carve2::render_with_diagnostics(input, &o);
+                let parsed = carve::render_with_diagnostics(input, &o);
                 return json!({"tree":tree,"diagnostics":diagnostics(parsed.diagnostics.into_iter().filter(|d| d.channel == "parse").collect())});
             }
-            let output = carve2::render_with_diagnostics(input, &o);
+            let output = carve::render_with_diagnostics(input, &o);
             let mut found = output.diagnostics;
             if c["area"] == "examples" && c["expected"].get("diagnostics").is_some() {
-                let mut lint = carve2::lint::LintOptions::default();
+                let mut lint = carve::lint::LintOptions::default();
                 lint.includes = o.includes.clone();
-                found.extend(carve2::lint::lint(input, &lint));
+                found.extend(carve::lint::lint(input, &lint));
             }
             json!({"tree":tree,"html":output.html,"diagnostics":diagnostics(found)})
         }
         "lint" => {
             if c["options"].get("extensions").is_some() { return json!({"unsupported":"lint extension"}); }
-            let mut opts = carve2::lint::LintOptions::default();
+            let mut opts = carve::lint::LintOptions::default();
             opts.includes = o.includes.clone();
             if let Some(rules) = c["options"]["rules"].as_object() {
                 opts.rules = rules.iter().filter_map(|(k,v)| v.as_str().map(|s|(k.clone(),s.to_string()))).collect();
@@ -207,20 +207,20 @@ fn run(c: &Value) -> Value {
             if let Some(platforms) = c["options"]["platforms"].as_array() {
                 opts.platforms = platforms.iter().filter_map(|p|p.as_str().map(str::to_owned)).collect();
             }
-            json!({"diagnostics":diagnostics(carve2::lint::lint(input, &opts))})
+            json!({"diagnostics":diagnostics(carve::lint::lint(input, &opts))})
         }
-        "tree-fixture" => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve2::tree_json(input, &o)).unwrap_or(Value::Null)}),
+        "tree-fixture" => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve::tree_json(input, &o)).unwrap_or(Value::Null)}),
         "tree" | "refused-tree" | "supplied-tree" => {
-            let result = if let Some(source) = c["json"].as_str() { carve2::reader::read_tree_json(source) }
-                else { carve2::reader::read_tree_value(c["tree"].clone()) };
+            let result = if let Some(source) = c["json"].as_str() { carve::reader::read_tree_json(source) }
+                else { carve::reader::read_tree_value(c["tree"].clone()) };
             match result {
-                Ok(read) => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve2::reader::write_tree_json(&read)).unwrap_or(Value::Null)}),
+                Ok(read) => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve::reader::write_tree_json(&read)).unwrap_or(Value::Null)}),
                 Err(e) => {
                     let path = match &e {
-                        carve2::reader::TreeError::Schema { path, .. }
-                        | carve2::reader::TreeError::Reader { path, .. }
-                        | carve2::reader::TreeError::Decode { path, .. } => path.as_str(),
-                        carve2::reader::TreeError::Json(_) => "",
+                        carve::reader::TreeError::Schema { path, .. }
+                        | carve::reader::TreeError::Reader { path, .. }
+                        | carve::reader::TreeError::Decode { path, .. } => path.as_str(),
+                        carve::reader::TreeError::Json(_) => "",
                     };
                     json!({"accepted":false,"error":"CarveTreeError","path":path})
                 },

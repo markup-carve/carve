@@ -46,6 +46,25 @@ function optionsOf(array $case): array
         $options['extensions'] = Tabs::extensions(($options['renderers']['carve.tabs'] ?? null) === 'standard');
         unset($options['renderers']);
     }
+    // The harness function of conformance/README.md ("Options").
+    if (is_array($options['codeBlockRenderer'] ?? null)) {
+        $spec = $options['codeBlockRenderer'];
+        $options['codeBlockRenderer'] = static function ($node, string $default) use ($spec): mixed {
+            $syntax = $node->f['syntax'] ?? null;
+            $result = $spec['result'] ?? null;
+            if ((array_key_exists('syntax', $spec) && $syntax !== $spec['syntax']) || $result === null) {
+                return null;
+            }
+            if (!is_string($result)) {
+                return $result;
+            }
+            return preg_replace_callback(
+                '/\{default\}|\{syntax\}/',
+                static fn (array $m): string => $m[0] === '{default}' ? $default : (is_string($syntax) ? $syntax : ''),
+                $result,
+            );
+        };
+    }
     return $options;
 }
 
@@ -170,6 +189,17 @@ function runCase(array $case): array
                 $tree = $case['json'] ?? json_encode($case['tree'], JSON_THROW_ON_ERROR);
                 $doc = \MarkupCarve\Carve2\Json\TreeReader::read($tree);
                 return ['accepted' => true, 'tree' => (new TreeEncoder())->encode($doc, null)];
+            case 'position':
+                if (!method_exists(Carve2::class, 'positionOf')) {
+                    return ['unsupported' => 'positionOf is not offered'];
+                }
+                try {
+                    return Carve2::positionOf($source, $case['offset']);
+                } catch (Throwable $error) {
+                    // PHP names the refused option in the message (`option offset: ...`), not in a path field.
+                    $path = preg_match('/^option (\w+):/', $error->getMessage(), $m) ? '/' . $m[1] : null;
+                    return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $path];
+                }
             case 'tree-fixture':
                 return ['accepted' => true, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR)];
             default:

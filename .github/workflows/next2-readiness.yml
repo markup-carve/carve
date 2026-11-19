@@ -43,7 +43,7 @@ jobs:
       CARVE_PHP_DIR: ${{ github.workspace }}/engines/carve-php
       CARVE_RS_DIR: ${{ github.workspace }}/engines/carve-rs
       CARVE_RS_READINESS_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve-next2-readiness
-      CARVE_RS_02_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve2
+      CARVE_RS_BIN: ${{ github.workspace }}/.cargo-next2-target/debug/carve
     steps:
       - uses: actions/checkout@v6
       - name: Choose engine refs
@@ -92,11 +92,11 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ${{ github.workspace }}/.cargo-next2-target
-          key: carve-next2-readiness-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/v2/Cargo.toml', 'engines/carve-rs/v2/src/**') }}
+          key: carve-next2-readiness-${{ runner.os }}-${{ hashFiles('scripts/next2-readiness-rs/Cargo.lock', 'scripts/next2-readiness-rs/src/main.rs', 'engines/carve-rs/Cargo.toml', 'engines/carve-rs/Cargo.lock', 'engines/carve-rs/build.rs', 'engines/carve-rs/src/**', 'engines/carve-rs/spec-data/**') }}
           restore-keys: carve-next2-readiness-${{ runner.os }}-
       - name: Build Rust 0.2 engine and batch adapter
         run: |
-          cargo build --manifest-path engines/carve-rs/v2/Cargo.toml --bin carve2
+          cargo build --manifest-path engines/carve-rs/Cargo.toml --bin carve
           cargo build --manifest-path scripts/next2-readiness-rs/Cargo.toml
       - name: Baseline classifier tests
         run: node --test tests/next2-readiness-classify.test.mjs

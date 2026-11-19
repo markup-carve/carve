@@ -5,6 +5,6 @@ edition = "2024"
 publish = false
 
 [dependencies]
-carve2 = { path = "../../engines/carve-rs/v2" }
+carve = { package = "carve-lang", path = "../../engines/carve-rs" }
 serde = "1"
 serde_json = { version = "1", features = ["unbounded_depth"] }

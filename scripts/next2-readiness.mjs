@@ -235,7 +235,7 @@ function jsRun(c) {
 }
 function cliRun(c, engine) {
   const command = c.args?.[0] ?? 'render'
-  if (engine === 'rs' && command !== 'lint') return { unsupported: `Rust carve2 CLI has no ${command} command` }
+  if (engine === 'rs' && command !== 'lint') return { unsupported: `Rust carve CLI has no ${command} command` }
   const dir = mkdtempSync(join(tmpdir(), `carve-next2-${engine}-`))
   for (const [name, content] of Object.entries(c.files ?? {})) {
     const path = resolve(dir, name)
@@ -246,7 +246,7 @@ function cliRun(c, engine) {
   const commands = {
     js: [process.execPath, resolve(jsDir, jsV2 ? 'dist/cli2.js' : 'dist/cli.js')],
     php: ['php', resolve(phpDir, existsSync(resolve(phpDir, 'v2/bin/carve2')) ? 'v2/bin/carve2' : 'bin/carve')],
-    rs: [resolve(process.env.CARVE_RS_02_BIN ?? resolve(root, 'target/debug/carve2'))],
+    rs: [resolve(process.env.CARVE_RS_BIN ?? resolve(root, 'target/debug/carve'))],
   }
   const [file, ...prefix] = commands[engine]
   if (!existsSync(file) && file !== 'php') return { unsupported: `${engine} 0.2 CLI is not built` }
