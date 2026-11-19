@@ -16,6 +16,70 @@
       "slotOrder": []
     },
     {
+      "name": "carve.codeGroup",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "code-group"
+      },
+      "props": {},
+      "slots": {
+        "panels": {
+          "kind": "block",
+          "minItems": 1
+        }
+      },
+      "clauses": [
+        "C2-X-063"
+      ],
+      "slotOrder": [
+        "panels"
+      ]
+    },
+    {
+      "name": "carve.details",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "details"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
+    },
+    {
+      "name": "carve.fencedRender.mermaid",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "mermaid"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061"
+      ],
+      "slotOrder": []
+    },
+    {
       "name": "carve.imgFence.image",
       "version": "1",
       "matcher": {
@@ -52,6 +116,65 @@
         "C2-X-060"
       ],
       "slotOrder": []
+    },
+    {
+      "name": "carve.mathBlock",
+      "version": "1",
+      "matcher": {
+        "form": "fence",
+        "name": "math"
+      },
+      "props": {
+        "language": {
+          "type": "string"
+        }
+      },
+      "slots": {},
+      "clauses": [
+        "C2-X-061",
+        "C2-X-062"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.spoiler",
+      "version": "1",
+      "matcher": {
+        "form": "inline",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {},
+      "clauses": [
+        "C2-X-064"
+      ],
+      "slotOrder": []
+    },
+    {
+      "name": "carve.spoilerBlock",
+      "version": "1",
+      "matcher": {
+        "form": "div",
+        "name": "spoiler"
+      },
+      "props": {},
+      "slots": {
+        "title": {
+          "kind": "inline",
+          "optional": true
+        },
+        "body": {
+          "kind": "block"
+        }
+      },
+      "clauses": [
+        "C2-X-064",
+        "C2-X-065"
+      ],
+      "slotOrder": [
+        "title",
+        "body"
+      ]
     },
     {
       "name": "carve.tab",

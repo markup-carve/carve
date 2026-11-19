@@ -10,7 +10,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-002** The program is `carve`.
 
-**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), and its scanner and event helpers. An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
+**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import and the editor adapters of its `import` command (C2-M-100), and its scanner and event helpers. An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
 
 **C2-T-004** `data/cli.json` holds the commands, flags, failure categories, calls and entry fields of this document. A row is normative together with the clauses it cites; where a row and its clause disagree, the clause wins.
 
@@ -29,17 +29,29 @@ This document defines what every engine offers a caller: the library calls and t
 | `formatWithDiagnostics` | as `format` | Carve source and the record | C2-W-134 |
 | `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
-| `lint` | Carve source, `rules`, `platforms`, `includes`, `extensions` | the record | C2-W-103, C2-W-109, C2-N-085 |
-| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082 |
+| `lint` | Carve source, `rules`, `platforms`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-N-085, C2-T-042 |
+| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
-| `encodeTree` | a tree | its JSON text | C2-A-012 |
+| `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217 |
 | `encodeEnvelope` | a tree | the JSON text of its envelope | C2-A-012 |
 | `decodeTree` | the JSON text of a 2.0 tree or envelope, `extensions` | the tree | C2-A-188 |
 | `validateTree` | a tree, `extensions` | nothing, or the refusal | C2-A-188 |
 | `migrateTree` | the JSON value of a 1.x or draft tree, bare or in an envelope | the 2.0 tree, its envelope where the input was one, and the record | C2-A-178, C2-A-180 |
 | `positionOf` | Carve source as text or bytes, an offset in its UTF-8 bytes | `line` and `column` | C2-T-019, C2-T-041 |
+| `diffTree` | two trees | a JSON Patch | C2-T-043 |
+| `applyPatch` | a tree, a JSON Patch, optionally `fingerprint`, `extensions` | a tree | C2-T-044, C2-T-045 |
+| `sourceFingerprint` | Carve source as text or bytes | a fingerprint | C2-T-046 |
+| `treeFingerprint` | a tree | a fingerprint | C2-T-046 |
 
 **C2-T-006** A call refuses with the typed error of its row in the table of C2-T-040, and with no other error; the command line turns that error into the category of the row.
+
+**C2-T-043** `diffTree` takes two trees and returns a JSON Patch (RFC 6902): a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second. Every `path` and `from` is an RFC 6901 pointer into the JSON value of `encodeTree` of the tree the operation applies to, the form of the `path` of a diagnostic (C2-A-173). Two trees whose JSON values are equal give the empty list. The operations an engine chooses and their order are not fixed, so two engines may give two patches for one pair of trees; a host compares the trees a patch gives, not patches.
+
+**C2-T-044** `applyPatch` applies the operations of RFC 6902 (`add`, `remove`, `replace`, `move`, `copy`, `test`) in order to the JSON value of `encodeTree` of the tree and decodes the result as `decodeTree` does (C2-A-188), with the standard extensions of `extensions` registered. It returns the decoded tree and leaves the given tree unchanged. There is no reversible patch and no three-way merge.
+
+**C2-T-045** `applyPatch` refuses with one `CarvePatchError` that carries `path` and `reason`, and applies nothing, in three cases. When `fingerprint` is given and is not the `treeFingerprint` of the tree, `path` is the empty pointer. When an operation is no operation of RFC 6902, its `path` or `from` names no member, or a `test` fails, `path` points into the patch, at the field of that operation (`/0/op`, `/0/path`, `/0/value`). When the result is no tree of contract 2.0, `path` points into the result, at the place where `decodeTree` refuses it.
+
+**C2-T-046** A fingerprint is `sha256:` followed by the 64 lower-case hex digits of the SHA-256 of bytes: for `sourceFingerprint` the UTF-8 bytes of the source as given, text encoded and bytes hashed as they are, with no normalization, so the text and the bytes of one source give one fingerprint; for `treeFingerprint` the UTF-8 bytes of `encodeTree` of the tree (C2-A-217).
 
 ## Commands
 
@@ -84,7 +96,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-019** A diagnostic line is `FILE:LINE:COLUMN: SEVERITY CODE MESSAGE`, and an entry with no range is written `FILE: SEVERITY CODE MESSAGE`. FILE is the `file` of the entry where it has one (C2-N-063) and the input otherwise. LINE counts line feeds from 1, and COLUMN counts the code points of that line from 1, both at the start of the range.
 
-**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range. The `message` is the text of the engine, for which the catalog row gives the reference wording (C2-W-106); a comparison of two reports does not compare it. A conformance case that states `messageWhen` compares the selected catalog condition separately, as C2-W-106 defines it.
+**C2-T-020** An entry of the record (C2-A-173) is a JSON object with the fields of this table. The library gives every field but `line` and `column`; the command line adds those two where the entry has a range, and to each object of `includedBy`. `includedBy` is the 0.1 field of that name; an engine may give it and a comparison does not require it. The `message` is the text of the engine, for which the catalog row gives the reference wording (C2-W-106); a comparison of two reports does not compare it. A conformance case that states `messageWhen` compares the selected catalog condition separately, as C2-W-106 defines it.
 
 | Field | Value | Present | Clauses |
 |---|---|---|---|
@@ -96,6 +108,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `range` | an object of `startOffset` and `endOffset`, in UTF-8 bytes | where the entry has a position in source | C2-A-173 |
 | `file` | the id of the included file the range is counted in | where that is not the top-level document | C2-N-063 |
 | `foreignType` | the name of the HTML node | on an entry of the importer that has one | C2-M-081 |
+| `includedBy` | the include chain: a list of objects of `file`, absent for the top-level document, and `range`, one per include node from the top-level document inward to the one that read `file` | optional, on an entry that has `file` | C2-N-063 |
 | `line` | the LINE of C2-T-019 | on the command line, with `range` | C2-T-019 |
 | `column` | the COLUMN of C2-T-019 | on the command line, with `range` | C2-T-019 |
 
@@ -183,11 +196,14 @@ This document defines what every engine offers a caller: the library calls and t
 |---|---|---|
 | `--rules` | JSON | the option `rules` (C2-W-109) |
 | `--platforms` | JSON | the option `platforms` (C2-W-109) |
+| `--heading-ids` | `off`, `keep-case`, `lower`, `ascii`, `ascii-lower`, `ascii-strict`, `ascii-strict-lower` | the option `headingIds` (C2-T-042) |
 | `--json` | switch | writes a diagnostics report (C2-T-021) instead of lines |
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |
 
 **C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.
+
+**C2-T-042** `lint` reads `headingIds` (C2-H-131), so a host lints with the option map it renders with. A rule that compares a fragment with the ids of the rendered HTML, as `broken-fragment-link` does, compares it with the heading ids that value generates: under `lower` the heading `= Alpha` has the id `alpha`, so a link to `#alpha` reports nothing, and under the default `keep-case` it has the id `Alpha`, so the same link reports the case-only message that names `Alpha`. Under `off` a heading has no generated id.
 
 ### `carve diagnostics`
 
@@ -241,7 +257,7 @@ This document defines what every engine offers a caller: the library calls and t
 | 2 | `usage` | `CarveOptionError` | an unknown flag, a bad or missing value, a refused combination, `--write` on standard input, an include root that cannot be read |
 | 2 | `input-unreadable` | | a file that is missing or unreadable, a tree in JSON that is not UTF-8 |
 | 2 | `input-invalid` | `CarveInputError` | a source longer than the `max_length` of its profile (C2-H-163) |
-| 2 | `ast-json-invalid` | `CarveTreeError`, `CarveLayoutError` | a tree or a sidecar the reader refuses (C2-A-188, C2-L-058) |
+| 2 | `ast-json-invalid` | `CarveTreeError`, `CarveLayoutError`, `CarvePatchError` | a tree or a sidecar the reader refuses (C2-A-188, C2-L-058), a patch `applyPatch` refuses (C2-T-045) |
 | 2 | `import-input-invalid` | `ImportInputError` | an HTML input the importer refuses (C2-M-006) |
 | 2 | `output-unwritable` | | a file of `--write` or a report that cannot be written |
 
@@ -254,12 +270,12 @@ The 0.1 commands, flags and reports that this document does not carry over are l
 | Section | Clauses |
 | --- | ---: |
 | Scope | 4 |
-| Library | 2 |
+| Library | 6 |
 | Commands | 4 |
 | Input and output | 8 |
 | Diagnostics and reports | 7 |
-| Command flags | 12 |
+| Command flags | 13 |
 | Exit codes | 4 |
-| **Total** | **41** |
+| **Total** | **46** |
 
-This document holds 41 clauses, none of them an exception. Ids run to C2-T-041.
+This document holds 46 clauses, none of them an exception. Ids run to C2-T-046.

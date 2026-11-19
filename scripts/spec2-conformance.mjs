@@ -237,6 +237,9 @@ const REFUSALS = {
   migrate: ['CarveTreeError'],
   import: ['ImportInputError', 'CarveRenderError', 'CarveOptionError'],
   position: ['CarveOptionError'],
+  patch: ['CarvePatchError'],
+  diff: [],
+  fingerprint: [],
 }
 const CATEGORY_ERRORS = new Set(readJson(join(spec, 'data/cli.json')).categories.flatMap(row => row.errors))
 function refusalProblems(entry) {
@@ -339,6 +342,22 @@ function positionProblems(entry) {
   return problems
 }
 
+// diff, patch and fingerprint cases (C2-T-043 to C2-T-046) state only their own fields and read no option.
+const TREE_CALL_FIELDS = { diff: ['applies', 'patch'], patch: ['children', 'refusal'], fingerprint: ['fingerprint'] }
+const TREE_CALL_INPUTS = { diff: ['inputAfter'], patch: ['patch', 'fingerprintOf'], fingerprint: ['of'] }
+function treeCallProblems(entry) {
+  const problems = []
+  for (const [kind, inputs] of Object.entries(TREE_CALL_INPUTS)) for (const field of inputs) if (entry[field] !== undefined && entry.kind !== kind) problems.push(`gives ${field} to a call that is no ${kind}`)
+  for (const [kind, fields] of Object.entries(TREE_CALL_FIELDS)) for (const field of fields) if (entry.expected[field] !== undefined && field !== 'children' && field !== 'refusal' && entry.kind !== kind) problems.push(`expects ${field} from a call that is no ${kind}`)
+  const own = TREE_CALL_FIELDS[entry.kind]
+  if (!own) return problems
+  if (Object.keys(entry.options).length) problems.push(`sets options, which a ${entry.kind} case does not read`)
+  for (const field of Object.keys(entry.expected)) if (!own.includes(field)) problems.push(`expects ${field} from a ${entry.kind} case`)
+  if (entry.kind === 'patch' && !entry.expected.children === !entry.expected.refusal) problems.push('expects exactly one of children and refusal')
+  if (entry.kind === 'diff' && entry.expected.patch !== undefined && entry.expected.patch.length !== 0) problems.push('pins a patch other than the empty one, which C2-T-043 does not fix')
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -373,6 +392,7 @@ for (const entry of cases.cases) {
   for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of commandProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of positionProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of treeCallProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }

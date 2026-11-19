@@ -24,6 +24,10 @@ Conventions:
 
 **C2-M-005** `<head>` and everything in it are dropped and reported once with `import-element-dropped`: the title, `<meta>`, `<link>`, `<base>`, and the scripts and styles of the head. The doctype is dropped and reported in the same way.
 
+**C2-M-100** An import option that changes the imported tree is an option of this document, which every engine offers: `rawHtml` (C2-M-066), `labels` (C2-M-101) and those that later rulings add, such as an editor adapter. The mapping rows of such an option stand in `data/import-html.json` next to the element rows. What only the command line does with imported files, as importing a directory, is reference tooling (C2-T-003).
+
+**C2-M-101** The importer reads `labels` (C2-H-125), the map the HTML was rendered with, a key left out taking its default. An accessible name or text that the renderer writes from a label string, and that equals the string of that key, is generated: it gives no node and no attribute, and the importer reports nothing for it, as for the `aria-label` of an admonition without a title (C2-H-155).
+
 **C2-M-006** An input that would give a tree deeper than the nesting limits a reader accepts (C2-A-171, C2-B-190, C2-I-118) is refused. The importer returns no tree, and the command line fails with status 2 and the category `import-input-invalid`, in the form of C2-W-101.
 
 Example 1 (verified)
@@ -1766,6 +1770,6 @@ This is the render of `# Intro`, a paragraph with the reference `[the guide][g]`
 
 ## Counts
 
-**C2-M-099** This document holds 83 clauses: 82 rules and 1 exception. It holds 64 examples: 46 verified and 18 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 85 clauses: 84 rules and 1 exception. It holds 64 examples: 46 verified and 18 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.

@@ -31,7 +31,7 @@ const cases = [
   ...read('trees/layouts.json').layouts.map(c => ({ ...c, area: 'trees', kind: 'layout-fixture', expected: c.refused ? { accepted: false } : { layout: c.layout, accepted: true } })),
 ]
 const work = Number.isFinite(limit) ? cases.slice(0, limit) : cases
-const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column'])
+const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column', 'applies', 'patch', 'fingerprint'])
 const normalize = value => {
   if (Array.isArray(value)) return value.map(normalize)
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, normalize(v)]))
@@ -96,10 +96,11 @@ function compare(c, actual) {
     if (!actual?.error) fields.push('refusal')
     else {
       const short = String(actual.error).split('\\').at(-1)
-      const contract = ['TreeError', 'OptionError', 'LayoutError', 'InputError', 'RenderError', 'WriteError'].includes(short) ? `Carve${short}` : short
+      const contract = ['TreeError', 'OptionError', 'LayoutError', 'InputError', 'RenderError', 'WriteError', 'PatchError'].includes(short) ? `Carve${short}` : short
       if (contract !== expected.refusal.error) fields.push('refusalType')
     }
-    if (expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
+    // An empty pointer names the whole input (C2-T-045), so it is compared exactly.
+    if (expected.refusal.path === '' ? actual.path !== '' : expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
     return { status: fields.length ? 'fail' : 'pass', fields }
   }
   if (c.kind === 'cli') {
@@ -114,6 +115,9 @@ function compare(c, actual) {
   if (expected.accepted !== undefined && actual.accepted !== expected.accepted) fields.push('accepted')
   if (expected.suppressed !== undefined && actual.suppressed !== expected.suppressed) fields.push('suppressed')
   for (const key of ['line', 'column']) if (expected[key] !== undefined && actual[key] !== expected[key]) fields.push(key)
+  if (expected.applies && actual.applies !== true) fields.push('applies')
+  if (expected.patch !== undefined && !same(actual.patch, expected.patch)) fields.push('patch')
+  if (expected.fingerprint !== undefined && actual.fingerprint !== expected.fingerprint) fields.push('fingerprint')
   if (c.kind === 'refused-tree' && actual.accepted === false && !String(actual.error).includes('TreeError')) fields.push('refusalType')
   if (c.kind === 'layout-fixture' && c.refused && actual.accepted === false && !String(actual.error).includes('LayoutError')) fields.push('refusalType')
   if (expected.html !== undefined && actual.html !== expected.html) fields.push('html')
@@ -171,6 +175,8 @@ const engineHeads = { js: revision(jsDir), php: revision(phpDir), rs: revision(r
 const jsV2 = existsSync(resolve(jsDir, 'v2/src/index.ts'))
 const js = await import(pathToFileURL(resolve(jsDir, jsV2 ? 'v2/src/index.ts' : 'src/index.ts')))
 const importer = await import(pathToFileURL(resolve(jsDir, 'import/src/index.ts')))
+// diffTree, applyPatch and the fingerprints (C2-T-043 to C2-T-046) are not exported from src/index.ts.
+const treePatch = existsSync(resolve(jsDir, 'src/tree-patch.ts')) ? await import(pathToFileURL(resolve(jsDir, 'src/tree-patch.ts'))) : null
 function jsOptions(c) {
   const options = { ...(c.options ?? {}) }
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
@@ -196,7 +202,7 @@ function hostTransforms(host) {
   } }))
 }
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
-const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms'].includes(key)))
+const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms', 'headingIds'].includes(key)))
 function jsRun(c) {
   // conformance/README.md: `{ standard: {...} }` creates the standard renderer with host options.
   if (Object.values(c.options?.renderers ?? {}).some(renderer => renderer !== 'standard')) return { unsupported: 'standard renderer host options are not offered' }
@@ -222,6 +228,17 @@ function jsRun(c) {
       if (typeof js.positionOf !== 'function') return { unsupported: 'positionOf is not offered' }
       const r = js.positionOf(input, c.offset)
       return { line: r.line, column: r.column }
+    }
+    if (kind === 'diff' || kind === 'patch' || kind === 'fingerprint') {
+      if (!treePatch) return { unsupported: 'diffTree, applyPatch and the fingerprints are not offered' }
+      const tree = source => js.parse(source, { positions: false })
+      if (kind === 'fingerprint') return { fingerprint: c.of === 'tree' ? treePatch.treeFingerprint(tree(input)) : treePatch.sourceFingerprint(input) }
+      if (kind === 'diff') {
+        const patch = treePatch.diffTree(tree(input), tree(c.inputAfter))
+        return { patch, applies: same(JSON.parse(js.encodeTree(treePatch.applyPatch(tree(input), patch))), JSON.parse(js.encodeTree(tree(c.inputAfter)))) }
+      }
+      const fingerprint = c.fingerprintOf === undefined ? undefined : treePatch.treeFingerprint(tree(c.fingerprintOf))
+      return { tree: treePatch.applyPatch(tree(input), c.patch, { fingerprint }) }
     }
     if (kind === 'tree-fixture') return { tree: js.parse(input, parseOptions(options)), accepted: true }
     if (kind === 'write') { const r = js.writeWithDiagnostics(c.tree, { ...options, ...(c.layout ? { layout: c.layout } : {}) }); return { carve: r.source, diagnostics: r.diagnostics } }

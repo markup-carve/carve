@@ -92,11 +92,11 @@ This document defines the extension interface for Carve 0.2.0.
 
 **C2-X-052** In `interactive` mode a registered interactive renderer handles the node. In `static` mode an explicitly registered build-time renderer handles it; registration for interactive mode alone does not select that channel. A build-time renderer returns self-contained HTML and receives the same host inputs and helpers as C2-X-033. With no renderer in the selected channel, C2-X-035 writes the fallback. Both channels obey C2-X-034 and C2-X-036.
 
-**C2-X-053** A host may register ordered document transforms. After includes and ordinary resolution, before HTML rendering, each receives a copy of the resolved render view and returns a view; registration order is execution order, and a later transform sees the earlier result. A transform may inspect the whole document, replace or insert nodes declared by its extension, or claim existing directive nodes. It does not change the authored tree, source record or the tree the Carve writer reads.
+**C2-X-053** A host may register ordered document transforms. After includes and ordinary resolution, before HTML rendering, each receives a copy of the resolved render view and returns a view; registration order is execution order, and a later transform sees the earlier result. A transform may inspect the whole document, replace or insert nodes declared by its extension, claim existing directive nodes, and edit core nodes of the view: change their attributes or content, or replace them with core nodes, as a transform that numbers headings or turns inline footnotes into text does. It does not change the authored tree, source record or the tree the Carve writer reads.
 
 **C2-X-054** A document transform keeps core nodes it does not replace in their order and may claim a directive only once. The first registered transform to claim a directive owns it; a later claim fails that transform. Inserted extension nodes require their ordinary declaration, valid slots and core fallback. The normal tree limits and profile restrictions apply to the resulting view, and every URL it writes passes C2-H-159 to C2-H-161.
 
-**C2-X-055** The host checks ids in the transformed view in document order after each transform. An inserted or replacement node with an authored id already used by a preceding node fails that transform; the first node keeps its id. Generated ids, including heading and extension control ids, are allocated again over the final view by their ordinary rules, avoiding every authored id and earlier generated id. References in that view resolve against the final ids before HTML is written. A failed document transform leaves its input view intact and reports a diagnostic naming the extension, as in C2-X-050.
+**C2-X-055** The host checks ids in the transformed view in document order after each transform. An inserted or replacement node with an authored id already used by a preceding node fails that transform; the first node keeps its id. Generated ids, including heading and extension control ids, are allocated again over the final view by their ordinary rules, avoiding every authored id and earlier generated id. References in that view resolve against the final ids before HTML is written. A failed document transform leaves its input view intact and reports a diagnostic naming the extension, as in C2-X-050. The checks of C2-X-054 and of this clause are observable only in their result: a view that fails one fails that transform as this clause says, and a view that passes all of them is rendered. An engine may check only the nodes a transform inserted, replaced or edited, since every node it kept passed the same checks before it ran; the result is the one a check of the whole view gives. A render with document transforms therefore resolves twice: once before the first transform, and once over the final view for the generated ids and references of this clause.
 
 ## Standard extension: tabs
 
@@ -239,13 +239,35 @@ Open the app.
 
 ## Standard extension source forms
 
-**C2-X-057** A registered `wiki` inline matcher claims `:wiki[Page]` as an inline extension with the parsed content as its target and core-text fallback. Its renderer may turn that target into a link only through the host URL helper and C2-H-159. A heading reference uses the existing core `</#id>` or `[Label](#id)` forms, and a bare URL or email uses an angle autolink; none gets a new delimiter from an extension (C2-X-013).
+**C2-X-057** A registered `wiki` inline matcher claims `:wiki[Page]` as an inline extension with the parsed content as its target and core-text fallback. In `:wiki[Page|Display]` the content before the first `|` is the target and the content after it the display text, which is the fallback: `:wiki[Main Page|home]` falls back to `home`. Without a `|` the content is both. Its renderer may turn that target into a link only through the host URL helper and C2-H-159. A heading reference uses the existing core `</#id>` or `[Label](#id)` forms, and a bare URL or email uses an angle autolink; none gets a new delimiter from an extension (C2-X-013).
 
-**C2-X-058** A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback. A locator is an attribute, for example `:cite[doe]{locator="p. 4"}`, not punctuation inside the key. A named `bibliography` or `references` directive may hold definitions as core definition-list entries, with each term the citation key and its description the definition. A document transform may claim that directive and resolve the citations from it (C2-X-053); without that extension, the inline form and directive retain their core fallback.
+**C2-X-058** A registered `cite` inline matcher claims `:cite[key]` as an inline extension with the key as its core-text fallback. A locator is an attribute, for example `:cite[doe]{locator="p. 4"}`, not punctuation inside the key. `:cite[a; b]` names several keys in one citation, separated by `;` and the spaces around it, and each key is resolved on its own. A named `bibliography` or `references` directive may hold definitions as core definition-list entries, with each term the citation key and its description the definition. A document transform may claim that directive and resolve the citations from it (C2-X-053); without that extension, the inline form and directive retain their core fallback.
 
 **C2-X-059** The standard `imgFence` matchers claim code fences whose language is `img` or `image` and whose body is SVG source, producing `carve.imgFence.img` or `carve.imgFence.image`, respectively. Its fallback is that core code block. Its trusted sanitizer removes unsafe elements with their descendants and unsafe attributes, then accepts only a single well-formed SVG root it can reduce to a bounded image without scripts, event attributes, active or external references, or foreign content. If it cannot, the renderer writes the fallback and reports its failure under C2-X-050. It writes the standard SVG namespace on the root and percent-encodes the accepted SVG as UTF-8 in a `data:image/svg+xml` URL for the `src` of one `<img>`; the encoded URL may be no longer than the existing 8 MiB extension payload bound (C2-X-030).
 
 **C2-X-060** Only the `imgFence` sanitizer's own result, passed directly to that `<img>` sink with its provenance intact, receives the URL-policy exception of C2-H-159. A source URL, an authored `data:` attribute, a copied sanitizer string or a value passed to another sink has no exception. The host applies the profile and its other attribute filters to the image and does not pass an unsafe sanitizer result through as HTML.
+
+## Standard extensions of the 0.1 catalog
+
+These extensions follow the catalog status of the tabs section. Each claims a core node by the matcher its row of `data/extensions.json` names, and with no renderer in the selected channel C2-X-035 writes its fallback.
+
+**C2-X-061** A diagram extension of the fenced renderers, as `carve.fencedRender.mermaid`, and `carve.mathBlock` claim a code block by its language (C2-X-010), and their fallback is that core code block. A diagram extension has a build-time renderer (C2-X-052) only where the host gives it a build function, and the engine makes no network call. In `static` mode without one, C2-X-035 writes the fallback, the plain code block `<pre><code class="language-mermaid">`, and no `<pre class="mermaid">` source element as in 0.1.
+
+**C2-X-062** The renderer of `carve.mathBlock` writes `role="math"` on the element that holds the math, as core display math does (C2-H-072, C2-H-077).
+
+**C2-X-063** The `code-group` div matcher of `carve.codeGroup` claims a div only when its body holds one or more code blocks and no other blocks; a body with another block stays a core div, as a `tabs` body does (C2-X-040), so no block is lost. The label of a panel is the bracket label of its code block, or, where it has none, its quoted title, or else its language.
+
+**C2-X-064** The spoiler is one extension with two node names, because a definition has one matcher form: `carve.spoiler`, which the `spoiler` inline matcher makes of `:spoiler[...]`, and `carve.spoilerBlock`, which the `spoiler` div matcher makes of `::: spoiler`. A host registers both together.
+
+**C2-X-065** `carve.details`, which the `details` div matcher makes, and `carve.spoilerBlock` take the fallback of a tab (C2-X-042): the quoted title as a `strong` paragraph, when present, followed by the body blocks. The core div with its class is not their fallback.
+
+**C2-X-066** A span key an extension adds for rendering and lint, as `samp`, `var`, `cite` and `dfn`, is an ordinary attribute for C2-A-035: only `abbr`, `time` and `kbd` are semantic keys of the core, so an added key merges with its other spellings by the general rule, and the duplicate checks treat it as any other key.
+
+**C2-X-067** The `glossary` transform writes its definition lists inside the core `<div class="glossary">` wrapper of the directive, which carries the directive's attributes; it does not put those attributes on a list.
+
+**C2-X-068** In `author-date` mode the author and year of a reference entry come from a span around its key in the description term, `:: [doe]{author="Doe" year="2020"}`, since a term takes no attributes in source, or from data the host gives the extension.
+
+**C2-X-069** A document transform does not see the render option `labels`, so the `index` extension takes the label of its back-links as its own option `backrefLabel`; its default is the default of the label `indexBackref`, `Back to`.
 
 ## Writing consistency
 
@@ -302,5 +324,6 @@ A Pandoc bridge can carry a quoted span as matching opening and closing `smart_p
 | Resolution, rendering and equality | 13 |
 | Standard extension: tabs | 11 |
 | Standard extension source forms | 4 |
+| Standard extensions of the 0.1 catalog | 9 |
 | Writing consistency | 1 |
-| **Total** | **60** |
+| **Total** | **69** |

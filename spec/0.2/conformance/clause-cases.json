@@ -17719,7 +17719,7 @@
     "C2-H-147",
     "C2-H-022"
    ],
-   "why": "C2-H-147: The transliteration table belongs to the host, so under these four values an id is outside conformance where the plain text holds a character at or above U+0080; an ASCII heading keeps its slug, `Hello-World` under `ascii` and `hello-world` under `ascii-lower`.",
+   "why": "C2-H-147: Every engine uses that table, so these four values give one id in every engine; an ASCII heading keeps its slug, `Hello-World` under `ascii` and `hello-world` under `ascii-lower`.",
    "summary": "ascii-strict keeps the case of an ASCII heading, as 0.1 asciiHeadingIds strict did",
    "input": "# Getting Started",
    "options": {
@@ -59001,6 +59001,941 @@
    },
    "expected": {
     "html": "<div class=\"tabs\" role=\"group\" aria-label=\"Tabs\"><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Install</h3><p>Run.</p></section><section class=\"tabs-panel\"><h3 class=\"tabs-label\">Use</h3><p>Open.</p></section></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1310",
+   "clauses": [
+    "C2-T-042",
+    "C2-T-005"
+   ],
+   "why": "C2-T-042: under `lower` the heading `= Alpha` has the id `alpha`, so a link to `#alpha` reports nothing",
+   "summary": "lint under headingIds lower checks the fragment against the lowered id",
+   "kind": "lint",
+   "input": "= Alpha\n\nSee [a](#alpha).\n",
+   "options": {
+    "headingIds": "lower"
+   },
+   "expected": {
+    "notReported": [
+     "broken-fragment-link"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1311",
+   "clauses": [
+    "C2-T-042"
+   ],
+   "why": "C2-T-042: under the default `keep-case` it has the id `Alpha`, so the same link reports the case-only message that names `Alpha`.",
+   "summary": "lint under the default keep-case reports the case-only message",
+   "kind": "lint",
+   "input": "= Alpha\n\nSee [a](#alpha).\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 3,
+      "column": 5,
+      "channel": "lint",
+      "messageWhen": "a rendered id differs only in case from the fragment as written or percent-decoded"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1312",
+   "clauses": [
+    "C2-T-042"
+   ],
+   "why": "C2-T-042: Under `off` a heading has no generated id.",
+   "summary": "lint under headingIds off finds no heading id",
+   "kind": "lint",
+   "input": "= Alpha\n\nSee [a](#Alpha).\n",
+   "options": {
+    "headingIds": "off"
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "line": 3,
+      "column": 5,
+      "messageWhen": "no rendered id differs only in case from either the fragment as written or percent-decoded"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1313",
+   "clauses": [
+    "C2-T-042",
+    "C2-T-010"
+   ],
+   "why": "C2-T-042: under `lower` the heading `= Alpha` has the id `alpha`, so a link to `#alpha` reports nothing",
+   "summary": "carve lint --heading-ids lower reports nothing for the lowered id",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= Alpha\n\nSee [a](#alpha).\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--heading-ids",
+    "lower",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdoutDiagnostics": [],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1314",
+   "clauses": [
+    "C2-T-042",
+    "C2-T-031"
+   ],
+   "why": "C2-T-042: under the default `keep-case` it has the id `Alpha`, so the same link reports the case-only message that names `Alpha`.",
+   "summary": "carve lint without the flag reports the fragment",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= Alpha\n\nSee [a](#alpha).\n"
+    }
+   },
+   "args": [
+    "lint",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdoutDiagnostics": [
+     {
+      "code": "broken-fragment-link",
+      "file": "a.crv",
+      "line": 3,
+      "column": 5,
+      "severity": "warning"
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1315",
+   "clauses": [
+    "C2-H-165",
+    "C2-B-130"
+   ],
+   "why": "C2-H-165: A line block is a leaf block, since a `line` is no block (C2-A-069): it gives one paragraph of the plain text of its lines, each with the spaces that lead it (C2-B-130), joined by one space as a hard break degrades, and an empty line adds nothing.",
+   "summary": "a degraded line block is one paragraph, lines joined by one space, leading spaces kept",
+   "input": "::: |\nRoses are red\n  Violets are blue\n:::\n",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<p>Roses are red   Violets are blue</p>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "Roses are red"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "  Violets are blue"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1316",
+   "clauses": [
+    "C2-H-165",
+    "C2-A-069"
+   ],
+   "why": "C2-H-165: A line block is a leaf block, since a `line` is no block (C2-A-069): it gives one paragraph of the plain text of its lines, each with the spaces that lead it (C2-B-130), joined by one space as a hard break degrades, and an empty line adds nothing.",
+   "summary": "an empty line of a degraded line block adds nothing",
+   "input": "::: |\na\n\nb\n:::\n",
+   "options": {
+    "profile": "minimal"
+   },
+   "expected": {
+    "html": "<p>a b</p>",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": []
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1317",
+   "clauses": [
+    "C2-H-032",
+    "C2-H-177"
+   ],
+   "why": "C2-H-032: These are the children of the tree, not their degraded forms (C2-H-165, C2-H-177): a table child gives no text also where the profile writes it as a paragraph, and a heading child gives its plain text without the `#` of its degraded form, so the label does not change with the profile.",
+   "summary": "a degraded table child of a task item gives no label text",
+   "kind": "render",
+   "input": "- [ ] | a |\n\n  after\n",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"after\"> a\n    <p>after</p>\n  </li>\n</ul>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1318",
+   "clauses": [
+    "C2-H-032",
+    "C2-H-143"
+   ],
+   "why": "C2-H-032: These are the children of the tree, not their degraded forms (C2-H-165, C2-H-177): a table child gives no text also where the profile writes it as a paragraph, and a heading child gives its plain text without the `#` of its degraded form, so the label does not change with the profile.",
+   "summary": "a degraded heading child of a task item gives its text without the mark",
+   "kind": "render",
+   "input": "- [ ] # h\n",
+   "options": {
+    "profile": "comment"
+   },
+   "expected": {
+    "html": "<ul class=\"task-list\">\n  <li class=\"task\" style=\"list-style: none\"><input type=\"checkbox\" disabled aria-label=\"h\"> # h</li>\n</ul>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1319",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second.",
+   "summary": "the patch of a changed word gives the second tree",
+   "kind": "diff",
+   "input": "a b\n",
+   "inputAfter": "a c\n",
+   "options": {},
+   "expected": {
+    "applies": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1320",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second.",
+   "summary": "the patch of an added paragraph gives the second tree",
+   "kind": "diff",
+   "input": "a\n",
+   "inputAfter": "a\n\nb\n",
+   "options": {},
+   "expected": {
+    "applies": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1321",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second.",
+   "summary": "the patch of a removed paragraph gives the second tree",
+   "kind": "diff",
+   "input": "a\n\nb\n",
+   "inputAfter": "b\n",
+   "options": {},
+   "expected": {
+    "applies": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1322",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second.",
+   "summary": "the patch of emphasis that becomes strong gives the second tree",
+   "kind": "diff",
+   "input": "Some /it/ text.\n",
+   "inputAfter": "Some *it* text.\n",
+   "options": {},
+   "expected": {
+    "applies": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1323",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: a list of operations that, applied in order by `applyPatch` to the first tree, give a tree whose JSON value is that of the second.",
+   "summary": "the patch of a heading level gives the second tree",
+   "kind": "diff",
+   "input": "= T\n",
+   "inputAfter": "== T\n",
+   "options": {},
+   "expected": {
+    "applies": true
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1324",
+   "clauses": [
+    "C2-T-043"
+   ],
+   "why": "C2-T-043: Two trees whose JSON values are equal give the empty list.",
+   "summary": "two equal trees give the empty patch",
+   "kind": "diff",
+   "input": "a\n",
+   "inputAfter": "a\n",
+   "options": {},
+   "expected": {
+    "applies": true,
+    "patch": []
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1325",
+   "clauses": [
+    "C2-T-044"
+   ],
+   "why": "C2-T-044: `applyPatch` applies the operations of RFC 6902 (`add`, `remove`, `replace`, `move`, `copy`, `test`) in order to the JSON value of `encodeTree` of the tree and decodes the result as `decodeTree` does (C2-A-188)",
+   "summary": "replace changes a text value",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "replace",
+     "path": "/children/0/children/0/value",
+     "value": "b"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1326",
+   "clauses": [
+    "C2-T-044"
+   ],
+   "why": "C2-T-044: `applyPatch` applies the operations of RFC 6902 (`add`, `remove`, `replace`, `move`, `copy`, `test`) in order to the JSON value of `encodeTree` of the tree and decodes the result as `decodeTree` does (C2-A-188)",
+   "summary": "copy appends a second paragraph",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "copy",
+     "from": "/children/0",
+     "path": "/children/-"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1327",
+   "clauses": [
+    "C2-T-044"
+   ],
+   "why": "C2-T-044: `applyPatch` applies the operations of RFC 6902 (`add`, `remove`, `replace`, `move`, `copy`, `test`) in order to the JSON value of `encodeTree` of the tree and decodes the result as `decodeTree` does (C2-A-188)",
+   "summary": "move reorders two paragraphs",
+   "kind": "patch",
+   "input": "a\n\nb\n",
+   "patch": [
+    {
+     "op": "move",
+     "from": "/children/0",
+     "path": "/children/1"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1328",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When the result is no tree of contract 2.0, `path` points into the result, at the place where `decodeTree` refuses it.",
+   "summary": "a result with an unknown node type is refused at the node",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "replace",
+     "path": "/children/0/type",
+     "value": "nope"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": "/children/0"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1329",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When the result is no tree of contract 2.0, `path` points into the result, at the place where `decodeTree` refuses it.",
+   "summary": "a result with an unknown field is refused at the field",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "add",
+     "path": "/children/0/color",
+     "value": "red"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": "/children/0/color"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1330",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When an operation is no operation of RFC 6902, its `path` or `from` names no member, or a `test` fails, `path` points into the patch, at the field of that operation (`/0/op`, `/0/path`, `/0/value`).",
+   "summary": "a path that names no member is refused at the path of the operation",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "remove",
+     "path": "/children/3"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": "/0/path"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1331",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When an operation is no operation of RFC 6902, its `path` or `from` names no member, or a `test` fails, `path` points into the patch, at the field of that operation (`/0/op`, `/0/path`, `/0/value`).",
+   "summary": "a failed test is refused at its value",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "test",
+     "path": "/children/0/type",
+     "value": "heading"
+    }
+   ],
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": "/0/value"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1332",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When an operation is no operation of RFC 6902, its `path` or `from` names no member, or a `test` fails, `path` points into the patch, at the field of that operation (`/0/op`, `/0/path`, `/0/value`).",
+   "summary": "an operation outside RFC 6902 is refused at its op",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [
+    {
+     "op": "jump",
+     "path": ""
+    }
+   ],
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": "/0/op"
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1333",
+   "clauses": [
+    "C2-T-045"
+   ],
+   "why": "C2-T-045: When `fingerprint` is given and is not the `treeFingerprint` of the tree, `path` is the empty pointer.",
+   "summary": "a fingerprint of another tree is refused before any operation",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [],
+   "fingerprintOf": "b\n",
+   "options": {},
+   "expected": {
+    "refusal": {
+     "error": "CarvePatchError",
+     "path": ""
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1334",
+   "clauses": [
+    "C2-T-044",
+    "C2-T-046"
+   ],
+   "why": "C2-T-044: `applyPatch` applies the operations of RFC 6902 (`add`, `remove`, `replace`, `move`, `copy`, `test`) in order to the JSON value of `encodeTree` of the tree and decodes the result as `decodeTree` does (C2-A-188)",
+   "summary": "the fingerprint of the tree itself is accepted",
+   "kind": "patch",
+   "input": "a\n",
+   "patch": [],
+   "fingerprintOf": "a\n",
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1335",
+   "clauses": [
+    "C2-T-046"
+   ],
+   "why": "C2-T-046: A fingerprint is `sha256:` followed by the 64 lower-case hex digits of the SHA-256 of bytes",
+   "summary": "the source fingerprint of abc",
+   "kind": "fingerprint",
+   "input": "abc",
+   "options": {},
+   "expected": {
+    "fingerprint": "sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1336",
+   "clauses": [
+    "C2-T-046"
+   ],
+   "why": "C2-T-046: text encoded and bytes hashed as they are, with no normalization, so the text and the bytes of one source give one fingerprint",
+   "summary": "the text ä gives the fingerprint of its UTF-8 bytes",
+   "kind": "fingerprint",
+   "input": "ä",
+   "options": {},
+   "expected": {
+    "fingerprint": "sha256:33e6d73fee82904c8d7afb78de1154d1e8dc2a0edb08120e63df5b9385c2d9cc"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1337",
+   "clauses": [
+    "C2-T-046"
+   ],
+   "why": "C2-T-046: text encoded and bytes hashed as they are, with no normalization, so the text and the bytes of one source give one fingerprint",
+   "summary": "the bytes C3 A4 give the fingerprint of the text ä",
+   "kind": "fingerprint",
+   "inputBytes": "C3 A4",
+   "options": {},
+   "expected": {
+    "fingerprint": "sha256:33e6d73fee82904c8d7afb78de1154d1e8dc2a0edb08120e63df5b9385c2d9cc"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1338",
+   "clauses": [
+    "C2-T-046",
+    "C2-A-217"
+   ],
+   "why": "C2-A-217: `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives.",
+   "summary": "the tree fingerprint hashes the canonical encoding",
+   "kind": "fingerprint",
+   "input": "a\n",
+   "of": "tree",
+   "options": {},
+   "expected": {
+    "fingerprint": "sha256:36023e95e92c19c8bebf17ef16d5c4c04cb330c4792d25e6c09f57087f1c76a5"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1339",
+   "clauses": [
+    "C2-H-147"
+   ],
+   "why": "C2-H-147: each letter of its `folds` is replaced by its ASCII spelling, so `ß` becomes `ss`",
+   "summary": "ascii folds ß to ss",
+   "input": "# Straße",
+   "options": {
+    "headingIds": "ascii"
+   },
+   "expected": {
+    "html": "<section id=\"Strasse\">\n  <h1>Straße</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Straße"
+       }
+      ],
+      "generatedId": "Strasse"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1340",
+   "clauses": [
+    "C2-H-147"
+   ],
+   "why": "C2-H-147: then the text is decomposed canonically, the combining marks U+0300 to U+036F are removed and the rest is composed canonically again, so `é` becomes `e`",
+   "summary": "ascii-lower removes a mark and folds Æ",
+   "input": "# Café Æon",
+   "options": {
+    "headingIds": "ascii-lower"
+   },
+   "expected": {
+    "html": "<section id=\"cafe-aeon\">\n  <h1>Café Æon</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "Café Æon"
+       }
+      ],
+      "generatedId": "cafe-aeon"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1341",
+   "clauses": [
+    "C2-H-147"
+   ],
+   "why": "C2-H-147: the rest is composed canonically again, so `é` becomes `e` and a Hangul syllable stays one character",
+   "summary": "ascii keeps a Hangul syllable composed",
+   "input": "# 한국",
+   "options": {
+    "headingIds": "ascii"
+   },
+   "expected": {
+    "html": "<section id=\"한국\">\n  <h1>한국</h1>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "한국"
+       }
+      ],
+      "generatedId": "한국"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1342",
+   "clauses": [
+    "C2-X-061",
+    "C2-X-035"
+   ],
+   "why": "C2-X-061: In `static` mode without one, C2-X-035 writes the fallback, the plain code block `<pre><code class=\"language-mermaid\">`, and no `<pre class=\"mermaid\">` source element as in 0.1.",
+   "summary": "static mermaid without a build function writes the plain code block",
+   "kind": "render",
+   "input": "```mermaid\ngraph TD\n```\n",
+   "options": {
+    "extensions": [
+     "carve.fencedRender.mermaid"
+    ],
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<pre><code class=\"language-mermaid\">graph TD\n</code></pre>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1343",
+   "clauses": [
+    "C2-X-063"
+   ],
+   "why": "C2-X-063: a body with another block stays a core div, as a `tabs` body does (C2-X-040), so no block is lost.",
+   "summary": "a code group with a paragraph stays a core div",
+   "kind": "render",
+   "input": "::: code-group\n```js\na\n```\n\nb\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.codeGroup"
+    ]
+   },
+   "expected": {
+    "html": "<div class=\"code-group\">\n  <pre><code class=\"language-js\">a\n</code></pre>\n  <p>b</p>\n</div>",
+    "notReported": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1344",
+   "clauses": [
+    "C2-X-065",
+    "C2-X-035"
+   ],
+   "why": "C2-X-065: `carve.details`, which the `details` div matcher makes, and `carve.spoilerBlock` take the fallback of a tab (C2-X-042): the quoted title as a `strong` paragraph, when present, followed by the body blocks.",
+   "summary": "details without a renderer writes the title as a strong paragraph",
+   "kind": "render",
+   "input": "::: details \"More\"\nHidden.\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.details"
+    ]
+   },
+   "expected": {
+    "html": "<p><strong>More</strong></p>\n<p>Hidden.</p>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1345",
+   "clauses": [
+    "C2-X-065",
+    "C2-X-064"
+   ],
+   "why": "C2-X-065: `carve.details`, which the `details` div matcher makes, and `carve.spoilerBlock` take the fallback of a tab (C2-X-042): the quoted title as a `strong` paragraph, when present, followed by the body blocks.",
+   "summary": "a spoiler block without a renderer writes the title as a strong paragraph",
+   "kind": "render",
+   "input": "::: spoiler \"Hint\"\nAnswer.\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.spoiler",
+     "carve.spoilerBlock"
+    ]
+   },
+   "expected": {
+    "html": "<p><strong>Hint</strong></p>\n<p>Answer.</p>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1346",
+   "clauses": [
+    "C2-X-057"
+   ],
+   "why": "C2-X-057: In `:wiki[Page|Display]` the content before the first `|` is the target and the content after it the display text, which is the fallback: `:wiki[Main Page|home]` falls back to `home`.",
+   "summary": "a wiki display text is the fallback",
+   "kind": "render",
+   "input": ":wiki[Main Page|home]\n",
+   "options": {
+    "extensions": [
+     "carve.wiki"
+    ]
+   },
+   "expected": {
+    "html": "<p>home</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1347",
+   "clauses": [
+    "C2-M-101",
+    "C2-M-100"
+   ],
+   "why": "C2-M-101: An accessible name or text that the renderer writes from a label string, and that equals the string of that key, is generated: it gives no node and no attribute, and the importer reports nothing for it",
+   "summary": "import reads labels and keeps no generated accessible name",
+   "kind": "import",
+   "html": "<aside class=\"admonition note\" aria-label=\"Hinweis\"><p>Text.</p></aside>",
+   "options": {
+    "labels": {
+     "admonitionNote": "Hinweis"
+    }
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "admonition",
+      "kind": "note",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "Text."
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "notReported": [
+     "import-attribute-dropped"
+    ]
    },
    "from": []
   }

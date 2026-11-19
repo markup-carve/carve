@@ -39,11 +39,11 @@
     {
       "name": "headingIds",
       "kind": "resolution",
-      "read_by": "resolve",
+      "read_by": ["lint", "resolve"],
       "type": "enum",
       "values": ["off", "keep-case", "lower", "ascii", "ascii-lower", "ascii-strict", "ascii-strict-lower"],
       "default": "keep-case",
-      "clauses": ["C2-H-131", "C2-H-137"]
+      "clauses": ["C2-H-131", "C2-H-137", "C2-T-005"]
     },
     {
       "name": "includes",
@@ -57,7 +57,7 @@
     {
       "name": "labels",
       "kind": "render",
-      "read_by": "render",
+      "read_by": ["import", "render"],
       "type": "map",
       "keys": "label key",
       "items": "text",
@@ -77,7 +77,7 @@
         "admonitionExample": "Example",
         "admonitionQuote": "Quote"
       },
-      "clauses": ["C2-H-091", "C2-H-125", "C2-H-137", "C2-H-155"]
+      "clauses": ["C2-H-091", "C2-H-125", "C2-H-137", "C2-H-155", "C2-M-101"]
     },
     {
       "name": "maxLosses",

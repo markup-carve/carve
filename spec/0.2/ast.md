@@ -59,6 +59,8 @@ Conventions:
 
 **C2-A-013** The envelope and its `document` carry equal `astVersion` strings, and a reader refuses a pair that differs. The envelope does not change the tree.
 
+**C2-A-217** `encodeTree` writes the JSON text of the JSON Canonicalization Scheme (RFC 8785): no whitespace, the members of every object in ascending order of their names compared as UTF-16 code units, and each string and number in the one spelling that scheme gives. So one tree has one encoding in every engine, and its `treeFingerprint` (C2-T-046) agrees across engines. A reader does not depend on that order: `decodeTree` reads the members of an object in any order (C2-A-188).
+
 ```json
 {
   "astVersion": "2.0",
@@ -769,11 +771,11 @@ The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a 
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 163 | 2 |
+| Existing AST contract | 164 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **198** | **3** |
+| **Total** | **199** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-216; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-217; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 
