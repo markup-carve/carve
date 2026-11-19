@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
 import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed } from './next2-readiness-classify.mjs'
+import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -344,6 +345,7 @@ outputs.js = work.map(jsRun)
 outputs.php = batch('php', [resolve(root, 'scripts/next2-readiness-php.php')], { CARVE_PHP_DIR: phpDir })
 outputs.rs = batch(resolve(process.env.CARVE_RS_READINESS_BIN ?? resolve(root, 'target/debug/carve-next2-readiness')), [], {})
 for (const [engine, output] of Object.entries(outputs)) work.forEach((c, i) => { if (c.kind === 'cli') output[i] = cliRun(c, engine) })
+const forbiddenReports = forbiddenCatalogReports(work, outputs, rules)
 const results = {}
 for (const [engine, output] of Object.entries(outputs)) results[engine] = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, ...compare(c, output[i]) }))
 
@@ -363,7 +365,8 @@ for (const [engine, rows] of Object.entries(results)) catalog[engine] = rules.ma
     return ['line', 'column', 'endLine', 'endColumn'].every(k => u.wanted[k] === undefined || place[k] === u.wanted[k])
   })
   return {
-    id: rule.id, status: uses.length === 0 || unsupported === uses.length ? 'unsupported' : failed > 0 ? 'fail' : 'pass',
+    id: rule.id, catalogStatus: rule.status,
+    status: catalogRole(rule.status) !== 'shared' ? catalogRole(rule.status) : uses.length === 0 || unsupported === uses.length ? 'unsupported' : failed > 0 ? 'fail' : 'pass',
     cases: uses.length, messageTemplate: !!rule.messages,
     idPercent: percent(uses.filter(u => u.actual?.diagnostics?.some(d => d.code === rule.id)).length, uses.length),
     rangePercent: percent(rangeUses.filter(matchingRange).length, rangeUses.length),
@@ -432,23 +435,24 @@ async function replay() {
   return out
 }
 const upgrade = await replay()
-function tally(rows) { return { pass: rows.filter(x => x.status === 'pass').length, fail: rows.filter(x => x.status === 'fail').length, unsupported: rows.filter(x => x.status === 'unsupported').length } }
+function tally(rows) { return { pass: rows.filter(x => x.status === 'pass').length, fail: rows.filter(x => x.status === 'fail').length, unsupported: rows.filter(x => x.status === 'unsupported').length, excluded: rows.filter(x => x.status === 'excluded').length, engineLocal: rows.filter(x => x.status === 'engine-local').length } }
 const counts = {}
 for (const engine of ['js', 'php', 'rs']) {
   counts[engine] = {}
   for (const area of ['clauses', 'examples', 'trees']) counts[engine][area] = tally(results[engine].filter(r => r.area === area))
   counts[engine].catalog = tally(catalog[engine])
 }
-counts.js.upgrade = { pass: upgrade.total - upgrade.blocked, fail: upgrade.blocked, unsupported: 0 }
+counts.js.upgrade = { pass: upgrade.total - upgrade.blocked, fail: upgrade.blocked, unsupported: 0, excluded: 0, engineLocal: 0 }
 const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries(rows.filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
-const lines = ['# Carve 0.2 engine readiness', '', '| Engine | Area | Pass | Fail | Unsupported | Agreement | Ready |', '|---|---|---:|---:|---:|---:|---|']
+const ready = (engine, areas) => Object.values(areas).every(row => row.fail + row.unsupported === 0) && !forbiddenReports.some(item => item.startsWith(`${engine}/`))
+const lines = ['# Carve 0.2 engine readiness', '', '| Engine | Area | Pass | Fail | Unsupported | Excluded: obsolete/void | Engine-local | Agreement | Ready |', '|---|---|---:|---:|---:|---:|---:|---:|---|']
 for (const [engine, areas] of Object.entries(counts)) for (const [area, row] of Object.entries(areas)) {
   const total = row.pass + row.fail + row.unsupported
-  lines.push(`| ${engine} | ${area} | ${row.pass} | ${row.fail} | ${row.unsupported} | ${total ? (row.pass / total * 100).toFixed(1) : '0.0'}% | ${row.fail + row.unsupported === 0 ? 'yes' : 'no'} |`)
+  lines.push(`| ${engine} | ${area} | ${row.pass} | ${row.fail} | ${row.unsupported} | ${row.excluded} | ${row.engineLocal} | ${total ? (row.pass / total * 100).toFixed(1) : '0.0'}% | ${row.fail + row.unsupported === 0 && (area !== 'catalog' || !forbiddenReports.some(item => item.startsWith(`${engine}/`))) ? 'yes' : 'no'} |`)
 }
-lines.push('', `Engine ready: ${Object.entries(counts).map(([engine, areas]) => `${engine} ${Object.values(areas).every(row => row.fail + row.unsupported === 0) ? 'yes' : 'no'}`).join(', ')}.`)
+lines.push('', `Engine ready: ${Object.entries(counts).map(([engine, areas]) => `${engine} ${ready(engine, areas) ? 'yes' : 'no'}`).join(', ')}.`)
 lines.push('', '| Engine | Unsupported kind | Cases |', '|---|---|---:|')
 for (const [engine, rows] of Object.entries(results)) {
   const kinds = new Map()
@@ -477,11 +481,12 @@ const upgradeVerdict = baseline && !sampled
   : { regressions: [], gaps: [] }
 const headMismatch = args.has('--baseline-heads') && baseline ? Object.keys(engineHeads).filter(engine => engineHeads[engine] !== baseline.engineHeads[engine]) : []
 const regressions = [
+  ...forbiddenReports.map(report => `excluded catalog diagnostic on clause case: ${report}`),
   ...headMismatch.map(engine => `${engine}: checked out ${engineHeads[engine]}, the baseline names ${baseline.engineHeads[engine]}`),
   ...Object.entries(verdicts).flatMap(([engine, v]) => v.regressions.map(r => `${engine}/${r.key}: ${r.old} became ${r.now}`)),
   ...upgradeVerdict.regressions.map(id => `upgrade: newly blocked source ${id}`),
 ]
-report.verdict = { regressions, engines: verdicts, upgrade: upgradeVerdict, listedIds: [...statusIds].sort() }
+report.verdict = { regressions, forbiddenReports, engines: verdicts, upgrade: upgradeVerdict, listedIds: [...statusIds].sort() }
 if (baseline) {
   const sample = (rows, n = 40) => rows.slice(0, n).map(r => '`' + r.key + '` (' + (r.reason ?? r.old) + (r.now ? ', ' + r.now : '') + ')').join(', ') + (rows.length > n ? `, and ${rows.length - n} more` : '')
   lines.push('', '## Baseline comparison', '', 'Regressions fail the job: a case whose input and expectation match the baseline and that now does worse. New cases and cases whose expectation changed are expected engine gaps. Listed gaps are named in the "Engine gaps" sections of `spec/0.2/STATUS.md`.', '')
