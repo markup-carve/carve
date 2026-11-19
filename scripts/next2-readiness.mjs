@@ -194,7 +194,9 @@ function jsOptions(c) {
     options.extensions = [...names].map(name => standardDefinitions.get(name) ?? name)
   }
   if (options.renderers) options.renderers = Object.fromEntries(Object.entries(options.renderers).map(([name, choice]) => [
-    name, name === 'carve.tabs' && js.standardTabsRenderer ? js.standardTabsRenderer(choice === 'standard' ? {} : choice.standard) :
+    name, name === 'carve.tabs' ? js.standardTabsRenderer
+      ? js.standardTabsRenderer(choice === 'standard' ? {} : choice.standard)
+      : choice === 'standard' ? js.tabsRenderer : choice :
       choice === 'standard' ? standardRenderers[name] ?? choice : choice,
   ]))
   // The harness function of conformance/README.md ("Options").
@@ -219,6 +221,9 @@ function hostTransforms(host) {
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
 const lintOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'rules', 'platforms', 'headingIds'].includes(key)))
 function jsRun(c) {
+  if (!js.standardTabsRenderer && Object.values(c.options?.renderers ?? {}).some(renderer => renderer !== 'standard')) {
+    return { unsupported: 'standard renderer host options are not offered' }
+  }
   const input = sourceOf(c), options = jsOptions(c)
   const kind = c.kind
   try {
