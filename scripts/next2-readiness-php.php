@@ -242,7 +242,14 @@ function runCase(array $case): array
                 return ['unsupported' => $kind . ' has no 0.2 PHP API'];
         }
     } catch (Throwable $error) {
-        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $error->pointer ?? $error->path ?? null];
+        $path = $error->pointer ?? $error->path ?? null;
+        // The PHP option exception names its option in the message rather than
+        // carrying a pointer. Preserve that field in the readiness contract.
+        if ($path === null && str_ends_with($error::class, '\\OptionError')
+            && preg_match('/^option ([A-Za-z][A-Za-z0-9]*)(?::|\\b)/', $error->getMessage(), $match)) {
+            $path = '/' . $match[1];
+        }
+        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage(), 'path' => $path];
     }
 }
 
