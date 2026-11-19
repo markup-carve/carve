@@ -315,9 +315,10 @@ function commandProblems(entry) {
     for (const arg of entry.args.slice(commands.has(entry.args[0]) ? 1 : 0)) {
       if (arg === '--') break
       if (!arg.startsWith('-') || arg === '-') continue
-      const name = arg === '-w' ? 'write' : arg.replace(/^--(no-)?/, '').split('=')[0]
+      const name = cli.flags.find(row => row.short === arg)?.name ?? arg.replace(/^--(no-)?/, '').split('=')[0]
       const flag = cli.flags.find(row => row.name === name)
-      if (!flag || !flag.commands.includes(command)) problems.push(`passes ${arg}, which data/cli.json does not list for ${command}`)
+      const flagsOf = cli.commands.find(row => row.name === command)?.flags_of ?? command
+      if (!flag || !flag.commands.includes(flagsOf)) problems.push(`passes ${arg}, which data/cli.json does not list for ${command}`)
     }
   }
   for (const list of [entry.expected.stdoutDiagnostics ?? [], entry.expected.stderrDiagnostics ?? []]) {

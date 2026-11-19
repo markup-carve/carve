@@ -60047,6 +60047,441 @@
     "html": "<p id=\"tabs-1-0-panel\">p</p>\n<div class=\"tabs\" role=\"tablist\" aria-label=\"Tabs\"><button type=\"button\" role=\"tab\" id=\"tabs-2-0\" aria-selected=\"true\" aria-controls=\"tabs-2-0-panel\">A</button><div class=\"tab-panel\" role=\"tabpanel\" id=\"tabs-2-0-panel\" aria-labelledby=\"tabs-2-0\"><p>a</p></div></div>"
    },
    "from": []
+  },
+  {
+   "id": "CC-1352",
+   "clauses": [
+    "C2-T-049",
+    "C2-T-050"
+   ],
+   "why": "C2-T-049: The command `fix` is `lint --fix` with the same flags. C2-T-050: Without `--write`, `lint --fix` writes the fixed source of each file on standard output and the entries that remain as lines on standard error.",
+   "summary": "fix rewrites a double-star strong, a double-tilde strike and a plus bullet",
+   "kind": "cli",
+   "args": [
+    "fix"
+   ],
+   "stdin": "a **b** ~~c~~\n\n+ x\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a *b* {~c~}\n\n- x\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1353",
+   "clauses": [
+    "C2-T-049"
+   ],
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
+   "summary": "a tilde pair that two fixes disagree on stays as written",
+   "kind": "cli",
+   "args": [
+    "lint",
+    "--fix"
+   ],
+   "stdin": "a ~s~ b\n",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "a ~s~ b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1354",
+   "clauses": [
+    "C2-T-049"
+   ],
+   "why": "C2-T-049: A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other.",
+   "summary": "turning the subscript rule off picks the braced strike",
+   "kind": "cli",
+   "args": [
+    "fix",
+    "--rules",
+    "{\"djot-subscript-tilde\":\"off\"}"
+   ],
+   "stdin": "a ~s~ b\n",
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "a {~s~} b\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1355",
+   "clauses": [
+    "C2-T-050",
+    "C2-T-016"
+   ],
+   "why": "C2-T-050: With `--write` it replaces each file whose fixed source differs from it (C2-T-016), and the entries that remain are its product, as lines or, with `--json`, as a report.",
+   "summary": "fix with write replaces the file",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "fix",
+    "--write",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "",
+    "filesAfter": {
+     "a.crv": {
+      "text": "a *b*\n"
+     }
+    },
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1356",
+   "clauses": [
+    "C2-T-050"
+   ],
+   "why": "C2-T-050: `--write` without `--fix`, and `--json` with `--fix` but without `--write`, are refused with the category `usage`.",
+   "summary": "lint fix with json but without write is refused",
+   "kind": "cli",
+   "args": [
+    "lint",
+    "--fix",
+    "--json"
+   ],
+   "stdin": "a **b**\n",
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1357",
+   "clauses": [
+    "C2-T-050"
+   ],
+   "why": "C2-T-050: `--write` without `--fix`, and `--json` with `--fix` but without `--write`, are refused with the category `usage`.",
+   "summary": "lint write without fix is refused",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--write",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "a.crv": {
+      "text": "a **b**\n"
+     }
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1358",
+   "clauses": [
+    "C2-T-047",
+    "C2-N-005"
+   ],
+   "why": "C2-T-047: `flatten` writes each file as one Carve document: it expands includes as `render` does (C2-T-018) and writes the expanded tree through the canonical writer (C2-W-100), so every include directive is replaced by the blocks it expanded to. C2-N-005: `carve flatten`, whose product is the expanded tree, is the one command that expands (C2-T-047).",
+   "summary": "flatten replaces an include with the blocks it expands to",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n\nend\n"
+    },
+    "b.crv": {
+     "text": "= B\n\nbody\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "= B\n\nbody\n\nend\n",
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1359",
+   "clauses": [
+    "C2-T-048"
+   ],
+   "why": "C2-T-048: with the category `include-unresolved` when an include did not expand, and the entries of its causes follow as lines on standard error",
+   "summary": "flatten of an include that does not expand fails with include-unresolved",
+   "kind": "cli",
+   "files": {
+    "u.crv": {
+     "text": "{{ missing.crv }}\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "u.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "",
+    "stderrCategory": "include-unresolved",
+    "stderrDiagnostics": [
+     {
+      "code": "include-not-found",
+      "file": "u.crv",
+      "line": 1,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1360",
+   "clauses": [
+    "C2-T-048",
+    "C2-N-054"
+   ],
+   "why": "C2-T-048: with `flatten-changed` when the HTML of the flattened source with the default options differs from that of the expanded tree, as when two included files each define one footnote, link reference or abbreviation key, which are looked up per file (C2-N-054, C2-N-055)",
+   "summary": "flatten of two files that define one footnote key fails with flatten-changed",
+   "kind": "cli",
+   "files": {
+    "m.crv": {
+     "text": "{{ n1.crv }}\n\n{{ n2.crv }}\n"
+    },
+    "n1.crv": {
+     "text": "x[^n]\n\n[^n]: one\n"
+    },
+    "n2.crv": {
+     "text": "y[^n]\n\n[^n]: two\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "m.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "",
+    "stderrCategory": "flatten-changed"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1361",
+   "clauses": [
+    "C2-T-051"
+   ],
+   "why": "C2-T-051: `--strict` on `render` and `lint` ends a file that wrote any entry with status 1 and no category, a hint included.",
+   "summary": "lint strict fails a file on a hint",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "= A\n\n# B\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--strict",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdoutDiagnostics": [
+     {
+      "code": "heading-marker-mixed",
+      "file": "a.crv",
+      "severity": "hint"
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1362",
+   "clauses": [
+    "C2-T-051"
+   ],
+   "why": "C2-T-051: `render --strict` still writes the HTML; `--strict-losses` is the flag that withholds it (C2-T-026).",
+   "summary": "render strict writes the HTML and fails on a loss",
+   "kind": "cli",
+   "args": [
+    "render",
+    "--strict"
+   ],
+   "stdin": "[a](javascript:x)\n",
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdout": "<p><a href=\"\">a</a></p>\n",
+    "stderrDiagnostics": [
+     {
+      "code": "destination-denied",
+      "file": "<stdin>",
+      "line": 1,
+      "column": 5
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1363",
+   "clauses": [
+    "C2-T-052",
+    "C2-T-009"
+   ],
+   "why": "C2-T-052: `lint --ignore` takes a file and drops every entry whose `file` (C2-N-063) is that id, and every entry of an entry file whose name as given (C2-T-013) is that value.",
+   "summary": "lint ignore drops the entries of the named entry file",
+   "kind": "cli",
+   "files": {
+    "i.crv": {
+     "text": "x **y**\n"
+    },
+    "s.crv": {
+     "text": "a **b**\n"
+    }
+   },
+   "args": [
+    "lint",
+    "--ignore",
+    "i.crv",
+    "i.crv",
+    "s.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 1,
+    "stdoutDiagnostics": [
+     {
+      "code": "markdown-strong-double-star",
+      "file": "s.crv",
+      "line": 1,
+      "column": 3
+     }
+    ],
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1364",
+   "clauses": [
+    "C2-T-053"
+   ],
+   "why": "C2-T-053: `--output` (`-o`) on `render`, `fmt`, `import` and `flatten` takes a path and writes the product of the run to that file instead of standard output",
+   "summary": "render with o writes the HTML to the file",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "-o",
+    "out.html",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "",
+    "filesAfter": {
+     "out.html": {
+      "text": "<p>a</p>\n"
+     }
+    },
+    "stderrCategory": null
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1365",
+   "clauses": [
+    "C2-T-053"
+   ],
+   "why": "C2-T-053: `fmt` refuses it with `--write`, `--check` or `--diff`, and a run whose output path resolves to the path of a report flag, as C2-T-015 compares two report paths, is refused, both with the category `usage` before any input is read.",
+   "summary": "fmt refuses output with check",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "fmt",
+    "--output",
+    "x.crv",
+    "--check",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "x.crv": null
+    }
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1366",
+   "clauses": [
+    "C2-T-053",
+    "C2-T-015"
+   ],
+   "why": "C2-T-053: a run whose output path resolves to the path of a report flag, as C2-T-015 compares two report paths, is refused",
+   "summary": "an output path that is also a report path is refused",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "a\n"
+    }
+   },
+   "args": [
+    "render",
+    "-o",
+    "r.json",
+    "--report-losses",
+    "r.json",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 2,
+    "stderrCategory": "usage",
+    "filesAfter": {
+     "r.json": null
+    }
+   },
+   "from": []
   }
  ]
 }

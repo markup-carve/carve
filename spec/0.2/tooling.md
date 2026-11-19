@@ -66,11 +66,13 @@ This document defines what every engine offers a caller: the library calls and t
 | `diagnostics` | Carve source | the entries of the parse channel | C2-A-172 |
 | `import` | HTML | the Carve source of the imported tree | C2-M-001 |
 | `migrate-ast` | a 1.x or draft tree in JSON | the 2.0 tree in JSON and a line feed | C2-A-180 |
+| `flatten` | Carve source | the expanded tree as canonical Carve source | C2-T-047 |
+| `fix` | Carve source | what `lint --fix` writes | C2-T-049 |
 | `upgrade` | 0.1 source | outside this specification (C2-T-003) | |
 
 **C2-T-008** A flag is `--name value` or `--name=value`. A switch is `--name` and takes no value; `--no-name` turns it off. `--` ends the flags, and every argument after it is a file. A flag that the table of its command does not list is refused with the category `usage`.
 
-**C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value.
+**C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value. `--ignore` collects every value too.
 
 **C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
 
@@ -87,6 +89,8 @@ This document defines what every engine offers a caller: the library calls and t
 **C2-T-015** A report flag takes a path, or `-` for standard error. The report is one JSON document for the whole run, followed by a line feed. After repeated instances of one flag have been reduced by C2-T-009, the collision and order rules of this clause apply. Two report flags of one run whose paths resolve to the same absolute path, against the working directory and with `.` and `..` segments removed, are refused with the category `usage` before any input is read. Two report flags with `-` are not refused: both reports go to standard error at the end of the run, in the order of the flags on the command line.
 
 **C2-T-016** `--write` replaces each file whose output differs from it and leaves the others untouched. With standard input among the files it is refused with the category `usage`.
+
+**C2-T-053** `--output` (`-o`) on `render`, `fmt`, `import` and `flatten` takes a path and writes the product of the run to that file instead of standard output, the products of the files before a failure of status 2 included (C2-T-017). `fmt` refuses it with `--write`, `--check` or `--diff`, and a run whose output path resolves to the path of a report flag, as C2-T-015 compares two report paths, is refused, both with the category `usage` before any input is read. A file it cannot write ends the run with the category `output-unwritable`.
 
 **C2-T-017** A failure of status 2 stops the run at its file; what earlier files wrote stays written. Otherwise the status of a run is the highest status of its files.
 
@@ -156,6 +160,8 @@ This document defines what every engine offers a caller: the library calls and t
 | `--report-losses` | path | writes the losses as a diagnostics report (C2-T-021) |
 | `--allow-loss` | code, repeatable | a code that is no loss (C2-T-027) |
 | `--max-render-losses` | count, 100 | the losses retained per file (C2-T-029) |
+| `--strict` | switch | ends a file that wrote an entry with status 1 (C2-T-051) |
+| `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
 
 **C2-T-025** A loss is a render-loss entry of a file whose code is not on the allow list. `render` writes each retained loss as a line on standard error, and no entry of the parse or the lint channel, which `diagnostics` and `lint` write (C2-T-031, C2-T-032).
 
@@ -187,6 +193,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--normalize` | switch | the option `normalize` |
 | `--align-tables` | switch | the option `alignTables` |
 | `--from-ast` | switch | writes each file read as a tree in JSON (C2-W-102) |
+| `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
 
 **C2-T-030** `fmt` refuses `--write` with `--check` or with `--diff`, `--check` with `--diff`, and `--normalize` with `--from-ast`, with the category `usage`. Without one of `--check`, `--diff` and `--write` it writes the output on standard output. A writer loss of C2-W-134 ends the file with status 1 and the category `writer-refused`.
 
@@ -200,10 +207,33 @@ This document defines what every engine offers a caller: the library calls and t
 | `--json` | switch | writes a diagnostics report (C2-T-021) instead of lines |
 | `--includes` | switch, on | expands includes (C2-T-018) |
 | `--include-root` | path | the containment root of includes (C2-N-004) |
+| `--fix` | switch | rewrites the findings of the rules that have a fix (C2-T-049) |
+| `--write` | switch | with `--fix`, replaces each file (C2-T-016, C2-T-050); `-w` is the same |
+| `--strict` | switch | ends a file that wrote an entry with status 1 (C2-T-051) |
+| `--ignore` | file, repeatable | drops the entries of that file (C2-T-052) |
 
 **C2-T-031** `lint` writes the entries that the call `lint` returns, as lines or as a report, and ends a file with status 1 when an entry has the severity `warning` or `error`; a run of hints alone ends with 0. The call `lint` returns the record of its run (C2-W-103): the entries of its parse in the parse channel and its findings in the lint channel (C2-W-113), as 0.1 lint reported an unclosed fence. A rule that is off by default, as each `djot-` rule is, is turned on by its id in `--rules`.
 
 **C2-T-042** `lint` reads `headingIds` (C2-H-131), so a host lints with the option map it renders with. A rule that compares a fragment with the ids of the rendered HTML, as `broken-fragment-link` does, compares it with the heading ids that value generates: under `lower` the heading `= Alpha` has the id `alpha`, so a link to `#alpha` reports nothing, and under the default `keep-case` it has the id `Alpha`, so the same link reports the case-only message that names `Alpha`. Under `off` a heading has no generated id.
+
+**C2-T-049** `lint --fix` rewrites each finding of a rule whose row in `data/lint-rules.json` has a `fix` to the one replacement its message names, at the range of the finding; the `before` and `after` of the `fix` show it on one source. A rule whose message names two replacements, as `deprecated-bare-underline` does, has no fix. The command `fix` is `lint --fix` with the same flags. Under `--fix` every rule that has a fix is on unless `--rules` turns it off, and the other rules keep their defaults (C2-T-031). A range that two findings with different replacements report stays as written: in `~t~`, `djot-subscript-tilde` and `deprecated-bare-strike` disagree, and `--rules` turning one of them off picks the other. A fix is kept only where the fixed source, parsed again, has the construct of its replacement where the finding started: `+ item` directly below a line of paragraph text opens no list with `-` either, so it stays. The fixes repeat until a pass changes nothing.
+
+**C2-T-050** Without `--write`, `lint --fix` writes the fixed source of each file on standard output and the entries that remain as lines on standard error. With `--write` it replaces each file whose fixed source differs from it (C2-T-016), and the entries that remain are its product, as lines or, with `--json`, as a report. A file ends with the status that `lint` gives its fixed source (C2-T-031). `--write` without `--fix`, and `--json` with `--fix` but without `--write`, are refused with the category `usage`.
+
+**C2-T-051** `--strict` on `render` and `lint` ends a file that wrote any entry with status 1 and no category, a hint included. `render --strict` still writes the HTML; `--strict-losses` is the flag that withholds it (C2-T-026).
+
+**C2-T-052** `lint --ignore` takes a file and drops every entry whose `file` (C2-N-063) is that id, and every entry of an entry file whose name as given (C2-T-013) is that value.
+
+### `carve flatten`
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--include-root` | path | the containment root of includes (C2-N-004) |
+| `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
+
+**C2-T-047** `flatten` writes each file as one Carve document: it expands includes as `render` does (C2-T-018) and writes the expanded tree through the canonical writer (C2-W-100), so every include directive is replaced by the blocks it expanded to. It is the one command with Carve source as its product that expands (C2-N-005). The frontmatter of an included file is not written, since it renders nothing.
+
+**C2-T-048** A file of `flatten` writes no source and ends with status 1 in three cases: with the category `include-unresolved` when an include did not expand, and the entries of its causes follow as lines on standard error; with `flatten-changed` when the HTML of the flattened source with the default options differs from that of the expanded tree, as when two included files each define one footnote, link reference or abbreviation key, which are looked up per file (C2-N-054, C2-N-055); and with `writer-refused` for a writer loss of C2-W-134.
 
 ### `carve diagnostics`
 
@@ -226,6 +256,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--report-losses` | path | writes the losses as a diagnostics report (C2-T-021) |
 | `--allow-loss` | code, repeatable | a code that is no loss (C2-T-027) |
 | `--max-render-losses` | count, 100 | the losses retained per file (C2-T-029) |
+| `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
 
 **C2-T-033** `import` without `--from` is refused with the category `usage`. The value `html` reads the input as C2-M-001 states; the reference engine also takes `markdown`, `gfm` and `djot` (C2-T-003).
 
@@ -243,7 +274,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-037** A run ends with status 0 when every file did what was asked and nothing it gates on was found.
 
-**C2-T-038** A run ends with status 1 and no category when `fmt --check` or `fmt --diff` finds a file that would change (C2-W-100), or `lint` finds an entry of severity `warning` or `error` (C2-T-031).
+**C2-T-038** A run ends with status 1 and no category when `fmt --check` or `fmt --diff` finds a file that would change (C2-W-100), or `lint` finds an entry of severity `warning` or `error` (C2-T-031), or `--strict` finds any entry (C2-T-051).
 
 **C2-T-039** Every failure with a category in C2-T-040 writes as its first line on standard error `carve[CATEGORY]:` and a message (C2-W-101).
 
@@ -254,12 +285,14 @@ This document defines what every engine offers a caller: the library calls and t
 | 1 | `render-loss` | `CarveRenderError` | a loss under `--strict-losses` (C2-H-130, C2-M-082) |
 | 1 | `writer-refused` | `CarveWriteError` | a writer loss of C2-W-134 in `fmt` or `import` |
 | 1 | `import-tree-invalid` | | the importer returns a tree the reader refuses (C2-T-035) |
+| 1 | `include-unresolved` | | an include that `flatten` did not expand (C2-T-048) |
+| 1 | `flatten-changed` | | a flattened source that renders differently from the expanded tree (C2-T-048) |
 | 2 | `usage` | `CarveOptionError` | an unknown flag, a bad or missing value, a refused combination, `--write` on standard input, an include root that cannot be read |
 | 2 | `input-unreadable` | | a file that is missing or unreadable, a tree in JSON that is not UTF-8 |
 | 2 | `input-invalid` | `CarveInputError` | a source longer than the `max_length` of its profile (C2-H-163) |
 | 2 | `ast-json-invalid` | `CarveTreeError`, `CarveLayoutError`, `CarvePatchError` | a tree or a sidecar the reader refuses (C2-A-188, C2-L-058), a patch `applyPatch` refuses (C2-T-045) |
 | 2 | `import-input-invalid` | `ImportInputError` | an HTML input the importer refuses (C2-M-006) |
-| 2 | `output-unwritable` | | a file of `--write` or a report that cannot be written |
+| 2 | `output-unwritable` | | a file of `--write`, `--output` or a report that cannot be written |
 
 ## Not carried over
 
@@ -272,10 +305,10 @@ The 0.1 commands, flags and reports that this document does not carry over are l
 | Scope | 4 |
 | Library | 6 |
 | Commands | 4 |
-| Input and output | 8 |
+| Input and output | 9 |
 | Diagnostics and reports | 7 |
-| Command flags | 13 |
+| Command flags | 19 |
 | Exit codes | 4 |
-| **Total** | **46** |
+| **Total** | **53** |
 
-This document holds 46 clauses, none of them an exception. Ids run to C2-T-046.
+This document holds 53 clauses, none of them an exception. Ids run to C2-T-053.

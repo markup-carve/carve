@@ -19,6 +19,25 @@
       ]
     },
     {
+      "name": "fix",
+      "specified": true,
+      "expands": true,
+      "flags_of": "lint",
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
+      "name": "flatten",
+      "specified": true,
+      "expands": true,
+      "clauses": [
+        "C2-T-047",
+        "C2-T-048"
+      ]
+    },
+    {
       "name": "fmt",
       "specified": true,
       "expands": false,
@@ -137,6 +156,18 @@
       ]
     },
     {
+      "name": "fix",
+      "commands": [
+        "lint"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-049",
+        "C2-T-050"
+      ]
+    },
+    {
       "name": "from",
       "commands": [
         "import"
@@ -190,6 +221,8 @@
       "commands": [
         "ast",
         "diagnostics",
+        "fix",
+        "flatten",
         "fmt",
         "import",
         "lint",
@@ -203,10 +236,23 @@
       ]
     },
     {
+      "name": "ignore",
+      "commands": [
+        "lint"
+      ],
+      "kind": "file",
+      "repeatable": true,
+      "clauses": [
+        "C2-T-009",
+        "C2-T-052"
+      ]
+    },
+    {
       "name": "include-root",
       "commands": [
         "ast",
         "diagnostics",
+        "flatten",
         "lint",
         "render"
       ],
@@ -294,6 +340,20 @@
       "clauses": [
         "C2-T-010",
         "C2-W-127"
+      ]
+    },
+    {
+      "name": "output",
+      "commands": [
+        "flatten",
+        "fmt",
+        "import",
+        "render"
+      ],
+      "kind": "path",
+      "short": "-o",
+      "clauses": [
+        "C2-T-053"
       ]
     },
     {
@@ -464,6 +524,18 @@
       ]
     },
     {
+      "name": "strict",
+      "commands": [
+        "lint",
+        "render"
+      ],
+      "kind": "switch",
+      "default": false,
+      "clauses": [
+        "C2-T-051"
+      ]
+    },
+    {
       "name": "strict-losses",
       "commands": [
         "import",
@@ -506,6 +578,8 @@
       "commands": [
         "ast",
         "diagnostics",
+        "fix",
+        "flatten",
         "fmt",
         "import",
         "lint",
@@ -521,14 +595,16 @@
     {
       "name": "write",
       "commands": [
-        "fmt"
+        "fmt",
+        "lint"
       ],
       "kind": "switch",
       "default": false,
       "short": "-w",
       "clauses": [
         "C2-T-016",
-        "C2-T-030"
+        "C2-T-030",
+        "C2-T-050"
       ]
     }
   ],
@@ -549,6 +625,14 @@
       ]
     },
     {
+      "name": "flatten-changed",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
+      ]
+    },
+    {
       "name": "import-input-invalid",
       "status": 2,
       "errors": [
@@ -565,6 +649,14 @@
       "errors": [],
       "clauses": [
         "C2-T-035"
+      ]
+    },
+    {
+      "name": "include-unresolved",
+      "status": 1,
+      "errors": [],
+      "clauses": [
+        "C2-T-048"
       ]
     },
     {
@@ -592,7 +684,8 @@
       "status": 2,
       "errors": [],
       "clauses": [
-        "C2-T-040"
+        "C2-T-040",
+        "C2-T-053"
       ]
     },
     {

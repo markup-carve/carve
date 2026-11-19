@@ -550,7 +550,7 @@ const valueCell = row => {
   if (row.kind === 'enum') return row.values.map(value => tick + value + tick).join(', ')
   if (row.kind === 'json') return 'JSON'
   if (row.kind === 'count') return `count, ${row.default}`
-  if (row.kind === 'code') return row.repeatable ? 'code, repeatable' : 'code'
+  if (row.kind === 'code' || row.kind === 'file') return row.repeatable ? `${row.kind}, repeatable` : row.kind
   return row.kind
 }
 for (const cell of flagCells) {
