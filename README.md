@@ -11,7 +11,7 @@ This has /italic/, *bold*, {_underline_}, {~strikethrough~}, and {=highlight=}.
 - [ ] Update the package
 
 |= Package |= Version |
-| carve-js | 0.1 |
+| carve-js | 0.2 |
 ^ Published packages
 
 ::: note
@@ -24,7 +24,7 @@ Carve also has fenced containers, footnotes, math, and attributes.
 ````text
 INLINE
   /italic/  *bold*  /*bold italic*/
-  _underline_  ~strikethrough~  =highlight=
+  {_underline_}  {~strikethrough~}  {=highlight=}
   {^superscript^}  {,subscript,}  `code`
 
 HEADINGS AND LINKS
@@ -90,8 +90,7 @@ editorial markup, raw content, includes, and extension syntax.
   text. Rendering methods can warn when an output format omits content.
 - If an application does not recognize an extension, its content remains in an
   ordinary span or div.
-- Bare HTML is literal text. Explicit `=html` passthrough can be disabled for
-  untrusted input.
+- Bare HTML is literal text, and explicit raw HTML is off by default.
 
 ## Install
 
@@ -107,17 +106,17 @@ cargo install carve-lang
 JavaScript:
 
 ```ts
-import { carveToHtml } from '@markup-carve/carve'
+import { render } from '@markup-carve/carve'
 
-const html = carveToHtml('/italic/, *bold*, and _underline_')
+const html = render('/italic/, *bold*, and {_underline_}')
 ```
 
 PHP:
 
 ```php
-use MarkupCarve\Carve\CarveConverter;
+use MarkupCarve\Carve\Carve;
 
-$html = (new CarveConverter())->convert('/italic/, *bold*, and _underline_');
+$html = Carve::toHtml('/italic/, *bold*, and {_underline_}');
 ```
 
 Rust CLI:
@@ -138,11 +137,11 @@ Carve is not Markdown. Some familiar constructs have different meanings:
 |---|---|---|
 | `*text*` | italic | bold |
 | `/text/` | plain text | italic |
-| `_text_` | italic | underline |
-| `~text~` | plain text in CommonMark | strikethrough |
+| `_text_` | italic | plain text |
+| `{_text_}` | plain text | underline |
 | `\|= Head \|` | plain table text | header cell |
 
-Converters from Markdown, HTML, Djot, and BBCode are available, but a `.crv`
+Importers from HTML, Markdown, and Djot are available, but a `.crv`
 file should not be passed to a Markdown parser. See [Migration from
 Markdown](https://markup-carve.github.io/carve/migrate-from-markdown) and the
 [format bridges](https://markup-carve.github.io/carve/format-bridges) for the
@@ -153,17 +152,18 @@ and some application features must be enabled separately. The [optional feature
 table](https://markup-carve.github.io/carve/extensions#feature-tiers-quick-reference)
 lists their availability.
 
-Bare HTML is literal text, but explicit `=html` passthrough is enabled by
-default in the JavaScript and Rust renderers. Disable it for untrusted input.
+Bare HTML is literal text. Explicit raw HTML is disabled by default and needs
+the `rawHtml` option or `carve render --raw-html`.
 Renderers also restrict unsafe URL schemes and attributes; see the [security
 model](https://markup-carve.github.io/carve/security).
 
 ## Specification and implementations
 
-Carve 0.1 is specified. Before 1.0, minor releases may change the grammar.
+Carve 0.2 is specified in [`spec/0.2/`](spec/0.2/README.md). Before 1.0, minor
+releases may change the grammar.
 
-- [Formal grammar](resources/grammar.ebnf)
-- [Conformance examples](tests/corpus)
+- [Conformance examples](spec/0.2/conformance/README.md)
+- [Upgrading from 0.1](spec/0.2/UPGRADING.md)
 - [Versioning policy](VERSIONING.md)
 - [JavaScript implementation](https://github.com/markup-carve/carve-js)
 - [PHP implementation](https://github.com/markup-carve/carve-php)

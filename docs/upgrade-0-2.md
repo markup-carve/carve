@@ -4,13 +4,13 @@ Carve 0.2 is a development version. Start with a copy of each 0.1 `.crv` file. T
 
 ## Run the reference rewrite tool
 
-Build `carve-js` on `next2` with `npm ci` and `npm run build`. Its 0.2 CLI is `node dist/cli2.js`. In a working copy of a 0.1 document:
+Build `carve-js` on `next2` with `npm ci` and `npm run build`. Its CLI is `node dist/cli.js` (installed as `carve`). In a working copy of a 0.1 document:
 
 ```sh
-node dist/cli2.js upgrade --check page.crv
-node dist/cli2.js upgrade --json page.crv
-node dist/cli2.js upgrade --write page.crv
-node dist/cli2.js fmt --write page.crv
+node dist/cli.js upgrade --check page.crv
+node dist/cli.js upgrade --json page.crv
+node dist/cli.js upgrade --write page.crv
+node dist/cli.js fmt --write page.crv
 ```
 
 `--check` writes nothing and exits 1 when a change or human review is needed. `--json` writes a structured report. Without `--write`, upgraded source goes to standard output and the report to standard error. `--write` replaces the input after checking the old and proposed HTML. A usage error exits 2. `--force` does not bypass an HTML mismatch. Run the tool **once per 0.1 file**: it is not idempotent on already upgraded source. This `upgrade` command is specific to the JavaScript reference engine; the shared [0.2 tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#scope) does not require it.
@@ -19,7 +19,7 @@ Read `rewrite`, `escape`, `report`, `upgrade-conflict`, and `upgrade-mismatch` r
 
 ## Common source rewrites
 
-These pairs were measured with `carve2 upgrade` on 0.1 input, then formatted with `carve2 fmt`. The left fences show old source, not 0.2 examples.
+These pairs were measured with `carve upgrade` on 0.1 input, then formatted with `carve fmt`. The left fences show old source, not 0.2 examples.
 
 A heading after a paragraph needs a blank line (`U-001`):
 
@@ -73,6 +73,6 @@ Compare representative pages rendered by both engines. Check headings and genera
 
 ## Update the host
 
-The current package root of `carve-js` still exports 0.1. The 0.2 entry point is `v2/src/index.ts`; move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. Stored trees need the 2.0 schema and `migrateTree` or `migrate-ast` before a strict 2.0 decoder reads them. Source layout is a sidecar. See the [integrator migration table](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#part-2-integrators-your-code-and-your-pages), [AST](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md), and [source layout](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md).
+The package root of `carve-js` exports 0.2; move `carveToHtml` callers to `render`, and consumers of old report objects to `renderWithDiagnostics`. Stored trees need the 2.0 schema and `migrateTree` or `migrate-ast` before a strict 2.0 decoder reads them. Source layout is a sidecar. See the [integrator migration table](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#part-2-integrators-your-code-and-your-pages), [AST](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md), and [source layout](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md).
 
 Review options instead of reusing a 0.1 options object. The 0.2 host must choose its URL policy, raw HTML behavior, include resolver and root, extension registrations, and strict loss handling. Compare site CSS and scripts against the 0.2 section, list, and table HTML. Keep the JSON upgrade report with the source change for review.

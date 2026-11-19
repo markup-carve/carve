@@ -4,7 +4,7 @@ Carve 0.2 renders HTML. Core content remains readable without client scripts. An
 
 ## Static mode
 
-`carve2 render --mode static document.crv` requests self-contained HTML. A registered extension renderer can produce its static form; a diagram without a build-time renderer falls back to source as a code block. Core math keeps its TeX-delimited `math` span in both modes. Static mode does not promise a generated image for math. See [C2-H-122 to C2-H-123 and C2-H-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
+`carve render --mode static document.crv` requests self-contained HTML. A registered extension renderer can produce its static form; a diagram without a build-time renderer falls back to source as a code block. Core math keeps its TeX-delimited `math` span in both modes. Static mode does not promise a generated image for math. See [C2-H-122 to C2-H-123 and C2-H-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
 ## Plan the fallback
 

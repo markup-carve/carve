@@ -4,11 +4,11 @@ description: Current implementation choices for Carve 0.2.
 
 # Compare implementations
 
-Carve 0.2 is under development. [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2/v2) is the reference implementation for the candidate specification. The released JavaScript, PHP and Rust engines implement 0.1. Their 0.1 conformance and speed measurements do not establish 0.2 support.
+Carve 0.2 is under development. [`carve-js` on `next2`](https://github.com/markup-carve/carve-js/tree/next2) is the reference implementation for the candidate specification. The released JavaScript, PHP and Rust engines implement 0.1. Their 0.1 conformance and speed measurements do not establish 0.2 support.
 
 | Need | Current 0.2 path |
 |---|---|
-| Parse, render, format or lint | The `carve-js` 0.2 branch and its `carve2` CLI |
+| Parse, render, format or lint | The `carve-js` 0.2 branch and its `carve` CLI |
 | Implement another language | Pin the [0.2 spec](./grammar) and run its [shared corpus](./conformance) |
 | Migrate 0.1 documents | Read the [upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md) and test the reference engine's `upgrade` command |
 | Use a released implementation today | Use the [0.1 site](https://markup-carve.github.io/carve/) and a released engine |

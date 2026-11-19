@@ -5,7 +5,7 @@ import { EditorView, hoverTooltip, tooltips, type Tooltip } from '@codemirror/vi
 import { linter, type Diagnostic as LintDiagnostic } from '@codemirror/lint'
 import { autocompletion, type CompletionContext, type CompletionResult } from '@codemirror/autocomplete'
 import { completionAt, hoverAt } from '@markup-carve/carve-lsp/browser'
-import { lint } from '../../engine-v2.js'
+import { lint } from '../../engine.js'
 
 type Position = { line: number; character: number }
 

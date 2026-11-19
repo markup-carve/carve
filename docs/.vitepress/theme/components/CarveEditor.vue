@@ -14,7 +14,7 @@ import {
 } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess, isolateHistory } from '@codemirror/commands'
 import type { Command } from '@codemirror/view'
-import { parse } from '../../engine-v2.js'
+import { parse } from '../../engine.js'
 import {
   BARE_CONTINUATION_MARKER,
   bareMarkerItem,

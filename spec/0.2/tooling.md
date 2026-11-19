@@ -8,7 +8,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-001** Every engine offers the calls of the section "Library" and the program of the section "Commands". A port spells a call, a result field and an error by the convention of its language, as it spells an option (C2-H-137).
 
-**C2-T-002** The program is `carve`. An engine that installs it beside a 0.1 program may give it another name: the reference engine names it `carve2` on `next2`.
+**C2-T-002** The program is `carve`.
 
 **C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), and its scanner and event helpers. An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
 

@@ -5,9 +5,9 @@ Carve 0.2 uses HTML as its specified import hub. The importer returns a 2.0 tree
 ## Basic workflow
 
 ```sh
-carve2 import --from html page.html > page.crv
-carve2 lint page.crv
-carve2 render page.crv > page-output.html
+carve import --from html page.html > page.crv
+carve lint page.crv
+carve render page.crv > page-output.html
 ```
 
 For a JavaScript integration, call `importDocument(html, { from: "html" })` and inspect its `document`, `source`, and diagnostics record. The source is a canonical spelling of the imported tree when the writer can express it. See [the two results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md#carriers-and-the-two-documents).

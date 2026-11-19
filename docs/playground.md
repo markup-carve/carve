@@ -40,7 +40,7 @@ The **Options** button opens the 0.2 profile, heading ID, section, smart typogra
 
 The in-page engine is Carve 0.2 JavaScript. The Rust WASM button is disabled because the bundled Rust build implements 0.1. The PHP sandbox link remains available for external experiments; it is not the engine behind this preview.
 
-The 0.2 browser bundle does not expose HTML import, so this playground has no Import button. The 0.2 CLI supports `carve2 import --from=html`. To import Markdown, convert it to HTML first, then import that HTML. See the [0.2 tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
+The 0.2 browser bundle does not expose HTML import, so this playground has no Import button. The 0.2 CLI supports `carve import --from=html`. To import Markdown, convert it to HTML first, then import that HTML. See the [0.2 tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
 
 ## Visual editor
 

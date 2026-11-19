@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
-import { diffCodeTransformer } from '@markup-carve/carve-grammars/shiki/diff'
+import { diffCodeTransformer } from '../../diff-transformer.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playground-code-languages.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
-import { render, parse, lint, format } from '../../engine-v2.js'
+import { render, parse, lint, format } from '../../engine.js'
 import { isDiffPre } from '../../diff-fences.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
 
@@ -406,7 +406,7 @@ function getHighlighter(): Promise<unknown> {
     highlighterPromise = (async () => {
       const { createHighlighter } = await import('shiki')
       // The playground and the docs use the same 0.2 TextMate grammar.
-      const carveGrammar = { ...(await import('@markup-carve/carve-grammars/textmate/carve2.tmLanguage.json')).default, name: 'carve', aliases: ['crv', 'Carve'] }
+      const carveGrammar = { ...(await import('@markup-carve/carve-grammars/textmate/carve.tmLanguage.json')).default, name: 'carve', aliases: ['crv', 'Carve'] }
       const csvGrammar = (await import('@markup-carve/carve-grammars/textmate/csv.tmLanguage.json')).default
       const tsvGrammar = (await import('@markup-carve/carve-grammars/textmate/tsv.tmLanguage.json')).default
       // The same Carve theme rules the docs code blocks get from carveMarkdown().

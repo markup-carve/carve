@@ -4,7 +4,7 @@
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { format, lint, render } from '../docs/.vitepress/engine-v2.js'
+import { format, lint, render } from '../docs/.vitepress/engine.js'
 
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const examples = JSON.parse(readFileSync(resolve(root, 'spec/0.2/conformance/examples.json'), 'utf8')).examples

@@ -10,6 +10,11 @@ Releases before 0.1.6 are archived in
 
 ## [Unreleased]
 
+### Breaking
+
+- Carve 0.2 replaces 0.1 as the current language: the README, docs and specification name the reference program `carve` (was `carve2`) and the carve-js package root as the 0.2 entry point (was `v2/src/index.ts`). C2-T-002 no longer allows a second program name beside 0.1.
+- Docs highlight `carve` and `crv` fences with the carve-grammars `carve` grammar; the `carve2` grammar alias is gone.
+
 ## [0.1.14] - 2026-11-12
 
 The spec settles one attach rule for `+`, a four-step block layout, a braced table alignment spelling and a canonical `***` thematic break. The executable spec model now follows the layout clauses across lists, descriptions, quotes, notes and comments, and the corpus pins the readings the engines owe.

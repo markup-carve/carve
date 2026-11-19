@@ -8,10 +8,10 @@ The source is a core inline extension before registration:
 :badge[Ready]
 ```
 
-Save the following as `badge.mjs` at the root of the `carve-js` checkout and run `node badge.mjs`:
+Save the following as `badge.mjs` in a project that installs `@markup-carve/carve` and run `node badge.mjs`:
 
 ```js
-import { render } from './v2/src/index.ts'
+import { render } from '@markup-carve/carve'
 
 const badge = {
   name: 'org.example.badge',

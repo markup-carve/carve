@@ -12,11 +12,11 @@ For example, this source has a heading and one paragraph:
 A *bold* word.
 ```
 
-The reference engine installs the 0.2 command as `carve2` on `next2`. `ast` writes a bare tree by default. Add `--envelope` at a storage or process boundary.
+The reference engine installs the command as `carve`. `ast` writes a bare tree by default. Add `--envelope` at a storage or process boundary.
 
 ```sh
-carve2 ast document.crv
-carve2 ast --envelope document.crv
+carve ast document.crv
+carve ast --envelope document.crv
 ```
 
 The JavaScript API offers `parse`, `parseWithDiagnostics`, `parseWithLayout`, `encodeTree`, `encodeEnvelope`, `decodeTree`, and `validateTree`. The [tooling contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library) gives each call's inputs and outputs.
@@ -35,4 +35,4 @@ The tree keeps meaning, while the [source-layout sidecar](./ast-source-layout.md
 
 ## Edit or exchange a tree
 
-Validate an external tree before rendering or writing it. `decodeTree` performs reader checks in addition to schema validation. `write` emits canonical Carve and reports facts it cannot spell. `migrateTree` and `carve2 migrate-ast` convert older trees; renaming `astVersion` alone is not migration. The [complete contract](./ast-json-contract.md) explains these boundaries.
+Validate an external tree before rendering or writing it. `decodeTree` performs reader checks in addition to schema validation. `write` emits canonical Carve and reports facts it cannot spell. `migrateTree` and `carve migrate-ast` convert older trees; renaming `astVersion` alone is not migration. The [complete contract](./ast-json-contract.md) explains these boundaries.

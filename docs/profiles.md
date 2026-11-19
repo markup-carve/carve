@@ -3,7 +3,7 @@
 A render profile limits which node types appear as their normal HTML form. The four 0.2 profile names are `full`, `article`, `comment`, and `minimal`. `full` is the default. The lists and limits are in [`url-policy.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/url-policy.json), and the behavior is in [C2-H-163 to C2-H-165](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
 ```sh
-carve2 render --profile comment document.crv
+carve render --profile comment document.crv
 ```
 
 The JavaScript API takes `profile: "comment"` in render options. A type denied by a profile degrades according to its node type; it is not removed by an arbitrary text filter. A profile also enforces its maximum input length before parsing and maximum nesting during rendering. `comment` adds `rel="nofollow ugc"` to links. The exact allowed types and limits come from the data file.

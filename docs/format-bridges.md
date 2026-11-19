@@ -6,8 +6,8 @@ Carve 0.2 specifies a semantic AST and an HTML import path. It does not specify 
 
 | Task | Path | What to inspect |
 | --- | --- | --- |
-| Display a Carve document | `carve2 render` or `render` | HTML and render-loss diagnostics |
-| Bring HTML into Carve | `carve2 import --from html` or `importDocument` | Tree, written source, importer and writer losses |
+| Display a Carve document | `carve render` or `render` | HTML and render-loss diagnostics |
+| Bring HTML into Carve | `carve import --from html` or `importDocument` | Tree, written source, importer and writer losses |
 | Exchange structure with another tool | 2.0 AST envelope | Version, declarations, fallback nodes, and reader validation |
 | Convert Markdown, GFM, or Djot | Produce HTML, then import it | HTML conversion losses and Carve import losses |
 | Produce another target | A host-owned writer over the 2.0 AST | Unsupported node and field losses |
