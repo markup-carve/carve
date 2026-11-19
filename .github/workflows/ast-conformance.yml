@@ -12,6 +12,8 @@ name: AST conformance
 
 on:
   pull_request:
+    # 0.1 conformance; next2 has its own readiness gate.
+    branches: [main]
     paths:
       - resources/engine-pins.json
   schedule:
