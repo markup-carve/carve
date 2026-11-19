@@ -66,9 +66,23 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
         let result = spec.get("result").and_then(Value::as_str).map(str::to_owned);
         o.code_block_renderer = Some(carve::options::CodeBlockRenderer::new(move |node, default_html| {
             if syntax.as_deref().is_some_and(|s| node["syntax"].as_str() != Some(s)) { return None; }
-            result.as_ref().map(|template| template
-                .replace("{default}", default_html)
-                .replace("{syntax}", node["syntax"].as_str().unwrap_or("")))
+            result.as_ref().map(|template| {
+                let mut rest = template.as_str();
+                let mut html = String::with_capacity(rest.len() + default_html.len());
+                while let Some(at) = rest.find('{') {
+                    html.push_str(&rest[..at]);
+                    let tail = &rest[at..];
+                    let (token, value) = if tail.starts_with("{default}") {
+                        ("{default}", default_html)
+                    } else if tail.starts_with("{syntax}") {
+                        ("{syntax}", node["syntax"].as_str().unwrap_or(""))
+                    } else { ("{", "{") };
+                    html.push_str(value);
+                    rest = &tail[token.len()..];
+                }
+                html.push_str(rest);
+                html
+            })
         }));
     }
     if let Some(files) = files {
@@ -269,6 +283,11 @@ fn run(c: &Value) -> Value {
             patch_case(c, kind).unwrap_or_else(|refused| refused)
         } else { run_boundary(c, kind).unwrap_or_else(|refused| refused) };
     }
+    if c.get("files").is_some() && c["options"].get("codeBlockRenderer").is_some() {
+        let validation = invoke(json!({"call":"render","source":"",
+            "options":{"codeBlockRenderer":c["options"]["codeBlockRenderer"]}}));
+        if let Err(refused) = validation { return refused; }
+    }
     let o = options(&c["options"], c.get("files"));
     match kind {
         "layout" => match carve::api::parse_with_layout(input, &o) {
@@ -386,6 +405,25 @@ mod tests {
             "options":{"codeBlockRenderer":{"syntax":"ts","result":"<pre>{syntax}:{default}</pre>"}}
         }));
         assert!(output["html"].as_str().unwrap().starts_with("<pre>ts:<pre>"), "{output}");
+    }
+
+    #[test]
+    fn host_code_renderer_with_files_refuses_nontext_result() {
+        let output = run(&json!({
+            "kind":"render", "input":"```ts\nx\n```\n", "files":{},
+            "options":{"codeBlockRenderer":{"syntax":"ts","result":7}}
+        }));
+        assert_eq!(output["error"], "CarveOptionError");
+        assert_eq!(output["path"], "/codeBlockRenderer");
+    }
+
+    #[test]
+    fn host_code_renderer_with_files_keeps_inserted_literal_tokens() {
+        let output = run(&json!({
+            "kind":"render", "input":"```ts\n{syntax}\n```\n", "files":{},
+            "options":{"codeBlockRenderer":{"syntax":"ts","result":"{default}"}}
+        }));
+        assert!(output["html"].as_str().unwrap().contains("{syntax}"), "{output}");
     }
 
     #[test]
