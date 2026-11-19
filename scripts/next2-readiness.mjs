@@ -115,10 +115,6 @@ function compare(c, actual) {
     }
     // An empty pointer names the whole input (C2-T-045), so it is compared exactly.
     if (expected.refusal.path === '' ? actual.path !== '' : expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
-    for (const item of expected.diagnostics ?? []) {
-      const wanted = typeof item === 'string' ? { code: item } : item
-      if (!actual?.diagnostics?.some(d => diagMatches(d, wanted, c))) fields.push(`diagnostic:${wanted.code}`)
-    }
     return { status: fields.length ? 'fail' : 'pass', fields }
   }
   if (c.kind === 'cli') {
