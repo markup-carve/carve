@@ -18,7 +18,7 @@ The tables below enumerate every entry in the shipped tool contract. The “0.2 
 
 ### Replay gap rulings
 
-The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 rewrite only the seven sources whose full 0.1 and 0.2 HTML was checked. U-390 now needs no change. U-393 and U-426 report every other line comment in a frame, which the verified rewrites do not cover. A comment inside a raw image alt is still source text (C2-I-074).
+The 18 November rulings take back the 17 November restores for one-letter ordered markers and line comments. The first marker fixes list style (C2-B-042), and a line comment takes every closer on its line (C2-I-024). U-397, U-398, U-403 and U-404 report list splits; `%%` directly after the opener of a bracket or a braced form is text again (C2-I-023). U-399 to U-402 and U-405 to U-407 were first checked on seven sources; the replay of 19 November widens them with U-432 to every line comment that 0.1 ended early, written only where the complete 0.1 and 0.2 HTML compare equal. U-390 now needs no change. U-393 and U-426 report every other line comment in a frame. A comment inside a raw image alt is still source text (C2-I-074).
 
 For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest source. For U-397 to U-407, the 0.2 result follows the new clauses while the reference engine still follows the old rule; each proposed rewrite was checked against the full 0.1 HTML with the 0.2 engine. A rewrite is promised only for the complete HTML comparison of that input. The other rows require a report at the source range named in the map. The full source strings and expected 0.2 HTML are in the data rows.
 
@@ -28,7 +28,7 @@ For U-375 to U-396, the pinned 0.1 and 0.2 engines were run on each shortest sou
 | U-376 | Every space after the colon of an abbreviation definition is separator in 0.1: `*[HTML]:  Hyper Text` gives the title `Hyper Text`; 0.2 keeps the second space in the title. **SILENT** | The old HTML is restored by the verified source spelling. | Use one space after `*[HTML]:`; rewrite |
 | U-377 | A table attribute `aligns="right,,center"` aligns each column in 0.1; 0.2 has no `aligns` attribute. **SILENT** | The old HTML is restored by the verified source spelling. | Remove the invalid `aligns` list and put `{>}` or `{~}` on each affected cell; rewrite |
 | U-378 | A footnote definition inside a definition description, then an indented and an unindented line: `:: t`, `:  [^f]: note`, `     cont`, `tail`. 0.1 writes an empty description; 0.2 keeps the three lines as description text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the nested definition opener through the following unprefixed line; report |
-| U-379 | A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 adds `more` to the term. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment line through the following retained line; report |
+| U-379 | A comment line under a definition term: `:: c`, `%% note`, `more`. 0.1 ends the list at the comment and `more` is a paragraph; 0.2 adds `more` to the term. **SILENT** | The old HTML differs. Where a blank line above the comment keeps the complete 0.1 HTML, U-433 writes it. | Report from the comment line through the following retained line; report |
 | U-380 | A comment in a div label: `::: note [%% hidden]`. 0.1 hides it and writes an empty label; 0.2 writes `%% hidden` as the label. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
 | U-381 | Inline markup in a div label: `::: note [/i/]`. 0.1 writes `<em>i</em>`; 0.2 writes the label as plain text. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the bracketed label on the div opener; report |
 | U-382 | A comment line in a div that opens on a list item: `- ::: inner`, ` %% c`, ` text`. 0.1 ends the div and the list at the comment and `text` is a paragraph after the list; 0.2 keeps `text` in the div. **SILENT** | The old HTML differs; no preserving spelling was verified. | Report from the comment line through the next retained line; report |
@@ -93,12 +93,14 @@ The explicit extension forms preserve their core fallback when no renderer is re
 
 ### Upgrade replay rows of 19 November
 
-The upgrade replay of the 0.1 conformance pack and examples found two more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
+The upgrade replay of the 0.1 conformance pack and examples found four more changes with a preserving 0.2 spelling. Each is written only when the complete 0.1 and 0.2 HTML of the document compare equal.
 
 | ID | 0.1 form or host setting | 0.2 result | Write in 0.2 / tool |
 | --- | --- | --- | --- |
 | U-430 | a /b {+c/ d+} **SILENT** | 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), also across a braced opener or an attribute block, where 0.1 kept it text: `<p>a <em>b {+c</em> d+}</p>`. | Write `a \/b {+c/ d+}` (C2-I-010); escape |
 | U-431 | a ----------- b **SILENT** | C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again, `—––––`; 0.1 wrote as many em dashes as leave an even rest, `———–`. | Write the dashes 0.1 wrote, `a ———– b`; rewrite |
+| U-432 | `/*a %% b*/ y` **SILENT** | A line comment takes every closer on its line (C2-I-024) and starts only at a line start or after whitespace (C2-I-023): `<p>/*a</p>`. 0.1 ended it at the closer of an open span and read it directly after an opener. | Write a braced comment in its place, `*/a{% b%}/* y` (C2-I-025); rewrite |
+| U-433 | :: t ⏎  %% c ⏎    more **SILENT** | 0.2 skips a comment-only line (C2-B-137), so `more` continues the term: `<dl><dt>t more</dt></dl>`. 0.1 ended the term at the comment line. | Write a blank line above the comment line; rewrite |
 
 ### Source change index
 

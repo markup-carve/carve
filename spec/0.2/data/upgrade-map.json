@@ -3260,6 +3260,26 @@
       "meaning02": "<p>a —–––– b</p> C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again; 0.1 wrote as many em dashes as leave an even rest. The dash characters 0.1 wrote keep its HTML; the tool writes them only when the complete HTML compares equal.",
       "toolEntry": "U-431",
       "silent": true
+    },
+    {
+      "id": "U-432",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "/*a %% b*/ y\n",
+      "to": "*/a{% b%}/* y\n",
+      "meaning02": "<p>/*a</p> A line comment takes the rest of its line, every closer on it included (C2-I-024), and starts only at a line start or after whitespace (C2-I-023); 0.1 ended it at the closer of an open span and also read it directly after an opener. A braced comment in its place (C2-I-025) keeps the 0.1 HTML, with the spaces before it removed as 0.1 removed them. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-399 to U-402 name the frame where it stands in one.",
+      "toolEntry": "U-432",
+      "silent": true
+    },
+    {
+      "id": "U-433",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": ":: t\n %% c\n   more\n",
+      "to": ":: t\n\n %% c\n   more\n",
+      "meaning02": "<dl>\n  <dt>t\nmore</dt>\n</dl> 0.2 skips a comment-only line (C2-B-137), so the line under it continues the paragraph or term above; 0.1 ended that block at the comment line. A blank line above the comment line keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-379 reports the rest.",
+      "toolEntry": "U-433",
+      "silent": true
     }
   ],
   "tree": [
