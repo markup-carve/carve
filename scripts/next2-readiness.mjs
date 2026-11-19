@@ -99,7 +99,8 @@ function compare(c, actual) {
       const contract = ['TreeError', 'OptionError', 'LayoutError', 'InputError', 'RenderError', 'WriteError', 'PatchError'].includes(short) ? `Carve${short}` : short
       if (contract !== expected.refusal.error) fields.push('refusalType')
     }
-    if (expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
+    // An empty pointer names the whole input (C2-T-045), so it is compared exactly.
+    if (expected.refusal.path === '' ? actual.path !== '' : expected.refusal.path && !actual.path?.startsWith(expected.refusal.path)) fields.push('refusalPath')
     return { status: fields.length ? 'fail' : 'pass', fields }
   }
   if (c.kind === 'cli') {
