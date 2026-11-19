@@ -288,9 +288,11 @@ fn run(c: &Value) -> Value {
             json!({"tree":tree,"html":output.html,"diagnostics":diagnostics(found)})
         }
         "lint" => {
-            if c["options"].get("extensions").is_some() { return json!({"unsupported":"lint extension"}); }
             let mut opts = carve::lint::LintOptions::default();
             opts.includes = o.includes.clone();
+            opts.heading_ids = o.heading_ids;
+            opts.extensions = c["options"]["extensions"].as_array().into_iter().flatten()
+                .filter_map(Value::as_str).map(str::to_owned).collect();
             if let Some(rules) = c["options"]["rules"].as_object() {
                 opts.rules = rules.iter().filter_map(|(k,v)| v.as_str().map(|s|(k.clone(),s.to_string()))).collect();
             }
