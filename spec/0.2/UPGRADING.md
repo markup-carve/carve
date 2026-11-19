@@ -89,7 +89,7 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | U-423 | See [[Main Page]]. (former wikilinks host extension) **SILENT** | The wiki form is `:wiki[Page]` (C2-X-013, C2-X-057). | Write `See :wiki[Main Page].`; rewrite |
 | U-424 | See [[Main Page\|home]]. (former wikilinks host extension) **SILENT** | The display text after the first `\|` stays the display text and the fallback (C2-X-057). | Write `See :wiki[Main Page\|home].`; rewrite |
 | U-425 | Type :samp[ls -l]. (former samp host extension) **SILENT** | Sample output is a span with the key `samp`, an ordinary attribute of the core that a registered semantic span extension writes as `<samp>` (C2-X-066). | Write `Type [ls -l]{samp}.`; rewrite |
-| U-429 | # Intro ⏎ ⏎ See </#Intro>. (`carve upgrade --migrate`) **SILENT** | A cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the 0.1 `fmt --migrate` repair; the record is `case-reference`. An id is matched exactly (C2-I-097). A reference with several candidates is left for `lint`. | Write `See </#intro>.`; rewrite |
+| U-429 | # Intro ⏎ ⏎ See </#intro>. (`carve upgrade --migrate`) **SILENT** | A cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the 0.1 `fmt --migrate` repair; the record is `case-reference`. An id is matched exactly (C2-I-097). A reference with several candidates is left for `lint`. | Write `See </#Intro>.`; rewrite |
 
 ### Source change index
 

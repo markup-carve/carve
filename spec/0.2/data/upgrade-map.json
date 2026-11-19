@@ -3235,8 +3235,8 @@
       "id": "U-429",
       "kind": "rewrite",
       "group": "case-only references",
-      "from": "# Intro\n\nSee </#Intro>.\n",
-      "to": "# Intro\n\nSee </#intro>.\n",
+      "from": "# Intro\n\nSee </#intro>.\n",
+      "to": "# Intro\n\nSee </#Intro>.\n",
       "meaning02": "Under `carve upgrade --migrate`, a cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the `fmt --migrate` repair of 0.1. An id is matched exactly, without case folding (C2-I-097). A reference with several candidates is left for `lint`.",
       "toolEntry": "U-429",
       "silent": true
