@@ -3240,6 +3240,26 @@
       "meaning02": "Under `carve upgrade --migrate`, a cross-reference or reference label that misses its only target by case alone is respelled to that target before the upgrade reads the source, the `fmt --migrate` repair of 0.1. An id is matched exactly, without case folding (C2-I-097). A reference with several candidates is left for `lint`.",
       "toolEntry": "U-429",
       "silent": true
+    },
+    {
+      "id": "U-430",
+      "kind": "escape",
+      "group": "upgrade replay",
+      "from": "a /b {+c/ d+}\n",
+      "to": "a \\/b {+c/ d+}\n",
+      "meaning02": "<p>a <em>b {+c</em> d+}</p> 0.2 pairs a bare delimiter wherever it can open and close (C2-I-046 to C2-I-051), across a braced opener or an attribute block, where 0.1 kept it text. A backslash keeps it text (C2-I-010). The tool escapes one or two delimiters on the line of the difference and keeps the escape only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-430",
+      "silent": true
+    },
+    {
+      "id": "U-431",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "a ----------- b\n",
+      "to": "a ———– b\n",
+      "meaning02": "<p>a —–––– b</p> C2-I-111 writes an odd hyphen run that is no multiple of three as one em dash and splits the rest again; 0.1 wrote as many em dashes as leave an even rest. The dash characters 0.1 wrote keep its HTML; the tool writes them only when the complete HTML compares equal.",
+      "toolEntry": "U-431",
+      "silent": true
     }
   ],
   "tree": [
