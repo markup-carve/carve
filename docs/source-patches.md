@@ -1,3 +1,7 @@
+---
+description: Why Carve 0.2 specifies no source-patch API, and what to use instead.
+---
+
 # Source-preserving patches
 
 Carve 0.2 does not specify the 0.1 source-patch or editor API. The reference 0.2 tooling contract offers parsing, source layout, formatting, writing, diagnostics, and AST migration, but no `createSourcePatch`, `applySourcePatch`, or `toCarvePatch`. See [tooling calls](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library) and [the upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#javascript-api).

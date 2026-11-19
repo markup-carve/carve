@@ -46,9 +46,6 @@ docs/includes.md :: PART 6 I4 :: AS IF the resolved content appeared inline :: -
 docs/includes.md :: PART 6 I11 :: MUST report, alongside the expanded document :: A processor that expands includes MUST report the set
 docs/includes.md :: PART 6 I11 :: the set MUST contain targets that were ATTEMPTED :: - Attempted targets are included, not just successful ones.
 docs/includes.md :: PART 6 I11 :: MUST be distinguishable as RESOLVED versus ATTEMPTED :: - Resolved versus attempted is observable. Each entry MUST
-docs/includes.md :: PART 6 I5 :: DETERMINISTIC RENAME-ON-COLLISION :: The processor MUST resolve duplicates deterministically by
-docs/includes.md :: PART 6 I5 :: it MUST NOT emit a Warning :: This is not a collision: it MUST NOT emit
-docs/includes.md :: PART 6 I5 :: MUST NOT rename anything :: This is not a collision: it MUST NOT emit
 docs/includes.md :: PART 6 I6 :: MUST detect inclusion CYCLES :: - Cycles. The processor MUST detect an inclusion cycle
 docs/includes.md :: PART 6 I6 :: MUST enforce a FINITE include-depth limit :: - Depth. Implementations MUST enforce a finite include-depth limit;
 docs/includes.md :: PART 6 I6 :: FINITE bound on RESOLVER INVOCATIONS :: Implementations MUST therefore enforce a finite bound on resolver

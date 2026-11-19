@@ -1,3 +1,7 @@
+---
+description: Diagnostic codes, severities, channels and ranges in Carve 0.2.
+---
+
 # Validation
 
 Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a code, severity, channel, message, and optional byte range or JSON Pointer. The channels are `parse`, `lint`, and `render-loss`. See [diagnostics](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#diagnostics) and [writer and lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint).
@@ -11,6 +15,8 @@ Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a co
 ## Programmatic checks
 
 The JavaScript API offers `lint`, `parseWithDiagnostics`, `renderWithDiagnostics`, `formatWithDiagnostics`, and `writeWithDiagnostics`. Rendering and writing can report losses that lint alone does not expose. Check the record before accepting a conversion. See [tooling calls](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#library) and [diagnostic rules](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint).
+
+`allowLosses` lists render-loss codes a host accepts: they leave the record and never fail `strictLosses`. `maxLosses` (default 100) caps the losses the record keeps and counts the rest in `suppressedDiagnostics`. The command line sets them with `--allow-loss` and `--max-render-losses`. `positionOf(source, offset)` turns a byte offset of an entry into the line and column the command line prints. See [render options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options) and [diagnostics and reports](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#diagnostics-and-reports).
 
 ## Lint rule catalog
 

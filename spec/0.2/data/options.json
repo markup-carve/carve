@@ -10,6 +10,24 @@
       "clauses": ["C2-H-137", "C2-W-068", "C2-W-118", "C2-W-119"]
     },
     {
+      "name": "allowLosses",
+      "kind": "render",
+      "read_by": ["import", "render"],
+      "type": "list",
+      "items": "code of the render-loss channel of lint-rules.json",
+      "default": [],
+      "clauses": ["C2-H-137", "C2-H-204", "C2-T-027"]
+    },
+    {
+      "name": "codeBlockRenderer",
+      "kind": "render",
+      "read_by": "render",
+      "type": "structure",
+      "holds": "a host function from a code block node and its default HTML to trusted HTML or nothing",
+      "default": null,
+      "clauses": ["C2-H-137", "C2-H-206", "C2-H-207"]
+    },
+    {
       "name": "extensions",
       "kind": "parse",
       "read_by": ["format", "lint", "parse", "tree"],
@@ -60,6 +78,14 @@
         "admonitionQuote": "Quote"
       },
       "clauses": ["C2-H-091", "C2-H-125", "C2-H-137", "C2-H-155"]
+    },
+    {
+      "name": "maxLosses",
+      "kind": "render",
+      "read_by": ["import", "render"],
+      "type": "count",
+      "default": 100,
+      "clauses": ["C2-H-137", "C2-H-205", "C2-T-029"]
     },
     {
       "name": "mode",
@@ -157,6 +183,15 @@
       "holds": "mentionUrl and tagUrl, URL templates in which {name} stands for the percent-encoded name and any other placeholder of letters, digits or underscores in braces is an option error; resolveMention and resolveTag, host functions from an object with kind, name and context to a URL, which replace the template of their pair; and context, a host value passed to the resolvers unchanged",
       "default": null,
       "clauses": ["C2-H-126", "C2-H-137"]
+    },
+    {
+      "name": "softBreak",
+      "kind": "render",
+      "read_by": "render",
+      "type": "enum",
+      "values": ["newline", "space", "br"],
+      "default": "newline",
+      "clauses": ["C2-H-045", "C2-H-137", "C2-H-203"]
     },
     {
       "name": "sourceLines",

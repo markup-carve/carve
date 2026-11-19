@@ -598,7 +598,7 @@ The invariants below are written so that a test can check each one on any tree a
 
 **C2-A-173** Every entry of the record has a code, a severity, a position, a message and a channel (C2-W-103). The channel is `parse`, `render-loss` or `lint`, and a code belongs to one channel (C2-W-104). The position is an optional range in UTF-8 bytes and an optional RFC 6901 path into the tree, so a finding on a tree with no source has the path alone. An entry of the HTML importer is positioned in the bytes of its HTML input and may also carry `foreignType`, the name of the HTML node it is about (C2-M-081).
 
-**C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1.
+**C2-A-174** The record replaces the separate callbacks, warning lists and render-loss settings of 0.1. Two 0.1 loss settings stay as options of the render: the allow list `allowLosses` and the cap `maxLosses` (C2-H-204, C2-H-205).
 
 ## Shapes that Carve source cannot spell
 

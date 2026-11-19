@@ -1,3 +1,7 @@
+---
+description: The versioned semantic tree of Carve 0.2 and the records that accompany it.
+---
+
 # Parsed document JSON
 
 Carve 0.2 exposes a versioned semantic tree. Use it when a tool needs document structure, references, or source positions. The [AST specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars) defines the tree and separate records that accompany it.

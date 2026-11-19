@@ -31,7 +31,7 @@ const cases = [
   ...read('trees/layouts.json').layouts.map(c => ({ ...c, area: 'trees', kind: 'layout-fixture', expected: c.refused ? { accepted: false } : { layout: c.layout, accepted: true } })),
 ]
 const work = Number.isFinite(limit) ? cases.slice(0, limit) : cases
-const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed'])
+const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column'])
 const normalize = value => {
   if (Array.isArray(value)) return value.map(normalize)
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => [k, normalize(v)]))
@@ -107,6 +107,7 @@ function compare(c, actual) {
   }
   if (expected.accepted !== undefined && actual.accepted !== expected.accepted) fields.push('accepted')
   if (expected.suppressed !== undefined && actual.suppressed !== expected.suppressed) fields.push('suppressed')
+  for (const key of ['line', 'column']) if (expected[key] !== undefined && actual[key] !== expected[key]) fields.push(key)
   if (c.kind === 'refused-tree' && actual.accepted === false && !String(actual.error).includes('TreeError')) fields.push('refusalType')
   if (c.kind === 'layout-fixture' && c.refused && actual.accepted === false && !String(actual.error).includes('LayoutError')) fields.push('refusalType')
   if (expected.html !== undefined && actual.html !== expected.html) fields.push('html')
@@ -167,6 +168,14 @@ function jsOptions(c) {
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
   if (options.extensions?.includes('carve.tabs')) options.extensions = js.tabsExtensions
   if (options.renderers?.['carve.tabs'] === 'standard') options.renderers = { 'carve.tabs': js.tabsRenderer }
+  // The harness function of conformance/README.md ("Options").
+  if (options.codeBlockRenderer) {
+    const { syntax, result } = options.codeBlockRenderer
+    options.codeBlockRenderer = (node, defaultHtml) => {
+      if ((syntax !== undefined && node.syntax !== syntax) || result === null) return undefined
+      return typeof result === 'string' ? result.replace(/\{default\}|\{syntax\}/g, token => token === '{default}' ? defaultHtml : node.syntax ?? '') : result
+    }
+  }
   return options
 }
 const parseOptions = options => Object.fromEntries(Object.entries(options).filter(([key]) => ['includes', 'extensions', 'headingIds', 'positions'].includes(key)))
@@ -189,7 +198,12 @@ function jsRun(c) {
     }
     if (kind === 'cli') return { unsupported: 'CLI replay is measured separately from the library runner' }
     if (kind === 'migrate') { const r = js.migrateTree(c.tree, options); return { tree: r.document, diagnostics: r.diagnostics } }
-    if (kind === 'import') { const r = importer.importDocument(c.html, { from: 'html', ...options }); return { tree: r.document, carve: r.source, diagnostics: r.diagnostics } }
+    if (kind === 'import') { const r = importer.importDocument(c.html, { from: 'html', ...options }); return { tree: r.document, carve: r.source, diagnostics: r.diagnostics, suppressed: r.suppressedDiagnostics } }
+    if (kind === 'position') {
+      if (typeof js.positionOf !== 'function') return { unsupported: 'positionOf is not offered' }
+      const r = js.positionOf(input, c.offset)
+      return { line: r.line, column: r.column }
+    }
     if (kind === 'tree-fixture') return { tree: js.parse(input, parseOptions(options)), accepted: true }
     if (kind === 'write') { const r = js.writeWithDiagnostics(c.tree, { ...options, ...(c.layout ? { layout: c.layout } : {}) }); return { carve: r.source, diagnostics: r.diagnostics } }
     if (kind === 'format' || kind === 'write-example') {
@@ -202,7 +216,7 @@ function jsRun(c) {
     if (kind === 'render' || kind === 'include') {
       const r = js.renderWithDiagnostics(c.tree ?? input, options)
       const diagnostics = c.area === 'examples' && c.expected?.diagnostics ? [...r.diagnostics, ...js.lint(input, lintOptions(options))] : r.diagnostics
-      return { html: r.html, diagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
+      return { html: r.html, diagnostics, suppressed: r.suppressedDiagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
     }
     return { unsupported: `unknown kind ${kind}` }
   } catch (e) { return { accepted: false, error: e.name, message: e.message, path: e.path } }

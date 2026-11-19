@@ -1,3 +1,7 @@
+---
+description: Syntax ideas considered during design and rejected, with the reasoning that killed each one.
+---
+
 # Dismissed Syntax Ideas
 
 This page records common spellings that Carve 0.2 does not adopt as core syntax. They can be useful in another language, but a Carve parser reads them under its own rules. The [0.2 block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) chapters decide the actual reading.

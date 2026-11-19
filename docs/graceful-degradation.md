@@ -1,3 +1,7 @@
+---
+description: How Carve output stays readable without client scripts or extensions.
+---
+
 # Output without JavaScript
 
 Carve 0.2 renders HTML. Core content remains readable without client scripts. An optional extension may render an enhanced view, but every qualified extension node must carry a core fallback. A reader or renderer without that extension uses the fallback. See [extension carriage](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#transformation-and-carriage) and [HTML fallback](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#resolution-rendering-and-equality).

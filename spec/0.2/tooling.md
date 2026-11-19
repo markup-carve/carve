@@ -37,6 +37,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `decodeTree` | the JSON text of a 2.0 tree or envelope, `extensions` | the tree | C2-A-188 |
 | `validateTree` | a tree, `extensions` | nothing, or the refusal | C2-A-188 |
 | `migrateTree` | the JSON value of a 1.x or draft tree, bare or in an envelope | the 2.0 tree, its envelope where the input was one, and the record | C2-A-178, C2-A-180 |
+| `positionOf` | Carve source as text or bytes, an offset in its UTF-8 bytes | `line` and `column` | C2-T-019, C2-T-041 |
 
 **C2-T-006** A call refuses with the typed error of its row in the table of C2-T-040, and with no other error; the command line turns that error into the category of the row.
 
@@ -59,7 +60,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-009** A flag given twice takes its last value, except `--allow-loss`, which collects every value.
 
-**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
+**C2-T-010** A flag that sets an option is named by the option in lower case with hyphens, so `urlPolicy` is `--url-policy`: a `boolean` option is a switch, an `enum` option takes one of its values, and a `list`, `map` or `structure` option takes JSON text. The one option set otherwise is `includes`, which `--includes` and `--include-root` set (C2-T-018). `allowLosses` and `maxLosses` keep the 0.1 flags: `--allow-loss` gives one code per instance (C2-T-027) and `--max-render-losses` the count (C2-T-029). `extensions` and `renderers` take host code, which JSON text cannot name, so they have no flag: they are options of the library calls only (C2-T-005). `codeBlockRenderer` takes host code as well and has no flag either. A value the option refuses is refused with the category `usage`. An option that the table of a command lists no flag for, or whose flag is not given, has its default; for `includes` C2-T-018 says what holds.
 
 ## Input and output
 
@@ -106,6 +107,8 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-024** An expansion retains at most `include_diagnostics` of `data/limits.json`, 100, entries whose code is the code of a cause in `data/includes.json`, the first in the order the failures occur. The result of a call that returns a record gives the number of the others as `suppressedDiagnostics`, 0 where there are none, and the command line counts them in `suppressed` (C2-T-021). An include whose entry is held back stays unexpanded as C2-N-061 says.
 
+**C2-T-041** `positionOf` takes a source as `parse` takes it and an offset in its UTF-8 bytes, counted as the offsets of a range are (C2-A-141, C2-B-218), and returns `line` and `column`: the LINE and COLUMN of C2-T-019 for a range that starts at that offset, so a library host shows the positions the command line writes. `line` is 1 plus the number of line feeds before the offset; a carriage return is no line feed. `column` is 1 plus the number of code points between the offset and the last line feed before it, or the start of the source; a U+FFFD that replaces an ill-formed sequence or a U+0000 counts as the one code point it is (C2-B-218). An offset equal to the length of the source gives the position after its last character. An offset that is negative, no integer, greater than the length, or inside the bytes of one code point, an ill-formed sequence that one U+FFFD replaces included, is refused with `CarveOptionError` naming `offset`. The call reads no option.
+
 ## Command flags
 
 ### Every command
@@ -128,6 +131,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--sections` | switch | the option `sections` |
 | `--smart-typography` | switch | the option `smartTypography` |
 | `--social` | JSON | the option `social` |
+| `--soft-break` | `newline`, `space`, `br` | the option `softBreak` |
 | `--source-lines` | switch | the option `sourceLines` |
 | `--strict-losses` | switch | the option `strictLosses`, with the allow list of C2-T-026 |
 | `--symbols` | JSON | the option `symbols` |
@@ -144,11 +148,11 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-026** With `--strict-losses` and a loss, `render` writes no HTML for that file and the file ends with status 1 and the category `render-loss` (C2-H-130). The command applies the allow list before `strictLosses`, so an allowed code alone never fails a file.
 
-**C2-T-027** `--allow-loss` takes a code of the render-loss channel of `data/lint-rules.json`; any other value is refused with the category `usage`. An allowed code is neither written on standard error nor in the report.
+**C2-T-027** `--allow-loss` takes a code of the render-loss channel of `data/lint-rules.json`; any other value is refused with the category `usage`. An allowed code is neither written on standard error nor in the report. The codes of the run are the option `allowLosses` (C2-H-204).
 
 **C2-T-028** `--report-losses` writes the losses of the run, and without a loss it writes the report with empty lists.
 
-**C2-T-029** `--max-render-losses` takes a count, a decimal integer of at least 0, and its default is 100. Each file retains its first losses up to that count; the others are counted in `suppressed` and written on no line.
+**C2-T-029** `--max-render-losses` takes a count, a decimal integer of at least 0, and its default is 100. It sets the option `maxLosses` (C2-H-205). Each file retains its first losses up to that count; the others are counted in `suppressed` and written on no line.
 
 ### `carve ast`
 
@@ -253,9 +257,9 @@ The 0.1 commands, flags and reports that this document does not carry over are l
 | Library | 2 |
 | Commands | 4 |
 | Input and output | 8 |
-| Diagnostics and reports | 6 |
+| Diagnostics and reports | 7 |
 | Command flags | 12 |
 | Exit codes | 4 |
-| **Total** | **40** |
+| **Total** | **41** |
 
-This document holds 40 clauses, none of them an exception. Ids run to C2-T-040.
+This document holds 41 clauses, none of them an exception. Ids run to C2-T-041.

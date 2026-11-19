@@ -1,3 +1,7 @@
+---
+description: How Carve 0.2 is developed, frozen and released.
+---
+
 # Versioning
 
 Carve 0.2 is developed on the `next2` branch. The [0.2 status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md) identifies the current freeze candidate and the extension work that remains provisional. These pages describe that candidate, not a published 0.2 release.

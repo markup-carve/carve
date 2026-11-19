@@ -1,3 +1,7 @@
+---
+description: Use CSS to style Carve containers as trees, cards, columns, and other layouts.
+---
+
 # Styling Recipes
 
 Carve's core containers and attributes give CSS hooks without changing the document language. The [block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#fences-divs-and-comment-blocks) defines container names and [HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#quotes-divs-and-their-sigil-forms) defines their output. Use a named div for grouping and a class for styling.

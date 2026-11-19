@@ -20,6 +20,7 @@ const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 
 const rules = readJson(join(spec, 'data/lint-rules.json')).rules
 const codes = new Set(rules.map(rule => rule.id))
+const ruleChannel = new Map(rules.map(rule => [rule.id, rule.channel]))
 const optionRows = new Map(readJson(join(spec, 'data/options.json')).options.map(row => [row.name, row]))
 const extensionRows = readJson(join(spec, 'data/extensions.json')).extensions
 const fixtureTrees = new Map()
@@ -162,8 +163,11 @@ for (const name of schemaOptions) if (!optionRows.has(name)) fail(`schema.json: 
 const matchers = new Set(extensionRows.filter(row => row.matcher).map(row => row.name))
 const extensionNames = new Set(extensionRows.map(row => row.name))
 const OPTION_VALUE = {
+  allowLosses: (value) => value.every(code => ruleChannel.get(code) === 'render-loss'),
+  codeBlockRenderer: (value) => typeof value.result !== 'number' || Number.isFinite(value.result),
   extensions: (value) => value.every(name => matchers.has(name)),
   includes: (value) => (value.depth === undefined || (value.depth >= 0 && value.depth <= 16)) && (value.bytes === undefined || (value.bytes >= 0 && value.bytes <= 8388608)),
+  maxLosses: (value) => Number.isInteger(value) && value >= 0,
   labels: (value) => Object.keys(value).every(key => Object.hasOwn(optionRows.get('labels').default, key)),
   platforms: (value) => value.every(name => optionRows.get('platforms').values.includes(name)),
   renderers: (value) => Object.keys(value).every(name => extensionNames.has(name)),
@@ -230,6 +234,7 @@ const REFUSALS = {
   tree: ['CarveTreeError'],
   migrate: ['CarveTreeError'],
   import: ['ImportInputError', 'CarveRenderError', 'CarveOptionError'],
+  position: ['CarveOptionError'],
 }
 const CATEGORY_ERRORS = new Set(readJson(join(spec, 'data/cli.json')).categories.flatMap(row => row.errors))
 function refusalProblems(entry) {
@@ -317,6 +322,21 @@ function commandProblems(entry) {
   return problems
 }
 
+// A position case gives an offset and expects a line and a column or a refusal (C2-T-041); only it states them.
+function positionProblems(entry) {
+  const problems = []
+  const fields = ['line', 'column'].filter(field => entry.expected[field] !== undefined)
+  if (entry.kind !== 'position') {
+    if (fields.length) problems.push(`expects ${fields.join(', ')} from a call that is no positionOf`)
+    if (entry.offset !== undefined) problems.push('gives an offset to a call that is no positionOf')
+    return problems
+  }
+  if (Object.keys(entry.options).length) problems.push('sets options, which positionOf does not read')
+  if (!entry.expected.refusal && fields.length !== 2) problems.push('expects neither a refusal nor a line and a column')
+  for (const field of Object.keys(entry.expected)) if (!['line', 'column', 'refusal'].includes(field)) problems.push(`expects ${field} from positionOf`)
+  return problems
+}
+
 // A clause case quotes the sentence that decides it, from a clause of the documents.
 const clauseText = new Map()
 for (const document of ['syntax-blocks', 'syntax-inline', 'ast', 'html', 'writer', 'source-layout', 'includes', 'extensions', 'import-html', 'tooling']) {
@@ -350,6 +370,7 @@ for (const entry of cases.cases) {
   for (const problem of refusalProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of layoutProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   for (const problem of commandProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
+  for (const problem of positionProblems(entry)) fail(`clause-cases.json ${entry.id}: ${problem}`)
   const refusedOption = entry.expected.refusal?.error === 'CarveOptionError' ? entry.expected.refusal.path?.split('/')[1] : undefined
   for (const name of badOptions(entry.options)) if (name !== refusedOption) fail(`clause-cases.json ${entry.id}: option ${name} has a value data/options.json does not allow`)
 }

@@ -1,4 +1,10 @@
+---
+description: How Carve reads syntax that could otherwise have more than one interpretation.
+---
+
 # Syntax Edge Cases
+
+> **Non-normative.** This page is an authoring guide. The 0.2 block and inline chapters are normative; the 0.1 grammar in `resources/grammar.ebnf` does not describe 0.2.
 
 The 0.2 block and inline chapters give explicit priorities when a character has more than one possible role. This page is an authoring guide to those choices. Use the [block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) and [inline chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) for exact cases.
 

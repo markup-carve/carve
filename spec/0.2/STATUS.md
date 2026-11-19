@@ -48,6 +48,8 @@ Freeze candidate 15: the rulings D1 to D8 of 18 November 2026. D1 and D2 take ba
 
 After the upgrade replay round: the 9,733-source comparison identified 21 unmapped cause groups, with 70 affected sources. The shortest source of each group was rerun against the pinned 0.1 and 0.2 JavaScript engines. Four groups have verified preserving spellings on their shortest inputs, one needs no change because the tool compares attribute names without case, and sixteen require a source-range report; U-375 through U-395 record the causes and U-396 the empty unclosed math run, bringing source rows from 269 to 291. The other replay sources were not retained in the input bundle, so no group-wide preservation claim is made. U-396 reports empty unclosed math runs that U-258 cannot rewrite, an unmapped mismatch has an explicit blocking status, and the one-time input contract excludes native 0.2 source. The trusted extension renderer host helpers now have the shape and indentation behavior of the pinned engine.
 
+Freeze candidate 16 content: the parity ruling of 19 November 2026, which brings four host features of the 0.1 engines into the 0.2 options and calls. `softBreak` (C2-H-203) writes a soft break as a line break, one space or `<br>`, the 0.1 soft break mode of the PHP engine; C2-H-045 and C2-H-065 refer to it. `allowLosses` (C2-H-204) and `maxLosses` (C2-H-205) are the loss allow list and the cap on retained losses of 0.1, read by the render and the HTML importer; `--allow-loss` and `--max-render-losses` set them (C2-T-010, C2-T-027, C2-T-029), and C2-A-174 names them. `codeBlockRenderer` (C2-H-206, C2-H-207) is the host function that writes code blocks, as the reference engine offers it. `positionOf` (C2-T-041) counts a line and a column exactly as C2-T-019 does. The options grow from 20 to 24, the option schema gains the type `count`, `--soft-break` joins the render flags, and the corpus gains the case kind `position` and the harness spelling of `codeBlockRenderer` (`conformance/README.md`). Clause cases rose from 1,177 to 1,244 (CC-1235 to CC-1301); source upgrade rows rose from 314 to 317 (U-420 to U-422). The gaps these additions open are listed under "Engine gaps from the parity ruling of 19 November".
+
 ## Documents
 
 Clauses are the paragraphs that start with a clause id. Rules and exceptions are counted by one rubric for all documents (an atomic normative statement that decides the tree, the output, the source written, a refusal or a report; an exception is a carve-out or a named interaction). *Labeled* is the number of clauses that start with the word "Exception", which each document counts at its end. The syntax chapters were counted construct by construct; the other documents were read more finely, so their rule counts are not comparable with the two chapters.
@@ -57,14 +59,14 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-blocks.md` | C2-B | 209 | 217 | 31 | 8 | 289 |
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 198 | 422 | 65 | 3 | 0 |
-| `html.md` | C2-H | 194 | 470 | 98 | 6 | 86 |
+| `html.md` | C2-H | 199 | 470 | 98 | 6 | 86 |
 | `writer.md` | C2-W | 129 | 294 | 86 | 5 | 45 |
 | `source-layout.md` | C2-L | 54 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 41 |
 | `extensions.md` | C2-X | 51 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 83 | 239 | 46 | 1 | 64 |
-| `tooling.md` | C2-T | 40 | 105 | 7 | 0 | 0 |
-| **Total** | | **1,155** | **2,286** | **449** | **39** | **656** |
+| `tooling.md` | C2-T | 41 | 105 | 7 | 0 | 0 |
+| **Total** | | **1,161** | **2,286** | **449** | **39** | **656** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule other clauses state or give; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay. Candidate 8 recounts the row of `tooling.md`: one rule per sentence of its clauses and one exception per carve-out (C2-T-002, C2-T-009, C2-T-010, C2-T-016, C2-T-031, C2-T-032, C2-T-038), which corrects the author's count of candidate 7. Candidate 9 adds C2-W-138 and C2-L-059 and amends other clauses; it moves the column Clauses, and Rules and Exceptions wait for a recount.
 
@@ -157,3 +159,8 @@ What stays unverified: the 328 unverified examples (written by hand from the cla
 - **O12.** For the extension catalog work: a renderer returns an HTML string the host cannot inspect for the escaping and URL policy of C2-X-034; the slots of a supplied node of another extension are walked in the key order of its `slots` object, which can differ from the order of its declaration (C2-X-020); and the annotation ids of C2-A-203 need a reader that is given the range sidecar with the tree.
 - **O22.** Points the restore round of candidate 6 left for a ruling, each restored as narrowly as the ruling required: header rows inside a body take `scope="row"` (U-271, against T-053 and C2-A-092), and a pipe table with `body-rows` keeps its 0.2 head (C2-B-178, U-058); inside a code span a backslash and a trailing space stay (the ruling of 16 November, C2-I-002); and the writer half of F33 (C2-W-098) now writes a row attribute value with a pipe in quotes, which the maintainer should confirm.
 - **O23.** O15 and O17 have no clause case, since no corpus option registers an extension. The other points of the round of candidate 7 are decided by the ruling of 17 November, 13:55 (UPGRADING, "Rulings of 17 November 2026, 13:55").
+
+## Engine gaps from the parity ruling of 19 November
+
+- `carve-js`: `softBreak`, `allowLosses`, `maxLosses` and `positionOf` are not offered (CC-1235 to CC-1249, CC-1250 to CC-1271, CC-1287 to CC-1301). `codeBlockRenderer` is offered, but a result that is neither text nor nothing throws a `TypeError` where C2-H-207 asks for `CarveOptionError` (CC-1285). The option table of the engine names `codeBlockRenderer` outside `data/options.json`; it is a row there now. The upgrade tool has no entry for U-420 to U-422.
+- `carve-php` and `carve-rs`: all four features, on the reference engine's lead.

@@ -1,3 +1,7 @@
+---
+description: How the canonical writer decides where an escape is needed.
+---
+
 # Writer escaping strategy
 
 The 0.2 canonical writer chooses escapes by parsing a candidate spelling in its actual context. It starts with bare text, finds the leftmost construct that the intended tree does not contain, escapes that opener, and parses again. It also handles the small set of cases where a bare character prevents an intended node from forming. The procedure defines the canonical bytes; a fixed list of punctuation characters does not. See [writer escaping](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#escaping).

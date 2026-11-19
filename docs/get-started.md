@@ -1,3 +1,8 @@
+---
+title: Get Started
+description: Try Carve in the playground, then render it in your own project.
+---
+
 # Get Started
 
 Carve 0.2 is under development on the `next2` branches. Start with a `.crv` file and the reference JavaScript engine. Its command is `carve` (`node dist/cli.js` in a checkout), and the package root exports the 0.2 API.

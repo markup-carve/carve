@@ -1,3 +1,7 @@
+---
+description: How Carve treats tabs, trailing spaces and line endings so a document survives an editor save.
+---
+
 # Portable Whitespace
 
 Whitespace determines block starts and container ownership in Carve 0.2. These habits make a document easier to read and keep edits from changing nearby blocks. The exact rules are in [paragraphs and interrupters](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters) and [container ownership](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#container-ownership-and-stripping).

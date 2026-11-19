@@ -225,6 +225,9 @@ The explicit extension forms preserve their core fallback when no renderer is re
 | ID | What you wrote in 0.1 | 0.2 unchanged rendering | Write in 0.2 / tool |
 | --- | --- | --- | --- |
 | U-079 | Render options of the host | Host options must be reviewed | Review by hand; report |
+| U-420 | The soft break mode of the 0.1 PHP renderer, `SoftBreakMode::Newline`, `::Space` or `::Break` | A soft break is a line break unless the render option `softBreak` says `space` or `br` (C2-H-203) | Set `softBreak` to `newline`, `space` or `br`; none |
+| U-421 | The loss allow list of the 0.1 command line, `--allow-loss CODE` | The flag stays and sets the render and import option `allowLosses`, which a library host can now set too (C2-H-204, C2-T-027) | Pass the same codes as `allowLosses`; none |
+| U-422 | The 0.1 cap on retained losses, `maxRenderLosses` and `--max-render-losses`, default 100 | The flag stays and sets the option `maxLosses`, default 100; the others are counted in `suppressedDiagnostics` (C2-H-205, C2-T-029) | Pass the same count as `maxLosses`; none |
 
 #### New block shapes
 

@@ -1,3 +1,7 @@
+---
+description: The render, import, AST and format paths of the Carve 0.2 command line.
+---
+
 # Supported CLI paths
 
 The Carve 0.2 command line has one specified render target, HTML, and one specified import source, HTML. It also reads and writes versioned AST JSON and canonical Carve source through separate commands. The reference engine calls the program `carve`. See [commands](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#commands).

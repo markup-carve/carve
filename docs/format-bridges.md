@@ -1,3 +1,7 @@
+---
+description: Convert Carve to and from other formats through the AST and the HTML importer.
+---
+
 # Format conversion
 
 Carve 0.2 specifies a semantic AST and an HTML import path. It does not specify a Markdown, plain text, or ANSI writer. An application that needs another format should choose a bridge for that target, then check its losses. See [the AST interchange contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars), [HTML import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md), and [the removed paths](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#command-line-and-missing-features).
