@@ -60482,6 +60482,56 @@
     }
    },
    "from": []
+  },
+  {
+   "id": "CC-1367",
+   "clauses": [
+    "C2-B-034"
+   ],
+   "why": "Catalog djot-plus-bullet: a parsed paragraph line whose first character after its container prefixes and optional spaces and tabs is `+`, followed by spaces or tabs and a further character",
+   "summary": "a plus bullet after a quote marker is reported at the plus",
+   "kind": "lint",
+   "input": "> + x\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 1,
+      "column": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1368",
+   "clauses": [
+    "C2-B-034"
+   ],
+   "why": "Catalog djot-plus-bullet: a parsed paragraph line whose first character after its container prefixes and optional spaces and tabs is `+`, followed by spaces or tabs and a further character",
+   "summary": "a plus bullet in a list item body is reported at the plus",
+   "kind": "lint",
+   "input": "- a\n\n  + x\n",
+   "options": {
+    "rules": {
+     "djot-plus-bullet": "on"
+    }
+   },
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "djot-plus-bullet",
+      "line": 3,
+      "column": 3
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

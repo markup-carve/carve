@@ -586,7 +586,7 @@
       "messages": ["Djot/Markdown `+` bullet is not a Carve bullet, so this line is a paragraph. Write `-` or `*`."],
       "message_origin": "data_file",
       "change": "opt-in Djot check",
-      "reports": "a parsed paragraph line whose first character after optional spaces and tabs is `+`, followed by spaces or tabs and a further character, except a continuation row that the parser takes into a table (C2-B-175); once per line (C2-B-034, C2-B-175)",
+      "reports": "a parsed paragraph line whose first character after its container prefixes and optional spaces and tabs is `+`, followed by spaces or tabs and a further character, except a continuation row that the parser takes into a table (C2-B-175); once per line (C2-B-034, C2-B-175)",
       "clauses": ["C2-B-034", "C2-B-175"]
     },
     {
