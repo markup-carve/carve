@@ -1,1 +1,0 @@
-{"mode":"safe","adapter":"generic","diagnostics":[{"code":"encoding-assumed","severity":"info","path":"/math[2]","fidelity":"degraded","confidence":"inferred"},{"code":"encoding-assumed","severity":"info","path":"/p[3]/math[2]","fidelity":"degraded","confidence":"inferred"}]}

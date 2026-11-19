@@ -1,5 +1,0 @@
-See [^a].
-
--
-
-[^a]: note body

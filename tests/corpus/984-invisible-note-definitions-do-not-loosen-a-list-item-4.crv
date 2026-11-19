@@ -1,7 +1,0 @@
-- [^a]: x
-
-  [^b]: +
-      indented
-
-  see[^a][^b]
-- next

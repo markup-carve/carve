@@ -24,4 +24,4 @@ The [status page](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STAT
 
 Each clause has examples or cases in the [shared 0.2 corpus](https://github.com/markup-carve/carve/tree/next2/spec/0.2/conformance). The JSON tables in [`data/`](https://github.com/markup-carve/carve/tree/next2/spec/0.2/data) make closed sets such as options, limits and node shapes inspectable. A clause governs if its table row disagrees with it.
 
-For a reading order and implementation checks, see [Implementing Carve](./implementing-carve). For 0.1 source, use the [0.1 specification](https://github.com/markup-carve/carve/tree/main/resources/spec).
+For a reading order and implementation checks, see [Implementing Carve](./implementing-carve). For 0.1 source, use the [0.1 specification](https://github.com/markup-carve/carve/tree/0.1/resources/spec).

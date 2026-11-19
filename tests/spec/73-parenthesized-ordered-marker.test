@@ -1,9 +1,0 @@
-Parenthesized ordered marker
-
-```
-(1) First
-(2) Second
-.
-<p>(1) First
-(2) Second</p>
-```

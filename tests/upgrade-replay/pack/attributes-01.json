@@ -1,0 +1,4802 @@
+[
+  {
+    "id": "attributes-000ce3108871",
+    "source": "![alt](img.png){.x}\n={/a={k=b/}\n"
+  },
+  {
+    "id": "attributes-0018effd36a4",
+    "source": "- a\n\n  {.c}\n\n   b\n"
+  },
+  {
+    "id": "attributes-0018f6c97086",
+    "source": " -{.x1} a\n{.x}\n       ## h\n"
+  },
+  {
+    "id": "attributes-00364863a451",
+    "source": "[[t](/v)]{.c}\n\n"
+  },
+  {
+    "id": "attributes-003a76b060ab",
+    "source": "| |{.row}\n- [x] {# note #}done\n{.xx}\n"
+  },
+  {
+    "id": "attributes-008553ab008d",
+    "source": "This paragraph.\n"
+  },
+  {
+    "id": "attributes-00a01fe52b11",
+    "source": ":  def\na^[x]{.k}{.j} b\n[a]: /u {.c}\n# H\n[a][]\n"
+  },
+  {
+    "id": "attributes-00ec9187a71a",
+    "source": "This paragraph gets th{.c}e class.\n {.note}\n"
+  },
+  {
+    "id": "attributes-00fc1b8c9bb6",
+    "source": "+ [a]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-00fe142746ec",
+    "source": " $`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-010f798099a9",
+    "source": "- a\n\n  {.x}\ntail{\n"
+  },
+  {
+    "id": "attributes-014932d5468d",
+    "source": "  ![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-01fe679ce332",
+    "source": "\n[ </#x]> b]{.c}\n"
+  },
+  {
+    "id": "attributes-025289df2962",
+    "source": "\n![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-028c5a7f2ecc",
+    "source": "{%%%:fr}\n*y*{k=\"a\tb\"}\n{lang=de}\n"
+  },
+  {
+    "id": "attributes-029da9440005",
+    "source": ":widget[xx]{#i k=}\n"
+  },
+  {
+    "id": "attributes-029eb3243fda",
+    "source": "pra\n"
+  },
+  {
+    "id": "attributes-02b8f82be16d",
+    "source": "- a\n  - b\n^[x ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-02d824fa1265",
+    "source": "- a\n\n\n  {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-031e60c290f0",
+    "source": "1. {k==v}{+i+}\n{k==v}{+i+}\n"
+  },
+  {
+    "id": "attributes-0353016df81b",
+    "source": "{k=v}{+i+}{.c\n"
+  },
+  {
+    "id": "attributes-039947672a58",
+    "source": "- a\n\n  {.x}\n  ```\n  code\n  ````\n[a]: /u {.c}\n\n- c\n"
+  },
+  {
+    "id": "attributes-03dd9056d2b0",
+    "source": "[[a </#x~s~]> b]{.c}\n"
+  },
+  {
+    "id": "attributes-03e85bde5458",
+    "source": "b\"}\n*x*{k=\"a\n*x*{k=\"a\n"
+  },
+  {
+    "id": "attributes-03f127a36662",
+    "source": "[x]{.a.b}\n. \n- b\n{.x}\n"
+  },
+  {
+    "id": "attributes-041c194e97a5",
+    "source": ": ::: note\n- para\n- {#x}\n```\ncode\n:::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-04f018b91acb",
+    "source": "{}\n[x]{kkbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-0508af0c8272",
+    "source": "- a\n- \n    {.c}\n     - b\n"
+  },
+  {
+    "id": "attributes-05ea40e3c4b5",
+    "source": "+ a^[x]{.k}{.j} b\n"
+  },
+  {
+    "id": "attributes-06059a3d716a",
+    "source": "![a](/u){src=/v}\nA [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-061864bf92cb",
+    "source": "- {}a\n+\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-062ef6761cb2",
+    "source": "-  a\n\n  {.x}\n\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-0630a06a5ba8",
+    "source": "a^[x]{.k}{.j} b\na^[x]{.k}{.j} b\n"
+  },
+  {
+    "id": "attributes-066d7ce22719",
+    "source": "   # h\n1.{#k} {#h}\n"
+  },
+  {
+    "id": "attributes-06e3ff26804c",
+    "source": " [z](safe.html){title=\"See: RFC 3986, http://example.com\"}\n"
+  },
+  {
+    "id": "attributes-07a7918beade",
+    "source": "- text\n\n\n- [ ] x {#c#} y\n  [a]: /u {.c}\n^[fn]\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-07e25daf393b",
+    "source": ":: t\n:  d\n   {.k}\n-     # H\n"
+  },
+  {
+    "id": "attributes-08b1a8f26985",
+    "source": ":: t\n:  d\n  {.k}\n   # H\n"
+  },
+  {
+    "id": "attributes-08dc9c1467be",
+    "source": "1.{#k} %%%{#h}\n   # h\n\n   # h\n"
+  },
+  {
+    "id": "attributes-08e2fb34dae3",
+    "source": "/{^a/{=b^}\n"
+  },
+  {
+    "id": "attributes-08fe7bbce2ad",
+    "source": "- para\n::: note\n- {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-0905e3fb59b1",
+    "source": " `c`{#a .k}{#b k=1}{:  d.k k=2}\n"
+  },
+  {
+    "id": "attributes-090caa5e6dc6",
+    "source": "~s~\n[x]{k='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-09295b9d8cc1",
+    "source": "{#Plan}\n# Plan\n\n:  See </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-0931b90e8b33",
+    "source": "{+{#+}#}\n"
+  },
+  {
+    "id": "attributes-0934a1e4196d",
+    "source": "\n- a\na^[x]{.k}{.j} b\n. \n+\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-094e5c030dfb",
+    "source": "{.data}\n|= A = B |\n| 1  | 2  |\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-0a51527d865c",
+    "source": "{align=right}\n"
+  },
+  {
+    "id": "attributes-0a98cb219b35",
+    "source": "+ [x]{#k .key kbd}\n"
+  },
+  {
+    "id": "attributes-0af065767499",
+    "source": "{```+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-0b05d7f489da",
+    "source": "[x]{k='a\\\\b'}\n*b*\n"
+  },
+  {
+    "id": "attributes-0b927ee7308d",
+    "source": "\na^[x]{.k}{.j} b\n"
+  },
+  {
+    "id": "attributes-0c50d70ff044",
+    "source": "[a </#x]> [r][d]b]{.c}\n"
+  },
+  {
+    "id": "attributes-0c5178e55fa2",
+    "source": "[[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-0c59f40c3b0a",
+    "source": "``\na^[x]{.k}{.j} b\n"
+  },
+  {
+    "id": "attributes-0c5def2da656",
+    "source": "para {.c} more\npara {.c} more\n"
+  },
+  {
+    "id": "attributes-0cec9f76e3e8",
+    "source": "![Apollo 11](apollo.jpg{.hero}\n^ Figure 1: Fir:: tst moon landing\n"
+  },
+  {
+    "id": "attributes-0d0fd3bb41cc",
+    "source": "{#raw-heading}\n[d]:u\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-0d764d0464a2",
+    "source": "{#fig-x .columns-2}\n ::: f{igure\n{#fig-x-a}\n![one](a.png)\n^ (a) One\n\n{#fig-x-b}\n![two](b.png)\n^ (b) Two\n:::\n^ Figure #: Group caption\n"
+  },
+  {
+    "id": "attributes-0d89b0b59de4",
+    "source": "| a | b |\n{:fr}\n{lang=de}\nText\n"
+  },
+  {
+    "id": "attributes-0d9d05ac6fd5",
+    "source": "|={.total} Total |= 99 |\n|={.total} Total |= 99 |\n|{~ .x} |\n| a | b |\n"
+  },
+  {
+    "id": "attributes-0da8fe0ccea6",
+    "source": "*x*{.a .b}\n\n\n\n*z*{.d }\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-0de2a03ec1d7",
+    "source": "- a\n+\n{.x}\n> q\n*b*- c\n"
+  },
+  {
+    "id": "attributes-0df06d3610eb",
+    "source": "- a\n  - b\n  +\n  {.x}\n  ```\n code\n  ```\n"
+  },
+  {
+    "id": "attributes-0e268a129f1d",
+    "source": "[labl]{key=c .a #b}{\n"
+  },
+  {
+    "id": "attributes-0e29fdaf39bc",
+    "source": "> q\n\n[x]{class=w/i/-1/2 .bar}\n"
+  },
+  {
+    "id": "attributes-0e5ef3141286",
+    "source": "> a\n> > {..c}\n  > tex\n"
+  },
+  {
+    "id": "attributes-0ea0fc15df0f",
+    "source": "{#fig-x .columns-2}\n::: figure\n{#fig-x-a}\n![one](a.png)\n^ (a) One\n\n{#fig-x-b}\n![two](b.png)\n^ (b) Two\n   :::\n ^ Figure #: Group caption\n"
+  },
+  {
+    "id": "attributes-0eab00e6c318",
+    "source": "-{#k} a\n # h| a | b |\n"
+  },
+  {
+    "id": "attributes-0f1f0ca96491",
+    "source": "- a\n\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-0f5656f87b7e",
+    "source": "- t\n  {.c}\n  %% c\n  x\n   ````\n"
+  },
+  {
+    "id": "attributes-0f614cbad50f",
+    "source": "[a]{k=\"t\\zu\"}\n[a]{k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-0f72af12aed0",
+    "source": "|= A |= B |\n| 1  | 2  |\n [y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-0fff27f47002",
+    "source": "[x]{k='a\\\\b'}\n---\n\n"
+  },
+  {
+    "id": "attributes-1056aaa66597",
+    "source": "- t\n- t\n\n  {.c}\n  %% c\n   ````\n  x\n"
+  },
+  {
+    "id": "attributes-10b07d1b58b6",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n \n\n[r: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-10c9a88ac8f1",
+    "source": "  [x]{.a.b}\n"
+  },
+  {
+    "id": "attributes-11b40f0494f3",
+    "source": "{#fig-x .columns-2}\n::: figure\n{#fig-x-a}\n![one](a.png)\n^ (a) One\n\n{#fig-x-b}\n![two](b.png)\n^ (b) Two\n- :::\n^ Figure #: Group caption\n"
+  },
+  {
+    "id": "attributes-11f0f29ad283",
+    "source": "> /{^a/{kb^}\n"
+  },
+  {
+    "id": "attributes-1200ed10cc27",
+    "source": "[x]{k=:  d'{y}'}\n"
+  },
+  {
+    "id": "attributes-123d619c309d",
+    "source": "- b\n%%%{.x\n"
+  },
+  {
+    "id": "attributes-129377cdf322",
+    "source": "[z](safe.html){title=\"Se: RFC 3986, http://example.com\"}\n| a | b |\n"
+  },
+  {
+    "id": "attributes-129d7045724f",
+    "source": "This paragraph gets the class.\n{.note}\n"
+  },
+  {
+    "id": "attributes-12b13963baf2",
+    "source": " {#poem .verse}\n::: |\n: Roses are red,\n  Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-132a7165773e",
+    "source": ":: t\n:: t\n:  d\n   {.k}\ntail\n*b*\n"
+  },
+  {
+    "id": "attributes-132cf9e8229d",
+    "source": "  - ![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-133b063282f9",
+    "source": "{#_id ._c _k=1 _=\"on cliick\"}\npara\n\tpara\n"
+  },
+  {
+    "id": "attributes-133cbdff6f68",
+    "source": "- a\n+\n {.x}\n- c\n\n"
+  },
+  {
+    "id": "attributes-1355bdadf868",
+    "source": "-::: note{#k} a\n  # h\n"
+  },
+  {
+    "id": "attributes-1380899e87a9",
+    "source": "- - [ ] x {#c#} y\n  - [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-144873640d77",
+    "source": "> - [ ] x {#c#} y\n> - [ ] x {#c#} y\n  - [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-144dc808f390",
+    "source": " [x]{.a!b}\n"
+  },
+  {
+    "id": "attributes-1483d1132796",
+    "source": "_*a*{title=\"_\"} b_\n_*a*{title=\"_\"} b_\n"
+  },
+  {
+    "id": "attributes-14930207f987",
+    "source": "|{~ .:  dx} |\n"
+  },
+  {
+    "id": "attributes-14d0e9b3116e",
+    "source": "+ [y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n [y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-1515ee520e5d",
+    "source": "- a\n  {.k}\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-15448ed23541",
+    "source": "  {.c}\n  %% c\n   ````\n  x\n"
+  },
+  {
+    "id": "attributes-1588b8e99ab4",
+    "source": "={/a={k=b/}\n[x]{samp} [y]{dfn=\"a term\"}\n"
+  },
+  {
+    "id": "attributes-15ba56a5bee2",
+    "source": "{#inst*b*all .featured}\n## Setup\n"
+  },
+  {
+    "id": "attributes-1621696312a3",
+    "source": " *[A]: b[a]{k=\"t\\zu\"}\na.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-1652d2e3964e",
+    "source": "# Plan\n{#Plan}\n1. \n    See </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-1654350e8eff",
+    "source": "{#a </#x#}> b#}\n\n"
+  },
+  {
+    "id": "attributes-166c47681c1c",
+    "source": ":: t\n:  d\n   {.k}\n  # H\n"
+  },
+  {
+    "id": "attributes-168007d9feb7",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n- \n[x]kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-16a20f1f9af7",
+    "source": ">> \n| a | b |\n|={.total} Total |= 99 |\n"
+  },
+  {
+    "id": "attributes-16b32e2419d9",
+    "source": "![a]((safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-16e7f82541e3",
+    "source": "{.c\n{#raw-heading}\n# a `x %% b`{=html} c\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-171a77d355b8",
+    "source": "{}\n*[HTML]: Long Form\nThe [HTM]{.x} key.\n"
+  },
+  {
+    "id": "attributes-17adc20985fb",
+    "source": "{:fr}\n{lang=de}\nText\n  {.c}\n\nTexxt\n"
+  },
+  {
+    "id": "attributes-17c5f6c948d7",
+    "source": "//{^a/{k=b}\n"
+  },
+  {
+    "id": "attributes-183379c72a7f",
+    "source": "> - - a\n \n    {.x}\n\ntail\n"
+  },
+  {
+    "id": "attributes-18a0492e6aa0",
+    "source": "para .c} more\n"
+  },
+  {
+    "id": "attributes-18d7a965e7da",
+    "source": "[x]{oclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-196128991ac5",
+    "source": " 1.{#k} {#h}\n   # h\n"
+  },
+  {
+    "id": "attributes-196153641977",
+    "source": " {.x}\n- \n|={.total} Total |= 99 |\n| a | b |\n"
+  },
+  {
+    "id": "attributes-19804520f330",
+    "source": "- a\nA [danger]{srcdoc=\"<script>\"} span.\n\n  {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-19e19bf7e13e",
+    "source": "{##a </#x#}> b#}\n"
+  },
+  {
+    "id": "attributes-19e95d6b92c9",
+    "source": "# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n## Setup\n\n## Setup\n\n{#api-v2}\n# API\n\n: See </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-19fb1ba161b6",
+    "source": "{align=right}\nAligned text..\n\n"
+  },
+  {
+    "id": "attributes-1a06e777fda5",
+    "source": "Launch :rocket:{.ig} now.\n"
+  },
+  {
+    "id": "attributes-1a142e08d24f",
+    "source": "[a]{title=\"`\"} and [n](u)\n  \n  {% a ` %}[n](u)\n  \n[m](u`) and [m](`v) and [n](w)\n``\n"
+  },
+  {
+    "id": "attributes-1a571de5386f",
+    "source": "[label]{key=c .a #b}\n[label]{key=c .a #b}\n"
+  },
+  {
+    "id": "attributes-1a789c1fda95",
+    "source": "={/a={k=bb/}\n> \n"
+  },
+  {
+    "id": "attributes-1ada3061418f",
+    "source": "\t[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-1b1658d772de",
+    "source": "+ ![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n+ ![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-1b3cf072b49d",
+    "source": "-{#k} {#h}\n  # hh\n"
+  },
+  {
+    "id": "attributes-1b4243e8c16b",
+    "source": "Para\n{.class}\n\n  Next\n"
+  },
+  {
+    "id": "attributes-1b7cce33f5af",
+    "source": " {_x _b_t=a_}\n"
+  },
+  {
+    "id": "attributes-1bc2faf28b5a",
+    "source": "{k=\"{y}\"}\n- # H\n"
+  },
+  {
+    "id": "attributes-1bd679982ef6",
+    "source": "::::\nText[^a]{.ref}.\n\n[^a]: note.\n"
+  },
+  {
+    "id": "attributes-1ced990a5809",
+    "source": "1. [x] {% c %}{.k}\n"
+  },
+  {
+    "id": "attributes-1cfa74fb57a2",
+    "source": "[^f]para {.c} moore\n:  d\n   {.k}\n"
+  },
+  {
+    "id": "attributes-1daa9aa787f7",
+    "source": "-{#k} a\n"
+  },
+  {
+    "id": "attributes-1e3c0e0ffa9e",
+    "source": "- a\n+\n>> q\n- c\n"
+  },
+  {
+    "id": "attributes-1e555185f9bf",
+    "source": "\n{#install .featured}\n: ## Setup\n"
+  },
+  {
+    "id": "attributes-1e7131747b59",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{title=\"a b\"}\n[x]{title=\"a b\"}\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-1f187c7ea078",
+    "source": "++ \n> {a=b .c}\n> # Auto\n\n> {#x a=b}\n> # Written\n\n:::\n{a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-1f3627cb2ad4",
+    "source": "![a](/u){src=/v}\n  # h\n_*a*{title=\"_\"} b__\n"
+  },
+  {
+    "id": "attributes-1f46c72e5161",
+    "source": "[d]: u\n- a\n+\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-1f6c5d3b4aea",
+    "source": "*x*{.a .b}\n\n*y*{ .c}\n\n\n\n*z*{.d }\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-1fafa9d39ec5",
+    "source": "p\n{k=\"a\\}b\"}\n"
+  },
+  {
+    "id": "attributes-200d035d831d",
+    "source": ":: t\n:  d\n  {.kk}\ntail\n"
+  },
+  {
+    "id": "attributes-201d985cb2f9",
+    "source": ": [a]{k='t\\zu'}\n"
+  },
+  {
+    "id": "attributes-205aca5e113c",
+    "source": "-{#} text\n # ::: |h\n"
+  },
+  {
+    "id": "attributes-20716744bb68",
+    "source": "A danger]{srcdoc=\"<script>\"} span.\n"
+  },
+  {
+    "id": "attributes-211358948c58",
+    "source": "{align=righ}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-21513885c9c6",
+    "source": "\n[a]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-216b22e56a35",
+    "source": "-{#k} text\n  {.k}\n # h\n"
+  },
+  {
+    "id": "attributes-21964a91e856",
+    "source": "`c`{#a .k}{#b k=1}{.k k=2}\n_u_\n"
+  },
+  {
+    "id": "attributes-21a0925f7146",
+    "source": "{#_id ._c _k=1 _=\"on click\"}\npra\n"
+  },
+  {
+    "id": "attributes-21b6185433ce",
+    "source": "*x*{.a .b}\n\n*y*{ .c}\n\n*z*{.d }\n\n[w]{ }\n_*a*{t=\"_\"} b/{t=c_}\n"
+  },
+  {
+    "id": "attributes-21c9ba26597a",
+    "source": " - > - para\n   >   {#x}\n tail\n\n"
+  },
+  {
+    "id": "attributes-21cfb2f1846f",
+    "source": "# a `x %% b`{=html} c\n{#raw-heading}\n{#raw-heading}\n"
+  },
+  {
+    "id": "attributes-222a798154b4",
+    "source": "\nText[^a]{.ref}.\n\n[^a]: notee.\n"
+  },
+  {
+    "id": "attributes-224e3086c9db",
+    "source": "{#ins!`z`tall .featured}\n## Setup\n"
+  },
+  {
+    "id": "attributes-22718338efde",
+    "source": "{.note}\n{k=\"v\"}\nThis paragraph gets the class.\n\n"
+  },
+  {
+    "id": "attributes-229493cfed0d",
+    "source": ":::\n- > - para\n  >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-2326d572efc2",
+    "source": "\n[x] {% c %}{.k}\n"
+  },
+  {
+    "id": "attributes-2329320f7c54",
+    "source": ":widget[x]{#i k=v}\n:widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-2363a8d6ae2a",
+    "source": "- a\n \n  {.x}\n  ```\n  code\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-23cc63bd18a2",
+    "source": " > {a=b .c}\n>{k=v} # Auto\n\n> {#x a=b}\n> # Written\n \n:::\n{a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-23e90097ae92",
+    "source": "1.{k} {#h}\n1.{k} {#h}\n    # h\n"
+  },
+  {
+    "id": "attributes-2425e8af37ff",
+    "source": "a ^[d]: uu[t{# ] #}z]--- b\n"
+  },
+  {
+    "id": "attributes-24805abeb990",
+    "source": "[a]: /u \t{.c}\n\n+ [a][]\n"
+  },
+  {
+    "id": "attributes-248d5eb3dc8d",
+    "source": "[z](safe.html){title=\"See: RFC 3986, http://examplee.com\"}\n[z](safe.html){title=\"See: RFC 3986, http://examplee.com\"}\n"
+  },
+  {
+    "id": "attributes-24a3ad6f0d81",
+    "source": "[a]]: /u {.c}\n[a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-24b3ebe8bfaf",
+    "source": "Text[^a]{{.reef}.\n\n[^a]: note.\n"
+  },
+  {
+    "id": "attributes-24da9eddb69b",
+    "source": "[x]{#k .key kbd}\n[x]{#k .key kbd}\n"
+  },
+  {
+    "id": "attributes-24f6ec8c5641",
+    "source": "|{~ x} |\n"
+  },
+  {
+    "id": "attributes-250f1e9097eb",
+    "source": "  # h\n{.data}\n|= A |= B |\n"
+  },
+  {
+    "id": "attributes-257459ed7fb4",
+    "source": "{#lst-greet}\n```python\ndef greet():\n    return 1\n```\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-25e10da497a7",
+    "source": ":: t\n ![alt](img.png){.x}\n"
+  },
+  {
+    "id": "attributes-26032689be4e",
+    "source": "#tag\n{k=\"{y}\"}\n# H\n"
+  },
+  {
+    "id": "attributes-261edb21a2cf",
+    "source": "*x*{.rea#tagl}\n"
+  },
+  {
+    "id": "attributes-26a40d23e5ed",
+    "source": "{#lst-greet}\n```pytho\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-27028365c056",
+    "source": "::: note\n- {#x}\ncode\n```\n\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-27366306caf3",
+    "source": "- text\n\n  [a]: /u {.c}\n\n [a][r][d][]\n"
+  },
+  {
+    "id": "attributes-274469a36afb",
+    "source": "p[^f]: t\np[^f]: t\n"
+  },
+  {
+    "id": "attributes-27485dee9446",
+    "source": ":: term\n:  def\n\t[a]: /u {.c}\n\t\n\t[a][]\n"
+  },
+  {
+    "id": "attributes-2861d7e2d919",
+    "source": "!alt](img.png){.x}\n"
+  },
+  {
+    "id": "attributes-2862ad1c55f0",
+    "source": "\nA [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-286a9db43e51",
+    "source": " [some text]{.highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-288050a0414a",
+    "source": ":: t\n:  d\n   {.k}\n   # H\n\n"
+  },
+  {
+    "id": "attributes-289e2fff63d6",
+    "source": "\na.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-28bee90ba99b",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n+ [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-28d089756b2f",
+    "source": "[x]{.a.b}\n[x]{.a.b}\n"
+  },
+  {
+    "id": "attributes-2908ec43e6e2",
+    "source": "{#_id .._c _k=1 _=\"on click\"}\n"
+  },
+  {
+    "id": "attributes-292b9b084059",
+    "source": "::: note\n- para\n- para\n   {.c}\n   - b\n- {#x}\n```\ncode\n::::\n :::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-29513d1a1b34",
+    "source": ":  d\n ^[x ^[a]{.c} b]\n ^[x ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-296ba64bc2a9",
+    "source": "[x]{.a!b}\n- > - para\n^ c[d]: uap\n  >   {#x}\n"
+  },
+  {
+    "id": "attributes-296bbe64c000",
+    "source": ":::\nA  plain box.\n :::\n\n{#s .sidebar}\n- :::\n  A div with attributes.\n:::\n"
+  },
+  {
+    "id": "attributes-2999c630ada4",
+    "source": "|={.total}Total |= 99 |\n | a | b |\n | a | b |\n"
+  },
+  {
+    "id": "attributes-29a478d9c539",
+    "source": "- [ ] x {#c#} y\n"
+  },
+  {
+    "id": "attributes-29e69cb3b4a3",
+    "source": "- a\n\n    {#x}\n  - c\n"
+  },
+  {
+    "id": "attributes-29e78226de11",
+    "source": "- > para\npara {.c} more\n  >  {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-29fe5e8b5307",
+    "source": "\n[[t](/v)]{c}\n"
+  },
+  {
+    "id": "attributes-2a32e0304c26",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n: [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-2a668eb2dac9",
+    "source": "- a\n\n\n  {.x}\n::::tail\n"
+  },
+  {
+    "id": "attributes-2ab8c4bef117",
+    "source": "[{#a]#}\n{#a </#x#}> b#}\n[x]{k='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-2abbd825d5d3",
+    "source": "[z](safe.html){title=\"See: RFC 3986, http://exa{}mple.com\"}\n[z](safe.html){title=\"See: RFC 3986, http://exa{}mple.com\"}\n"
+  },
+  {
+    "id": "attributes-2afe4202d100",
+    "source": "a [t[^1]{##z}][r] [^1]{#y}\n\n[r]: /u\n\n[[^1]: n\n"
+  },
+  {
+    "id": "attributes-2b169b8808f0",
+    "source": "[a]{title=\"`\"} and [n](u)\n\n{% a ` %}[n](u)\n::: note\n\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-2b488986d36c",
+    "source": " [x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-2b5c0dda36c1",
+    "source": "\n*[HTML]$`x`: Long Form\n\nThe [HTML]{.x} key.\n"
+  },
+  {
+    "id": "attributes-2b6a2bb448b5",
+    "source": "A   [danger]{srcdoc=\"<script>\"} span.\n\n"
+  },
+  {
+    "id": "attributes-2b756b2beefd",
+    "source": ":: t\n: :  d\n{.k}\ntail\n"
+  },
+  {
+    "id": "attributes-2b77986c20cb",
+    "source": "- a\n\n*[A]: b\n  {.c}\n b\n"
+  },
+  {
+    "id": "attributes-2bc0663cf91f",
+    "source": "[<htt{}ps://e.com>]{.c}\n"
+  },
+  {
+    "id": "attributes-2bdeb98398e8",
+    "source": "- > - para\n >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-2be611e7005f",
+    "source": "{_x _b_{t=a_}\n{_x _b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-2c8c1c523fac",
+    "source": "       # h\n"
+  },
+  {
+    "id": "attributes-2c90cd935830",
+    "source": "\n[x]{k=='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-2c922a5b4895",
+    "source": " ![a](sfe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-2ccb738d0f9c",
+    "source": "[x]{.a#i}\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-2cf3335d8ef6",
+    "source": "{:fr}\nSee </#Plan> and </#plan>.\n{lang=de}\n"
+  },
+  {
+    "id": "attributes-2d3b83d8bf85",
+    "source": "+ /{^a/{k=b^}\n"
+  },
+  {
+    "id": "attributes-2da49f3ec8ed",
+    "source": "/{^a/{kb^}\n"
+  },
+  {
+    "id": "attributes-2dc8033ee16e",
+    "source": "``````x\ncode\n- a\n  | a | b |- b\n    {#x}\n  - c\n"
+  },
+  {
+    "id": "attributes-2e76a24f3185",
+    "source": "[a]: /u \t{.c}\n\n: [a][]\n"
+  },
+  {
+    "id": "attributes-2ea1cc1cae94",
+    "source": "[]{k=</#h>'t\\zu'}\n"
+  },
+  {
+    "id": "attributes-2ee745b675f9",
+    "source": "\n:: t\n:  d\n   {.k}\n_*a*{t=\"_\"} b/{t=c_}\ntail\n"
+  },
+  {
+    "id": "attributes-2f1a75b55684",
+    "source": "  {k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-2f936812f8ee",
+    "source": "[label]{key=c .a #b}\n:: t\n:  d\n   {.k}\n   # H\n```\n"
+  },
+  {
+    "id": "attributes-2fa66e0dff45",
+    "source": "[*Ctrl*+C]{#cop*b*y .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-2fd387d53b43",
+    "source": " {..note}\n This paragraph.\n"
+  },
+  {
+    "id": "attributes-300a05cf65eb",
+    "source": "{#fig-x .columns-2}\n::: figur\n{#fig-x-a}\n![one](a.png)\n^ (a) One\n\n{#fig-x-b}\n![two](b.png)\n^ (b) Two\n:::\n^ Figure #: Group caption\n"
+  },
+  {
+    "id": "attributes-300eb6e0d0e1",
+    "source": "{align=rihtt}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-3012b6f25a7a",
+    "source": ":: t\n{k=\"a\\\\}b\"}\n"
+  },
+  {
+    "id": "attributes-303047daca58",
+    "source": " ![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-3044d6b8b493",
+    "source": "- t\n    {.c}\n  %% c\n   ````\n  x\n"
+  },
+  {
+    "id": "attributes-3051ad925d22",
+    "source": " {.note}\n This para```xgraph.\n This para```xgraph.\n[z](safe.html){title=\"See: RFC 3986, http://example.com\"}\n"
+  },
+  {
+    "id": "attributes-30c18f7ef2e7",
+    "source": "A [danger]{style=\"x:expression(steal())\"} span.\n{#i}\n"
+  },
+  {
+    "id": "attributes-30cb570dae84",
+    "source": "::: note\n  - para\n  - {#x}\n```\n[^f]:tcode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-3201c364a44c",
+    "source": "- > para\n+   >  {#x}\n  tail\n"
+  },
+  {
+    "id": "attributes-32118d64e444",
+    "source": "Text[^a]{.ref> }.\n\n[^a]: note.\n"
+  },
+  {
+    "id": "attributes-326d7931cabd",
+    "source": "/_a_{t=\"/\"{.c} b*{t=c/}\n/_a_{t=\"/\"{.c} b*{t=c/}\n"
+  },
+  {
+    "id": "attributes-328eaa72c86b",
+    "source": "\n[a]: /u {.c}\n\n[^f]\n[a][]\n"
+  },
+  {
+    "id": "attributes-3297c11282f2",
+    "source": "![alt](iimg.png){.x}\n"
+  },
+  {
+    "id": "attributes-32e4f23054eb",
+    "source": "*x*{k=\"a\n*x*{k=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-33300bc15742",
+    "source": "{.x}> _*a*{t=\"_\"} b/{t=c_}\n"
+  },
+  {
+    "id": "attributes-337c466312c6",
+    "source": "A [danger]{style=\"x:expression(steal())\"} span.\n- a\n  {.x}\n{#i}\n  para\n"
+  },
+  {
+    "id": "attributes-33a32f46f8da",
+    "source": "- /_a_{{t=\"/\"} b*{t=c/}\n"
+  },
+  {
+    "id": "attributes-33bbfdbd25fe",
+    "source": "- a\n  {.k}\n  code\ntail\n  ```\n"
+  },
+  {
+    "id": "attributes-33f02e8ff018",
+    "source": "A [danger]{srcdoc=\"<script>\"} span.\n- a\n\n* \n"
+  },
+  {
+    "id": "attributes-346bda587b6d",
+    "source": "[x]{class=w1/2 .bar}\n"
+  },
+  {
+    "id": "attributes-3488141ed144",
+    "source": "+  _**a*{t=\"_\"} b/{t=c_}\n"
+  },
+  {
+    "id": "attributes-34e790b41e42",
+    "source": "*x*{.a .b}\n+ \n+ *y*{ .c}\n*z*{.d }\n\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-352c4ea2913a",
+    "source": "![a](safe.png){srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\n- b\n{{.x}\n"
+  },
+  {
+    "id": "attributes-358d1c5c6992",
+    "source": "{#install .featured}\n\t\n## Setup\n"
+  },
+  {
+    "id": "attributes-35d7536d9906",
+    "source": "*x*{k=\"a\nbb\"}\n"
+  },
+  {
+    "id": "attributes-35fcf794a36c",
+    "source": "- text\n  [a]: /u {.c}\n\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-3649f758a254",
+    "source": "# a `x %% b`{=html} c\n+ _*a*{title=\"_\"} b_\n[l](u)\n"
+  },
+  {
+    "id": "attributes-36ccb8e114ec",
+    "source": "| </#h>|{.row}\n"
+  },
+  {
+    "id": "attributes-36ef379bf00e",
+    "source": ":::\n$`x`\n{#raw-heading}\n# a `x %% b`{=html} c\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-37498c70e93a",
+    "source": "\n|{#x} < content |\n"
+  },
+  {
+    "id": "attributes-3762d84dd90d",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n\t\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-3785c8c1fa98",
+    "source": " *x*{k=a\t.b}\n\n\n*y*{k=\"a\tb\"}\n"
+  },
+  {
+    "id": "attributes-379ad49707fb",
+    "source": "p\n\n"
+  },
+  {
+    "id": "attributes-37a4145c228e",
+    "source": "[x]{class=w-1/2 .bar}\n\n"
+  },
+  {
+    "id": "attributes-381050912031",
+    "source": "- > - para\n   >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-3888ecaf8e01",
+    "source": " - > para\n\n  >  {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-389cd671f2cf",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n|{#x} < content |\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-38a02e0d4cf3",
+    "source": "The [HTML]{.x} key.\n*[HTML]: Long Form\n"
+  },
+  {
+    "id": "attributes-38c4ff2d3265",
+    "source": "\n_*a*{title=\"_\"} b_\n_*a*{title=\"_\"} b_\n"
+  },
+  {
+    "id": "attributes-38ffa50b6897",
+    "source": "[x]{onclick=\"steal()\"}\n\n"
+  },
+  {
+    "id": "attributes-391b2b7cc40e",
+    "source": " *x*{=\"1. a\nb\"}\n"
+  },
+  {
+    "id": "attributes-394af7d8d0e1",
+    "source": "\nPara\n- {.class}\n  \n  Next\n"
+  },
+  {
+    "id": "attributes-3986434595ba",
+    "source": "[some text]{.highlight #note key=val}\n[some text]{.highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-3a01a12bf671",
+    "source": "nota div\n::: {.x}\n"
+  },
+  {
+    "id": "attributes-3a10583b760d",
+    "source": "*x*{.a .b}\n\n*y*{k=\"a\tb\"}\n*y*{ .c}\n\n*z*{.d }\n\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-3a2216af4c37",
+    "source": "- a\n\n   {.c}\n   - b\n\n"
+  },
+  {
+    "id": "attributes-3a309339832c",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n@user\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-3a64e9a2e2d2",
+    "source": "[some text]{.highlight #note ke=val}\n"
+  },
+  {
+    "id": "attributes-3a70001b1f9c",
+    "source": "-{#~s~k} a\n # h\n"
+  },
+  {
+    "id": "attributes-3a853f9edc5d",
+    "source": "![a](/u){src=v}\n"
+  },
+  {
+    "id": "attributes-3a86ce1d58e7",
+    "source": "- a\n   {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-3ac1f3947882",
+    "source": "[x]{title=\"a b\"}\n[a]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-3b3b1d2f1222",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\n{\nconst x = 1\n\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-3b47b456d02d",
+    "source": "- a\n\n  {.x}\n[^f]: t\n\n\ntail\n"
+  },
+  {
+    "id": "attributes-3b4c761e22e5",
+    "source": "[<httpss:://e.com>]{.c}\n[<httpss:://e.com>]{.c}\n"
+  },
+  {
+    "id": "attributes-3b6efcd88a2a",
+    "source": "Launch :rockket:{.big} now.\n"
+  },
+  {
+    "id": "attributes-3b8b0b96bf57",
+    "source": "Para\n{.class}\n{.class}\n|={.total} Total |= 99 |\n| a | b |\n\nNext\n\t\n"
+  },
+  {
+    "id": "attributes-3bdbfa4be661",
+    "source": " :  def\n[a]: /u {.c}\n\n[a]]\n"
+  },
+  {
+    "id": "attributes-3bee0d772014",
+    "source": "![a](safe.png){srcset={#i}\"safe.png 1x, javascript:alert(1) 2x\"}\n"
+  },
+  {
+    "id": "attributes-3bfe182a16d0",
+    "source": "*x*{k$`x`=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-3cb0cccba812",
+    "source": "{k=\"{y}\"}\n#  H\n- a\n\n[{#a]#}\n"
+  },
+  {
+    "id": "attributes-3cf20fbfce33",
+    "source": "| ||{.row}{.c\n"
+  },
+  {
+    "id": "attributes-3cfef42a936b",
+    "source": "{#_id ._c _k=1 _=\"on click\"}\nparra\n"
+  },
+  {
+    "id": "attributes-3d164b53be2c",
+    "source": "[some :::text]{.hhighlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-3d724592bc4f",
+    "source": "- text\n\n  [a]: /u {.c}\n\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-3d8d2bcd0f81",
+    "source": " - [ ] x {#c#} y\n\t\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-3db90e9177fd",
+    "source": "|=={~~ .x} |\n"
+  },
+  {
+    "id": "attributes-3dd3f21eeaf9",
+    "source": "# Plan\nSee </#Plan> and </#plan>.\n{#Plan}\n"
+  },
+  {
+    "id": "attributes-3dd67fe4cbb6",
+    "source": "- t\n  %% c\n   ````\n  x\n- [ ] x {#c#} y\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-3e2de04c71bd",
+    "source": ":::{}\n[x]1. {k='{y}'}\n"
+  },
+  {
+    "id": "attributes-3e48ab06ddfd",
+    "source": "Text[^a]{.ref}.\n^[f```n]\n\n[^a]: note.\n"
+  },
+  {
+    "id": "attributes-3e4bf522895f",
+    "source": ":  d\na.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-3ea8ee96c39c",
+    "source": " # h\n"
+  },
+  {
+    "id": "attributes-3efa931a64e1",
+    "source": "~~~\n{align=right}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-3f35c7ad21de",
+    "source": "{k=v}{+i+}\n{k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-3f3e0830faf1",
+    "source": "- > - para\n  >   {#x}\n  >   {#x}\ntail::::\ntail\n"
+  },
+  {
+    "id": "attributes-3f5062ab0e65",
+    "source": "{k=a\\}b\"}\np\n"
+  },
+  {
+    "id": "attributes-3fc3f9e0cef1",
+    "source": "> \n| |{.row}\n| |{.row}\n"
+  },
+  {
+    "id": "attributes-3ffac658a73d",
+    "source": "![alt](img.png){.x}\n![alt](img.png){.x}\n![alt](img.png){.xx}\n"
+  },
+  {
+    "id": "attributes-40109041fb8f",
+    "source": "[y](safe.html){piing=\"\"safe.html javascript:alert(1)\"}\n[l](u)\n"
+  },
+  {
+    "id": "attributes-404e00830e04",
+    "source": "- a\n  {.x}\n  ara\n  ara\n"
+  },
+  {
+    "id": "attributes-40785f1dd0e1",
+    "source": "\n![a](safe.png){srcset=\"safe.png 1x, javascrpt:alert(1) 2x\"}\n"
+  },
+  {
+    "id": "attributes-4096c99334a5",
+    "source": "{.data}\n|= A |=B |\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-40ab7bb8b947",
+    "source": " - a\n{.x}\n+\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-40b60ec72731",
+    "source": ">  This paragraph.\n"
+  },
+  {
+    "id": "attributes-40ca1d85fdbf",
+    "source": " ![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-418e0d4ac86a",
+    "source": "-{#} a*b*\n  # h\n"
+  },
+  {
+    "id": "attributes-421873350889",
+    "source": "[x]{k='{y}'}\n\n"
+  },
+  {
+    "id": "attributes-421b20c5c824",
+    "source": "\n- a\n- a\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-42210dd60ea4",
+    "source": "|{#x} < cotent |\n"
+  },
+  {
+    "id": "attributes-4239dc2166b8",
+    "source": "-{.x1} a\n      # h\n"
+  },
+  {
+    "id": "attributes-43b9a5195992",
+    "source": "# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n## Setup\n\n### Setup\n\n{#api-v2}\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-43ffa7a258ef",
+    "source": "{k=v}{+i+}\n        # h\n-{.x1} a\n"
+  },
+  {
+    "id": "attributes-441561da744c",
+    "source": "> [z](safe.html){title=\"S|= a |= b |ee: RFC 3986, http://example.com\"}\n"
+  },
+  {
+    "id": "attributes-443e433b5804",
+    "source": "::: {.x}\nnt a div\n\n:::\n"
+  },
+  {
+    "id": "attributes-4469c213c00d",
+    "source": "{#fig-m}\n  [a]: /u {.c}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-447e1387d15c",
+    "source": "::: note\n- {#x}}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-44a5e8487722",
+    "source": "^[fn]x*{.real}\n"
+  },
+  {
+    "id": "attributes-44b7b88ed868",
+    "source": " - > - para\n  >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-44c4fa90d885",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n- [r]: /u\n- \n- [^1]: n\n"
+  },
+  {
+    "id": "attributes-44f3907ab46f",
+    "source": "[a]: /u \t{.c}\n\n- b\n{..x}\n"
+  },
+  {
+    "id": "attributes-450119d9e6b2",
+    "source": "{k=v}{++}\n"
+  },
+  {
+    "id": "attributes-452b1ffd67e3",
+    "source": "\n  {.x}\n   ```\n  codde\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-45f077966218",
+    "source": ": Launch :cket:{.big} now.\n"
+  },
+  {
+    "id": "attributes-45fec31b7b5f",
+    "source": "---\n- text\n\n  [a]: /u {.c}\n\n[a][]\n\n"
+  },
+  {
+    "id": "attributes-4630b3439747",
+    "source": "[x]{a#i}\n"
+  },
+  {
+    "id": "attributes-46477525c1f1",
+    "source": "![a]](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-46955dabedd9",
+    "source": "`\n|{~ .x} |\n"
+  },
+  {
+    "id": "attributes-46fe53603435",
+    "source": "a.{.c- }  An alpha item.\n"
+  },
+  {
+    "id": "attributes-47e6d46265f7",
+    "source": "{.c}\nc`{#a .k}{#b k=1}{.k k=2}\n"
+  },
+  {
+    "id": "attributes-47f282f69c7f",
+    "source": "{.n[^f]ote}\nThis paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-4838a4eb449d",
+    "source": "1. [*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n- b\n"
+  },
+  {
+    "id": "attributes-483dd8a317d7",
+    "source": "- > paara\n >  {#x}\n> tail\n"
+  },
+  {
+    "id": "attributes-486f917848c5",
+    "source": "[some text]{.highlight #note key=val}\n[some text]{.highlight #note key=val}\n[a]{k='t\\zu'}\n"
+  },
+  {
+    "id": "attributes-488745919da1",
+    "source": "\t:: t\n\t:  d\n   {.k}\n   ##`` H\n"
+  },
+  {
+    "id": "attributes-48a0730e620a",
+    "source": " \t%%%[x]{k='{y}'}\n"
+  },
+  {
+    "id": "attributes-48bcd6719e8c",
+    "source": "[x]{#k .key kbd}\n{#i}\n"
+  },
+  {
+    "id": "attributes-4948eea1ed03",
+    "source": "{\nA [danger]{srcdoc=\"<script>\"} span.\n"
+  },
+  {
+    "id": "attributes-49c112b0d591",
+    "source": "+ - a\n+   {.x}\n+   para\n"
+  },
+  {
+    "id": "attributes-4a1ee9f823f0",
+    "source": "a ^[t{# ] #}z] b\n\n%%%\n"
+  },
+  {
+    "id": "attributes-4a4ccf7fd7d8",
+    "source": ":::\n{.line-block}\none\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-4a4e884173fb",
+    "source": "-  a\n\n/i/\n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-4a8dd969a656",
+    "source": "- t\n  {.c}\n  %%% c\n  ````\n  x\n"
+  },
+  {
+    "id": "attributes-4a92abdfc59d",
+    "source": "|{#x} < content |\n[[t](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-4a9626ec0fde",
+    "source": "_*_u_a*{title=\"@user_\"} b_\n"
+  },
+  {
+    "id": "attributes-4ab067b336a6",
+    "source": "\n- text\n  [a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-4ba3d55341d1",
+    "source": "::: note\n- para\n - {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-4bbfd0d7246c",
+    "source": "[^f][x]{k='a\\\\b'}\n\n"
+  },
+  {
+    "id": "attributes-4be2bb815f26",
+    "source": "-{#k} text\n # h\n # h\n"
+  },
+  {
+    "id": "attributes-4be6fa280b44",
+    "source": "[x]{k='a\\\\b'}\n^[x ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-4c1197184f5e",
+    "source": "\t{.note}\n\t This paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-4c2b519ffe34",
+    "source": " a\n\n       # h\n   - b\n"
+  },
+  {
+    "id": "attributes-4c6a3fc72044",
+    "source": "\n+ \n- a\n+\n+ {.x}\n+ > q\n- c\n"
+  },
+  {
+    "id": "attributes-4c74fdfa120e",
+    "source": "$$`E=mc^2`{#eq-1}\n^ cap\n\n"
+  },
+  {
+    "id": "attributes-4d7b5488183b",
+    "source": " a ^[t{# ] #}z] b\n"
+  },
+  {
+    "id": "attributes-4d9743c53a9e",
+    "source": "- a\n  {.k}\n> tail\n> tail\n"
+  },
+  {
+    "id": "attributes-4db504145296",
+    "source": "- a\n+\n{.x}}\n  > q\n- c\n"
+  },
+  {
+    "id": "attributes-4dbbeb08b741",
+    "source": ">::: note aa\n> {.c}\n> text\n"
+  },
+  {
+    "id": "attributes-4e624e4789d8",
+    "source": " | |{.ro}\n"
+  },
+  {
+    "id": "attributes-4e6d80e87a42",
+    "source": "  {.note}\n"
+  },
+  {
+    "id": "attributes-4e77328b38e7",
+    "source": "{.line-block\n:::\none\ntwo\n:---::\n"
+  },
+  {
+    "id": "attributes-4ee714f89d22",
+    "source": "- text\n\n  [a]: /u {.c}\n[a][]\n\n"
+  },
+  {
+    "id": "attributes-4f06172e94dc",
+    "source": "- a\n+\n\n{.x}\n> q[r][d]\n- c\n"
+  },
+  {
+    "id": "attributes-4f6e50d115c9",
+    "source": "  \n  [a]: /u \t{.c}\n[a][]\n"
+  },
+  {
+    "id": "attributes-4f71d93473ea",
+    "source": ":: term\n:  def\n\t\n\t[a][]\n"
+  },
+  {
+    "id": "attributes-4f9b85b3233a",
+    "source": "a ^[t{# ] #}z] b\n- > para\n >  {#x}\n  >  {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-4fa072184e79",
+    "source": " [a]{k=\"t\\zu\"}\n [a]k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-4fc732c884ec",
+    "source": "{{.x}\n- b\n"
+  },
+  {
+    "id": "attributes-504ce13154d9",
+    "source": "- a\n```\n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-50d4812cbd23",
+    "source": "\n  {.x}\n  ```\n  code\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-5139745e2453",
+    "source": "*x*{.re|= a |= b |al}\n"
+  },
+  {
+    "id": "attributes-5139887df1da",
+    "source": "**{k=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-5148b5978e37",
+    "source": "::: note\n::: note\n- {#x}\n```\ncode\n ::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-5157da231a1d",
+    "source": "\n- a\n\n  {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-517da384148f",
+    "source": "- > - para\n   >   {#x}\ntail\n\n"
+  },
+  {
+    "id": "attributes-520fb382a4fa",
+    "source": "[a][]\n{#raw-heading}\n# a `x %% b`{=html} c\n|{~ .x} |\n"
+  },
+  {
+    "id": "attributes-521788dfab17",
+    "source": "#i}\n[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-5274be4bb307",
+    "source": "- |{~ .x} |\n"
+  },
+  {
+    "id": "attributes-528c72065aca",
+    "source": "Parra\n\n{.class}\nNext\n{.c\n"
+  },
+  {
+    "id": "attributes-529cb9f3190a",
+    "source": "1.  # h\n-{#k} text\n"
+  },
+  {
+    "id": "attributes-52d90b21d528",
+    "source": "\n={/a={{kb/}\n"
+  },
+  {
+    "id": "attributes-538dc548b741",
+    "source": "a^[x]{.k}{.j} b\n1.{#k} {#h}\n> 1.{#k} {#h}\n     # h\n"
+  },
+  {
+    "id": "attributes-539ce6d3633c",
+    "source": "\n- a\n  {.x}\n{.c\n[^f]\ntail\n"
+  },
+  {
+    "id": "attributes-53de4993e3fe",
+    "source": "- [ ] x {#c#} y\n- [[x] {# note #}done\n``\n"
+  },
+  {
+    "id": "attributes-5451a4b7ae73",
+    "source": "not a div\n::```x:\n![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-546c5957311d",
+    "source": "+ A [danger]{style=\"x:expressioon(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-54d54ad9e26d",
+    "source": " > a\n> {.c}\n> text\n"
+  },
+  {
+    "id": "attributes-551247381333",
+    "source": "{#poem .verse}\n::: |\nRoses are red,\n:::\n"
+  },
+  {
+    "id": "attributes-558664b8a0c0",
+    "source": "![Apollo 11](apollo.jpg){.hero}\n^ igure 1: First moon landing\n"
+  },
+  {
+    "id": "attributes-55b275839dc4",
+    "source": "={/a={k=b/}\n^[fn]\n"
+  },
+  {
+    "id": "attributes-55b40e71f128",
+    "source": "-- a\n  - b\n  +\n  +\n  {.x}\n  ```\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-55c0598329ca",
+    "source": "  >   {#x}\n  >   {#x}\n"
+  },
+  {
+    "id": "attributes-55ccb9f36d3a",
+    "source": "- a\n  +\n  - b\n  {.x}\n  ```\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-567cfbcd3cc1",
+    "source": "- a\n\n  {.c}\n-- b\n"
+  },
+  {
+    "id": "attributes-56b1b591a0c4",
+    "source": " :widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-571049da6633",
+    "source": " $`E=mc^2`{#i k=v}\n $`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-58b58c754bd4",
+    "source": "![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n\n\n\n"
+  },
+  {
+    "id": "attributes-58dcea9a3697",
+    "source": "{#poem .verse}\n::: |\n  Violets are blue.\nRoses are red,\n:::{\n"
+  },
+  {
+    "id": "attributes-591dc4360f8b",
+    "source": "_*a*{title=\"_\"} b_\n{\n"
+  },
+  {
+    "id": "attributes-5944b36aa7a1",
+    "source": "- a\n+\n{.x}\n > q\n \n"
+  },
+  {
+    "id": "attributes-597575eb63bd",
+    "source": "Launch :rocket:{.big} ow.\n:  d\n"
+  },
+  {
+    "id": "attributes-5a13a9d9d78f",
+    "source": "A [daner]{srcdoc=\"<script>\"} span.\nA [danger]{srcdoc=\"<script>\"} span.\n"
+  },
+  {
+    "id": "attributes-5a83afb840e4",
+    "source": "[x]{#k .key kbd}}\n"
+  },
+  {
+    "id": "attributes-5aa820cf7327",
+    "source": ":  d\n: > \n  :: t\n     {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-5b1e0a3435aa",
+    "source": "{#raw-heading}\n[x]{kbd onclick=\"alert(1)\"}\n# a `x %% b`{=html} c\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-5b3fb096681f",
+    "source": "- > para\n  >  {#x}\n  >  {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-5b4b8f5588f8",
+    "source": "-{.x1 a\n      # h\n"
+  },
+  {
+    "id": "attributes-5b577ffe471b",
+    "source": "[r][d]\n[:::a]{k='t\\zu'}\n"
+  },
+  {
+    "id": "attributes-5bcd51e79262",
+    "source": "::: note\n- parra\n- {#x}\n```\ncode\n::::\n:::\nafer *b*\n"
+  },
+  {
+    "id": "attributes-5c35b72283d8",
+    "source": " {#Plan}\n# Plan\n\n- See </#Plan> and </#plan>.\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-5cb0da9cff24",
+    "source": "{.note}\n\n"
+  },
+  {
+    "id": "attributes-5cc60d25ac31",
+    "source": "$`E=mc^2`{#i k=v}\n\n"
+  },
+  {
+    "id": "attributes-5d1575080f92",
+    "source": "` # h\n-{#k} [d]: utext\n"
+  },
+  {
+    "id": "attributes-5d2b2666ce23",
+    "source": "\t^ cap\n\t$$`E=mc^2`{#eq-1}\n"
+  },
+  {
+    "id": "attributes-5d2d94c78b99",
+    "source": ":::\nA plain box.\n:::\n\n{#s .sidebar}\n :::\nA div with attributes.\n:::\n"
+  },
+  {
+    "id": "attributes-5d3dd45884b8",
+    "source": "1. [x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-5d5f39cc784f",
+    "source": "[a]: /u \t{.c}\n\n[a| a | b |][]\n"
+  },
+  {
+    "id": "attributes-5db9e5009c80",
+    "source": "after *b*\n/_a_{t=\"/\"} b*{tc/}\n"
+  },
+  {
+    "id": "attributes-5dccdcf8deb7",
+    "source": "- a\n\n  {.x}\n  {#i{}}\n  -  b\n"
+  },
+  {
+    "id": "attributes-5ddbb2659ce4",
+    "source": "\n> q\n> {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-5e07c7076e98",
+    "source": "\n- > para\n  >  {#x}\n:::tail\n"
+  },
+  {
+    "id": "attributes-5e997b63f88b",
+    "source": "\n![Apollo 11](apollo.jpg){.hero}\n^ Figure 1: First moon landing\n"
+  },
+  {
+    "id": "attributes-5ec47ae987ca",
+    "source": "> a\n  \n> text%%%\n"
+  },
+  {
+    "id": "attributes-5f123531784d",
+    "source": "- a\n  \n    {.x}\n\ntail\n"
+  },
+  {
+    "id": "attributes-5f525b6215c9",
+    "source": ":  d\n</#h>\n[x]{#k .key kbd}\n"
+  },
+  {
+    "id": "attributes-5f545446a27b",
+    "source": "- a\n+\n{{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-5f581a25e810",
+    "source": ":: term\n:  def\n[a]: /u {.c}\n{\n[a][]\n"
+  },
+  {
+    "id": "attributes-606a9a87411e",
+    "source": "\n[x]{#k .key kbd}\n```x\n[x]{#k .key kbd}\n"
+  },
+  {
+    "id": "attributes-60b2f67028c9",
+    "source": "\n[[t](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-60c0ac4c4f6a",
+    "source": "- [ ] x #c#} y\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-610f3fb32b05",
+    "source": "*[HTML]: Long Form\n The [HTML]{.x} key.\n~s~ \n"
+  },
+  {
+    "id": "attributes-6136211c342d",
+    "source": "{{+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-613cd473c856",
+    "source": "- a\n\n  {.x}\n\ntail%%\n"
+  },
+  {
+    "id": "attributes-616b5402c173",
+    "source": "- t\n  {.c}\n    ````\n  x\n"
+  },
+  {
+    "id": "attributes-61702ffa976e",
+    "source": "[a </#x]> b]{.}\n"
+  },
+  {
+    "id": "attributes-61e3fe6b5cbc",
+    "source": "-- a\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-61f53180a11c",
+    "source": "\t[# H<https://e.com>]{.c}\n"
+  },
+  {
+    "id": "attributes-6263c4d7d20d",
+    "source": "![alt](img.png~s~){.x}\n"
+  },
+  {
+    "id": "attributes-628b956c1f13",
+    "source": "\n{k=\"a\\}b\"}\npp+ \n"
+  },
+  {
+    "id": "attributes-63391ebb2773",
+    "source": "{k=v}\n"
+  },
+  {
+    "id": "attributes-63ad3edc89aa",
+    "source": " [a]{k=\"t\\zu\"}\n\n"
+  },
+  {
+    "id": "attributes-63be6c0a88e4",
+    "source": "::: not\n- para\n- {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-63d7d8ae6f3f",
+    "source": "[x]{title=\"a b\"}\n{k=v}{~s~+i+}\n"
+  },
+  {
+    "id": "attributes-64028e210081",
+    "source": "- a\n\n  {.x}\ntail\n# H\ntail\n"
+  },
+  {
+    "id": "attributes-641c5c1546e8",
+    "source": "[a]: u \t{.c}\n:::\n\na][]\n"
+  },
+  {
+    "id": "attributes-644abe383081",
+    "source": "\n\n*x*{k=\"a\n[x]{.a#i}\nb\"}\n"
+  },
+  {
+    "id": "attributes-6455001768c7",
+    "source": ":: term\n:  def\n[a]: /u  {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-645caa3c238d",
+    "source": "{#raw-heading}\n\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-6488592f54d4",
+    "source": "{.a #b}\nA [danger]{srcdoc=\"<script>\"} span.\n[label]{key=c .a #b}\n"
+  },
+  {
+    "id": "attributes-64bb0d424892",
+    "source": "|={.total} Total |= 99 |\n| a | b |\n\n"
+  },
+  {
+    "id": "attributes-65095542a48d",
+    "source": ":: tt\n   {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-650bd9018605",
+    "source": "{#lst-greet}\n```pythonn\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-6511e489faee",
+    "source": "a.{.c}  An alpha ite[^f]m.\n"
+  },
+  {
+    "id": "attributes-6527f8d5206f",
+    "source": "Para\n{.class}\n\nNex\n"
+  },
+  {
+    "id": "attributes-65702034c116",
+    "source": "{.line-block}\n\n:::\none\ntwo\n:::\n\n"
+  },
+  {
+    "id": "attributes-6650aae94d1e",
+    "source": "{+`{#+}#}\n{+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-669f2e2ece72",
+    "source": "  {.x}\n\n{#install .featured}\n ## Setup\n"
+  },
+  {
+    "id": "attributes-66be205227d0",
+    "source": "::: {.x}\n:::\nnot a div\n"
+  },
+  {
+    "id": "attributes-66c29a830eea",
+    "source": "  [x]{class=w-1/2 .bar}\n{#_id ._c _k=1 _=\"on click\"}\npara\n"
+  },
+  {
+    "id": "attributes-66d0931bd593",
+    "source": ":: t\n:  d\n x{.c}  {.k}\n    # H\n\n"
+  },
+  {
+    "id": "attributes-672b79cfd8f4",
+    "source": "  _*a*{title=\"_\"} b_\n"
+  },
+  {
+    "id": "attributes-6738c407872c",
+    "source": "para {.c} more\n - [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-6742791c0f89",
+    "source": "- b\n{.x}\n[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-67e3f408b3dd",
+    "source": "{{_x _b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-67f48ddd5c24",
+    "source": "{#install .featured}\n\n## Setup\n"
+  },
+  {
+    "id": "attributes-680ee2f0a54a",
+    "source": "[x] {% c %}{.k}\n- t\n  {.c}\n"
+  },
+  {
+    "id": "attributes-681b7eec12db",
+    "source": "_*a*{title=\"_\"} b_\nnot a div\n:::\n%%\n"
+  },
+  {
+    "id": "attributes-6831ceb8efe7",
+    "source": "![Apoll 11](apollo.jpg){.hero}\n^ Figure 1: First moon landing\n"
+  },
+  {
+    "id": "attributes-688cbae2fee0",
+    "source": "> [*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n> [*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n  [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-68b04587519f",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n\n[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-68dca079574c",
+    "source": "\n1. [^a]: note.\n"
+  },
+  {
+    "id": "attributes-6912007a6c21",
+    "source": "1. [x]{class={w-1/2 .bar}\n1. [x]{class={w-1/2 .bar}\n"
+  },
+  {
+    "id": "attributes-69c4e45ad733",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\na [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-69eab4688cba",
+    "source": "tail\nA [danger]{style=\"x:expression(steal())\"} span.\nA [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-6a3ae9f70849",
+    "source": "[x]{.a!b}\n[x]{..a!b}\n"
+  },
+  {
+    "id": "attributes-6aa4fffd667f",
+    "source": ":: t\n:  d\n  {.k}\ntai\n"
+  },
+  {
+    "id": "attributes-6aa5ef0217f7",
+    "source": "| a | b |\n"
+  },
+  {
+    "id": "attributes-6aba4922f806",
+    "source": "- [x] {# note #}done\n- [ ] x {#c#} y\n"
+  },
+  {
+    "id": "attributes-6ae71127b011",
+    "source": "\n- a\n  {.x}\n  para\n"
+  },
+  {
+    "id": "attributes-6b170119463a",
+    "source": "| |{.rrow}\n"
+  },
+  {
+    "id": "attributes-6b47675ef296",
+    "source": "[a]]{k=v.w}\n [a]]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-6babfb5ccefb",
+    "source": "[a]: /u {.c}\n\n\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-6c2d9f9bef1a",
+    "source": "[x]{onclick=\"steal()\"}\n## Setup\n"
+  },
+  {
+    "id": "attributes-6c377768a67d",
+    "source": "- a\n  {.x}\n\n  {.x}| a | b |\n  {#i}\n  - b\n"
+  },
+  {
+    "id": "attributes-6c59c3160403",
+    "source": "-- a\n\n   {.c}\n- b\n"
+  },
+  {
+    "id": "attributes-6ce87167db05",
+    "source": " :: term\n:  def\n[a]: /u {.c}\n[x]{.a#i}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-6cfdd47546fd",
+    "source": "- a\n\n  {.x}\n code\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-6d38dc50b3fe",
+    "source": "> {a=b .c}\n> # Auto\n![two](b.png)\n^ (b) Two\n\n> {#x a=b}\n> # Written\n\n:::\n{a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-6d54524d8105",
+    "source": "::: |\n-{#k}  a\n  # h\n"
+  },
+  {
+    "id": "attributes-6d6e0e792ed6",
+    "source": "{\n![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-6d965b0f1891",
+    "source": "[label]{key=c .a #b}\n [label]{key=c .a #b}\n"
+  },
+  {
+    "id": "attributes-6dce02fd7aec",
+    "source": "- t\n  {.c}\n  {.c}\n  %% c\n   ````\n  x\n"
+  },
+  {
+    "id": "attributes-6ddba530e495",
+    "source": "![a](safe.png){srcset=\"https://example.comm/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-6e00d078d89b",
+    "source": "{.a #b}\n![a](safe.png){srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\n"
+  },
+  {
+    "id": "attributes-6e0df51cbe94",
+    "source": "={/aa={k=b/}\n"
+  },
+  {
+    "id": "attributes-6e76f992c054",
+    "source": "{#_id ._c _k=1 _=\"on click\"}\npara\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-6eb3d52b01cc",
+    "source": " [[t](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-6f2e653fecac",
+    "source": "|={~ .x}  |\n"
+  },
+  {
+    "id": "attributes-6f310a0c7be4",
+    "source": "- a\n\n- para\n- {#x}\n  {.c}\n\n  b\n"
+  },
+  {
+    "id": "attributes-6f9ec6dd08a7",
+    "source": "\n - a\n  - b\n    {#}\n  - c\n"
+  },
+  {
+    "id": "attributes-6fc4b42f68b1",
+    "source": "\n[a]{k='t\\zu'{}\n"
+  },
+  {
+    "id": "attributes-6fe9fa78e505",
+    "source": "  [a]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-70410b660889",
+    "source": ":: t\n:  d\n{..k}x{.c}\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-704c7bbfc013",
+    "source": "\n[x] {% c %}{.k}\n> [a]{k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-70c8e19d8f2a",
+    "source": " ![Apollo 11](apollo.jpg){.hero}\n^ Figure : First moon landing\n"
+  },
+  {
+    "id": "attributes-71286fb6caf4",
+    "source": "{.line-block}\n:::\n\none\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-71302690d5d7",
+    "source": "+ - > - para\n    >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-7150051be49a",
+    "source": "{#_id ._c _k=1 _=\"on click\"}\n:::\npara\n"
+  },
+  {
+    "id": "attributes-715d342aac8f",
+    "source": "1.{#k} {#h}\n   # h\n\n\n"
+  },
+  {
+    "id": "attributes-719196d00d25",
+    "source": "- a\n  - b\n  +\n  {.x}\n  ```\n    code\n  ```\n"
+  },
+  {
+    "id": "attributes-71af9fcf78a7",
+    "source": "  >   {#x}\n:: t[x]{k='{y}'}\n"
+  },
+  {
+    "id": "attributes-71ead9b3a86a",
+    "source": "\n[r]: /u\n\na^[x]{.k}{.j} b\n[^1]:  n\n"
+  },
+  {
+    "id": "attributes-71fd9ff9de1b",
+    "source": " `c`{#a .k}{#b k=1}{.k   k=2}\n"
+  },
+  {
+    "id": "attributes-71ffd8554f4f",
+    "source": "[x]{#k .key kbd}\n[x]{#k .key kbd}\n+ ={/a={k=b/}\n"
+  },
+  {
+    "id": "attributes-720bb98b087a",
+    "source": "        # h\n-{.x1} a\n"
+  },
+  {
+    "id": "attributes-721776dfe7a0",
+    "source": " para {.c} more\n^ cap\n\nNext\n"
+  },
+  {
+    "id": "attributes-7222d12595d2",
+    "source": "1. \n[x]{samp} [y]{dfn=\"a term\"}\n"
+  },
+  {
+    "id": "attributes-722fc115f577",
+    "source": "$`E=mc^2`{#i k=vv!`z`*[A]: b}\n"
+  },
+  {
+    "id": "attributes-724e6ecd6b55",
+    "source": "{#install .featured}\n## Setup\n## Setup\n"
+  },
+  {
+    "id": "attributes-72916bed318c",
+    "source": "{#poem .verse}\n:::: |\n  Violets are blue.\nRoses are red,\n:::\n"
+  },
+  {
+    "id": "attributes-735b61a98506",
+    "source": ":::\n [a]{k=v.w}\n\n"
+  },
+  {
+    "id": "attributes-7362a30d9e32",
+    "source": "\n_*a*{title=\"_\"} b_\n"
+  },
+  {
+    "id": "attributes-743e8f04498d",
+    "source": "[Example][ex] and [again][ex]\n\n [ex]: https://example.com {.external}\n. \n"
+  },
+  {
+    "id": "attributes-74410369b2b0",
+    "source": "A [danger]{stle=\"xx:expression(steal())\"} span.\n\n"
+  },
+  {
+    "id": "attributes-746d72fd5231",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-74a6b16b2b1f",
+    "source": "{+`{{#+}#}\n{+`{#+}#}\n{+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-75469a7f0163",
+    "source": "{#lst-greet}\n```python\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-755e6fb820da",
+    "source": ":widget[x]{#i k=v}\n\n*x*{.real}\n*x*{.real}\n"
+  },
+  {
+    "id": "attributes-75708c259f7e",
+    "source": ":: |\n[x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-75b72c9d6274",
+    "source": "[<https://e.com>]{.c}\n [x]{.a!b}\n"
+  },
+  {
+    "id": "attributes-75c69bd5ab2e",
+    "source": " [label]{keey=c .a #b}\n"
+  },
+  {
+    "id": "attributes-75d8d4ef1377",
+    "source": "{k=\"a\\}b\"}\n"
+  },
+  {
+    "id": "attributes-75e548cb4b24",
+    "source": "  {.c}\n   ````\n![one](a.png)\n^ (a) One\n  %% c\n  x\n"
+  },
+  {
+    "id": "attributes-75f64813c62a",
+    "source": "+\n Launch :rocket:{.big} now.\npara\n"
+  },
+  {
+    "id": "attributes-7647a4333a27",
+    "source": "{align=right style=\"color: red\"}\nAlgned text.\n>> \n"
+  },
+  {
+    "id": "attributes-766b00138c4e",
+    "source": "/_a_{t=\"/\"} b*{t=c/}\n/_a_{t=\"/\"} b*{t=c/}\n"
+  },
+  {
+    "id": "attributes-767e141b3205",
+    "source": "- a\n\n\n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-76a1e8e516aa",
+    "source": "{#insstall .featured}\n## Setup\n- t\n"
+  },
+  {
+    "id": "attributes-76f763b359ef",
+    "source": "1.{#k} {#h}\n"
+  },
+  {
+    "id": "attributes-7704cba94ec2",
+    "source": "Paraa\n{.class}\n\nNext\n"
+  },
+  {
+    "id": "attributes-775714ce4238",
+    "source": "{k=\"{yy}\"}\n# H\n"
+  },
+  {
+    "id": "attributes-778fa1fd7502",
+    "source": "- [ ] x {#c#} y\n- [x] {# note #}done\n</#h>\n"
+  },
+  {
+    "id": "attributes-779dc694ad86",
+    "source": "\n*x*{.a .b}\n\n*y*{ .c}\n\n*z*{.d }\n\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-77ea4d53ecb9",
+    "source": "[Example][ex]] and [again][ex]\n\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-783ca78d320d",
+    "source": "x{.c}- a\n\n  {.c}\n  ```\n- c\n$`E=mc^2`{#i k=v}\n- b\n"
+  },
+  {
+    "id": "attributes-7941e38f3a40",
+    "source": "- a\n{#i}[^f]\n\n  {.x}\n  {.x}\n  ```\n  code\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-795727ec7049",
+    "source": "{k=v}{+i}\n/i/\n"
+  },
+  {
+    "id": "attributes-796b59cc5108",
+    "source": ":::\nA plain box.\n:::\n\n\n\n{#s .sidebar}\n:::\nA div with attributes.\n:::\n"
+  },
+  {
+    "id": "attributes-7976ddeb01e6",
+    "source": "{#lst-greet}\n```python\ndef greet():\ndef greet():\n    return 1\n```\n^ Listing #: a greetng\n\n See </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-79c9ba16d736",
+    "source": "*x*{k=a\t.b}\n> *y*{k=\"a\tb\"}\n\n"
+  },
+  {
+    "id": "attributes-79f0a9257407",
+    "source": "- teext\n\n  [a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-79f5be7523e5",
+    "source": "-{#k} text\n:: t\n-{#k} text\n # h\n"
+  },
+  {
+    "id": "attributes-7a11928cc7d7",
+    "source": ":: t\n:: t\n:  d\n> tail\n"
+  },
+  {
+    "id": "attributes-7a5cd7f30ba6",
+    "source": "[[[t:  d](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-7ad9c661c232",
+    "source": "> 1.{#k} {#h}\n     # h\n"
+  },
+  {
+    "id": "attributes-7ba09d97f5c7",
+    "source": "[x]{k='{y}'}\n[a]{k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-7bda6017b33d",
+    "source": "::: note\n- para\n- {#x}\n````\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-7c1aa1859444",
+    "source": "[[t]](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-7c58f96b2fd9",
+    "source": " {#raw-heading}\n{#raw-heading}\n# a `x %% b`{=html} c\n::: figure\n"
+  },
+  {
+    "id": "attributes-7c87e007efce",
+    "source": "*x*{.a .b}\n*x*{.a .b}\n\n*y*{ .c}\n\n*z*{.d }\n\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-7c8cfc06c442",
+    "source": "[<https://e.com>]{.c}\n[x]{.a.b}\n"
+  },
+  {
+    "id": "attributes-7cf09d277bf0",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n## Setup\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-7d032a604953",
+    "source": "[l](u)para\n"
+  },
+  {
+    "id": "attributes-7d85c7c7c940",
+    "source": "{.note*[A]: b}\n"
+  },
+  {
+    "id": "attributes-7d8788aa9ad4",
+    "source": " [x ^[a]{.c} b]\n [x ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-7d9a3ecacec2",
+    "source": "*x*{.a .b}\n\n\n*y*{ .c}\n\n*z*{.d }\n\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-7da1522d87f7",
+    "source": "~~~\n[x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-7dccab06c635",
+    "source": ": [x]{.`a#i}\n"
+  },
+  {
+    "id": "attributes-7e2a5beda2f7",
+    "source": "[x]{k='a\\\\b'}\n[x]{k='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-7e3d3c912e88",
+    "source": " a.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-7e78b0a08f2d",
+    "source": "- a\n\n    {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-7f20d9b93822",
+    "source": "$`E=mc^2`{#ii k=v}\n"
+  },
+  {
+    "id": "attributes-7f23933b9981",
+    "source": "::: note\n- {#x}\n```\n[x]{onclick=\"steal()\"}\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-7f856e9664c8",
+    "source": "A [span]{.c} here.\nA [span]{.c} here.\nA [span]{.c} here.\n"
+  },
+  {
+    "id": "attributes-7f8910bb7e6d",
+    "source": ":: t\n$$`E=mc^`{#eq-1}\n^ cap\n"
+  },
+  {
+    "id": "attributes-7fdbe5b519c2",
+    "source": "::: note\n+ - para\n+ - {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-7fe87f44b4f5",
+    "source": "- b\n{..x}\n"
+  },
+  {
+    "id": "attributes-8048f656d770",
+    "source": "Para\n{.class}\n \n Next\nNet\n"
+  },
+  {
+    "id": "attributes-8065b90f7a32",
+    "source": "> q\n> q\n> {.k}\ntail\nail\n"
+  },
+  {
+    "id": "attributes-8097f614be98",
+    "source": "\n- a\n\n   {.c}\n- b\n{\n"
+  },
+  {
+    "id": "attributes-80d12a718b30",
+    "source": ":: t\n{  d\n   {.k}\n   # H\n"
+  },
+  {
+    "id": "attributes-80f499652a38",
+    "source": "- a\n  {.x}\n%%%\n  para\n"
+  },
+  {
+    "id": "attributes-80f80ddb19b6",
+    "source": " {.note}\nThis paragraph gets the cllass.\n"
+  },
+  {
+    "id": "attributes-80f810d07ee5",
+    "source": "  - b\n- a\n  - c\n:     {#x}\n"
+  },
+  {
+    "id": "attributes-81220f2e02d1",
+    "source": "_*a*{t=\"_\"} b/{t=c_}\ntext\n"
+  },
+  {
+    "id": "attributes-81f0608500d3",
+    "source": "_*a*{title=\"_\"} b_\n\t|= a |= b |\n"
+  },
+  {
+    "id": "attributes-824b811637e6",
+    "source": "{\n\n^[fn]\n- a\n  {.x}\n  para\n"
+  },
+  {
+    "id": "attributes-827c82c3d00c",
+    "source": "[x]{title=\"a b\"}\n_*a*{title=\"_\"} b_\n[x]{title=\"a b\"}\n[x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-82a4d0db3c3c",
+    "source": " Launch :rocket:{.big} now.\n"
+  },
+  {
+    "id": "attributes-8305d3400c7a",
+    "source": "[llabel]{key=c .a #b}\n"
+  },
+  {
+    "id": "attributes-8425d795225a",
+    "source": "| |{.row}\n| |{.row}\n"
+  },
+  {
+    "id": "attributes-844310ab03ce",
+    "source": ":: term\n:  def\n[a]: /u {.c}\n\n\n"
+  },
+  {
+    "id": "attributes-8485dd4433eb",
+    "source": "  tail\n  A [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-84a694591744",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n\n> [r]: /u\n  [^1]: n\n  |={~ .x} |\n"
+  },
+  {
+    "id": "attributes-84e68a64b240",
+    "source": "\n[{#a]#}\n"
+  },
+  {
+    "id": "attributes-852ad85ffa66",
+    "source": "\n*[HTML]: Long Form\nThe [HTML]{.x} key.\n"
+  },
+  {
+    "id": "attributes-853e71aa642c",
+    "source": " a^[~s~x]{.k}{.j} b\n a^[~s~x]{.k}{.j} b\n"
+  },
+  {
+    "id": "attributes-8567e526edc8",
+    "source": "> {a=b .c}\n> # Auto\n\n> {#x a=b}\n> # Written\n\n{a=b .c}\n:::\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-857b9685f4df",
+    "source": "- + \n  A [span]{.c} here.\n"
+  },
+  {
+    "id": "attributes-85ab2925d013",
+    "source": "  >  {#x}\ntail\n\t|={.total} Total |= 99 |\n | a | b |\n"
+  },
+  {
+    "id": "attributes-85b0c8bb2fe8",
+    "source": "> {a=b .c}\n> # Auto\n\n> {#x a=b}\n> # Written\n\n:::\n{a=b.c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-85c3ef8ae1e3",
+    "source": " 1. [label]{key=c .a #b}\n[label]{key=c .a #b}\n"
+  },
+  {
+    "id": "attributes-86051a7b8d1d",
+    "source": ": #H\n"
+  },
+  {
+    "id": "attributes-860ec1e0ba61",
+    "source": "-- a\n\n:   {.c}\n\n  b\n"
+  },
+  {
+    "id": "attributes-86e62c60e5e2",
+    "source": "-{#k} a\n+   # h\n"
+  },
+  {
+    "id": "attributes-86e701836e4c",
+    "source": "{align=right style=\"c::: |olor: red\"}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-86ff51edb3aa",
+    "source": "[*C  trl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[^f] t\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-870d0bb3d628",
+    "source": "a.{.c}  An alpha1.  it~~~em.\n"
+  },
+  {
+    "id": "attributes-8713eebbee19",
+    "source": "a^[x]{.k}{.j} b\n{#i}\n{#i}\n"
+  },
+  {
+    "id": "attributes-87164b616652",
+    "source": "{.line-block}\n{.a #b}\n:::\none\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-8760f095239d",
+    "source": ":: t\n  {.k}\n:  d\n {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-879ae6183226",
+    "source": "- a\n\n \n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-87bdcfac9ad7",
+    "source": " [a </#x]> b]{.c}\n [a </#x]> b]{.c}\n"
+  },
+  {
+    "id": "attributes-886fd63abcaf",
+    "source": "- a\n\n  {.x}\n  {.x}\n\ntail\n"
+  },
+  {
+    "id": "attributes-8876648e0928",
+    "source": "{#install .featured}\n"
+  },
+  {
+    "id": "attributes-889a667b63b4",
+    "source": "{#i}a ^[t{# ] #}z] b\n"
+  },
+  {
+    "id": "attributes-889edf681031",
+    "source": "|= a |= b |\n[^f]: t- a\n\n|={~ .x} |\n  {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-88f5345ef1e7",
+    "source": "{#Plan}\n  # Plan\n  \nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-897454afc4fc",
+    "source": "~~~\n[x] {% c %}{.k}\n"
+  },
+  {
+    "id": "attributes-8997a8ad3035",
+    "source": "\n![a](/u){src=/v}\n![a](/u){src=/v}\ntext\n"
+  },
+  {
+    "id": "attributes-89b2eb272487",
+    "source": "\t{k=\"{y}\"}\n\n# HH\n"
+  },
+  {
+    "id": "attributes-8a23a258dea7",
+    "source": "{align=right style=\"color: red\"}\nAligned text.\n[Example][ex] and [again][ex]\n\n|={~ .x} |\n"
+  },
+  {
+    "id": "attributes-8a3e15181922",
+    "source": " [x]{onclick=\"stea()\"}\n"
+  },
+  {
+    "id": "attributes-8a4001809abd",
+    "source": "{:fr}\n{lang=de}\n{.a #b}\nText\n"
+  },
+  {
+    "id": "attributes-8af0bcd2e45f",
+    "source": "![alt](mg.png){.x}\n\n"
+  },
+  {
+    "id": "attributes-8af1ca4970e1",
+    "source": "[Example][ex] and [again][ex]\n@user\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-8afa7103e6cc",
+    "source": ">      # h\n"
+  },
+  {
+    "id": "attributes-8b674e4990a5",
+    "source": "$`E^ cap=mc^2`{#i k=v}}\n"
+  },
+  {
+    "id": "attributes-8b6865fb0d7f",
+    "source": "{#lst-greet}\n```python\ndef greet():\n {#i}   return 1\n```\n^ Listing #: a greeting\n\n"
+  },
+  {
+    "id": "attributes-8b6b1a10ee2a",
+    "source": "{.c\n{#a </#x#}> b::: note#}\n/{^a/{k=b^}\n"
+  },
+  {
+    "id": "attributes-8b6c2c548eaa",
+    "source": "```\n[[t]/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-8b839fc5ff06",
+    "source": " ::: {.x}\nnot a div\n:::\n"
+  },
+  {
+    "id": "attributes-8bf0aa0be68e",
+    "source": "{.data}\n|= A |= B |\n| @user1  | 2  |\n"
+  },
+  {
+    "id": "attributes-8c510985aae1",
+    "source": "|={~ .x} |\n|={~ .x} |\n"
+  },
+  {
+    "id": "attributes-8c5c9e045ab6",
+    "source": "*x*{k=\"a\n\nb\"}\n"
+  },
+  {
+    "id": "attributes-8d4419cb6878",
+    "source": "{.line-block}\n:::\none\ntwo\n:::\n:::\n"
+  },
+  {
+    "id": "attributes-8d8ba2d9d513",
+    "source": "> - a\n+\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-8d991fc51945",
+    "source": "[z](safe.html){ttitle=\"See: RFC 3986, http://example.com\"}\n``\n"
+  },
+  {
+    "id": "attributes-8dbe20828e85",
+    "source": "={/a={k=b\n"
+  },
+  {
+    "id": "attributes-8dc1057cee2b",
+    "source": ">  a ^[t# ] #}z] b\n"
+  },
+  {
+    "id": "attributes-8dca522fffed",
+    "source": "# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n## Setup\n\n## Setup\n---\n{#api-v2}\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-8de2dda51d9a",
+    "source": ": [{#a]#}\n"
+  },
+  {
+    "id": "attributes-8e3a1c1e3e92",
+    "source": "{align=right}\nAligned text.\nAligned text.\n"
+  },
+  {
+    "id": "attributes-8e61ba553011",
+    "source": "This paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-8e754bf9c4e1",
+    "source": "{#lst-greet}\n```python\ndef greet():\n  {k=v}  return 1\n```\n^ Listing #: a greeting\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-8e94a3bb5968",
+    "source": "::: note\n- {#x}\n```\ncode\n::::\n:::\n- a\nafter *b*\n"
+  },
+  {
+    "id": "attributes-8f3af3b61745",
+    "source": "* \n[x]{/i/class=w-1/2 .bar}\n"
+  },
+  {
+    "id": "attributes-8f5da8333d56",
+    "source": "> [a{k=\"t\\zu\"}\n  \n"
+  },
+  {
+    "id": "attributes-8f6e09391007",
+    "source": "Par\n{.class}\n\nNext\n"
+  },
+  {
+    "id": "attributes-8fe3ac9fb5c8",
+    "source": " [{#a]#}\n"
+  },
+  {
+    "id": "attributes-8ff25f20070e",
+    "source": " {.line-block}\n :::\n one\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-90753a986982",
+    "source": "{#Plan}\n{#i}\n# Plan\n\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-90f30812bfd1",
+    "source": " [label]{key=c .a #b}\n\n"
+  },
+  {
+    "id": "attributes-9125dccce291",
+    "source": "![a](safe.png){srcset==\"safe.png 1x, javascript:alert(1) 2x\"}\n"
+  },
+  {
+    "id": "attributes-913796ff03de",
+    "source": " *x*{k=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-91f44648b2dc",
+    "source": "\t:: t\n\t\n:  d\ntail\n   {.k}\n"
+  },
+  {
+    "id": "attributes-926d90b1a72a",
+    "source": "1. [x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-927ebc21b4eb",
+    "source": "   # h\n"
+  },
+  {
+    "id": "attributes-92b5ff5f4086",
+    "source": "> {a=b .c}\n> # Auto\n\n> {#x a=b}\n> # Written\n\n:::\n:::\n  {a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-92babae198a8",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n \n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-92bdf0eefab7",
+    "source": "\n[x]{k='{y}'}\n[x]{k='{y}'}\n$$`E=mc^2`{#eq-1}\n^ cap\n"
+  },
+  {
+    "id": "attributes-933737a0b5e7",
+    "source": "[x]{..a!b}\n"
+  },
+  {
+    "id": "attributes-9361b44c23c6",
+    "source": "#taag\n\n$`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-9370e6d52e25",
+    "source": "- \n  {.x}\n  para\n"
+  },
+  {
+    "id": "attributes-938eff0b90fa",
+    "source": "*[HTML]: Long Form\n*[HTML]: Long Form\n\nThe [HTML]{.x} key.\n"
+  },
+  {
+    "id": "attributes-939c3f677de6",
+    "source": "1. [x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-93c421ab7366",
+    "source": "\n[a]{title=\"`\"} and [n](u)\n{% a ` %}[n](u)\n\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-942b6b26c9c8",
+    "source": "tail\n- a\n\n  {.x}\nSee </#lst-greet>.\n   {#i}\n  - b\n"
+  },
+  {
+    "id": "attributes-943097f84a95",
+    "source": "*[HTML]: Long Form\n{}\n\nThe [HTML]{.x} key.\n"
+  },
+  {
+    "id": "attributes-94b03a90c716",
+    "source": "> {a=b .c}\n> # Auto\n\n> # H{#x a=b}\n> # Written\n\n:::\n{a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-94f28012190a",
+    "source": "[x]{k=''a\\\\b'}\n\n"
+  },
+  {
+    "id": "attributes-952790700603",
+    "source": "[Example][ex] and [again][ex]\n\n[ex]: https://examp# Hle.com {.external}\n"
+  },
+  {
+    "id": "attributes-95a6d3ce02f9",
+    "source": "\tA [danger]{style=\"x:expression(steal())\"} span.\n\t\n"
+  },
+  {
+    "id": "attributes-95db5214606e",
+    "source": "[x]{{k='{y}'}\n\n  {.c}\n"
+  },
+  {
+    "id": "attributes-960a60795b43",
+    "source": "A %%%[span]{.c} here.\n"
+  },
+  {
+    "id": "attributes-962d4d685e35",
+    "source": "`c`{#a .k}{#b k=1}}{.k k=2}\n"
+  },
+  {
+    "id": "attributes-96c8c84e19fb",
+    "source": "+ |{~ .x} |\n"
+  },
+  {
+    "id": "attributes-96e96461dfe8",
+    "source": "^[x ^[a]{.c} b]\n^[x ^[a]{.c} b]\n[a]{k=v.w}\n"
+  },
+  {
+    "id": "attributes-9700ec9c847c",
+    "source": "*x*{.a .b}\n{k=\"v\"}\n*y*{.c}\n\n\n*z*{.d }\n[w]{ }\n"
+  },
+  {
+    "id": "attributes-970543ea1a3b",
+    "source": " {+`{#+}#}\n[l](u)\n\n"
+  },
+  {
+    "id": "attributes-971be01bef2d",
+    "source": "# a `x %% b`{=html} c\n{#raw-heading}\n"
+  },
+  {
+    "id": "attributes-97f5849cac2f",
+    "source": "[z](safe.html){title=\"See RFC 3986, http://example.com\"}\n"
+  },
+  {
+    "id": "attributes-9804e4f0e43a",
+    "source": " $$`E=mc^2`{#eq-1}\n^ cap\n"
+  },
+  {
+    "id": "attributes-9845e7ed7899",
+    "source": "- aa\n:*  \n:    {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-98aa99105fd7",
+    "source": ":: term\n:  def\n[a]: /u {.c}\n\n[a][]\n{#_id ._c _k=1 _=\"on click\"}\npara\n"
+  },
+  {
+    "id": "attributes-98c0770f950f",
+    "source": "[a </#x]> b]{.c}\n^[x  ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-99bd9e3255c6",
+    "source": "$`E=mc^2`{#i k=v}\n$`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-99eb94623c34",
+    "source": ":: t\n:  d\n> :  d\n{.k}\nttail\n"
+  },
+  {
+    "id": "attributes-9a1e048f0181",
+    "source": "[x]{samp} [y]{dfn=\"a term\"}\n-{.x1} a\n-{.x1} a\n       # h\n"
+  },
+  {
+    "id": "attributes-9a407761be7b",
+    "source": "1. |={~ .x}%% |\n"
+  },
+  {
+    "id": "attributes-9a4d649163bb",
+    "source": "|={~ .x} |\n```\n"
+  },
+  {
+    "id": "attributes-9aa0737cb25a",
+    "source": "- a\n\n  {.c}\n\n  b\n[d]: u\n"
+  },
+  {
+    "id": "attributes-9acc05a43ba2",
+    "source": "{.data}\n |= A |= B |\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-9ad0191f5dba",
+    "source": "A [danger]{srcdoc=\"<script>\"} sspan.\n"
+  },
+  {
+    "id": "attributes-9b0d180ce6e9",
+    "source": ":::\n{+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-9b623b316ab6",
+    "source": "- a\n  - b\n  +\n1.   {.x}\n1.   ```\n  code\n"
+  },
+  {
+    "id": "attributes-9bce127a5195",
+    "source": "+ [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-9be73a99b9b5",
+    "source": "#tag\n[some text]{.%%highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-9be771360ab9",
+    "source": "[a]: /u \t{.c}\n\n`\n\n`\n[a][]\n"
+  },
+  {
+    "id": "attributes-9c54ece2bf7e",
+    "source": "[a]{title=\"`\"} and [n](u)\n\n> \n{% a ` %}[n](u)\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-9c5abc5e223a",
+    "source": "  {.c}\n- t\n  %% c\n   ````\n/i/  x\n"
+  },
+  {
+    "id": "attributes-9c8c6d02f367",
+    "source": "\nLaunch :rocket:{.big} now.\n"
+  },
+  {
+    "id": "attributes-9cdeb25be901",
+    "source": " {+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-9cef7a82981a",
+    "source": "- b\n {.x}\n"
+  },
+  {
+    "id": "attributes-9d39aae9ef22",
+    "source": "- text\n\n\n  [a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-9d4be06033ba",
+    "source": "{#Plan}\n# Plan\n{k=\"v\"}\n\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-9d4bf236a7e6",
+    "source": "[a]: /u \t{.c}\n\n[][]\n"
+  },
+  {
+    "id": "attributes-9e2717c7b643",
+    "source": "![]/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-9e718d1e59f7",
+    "source": "- a\n  - b\n  \n  {.x}\n  ```\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-9eb2bd05c652",
+    "source": "[<https://e.com>]{..c}\n[<https://e.com>]{..c}\n"
+  },
+  {
+    "id": "attributes-9ec824fdbba1",
+    "source": "[*Ctrl*+C]{#copy .shortccut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{kbd onclick=alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-9ee301495462",
+    "source": "|{~ .x} |\n- a\n%%%\n\n   {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-9ef6ee4f952f",
+    "source": "::: note\n[r][d]- {#x}\n{#a </#x#}> b#}\n- [ ] x {#c#} y\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-9f49a4762dc0",
+    "source": " - b\n[l](u)\n"
+  },
+  {
+    "id": "attributes-9f5bcf7c5340",
+    "source": "\n:: t\n:  d\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-a05bac094f8d",
+    "source": " :wiidget[x]{#i*  k=v}\n"
+  },
+  {
+    "id": "attributes-a05f22645501",
+    "source": " {#a </#x#}> b#}\n"
+  },
+  {
+    "id": "attributes-a070c5b822e9",
+    "source": "1. para {.c} more\n1. para {.c} more\n"
+  },
+  {
+    "id": "attributes-a0835a07ae9b",
+    "source": "\n[x]{title=\"a b{#i}\"}\n[x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-a0bcdf70c7b5",
+    "source": ">  [a]{title=\"`\"} and [n](u)\n> \n> {% a ` %%}[n](u)\n\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-a0de6e61a840",
+    "source": "- a\n- a\n\n  {.c}\n+ \n    b\n"
+  },
+  {
+    "id": "attributes-a14e983c6636",
+    "source": "  [*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" oonclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-a16e658133a4",
+    "source": "[x]{samp} [y]{dfn=\"a term\"}\n[x]{samp} [y]{dfn=\"a term\"}\n"
+  },
+  {
+    "id": "attributes-a18f49b8bbaa",
+    "source": ":widget[x]{#i  k=v}\n"
+  },
+  {
+    "id": "attributes-a1aa6380b137",
+    "source": "[x]{#k .key kbbd}\n"
+  },
+  {
+    "id": "attributes-a1b4b7439b18",
+    "source": "- - a\n\n {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-a1bf19fea77d",
+    "source": ">> \n -{.x1} a\n\n       # h\n"
+  },
+  {
+    "id": "attributes-a1ce2766217e",
+    "source": "[a]{{k='t\\zu'}\n{align=right}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-a1f1bf16b402",
+    "source": "{#raw-heading}\n# a `x %* % b`{=html} c\n{k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-a1f8aec7a9c4",
+    "source": "[x]{kbd onclick=\"alert(1)\"}\n[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)}\n"
+  },
+  {
+    "id": "attributes-a2f5bafcfea8",
+    "source": "-{#k} a\n \t # h\n"
+  },
+  {
+    "id": "attributes-a302b33d2754",
+    "source": "\n{_x _b_{t=a_}\n---\n{_x _b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-a370411c7fbd",
+    "source": "*x*{.a .b}\n\n> a\n> {.c}\n> text\n"
+  },
+  {
+    "id": "attributes-a380e34d6ae8",
+    "source": "- a\n\n   {.c}\n\n"
+  },
+  {
+    "id": "attributes-a3a523ebaaa8",
+    "source": "[x{>> .c]{.a.b}\n\n"
+  },
+  {
+    "id": "attributes-a3fd96478886",
+    "source": ":: t\n> :  d\n>    {.k}\nx{.c}\n"
+  },
+  {
+    "id": "attributes-a425f6d1143f",
+    "source": "|=a |= b |\n> a\n\n> {.c}\n> text\n"
+  },
+  {
+    "id": "attributes-a4355402070f",
+    "source": "_*a*{t=\"_\"} b/{t=c_}\n\n"
+  },
+  {
+    "id": "attributes-a44a4c1453dd",
+    "source": "[x]{smp} [y]{dfn=\"a term\"}\n"
+  },
+  {
+    "id": "attributes-a48f792baa32",
+    "source": "\n[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-a517cbaf5a6f",
+    "source": " > para {.c} more\n"
+  },
+  {
+    "id": "attributes-a52c2f830e8a",
+    "source": "{#poem .verse}\n[x]{.a.b}\n::: |\nRoses are red,\n Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-a55f08d67088",
+    "source": "[x]{k='a\\\\\\b'}\n"
+  },
+  {
+    "id": "attributes-a5aa89a3dc36",
+    "source": "*x*{.ral}\n*x*{.ral}\n"
+  },
+  {
+    "id": "attributes-a5af695b0e75",
+    "source": "[a]: /u \t\t{.c}\n[a][[]\n\n"
+  },
+  {
+    "id": "attributes-a5bb39267577",
+    "source": "{#fig-m}\n::: figure\n\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n%%\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-a60b10cc63ac",
+    "source": " [x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-a63fdab65dae",
+    "source": "*[HTML]: Long Form\n\n[z](safe.html){title=\"See: RFC 3986, http://example.com\"}\nThe [HTML]{.x} key.\n# H+ \n"
+  },
+  {
+    "id": "attributes-a6486dcf4714",
+    "source": "{align=right style=\"color: red\"}\n_*a*{title=\"_\"} b_\nAligned text.\nAligned text.\n"
+  },
+  {
+    "id": "attributes-a69af733c5ec",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n````js\nconst x = 1\n```\n^ A listing panel\n\n^ An equation panel\n$$`E = mc^2`\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-a6c3c55b2706",
+    "source": "> q\n+ > {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-a6cbcf22e259",
+    "source": "![a](safe.png)>> {srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\n"
+  },
+  {
+    "id": "attributes-a6d5d82634e7",
+    "source": "not a div\n  [x]{.a#:: ti}\n"
+  },
+  {
+    "id": "attributes-a70a7511ee1c",
+    "source": " /_a_{t=\"/\"} b*{t=c/}\n"
+  },
+  {
+    "id": "attributes-a7171f2121fd",
+    "source": "- a\n*b*\n  {.x}\n  ```\n   code\n  ```\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-a739a0249db7",
+    "source": "  q\n> {.k}\ntail\n\n"
+  },
+  {
+    "id": "attributes-a75fd5d30297",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```{#i}js\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-a767dafed32f",
+    "source": " This paragraph.\n"
+  },
+  {
+    "id": "attributes-a780d4f36eac",
+    "source": "-{{#k} a\n"
+  },
+  {
+    "id": "attributes-a7be1fec180a",
+    "source": "{#poem .verse}\n::: |\nRoses are red,\n[x]{#k .key kbd}\n  Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-a7da93646d5e",
+    "source": ":: t\n   {.k}\n:  d\n   # H\n"
+  },
+  {
+    "id": "attributes-a806ba2fc50a",
+    "source": "[a]: /u\t{.c}\n\n[a][]\n[a][]\n"
+  },
+  {
+    "id": "attributes-a8102842a273",
+    "source": "::: note\n- para\n- {#x}\n- {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-a834227c34b1",
+    "source": "^[x ^[a]{.c} bb]\n"
+  },
+  {
+    "id": "attributes-a8682d6ca70e",
+    "source": "\n$`E=mc^2`{#i k=v}\n$`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-a89613f2d4b8",
+    "source": "# Plan\n{#Plan}\n\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-a8bb2cad5c91",
+    "source": ":: t\n :  d\n   {.k}\n   # H\n"
+  },
+  {
+    "id": "attributes-a8c95cb39e5f",
+    "source": "{#lst-greet}\n```python\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-a8ee1ee64fcf",
+    "source": "- a\n\n  {.c}\n- b\n{+`{#+}#}\n"
+  },
+  {
+    "id": "attributes-a95f0ddde493",
+    "source": " ![Apollo 11](apollo.jpg){.hero- }\n ^ Figure 1: First moon landing\n"
+  },
+  {
+    "id": "attributes-a991c04a0b8a",
+    "source": "-\n  [[t](/v)]{.c}\n"
+  },
+  {
+    "id": "attributes-a9d00720a2b8",
+    "source": "{.line-block}\n:```::\none\ntwo\n"
+  },
+  {
+    "id": "attributes-aa0f4427f69f",
+    "source": "- \n\n  {.x}\n  {#i}\n  - b\n"
+  },
+  {
+    "id": "attributes-aa605edc0a47",
+    "source": "1.{#k} {#h}\n   # x{.c}h\n"
+  },
+  {
+    "id": "attributes-aa8bc1f8a21e",
+    "source": "# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n## Setup\n\n## Setup\n\n{#ap+ i-v2}\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-aa9db36389d4",
+    "source": "- text\n\n  [a]: /u {.c}\n  [a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-aab16a4892eb",
+    "source": "[x]{k='a[r][d]\\\\b'}\n"
+  },
+  {
+    "id": "attributes-aabe336ce54e",
+    "source": "- a\n  - b\n  - c\n+     {#x}\n"
+  },
+  {
+    "id": "attributes-aaf4cf87e1f0",
+    "source": "1. \nA [danger]{style=\"x:expression(steal())\"} span.\nA [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-ab0216186bf2",
+    "source": "{k=v}{{+i+}\n"
+  },
+  {
+    "id": "attributes-aba4d2f0ceb1",
+    "source": "</#h>\n"
+  },
+  {
+    "id": "attributes-abc8a633d915",
+    "source": "-  a\n\n  {.x}\n\ntail\n"
+  },
+  {
+    "id": "attributes-abde90172d00",
+    "source": "#tag\n[<https://e.com>]{.c}\n"
+  },
+  {
+    "id": "attributes-ac27e3a8f73a",
+    "source": "> |={~ .x} |\n"
+  },
+  {
+    "id": "attributes-ac29c54ad684",
+    "source": ": A [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-ac342c2c512a",
+    "source": "a^[x]{.k}{.j} b\n\n"
+  },
+  {
+    "id": "attributes-ac398dd0251d",
+    "source": "  b\n[a]{k=\"\\zu\"}\n\n"
+  },
+  {
+    "id": "attributes-ac72b4a7aeef",
+    "source": "::: note\n- para\n- {#x}\n| a | b |\n ```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-aca8e1600cac",
+    "source": "  # H\n1. {k=\"{y}\"}\n"
+  },
+  {
+    "id": "attributes-acad41fab172",
+    "source": "$$`E=mc^2`{#eq-|= a |= b |1}\n>> \n"
+  },
+  {
+    "id": "attributes-ad6713c09527",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```jjs\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^`\n ^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-ad7ec9910fda",
+    "source": "\n- a\n\n  {.c}\n\n  b\n"
+  },
+  {
+    "id": "attributes-ad97ec9188c3",
+    "source": " # ^[fn]h\n-{#k} a\n"
+  },
+  {
+    "id": "attributes-adb1448227f3",
+    "source": "a^[x]{.k}{.j} b\n  para {.c} more\n"
+  },
+  {
+    "id": "attributes-adf7ef1a7117",
+    "source": "\n[some text]{.highlight #note key=val}\n[^f]\n"
+  },
+  {
+    "id": "attributes-ae26697d295a",
+    "source": "- a\n  {.k}\nail\nail\n"
+  },
+  {
+    "id": "attributes-ae5466e8bb95",
+    "source": "1.{#k} {#h}\n\n   # h\n"
+  },
+  {
+    "id": "attributes-ae6e2284498f",
+    "source": "- > - para\n  >   {#x}\n\ntaail\n"
+  },
+  {
+    "id": "attributes-aeabe59bb9fb",
+    "source": "[x]{k='a\\\\b'}\n{k=v}- \n"
+  },
+  {
+    "id": "attributes-aec31175baf9",
+    "source": " - > para\n{.note}\nThis paragraph gets the class.\n  >  {#x{}\ntail\n"
+  },
+  {
+    "id": "attributes-aecce80b314e",
+    "source": "> {a=b .c}\n> # Auto\n\n> {#x a=b}\n> # Written\n\n\n:::\n{a=b .c}\n# Divved\n:::\n"
+  },
+  {
+    "id": "attributes-aeed662c2136",
+    "source": "\n[a </#x]> b]{.c}\n"
+  },
+  {
+    "id": "attributes-af0c93f819ea",
+    "source": ":  d\n    {.k}\n tail\n"
+  },
+  {
+    "id": "attributes-af209473540a",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-af8e76adcef8",
+    "source": "{#lst-greet}\n```python\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n  \n*x*{.real}\n  See </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-af90385a99a8",
+    "source": "- a\n>   - b\n  +\n   {.x}\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-af9a377e034e",
+    "source": " [labbel]{key=c  .a #b}\n"
+  },
+  {
+    "id": "attributes-afa068d23d7e",
+    "source": "[a]: /u \t{.c}\n{#i}\n1. [a][]\n1. - a\n"
+  },
+  {
+    "id": "attributes-afd7b5ac2e60",
+    "source": "|{~ .x} |\n|~ .x} |\n{\n"
+  },
+  {
+    "id": "attributes-b0088f477fc8",
+    "source": "$`E=mc^2`{#i:  d k=v}\n"
+  },
+  {
+    "id": "attributes-b0592d6f0a79",
+    "source": "+ A [danger]{syle=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-b08ca60a5cf1",
+    "source": "[xx]{kbd onclick=\"alert(1)\"}\n[*CCtrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-b0936b549bac",
+    "source": ": para\n"
+  },
+  {
+    "id": "attributes-b0fb68dc03f0",
+    "source": "# |= a |= b |H\nLaunch :rockt:{.big} now.\n"
+  },
+  {
+    "id": "attributes-b10713c864dc",
+    "source": "+ [a]{title=\"`\"} and [n](u)\n  \n  {% a ` %}[n](u)\n[m](u`) and [m](`v) and [n](w)\n\n"
+  },
+  {
+    "id": "attributes-b15110c5eb56",
+    "source": "[a]]]{k='t\\zu'}\n"
+  },
+  {
+    "id": "attributes-b15ea9d705a3",
+    "source": "widget[x]{#i k=v}\n- [ ] x {#c#} y\n- [ ] x {#c#} y\n"
+  },
+  {
+    "id": "attributes-b169a6747cc9",
+    "source": "*xx*{.real}\n"
+  },
+  {
+    "id": "attributes-b1a358e5ce93",
+    "source": "[x]{onclick=\"ssteal()\"}\n"
+  },
+  {
+    "id": "attributes-b1a72c664421",
+    "source": "[x]{samp} [y]{dfn=\"a term\"}\ntext\nteext\n"
+  },
+  {
+    "id": "attributes-b1baf4e81746",
+    "source": "{#poem .verse}\n::: |\n1. \n:    Roses are red,\n  Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-b22e1a3b9bab",
+    "source": "- [ ]] x {#c#} y\n[some text]{.highlight #note key=val}\n- [x] {# note #}done\n\n"
+  },
+  {
+    "id": "attributes-b27c73dc4bf7",
+    "source": "- a\n  para\n  {.x}\n"
+  },
+  {
+    "id": "attributes-b2c0acfa9074",
+    "source": "pa```xra {.c} more\n"
+  },
+  {
+    "id": "attributes-b2ce2a7a2667",
+    "source": "- a\n- a\n\n  {.c}\n- b\n:: term\n"
+  },
+  {
+    "id": "attributes-b2ffaf699635",
+    "source": "  \n{#_id ._c _k=1 _=\"on click\"}\npara\npara\n"
+  },
+  {
+    "id": "attributes-b3176e1d66ff",
+    "source": "- a\n\n  {.c}\n\n\n\n> Brevity.\n  b\n"
+  },
+  {
+    "id": "attributes-b321633be6ae",
+    "source": "- a\n: \n    {.c}\n\n"
+  },
+  {
+    "id": "attributes-b33669a2c486",
+    "source": "[x]]{k='a\\\\b'}}\n"
+  },
+  {
+    "id": "attributes-b3446dd606e7",
+    "source": "{.note}\nT*[A]: bhis paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-b36be20ea143",
+    "source": "{aliign=right style=\"color: red\"}\n{}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-b371181202dd",
+    "source": "\t{{_x _b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-b3a5a1f2cd09",
+    "source": "```python\n{#lst-greet}\ndef greet():\n   return 1\n: ```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-b4555ed2cdc6",
+    "source": "{#Plan}\n# Pln\n\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-b4be9b88c80a",
+    "source": "- a\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-b4cd039e04b6",
+    "source": "$$`E=mc^2`{#eq-1}\n$$`E=mc^2`{#eq-1}\n^ cap\n"
+  },
+  {
+    "id": "attributes-b50c1b0ef1d6",
+    "source": "{k=\"{y}\"}\n # H\n"
+  },
+  {
+    "id": "attributes-b54c60b876f0",
+    "source": "\n{#a </#x#}> b#}\n"
+  },
+  {
+    "id": "attributes-b57eb32265bc",
+    "source": " ![alt](i---mg.png){.x}\n"
+  },
+  {
+    "id": "attributes-b625c982e7a9",
+    "source": ":: t\n:  d\n  {.k}\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-b6711660ea5b",
+    "source": "\n^ Figure 1: First moon landing\n![Apollo 11](apollo.jpg){.hero}\n"
+  },
+  {
+    "id": "attributes-b6899baf5680",
+    "source": "_*a*{t=\"_\"} b/{t=cc_}\n# 2024 Recap\n\n"
+  },
+  {
+    "id": "attributes-b6a23d30f7ed",
+    "source": "*x*{.real}text\n\n"
+  },
+  {
+    "id": "attributes-b6d816661966",
+    "source": "\n/_a_{t=\"/\"} b*{t=c/}\n_u_\n"
+  },
+  {
+    "id": "attributes-b746648de3c4",
+    "source": "*x*{k=a\t.b}\n  \n\n*y*{k=!`z`\"a\tb\"}\n}\n"
+  },
+  {
+    "id": "attributes-b74f0999fada",
+    "source": "\npara {.c} more\npara {.c} more\n"
+  },
+  {
+    "id": "attributes-b797274d479d",
+    "source": " ^[x ^[a]{.c} b]\n"
+  },
+  {
+    "id": "attributes-b7ba4b12664a",
+    "source": "1. 1. :widget[x]{#i k=v}\n1. :widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-b7c492f19a78",
+    "source": "[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n+ [y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-b7d121bfd05e",
+    "source": "> - a\n +  - b\n  +\n  {.x}\n  ````\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-b7d27562e56f",
+    "source": "[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n\n"
+  },
+  {
+    "id": "attributes-b7e992067222",
+    "source": "- text\n\n  [a]: /u {.c}\n\n[[a][]\n"
+  },
+  {
+    "id": "attributes-b8063e1a02c0",
+    "source": "*x*{[l](u)k=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-b86f74aa44a3",
+    "source": "+ {#insta```xll .featured}\n ## Setup\n"
+  },
+  {
+    "id": "attributes-b8ac25b92d98",
+    "source": "{k=\"a\\}b\"}\np\n\n[x]{.a!b}\n"
+  },
+  {
+    "id": "attributes-b8c24927004c",
+    "source": "> ^ Figure 1: First moon landing\n\n![Apollo 11](apollo.jpg){.hero}\n"
+  },
+  {
+    "id": "attributes-b8c955475e7c",
+    "source": "- a\n  - b\n{align=right}\n{align=right}\nAligned text.\n"
+  },
+  {
+    "id": "attributes-b912c6b6aae2",
+    "source": "[a]]{k='t\\zu'}\n\n"
+  },
+  {
+    "id": "attributes-b918b4640f29",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n:widget[x]{#i k=v}\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-b959da46fddc",
+    "source": "   # h:::{.c\nPara\n{.class}\n\nNext\n"
+  },
+  {
+    "id": "attributes-b9f300c907c3",
+    "source": "*[A]: b{k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-ba282fd3eb2e",
+    "source": "::t\n:  d\n  {.k}\n::: |\ntail*[A]: b\n"
+  },
+  {
+    "id": "attributes-ba34104b9423",
+    "source": "This paragraph gets the class.\nThis paragraph gets the class.\n{.note}\n"
+  },
+  {
+    "id": "attributes-ba938b2be2da",
+    "source": "# Café Notes\n# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n## Setup\n\n## Setup\n\n{#api-v2}\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-bb1ef5faa205",
+    "source": "_*a*{t=\"_\"} b/{t=c_\n"
+  },
+  {
+    "id": "attributes-bb30560d1748",
+    "source": "\na^[x]{.k}{.j} b\t\n"
+  },
+  {
+    "id": "attributes-bb6425c93402",
+    "source": ": {k=\"a\\}b\"}\n"
+  },
+  {
+    "id": "attributes-bbfbd95db65d",
+    "source": "{k=v}\npara {.c} more\n"
+  },
+  {
+    "id": "attributes-bc0021e04819",
+    "source": "::: note\n- {#x}\n```\n\ncode\n::::\n::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-bc2d901b7d0a",
+    "source": "tail\n"
+  },
+  {
+    "id": "attributes-bc35b48f084c",
+    "source": "# Café Notes\n\n# Über uns\n   # 2024 Recap\n   \n## Setup\n\n## Setup\n\n{#api-v2}\n# API\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-bc6ee9ffd5e9",
+    "source": "^ (b) Two\n:::\n[x]{.a!b}\n"
+  },
+  {
+    "id": "attributes-bce0e9268a5e",
+    "source": "```x\n[a]{k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-bcecfb168af1",
+    "source": "-{#k} tex\n\t # h\n"
+  },
+  {
+    "id": "attributes-bd48fbbcb2fc",
+    "source": "- a\n - b\n    {#x}\n  - c\n"
+  },
+  {
+    "id": "attributes-bd7aaeaf72b7",
+    "source": "={/a={k=b/}\n={/a={k=b/}\n"
+  },
+  {
+    "id": "attributes-bdf23fc8e903",
+    "source": " -{#k} text\n # h\n"
+  },
+  {
+    "id": "attributes-be1dfc6b4469",
+    "source": "::: note\n\n- {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-be97dd2d685b",
+    "source": "::{.c t\n:  d\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-bec2428c9996",
+    "source": "\na ^[t{# ] #}z] b\n"
+  },
+  {
+    "id": "attributes-bec4dd8fef1d",
+    "source": "\npara {.c} moe\n"
+  },
+  {
+    "id": "attributes-becf4c81c704",
+    "source": "[x]{kbd onclick=\"alert(1)\"}\n[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-bf4f0b001a54",
+    "source": "[{#a]#{}}\n"
+  },
+  {
+    "id": "attributes-bfdcfceb4bfc",
+    "source": " `# h\n-{#k} text\n:: t\n"
+  },
+  {
+    "id": "attributes-bff1621c160f",
+    "source": "\nLaunch :ro^[fn]cket:{.big} now.\n"
+  },
+  {
+    "id": "attributes-c06ee3e99e10",
+    "source": "{#raw-heading}\n# a `x %% b`{=html} c\n:  d\n"
+  },
+  {
+    "id": "attributes-c07471e272e0",
+    "source": "{#lst-greet}\n{#lst-greet}\n```python\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-c077e08ea62a",
+    "source": "[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n \n"
+  },
+  {
+    "id": "attributes-c08aee3ca6c3",
+    "source": "[{#a]#}\n_u_\n"
+  },
+  {
+    "id": "attributes-c0cab77a4cbb",
+    "source": "|{~ .x} ~~~|\n|{~ .x} |\n"
+  },
+  {
+    "id": "attributes-c0d865af4aab",
+    "source": "[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n-{#k} a\n[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-c0ffc4abb3b7",
+    "source": "- a\n\n\n  {.x}\n\ntail\n"
+  },
+  {
+    "id": "attributes-c133cfedc010",
+    "source": "[a]{title=\"`\"} and [n](u)\n{% a ` %}[n](u)\n\n\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-c17adb30fe0e",
+    "source": "*x*{k=\"a\nb\"}\n*[A]: b\n"
+  },
+  {
+    "id": "attributes-c18b29e5d9e4",
+    "source": "\n a\n+\n{.x}\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-c1d01c415f59",
+    "source": ": [a]: /u {.c}\n\n[a][]\n[a </#x]> ]{.c}\n"
+  },
+  {
+    "id": "attributes-c20875361341",
+    "source": ":: term\n:  def\n[a]:: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-c2774ccc8525",
+    "source": "{#fig-m}\n::: figure\n|= Kind|= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^2`\n\n> Measured twice.\n\n^ A quoted panel\n> Brevity.\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-c29bbbbab31b",
+    "source": "_*a*{=\"_\"} b/{t=c_}\n"
+  },
+  {
+    "id": "attributes-c29e85866d7f",
+    "source": "\n![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n\n"
+  },
+  {
+    "id": "attributes-c2b93c1eb074",
+    "source": "- a\n{}\n  {.x}\n  para\n[^f]\n\n"
+  },
+  {
+    "id": "attributes-c30124366147",
+    "source": "{.data}\n\n|= A |= B |\n:  def\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-c31b725b8433",
+    "source": "+ - para\n+ - {#x}\n```\ncode\n::::\n:::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-c31c8031c5e0",
+    "source": "  {k=\"{y}\"}\n  # H\n\n"
+  },
+  {
+    "id": "attributes-c37744a6a01e",
+    "source": "{.x}}\n[x] {% c %}{.k}\n"
+  },
+  {
+    "id": "attributes-c3edb2abff56",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-c3f83066925b",
+    "source": ": ![a](/u){src=/v}\n`c`{#a .k}{#b k=1}{.k k=2}\n`c`{#a .k}{#b k=1}{.k k=2}\n"
+  },
+  {
+    "id": "attributes-c4b3ea444b0a",
+    "source": ":: t\n   {.k}\n:  d\ntail\n"
+  },
+  {
+    "id": "attributes-c4f15f719768",
+    "source": "1. [x]{class=w-1/2 .bar}\n- [x] {# note #}done\n"
+  },
+  {
+    "id": "attributes-c53359e105e9",
+    "source": "\n| |{{.row}\n"
+  },
+  {
+    "id": "attributes-c57d4bd36a54",
+    "source": "-{#k} text\n # h\n- \n  {.x}\n"
+  },
+  {
+    "id": "attributes-c5868cda5324",
+    "source": ":: t\n{.k}\ntail\n"
+  },
+  {
+    "id": "attributes-c5a169f0f2aa",
+    "source": "::: note\n- para\n- {#x}\n```\n\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-c5c781d2c881",
+    "source": "`c`{#a .k}{#b k=1}{.k k=2}\npara {.c} more\n"
+  },
+  {
+    "id": "attributes-c5d51dc500a0",
+    "source": "![a](safe.png){srcset=\"safe.png 1x, javacript:alert(1)  2x\"}\n"
+  },
+  {
+    "id": "attributes-c6b59df43573",
+    "source": "{k=v}{+i+}\nThis paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-c6c6fc51de75",
+    "source": " {k=\"{y}\"}\n# H\n"
+  },
+  {
+    "id": "attributes-c6f85a8ad29c",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\na [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-c7155689f68a",
+    "source": "1. *x*{`k=a\t.b}\n   \n*y*{k=\"a\tb\"}\n"
+  },
+  {
+    "id": "attributes-c754c7926212",
+    "source": ":: term\n:  def\n[a]: /u {.c}\n \n\n [a][]\n"
+  },
+  {
+    "id": "attributes-c75996f36afe",
+    "source": "::::\nA plain box.\n:::\n\n{#s .sidebar}\n:::\nA div with attributes.\n:::\n"
+  },
+  {
+    "id": "attributes-c75f6c3a7eac",
+    "source": "Text[^a]{.ref}.\n\n\n[^a]:`` note.\n"
+  },
+  {
+    "id": "attributes-c763a5f47a0c",
+    "source": "[x]{title\"a b\"}\n"
+  },
+  {
+    "id": "attributes-c84c6083ed65",
+    "source": "\n*x*{k=a\t.b}\n*y*{k=\"a\tb\"}\n"
+  },
+  {
+    "id": "attributes-c8a3f6aed4d5",
+    "source": "| |{.row}\n  - [x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-c8df72fca9e4",
+    "source": "- > par> a\n"
+  },
+  {
+    "id": "attributes-c90cf76bdc28",
+    "source": "[^f]: t\n- a\n\n  {.x}\n  \ntail\n"
+  },
+  {
+    "id": "attributes-c914cdd97825",
+    "source": "\n:: t\n:  d\n   {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-c94e5bd4f1f8",
+    "source": "{#lst-greet}\n```python\n{#i}\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-c95507c57b84",
+    "source": "[{#a]#}\nA [danger]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-c99f6b4539e7",
+    "source": "{#lst-greet}\n```python\ndef greet():\n```\n    return 1\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-c9a06a2c519f",
+    "source": "\n[x] {% c %}{.k}\n- > - para\ntail\n"
+  },
+  {
+    "id": "attributes-c9aa6d68fa8c",
+    "source": "[Example][ex] and [again][ex]\n\n[ex]: https://example.com {.external}\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-c9faccaca447",
+    "source": "- a\n\n\n  {.x}\n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-c9fb2a6169cc",
+    "source": " + |{#x} < content |\n"
+  },
+  {
+    "id": "attributes-ca0d56f2e926",
+    "source": "$`E=mc^2`{#i k=v}%%\n\n"
+  },
+  {
+    "id": "attributes-ca960e5f0700",
+    "source": "- text\n\n   [a]: /u {.c}\n\n [a][]\n"
+  },
+  {
+    "id": "attributes-ca9a37c5d4db",
+    "source": ":: t\n:  d\n![Apollo 11](apollo.jpg){.hero}\n a^[x]{.k}{.j} b\n   {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-caac0b29a721",
+    "source": "{#Plan}\n# Pllan\n. \n\nSee </#Plan> and </#plan>.\n"
+  },
+  {
+    "id": "attributes-cafea9620417",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n   [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-cb034e99f77b",
+    "source": "+ :widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-cb7e5178fbed",
+    "source": "{#[r][d]lst-greet}\n```python\ndef greet():\n    return 1\n```\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-cbf3c57cb809",
+    "source": " {k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-cc7c623c1196",
+    "source": "{#poem .verse}\n::: |\nRoses a---re red,\n  Violets are blue.\n*A]: b\n:::\n"
+  },
+  {
+    "id": "attributes-cc8514e61bae",
+    "source": "\n{_x _b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-cc8a739e2846",
+    "source": "[y](afe.html){ping=\"safe.html javascript:alert(1# H)\"}\n"
+  },
+  {
+    "id": "attributes-cc9f4c333b6a",
+    "source": "para {.c}  mor}e\n"
+  },
+  {
+    "id": "attributes-ccc2b0555e5b",
+    "source": "- text\n\n\n  [a]: /u {.c}\n> \n[a][]\n"
+  },
+  {
+    "id": "attributes-ccd2afdfbb80",
+    "source": "{:fr}\n{lang=de}\nTex{t\n"
+  },
+  {
+    "id": "attributes-cd31978b58fe",
+    "source": "{k=\"a\\}b\"}\n{k=\"a\\}b\"}\np\n"
+  },
+  {
+    "id": "attributes-cd44a9178433",
+    "source": "-{.x1} a\n-{.x1} a\n      # h\n"
+  },
+  {
+    "id": "attributes-cd4f9b6eff18",
+    "source": "{.data}\n|= A |=  |\n| 1  | 2  |\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-cd725ad086ad",
+    "source": "[<https://e.com>]{.c}\n+ [<https://e.com>]{.c}\n"
+  },
+  {
+    "id": "attributes-cda915599293",
+    "source": "{#Plan}\n# Plan\n```x\nSee </#Plan> and </#plan>.\n\n"
+  },
+  {
+    "id": "attributes-ce0a3cc70be0",
+    "source": "   ````\n  x\n[some text]{.highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-ce1cd5236582",
+    "source": "^[x ^[a{.c}} b]\n"
+  },
+  {
+    "id": "attributes-ce23c91f5185",
+    "source": "[some txt]{.highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-ce40c0be1173",
+    "source": "a ^[t{# ] #}z]b\n"
+  },
+  {
+    "id": "attributes-ce68970d0433",
+    "source": "{.line-block}\n :::\n:::\none\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-ce6b27f128f7",
+    "source": "[x]{.a#i}\n![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-ce83ca8f098a",
+    "source": "{.lline-block}\n:::\n[<https://e.com>]{.c}\none\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-ce9a29f1a672",
+    "source": "- aa\n{.x}\n+\n> q\n- c\n"
+  },
+  {
+    "id": "attributes-cea8a8af5f29",
+    "source": " ![a](/u){src=/v\n"
+  },
+  {
+    "id": "attributes-cf53f1c5ff54",
+    "source": "\t *x*{.eal}\n"
+  },
+  {
+    "id": "attributes-cf7a9023004e",
+    "source": "- > - para\n\n  >   {#x}\ntail\n"
+  },
+  {
+    "id": "attributes-cfa876064bb6",
+    "source": "^ cap\n^ cap\n {#raw-heading}\n# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-d01cd645b1ce",
+    "source": "[[t](/v)]{.c}\n={/a={k=b/}\n|={~ .x} |\n"
+  },
+  {
+    "id": "attributes-d022b3c624cf",
+    "source": "\n[Example][ex] and [again][ex]\n [ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-d0336cf83fdb",
+    "source": "::: {.x}\n::%%%:\nnot a div\n"
+  },
+  {
+    "id": "attributes-d0a37de5fdf8",
+    "source": "[]: /u \t{.c}\n^ cap\n[atext][]\n"
+  },
+  {
+    "id": "attributes-d0a585abc86e",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n[r]: /u\n\n[^1]: n\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-d0cd4a015466",
+    "source": "- a\n  - \n  +\n  {.x}\n  ```\n  ````\n"
+  },
+  {
+    "id": "attributes-d1025aacc4c8",
+    "source": "[Example][ex] and [again][ex]\n{.c}\n\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-d1379a54a827",
+    "source": "  >   {#x}\n- > - para\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-d157e15d5f6b",
+    "source": "---\n:widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-d159c613f798",
+    "source": "[a]{title=\"`\"} and [n](u)\n{k=\"v\"}\n{% a ` %}[n](u)\n\n\n[m](u`) and [m](`v) and [n](w)\n"
+  },
+  {
+    "id": "attributes-d1bdcd1f5248",
+    "source": "- a\n~s~\n\n  {.x}\ntail\n"
+  },
+  {
+    "id": "attributes-d206be99f319",
+    "source": "- a\n\n ![a](safe.png){srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\n   {.c}\n   - b\n"
+  },
+  {
+    "id": "attributes-d23c385ceaa5",
+    "source": "[a </#x]> b]{.c}\n1.{#k} {#h}\n   # h\n"
+  },
+  {
+    "id": "attributes-d2a6f3ad9f2d",
+    "source": "- > para\n   >  {#x}\n tai\n"
+  },
+  {
+    "id": "attributes-d2cab031d9b3",
+    "source": "\n_*a*{t=\"_\"} b/{t=c_}\n_*a**{t=\"_\"} b/{t=c_}\n"
+  },
+  {
+    "id": "attributes-d334799a2d34",
+    "source": "{.line-block}\n:::\n{k=\"{y}\"}\n# H\n"
+  },
+  {
+    "id": "attributes-d33a554a1981",
+    "source": "[a]{title=\"`\"} and [n](u)\n\n{%{.a #b} a ` %}[n](u)\n\n\n[m](u`) and [m](`v) and [n](w)\n\n"
+  },
+  {
+    "id": "attributes-d351b7d35a6f",
+    "source": "*x*{k=\"a\nb\"}\n\n"
+  },
+  {
+    "id": "attributes-d3aab4b53698",
+    "source": "a.{.c}  An alpha item.\na.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-d3ca45e01898",
+    "source": "- > para\ntail\n  > ::: {#x}\n"
+  },
+  {
+    "id": "attributes-d3cc17e29a68",
+    "source": "={/aa={k=b/}\n={/a={k=b/}\n\n"
+  },
+  {
+    "id": "attributes-d3fab13c85e8",
+    "source": "`c`{#a .k}{#b k=1}{.k k=2}\n\n"
+  },
+  {
+    "id": "attributes-d403f34588c5",
+    "source": "[x]]{k='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-d472b9bcd385",
+    "source": "{.note}\n{.note}\nThis paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-d47ed43f78c8",
+    "source": "\n- a\n%%%  {.k}\nt/i/ail\n"
+  },
+  {
+    "id": "attributes-d501d0188377",
+    "source": "*[HTML]: Long Form\nThe [HTML]{.x} key.\n-{#k} a\n"
+  },
+  {
+    "id": "attributes-d5133fbbd104",
+    "source": "[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n [x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-d580075a8270",
+    "source": "\n[some text]{.highlight #note key=val}\n\n"
+  },
+  {
+    "id": "attributes-d60e8fac5486",
+    "source": "{#_id ._c _k=1 _=\"on click\"}\n *b*\npara\n"
+  },
+  {
+    "id": "attributes-d623f02013a9",
+    "source": "+ ![a]/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-d658e586e80b",
+    "source": ": `c`{#a .k}{#b k=1}.k k=2}\n"
+  },
+  {
+    "id": "attributes-d669fd4a42f8",
+    "source": ":  d\n{.line-block}\n:::\noone\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-d6b2d51e39b0",
+    "source": "{#Plan}\n# Plan\n\n\nSee </#Plan1. > and </#plan>.\n"
+  },
+  {
+    "id": "attributes-d6b9a123fc54",
+    "source": " [a]{k==v.w*[A]: b}\n"
+  },
+  {
+    "id": "attributes-d6e0ab53f4d7",
+    "source": " | |{.row}\n"
+  },
+  {
+    "id": "attributes-d74aa636bbaf",
+    "source": "- a\n\n  {.x}\n\n  {#i}\n - b\n"
+  },
+  {
+    "id": "attributes-d74c7cc506ca",
+    "source": "/_a_{t=\"/\"} b*{t=c/}\n`\n#tag\n"
+  },
+  {
+    "id": "attributes-d77575a15672",
+    "source": "> {.c}\n> \n> text\n"
+  },
+  {
+    "id": "attributes-d7a022809675",
+    "source": "- [ ] x {#c#} y\n- [x] {# note #}done\n[a]{k=\"t\\zu\"}[^f]\n"
+  },
+  {
+    "id": "attributes-d80bc7095235",
+    "source": "1. \n![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-d84327095e3d",
+    "source": " [x]{samp} [y]{dfn=a term\"}\n"
+  },
+  {
+    "id": "attributes-d886e8776ccb",
+    "source": ":: t\n:  d\n\t{.k|= a |= b |}\n\ttail\n"
+  },
+  {
+    "id": "attributes-d8af27569d4f",
+    "source": "- a\n\n   {.c}\n  - b\n"
+  },
+  {
+    "id": "attributes-d8d263f71839",
+    "source": "- a\n {.k}\ntail\ntail\n"
+  },
+  {
+    "id": "attributes-d8d44fc7df57",
+    "source": "^ Figure 1: First moon landing\n"
+  },
+  {
+    "id": "attributes-d8ded291dc0e",
+    "source": "- a\n\n  {.x}\n\ntaiil\n"
+  },
+  {
+    "id": "attributes-d8e3f4f8db72",
+    "source": ":: t\n={/a={k=b/}\n:  d\n  {.k}\ntail\n"
+  },
+  {
+    "id": "attributes-d9d8eb00505f",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-d9e7c365a1cf",
+    "source": "!`z`\n![a](/u){src=/v}\n"
+  },
+  {
+    "id": "attributes-da0ba2437fa0",
+    "source": "{#poem .verse}\n::: |\nRoses are red,\n *  Violets are blue.\n::`:\n"
+  },
+  {
+    "id": "attributes-da33a1d97d64",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n::::\n# H\n[r]: /u\n}\n[^1]: n\n"
+  },
+  {
+    "id": "attributes-da4e9abbbe33",
+    "source": "\t  # h\n-{#k} {#h}\n"
+  },
+  {
+    "id": "attributes-da740682a4d5",
+    "source": "\n a.{.c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-dab86ed6d765",
+    "source": "[x]{onclick=\"steal()\"}\n~s~\n"
+  },
+  {
+    "id": "attributes-dacd1c1a65b4",
+    "source": "![a](/u){src=/v}\n\n"
+  },
+  {
+    "id": "attributes-dad9d8097ea8",
+    "source": "_*a*{title=\"_\"} b_\n_*a*{title=\"_\"} b_\n</#h>\n"
+  },
+  {
+    "id": "attributes-db27c1c716b1",
+    "source": "^ Figure 1: First moon landing\n@user\n ![Apollo 11](apollo.jpg){.hero}\n"
+  },
+  {
+    "id": "attributes-db52a41a5ac5",
+    "source": ": [x]{{class=w-1/2 .bar}\n"
+  },
+  {
+    "id": "attributes-dbe890447df0",
+    "source": "![a](safe.png){srcset=\"!`z`https://example.com/a,data:x 1x\"}\n"
+  },
+  {
+    "id": "attributes-dbfedd8b3710",
+    "source": "[x] {% c %%}{.k}\n"
+  },
+  {
+    "id": "attributes-dc223875a97b",
+    "source": "{#lst-greet}\n```pytho\ndef greet():\n    return 1\n```\n  {.x}\n^ Listing #: a greeting\n\nSee </#lst-greet>.\n"
+  },
+  {
+    "id": "attributes-dc6ae1e730c9",
+    "source": "- t\n   {.c}\n  %% c\n   ````\n  x\n"
+  },
+  {
+    "id": "attributes-dc8f2544a134",
+    "source": "- a\n\n  {.x}\ntail\n\n"
+  },
+  {
+    "id": "attributes-dca960af67df",
+    "source": "```x\n- [] x {#c#} y\n- [x] {:  d# note #}done\n"
+  },
+  {
+    "id": "attributes-ddf333289512",
+    "source": "Text[^a]{.ref}.\n [^a]: note.\n\n"
+  },
+  {
+    "id": "attributes-de062eed280a",
+    "source": "  {.data}\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-de16b06c3311",
+    "source": "[x]{onclick=\"steal()\"}\n[x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-de26e2c34cf8",
+    "source": "> a\n{#i}> {.c}\n> text\n"
+  },
+  {
+    "id": "attributes-de5706040a33",
+    "source": "::: note\n::: note\n- {#x}\n```\ncode\n::::\n :::\nafter _u_*b*\n"
+  },
+  {
+    "id": "attributes-def63ca9749a",
+    "source": ":: t\n  [x]{title=\"a b\"}\n"
+  },
+  {
+    "id": "attributes-df0716507a5d",
+    "source": "# Café Notes\n\n# Über uns\n\n# 2024 Recap\n\n> ## Setup\n\n## Setup\n\n{#api-v2}\n# API\n\nSee </#cafe-notes>, </#section-2024-recap>, </#Setup-2>, and </#api-v2>.\n"
+  },
+  {
+    "id": "attributes-df8741efe83d",
+    "source": " [x]{k='\\\\b'}\n"
+  },
+  {
+    "id": "attributes-df88179a8afd",
+    "source": ":: term\n[x]{.a#i}\n:  def\n[a]: /u {.c}\n\n^ cap\n[a][]\n"
+  },
+  {
+    "id": "attributes-dfee3252cbc0",
+    "source": "- a\n\n\n  {.c}\n  b\n"
+  },
+  {
+    "id": "attributes-e03458e3587f",
+    "source": "={/a={k=b/}\n={/a={k=b/}\n={/a={k=b/}\n"
+  },
+  {
+    "id": "attributes-e061437121ec",
+    "source": ":: term\n:  def\n[a]: /u {.c}\na ^[t{# ] #}z] b\n\n[a][]\n{.c\n"
+  },
+  {
+    "id": "attributes-e068b5187c42",
+    "source": "[z](safe.html){ttle=\"See: RFC 3986, http://example.com\"}\n:::\n"
+  },
+  {
+    "id": "attributes-e0b3074ef438",
+    "source": "{align=right style=\"color: red\"}\n - a\n\n   {.c}\n\n  b\n"
+  },
+  {
+    "id": "attributes-e0cdae9511f1",
+    "source": ":: term\n:  def\n[a]: /u {.c}\n\n[a][]\na][]\n"
+  },
+  {
+    "id": "attributes-e0dc6ba1c505",
+    "source": "- [x] {# note #}d:: tone\n"
+  },
+  {
+    "id": "attributes-e0e191f213f9",
+    "source": "%%%- a\n \n  {.x}\n\nta[d]: uil\n"
+  },
+  {
+    "id": "attributes-e0e772ce4559",
+    "source": " a.{.c}  An alpha item.\n::: ||\n"
+  },
+  {
+    "id": "attributes-e111f917ecf4",
+    "source": "\n- b\n{.x}\n---\n"
+  },
+  {
+    "id": "attributes-e1149009ae29",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n. \n```x\n[r]: /u\n \n[^1]: n\n"
+  },
+  {
+    "id": "attributes-e122f3f17008",
+    "source": "_*a*{t=\"_\"} b/{t=c_}\n{.line-block}\n- :::\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-e174911da427",
+    "source": "~~~\n$`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-e1bdc4c39252",
+    "source": " 1.{#k} {#h}\npara *[A]: b{.c} more\n"
+  },
+  {
+    "id": "attributes-e1f68e487bd5",
+    "source": " ^ cap_u_\n$$`E=mc^2`{#eq-1}\n"
+  },
+  {
+    "id": "attributes-e217441bac53",
+    "source": "[x]{k='a\\\\b'}\n\n"
+  },
+  {
+    "id": "attributes-e220540c03d3",
+    "source": "*x*{k=a\t.b}\n*x*{k=a\t.b}\n*y*{k=\"a\tb\"}\n\n"
+  },
+  {
+    "id": "attributes-e234affcb3cc",
+    "source": "{.line-block}\n:::\nonee\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-e2778af506d6",
+    "source": "|={~ .x} |\n- a\n}\n\n\n"
+  },
+  {
+    "id": "attributes-e2a7a7e0e769",
+    "source": "[z](safe.html){title=\"See: RFC 3986, http://example.com\"}\n[x]{onclick=\"steal()\"}\n"
+  },
+  {
+    "id": "attributes-e3b8c2571c3e",
+    "source": "- t\n   {.c}\n  %% c\n   ````\n-   x\n"
+  },
+  {
+    "id": "attributes-e3c058fef4be",
+    "source": "{.note}\n\n[a][]\nThi paragraph gets the class.\n\n"
+  },
+  {
+    "id": "attributes-e3c2eb2e7e63",
+    "source": "\t> a\n\t> {.c}\n\t> text\n"
+  },
+  {
+    "id": "attributes-e40dce86a00d",
+    "source": "> a\n> {.c}\n"
+  },
+  {
+    "id": "attributes-e45222f6b2d4",
+    "source": "- a\na^[x]{.k}{.j} b\n\n  {.x}\n  ```\n  code\n-   ```\n- - c\n"
+  },
+  {
+    "id": "attributes-e52e126aa86c",
+    "source": "|={.total} Total |= 99 |\n- a\n  - b\n  +\n  {.x}\n  ```\n\n  code\n  ```\n"
+  },
+  {
+    "id": "attributes-e53b4e41edf0",
+    "source": "- [ ] x {#c#} y\n- [x] {# note #}done\n- [x] {# note #}done\n: \n"
+  },
+  {
+    "id": "attributes-e5528bd43a7f",
+    "source": ":: t\n:  d\n   {.k}\n\n"
+  },
+  {
+    "id": "attributes-e55a1b4c82a7",
+    "source": "{#a </#x#}> b#\n"
+  },
+  {
+    "id": "attributes-e594b66ac8e5",
+    "source": " {.data}\n|= A |= B |\n- | 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-e5980678bdee",
+    "source": "A [danger]{srcdoc=\"<scipt>\"} span.\n"
+  },
+  {
+    "id": "attributes-e60e7ba4b1ff",
+    "source": "|=.total} Total |= 99 |\n| a | b |\n"
+  },
+  {
+    "id": "attributes-e6696d1b99ee",
+    "source": "> a\n> {..c}\n> tex\n"
+  },
+  {
+    "id": "attributes-e67ad4dea614",
+    "source": "/i/\nLaunch :rocket:{.big}} now.\n"
+  },
+  {
+    "id": "attributes-e6de2da7f126",
+    "source": "{#install .featured}\n {#install .featured}\n ## Setup\n"
+  },
+  {
+    "id": "attributes-e724851575c7",
+    "source": "[a]{title=\"`\"} and [n](u)\n\n {% a ` %}[n](u)\n[m](u`) and [m](`v) and [n](w)\n\n"
+  },
+  {
+    "id": "attributes-e74846860ec8",
+    "source": "\n{k=v}{+i+}\n{k=v}{+i+}\n"
+  },
+  {
+    "id": "attributes-e75040772b04",
+    "source": "::: note\n- a\n\n  ``{.c}\n  b\n\n"
+  },
+  {
+    "id": "attributes-e75ea3c6ae29",
+    "source": " *x*{.real}\n"
+  },
+  {
+    "id": "attributes-e7a8b27b4bcc",
+    "source": " [y](safe.html){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-e7fb2fc08704",
+    "source": "{#poem .verse}\n::: |\nRoses are red,\n  Violets are blue.\n  Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-e802d0b3c0c1",
+    "source": "a ^[t{## ] #}z] b\n"
+  },
+  {
+    "id": "attributes-e83a4fdc0a27",
+    "source": "- a\n  - b\ntail\n    {#x}\n  - c\n"
+  },
+  {
+    "id": "attributes-e86b0df65e05",
+    "source": "1. [x]{k='a\\\\b'}\n"
+  },
+  {
+    "id": "attributes-e8827c44a33a",
+    "source": "[m](u`) and [m](`v) and [n](w)\n A [span]{.c} here.\n"
+  },
+  {
+    "id": "attributes-e89680d3e23b",
+    "source": "{#fig-x .columns-2}\n::: figure\n{#fig-x-a}\n ![one](a.png)\n^ (a) One\n\n{#fig-x-b}\n![two](b.png)\n%%\n^ (b) Two\n:::\n^ Figur #: Group caption\n"
+  },
+  {
+    "id": "attributes-e8c887db719b",
+    "source": "[x]{class=w-1/2 .$`x`bar}\n"
+  },
+  {
+    "id": "attributes-e8ce010fe269",
+    "source": ":: t\n:  d\n    {.k}\n   # H\n"
+  },
+  {
+    "id": "attributes-e8ced5a276d9",
+    "source": ". \n|={{k=\"v\"}~ .x} |\n"
+  },
+  {
+    "id": "attributes-e8eabe67f39d",
+    "source": "{.data}\n|= A |= B |\n | 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-e8f1510d9e38",
+    "source": "|=={~ .x} |\n"
+  },
+  {
+    "id": "attributes-e8f53c3a99c9",
+    "source": "[a]{k=\"t\\zu\"_u_}\n"
+  },
+  {
+    "id": "attributes-e8fc23b047fb",
+    "source": "1. x{.c}\n   para {.c} more\n~~~\n"
+  },
+  {
+    "id": "attributes-e96d43a29320",
+    "source": "[Example][ex] and [agaain][ex]\n+ \n%%\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-e9769177dc70",
+    "source": "- a\n\n  {.x}\n  {#i}\n  - b\n```\n^ Listing #: a greeting\n"
+  },
+  {
+    "id": "attributes-e97f39284547",
+    "source": " # h\n # h\n-{#k} tex\n"
+  },
+  {
+    "id": "attributes-e9d64cbe5207",
+    "source": "{k=v}{+i+}\n#tag\n"
+  },
+  {
+    "id": "attributes-e9e8a0b56f94",
+    "source": " :  d\n{.k}\ntail\n"
+  },
+  {
+    "id": "attributes-ea17c848f8d2",
+    "source": "Launch :rocket:{.big} now.\n  [a]: /u {.c}\n\n"
+  },
+  {
+    "id": "attributes-eae843b0d51c",
+    "source": ". \n| |{.row}\n"
+  },
+  {
+    "id": "attributes-eb4de2eac8df",
+    "source": "[aa]{k='t\\zu'}\n"
+  },
+  {
+    "id": "attributes-eb60e06dc7a5",
+    "source": " *[HTML]:  Long Form\n{#_id ._c _k=1 _=\"on click\"}\n\nThe [HTML]{.x} key.\n"
+  },
+  {
+    "id": "attributes-eb70a3d8546e",
+    "source": "\n[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-eb98611f941f",
+    "source": "::: ote\n- {#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-eba8702e9d43",
+    "source": "> Text[^a]{.ref}.\n \n"
+  },
+  {
+    "id": "attributes-ebd516b3e311",
+    "source": ":: t\n{.data}\n|= A |= B |\n| 1  | 2  |\n"
+  },
+  {
+    "id": "attributes-ec7efff0344d",
+    "source": "*x*{k=a\t.b}\n- \n  *y*{k=\"a\tb\"}\n  *y*{k=\"a\tb\"}\n  *y*{k=\"a\tb\"}\n"
+  },
+  {
+    "id": "attributes-ecddae98cc50",
+    "source": " # h\n -{#k} {#h}\n"
+  },
+  {
+    "id": "attributes-ed34547c34d6",
+    "source": "tail\n This paragraph.\n  {.note}\n"
+  },
+  {
+    "id": "attributes-ed3ca838cad5",
+    "source": "[x]{onclick=\"ste@useral()\"}\n[x]{onclick=\"seal()\"}\n"
+  },
+  {
+    "id": "attributes-ed56e351a99b",
+    "source": "@user> a\n> {.c}\n > text\n"
+  },
+  {
+    "id": "attributes-ed576ade1588",
+    "source": "[[t](/v)]{.c}\n*[A]: b\n*[A]: b\n"
+  },
+  {
+    "id": "attributes-ed984824771d",
+    "source": "{#fig-m}\n::: figure\n|= Kind |= N |\n| a    | 1 |\n\n```js\nconst x = 1\n```\n^ A listing panel\n^ A listing panel\n\n$$`E = mc^2`\n^ An equation panel\n\n> Measured twice.\n\n> Brevity.\n^ A quoted panel\n:::\n^ Figure #: Mixed panels\n"
+  },
+  {
+    "id": "attributes-ede697d1f341",
+    "source": "{#poem .verse}\n::: |\nRoses are red,\n  Violets are blue.\n::\n"
+  },
+  {
+    "id": "attributes-ee86f89fac92",
+    "source": " # h\n-{#k} {#h}\n"
+  },
+  {
+    "id": "attributes-ee884f67e8a7",
+    "source": "::: |={/a={k=b/}\n"
+  },
+  {
+    "id": "attributes-ee8c8152e847",
+    "source": "[[t](/v)]]{.c}\n"
+  },
+  {
+    "id": "attributes-eeacbbb9bcba",
+    "source": "- text\n\n:::\n  [a]: /u {.c}\n\n[a][]\n"
+  },
+  {
+    "id": "attributes-eee494e29d32",
+    "source": "::: note\n- {{#x}\n```\ncode\n::::\n:::\nafter *b*\n"
+  },
+  {
+    "id": "attributes-eeeaf84601d0",
+    "source": "*x*{k=a\t.b}\n*x*{k=a\t.b}\n\n*y*{k=\"a\tb\"\n\n"
+  },
+  {
+    "id": "attributes-ef20b2a4e463",
+    "source": "![a](/){src{.c=/v}\n"
+  },
+  {
+    "id": "attributes-efa63fc7e80c",
+    "source": "/{^~~~~a/{k=b^}\n"
+  },
+  {
+    "id": "attributes-efc57826035d",
+    "source": "_*a*{title\"_\"} b_\n"
+  },
+  {
+    "id": "attributes-f06b8cceceba",
+    "source": " \n\t$`E=mc^2`{#i k=v}\n"
+  },
+  {
+    "id": "attributes-f08fbc119a45",
+    "source": "[x]{class=w-1/2 .~~~bar\n"
+  },
+  {
+    "id": "attributes-f0c2685080cb",
+    "source": "       # h\n-{.x1} a\n"
+  },
+  {
+    "id": "attributes-f0f3f26c88c8",
+    "source": "\n![alt](mg.png){.x}\n"
+  },
+  {
+    "id": "attributes-f1104ec22027",
+    "source": "{:fr}\n{:fr}\n {lang=de}\nText\n"
+  },
+  {
+    "id": "attributes-f16c07163b43",
+    "source": "![Apollo 11](apollo.jpg){.hero}\n![Apollo 11](apollo.jpg){.hero}\n"
+  },
+  {
+    "id": "attributes-f18515ec7b49",
+    "source": "- [[t](/v)]]{.c}\n"
+  },
+  {
+    "id": "attributes-f18c3235bcd6",
+    "source": "   # h\n1.{#k} {#h}\n{#i}\n"
+  },
+  {
+    "id": "attributes-f1c3211d4e74",
+    "source": "\t{k=v}{+i\n"
+  },
+  {
+    "id": "attributes-f1cd60bb1690",
+    "source": "- t\n  {.c}\n   ````\n:::  x\n[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-f21227e737b3",
+    "source": "> [x]{samp} [y]{dfn=\"a term\"}\n"
+  },
+  {
+    "id": "attributes-f21c09ae8451",
+    "source": " ={/</#h>a={k=b/}\n"
+  },
+  {
+    "id": "attributes-f2b243807e71",
+    "source": "- a\n\n  {.c}\n   b\n"
+  },
+  {
+    "id": "attributes-f2bba43a8dc7",
+    "source": "a [t[^1]{#z}][r] [^1]{#y}\n\n\n[r]: /u\n: \n[^1]:n\n"
+  },
+  {
+    "id": "attributes-f2ee7f47a3c2",
+    "source": "Text[^a]{.ref.\n\n [^a]: note.\n"
+  },
+  {
+    "id": "attributes-f2f2f7b04467",
+    "source": "\n[Ex[^f]: tample][ex] and [again][ex\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-f2f7d0c1e9b1",
+    "source": "\n\n*x*{k=\"a\nb\"}\n"
+  },
+  {
+    "id": "attributes-f34132bbbbeb",
+    "source": "-{#k} . {#h}\n  # h\n"
+  },
+  {
+    "id": "attributes-f3e934e0eeda",
+    "source": "[label]{keyc .a #b}\n"
+  },
+  {
+    "id": "attributes-f463791ff443",
+    "source": " A [danger]]{style=\"x:expression(steal())\"} span.\n"
+  },
+  {
+    "id": "attributes-f4b7dc495202",
+    "source": "[d]: u\n[a]{k=\"t\\zu\"}\n"
+  },
+  {
+    "id": "attributes-f4c64e67af29",
+    "source": "::: {.x}\nnot a div\n1. :::\n"
+  },
+  {
+    "id": "attributes-f4ccc3bcfa56",
+    "source": "{align=right}\nAlignex{.c}d text.\n"
+  },
+  {
+    "id": "attributes-f4cd25e80a44",
+    "source": "> q\n> {.k}\ntail[d]: u\n"
+  },
+  {
+    "id": "attributes-f5393d46c1c3",
+    "source": "{#i}\n[x]{.a#i}\n[x]{.a#i}\n"
+  },
+  {
+    "id": "attributes-f54b418a64f0",
+    "source": "- a\n\ntail\n+    {.c}\n+    - b\n"
+  },
+  {
+    "id": "attributes-f559b1caa253",
+    "source": "^[{.cfn]\n^[fn]\n:widget[x]{#i k=v}\n"
+  },
+  {
+    "id": "attributes-f56b42cd5a39",
+    "source": "[y](safe.ht{#i}ml){ping=\"safe.html javascript:alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-f5d65a72c7ea",
+    "source": "a ^[t{# ] #}z] b\na ^[t{# ] #}z] b\n"
+  },
+  {
+    "id": "attributes-f608da6e0235",
+    "source": "- a| a | b |\n. \n  {.x}\n text para\n"
+  },
+  {
+    "id": "attributes-f60b673b57ba",
+    "source": "/{^a/{k=b^}\n  {.k}\n/{^a/{k=b^}\n"
+  },
+  {
+    "id": "attributes-f663dd291a9f",
+    "source": "a.{..c}  An alpha item.\n"
+  },
+  {
+    "id": "attributes-f6c82ec7b586",
+    "source": "::$`x`:\n{.line-block}\nonne\ntwo\n:::\n"
+  },
+  {
+    "id": "attributes-f6d50d7c3a9f",
+    "source": "[x]{onclick=\"steal()\"}\n```\n"
+  },
+  {
+    "id": "attributes-f6ecb5fd50a0",
+    "source": "[y](safe.html){ping=\"safe.html javascript:alert(1)\"}\nparaa\n{#_id ._c _k=1 _=\"on click\"}\n"
+  },
+  {
+    "id": "attributes-f73d0119949f",
+    "source": "![a](safe.png){srcset=\"https://example.com/a,data:x 1x\"}\n[some text]{.highlight #note key=val}\n"
+  },
+  {
+    "id": "attributes-f77bf9e34171",
+    "source": "={/a={k=b/}\n[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n[x]{kbd onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-f786f5180950",
+    "source": "Text[^a]{.ref}.\n\n\n[^a]: note.\n[^a]: note.\n"
+  },
+  {
+    "id": "attributes-f7a671c0da1c",
+    "source": "[[Example][ex] and [again][ex]\n\n[ex]: https://example.com {.external}\n"
+  },
+  {
+    "id": "attributes-f7ab34ca6835",
+    "source": " {_x :::_b_{t=a_}\n"
+  },
+  {
+    "id": "attributes-f7ce6b0a1857",
+    "source": "- a\n* \n\n  {.x}\n  ```\n  code\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-f7f33be53572",
+    "source": "- a\n\n >>  {.x}\n  code\n  ```\n  ```\n  ```\n- c\n"
+  },
+  {
+    "id": "attributes-f80973e9f72f",
+    "source": "\tA [span]{.c} he!`z`r.\n"
+  },
+  {
+    "id": "attributes-f82314255942",
+    "source": ":::\nA plain box.\n\n:::\n\n{#s .sidebar}\n:::\nA div with attributes.\n:::\n"
+  },
+  {
+    "id": "attributes-f8e0bae718cd",
+    "source": "\n\n:: t\n:  d\n   # H\n   {.k}\n"
+  },
+  {
+    "id": "attributes-f90c36216cb3",
+    "source": "[[t](/v)]{.c}\n```x\n"
+  },
+  {
+    "id": "attributes-f935185a6720",
+    "source": "\n This paragraph.\n"
+  },
+  {
+    "id": "attributes-f9ddeed04a65",
+    "source": "- a\n   {.x}\n para\n para\n"
+  },
+  {
+    "id": "attributes-fa2d69b33236",
+    "source": " [x]{k='{y}'}\n"
+  },
+  {
+    "id": "attributes-fa30a28a50a8",
+    "source": "::: |\nRoses are red,\n\n  Violets are blue.\n:::\n"
+  },
+  {
+    "id": "attributes-fa5f990238c1",
+    "source": "*y*{k=\"a\tb\"}\n|={~ .x} |\n"
+  },
+  {
+    "id": "attributes-fa6be8432d8f",
+    "source": "- [x] {# not# He #}done\n- [ ] x {#c#} y\n"
+  },
+  {
+    "id": "attributes-faa943690fc3",
+    "source": "{align=right}\n Aligned text.\n{align=right}\n"
+  },
+  {
+    "id": "attributes-fad87b33190e",
+    "source": "[x]{kbd onclick=\"alert(1)\"\"}\n[*Ctrl*+C]{#copy .shortcut kbd data-key=\"copy\" onclick=\"alert(1)\"}\n"
+  },
+  {
+    "id": "attributes-fae8ba9cfa9a",
+    "source": "-> --\n|{~ .x} |\n"
+  },
+  {
+    "id": "attributes-faeb68ead4fa",
+    "source": "1. a.{.c} An alpha item.\n"
+  },
+  {
+    "id": "attributes-fc27baff55d5",
+    "source": "b\"}\n"
+  },
+  {
+    "id": "attributes-fc34c494edcf",
+    "source": "1. \n:widget[x]{#i kv}\n"
+  },
+  {
+    "id": "attributes-fc74d3717045",
+    "source": "::  t\n:  d\n   {.k}\n@user\n   #*  H\n"
+  },
+  {
+    "id": "attributes-fc8ecb7702f8",
+    "source": "_*a*{t=\"_\"} b/{t=c_}\n{#a </#x#}> b#}\n"
+  },
+  {
+    "id": "attributes-fcde057697dd",
+    "source": "- a\n  {.x}\n  para\n  para\n"
+  },
+  {
+    "id": "attributes-fcf10d6bb971",
+    "source": "::: note\n- para\n- {#x}\n```\n![a](safe.png){srcset=\"safe.png 1x, javascript:alert(1) 2x\"}\ncode\n::::\n:::\naf{.a #b}ter *b*\n"
+  },
+  {
+    "id": "attributes-fd12f1f78f16",
+    "source": "{.x}\n {.note}\n  This paragraph.\n"
+  },
+  {
+    "id": "attributes-fd7b4d23d46b",
+    "source": "*x*{k=a\t.b}\n\n*y*{k=\"a\tb\"}\n\n*y*{k=\"a\tb\"}\n"
+  },
+  {
+    "id": "attributes-fd7ba79d5a74",
+    "source": " `c`{#a .k}{#b k=1}{.k k=2}\n"
+  },
+  {
+    "id": "attributes-fd98503c501d",
+    "source": "- \n\n\n   - b\n"
+  },
+  {
+    "id": "attributes-fda0aaf81706",
+    "source": "\nThis paragraph gets the class.\nThis paragraph gets the class.\n"
+  },
+  {
+    "id": "attributes-fdbeaf7efc47",
+    "source": "A [danger]{style=\"x:expression(steal())\"} span.\nA [danger]{style=\"x:expression(steal())\"}` span.\n"
+  },
+  {
+    "id": "attributes-fdd12ee268af",
+    "source": "# a `x %% b`{=html} c\n"
+  },
+  {
+    "id": "attributes-fe22c08eaee6",
+    "source": ":: t\n:  d\n|{#x} < content |\n{.k}\n~~~tail\n"
+  },
+  {
+    "id": "attributes-fe84887143c1",
+    "source": " - a\n+\n{.{#i}x}\n> q\n- c\n\n"
+  },
+  {
+    "id": "attributes-fefa2627644f",
+    "source": "\n{:fr}\n{lang=de}\n/i/\nText\n"
+  },
+  {
+    "id": "attributes-ff457a0ec466",
+    "source": " _*a*{t=\"_\" b/{t=c_}\n"
+  }
+]
