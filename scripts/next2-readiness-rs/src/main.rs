@@ -80,6 +80,7 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
 fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
     let mut req = json!({"call": name, "options": options});
     if let Some(host) = c.get("host") { req["host"] = host.clone(); }
+    if let Some(offset) = c.get("offset") { req["offset"] = offset.clone(); }
     if name == "importDocument" {
         req["from"] = json!("html");
         req["source"] = c["html"].clone();
@@ -94,7 +95,7 @@ fn call(c: &Value, name: &str, options: Value) -> Result<Value, Value> {
     let out: Value = serde_json::from_str(&carve::api::json::call(&req.to_string())).unwrap_or(Value::Null);
     match out.get("ok") {
         Some(ok) => Ok(ok.clone()),
-        None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"]})),
+        None => Err(json!({"accepted":false,"error":out["error"]["name"],"message":out["error"]["message"],"path":out["error"]["path"]})),
     }
 }
 
@@ -105,7 +106,7 @@ fn parse_options(v: &Value) -> Value {
 }
 
 /// Kinds and options the direct calls below cannot express: the writer, the
-/// importer, standard extensions and host document transforms.
+/// importer, migration, positions, standard extensions and host document transforms.
 fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
     let opts = c.get("options").cloned().unwrap_or_else(|| json!({}));
     Ok(match kind {
@@ -148,6 +149,14 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
             json!({"tree": r["tree"].take(), "diagnostics": parse})
         }
         "lint" => json!({"diagnostics": call(c, "lint", opts)?["diagnostics"]}),
+        "migrate" => {
+            let mut r = call(c, "migrateTree", opts)?;
+            json!({"tree": r["tree"].take(), "diagnostics": r["diagnostics"].take()})
+        }
+        "position" => {
+            let r = call(c, "positionOf", opts)?;
+            json!({"line": r["line"], "column": r["column"]})
+        }
         _ => {
             let mut r = call(c, "renderWithDiagnostics", opts.clone())?;
             let mut out = json!({"html": r["html"].take(), "diagnostics": r["diagnostics"].take(), "suppressed": r["suppressedDiagnostics"]});
@@ -160,7 +169,7 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
-    let boundary = matches!(kind, "format" | "write" | "write-example" | "import")
+    let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position")
         || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
     if boundary && c.get("files").is_none() {
         if c["options"].get("codeBlockRenderer").is_some() {
