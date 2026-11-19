@@ -106,11 +106,27 @@
         "C2-X-045",
         "C2-X-046",
         "C2-X-047",
-        "C2-X-048"
+        "C2-X-048",
+        "C2-X-056"
       ],
       "slotOrder": [
         "tabs"
-      ]
+      ],
+      "rendererOptions": {
+        "mode": {
+          "values": [
+            "css",
+            "aria"
+          ],
+          "default": "css",
+          "clauses": [
+            "C2-X-043",
+            "C2-X-047",
+            "C2-X-048",
+            "C2-X-056"
+          ]
+        }
+      }
     },
     {
       "name": "carve.wiki",

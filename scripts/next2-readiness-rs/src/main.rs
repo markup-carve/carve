@@ -171,6 +171,9 @@ fn run(c: &Value) -> Value {
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
     let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position")
         || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
+    if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
+        return json!({"unsupported":"standard renderer host options are not offered"});
+    }
     if boundary && c.get("files").is_none() {
         if c["options"].get("codeBlockRenderer").is_some() {
             return json!({"unsupported":"codeBlockRenderer is a host function"});

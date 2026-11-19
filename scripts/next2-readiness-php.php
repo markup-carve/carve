@@ -119,6 +119,11 @@ function runCase(array $case): array
     if (isset($case['inputBytes'])) {
         $source = hex2bin(str_replace(' ', '', $case['inputBytes']));
     }
+    foreach ($case['options']['renderers'] ?? [] as $renderer) {
+        if ($renderer !== 'standard') {
+            return ['unsupported' => 'standard renderer host options are not offered'];
+        }
+    }
     $options = optionsOf($case);
     try {
         switch ($kind) {
