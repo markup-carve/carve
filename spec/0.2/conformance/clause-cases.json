@@ -46970,9 +46970,10 @@
    "id": "CC-813",
    "clauses": [
     "C2-W-106",
-    "C2-H-075"
+    "C2-H-075",
+    "C2-W-138"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-H-075: a value of `kbd` is dropped. C2-W-138: Where that construct is a part of a node, such as an attribute, an option, a destination, a delimiter or a quote, the range is that part and not the node.",
    "summary": "a value on kbd is reported as discarded",
    "kind": "lint",
    "input": "[x]{kbd=a}\n",
@@ -46982,7 +46983,9 @@
      {
       "code": "semantic-attribute-value-ignored",
       "line": 1,
-      "column": 1,
+      "column": 5,
+      "endLine": 1,
+      "endColumn": 10,
       "channel": "lint",
       "severity": "warning"
      }
@@ -48612,9 +48615,10 @@
    "clauses": [
     "C2-W-106",
     "C2-B-180",
-    "C2-B-226"
+    "C2-B-226",
+    "C2-W-138"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-180: A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table C2-B-226: The separator is a comma for `csv` and a tab for `tsv`. ... A separator always starts another cell",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-180: A delimited table, a `csv` or `tsv` fence that the `table` attribute marks, is always a table C2-B-226: The separator is a comma for `csv` and a tab for `tsv`. ... A separator always starts another cell C2-W-138: The range of an entry is the source span of the construct that the catalog row of its code names",
    "summary": "a csv record with more fields than the first",
    "kind": "lint",
    "input": "{table}\n```csv\na\nb,c\n```\n",
@@ -48623,8 +48627,10 @@
     "diagnostics": [
      {
       "code": "delimited-table-wide-row",
-      "line": 2,
+      "line": 1,
       "column": 1,
+      "endLine": 5,
+      "endColumn": 4,
       "channel": "lint",
       "severity": "warning"
      }
@@ -58182,7 +58188,7 @@
       "code": "destination-denied",
       "file": "a.crv",
       "line": 1,
-      "column": 1
+      "column": 5
      }
     ],
     "stderrCategory": null
