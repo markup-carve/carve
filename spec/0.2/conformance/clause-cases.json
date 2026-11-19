@@ -60547,6 +60547,86 @@
     "html": "<blockquote>\n  <blockquote><p>after</p></blockquote>\n</blockquote>"
    },
    "from": []
+  },
+  {
+   "id": "CC-1370",
+   "clauses": [
+    "C2-X-055"
+   ],
+   "why": "C2-X-055: A duplicate authored id that the view held before the transform ran, which C2-A-039 reports, fails no transform: only the nodes a transform inserted, replaced or edited are checked.",
+   "summary": "a duplicate id the input view already held does not fail a transform that inserts a node without one",
+   "kind": "render",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "extensions": [
+     {
+      "name": "sample.first",
+      "version": "1",
+      "required": false,
+      "slots": []
+     }
+    ],
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "A"
+       }
+      ],
+      "attrs": {
+       "id": "a"
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "C"
+       }
+      ],
+      "attrs": {
+       "id": "a"
+      }
+     }
+    ]
+   },
+   "options": {},
+   "host": {
+    "documentTransforms": [
+     {
+      "name": "sample.first",
+      "after": "/children/1",
+      "insert": {
+       "type": "block_extension",
+       "name": "sample.first",
+       "version": "1",
+       "children": [],
+       "fallback": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "B"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "expected": {
+    "html": "<p id=\"a\">A</p>\n<p id=\"a\">C</p>\n<p>B</p>",
+    "notReported": [
+     "extension-transform-failed"
+    ]
+   },
+   "from": []
   }
  ]
 }
