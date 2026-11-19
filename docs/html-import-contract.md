@@ -1,3 +1,7 @@
+---
+description: An integration map for the Carve 0.2 HTML importer.
+---
+
 # HTML import contract
 
 This is an integration map for the normative [Carve 0.2 HTML importer](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md). Use the specification when exact element, attribute, whitespace, or diagnostic behavior matters. The 0.1 importer contract is not a substitute for it.

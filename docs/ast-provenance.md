@@ -1,3 +1,7 @@
+---
+description: Record where imported or generated content came from in an optional sidecar.
+---
+
 # Provenance in parsed document JSON
 
 Use provenance when a tool needs to identify where imported or generated content came from. In 0.2, multi-source lineage and byte spans belong to an optional sidecar, separate from the semantic tree. It addresses one tree by JSON Pointer and needs rebinding after edits. See [tree and sidecars](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#tree-and-sidecars).

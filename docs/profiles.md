@@ -1,3 +1,7 @@
+---
+description: The four render profiles and which node types each one allows.
+---
+
 # Content profiles
 
 A render profile limits which node types appear as their normal HTML form. The four 0.2 profile names are `full`, `article`, `comment`, and `minimal`. `full` is the default. The lists and limits are in [`url-policy.json`](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/url-policy.json), and the behavior is in [C2-H-163 to C2-H-165](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).

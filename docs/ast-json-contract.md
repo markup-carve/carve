@@ -1,3 +1,7 @@
+---
+description: Which parts of the Carve 0.2 tree contract an integration task needs.
+---
+
 # Parsed document JSON contract
 
 This page maps integration tasks to the Carve 0.2 tree contract. The normative rules and examples are in the [AST specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md) and [JSON schema](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/ast-schema.json). The 0.1 contract does not describe a 2.0 tree.

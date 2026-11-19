@@ -1,3 +1,7 @@
+---
+description: The source layout sidecar: byte ranges and written forms beside the tree.
+---
+
 # Source layout beside parsed document JSON
 
 `parseWithLayout` returns a semantic tree and a source-layout sidecar. The tree records meaning; the sidecar records spelling and measured source ranges. AST JSON and rendering are the same whether or not a sidecar was requested. See [the source-layout contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/source-layout.md#what-the-sidecar-is).

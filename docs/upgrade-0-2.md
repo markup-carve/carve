@@ -1,3 +1,7 @@
+---
+description: Move 0.1 documents to Carve 0.2 with the upgrade guide and map.
+---
+
 # Upgrading from 0.1
 
 Carve 0.2 is a development version. Start with a copy of each 0.1 `.crv` file. The [0.2 upgrade guide](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md) and its [upgrade map](https://github.com/markup-carve/carve/blob/next2/spec/0.2/data/upgrade-map.json) list the source and output changes. Some old source remains valid while its HTML changes, so a clean parse is not enough.

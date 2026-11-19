@@ -1,3 +1,8 @@
+---
+title: Coming from Markdown
+description: A task-oriented guide for Markdown and GFM authors switching to Carve.
+---
+
 # Coming from Markdown
 
 Carve is a separate language. A Markdown file needs conversion and review before it becomes a `.crv` document. The 0.2 reference engine imports HTML; a Markdown pipeline can render Markdown to HTML and then use `carve import`. See the [HTML import contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md) and [Upgrading from 0.1](./upgrade-0-2) if the source is already Carve 0.1.

@@ -1,3 +1,8 @@
+---
+title: "Explicit same-kind emphasis nesting"
+description: "Specification change, compatibility examples, and acceptance cases for nested braced emphasis."
+---
+
 # Explicit Same-Kind Emphasis Nesting
 
 Carve 0.2 pairs emphasis delimiters on one stack. A bare slash marks emphasis and a bare star marks strong text. Braced pairs can force a boundary where bare punctuation would be ambiguous. See [emphasis and strong](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md#emphasis-and-strong) and [braced delimiters](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md#braced-delimiters).

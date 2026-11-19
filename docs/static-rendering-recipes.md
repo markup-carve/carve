@@ -1,3 +1,7 @@
+---
+description: Render pages that work without client scripts or external rendering services.
+---
+
 # Static rendering recipes
 
 Use static mode when a page must work without client scripts or external rendering services. The 0.2 renderer writes HTML; it does not ship a general Graphviz, Mermaid, MathJax, or KaTeX conversion step. See [the static mode contract](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).

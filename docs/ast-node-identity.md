@@ -1,3 +1,7 @@
+---
+description: Authored ids, generated heading ids and node identity in editing tools.
+---
+
 # Node identity in parsed document JSON
 
 An authored `attrs.id` identifies a document target. A generated heading `generatedId` is a render result. Neither is the identity of a tree node in an editing session. See [attributes](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#attributes) and [resolution results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#resolution-results).

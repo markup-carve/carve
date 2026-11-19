@@ -1,3 +1,8 @@
+---
+title: Cheat Sheet
+description: Every Carve construct on one scannable page.
+---
+
 # Cheat Sheet
 
 This is a compact 0.2 authoring reference. The [block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md) and [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md) chapters decide edge cases. Separate blocks with a blank line when you want an unambiguous start.

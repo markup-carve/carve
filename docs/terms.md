@@ -1,3 +1,8 @@
+---
+title: Terms used in this documentation
+description: Definitions for Carve-specific and markup-language terms.
+---
+
 # Terms Used in This Documentation
 
 These terms follow the [0.2 specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/README.md).

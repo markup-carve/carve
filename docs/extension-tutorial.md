@@ -1,3 +1,7 @@
+---
+description: Claim an inline extension form and render it in static HTML.
+---
+
 # Writing an extension: a badge
 
 This example claims an existing inline extension form and renders it in static HTML. It runs with Node.js 26 from a `carve-js` `next2` checkout. The interface is provisional; pin a reference revision before using it in production. See [registration and matching](https://github.com/markup-carve/carve/blob/next2/spec/0.2/extensions.md#registration-and-matching) and [extension status](https://github.com/markup-carve/carve/blob/next2/spec/0.2/STATUS.md).

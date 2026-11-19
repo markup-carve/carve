@@ -1,3 +1,7 @@
+---
+description: Diagnostics in Carve 0.2: codes, severities, channels and ranges.
+---
+
 # Validation
 
 Carve 0.2 reports diagnostics in one record beside the tree. Each entry has a code, severity, channel, message, and optional byte range or JSON Pointer. The channels are `parse`, `lint`, and `render-loss`. See [diagnostics](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#diagnostics) and [writer and lint](https://github.com/markup-carve/carve/blob/next2/spec/0.2/writer.md#diagnostics-and-lint).

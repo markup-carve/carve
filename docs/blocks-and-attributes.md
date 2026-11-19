@@ -1,3 +1,7 @@
+---
+description: Where an attribute attaches on a block versus an inline element, and why the two differ.
+---
+
 # Blocks and Attributes
 
 Blocks organize a Carve 0.2 document. An attribute line gives the next eligible block an id, classes, or other keys. The exact attachment and container rules are in the [block chapter](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#attribute-lines); [HTML rendering](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#attributes) decides which keys appear in output.

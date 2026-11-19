@@ -1,3 +1,7 @@
+---
+description: Every place Carve deliberately parses differently from Djot - the reference for porting a Djot parser.
+---
+
 # Divergence from Djot
 
 Carve and Djot share some visible forms but have different parsing and output contracts. Treat a Djot document as input to a conversion workflow, then review the result. The [0.2 block](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md), [inline](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-inline.md), and [HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md) chapters define Carve behavior.

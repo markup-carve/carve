@@ -1,3 +1,7 @@
+---
+description: Turn HTML into a Carve tree, Carve source and diagnostics.
+---
+
 # Import HTML
 
 Carve 0.2 uses HTML as its specified import hub. The importer returns a 2.0 tree, Carve source, and diagnostics. The normative behavior is in [importing HTML](https://github.com/markup-carve/carve/blob/next2/spec/0.2/import-html.md); the command and library entry points are in [tooling](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md#carve-import).
