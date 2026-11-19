@@ -15,6 +15,12 @@ fn diagnostics(items: Vec<carve::diagnostic::Diagnostic>) -> Value {
     })).collect())
 }
 
+fn decode_unbounded(source: &str) -> Value {
+    let mut decoder = serde_json::Deserializer::from_str(source);
+    decoder.disable_recursion_limit();
+    Value::deserialize(&mut decoder).unwrap_or(Value::Null)
+}
+
 fn options(v: &Value, files: Option<&Value>) -> carve::Options {
     let mut o = carve::Options::default();
     for (name, slot) in [
@@ -54,6 +60,30 @@ fn options(v: &Value, files: Option<&Value>) -> carve::Options {
     }
     if let Some(labels) = v["labels"].as_object() {
         o.labels = labels.iter().filter_map(|(k, v)| v.as_str().map(|s| (k.clone(), s.to_owned()))).collect();
+    }
+    if let Some(spec) = v["codeBlockRenderer"].as_object() {
+        let syntax = spec.get("syntax").and_then(Value::as_str).map(str::to_owned);
+        let result = spec.get("result").and_then(Value::as_str).map(str::to_owned);
+        o.code_block_renderer = Some(carve::options::CodeBlockRenderer::new(move |node, default_html| {
+            if syntax.as_deref().is_some_and(|s| node["syntax"].as_str() != Some(s)) { return None; }
+            result.as_ref().map(|template| {
+                let mut rest = template.as_str();
+                let mut html = String::with_capacity(rest.len() + default_html.len());
+                while let Some(at) = rest.find('{') {
+                    html.push_str(&rest[..at]);
+                    let tail = &rest[at..];
+                    let (token, value) = if tail.starts_with("{default}") {
+                        ("{default}", default_html)
+                    } else if tail.starts_with("{syntax}") {
+                        ("{syntax}", node["syntax"].as_str().unwrap_or(""))
+                    } else { ("{", "{") };
+                    html.push_str(value);
+                    rest = &tail[token.len()..];
+                }
+                html.push_str(rest);
+                html
+            })
+        }));
     }
     if let Some(files) = files {
         let mut map = BTreeMap::new();
@@ -178,17 +208,23 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
             json!({"carve": r.output, "diagnostics": r.diagnostics})
         }
         "write" => {
+            if c["expected"].get("refusal").is_some() {
+                let r = call(c, "write", opts)?;
+                return Ok(json!({"carve":r["output"]}));
+            }
             let r = call(c, "writeWithDiagnostics", opts)?;
             json!({"carve": r["output"], "diagnostics": r["diagnostics"]})
         }
         "import" => {
             let r = call(c, "importDocument", opts)?;
-            json!({"tree": r["tree"], "carve": r["source"], "diagnostics": r["diagnostics"]})
+            json!({"tree": r["tree"], "carve": r["source"], "diagnostics": r["diagnostics"],
+                "suppressed": r["suppressedDiagnostics"]})
         }
         "parse" => {
             let mut r = call(c, "parseWithDiagnostics", opts)?;
             let parse = r["diagnostics"].as_array().into_iter().flatten().filter(|d| d["channel"] == "parse").cloned().collect::<Vec<_>>();
-            json!({"tree": r["tree"].take(), "diagnostics": parse})
+            json!({"tree": r["tree"].take(), "diagnostics": parse,
+                "suppressed": r["suppressedDiagnostics"]})
         }
         "layout" => {
             let mut r = call(c, "parseWithLayout", opts)?;
@@ -216,9 +252,22 @@ fn run_boundary(c: &Value, kind: &str) -> Result<Value, Value> {
 fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
+    let unhandled_option = c["options"].as_object().is_some_and(|values| values.keys().any(|name|
+        !matches!(name.as_str(), "roundtrip" | "rawHtml" | "sections" | "smartTypography"
+            | "sourceLines" | "strictLosses" | "headingIds" | "profile" | "mode"
+            | "softBreak" | "allowLosses" | "maxLosses" | "social" | "urlPolicy"
+            | "symbols" | "labels" | "includes" | "extensions" | "renderers"
+            | "codeBlockRenderer")));
     let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint" | "layout")
-        || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()))
-        || (kind == "render" && c["options"]["strictLosses"] == true);
+        || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some()
+            || c["options"].get("codeBlockRenderer").is_some()
+            || c["options"].get("maxLosses").is_some()
+            || c["options"].get("allowLosses").is_some()
+            || c["options"].get("strictLosses").is_some()
+            || c["expected"].get("refusal").is_some()
+            || c["expected"].get("suppressed").is_some()
+            || unhandled_option
+            || c.get("host").is_some()));
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
         // Let the JSON boundary accept renderer host options when the pinned engine offers them.
         // Its current renderers option takes only the string "standard".
@@ -229,12 +278,14 @@ fn run(c: &Value) -> Value {
         });
     }
     if boundary && c.get("files").is_none() {
-        if c["options"].get("codeBlockRenderer").is_some() {
-            return json!({"unsupported":"codeBlockRenderer is a host function"});
-        }
         return if matches!(kind, "diff" | "patch" | "fingerprint") {
             patch_case(c, kind).unwrap_or_else(|refused| refused)
         } else { run_boundary(c, kind).unwrap_or_else(|refused| refused) };
+    }
+    if c.get("files").is_some() && c["options"].get("codeBlockRenderer").is_some() {
+        let validation = invoke(json!({"call":"render","source":"",
+            "options":{"codeBlockRenderer":c["options"]["codeBlockRenderer"]}}));
+        if let Err(refused) = validation { return refused; }
     }
     let o = options(&c["options"], c.get("files"));
     match kind {
@@ -274,10 +325,14 @@ fn run(c: &Value) -> Value {
                     Err(e) => return json!({"error":e.to_string()}),
                 }
             } else { carve::tree_json(input, &o) };
-            let tree: Value = serde_json::from_str(&tree).unwrap_or(Value::Null);
+            let tree = decode_unbounded(&tree);
             if kind == "parse" {
-                let parsed = carve::render_with_diagnostics(input, &o);
-                return json!({"tree":tree,"diagnostics":diagnostics(parsed.diagnostics.into_iter().filter(|d| d.channel == "parse").collect())});
+                return match carve::api::parse_with_diagnostics(input, &o) {
+                    Ok(parsed) => json!({"tree":tree,"diagnostics":parsed.diagnostics,
+                        "suppressed":parsed.suppressed_diagnostics}),
+                    Err(error) => json!({"accepted":false,"error":error.spec_name(),
+                        "path":error.path()}),
+                };
             }
             let output = carve::render_with_diagnostics(input, &o);
             let mut found = output.diagnostics;
@@ -300,9 +355,13 @@ fn run(c: &Value) -> Value {
             if let Some(platforms) = c["options"]["platforms"].as_array() {
                 opts.platforms = platforms.iter().filter_map(|p|p.as_str().map(str::to_owned)).collect();
             }
-            json!({"diagnostics":diagnostics(carve::lint::lint(input, &opts))})
+            let mut result = json!({"diagnostics":diagnostics(carve::lint::lint(input, &opts))});
+            if c["area"] == "examples" {
+                result["tree"] = decode_unbounded(&carve::tree_json(input, &o));
+            }
+            result
         }
-        "tree-fixture" => json!({"accepted":true,"tree":serde_json::from_str::<Value>(&carve::tree_json(input, &o)).unwrap_or(Value::Null)}),
+        "tree-fixture" => json!({"accepted":true,"tree":decode_unbounded(&carve::tree_json(input, &o))}),
         "tree" | "refused-tree" | "supplied-tree" => {
             let result = if let Some(source) = c["json"].as_str() { carve::reader::read_tree_json(source) }
                 else { carve::reader::read_tree_value(c["tree"].clone()) };
@@ -331,4 +390,55 @@ fn main() {
     let cases = Value::deserialize(&mut de).expect("JSON cases");
     let output: Vec<Value> = cases.as_array().expect("case list").iter().map(run).collect();
     println!("{}", Value::Array(output));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{run, decode_unbounded};
+    use serde_json::json;
+
+    #[test]
+    fn host_code_renderer_reaches_the_rust_boundary() {
+        let output = run(&json!({
+            "kind":"render", "input":"```ts\nx\n```\n",
+            "options":{"codeBlockRenderer":{"syntax":"ts","result":"<pre>{syntax}:{default}</pre>"}}
+        }));
+        assert!(output["html"].as_str().unwrap().starts_with("<pre>ts:<pre>"), "{output}");
+    }
+
+    #[test]
+    fn host_code_renderer_with_files_refuses_nontext_result() {
+        let output = run(&json!({
+            "kind":"render", "input":"```ts\nx\n```\n", "files":{},
+            "options":{"codeBlockRenderer":{"syntax":"ts","result":7}}
+        }));
+        assert_eq!(output["error"], "CarveOptionError");
+        assert_eq!(output["path"], "/codeBlockRenderer");
+    }
+
+    #[test]
+    fn host_code_renderer_with_files_keeps_inserted_literal_tokens() {
+        let output = run(&json!({
+            "kind":"render", "input":"```ts\n{syntax}\n```\n", "files":{},
+            "options":{"codeBlockRenderer":{"syntax":"ts","result":"{default}"}}
+        }));
+        assert!(output["html"].as_str().unwrap().contains("{syntax}"), "{output}");
+    }
+
+    #[test]
+    fn refused_option_is_reported_with_its_type_and_path() {
+        let output = run(&json!({
+            "kind":"render", "input":"a", "options":{"alignTables":true},
+        }));
+        assert_eq!(output["error"], "CarveOptionError");
+        assert_eq!(output["path"], "/alignTables");
+    }
+
+    #[test]
+    fn deep_tree_json_is_not_lost_at_the_adapter_boundary() {
+        let nested = (0..180).fold(String::from("{\"type\":\"text\",\"value\":\"x\"}"),
+            |node, _| format!("{{\"type\":\"strong\",\"children\":[{node}]}}"));
+        let source = format!("[{nested}]");
+        assert!(decode_unbounded(&source).is_array());
+    }
 }
