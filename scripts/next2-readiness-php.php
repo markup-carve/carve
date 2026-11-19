@@ -40,6 +40,11 @@ function findings(array $items): array
     }, $items);
 }
 
+function suppressedOf(object $result): ?int
+{
+    return property_exists($result, 'suppressedDiagnostics') ? $result->suppressedDiagnostics : null;
+}
+
 function parseOptions(array $options): array
 {
     return array_intersect_key($options, array_flip(['includes', 'extensions', 'headingIds', 'positions']));
@@ -79,7 +84,7 @@ function runCase(array $case): array
                 if (($case['area'] ?? null) === 'examples' && isset($case['expected']['diagnostics'])) {
                     $diagnostics = array_merge($diagnostics, Carve2::lint($source, lintOptions($options)));
                 }
-                return ['html' => $result->html, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR), 'diagnostics' => findings($diagnostics)];
+                return ['html' => $result->html, 'tree' => json_decode(Carve2::toJson($source, parseOptions($options)), true, 4096, JSON_THROW_ON_ERROR), 'diagnostics' => findings($diagnostics), 'suppressed' => suppressedOf($result)];
             case 'parse':
                 $result = Carve2::parseWithDiagnostics($source, $options);
                 return ['tree' => (new TreeEncoder())->encode($result->tree, $source), 'diagnostics' => findings($result->diagnostics)];
@@ -113,7 +118,7 @@ function runCase(array $case): array
                 }
             case 'import':
                 $result = Carve2::importHtml($case['html'], $options);
-                return ['tree' => $result->document, 'carve' => $result->source, 'diagnostics' => findings($result->diagnostics)];
+                return ['tree' => $result->document, 'carve' => $result->source, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
             case 'tree':
             case 'refused-tree':
             case 'supplied-tree':
