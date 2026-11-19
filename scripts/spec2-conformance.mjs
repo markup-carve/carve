@@ -205,7 +205,8 @@ function diagnosticProblems(entry) {
     if (['obsolete', 'void'].includes(rule.status)) problems.push(`expects ${diagnostic.code}, which is ${rule.status}`)
     if (diagnostic.messageWhen !== undefined && !rule.messages?.some(message => typeof message === 'object' && message.when === diagnostic.messageWhen)) problems.push(`expects ${diagnostic.code} message condition ${diagnostic.messageWhen}, which the catalog does not list`)
     if (diagnostic.channel && rule.channel !== diagnostic.channel) problems.push(`gives ${diagnostic.code} the channel ${diagnostic.channel}, the catalog ${rule.channel}`)
-    if (diagnostic.severity && (rule.severity ?? 'warning') !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, the catalog ${rule.severity ?? 'warning'}`)
+    const severity = entry.options?.strictLosses && rule.channel === 'render-loss' ? 'error' : rule.severity ?? 'warning'
+    if (diagnostic.severity && severity !== diagnostic.severity) problems.push(`gives ${diagnostic.code} the severity ${diagnostic.severity}, expected ${severity}`)
     if (diagnostic.file !== undefined && !entry.files?.[diagnostic.file]) problems.push(`names the file ${diagnostic.file}, which files does not hold`)
     const text = textOf(entry, diagnostic.file)
     for (const [line, column] of [[diagnostic.line, diagnostic.column], [diagnostic.endLine, diagnostic.endColumn]]) {

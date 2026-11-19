@@ -217,7 +217,8 @@ fn run(c: &Value) -> Value {
     let kind = c["kind"].as_str().unwrap_or("render");
     let input = c["input"].as_str().or_else(|| c["source"].as_str()).unwrap_or("");
     let boundary = matches!(kind, "format" | "write" | "write-example" | "import" | "migrate" | "position" | "diff" | "patch" | "fingerprint" | "layout")
-        || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()));
+        || (matches!(kind, "render" | "parse" | "lint") && (c["options"].get("extensions").is_some() || c.get("host").is_some()))
+        || (kind == "render" && c["options"]["strictLosses"] == true);
     if c["options"]["renderers"].as_object().is_some_and(|r| r.values().any(|v| v != "standard")) {
         // Let the JSON boundary accept renderer host options when the pinned engine offers them.
         // Its current renderers option takes only the string "standard".
