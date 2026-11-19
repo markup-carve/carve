@@ -60532,6 +60532,21 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1369",
+   "clauses": [
+    "C2-B-109"
+   ],
+   "why": "C2-B-109: A comment block closes at a bare run of `%` of at least the opener's length (C2-B-110) on any line, whatever its indent and also where the line lacks the marks of the quotes around the block, and that line closes no container, as in 0.1.",
+   "summary": "a comment fence in a double quote closes at a line that carries only the outer quote mark",
+   "kind": "render",
+   "input": "> > %%%\n> > hidden\n> %%%\n> > after\n",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <blockquote><p>after</p></blockquote>\n</blockquote>"
+   },
+   "from": []
   }
  ]
 }
