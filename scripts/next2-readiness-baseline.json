@@ -1250,52 +1250,6 @@
     "clauses/position/CC-1299": "34b48a406228834d",
     "clauses/position/CC-1300": "1247bf4e20bd241b",
     "clauses/position/CC-1301": "42ef6b816bdd45cd",
-    "clauses/render/CC-1302": "be3254ae87299f5e",
-    "clauses/render/CC-1303": "d1bde70c9d1c5d08",
-    "clauses/render/CC-1304": "56c6833e613bbd0e",
-    "clauses/render/CC-1305": "1f14265d099d0615",
-    "clauses/render/CC-1306": "fda05274ac2412c7",
-    "clauses/render/CC-1307": "41e535b370e53fb9",
-    "clauses/render/CC-1308": "a66d2f2611b6a429",
-    "clauses/render/CC-1309": "0877af8ea4e890f3",
-    "clauses/lint/CC-1310": "b618e8b98d14fa22",
-    "clauses/lint/CC-1311": "234fd46a513fedc4",
-    "clauses/lint/CC-1312": "5f957dab2120b4a9",
-    "clauses/cli/CC-1313": "ebe07b43cd8d9f8e",
-    "clauses/cli/CC-1314": "962cdbfca31980d6",
-    "clauses/render/CC-1315": "9fd412b4672f8d2e",
-    "clauses/render/CC-1316": "561242bc99bf36b4",
-    "clauses/render/CC-1317": "3d7176a5314245d1",
-    "clauses/render/CC-1318": "c2be42df70e5df66",
-    "clauses/diff/CC-1319": "81d5cbf675e90892",
-    "clauses/diff/CC-1320": "92abe019075e4f3d",
-    "clauses/diff/CC-1321": "6f00cace5282a5bd",
-    "clauses/diff/CC-1322": "426dedc52d8500a7",
-    "clauses/diff/CC-1323": "e00667f1396b60a0",
-    "clauses/diff/CC-1324": "2e1c53848d9f2805",
-    "clauses/patch/CC-1325": "b712f29608791f1b",
-    "clauses/patch/CC-1326": "ff08c755c8817989",
-    "clauses/patch/CC-1327": "783ad7e7152f7535",
-    "clauses/patch/CC-1328": "c4dbfa6c1e2ae4a4",
-    "clauses/patch/CC-1329": "f4f5aa2675001e28",
-    "clauses/patch/CC-1330": "f8b8935aa528bb2a",
-    "clauses/patch/CC-1331": "e0576ec8f9dbb3a8",
-    "clauses/patch/CC-1332": "2d4a41912ccc7a76",
-    "clauses/patch/CC-1333": "051458c380598205",
-    "clauses/patch/CC-1334": "ab4458971b2bb136",
-    "clauses/fingerprint/CC-1335": "23ff5cfa85617cd1",
-    "clauses/fingerprint/CC-1336": "d77ee205e169fd9e",
-    "clauses/fingerprint/CC-1337": "43e21ad316d3a219",
-    "clauses/fingerprint/CC-1338": "49ce296eb292f601",
-    "clauses/render/CC-1339": "7a4a261979178a93",
-    "clauses/render/CC-1340": "caa7385e0d8d4e83",
-    "clauses/render/CC-1341": "bfa67cb307c0cdf2",
-    "clauses/render/CC-1342": "839af07a5fcb3326",
-    "clauses/render/CC-1343": "97d30f41d0224376",
-    "clauses/render/CC-1344": "7e5c31ea50098ba5",
-    "clauses/render/CC-1345": "b72af820522669e0",
-    "clauses/render/CC-1346": "80aa13f6c25d7952",
-    "clauses/import/CC-1347": "7e18175acab72ce8",
     "examples/render/syntax-blocks-1": "e8fa59723ee6544d",
     "examples/render/syntax-blocks-2": "6786111604464735",
     "examples/render/syntax-blocks-3": "4517290d2293a0fa",
@@ -2719,28 +2673,6 @@
       "clauses/position/CC-1299": "fail",
       "clauses/position/CC-1300": "fail",
       "clauses/position/CC-1301": "fail",
-      "clauses/render/CC-1302": "unsupported",
-      "clauses/render/CC-1303": "unsupported",
-      "clauses/render/CC-1304": "unsupported",
-      "clauses/render/CC-1305": "unsupported",
-      "clauses/render/CC-1306": "unsupported",
-      "clauses/render/CC-1307": "fail",
-      "clauses/render/CC-1308": "unsupported",
-      "clauses/render/CC-1309": "unsupported",
-      "clauses/lint/CC-1310": "fail",
-      "clauses/lint/CC-1312": "fail",
-      "clauses/cli/CC-1313": "fail",
-      "clauses/render/CC-1315": "fail",
-      "clauses/render/CC-1316": "fail",
-      "clauses/render/CC-1317": "fail",
-      "clauses/render/CC-1318": "fail",
-      "clauses/fingerprint/CC-1338": "fail",
-      "clauses/render/CC-1341": "fail",
-      "clauses/render/CC-1342": "fail",
-      "clauses/render/CC-1343": "fail",
-      "clauses/render/CC-1344": "fail",
-      "clauses/render/CC-1345": "fail",
-      "clauses/render/CC-1346": "fail",
       "examples/render/html-50": "fail",
       "examples/render/html-48": "fail",
       "examples/render/html-53": "fail",
@@ -2775,10 +2707,17 @@
       "clauses/write/CC-465": "fail",
       "clauses/write/CC-466": "fail",
       "clauses/tree/CC-468": "fail",
+      "clauses/tree/CC-469": "fail",
+      "clauses/tree/CC-470": "fail",
+      "clauses/tree/CC-471": "fail",
+      "clauses/tree/CC-472": "fail",
+      "clauses/tree/CC-473": "fail",
+      "clauses/tree/CC-474": "fail",
       "clauses/write/CC-478": "fail",
       "clauses/write/CC-479": "fail",
       "clauses/import/CC-480": "fail",
       "clauses/parse/CC-482": "fail",
+      "clauses/tree/CC-493": "fail",
       "clauses/write/CC-499": "fail",
       "clauses/write/CC-500": "fail",
       "clauses/migrate/CC-502": "unsupported",
@@ -2792,10 +2731,12 @@
       "clauses/render/CC-510": "fail",
       "clauses/render/CC-511": "fail",
       "clauses/render/CC-513": "fail",
+      "clauses/render/CC-514": "fail",
       "clauses/write/CC-515": "fail",
       "clauses/cli/CC-519": "fail",
       "clauses/cli/CC-520": "fail",
       "clauses/cli/CC-521": "fail",
+      "clauses/cli/CC-525": "fail",
       "clauses/cli/CC-526": "fail",
       "clauses/cli/CC-527": "fail",
       "clauses/cli/CC-529": "fail",
@@ -3056,25 +2997,6 @@
       "clauses/render/CC-1284": "fail",
       "clauses/render/CC-1285": "fail",
       "clauses/render/CC-1286": "fail",
-      "clauses/render/CC-1302": "unsupported",
-      "clauses/render/CC-1303": "unsupported",
-      "clauses/render/CC-1304": "unsupported",
-      "clauses/render/CC-1305": "unsupported",
-      "clauses/render/CC-1306": "unsupported",
-      "clauses/render/CC-1307": "fail",
-      "clauses/render/CC-1308": "unsupported",
-      "clauses/render/CC-1309": "unsupported",
-      "clauses/lint/CC-1310": "fail",
-      "clauses/lint/CC-1312": "fail",
-      "clauses/cli/CC-1313": "fail",
-      "clauses/cli/CC-1314": "fail",
-      "clauses/render/CC-1315": "fail",
-      "clauses/render/CC-1316": "fail",
-      "clauses/render/CC-1339": "fail",
-      "clauses/render/CC-1340": "fail",
-      "clauses/render/CC-1345": "fail",
-      "clauses/render/CC-1346": "fail",
-      "clauses/import/CC-1347": "fail",
       "examples/render/syntax-inline-104": "fail",
       "examples/render/syntax-inline-112": "fail",
       "examples/lint/writer-24": "fail",
@@ -3105,9 +3027,9 @@
   "counts": {
     "js": {
       "clauses": {
-        "pass": 1208,
-        "fail": 75,
-        "unsupported": 7
+        "pass": 1184,
+        "fail": 60,
+        "unsupported": 0
       },
       "examples": {
         "pass": 648,
@@ -3120,8 +3042,8 @@
         "unsupported": 0
       },
       "catalog": {
-        "pass": 148,
-        "fail": 8,
+        "pass": 149,
+        "fail": 7,
         "unsupported": 21
       },
       "upgrade": {
@@ -3132,8 +3054,8 @@
     },
     "php": {
       "clauses": {
-        "pass": 1176,
-        "fail": 109,
+        "pass": 1121,
+        "fail": 118,
         "unsupported": 5
       },
       "examples": {
@@ -3154,9 +3076,9 @@
     },
     "rs": {
       "clauses": {
-        "pass": 1095,
-        "fail": 112,
-        "unsupported": 83
+        "pass": 1068,
+        "fail": 100,
+        "unsupported": 76
       },
       "examples": {
         "pass": 652,
@@ -3169,36 +3091,36 @@
         "unsupported": 19
       },
       "catalog": {
-        "pass": 148,
-        "fail": 8,
+        "pass": 149,
+        "fail": 7,
         "unsupported": 21
       }
     }
   },
   "lintAgreement": {
     "js": {
-      "idPercent": 99.01,
-      "rangePercent": 98.88,
-      "messagePercent": 89.24,
-      "probes": 405,
-      "rangeProbes": 269,
-      "messageProbes": 381
+      "idPercent": 100,
+      "rangePercent": 99.25,
+      "messagePercent": 90.16,
+      "probes": 400,
+      "rangeProbes": 267,
+      "messageProbes": 376
     },
     "php": {
-      "idPercent": 98.02,
-      "rangePercent": 96.28,
-      "messagePercent": 96.59,
-      "probes": 405,
-      "rangeProbes": 269,
-      "messageProbes": 381
+      "idPercent": 98,
+      "rangePercent": 96.25,
+      "messagePercent": 96.54,
+      "probes": 400,
+      "rangeProbes": 267,
+      "messageProbes": 376
     },
     "rs": {
-      "idPercent": 99.75,
-      "rangePercent": 99.26,
-      "messagePercent": 96.59,
-      "probes": 405,
-      "rangeProbes": 269,
-      "messageProbes": 381
+      "idPercent": 100,
+      "rangePercent": 99.25,
+      "messagePercent": 97.07,
+      "probes": 400,
+      "rangeProbes": 267,
+      "messageProbes": 376
     }
   },
   "catalogRules": {
@@ -3270,10 +3192,10 @@
         "messagePercent": 100
       },
       "broken-fragment-link": {
-        "status": "fail",
-        "idPercent": 75,
-        "rangePercent": 66.67,
-        "messagePercent": 75
+        "status": "pass",
+        "idPercent": 100,
+        "rangePercent": 100,
+        "messagePercent": 100
       },
       "caption-looking-paragraph": {
         "status": "pass",
@@ -3565,7 +3487,7 @@
       },
       "extension-fallback-rendered": {
         "status": "fail",
-        "idPercent": 70,
+        "idPercent": 100,
         "rangePercent": 0,
         "messagePercent": 0
       },
@@ -5398,10 +5320,10 @@
         "messagePercent": 100
       },
       "broken-fragment-link": {
-        "status": "fail",
+        "status": "pass",
         "idPercent": 100,
         "rangePercent": 100,
-        "messagePercent": 75
+        "messagePercent": 100
       },
       "caption-looking-paragraph": {
         "status": "pass",
@@ -5693,9 +5615,9 @@
       },
       "extension-fallback-rendered": {
         "status": "fail",
-        "idPercent": 90,
+        "idPercent": 100,
         "rangePercent": 0,
-        "messagePercent": 90
+        "messagePercent": 100
       },
       "extension-renderer-failed": {
         "status": "unsupported",
