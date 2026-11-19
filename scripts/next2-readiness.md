@@ -24,7 +24,7 @@ Each blocked upgrade source gets a class (carve#6163, carve#6164):
 - **(a) report row**: only `report` or `none` rows are cited on the mismatch line; a person decides.
 - **(c) malformed 0.1 source**: the frozen 0.1 lint reports a rule from `next2-readiness-malformed.json` on the mismatch line, or anywhere in a source with no mapped row.
 
-Only (b) and (d) count against the carve-js upgrade bar. All four are listed in the report, and all four are in the regression gate: a blocked source of an unchanged file that moves from (a) or (c) to (b) or (d) is a regression too.
+Only real example sources (`tests/upgrade-replay/examples/`) in (b) or (d) count against the carve-js upgrade bar. The report splits example and generated-pack sources by all four classes. Every source stays in the regression gate: a blocked source of an unchanged file that moves from (a) or (c) to (b) or (d) is a regression too.
 
 Aggregate counts, per-rule catalog percentages and lint agreement are reported in the summary but do not fail the job: adding a case moves them without anything regressing.
 
