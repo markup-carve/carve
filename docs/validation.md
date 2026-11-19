@@ -1,5 +1,5 @@
 ---
-description: Diagnostics in Carve 0.2: codes, severities, channels and ranges.
+description: Diagnostic codes, severities, channels and ranges in Carve 0.2.
 ---
 
 # Validation

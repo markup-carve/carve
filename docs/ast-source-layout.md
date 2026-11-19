@@ -1,5 +1,5 @@
 ---
-description: The source layout sidecar: byte ranges and written forms beside the tree.
+description: Byte ranges and written forms recorded in a source layout sidecar beside the tree.
 ---
 
 # Source layout beside parsed document JSON
