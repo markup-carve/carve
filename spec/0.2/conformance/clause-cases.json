@@ -48401,7 +48401,7 @@
     "C2-W-106",
     "C2-B-146"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "a figure label paragraph below an image",
    "kind": "lint",
    "input": "![a](a.png)\n\nFigure 1: A cat\n",
@@ -48425,7 +48425,7 @@
     "C2-W-106",
     "C2-B-146"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`. C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "near miss: a caption line below the image",
    "kind": "lint",
    "input": "![a](a.png)\n^ Figure 1: A cat\n",
@@ -55843,7 +55843,7 @@
    "clauses": [
     "C2-B-146"
    ],
-   "why": "C2-B-146: A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test.",
+   "why": "C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149).",
    "summary": "spaces alone do not make a caption",
    "kind": "render",
    "input": "![](a)\n^  ",
@@ -60625,6 +60625,67 @@
     "notReported": [
      "extension-transform-failed"
     ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1371",
+   "clauses": [
+    "C2-B-146",
+    "C2-B-149"
+   ],
+   "why": "C2-B-146: A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches C2-B-149: A caption line with no host block is text under the same rule.",
+   "summary": "a hostless caret line stays unattached after an attribute line closes as text",
+   "kind": "render",
+   "input": "{.x}\n^ cap\n",
+   "options": {},
+   "expected": {
+    "html": "<p>{.x}</p>\n<p>^ cap</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1372",
+   "clauses": [
+    "C2-X-047",
+    "C2-H-009"
+   ],
+   "why": "C2-X-047: It writes the authored id, `tabs` followed by the authored classes, and the other authored attributes in the order of C2-H-009.",
+   "summary": "the tabs wrapper writes its authored id and class after the generated tabs class",
+   "kind": "render",
+   "input": "{#t .k}\n:::: tabs\n::: tab \"A\"\na\n:::\n::::\n",
+   "options": {
+    "extensions": [
+     "carve.tabs"
+    ],
+    "renderers": {
+     "carve.tabs": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div id=\"t\" class=\"tabs k\" role=\"group\" aria-label=\"Tabs\"><input type=\"radio\" name=\"tabs-1\" id=\"tabs-1-0\" checked><label for=\"tabs-1-0\">A</label><div class=\"tab-panel\" role=\"group\" aria-label=\"A\"><p>a</p></div></div>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1373",
+   "clauses": [
+    "C2-X-048"
+   ],
+   "why": "C2-X-048: A code group uses a separate counter from 1: its Kth tab, counted from 1, has the id `codegroup-N-tab-K`.",
+   "summary": "the first code group uses codegroup-1-tab-1 for its first control",
+   "kind": "render",
+   "input": "::: code-group\n```js [NPM]\nnpm i\n```\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.codeGroup"
+    ],
+    "renderers": {
+     "carve.codeGroup": "standard"
+    }
+   },
+   "expected": {
+    "html": "<div class=\"code-group\" role=\"group\" aria-label=\"Code examples\"><input type=\"radio\" name=\"codegroup-1\" id=\"codegroup-1-tab-1\" class=\"code-group-radio\" checked><label for=\"codegroup-1-tab-1\" class=\"code-group-label\">NPM</label><div class=\"code-group-panel\" role=\"group\" aria-label=\"NPM\"><pre><code class=\"language-js\">npm i\n</code></pre></div></div>"
    },
    "from": []
   }

@@ -4469,13 +4469,13 @@ Example 257 (unverified)
 
 ## Captions
 
-**C2-B-146** A caption line is `^`, one or more spaces and content, directly below its block with no blank line and owned by the same container as that block, with no column test. The caption text starts at the first character behind those spaces that is not a space or a tab, and a continuation line of a caption loses its indent like every line of a content (C2-I-002).
+**C2-B-146** A line of `^`, one or more spaces and content is a caption line by its shape. The host test decides only whether it attaches: the line must be directly below its block with no blank line and owned by the same container as that block, with no column test (C2-B-149). The caption text starts at the first character behind those spaces that is not a space or a tab, and a continuation line of a caption loses its indent like every line of a content (C2-I-002).
 
 **C2-B-147** A caption attaches to one of six blocks: an image, a table, a code block, a quote, a math block or a figure group. A code include, an include whose valid options hold `code`, takes a caption too, which its expansion gives to the block it becomes (C2-N-073).
 
 **C2-B-148** A caption is paragraph-like: its text takes lazy lines and ends as a paragraph does, so a second caption line directly below a caption continues the first.
 
-**C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it.
+**C2-B-149** After a blank line or below any other block a caption line is text, and `unattached-caption` reports it. A caption line with no host block is text under the same rule.
 
 A raw block is not one of the six blocks of C2-B-147, so the caret line below it is text (C2-B-149).
 
