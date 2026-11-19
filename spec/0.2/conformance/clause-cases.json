@@ -28630,21 +28630,26 @@
   {
    "id": "CC-513",
    "clauses": [
-    "C2-T-006",
-    "C2-T-040",
+    "C2-T-005",
     "C2-H-130"
    ],
-   "why": "C2-T-006: A call refuses with the typed error of its row in the table of C2-T-040, and with no other error C2-T-040: The failure categories, their status and the library error each comes from are the rows of this table. C2-H-130: `strictLosses` turns every render-loss entry into an error (C2-A-172): the render returns no output.",
-   "summary": "a render with strictLosses and a denied destination throws CarveRenderError",
+   "why": "C2-T-005: An engine offers the calls of this table. C2-H-130: `strictLosses` turns every render-loss entry into an error (C2-A-172): the render returns no output.",
+   "summary": "a diagnostic strict render with a denied destination returns empty HTML and an error record",
    "kind": "render",
    "input": "[b](javascript:y)",
    "options": {
     "strictLosses": true
    },
    "expected": {
-    "refusal": {
-     "error": "CarveRenderError"
-    }
+    "html": "",
+    "diagnostics": [
+     {
+      "code": "destination-denied",
+      "severity": "error"
+     }
+    ],
+    "diagnosticsComplete": true,
+    "suppressed": 0
    },
    "from": []
   },
@@ -57685,7 +57690,7 @@
     "C2-H-130"
    ],
    "why": "C2-H-204: counts for neither `strictLosses` (C2-H-130) nor `maxLosses` (C2-H-205)",
-   "summary": "a loss that is not allowed still fails a strict render",
+   "summary": "an unallowed loss under strictLosses returns empty HTML and an error record",
    "kind": "render",
    "input": "[a](javascript:x)\n\nb `c`{=latex}\n",
    "options": {
@@ -57695,9 +57700,15 @@
     "strictLosses": true
    },
    "expected": {
-    "refusal": {
-     "error": "CarveRenderError"
-    }
+    "html": "",
+    "diagnostics": [
+     {
+      "code": "raw-format-dropped",
+      "severity": "error"
+     }
+    ],
+    "diagnosticsComplete": true,
+    "suppressed": 0
    },
    "from": []
   },
@@ -58051,7 +58062,7 @@
     "C2-H-130"
    ],
    "why": "C2-H-205: The cap changes no output: `strictLosses` counts every loss that is not allowed, kept or not, so a render under `strictLosses` with `maxLosses` 0 still fails on a loss.",
-   "summary": "a strict render with maxLosses 0 still fails on a loss",
+   "summary": "a strict render with maxLosses 0 returns empty HTML and counts its suppressed loss",
    "kind": "render",
    "input": "[a](javascript:x)\n",
    "options": {
@@ -58059,9 +58070,10 @@
     "strictLosses": true
    },
    "expected": {
-    "refusal": {
-     "error": "CarveRenderError"
-    }
+    "html": "",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "suppressed": 1
    },
    "from": []
   },
