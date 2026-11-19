@@ -59944,6 +59944,61 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1348",
+   "clauses": [
+    "C2-X-024",
+    "C2-X-059",
+    "C2-X-035"
+   ],
+   "why": "C2-X-024: Where the fallback is the claimed core node, it is that node without these attributes, which the extension node holds, so the fallback HTML of C2-X-035 writes each of them once. C2-X-059: Its fallback is that core code block without its attributes (C2-X-024).",
+   "summary": "an attributed imgFence fallback writes its id and class once, on the wrapper",
+   "kind": "render",
+   "input": "{#pic .x}\n```img\n<svg></svg>\n```\n",
+   "options": {
+    "extensions": [
+     "carve.imgFence.img"
+    ]
+   },
+   "expected": {
+    "html": "<div id=\"pic\" class=\"x\">\n  <pre><code class=\"language-img\">&lt;svg&gt;&lt;/svg&gt;\n</code></pre>\n</div>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ],
+    "notReported": [
+     "duplicate-id"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1349",
+   "clauses": [
+    "C2-X-024",
+    "C2-X-061",
+    "C2-X-035"
+   ],
+   "why": "C2-X-024: Where the fallback is the claimed core node, it is that node without these attributes, which the extension node holds, so the fallback HTML of C2-X-035 writes each of them once. C2-X-061: A diagram extension of the fenced renderers, as `carve.fencedRender.mermaid`, and `carve.mathBlock` claim a code block by its language (C2-X-010), and their fallback is that core code block without its attributes (C2-X-024).",
+   "summary": "an attributed static mermaid fallback writes its id once, on the wrapper",
+   "kind": "render",
+   "input": "{#m}\n```mermaid\ngraph TD\n```\n",
+   "options": {
+    "extensions": [
+     "carve.fencedRender.mermaid"
+    ],
+    "mode": "static"
+   },
+   "expected": {
+    "html": "<div id=\"m\">\n  <pre><code class=\"language-mermaid\">graph TD\n</code></pre>\n</div>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ],
+    "notReported": [
+     "duplicate-id"
+    ]
+   },
+   "from": []
   }
  ]
 }
