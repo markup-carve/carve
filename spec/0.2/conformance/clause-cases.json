@@ -61254,6 +61254,36 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1397",
+   "clauses": [
+    "C2-W-107",
+    "C2-B-019",
+    "C2-B-192"
+   ],
+   "why": "Catalog unattached-block-attribute: a line the parse reads as text of a paragraph is no attribute line (C2-W-107)",
+   "summary": "an attribute-shaped line that continues a paragraph gets only the blank-line warning",
+   "kind": "lint",
+   "input": "para\n{.c}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 5
+     }
+    ],
+    "notReported": [
+     "unattached-block-attribute"
+    ]
+   },
+   "from": []
   }
  ]
 }
