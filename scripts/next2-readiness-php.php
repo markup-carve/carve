@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use MarkupCarve\Carve2\Carve2;
+use MarkupCarve\Carve2\Extension;
 use MarkupCarve\Carve2\Extension\DocumentTransform;
 use MarkupCarve\Carve2\Extension\Tabs;
 use MarkupCarve\Carve2\Json\TreeEncoder;
@@ -32,6 +33,7 @@ if (!class_exists(Carve2::class)) {
 function optionsOf(array $case): array
 {
     $options = $case['options'] ?? [];
+    $options['documentTransforms'] = [];
     if (isset($case['files'])) {
         $files = $case['files'];
         $options['includes'] = ($options['includes'] ?? []) + ['resolver' => static function (array $request) use ($files): array {
@@ -50,6 +52,74 @@ function optionsOf(array $case): array
         $standard = $renderer === 'standard' || is_array($renderer) && isset($renderer['standard']);
         $mode = is_array($renderer) ? ($renderer['standard']['mode'] ?? 'css') : 'css';
         $options['extensions'] = Tabs::extensions($standard, $mode);
+        unset($options['renderers']);
+    }
+    // A standard renderer the name boundary does not offer, or one with host options, is registered as its bundle.
+    $bundles = [
+        'carve.details' => static fn (array $o) => Extension\Details::bundle(...$o),
+        'carve.spoiler' => static fn (array $o) => Extension\Spoiler::bundle(...$o),
+        'carve.spoilerBlock' => static fn (array $o) => Extension\Spoiler::bundle(...$o),
+        'carve.fencedRender.mermaid' => static fn (array $o) => Extension\FencedRender::mermaid(...$o),
+        'carve.mathBlock' => static fn (array $o) => Extension\MathBlock::bundle(...$o),
+        'carve.codeGroup' => static fn (array $o) => Extension\CodeGroup::bundle(...$o),
+    ];
+    foreach (array_keys($options['renderers'] ?? []) as $name) {
+        $renderer = $options['renderers'][$name] ?? null;
+        if ($renderer === null) {
+            continue;
+        }
+        $hostOptions = is_array($renderer) ? ($renderer['standard'] ?? null) : null;
+        $byName = $renderer === 'standard' && Extension\Standard::renderer($name, 'interactive') !== null;
+        if (!isset($bundles[$name]) || $byName || ($renderer !== 'standard' && $hostOptions === null)) {
+            continue;
+        }
+        $definitions = $bundles[$name]($hostOptions ?? [])->definitions();
+        $registered = array_map(static fn ($d) => $d->name, $definitions);
+        $options['extensions'] = [
+            ...array_values(array_filter($options['extensions'] ?? [], static fn ($e) => !is_string($e) || !in_array($e, $registered, true))),
+            ...$definitions,
+        ];
+        foreach ($registered as $covered) {
+            unset($options['renderers'][$covered]);
+        }
+    }
+    // Standard extensions outside data/extensions.json, by the name an engine selects them with (see the JS runner).
+    $named = [
+        'carve.listTable' => static fn () => Extension\ListTable::bundle(),
+        'carve.semanticSpan' => static fn () => Extension\SemanticSpan::bundle(),
+        'carve.codeCallouts' => static fn () => Extension\CodeCallouts::bundle(),
+        'carve.fencedRender.d2' => static fn () => Extension\FencedRender::d2(),
+        'carve.fencedRender.graphviz' => static fn () => Extension\FencedRender::graphviz(),
+        'carve.fencedRender.dot' => static fn () => Extension\FencedRender::graphviz(),
+        'carve.fencedRender.wavedrom' => static fn () => Extension\FencedRender::wavedrom(),
+        'carve.fencedRender.abc' => static fn () => Extension\FencedRender::abc(),
+        'carve.fencedRender.plantuml' => static fn () => Extension\FencedRender::plantuml(),
+        'carve.fencedRender.puml' => static fn () => Extension\FencedRender::plantuml(),
+        'carve.fencedRender.vega-lite' => static fn () => Extension\FencedRender::vegaLite(),
+        'carve.fencedRender.chart' => static fn () => Extension\FencedRender::chart(),
+        'carve.externalLinks' => static fn () => Extension\Navigation::externalLinks(),
+    ];
+    $extensions = [];
+    foreach ($options['extensions'] ?? [] as $extension) {
+        if (!is_string($extension) || !isset($named[$extension])) {
+            $extensions[] = $extension;
+            continue;
+        }
+        $made = $named[$extension]();
+        // A transform-only extension is one definition, not a bundle.
+        if (!method_exists($made, 'definitions')) {
+            $extensions[] = $made;
+            continue;
+        }
+        $withRenderers = ($options['renderers'][$extension] ?? null) === 'standard';
+        unset($options['renderers'][$extension]);
+        array_push($extensions, ...($withRenderers ? $made : $made->withoutRenderers())->definitions());
+        array_push($options['documentTransforms'], ...$made->transforms());
+    }
+    if (isset($options['extensions'])) {
+        $options['extensions'] = $extensions;
+    }
+    if (($options['renderers'] ?? null) === []) {
         unset($options['renderers']);
     }
     // The harness function of conformance/README.md ("Options").
@@ -145,7 +215,14 @@ function runCase(array $case): array
             return ['unsupported' => 'standard renderer host options are not offered'];
         }
     }
-    $options = optionsOf($case);
+    try {
+        $options = optionsOf($case);
+    } catch (Throwable $error) {
+        // An engine without a standard factory the case names.
+        return ['accepted' => false, 'error' => $error::class, 'message' => $error->getMessage()];
+    }
+    $transforms = $options['documentTransforms'];
+    unset($options['documentTransforms']);
     try {
         switch ($kind) {
             case 'migrate':
@@ -166,6 +243,10 @@ function runCase(array $case): array
                 if (isset($case['tree']) && !isset($case['source']) && !isset($case['input'])) {
                     $doc = \MarkupCarve\Carve2\Json\TreeReader::read(json_encode($case['tree'], JSON_THROW_ON_ERROR), $options);
                     $result = Carve2::renderWithDiagnostics($doc, $options);
+                    return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
+                }
+                if ($transforms !== []) {
+                    $result = Carve2::renderWithDocumentTransforms($source, $transforms, $options);
                     return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
                 }
                 $result = Carve2::renderWithDiagnostics($source, $options);

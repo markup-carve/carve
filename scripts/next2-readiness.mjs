@@ -9,6 +9,7 @@ import { isDeepStrictEqual } from 'node:util'
 import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
+import { extensionReport } from './next2-readiness-extensions.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -32,7 +33,12 @@ const cases = [
   ...read('trees/refused.json').trees.map(c => ({ ...c, area: 'trees', kind: 'refused-tree', expected: { accepted: false } })),
   ...read('trees/layouts.json').layouts.map(c => ({ ...c, area: 'trees', kind: 'layout-fixture', expected: c.refused ? { accepted: false } : { layout: c.layout, accepted: true } })),
 ]
-const work = Number.isFinite(limit) ? cases.slice(0, limit) : cases
+// The extension corpus is reported in its own section and never gates (conformance/README.md, "Extensions").
+const extensionCases = read('conformance/extensions.json').cases.map(c => ({ ...c, area: 'extensions', kind: c.kind ?? 'render' }))
+const extensionsOnly = args.has('--extensions-only')
+const isExtension = c => c.area === 'extensions'
+const core = extensionsOnly ? [] : Number.isFinite(limit) ? cases.slice(0, limit) : cases
+const work = [...core, ...extensionCases]
 const expectedFields = new Set(['html', 'htmlIncludes', 'children', 'refusal', 'layout', 'layoutAbsent', 'carve', 'diagnostics', 'notReported', 'accepted', 'tree', 'diagnosticsComplete', 'status', 'stdout', 'stderrCategory', 'stdoutJson', 'stdoutDiagnostics', 'stderrDiagnostics', 'filesAfter', 'suppressed', 'line', 'column', 'applies', 'patch', 'fingerprint'])
 const normalize = value => {
   if (Array.isArray(value)) return value.map(normalize)
@@ -205,19 +211,48 @@ const standardDefinitions = new Map([
   ...bundles.flatMap(bundle => bundle.extensions),
 ].filter(Boolean).map(definition => [definition.name, definition]))
 const standardRenderers = Object.assign({}, ...bundles.map(bundle => bundle.renderers))
+// A renderer choice `{ standard: options }` builds the standard bundle with those host options.
+const standardFactories = { 'carve.codeGroup': standard.codeGroup, 'carve.fencedRender.mermaid': standard.mermaid,
+  'carve.mathBlock': standard.mathBlock, 'carve.details': standard.details, 'carve.spoiler': standard.spoiler, 'carve.spoilerBlock': standard.spoiler }
+const optionRenderer = (name, choice) => standardFactories[name] && choice?.standard ? standardFactories[name](choice.standard).renderers[name] ?? choice : choice
+// Standard extensions outside the catalog of data/extensions.json, by the name an engine selects them with. The
+// bundle is registered whole; its renderers only where the case names it with `standard` in `renderers`.
+const namedBundles = {
+  'carve.listTable': standard.listTable, 'carve.semanticSpan': standard.semanticSpan, 'carve.codeCallouts': standard.codeCallouts,
+  'carve.fencedRender.d2': standard.d2, 'carve.fencedRender.graphviz': standard.graphviz, 'carve.fencedRender.dot': standard.graphviz,
+  'carve.fencedRender.wavedrom': standard.wavedrom, 'carve.fencedRender.abc': standard.abc, 'carve.fencedRender.plantuml': standard.plantuml,
+  'carve.fencedRender.puml': standard.plantuml, 'carve.fencedRender.vega-lite': standard.vegaLite, 'carve.fencedRender.chart': standard.chart,
+  'carve.externalLinks': standard.externalLinks,
+}
+function namedBundleOptions(options) {
+  const transforms = []
+  const extensions = []
+  const renderers = { ...(options.renderers ?? {}) }
+  for (const name of options.extensions) {
+    if (!namedBundles[name]) { extensions.push(name); continue }
+    const made = namedBundles[name]()
+    // A transform-only extension is one definition, not a bundle.
+    const bundle = made.extensions ? made : { extensions: [made], renderers: {} }
+    extensions.push(...bundle.extensions)
+    if (renderers[name] === 'standard') { delete renderers[name]; Object.assign(renderers, bundle.renderers) }
+    transforms.push(...(bundle.transforms ?? []))
+  }
+  return { ...options, extensions, renderers, transforms }
+}
 function jsOptions(c) {
-  const options = { ...(c.options ?? {}) }
+  let options = { ...(c.options ?? {}) }
   if (c.files) options.includes = { ...(options.includes ?? {}), resolver: resolver(c.files) }
+  if (options.extensions?.some(name => namedBundles[name])) options = namedBundleOptions(options)
   if (options.extensions) {
     const names = new Set(options.extensions)
     if (names.has('carve.tabs')) names.add('carve.tab')
-    options.extensions = [...names].map(name => standardDefinitions.get(name) ?? name)
+    options.extensions = [...names].map(name => typeof name === 'string' ? standardDefinitions.get(name) ?? name : name)
   }
   if (options.renderers) options.renderers = Object.fromEntries(Object.entries(options.renderers).map(([name, choice]) => [
     name, name === 'carve.tabs' ? js.standardTabsRenderer
       ? js.standardTabsRenderer(choice === 'standard' ? {} : choice.standard)
       : choice === 'standard' ? js.tabsRenderer : choice :
-      choice === 'standard' ? standardRenderers[name] ?? choice : choice,
+      choice === 'standard' ? standardRenderers[name] ?? choice : optionRenderer(name, choice),
   ]))
   // The harness function of conformance/README.md ("Options").
   if (options.codeBlockRenderer) {
@@ -244,8 +279,10 @@ function jsRun(c) {
   if (!js.standardTabsRenderer && Object.values(c.options?.renderers ?? {}).some(renderer => renderer !== 'standard')) {
     return { unsupported: 'standard renderer host options are not offered' }
   }
-  const input = sourceOf(c), options = jsOptions(c)
+  const input = sourceOf(c)
   const kind = c.kind
+  let options
+  try { options = jsOptions(c) } catch (e) { return { accepted: false, error: e.name, message: e.message } }
   try {
     if (kind === 'refused-tree' || kind === 'supplied-tree' || kind === 'tree') {
       const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions)
@@ -294,7 +331,8 @@ function jsRun(c) {
     if (kind === 'lint') return { diagnostics: js.lint(typeof input === 'string' ? input : input.toString('utf8'), options), ...(c.area === 'examples' ? { tree: js.parse(input, parseOptions(options)) } : {}) }
     if (kind === 'render' || kind === 'include') {
       if (c.host && typeof js.renderWithDocumentTransforms !== 'function') return { unsupported: 'renderWithDocumentTransforms is not offered' }
-      const r = c.host ? js.renderWithDocumentTransforms(c.tree ?? input, hostTransforms(c.host), options) : js.renderWithDiagnostics(c.tree ?? input, options)
+      const { transforms = [], ...renderOptions } = options
+      const r = c.host || transforms.length ? js.renderWithDocumentTransforms(c.tree ?? input, [...transforms, ...hostTransforms(c.host)], renderOptions) : js.renderWithDiagnostics(c.tree ?? input, renderOptions)
       const diagnostics = c.area === 'examples' && c.expected?.diagnostics ? [...r.diagnostics, ...js.lint(input, lintOptions(options))] : r.diagnostics
       return { html: r.html, diagnostics, suppressed: r.suppressedDiagnostics, ...(c.tree ? {} : { tree: js.parse(input, parseOptions(options)) }) }
     }
@@ -352,13 +390,27 @@ outputs.rs = batch(resolve(process.env.CARVE_RS_READINESS_BIN ?? resolve(root, '
 for (const [engine, output] of Object.entries(outputs)) work.forEach((c, i) => { if (c.kind === 'cli') output[i] = cliRun(c, engine) })
 const forbiddenReports = forbiddenCatalogReports(work, outputs, rules)
 const results = {}
-for (const [engine, output] of Object.entries(outputs)) results[engine] = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, ...compare(c, output[i]) }))
+const extensionResults = {}
+for (const [engine, output] of Object.entries(outputs)) {
+  const rows = work.map((c, i) => ({ area: c.area, kind: c.kind, id: c.id, extension: c.extension, ...compare(c, output[i]) }))
+  results[engine] = rows.filter(row => row.area !== 'extensions')
+  // A failing extension case keeps the engine's HTML, so a ticket can quote it.
+  extensionResults[engine] = rows.flatMap((row, i) => row.area !== 'extensions' ? []
+    : [row.status === 'fail' ? { ...row, html: output[i]?.html, error: output[i]?.error, message: output[i]?.message } : row])
+}
+const extensionLines = extensionReport(extensionCases, extensionResults)
+if (extensionsOnly) {
+  console.log(extensionLines.join('\n'))
+  writeFileSync(mdPath, extensionLines.join('\n') + '\n')
+  writeFileSync(jsonPath, JSON.stringify({ engineHeads, extensions: extensionResults }, null, 2) + '\n')
+  process.exit(0)
+}
 
 // Every catalog row is accounted for. Cases with no stated trigger are unsupported evidence, not a silent pass.
 const catalog = {}
 const lintAgreement = {}
 for (const [engine, rows] of Object.entries(results)) catalog[engine] = rules.map(rule => {
-  const uses = work.flatMap((c, i) => (c.expected?.diagnostics ?? []).filter(d => (typeof d === 'string' ? d : d.code) === rule.id).map(d => ({ c, actual: outputs[engine][i], wanted: typeof d === 'string' ? { code: d } : d })))
+  const uses = work.flatMap((c, i) => ((isExtension(c) ? undefined : c.expected)?.diagnostics ?? []).filter(d => (typeof d === 'string' ? d : d.code) === rule.id).map(d => ({ c, actual: outputs[engine][i], wanted: typeof d === 'string' ? { code: d } : d })))
   const unsupported = uses.filter(u => u.actual?.unsupported).length
   const failed = uses.filter(u => !u.actual?.unsupported && !u.actual?.diagnostics?.some(d => diagMatches(d, u.wanted, u.c))).length
   const percent = (passed, total) => total ? Number((passed / total * 100).toFixed(2)) : 0
@@ -380,7 +432,7 @@ for (const [engine, rows] of Object.entries(results)) catalog[engine] = rules.ma
   }
 })
 for (const engine of Object.keys(outputs)) {
-  const probes = work.flatMap((c, i) => (c.expected?.diagnostics ?? []).map(d => ({ c, actual: outputs[engine][i], wanted: typeof d === 'string' ? { code: d } : d })))
+  const probes = work.flatMap((c, i) => ((isExtension(c) ? undefined : c.expected)?.diagnostics ?? []).map(d => ({ c, actual: outputs[engine][i], wanted: typeof d === 'string' ? { code: d } : d })))
   const ranges = probes.filter(p => ['line', 'column', 'endLine', 'endColumn'].some(k => p.wanted[k] !== undefined))
   const messages = probes.filter(p => ruleById.get(p.wanted.code)?.messages)
   const percent = (ok, total) => total ? Number((ok / total * 100).toFixed(2)) : 0
@@ -484,8 +536,8 @@ const sampled = Number.isFinite(limit)
 const stored = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, 'utf8')) : null
 if (stored && !stored.cases && !args.has('--write-baseline')) throw new Error('The readiness baseline has no per-case fingerprints (schema 1); regenerate it with --write-baseline')
 const baseline = stored?.cases ? stored : null
-const currentCases = Object.fromEntries(work.map(c => [caseKey(c), caseFingerprint(c, ruleById)]))
-const caseByKey = new Map(work.map(c => [caseKey(c), c]))
+const currentCases = Object.fromEntries(core.map(c => [caseKey(c), caseFingerprint(c, ruleById)]))
+const caseByKey = new Map(core.map(c => [caseKey(c), c]))
 const statusIds = listedGaps(readFileSync(resolve(spec, 'STATUS.md'), 'utf8'))
 const verdicts = {}
 if (baseline) for (const engine of ['js', 'php', 'rs']) {
@@ -517,6 +569,8 @@ if (baseline) {
   }
   if (headMismatch.length) lines.push('', `Engine checkout differs from the baseline heads: ${headMismatch.join(', ')}.`)
 }
+lines.push('', ...extensionLines)
+report.extensions = extensionResults
 writeFileSync(jsonPath, JSON.stringify(report, null, 2) + '\n')
 writeFileSync(mdPath, lines.join('\n') + '\n')
 console.log(lines.join('\n'))

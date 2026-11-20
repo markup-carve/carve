@@ -1,6 +1,6 @@
 # Conformance corpus of Carve 0.2
 
-One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list.
+One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list. A fourth file, `extensions.json`, holds the standard extension corpus (see "Extensions"); it is outside the schema and does not gate an engine.
 
 | File | `kind` | List | Made by |
 |---|---|---|---|
@@ -170,6 +170,16 @@ The check fails an error that no category of `data/cli.json` names or that the c
 ```json
 { "rules": { "djot-plus-bullet": "on", "bare-html-tag": "off" }, "platforms": ["github"], "extensions": ["carve.tabs"], "renderers": { "carve.tabs": "standard" } }
 ```
+
+## Extensions
+
+`extensions.json` (`kind` `extensions`, list `cases`) checks the HTML of the standard extensions. Each extension has cases for its default use, its host options, a use inside a list item and inside a block quote, literal code text, and escaped user text, with its fallback where no renderer is selected. An entry has `id` (`EXT-nnn`), `extension`, `summary`, `clauses`, `expectedFrom`, `kind` (`render`), `input`, `options` and `expected` (`html`, `htmlIncludes`, diagnostics), read as in a clause case.
+
+`expectedFrom` says where the expected HTML comes from. `0.2` means the 0.2 clauses in `clauses` decide it. `0.1: ...` names the documented 0.1 output it follows, a row of `tests/corpus-optional` or an extension page, where 0.2 has no text for the renderer yet; `clauses` then lists only the 0.2 clauses the case also relies on, such as C2-H-047 for literal code text. No expectation is copied from an engine. Where the engines agree on a detail that neither 0.2 nor the 0.1 source decides, the case states only `htmlIncludes`.
+
+`options.extensions` names extensions of `data/extensions.json` as above, and also standard extensions outside that table by the name an engine selects them with, such as `carve.listTable` or `carve.fencedRender.dot`. The runner registers such an extension as its whole standard bundle, with its document transforms, and with its renderers where `renderers` maps the name to `"standard"`. A renderer with host options, as `{ "carve.codeGroup": { "standard": { "mode": "aria" } } }`, takes the options of the clause the case cites.
+
+`scripts/next2-readiness.mjs` replays the file in the section "Extensions" of its report, with pass, fail and unsupported per engine and extension. It does not count toward Engine ready and is not part of the baseline. `node scripts/next2-readiness.mjs --extensions-only` replays only this file.
 
 ## Refused trees
 
