@@ -73,7 +73,7 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["`${columns}` is `column` when `${past}` is 1 and `columns` otherwise."],
-      "range": "the whole opening mark as written, without indentation or following content: the full run of `#` of a heading, of colons of a colon fence, of backticks or tildes of a code fence and of pipes of a line block fence; the thematic break without trailing spaces and tabs; the quote mark; the term mark; the first `|` of a table row",
+      "range": "the whole opening mark as written, without indentation or following content: the full run of `#` or `=` of a heading, of colons of a colon fence, a line block included, and of backticks or tildes of a code fence; the thematic break without trailing spaces and tabs; the quote mark; the term mark; the first `|` of a table row",
       "reports": "a block opener that stands past the content column of its owner and still opens there: a quote mark, a colon fence, a code fence or line block, a definition term, a heading, a thematic break or a pipe table row, where the owner is the document (content column 0), a quote, a footnote body, a description or a div; not a list marker, not a `%%%` comment fence, not a table row directly below a row, and never inside a list item, which `list-item-block-overindented` reports; once per opener (C2-B-003, C2-B-025, C2-B-028)",
       "clauses": ["C2-B-003", "C2-B-025", "C2-B-028"]
     },
