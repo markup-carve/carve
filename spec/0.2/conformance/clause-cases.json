@@ -54896,7 +54896,7 @@
       "line": 2,
       "column": 1,
       "endLine": 2,
-      "endColumn": 2,
+      "endColumn": 5,
       "messageWhen": "the line is inside frontmatter"
      }
     ]
@@ -61064,6 +61064,268 @@
       "channel": "lint",
       "severity": "warning"
      }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1389",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-031"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages",
+   "summary": "a quote mark glued to text is reported on the line without its trailing spaces",
+   "kind": "lint",
+   "input": ">a  \n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1390",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-031",
+    "C2-B-161"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages",
+   "summary": "the frontmatter message has the same line range",
+   "kind": "lint",
+   "input": "---\ntitle: x\n>a  \n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 3,
+      "column": 1,
+      "messageWhen": "the line is inside frontmatter",
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 3,
+      "endColumn": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1391",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-003"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog block-opener-overindented: the whole opening mark as written, without indentation or following content",
+   "summary": "an overindented four-colon div opener is reported on its whole colon run",
+   "kind": "lint",
+   "input": "# H\n\n   ::::\n   x\n   ::::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 3,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 3,
+      "endColumn": 8
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1392",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-003"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog block-opener-overindented: of backticks or tildes of a code fence",
+   "summary": "an overindented code fence is reported on its whole backtick run",
+   "kind": "lint",
+   "input": "   ````\n   x\n   ````\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 8
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1393",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-025",
+    "C2-B-027"
+   ],
+   "why": "Catalog list-item-block-overindented: the list is exhaustive, so an include directive line is no block opener here",
+   "summary": "an include directive line past an item's content column is not reported",
+   "kind": "lint",
+   "input": "- a\n\n      {{ x.crv }}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-item-block-overindented"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1394",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-108"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog colon-fence-length-mismatch: the colon run, without indentation and without the spaces and tabs after it",
+   "summary": "a mismatched bare colon run is reported without its trailing spaces",
+   "kind": "lint",
+   "input": ":::: x\n:::::  \n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "colon-fence-length-mismatch",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 6
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1395",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: the container counts only where it is open inside the run's own innermost container",
+   "summary": "a colon run in a quote inside a div is not compared with the div",
+   "kind": "lint",
+   "input": "::::\n> :::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "colon-fence-length-mismatch"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1396",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: the container counts only where it is open inside the run's own innermost container",
+   "summary": "a colon run in a list item inside a div is not compared with the div",
+   "kind": "lint",
+   "input": "::::\n- a\n\n  :::  \n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "colon-fence-length-mismatch"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1397",
+   "clauses": [
+    "C2-W-107",
+    "C2-B-019",
+    "C2-B-192"
+   ],
+   "why": "Catalog unattached-block-attribute: a line the parse reads as text of a paragraph is no attribute line (C2-W-107)",
+   "summary": "an attribute-shaped line that continues a paragraph gets only the blank-line warning",
+   "kind": "lint",
+   "input": "para\n{.c}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-without-blank-line",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 5
+     }
+    ],
+    "notReported": [
+     "unattached-block-attribute"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1398",
+   "clauses": [
+    "C2-W-143",
+    "C2-B-192"
+   ],
+   "why": "C2-W-143: A line `>` inside a quote is blank for the rules inside the quote, although the parse does not read it as a blank line that ends the quote (C2-B-009, C2-B-032).",
+   "summary": "a line of only the quote mark is blank for the attribute line above it in the quote",
+   "kind": "lint",
+   "input": "> {.c}\n>\n> # H\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-block-attribute",
+      "line": 1,
+      "column": 3,
+      "messageWhen": "a blank line follows the attribute line in its container, whether or not a block follows that blank line",
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 7
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1399",
+   "clauses": [
+    "C2-W-143",
+    "C2-B-031"
+   ],
+   "why": "C2-W-143: A mark that is no container prefix is not blank: `>>` at column 1 is text (C2-B-031).",
+   "summary": "a line `>>` at column 1 is not blank, so the attribute line above it attaches",
+   "kind": "lint",
+   "input": "{.c}\n>>\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-block-attribute"
     ]
    },
    "from": []

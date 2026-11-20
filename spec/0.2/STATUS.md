@@ -66,13 +66,13 @@ Clauses are the paragraphs that start with a clause id. Rules and exceptions are
 | `syntax-inline.md` | C2-I | 109 | 136 | 30 | 14 | 131 |
 | `ast.md` | C2-A | 199 | 422 | 65 | 3 | 0 |
 | `html.md` | C2-H | 199 | 470 | 98 | 6 | 86 |
-| `writer.md` | C2-W | 129 | 294 | 86 | 5 | 45 |
+| `writer.md` | C2-W | 130 | 294 | 86 | 5 | 45 |
 | `source-layout.md` | C2-L | 54 | 95 | 23 | 0 | 0 |
 | `includes.md` | C2-N | 88 | 219 | 54 | 2 | 41 |
 | `extensions.md` | C2-X | 69 | 89 | 9 | 0 | 0 |
 | `import-html.md` | C2-M | 85 | 239 | 46 | 1 | 64 |
 | `tooling.md` | C2-T | 46 | 105 | 7 | 0 | 0 |
-| **Total** | | **1,187** | **2,286** | **449** | **39** | **656** |
+| **Total** | | **1,188** | **2,286** | **449** | **39** | **656** |
 
 In candidates 4 and 5 the columns Rules and Exceptions are the counts of the candidate before moved by the change of each commit of the round, not a recount. Revision 1 of candidate 5 adds no clause and does not move these two columns. Candidate 6 adds one clause, C2-B-230, and amends others; it does not move these two columns either, so they wait for a recount. Candidate 7 adds C2-H-201 and the forty clauses of `tooling.md`; its row of Rules and Exceptions is the count of that document's author, not a rubric reading, and the other rows do not move. The reduction of 17 November 2026 deletes clauses whose rule other clauses state or give; it moves the columns Clauses and Labeled, not Rules and Exceptions, since the rules stay. Candidate 8 recounts the row of `tooling.md`: one rule per sentence of its clauses and one exception per carve-out (C2-T-002, C2-T-009, C2-T-010, C2-T-016, C2-T-031, C2-T-032, C2-T-038), which corrects the author's count of candidate 7. Candidate 9 adds C2-W-138 and C2-L-059 and amends other clauses; it moves the column Clauses, and Rules and Exceptions wait for a recount.
 
@@ -195,3 +195,12 @@ Measured with the readiness runner on the engine heads of `scripts/next2-readine
 - `carve-js`: the engine at the baseline head has none of the commands of C2-T-047 to C2-T-053; `next2` `7589dbc` passes CC-1352 to CC-1366 but CC-1359, where it writes the include entries before the category line that C2-T-039 puts first. C2-B-109: a `> %%%` line under a comment block opened in `> >` closes it (CC-1369). The upgrade tool has no entry for U-426 to U-429 and still treats U-393 as no change.
 - `carve-php`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1364); `djot-plus-bullet` after a quote marker (CC-1367); the comment closer of C2-B-109 (CC-1369); the `destination-denied` column of CC-1271.
 - `carve-rs`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1365); `djot-plus-bullet` after a quote marker (CC-1367).
+
+## Engine gaps from the lint rulings of 20 November
+
+The maintainer rulings on #6191 to #6196: `blockquote-marker-without-space` and `colon-fence-length-mismatch` state their range, `block-opener-overindented` reports the whole opening mark, an include directive is no block opener for `list-item-block-overindented`, a colon run in a quote or item inside a div is not compared with the div, an attribute-shaped paragraph line gets only `block-opener-without-blank-line`, and C2-W-143 says which lines are blank for lint. Clause cases CC-1389 to CC-1399. Measured on the engine `next2` heads of 20 November.
+
+- All three engines: the frontmatter message is reported on the `>` alone (CC-1390); an overindented code fence is reported on its first backtick (CC-1392).
+- `carve-js`: the overindented div opener is reported on three colons (CC-1391); an include directive line past an item's content column is reported (CC-1393); a colon run in a quote or item inside a div is compared with the div (CC-1395, CC-1396).
+- `carve-php`: CC-1391 and CC-1393 as `carve-js`; the colon run range takes the trailing spaces (CC-1394); an attribute-shaped paragraph line also gets `unattached-block-attribute` (CC-1397); a `>` line in a quote is not blank (CC-1398).
+- `carve-rs`: the line range of `blockquote-marker-without-space` is the `>` alone (CC-1389); CC-1395 and CC-1396 as `carve-js`; CC-1397 as `carve-php`; a `>` line in a quote gets the other message of `unattached-block-attribute` (CC-1398).

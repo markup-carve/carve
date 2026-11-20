@@ -73,6 +73,7 @@
       ],
       "message_origin": "engine_0_1",
       "message_notes": ["`${columns}` is `column` when `${past}` is 1 and `columns` otherwise."],
+      "range": "the whole opening mark as written, without indentation or following content: the full run of `#` or `=` of a heading, of colons of a colon fence, a line block included, and of backticks or tildes of a code fence; the thematic break without trailing spaces and tabs; the quote mark; the term mark; the first `|` of a table row",
       "reports": "a block opener that stands past the content column of its owner and still opens there: a quote mark, a colon fence, a code fence or line block, a definition term, a heading, a thematic break or a pipe table row, where the owner is the document (content column 0), a quote, a footnote body, a description or a div; not a list marker, not a `%%%` comment fence, not a table row directly below a row, and never inside a list item, which `list-item-block-overindented` reports; once per opener (C2-B-003, C2-B-025, C2-B-028)",
       "clauses": ["C2-B-003", "C2-B-025", "C2-B-028"]
     },
@@ -87,9 +88,9 @@
       ],
       "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition."],
       "message_origin": "design",
-      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025)",
+      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025); a blank line is one as C2-W-143 reads it",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
-      "clauses": ["C2-B-019", "C2-B-200"]
+      "clauses": ["C2-B-019", "C2-B-200", "C2-W-143"]
     },
     {
       "id": "blockquote-marker-without-space",
@@ -99,6 +100,7 @@
       "default": "on",
       "messages": [{"when": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
+      "range": "the line from its `>` to its last character that is not a space or a tab, for both messages",
       "reports": "a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line (C2-B-031)",
       "clauses": ["C2-B-031"]
     },
@@ -208,7 +210,8 @@
       ],
       "message_notes": ["`${kind}` names the innermost open colon container: `div`, `admonition`, `figure group`, `line block` or `hard-break block` (C2-B-119, C2-B-125)."],
       "message_origin": "engine_0_1",
-      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
+      "range": "the colon run, without indentation and without the spaces and tabs after it",
+      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length; the container counts only where it is open inside the run's own innermost container, so a run in a quote or list item that sits in a div, with no colon container open inside that quote or item, is not reported, since it cannot close the outer div (C2-B-109); the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
       "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
     },
     {
@@ -1384,7 +1387,7 @@
         "With an attributed item the message starts \"This line uses the attributed item's former full-prefix column.\""
       ],
       "message_origin": "engine_0_1",
-      "reports": "a line owned by a list item, including a block opener inside a div in that item, or below an ended item across blank lines only, whose content behind the quote marks starts past the item's content column with a block opener: a heading marker, a quote mark, a code fence, a term mark, a div fence, a block image line, a thematic break, an attribute line or a table row; once per line, consecutive quote or table lines of one block once, and never a list marker, a comment line, a line of a verbatim body or an escaped opener (C2-B-025, C2-B-027)",
+      "reports": "a line owned by a list item, including a block opener inside a div in that item, or below an ended item across blank lines only, whose content behind the quote marks starts past the item's content column with a block opener: a heading marker, a quote mark, a code fence, a term mark, a div fence, a block image line, a thematic break, an attribute line or a table row; the list is exhaustive, so an include directive line is no block opener here; once per line, consecutive quote or table lines of one block once, and never a list marker, a comment line, a line of a verbatim body or an escaped opener (C2-B-025, C2-B-027)",
       "clauses": ["C2-B-025", "C2-B-027"]
     },
     {
@@ -1870,8 +1873,8 @@
       "messages": [{"when": "the attribute line reaches the end of its container or document without a following blank line", "text": "This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it."}, {"when": "a blank line follows the attribute line in its container, whether or not a block follows that blank line", "text": "A blank line follows this attribute line, so it is text. Remove the blank line if you mean to attach it to a following block."}],
       "message_origin": "data_file",
       "change": "also an attribute line separated from its block by a blank line, which is text",
-      "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192)",
-      "clauses": ["C2-B-090", "C2-B-092", "C2-B-192"]
+      "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows, a line blank as C2-W-143 reads it; a line the parse reads as text of a paragraph is no attribute line (C2-W-107), and `block-opener-without-blank-line` reports it; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192, C2-W-143)",
+      "clauses": ["C2-B-090", "C2-B-092", "C2-B-192", "C2-W-143"]
     },
     {
       "id": "unattached-caption",

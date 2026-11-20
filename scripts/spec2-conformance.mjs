@@ -373,7 +373,7 @@ for (const entry of cases.cases) {
   if (ids.has(entry.id)) fail(`clause-cases.json ${entry.id}: duplicate id`)
   ids.add(entry.id)
   for (const clause of entry.clauses) if (!clauseText.has(clause)) fail(`clause-cases.json ${entry.id}: cites ${clause}, which no document defines`)
-  // `why` quotes clauses and, when a catalog trigger decides the case, a reports fragment.
+  // `why` quotes clauses and, when a catalog trigger decides the case, a fragment of its range or reports.
   const quotes = entry.why.split(/ (?=C2-[A-Z]-\d{3}: |Catalog [a-z0-9/-]+: )/)
   const norm = (text) => text.replaceAll(/\s+/g, ' ').trim()
   for (const part of quotes) {
@@ -383,7 +383,7 @@ for (const entry of cases.cases) {
       if (!entry.clauses.includes(clause[1])) fail(`clause-cases.json ${entry.id}: why quotes ${clause[1]}, which clauses does not list`)
       else if (!clause[2].split(' ... ').map(norm).every(piece => norm(clauseText.get(clause[1]) ?? '').includes(piece))) fail(`clause-cases.json ${entry.id}: why is not text of ${clause[1]}`)
     } else if (catalog) {
-      const report = ruleOf.get(catalog[1])?.reports ?? ''
+      const report = [ruleOf.get(catalog[1])?.range, ruleOf.get(catalog[1])?.reports].filter(Boolean).join(' ')
       if (!catalog[2].split(' ... ').map(norm).every(piece => norm(report).includes(piece))) fail(`clause-cases.json ${entry.id}: why is not reports text of ${catalog[1]}`)
     } else fail(`clause-cases.json ${entry.id}: why does not start with a clause or Catalog id`)
   }
