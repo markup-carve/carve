@@ -54896,7 +54896,7 @@
       "line": 2,
       "column": 1,
       "endLine": 2,
-      "endColumn": 2,
+      "endColumn": 5,
       "messageWhen": "the line is inside frontmatter"
      }
     ]
