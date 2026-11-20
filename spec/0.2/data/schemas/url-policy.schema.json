@@ -77,7 +77,7 @@
           "denied_block": { "$ref": "#/$defs/types" },
           "denied_inline": { "$ref": "#/$defs/types" },
           "link_rel": { "type": "array", "uniqueItems": true, "items": { "type": "string" }, "description": "The tokens of the `rel` attribute written on every link." },
-          "max_nesting": { "type": "integer", "minimum": 1, "description": "The deepest level a node may stand at below the document, every block and inline level counted." },
+          "max_nesting": { "type": "integer", "minimum": 1, "description": "The deepest block-container level below the document; list items, paragraphs, and inline nodes do not add levels." },
           "max_length": { "type": "integer", "minimum": 1, "description": "The longest input accepted, in UTF-8 bytes." },
           "clauses": { "$ref": "#/$defs/clauses" }
         }

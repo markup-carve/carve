@@ -178,14 +178,14 @@
     "C2-H-165",
     "C2-W-116"
    ],
-   "why": "C2-H-166: For `max_nesting` the children of the document stand at level 0, and each block level and each inline level below adds one. A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.",
-   "summary": "comment profile nesting bound degrades code span",
+   "why": "C2-H-166: For `max_nesting`, the document stands at level 0. Each block container, including a list, block quote or div, adds one level; a top-level container stands at level 1.",
+   "summary": "comment profile nesting bound keeps code span",
    "input": "> > > > `x`",
    "options": {
     "profile": "comment"
    },
    "expected": {
-    "html": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <blockquote><p>x</p></blockquote>\n    </blockquote>\n  </blockquote>\n</blockquote>",
+    "html": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <blockquote><p><code>x</code></p></blockquote>\n    </blockquote>\n  </blockquote>\n</blockquote>",
     "children": [
      {
       "type": "block_quote",
@@ -3133,7 +3133,7 @@
    "clauses": [
     "C2-H-166"
    ],
-   "why": "C2-H-166: A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded.",
+   "why": "C2-H-166: A container at the bound stays with its content; a container that would stand above the bound is outside the profile and is degraded as a whole.",
    "summary": "comment profile nesting bound at level 4",
    "input": "> > > > `",
    "options": {
@@ -4357,14 +4357,14 @@
     "C2-H-166",
     "C2-H-165"
    ],
-   "why": "C2-H-166: A `list_item` counts a level but is never degraded on its own: it keeps its `<li>`, and its blocks are degraded.",
+   "why": "C2-H-166: A `list_item` is a member of its list and adds no level.",
    "summary": "minimal nesting bound in nested list",
    "input": "- - a `b` <c:d>",
    "options": {
     "profile": "minimal"
    },
    "expected": {
-    "html": "<ul>\n  <li>\n    <ul>\n      <li>a b c:d</li>\n    </ul>\n  </li>\n</ul>",
+    "html": "<ul>\n  <li>\n    <ul>\n      <li>a <code>b</code> c:d</li>\n    </ul>\n  </li>\n</ul>",
     "children": [
      {
       "type": "list",
@@ -5148,7 +5148,7 @@
     "C2-H-166",
     "C2-B-033"
    ],
-   "why": "C2-H-166: A node at a level above the bound is outside the profile; a node at the bound stays, and its children are degraded. A `list_item` counts a level but is never degraded on its own: it keeps its `<li>`, and its blocks are degraded.",
+   "why": "C2-H-166: A container at the bound stays with its content; a container that would stand above the bound is outside the profile and is degraded as a whole. A `list_item` keeps its `<li>` when its list stays, including when another construct inside it degrades.",
    "summary": "nested list source lines under minimal profile nesting",
    "input": "- - -C2-A-034",
    "options": {
@@ -61599,6 +61599,84 @@
   ]
  },
  "from": []
-}
+},
+ {
+  "id": "CC-1415",
+  "clauses": [
+   "C2-H-163",
+   "C2-H-166"
+  ],
+  "why": "C2-H-166: A `list_item` is a member of its list and adds no level. Paragraphs, other non-container blocks and inline nodes add no level.",
+  "summary": "minimal plain list has no profile loss",
+  "kind": "render",
+  "input": "- a\n- b",
+  "options": {
+   "profile": "minimal",
+   "strictLosses": true
+  },
+  "expected": {
+   "html": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1416",
+  "clauses": [
+   "C2-H-166"
+  ],
+  "why": "C2-H-166: A container at the bound stays with its content; a container that would stand above the bound is outside the profile and is degraded as a whole.",
+  "summary": "minimal nested list at the bound stays",
+  "kind": "render",
+  "input": "- a\n  - b",
+  "options": {
+   "profile": "minimal"
+  },
+  "expected": {
+   "html": "<ul>\n  <li>a\n    <ul>\n      <li>b</li>\n    </ul>\n  </li>\n</ul>",
+   "diagnostics": []
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1417",
+  "clauses": [
+   "C2-H-166"
+  ],
+  "why": "C2-H-166: A container at the bound stays with its content; a container that would stand above the bound is outside the profile and is degraded as a whole.",
+  "summary": "minimal third list exceeds the bound once",
+  "kind": "render",
+  "input": "- a\n  - b\n    - c",
+  "options": {
+   "profile": "minimal"
+  },
+  "expected": {
+   "html": "<ul>\n  <li>a\n    <ul>\n      <li>b\n        <p>- c</p>\n      </li>\n    </ul>\n  </li>\n</ul>",
+   "diagnostics": [
+    "profile-construct-degraded"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1418",
+  "clauses": [
+   "C2-H-166"
+  ],
+  "why": "C2-H-166: A container at the bound stays with its content; a container that would stand above the bound is outside the profile and is degraded as a whole.",
+  "summary": "comment fifth quote exceeds the bound once",
+  "kind": "render",
+  "input": "> > > > > `x`",
+  "options": {
+   "profile": "comment"
+  },
+  "expected": {
+   "html": "<blockquote>\n  <blockquote>\n    <blockquote>\n      <blockquote><p>&gt; x</p></blockquote>\n    </blockquote>\n  </blockquote>\n</blockquote>",
+   "diagnostics": [
+    "profile-construct-degraded"
+   ]
+  },
+  "from": []
+ }
  ]
 }
