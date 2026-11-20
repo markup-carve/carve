@@ -282,6 +282,7 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
       else if (key === 'v' && !lets.has(value)) fail(`${where}: reads ${value}, which no let names`)
       else if (key === 'in' && typeof value[1] === 'string' && !sets.has(value[1])) fail(`${where}: names the set ${value[1]}, which this file does not define`)
       else if (key === 'matches' && /\(\?<?[=!]|\\[1-9]|\\k</.test(String(value[1]))) fail(`${where}: the pattern ${value[1]} uses lookaround or a backreference (C2-W-142)`)
+      else if (key === 'pairs' && value[2] !== undefined && value[2] !== 'strict') fail(`${where}: the pair scan option ${value[2]} is not strict (C2-W-147)`)
       else if (key === 'some') { checkPath(value.in, over, lets, where); walkExpr(value.where, over, lets, where) }
       if (key !== 'some' && key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
     }
