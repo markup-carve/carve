@@ -61121,6 +61121,58 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1391",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-003"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog block-opener-overindented: the whole opening mark as written, without indentation or following content",
+   "summary": "an overindented four-colon div opener is reported on its whole colon run",
+   "kind": "lint",
+   "input": "# H\n\n   ::::\n   x\n   ::::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 3,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 3,
+      "endColumn": 8
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1392",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-003"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog block-opener-overindented: of backticks or tildes of a code fence",
+   "summary": "an overindented code fence is reported on its whole backtick run",
+   "kind": "lint",
+   "input": "   ````\n   x\n   ````\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "block-opener-overindented",
+      "line": 1,
+      "column": 4,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 8
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
