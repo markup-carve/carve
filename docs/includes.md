@@ -212,7 +212,7 @@ server.listen(3000)
 ```
 
 ```carve
-{{ src/server.js @region:start @code:js }}
+{{ src/server.js @code:js @region:start }}
 ```
 
 ```html

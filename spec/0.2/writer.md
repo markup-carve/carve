@@ -702,9 +702,9 @@ Written:
 ```
 
 
-**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `lines`, `region`, `rows`, `cols`, `shift`, `code`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117). The writer never writes the `children` or the `file` of an expanded include, and reports no loss for them (C2-N-080).
+**C2-W-058** An include writes its decoded `options` in the rank order of `data/include-options.json`: `code`, `lines`, `region`, `rows`, `cols`, `shift`. A range writes its range text, a list of column names writes a quoted comma-separated list with escapes, an integer writes decimal, `auto` writes `auto`, and `code: true` writes `@code` without a value. Original quote and escape spelling comes from the source-layout record (C2-L-055). The entries of `invalid` follow the options, each after one space and as the tree holds it (C2-A-181). An entry that would not read back as the same invalid option, such as `@lines:1-2` with no `lines` before it, has no spelling and is reported (C2-W-117). A path is quoted when its bare form cannot hold it (C2-B-202); a double quote and a backslash in it are escaped with a backslash. A path with a line break is unspellable and reported (C2-W-117). The writer never writes the `children` or the `file` of an expanded include, and reports no loss for them (C2-N-080).
 
-The options are written in rank order, `lines` before `code` (C2-W-058).
+The options are written in rank order, `code` before `lines` (C2-W-058).
 
 Example 45 (unverified)
 
@@ -717,7 +717,7 @@ Input:
 Written:
 
 ```carve
-{{ a.crv @lines:1-2 @code }}
+{{ a.crv @code @lines:1-2 }}
 ```
 
 
