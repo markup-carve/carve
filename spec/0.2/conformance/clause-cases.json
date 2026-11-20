@@ -61284,6 +61284,51 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1398",
+   "clauses": [
+    "C2-W-143",
+    "C2-B-192"
+   ],
+   "why": "C2-W-143: A line `>` inside a quote is blank for the rules inside the quote, although the parse does not read it as a blank line that ends the quote (C2-B-009, C2-B-032).",
+   "summary": "a line of only the quote mark is blank for the attribute line above it in the quote",
+   "kind": "lint",
+   "input": "> {.c}\n>\n> # H\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unattached-block-attribute",
+      "line": 1,
+      "column": 3,
+      "messageWhen": "a blank line follows the attribute line in its container, whether or not a block follows that blank line",
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 7
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1399",
+   "clauses": [
+    "C2-W-143",
+    "C2-B-031"
+   ],
+   "why": "C2-W-143: A mark that is no container prefix is not blank: `>>` at column 1 is text (C2-B-031).",
+   "summary": "a line `>>` at column 1 is not blank, so the attribute line above it attaches",
+   "kind": "lint",
+   "input": "{.c}\n>>\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "unattached-block-attribute"
+    ]
+   },
+   "from": []
   }
  ]
 }

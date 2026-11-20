@@ -88,9 +88,9 @@
       ],
       "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition."],
       "message_origin": "design",
-      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025)",
+      "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025); a blank line is one as C2-W-143 reads it",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
-      "clauses": ["C2-B-019", "C2-B-200"]
+      "clauses": ["C2-B-019", "C2-B-200", "C2-W-143"]
     },
     {
       "id": "blockquote-marker-without-space",
@@ -1873,8 +1873,8 @@
       "messages": [{"when": "the attribute line reaches the end of its container or document without a following blank line", "text": "This attribute line reaches no block: a blank line or the end of its container follows, so the line is text (C2-B-192). Move it directly above the block it describes, or delete it."}, {"when": "a blank line follows the attribute line in its container, whether or not a block follows that blank line", "text": "A blank line follows this attribute line, so it is text. Remove the blank line if you mean to attach it to a following block."}],
       "message_origin": "data_file",
       "change": "also an attribute line separated from its block by a blank line, which is text",
-      "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows; a line the parse reads as text of a paragraph is no attribute line (C2-W-107), and `block-opener-without-blank-line` reports it; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192)",
-      "clauses": ["C2-B-090", "C2-B-092", "C2-B-192"]
+      "reports": "an attribute line, or a run of consecutive attribute lines reported once at its first line, that no block takes because the end of its container or of the document follows, and since 0.2 also one that a blank line follows, a line blank as C2-W-143 reads it; a line the parse reads as text of a paragraph is no attribute line (C2-W-107), and `block-opener-without-blank-line` reports it; once per run, the range is the attribute line (C2-B-090, C2-B-092, C2-B-192, C2-W-143)",
+      "clauses": ["C2-B-090", "C2-B-092", "C2-B-192", "C2-W-143"]
     },
     {
       "id": "unattached-caption",
