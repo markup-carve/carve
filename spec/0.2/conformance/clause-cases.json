@@ -64197,6 +64197,48 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1469",
+ "clauses": [
+  "C2-I-047",
+  "C2-I-048",
+  "C2-W-146"
+ ],
+ "why": "C2-I-047: A delimiter can open when the character before it is not a word character and the character after it is not whitespace. C2-I-048: A delimiter can close when the character before it is not whitespace and the character after it is not a word character. C2-W-146: Canonical output passes the lint rules that report a pair of bare marks that stays text.",
+ "summary": "an escaped candidate opener takes no part and the next valid bare pair is reported",
+ "kind": "lint",
+ "input": "\\~foo ~bar~\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "deprecated-bare-strike",
+    "line": 1,
+    "column": 7,
+    "severity": "warning",
+    "channel": "lint"
+   }
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1470",
+ "clauses": [
+  "C2-I-047"
+ ],
+ "why": "Catalog deprecated-bare-strike: the opener can open by C2-I-047, stands next to no other `~`",
+ "summary": "a bare strike opener cannot be the second mark of a longer tilde run",
+ "kind": "lint",
+ "input": "~~a~\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-strike"
+  ]
+ },
+ "from": []
 }
  ]
 }
