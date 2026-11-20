@@ -520,7 +520,7 @@
     {
       "name": "source_format",
       "type": "name",
-      "means": "on a table record: the source format of the table, `pipe` for a pipe table, `csv` or `tsv` for a delimited table; spelling that the tree does not hold",
+      "means": "on a table, table_row or table_cell record: the source format of the table, `pipe` for a pipe table, `csv` or `tsv` for a delimited table; spelling that the tree does not hold",
       "clauses": [
         "C2-A-095",
         "C2-B-180",
@@ -2997,6 +2997,14 @@
       ],
       "when": {
         "all": [
+          {
+            "eq": [
+              {
+                "f": "source_format"
+              },
+              "pipe"
+            ]
+          },
           {
             "any": [
               {
@@ -7151,6 +7159,14 @@
       "when": {
         "all": [
           {
+            "eq": [
+              {
+                "f": "source_format"
+              },
+              "pipe"
+            ]
+          },
+          {
             "not": {
               "has": "node.children.-1.attrs"
             }
@@ -7160,7 +7176,7 @@
               {
                 "f": "text"
               },
-              "\\|\\s*\\{[^|]*\\}\\s*\\|[^|]*$"
+              "\\|\\s*\\{\\s*[^%}\\s][^|]*\\}\\s*\\|[^|]*$"
             ]
           }
         ]
@@ -7422,7 +7438,19 @@
         "table_cell"
       ],
       "when": {
-        "has": "node.span"
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "source_format"
+              },
+              "pipe"
+            ]
+          },
+          {
+            "has": "node.span"
+          }
+        ]
       },
       "range": {
         "start": {
@@ -7522,6 +7550,14 @@
       ],
       "when": {
         "all": [
+          {
+            "eq": [
+              {
+                "f": "source_format"
+              },
+              "pipe"
+            ]
+          },
           {
             "not": {
               "has": "node.span"
