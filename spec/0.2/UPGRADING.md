@@ -906,7 +906,7 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | No 0.2 counterpart. |
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
 | `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve import --from html`. |
-| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). BBCode has no 0.2 importer. |
+| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode has no 0.2 importer. |
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
@@ -1009,6 +1009,47 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 
 0.2 checks option names and types. `CarveOptionError` names a refused option. Invalid trees raise `CarveTreeError`; invalid layout records raise `CarveLayoutError`. `renderTree` can raise `CarveRenderError` under `strictLosses`. `parseWithDiagnostics` and `renderWithDiagnostics` return structured findings. Port code that used 0.1 parser callbacks or `*WithReport` loss objects to this channel. Resolution results stay on the 2.0 tree. A caller should not infer them from rendered HTML.
 
+### Markdown import is GFM import
+
+The 0.1 Markdown importer (`markdownToCarve`, `migrate --from markdown`) read GitHub Flavored Markdown: tables, task lists, strikethrough, bare URL autolinks and footnotes. In 0.2, `from: 'markdown'` reads CommonMark only, and `from: 'gfm'` adds the GitHub extensions. A caller that keeps the name `markdown` loses those constructs without an error: a table becomes escaped paragraph text.
+
+Input:
+
+```markdown
+| a | b |
+|---|--:|
+| 1 | 2 |
+
+- [x] done
+
+~~gone~~ https://example.com
+```
+
+`importDocument(input, { from: 'markdown' })`:
+
+```carve
+\| a | b |
+\|-\--|-\-:|
+\| 1 | 2 |
+
+- \[x] done
+
+~~gone~~ https://example.com
+```
+
+`importDocument(input, { from: 'gfm' })`:
+
+```carve
+|= a |={>} b |
+| 1 | 2 |
+
+- [x] done
+
+{-gone-} [https://example.com](https://example.com)
+```
+
+Map every 0.1 Markdown import to `gfm`: `importDocument(input, { from: 'gfm' })` and `carve import --from gfm`. Use `markdown` only for input that must be read as strict CommonMark. A host that offers a "Markdown" import should pass `gfm` by default.
+
 ### HTML and page selectors
 
 The table groups differences observed by rendering the same source with both engines. The comparison included the 0.1 `resources/examples/` fixtures and fenced Carve examples in the six 0.2 documents. Of 850 inputs, 221 had different HTML before source upgrades. Many are intentional source changes in Part 1. The 167 rewrite contract inputs were also rendered before and after the tool. Do not treat those counts as a claim that every existing document differs.
@@ -1057,6 +1098,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `--no-raw-html`, `--safe` | the default; `--raw-html` turns raw HTML on |
 | `--report-losses`, `--allow-loss`, `--max-render-losses`, `--report-includes` | the same names (C2-T-021 to C2-T-029); a loss report holds 0.2 diagnostic entries, and the include report the dependencies of C2-N-083 with `path`, `from`, `file` and `read` |
 | `migrate --from html` | `carve import --from html` |
+| `migrate --from markdown` | `carve import --from gfm`; `--from markdown` reads CommonMark only and leaves tables as text |
 | `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
 | `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
 | `lint --rule ID`, `lint --platform NAME` | `carve lint --rules '{"ID":"on"}'`, `--platforms '["NAME"]'` (C2-T-010) |
