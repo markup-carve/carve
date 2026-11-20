@@ -8,6 +8,7 @@ import { spawnSync } from 'node:child_process'
 import { isDeepStrictEqual } from 'node:util'
 import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
+import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -186,6 +187,10 @@ const revision = dir => {
   return result.stdout.trim()
 }
 const engineHeads = { js: revision(jsDir), php: revision(phpDir), rs: revision(rsDir) }
+if (args.has('--prepared')) {
+  const baselineHeads = JSON.parse(readFileSync(baselinePath, 'utf8')).engineHeads
+  verifyPreparedHeads({ js: jsDir, php: phpDir, rs: rsDir }, engineHeads, baselineHeads)
+}
 // carve-js next2 moved the 0.2 engine from v2/ to the package root (carve-js#5064).
 const jsV2 = existsSync(resolve(jsDir, 'v2/src/index.ts'))
 const js = await import(pathToFileURL(resolve(jsDir, jsV2 ? 'v2/src/index.ts' : 'src/index.ts')))
@@ -455,7 +460,7 @@ const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, ro
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
 const ready = (engine, areas) => Object.values(areas).every(row => row.fail + row.unsupported === 0) && !forbiddenReports.some(item => item.startsWith(`${engine}/`))
-const lines = ['# Carve 0.2 engine readiness', '', '| Engine | Area | Pass | Fail | Unsupported | Excluded: obsolete/void | Engine-local | Agreement | Ready |', '|---|---|---:|---:|---:|---:|---:|---:|---|']
+const lines = ['# Carve 0.2 engine readiness', '', ...Object.entries(engineHeads).map(([engine, head]) => `${engine} commit: \`${head}\``), '', '| Engine | Area | Pass | Fail | Unsupported | Excluded: obsolete/void | Engine-local | Agreement | Ready |', '|---|---|---:|---:|---:|---:|---:|---:|---|']
 for (const [engine, areas] of Object.entries(counts)) for (const [area, row] of Object.entries(areas)) {
   const total = row.pass + row.fail + row.unsupported
   lines.push(`| ${engine} | ${area} | ${row.pass} | ${row.fail} | ${row.unsupported} | ${row.excluded} | ${row.engineLocal} | ${total ? (row.pass / total * 100).toFixed(1) : '0.0'}% | ${row.fail + row.unsupported === 0 && (area !== 'catalog' || !forbiddenReports.some(item => item.startsWith(`${engine}/`))) ? 'yes' : 'no'} |`)
