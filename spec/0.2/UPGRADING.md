@@ -1116,7 +1116,7 @@ Not carried over:
 
 - `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
 
-0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). The editor adapters are outside the specification (C2-T-003); callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows.
+0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). Callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows; the editor adapters of the HTML importer are the import option `adapter` (C2-M-102).
 
 ## Part 3. Tree consumers: AST 1.x to 2.0
 
