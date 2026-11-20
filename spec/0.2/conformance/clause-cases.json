@@ -61459,6 +61459,32 @@
     "diagnostics": [{"code": "unattached-block-attribute", "line": 1, "column": 1, "endLine": 1, "endColumn": 5, "messageWhen": "the attribute line reaches the end of its container or document without a following blank line", "channel": "lint", "severity": "warning"}]
    },
    "from": []
+  },
+  {
+   "id": "CC-1408",
+   "clauses": ["C2-B-003", "C2-B-004", "C2-B-027"],
+   "why": "C2-B-003: Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space. C2-B-004: A leading tab advances the column to the next multiple of 4, for counting only: the bytes are kept as written, also in code.",
+   "summary": "a tab before a quote mark does not overindent a term in the quoted item",
+   "kind": "lint",
+   "input": "> i) :::\n\t>   :: term\n",
+   "options": {},
+   "expected": {
+    "notReported": ["list-item-block-overindented"]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1409",
+   "clauses": ["C2-W-088", "C2-B-137"],
+   "why": "C2-W-088: The text is written bare and parsed in its context, including the link definitions of the whole document. C2-B-137: Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line.",
+   "summary": "a description mark after a comment stays bare in an item paragraph",
+   "kind": "format",
+   "input": "- a\n  %% c\n  \\:: t\n",
+   "options": {},
+   "expected": {
+    "carve": "- a\n  %% c\n  :: t\n"
+   },
+   "from": []
   }
  ]
 }
