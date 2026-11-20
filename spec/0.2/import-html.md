@@ -8,7 +8,7 @@ Conventions:
 
 - A clause is a paragraph that starts with an id of the form `C2-M-nnn`. `C2-A-nnn`, `C2-B-nnn`, `C2-H-nnn`, `C2-I-nnn`, `C2-L-nnn` and `C2-W-nnn` name clauses of the AST document, the block and inline chapters, the HTML document, the sidecar document and the writer document.
 - A clause that starts with the word "Exception" is a carve-out from a more general clause. Exceptions are counted at the end.
-- `data/import-html.json` holds the rows the clauses read: `attributes`, `elements`, `conventions`, `codes` and `losses`, and the tables of this document are rows of it too. Where a row and its clause disagree, the clause wins.
+- `data/import-html.json` holds the rows the clauses read: `adapters`, `attributes`, `elements`, `conventions`, `codes` and `losses`, and the tables of this document are rows of it too. Where a row and its clause disagree, the clause wins.
 - Each example is a `compare` container that holds the HTML input, the children of the imported document as JSON without positions and provenance, and the Carve source the canonical writer gives for that tree. The line above it gives its number and status. *Verified* means the reference importer at `carve-js` `next2` commit `0266e137` gives this tree and this source, with the example's import option, and reports every code of the example's `Reported:` line. *Unverified* means the importer differs: the tree and the report were written by hand from the clauses, and the source was then produced by the 0.2 writer from that tree with no loss reported. A line below an example that starts with `Reported:` names codes the import reports; it need not name every one.
 - "Report X" means: add an entry with the code X to the diagnostics record (C2-M-080).
 
@@ -24,7 +24,7 @@ Conventions:
 
 **C2-M-005** `<head>` and everything in it are dropped and reported once with `import-element-dropped`: the title, `<meta>`, `<link>`, `<base>`, and the scripts and styles of the head. The doctype is dropped and reported in the same way.
 
-**C2-M-100** An import option that changes the imported tree is an option of this document, which every engine offers: `rawHtml` (C2-M-066), `labels` (C2-M-101) and those that later rulings add, such as an editor adapter. The mapping rows of such an option stand in `data/import-html.json` next to the element rows. What only the command line does with imported files, as importing a directory, is reference tooling (C2-T-003).
+**C2-M-100** An import option that changes the imported tree is an option of this document, which every engine offers: `rawHtml` (C2-M-066), `labels` (C2-M-101), `adapter` (C2-M-102) and those that later rulings add. The mapping rows of such an option stand in `data/import-html.json` next to the element rows. What only the command line does with imported files, as importing a directory, is reference tooling (C2-T-003).
 
 **C2-M-101** The importer reads `labels` (C2-H-125), the map the HTML was rendered with, a key left out taking its default. An accessible name or text that the renderer writes from a label string, and that equals the string of that key, is generated: it gives no node and no attribute, and the importer reports nothing for it, as for the `aria-label` of an admonition without a title (C2-H-155).
 
@@ -1768,8 +1768,59 @@ See [the guide](/guide "Guide") and [https://example.com](https://example.com).
 
 This is the render of `# Intro`, a paragraph with the reference `[the guide][g]` and the autolink `<https://example.com>`, and a tight list whose first item holds two paragraphs, without `roundtrip`. The generated id comes back as authored, the reference as an inline link with its title, the autolink as a link whose text is its target, and the tight list as loose, since its first item holds two blocks.
 
+## Editor adapters
+
+**C2-M-102** The importer reads the option `adapter`, which names the editor that wrote the HTML: `generic`, the default, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word` or `google-docs`. Any other value is refused with an option error before the import starts, and `--adapter` with any other value with the category `usage`. The rows `adapters` of `data/import-html.json` say what each value does. `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more, since its mapping already reads what these editors write. `word` and `google-docs` run the note pass of C2-M-103 to C2-M-110 on the parsed tree before the mapping, the same pass for both: a word processor exports its notes as a pair of links, the reference to the note and the note back to the reference, and the pass reads such a pair as a footnote.
+
+**C2-M-103** In the note pass, an *anchor* is an `<a>` that C2-M-062 and C2-M-063 do not read, whose `href` is `#` and a fragment that is not empty, where the fragment names an element: the first element in document order whose `id` is the fragment, or else the first `<a>` whose `name` is. The *identity* of an anchor is its `id`, or else its `name`. The *block* of an anchor is the element its fragment names when that is an `li`, `div`, `section`, `aside`, `p`, `td` or `blockquote`, and otherwise the nearest ancestor that is one of these, below the `<body>`. When the parent of that block is a `div`, `li`, `section` or `aside` with an `id` that is not empty, and the parent and its descendants hold exactly one element that the fragment of an anchor names, the parent is the block: Word and LibreOffice wrap each note in such an element. An anchor whose block contains it, or that finds no such element below the `<body>`, has no block.
+
+**C2-M-104** An anchor is a *candidate* when it has a block and that block holds an `<a>` whose `href` is `#` and the anchor's identity, or when the classes of the anchor include `footnote-ref` or `footnoteRef`. Of two candidates each inside the block of the other, one is the reference and the other its backlink: the one whose classes include `footnote-ref` or `footnoteRef`, when only one does; else the one whose classes do not include `footnote-back`, when only one does; else the one earlier in document order. Every candidate that is not such a backlink is a *reference*, and its block is a *note*. A note that contains another note is no note, and its references are anchors again. Every other anchor outside the notes whose fragment is that of a reference of a note is a reference of the same note too.
+
+**C2-M-105** The pass then changes the parsed tree, and the mapping reads the changed tree. Each reference becomes a note reference of C2-M-062 to its note, in the place of the reference or, when the reference is the only element of a `<sup>` and the rest of it is whitespace, in the place of that `<sup>`. The attributes of the element it replaces are not kept.
+
+**C2-M-106** A backlink of a note is an `<a>` inside it whose `href` is `#` and the identity of one of its references, whose identity is the fragment of one of its references, or whose classes include `footnote-back`. It leaves the tree with its content, and so does a `<sup>` or `<span>` that it leaves holding only whitespace.
+
+**C2-M-107** A note that is an item of the first `<ol>` of a footnote section (C2-M-061) and has an `id` stays where it is, and its references name it. Every other note leaves its place: the notes, in document order, become the items of one footnote section at the end of the document, each item with the content of its note, and the note element itself and its attributes are not kept. They take the keys `1`, `2` and so on, skipping a key that a footnote section of the input gives.
+
+**C2-M-108** Before the first note that leaves its place, every `<hr>` and `<br>` among its preceding siblings is dropped up to the first that is no whitespace, comment, `<hr>` or `<br>`, and when there is none, the same is done for the preceding siblings of its parent, up to the `<body>`: that is the separator a word processor writes above its notes.
+
+**C2-M-109** An element that holds only whitespace, comments, `<hr>` and `<br>` after the notes have left it is dropped, and so is its parent when that one is left in the same way, up to the `<body>`.
+
+**C2-M-110** The pass reports nothing. The references, the backlinks, the separator and the elements it empties are the navigation and the layout of the export, and the attributes of the notes and of the replaced references are its ids and its styling. Every other element and attribute of the input is read by the mapping and reported as in any import.
+
+Example 65 (unverified, import option `adapter` set to `word`)
+
+::: compare
+
+```html
+<p>Data<a href="#_ftn1" name="_ftnref1" title=""><span class="MsoFootnoteReference">[1]</span></a> centre.</p>
+<div><br clear="all">
+<hr align="left" size="1" width="33%">
+<div id="ftn1">
+<p><a href="#_ftnref1" name="_ftn1" title=""><span class="MsoFootnoteReference">[1]</span></a> NCAS British Atmospheric Data Centre</p>
+</div>
+</div>
+```
+
+```json
+[
+  {"type":"paragraph","children":[{"type":"text","value":"Data"},{"type":"footnote_ref","key":"1","namespace":"footnote"},{"type":"text","value":" centre."}]},
+  {"type":"footnote","key":"1","namespace":"footnote","children":[{"type":"paragraph","children":[{"type":"text","value":"NCAS British Atmospheric Data Centre"}]}]}
+]
+```
+
+```carve
+Data[^1] centre.
+
+[^1]: NCAS British Atmospheric Data Centre
+```
+
+:::
+
+The reference names `_ftn1`, the marker anchor of the note, whose nearest block is the `<p>`; its parent `<div id="ftn1">` holds one named element, so it is the block. The note points back at `_ftnref1`, the identity of the reference, and the reference comes first. The marker anchor of the note is its backlink, the `<br>` and the `<hr>` before the note are the separator, and the outer `<div>` is left empty. With `adapter` set to `generic`, the same input gives two links and a thematic break.
+
 ## Counts
 
-**C2-M-099** This document holds 85 clauses: 84 rules and 1 exception. It holds 64 examples: 46 verified and 18 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes and 18 loss rows.
+**C2-M-099** This document holds 94 clauses: 93 rules and 1 exception. It holds 65 examples: 46 verified and 19 unverified. `data/import-html.json` holds 118 element rows, 11 attribute rows, 10 conventions, 7 codes, 18 loss rows and 7 adapter rows.
 
 The reduction of 17 November 2026 deleted C2-M-073, whose rule other clauses state or give; its id is not reused.

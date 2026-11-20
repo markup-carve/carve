@@ -61669,6 +61669,1614 @@
    ]
   },
   "from": []
+ },
+ {
+  "id": "CC-1419",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more",
+  "summary": "generic reads a Word note pair as two links",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "generic"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "_ftnref1"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteReference"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": "[1]"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "href": "#_ftn1",
+       "tooltip": "",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "left"
+         ],
+         [
+          "size",
+          "1"
+         ],
+         [
+          "width",
+          "33%"
+         ]
+        ]
+       },
+       "type": "thematic_break"
+      },
+      {
+       "attrs": {
+        "id": "ftn1"
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteText"
+          ]
+         },
+         "children": [
+          {
+           "attrs": {
+            "keyValues": [
+             [
+              "name",
+              "_ftn1"
+             ]
+            ]
+           },
+           "children": [
+            {
+             "attrs": {
+              "classes": [
+               "MsoFootnoteReference"
+              ]
+             },
+             "children": [
+              {
+               "type": "text",
+               "value": "[1]"
+              }
+             ],
+             "type": "span"
+            }
+           ],
+           "href": "#_ftnref1",
+           "tooltip": "",
+           "type": "link"
+          },
+          {
+           "type": "text",
+           "value": " NCAS British Atmospheric Data Centre"
+          }
+         ],
+         "type": "paragraph"
+        }
+       ],
+       "type": "div"
+      }
+     ],
+     "type": "div"
+    }
+   ],
+   "carve": "Data[[\\[1\\]]{.MsoFootnoteReference}](#_ftn1 \"\"){name=_ftnref1} centre.\n\n::::\n{align=left size=1 width=33%}\n***\n\n{#ftn1}\n:::\n{.MsoFootnoteText}\n[[\\[1\\]]{.MsoFootnoteReference}](#_ftnref1 \"\"){name=_ftn1} NCAS British Atmospheric Data Centre\n:::\n::::\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1420",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more",
+  "summary": "tiptap gives the tree of generic for a Word note pair",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "tiptap"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "_ftnref1"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteReference"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": "[1]"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "href": "#_ftn1",
+       "tooltip": "",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "left"
+         ],
+         [
+          "size",
+          "1"
+         ],
+         [
+          "width",
+          "33%"
+         ]
+        ]
+       },
+       "type": "thematic_break"
+      },
+      {
+       "attrs": {
+        "id": "ftn1"
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteText"
+          ]
+         },
+         "children": [
+          {
+           "attrs": {
+            "keyValues": [
+             [
+              "name",
+              "_ftn1"
+             ]
+            ]
+           },
+           "children": [
+            {
+             "attrs": {
+              "classes": [
+               "MsoFootnoteReference"
+              ]
+             },
+             "children": [
+              {
+               "type": "text",
+               "value": "[1]"
+              }
+             ],
+             "type": "span"
+            }
+           ],
+           "href": "#_ftnref1",
+           "tooltip": "",
+           "type": "link"
+          },
+          {
+           "type": "text",
+           "value": " NCAS British Atmospheric Data Centre"
+          }
+         ],
+         "type": "paragraph"
+        }
+       ],
+       "type": "div"
+      }
+     ],
+     "type": "div"
+    }
+   ],
+   "carve": "Data[[\\[1\\]]{.MsoFootnoteReference}](#_ftn1 \"\"){name=_ftnref1} centre.\n\n::::\n{align=left size=1 width=33%}\n***\n\n{#ftn1}\n:::\n{.MsoFootnoteText}\n[[\\[1\\]]{.MsoFootnoteReference}](#_ftnref1 \"\"){name=_ftn1} NCAS British Atmospheric Data Centre\n:::\n::::\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1421",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more",
+  "summary": "prosemirror gives the tree of generic for a Word note pair",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "prosemirror"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "_ftnref1"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteReference"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": "[1]"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "href": "#_ftn1",
+       "tooltip": "",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "left"
+         ],
+         [
+          "size",
+          "1"
+         ],
+         [
+          "width",
+          "33%"
+         ]
+        ]
+       },
+       "type": "thematic_break"
+      },
+      {
+       "attrs": {
+        "id": "ftn1"
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteText"
+          ]
+         },
+         "children": [
+          {
+           "attrs": {
+            "keyValues": [
+             [
+              "name",
+              "_ftn1"
+             ]
+            ]
+           },
+           "children": [
+            {
+             "attrs": {
+              "classes": [
+               "MsoFootnoteReference"
+              ]
+             },
+             "children": [
+              {
+               "type": "text",
+               "value": "[1]"
+              }
+             ],
+             "type": "span"
+            }
+           ],
+           "href": "#_ftnref1",
+           "tooltip": "",
+           "type": "link"
+          },
+          {
+           "type": "text",
+           "value": " NCAS British Atmospheric Data Centre"
+          }
+         ],
+         "type": "paragraph"
+        }
+       ],
+       "type": "div"
+      }
+     ],
+     "type": "div"
+    }
+   ],
+   "carve": "Data[[\\[1\\]]{.MsoFootnoteReference}](#_ftn1 \"\"){name=_ftnref1} centre.\n\n::::\n{align=left size=1 width=33%}\n***\n\n{#ftn1}\n:::\n{.MsoFootnoteText}\n[[\\[1\\]]{.MsoFootnoteReference}](#_ftnref1 \"\"){name=_ftn1} NCAS British Atmospheric Data Centre\n:::\n::::\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1422",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more",
+  "summary": "ckeditor gives the tree of generic for a Word note pair",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "ckeditor"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "_ftnref1"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteReference"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": "[1]"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "href": "#_ftn1",
+       "tooltip": "",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "left"
+         ],
+         [
+          "size",
+          "1"
+         ],
+         [
+          "width",
+          "33%"
+         ]
+        ]
+       },
+       "type": "thematic_break"
+      },
+      {
+       "attrs": {
+        "id": "ftn1"
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteText"
+          ]
+         },
+         "children": [
+          {
+           "attrs": {
+            "keyValues": [
+             [
+              "name",
+              "_ftn1"
+             ]
+            ]
+           },
+           "children": [
+            {
+             "attrs": {
+              "classes": [
+               "MsoFootnoteReference"
+              ]
+             },
+             "children": [
+              {
+               "type": "text",
+               "value": "[1]"
+              }
+             ],
+             "type": "span"
+            }
+           ],
+           "href": "#_ftnref1",
+           "tooltip": "",
+           "type": "link"
+          },
+          {
+           "type": "text",
+           "value": " NCAS British Atmospheric Data Centre"
+          }
+         ],
+         "type": "paragraph"
+        }
+       ],
+       "type": "div"
+      }
+     ],
+     "type": "div"
+    }
+   ],
+   "carve": "Data[[\\[1\\]]{.MsoFootnoteReference}](#_ftn1 \"\"){name=_ftnref1} centre.\n\n::::\n{align=left size=1 width=33%}\n***\n\n{#ftn1}\n:::\n{.MsoFootnoteText}\n[[\\[1\\]]{.MsoFootnoteReference}](#_ftnref1 \"\"){name=_ftn1} NCAS British Atmospheric Data Centre\n:::\n::::\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1423",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `generic` and the editor values `tiptap`, `prosemirror`, `ckeditor` and `tinymce` read the input as this document states and nothing more",
+  "summary": "tinymce gives the tree of generic for a Word note pair",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "tinymce"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "_ftnref1"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteReference"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": "[1]"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "href": "#_ftn1",
+       "tooltip": "",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "align",
+          "left"
+         ],
+         [
+          "size",
+          "1"
+         ],
+         [
+          "width",
+          "33%"
+         ]
+        ]
+       },
+       "type": "thematic_break"
+      },
+      {
+       "attrs": {
+        "id": "ftn1"
+       },
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "MsoFootnoteText"
+          ]
+         },
+         "children": [
+          {
+           "attrs": {
+            "keyValues": [
+             [
+              "name",
+              "_ftn1"
+             ]
+            ]
+           },
+           "children": [
+            {
+             "attrs": {
+              "classes": [
+               "MsoFootnoteReference"
+              ]
+             },
+             "children": [
+              {
+               "type": "text",
+               "value": "[1]"
+              }
+             ],
+             "type": "span"
+            }
+           ],
+           "href": "#_ftnref1",
+           "tooltip": "",
+           "type": "link"
+          },
+          {
+           "type": "text",
+           "value": " NCAS British Atmospheric Data Centre"
+          }
+         ],
+         "type": "paragraph"
+        }
+       ],
+       "type": "div"
+      }
+     ],
+     "type": "div"
+    }
+   ],
+   "carve": "Data[[\\[1\\]]{.MsoFootnoteReference}](#_ftn1 \"\"){name=_ftnref1} centre.\n\n::::\n{align=left size=1 width=33%}\n***\n\n{#ftn1}\n:::\n{.MsoFootnoteText}\n[[\\[1\\]]{.MsoFootnoteReference}](#_ftnref1 \"\"){name=_ftn1} NCAS British Atmospheric Data Centre\n:::\n::::\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1424",
+  "clauses": [
+   "C2-M-102",
+   "C2-M-106",
+   "C2-M-110"
+  ],
+  "why": "C2-M-102: `word` and `google-docs` run the note pass of C2-M-103 to C2-M-110 on the parsed tree before the mapping, the same pass for both",
+  "summary": "word reads a filtered Word export note as a footnote",
+  "kind": "import",
+  "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p class=\"MsoFootnoteText\"><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Data"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": " centre."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "classes": [
+         "MsoFootnoteText"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "NCAS British Atmospheric Data Centre"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Data[^1] centre.\n\n[^1]: {.MsoFootnoteText}\n  NCAS British Atmospheric Data Centre\n",
+   "notReported": [
+    "import-element-dropped",
+    "import-attribute-dropped"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1425",
+  "clauses": [
+   "C2-M-102",
+   "C2-M-106",
+   "C2-M-110"
+  ],
+  "why": "C2-M-102: `word` and `google-docs` run the note pass of C2-M-103 to C2-M-110 on the parsed tree before the mapping, the same pass for both",
+  "summary": "word reads a Word Save as Web Page note as a footnote",
+  "kind": "import",
+  "html": "<p class=MsoNormal>Static typing<a\nstyle='mso-footnote-id:ftn1' href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span\nclass=MsoFootnoteReference><span style='mso-special-character:footnote'><![if !supportFootnotes]><span\nclass=MsoFootnoteReference><span style='font-size:11.0pt'>[1]</span></span><![endif]></span></span></a> matters.</p>\n<div style='mso-element:footnote-list'><![if !supportFootnotes]><br clear=all>\n<hr align=left size=1 width=\"33%\">\n<![endif]>\n<div style='mso-element:footnote' id=ftn1>\n<p class=MsoFootnoteText><a style='mso-footnote-id:ftn1' href=\"#_ftnref1\"\nname=\"_ftn1\" title=\"\"><span class=MsoFootnoteReference><span style='mso-special-character:\nfootnote'><![if !supportFootnotes]><span class=MsoFootnoteReference><span\nstyle='font-size:10.0pt'>[1]</span></span><![endif]></span></span></a>\nStatic Object Orient Languages</p>\n</div>\n</div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "attrs": {
+      "classes": [
+       "MsoNormal"
+      ]
+     },
+     "children": [
+      {
+       "type": "text",
+       "value": "Static typing"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": " matters."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "classes": [
+         "MsoFootnoteText"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "Static Object Orient Languages"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "{.MsoNormal}\nStatic typing[^1] matters.\n\n[^1]: {.MsoFootnoteText}\n  Static Object Orient Languages\n",
+   "notReported": [
+    "import-element-dropped",
+    "import-attribute-dropped"
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1426",
+  "clauses": [
+   "C2-M-102",
+   "C2-M-107"
+  ],
+  "why": "C2-M-102: `word` and `google-docs` run the note pass of C2-M-103 to C2-M-110 on the parsed tree before the mapping, the same pass for both",
+  "summary": "google-docs reads Google Docs notes as footnotes",
+  "kind": "import",
+  "html": "<p class=\"c4\"><span class=\"c7\">Stalin became General Secretary</span><sup class=\"c1\"><a href=\"#ftnt1\" id=\"ftnt_ref1\">[1]</a></sup><span class=\"c0\">&nbsp;in 1922</span><sup class=\"c1\"><a href=\"#ftnt2\" id=\"ftnt_ref2\">[2]</a></sup><span class=\"c0\">.</span></p><hr class=\"c10\"><div><p class=\"c5\"><a href=\"#ftnt_ref1\" id=\"ftnt1\">[1]</a><span class=\"c2\">&nbsp;General Secretary of the Communist Party.</span></p></div><div><p class=\"c5\"><a href=\"#ftnt_ref2\" id=\"ftnt2\">[2]</a><span class=\"c2\">&nbsp;Roy Medvedev, Let History Judge, Page 3</span></p></div>",
+  "options": {
+   "adapter": "google-docs"
+  },
+  "expected": {
+   "children": [
+    {
+     "attrs": {
+      "classes": [
+       "c4"
+      ]
+     },
+     "children": [
+      {
+       "attrs": {
+        "classes": [
+         "c7"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "Stalin became General Secretary"
+        }
+       ],
+       "type": "span"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "attrs": {
+        "classes": [
+         "c0"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": " in 1922"
+        }
+       ],
+       "type": "span"
+      },
+      {
+       "key": "2",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "attrs": {
+        "classes": [
+         "c0"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "."
+        }
+       ],
+       "type": "span"
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "c2"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": " General Secretary of the Communist Party."
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "attrs": {
+          "classes": [
+           "c2"
+          ]
+         },
+         "children": [
+          {
+           "type": "text",
+           "value": " Roy Medvedev, Let History Judge, Page 3"
+          }
+         ],
+         "type": "span"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "2",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "{.c4}\n[Stalin became General Secretary]{.c7}[^1][ in 1922]{.c0}[^2][.]{.c0}\n\n[^1]: [ General Secretary of the Communist Party.]{.c2}\n\n[^2]: [ Roy Medvedev, Let History Judge, Page 3]{.c2}\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1427",
+  "clauses": [
+   "C2-M-103"
+  ],
+  "why": "C2-M-103: When the parent of that block is a `div`, `li`, `section` or `aside` with an `id` that is not empty, and the parent and its descendants hold exactly one element that the fragment of an anchor names, the parent is the block",
+  "summary": "word takes the LibreOffice note wrapper with its two paragraphs as the note",
+  "kind": "import",
+  "html": "<p>Body sentence one<a class=\"sdfootnoteanc\" name=\"sdfootnote1anc\" href=\"#sdfootnote1sym\"><sup>1</sup></a>\ncontinues.</p>\n<p>Second para<a class=\"sdfootnoteanc\" name=\"sdfootnote2anc\" href=\"#sdfootnote2sym\"><sup>2</sup></a>\nends.</p>\n<div id=\"sdfootnote1\"><p class=\"sdfootnote\"><a class=\"sdfootnotesym\" name=\"sdfootnote1sym\" href=\"#sdfootnote1anc\">1</a>The\n first note body.</p>\n</div>\n<div id=\"sdfootnote2\"><p class=\"sdfootnote\"><a class=\"sdfootnotesym\" name=\"sdfootnote2sym\" href=\"#sdfootnote2anc\">2</a>Note\n two para one.</p>\n <p class=\"sdfootnote\">Note two para two.</p>\n</div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Body sentence one"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "continues."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Second para"
+      },
+      {
+       "key": "2",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "soft_break"
+      },
+      {
+       "type": "text",
+       "value": "ends."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "classes": [
+         "sdfootnote"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "The"
+        },
+        {
+         "type": "soft_break"
+        },
+        {
+         "type": "text",
+         "value": "first note body."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    },
+    {
+     "children": [
+      {
+       "attrs": {
+        "classes": [
+         "sdfootnote"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "Note"
+        },
+        {
+         "type": "soft_break"
+        },
+        {
+         "type": "text",
+         "value": "two para one."
+        }
+       ],
+       "type": "paragraph"
+      },
+      {
+       "attrs": {
+        "classes": [
+         "sdfootnote"
+        ]
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "Note two para two."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "2",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Body sentence one[^1]\ncontinues.\n\nSecond para[^2]\nends.\n\n[^1]: {.sdfootnote}\n  The\n  first note body.\n\n[^2]: {.sdfootnote}\n  Note\n  two para one.\n\n  {.sdfootnote}\n  Note two para two.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1428",
+  "clauses": [
+   "C2-M-108",
+   "C2-M-109"
+  ],
+  "why": "C2-M-108: that is the separator a word processor writes above its notes",
+  "summary": "word drops the rule above Pandoc 1 notes and the emptied container",
+  "kind": "import",
+  "html": "<p>Here is a footnote reference,<a href=\"#fn1\" class=\"footnoteRef\" id=\"fnref1\"><sup>1</sup></a> and another.</p>\n<div class=\"footnotes\">\n<hr />\n<ol>\n<li id=\"fn1\"><p>Here is the footnote.<a href=\"#fnref1\">&#8617;</a></p></li>\n</ol>\n</div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Here is a footnote reference,"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": " and another."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "Here is the footnote."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Here is a footnote reference,[^1] and another.\n\n[^1]: Here is the footnote.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1429",
+  "clauses": [
+   "C2-M-103"
+  ],
+  "why": "C2-M-103: An anchor whose block contains it, or that finds no such element below the `<body>`, has no block.",
+  "summary": "word binds no note whose block would be the whole document",
+  "kind": "import",
+  "html": "<span id=\"x\">loose target</span><p>Body<a href=\"#x\" class=\"footnote-ref\" id=\"rx\"><sup>1</sup></a> tail.</p>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "attrs": {
+        "id": "x"
+       },
+       "children": [
+        {
+         "type": "text",
+         "value": "loose target"
+        }
+       ],
+       "type": "span"
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Body"
+      },
+      {
+       "attrs": {
+        "classes": [
+         "footnote-ref"
+        ],
+        "id": "rx"
+       },
+       "children": [
+        {
+         "children": [
+          {
+           "type": "text",
+           "value": "1"
+          }
+         ],
+         "type": "superscript"
+        }
+       ],
+       "href": "#x",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " tail."
+      }
+     ],
+     "type": "paragraph"
+    }
+   ],
+   "carve": "[loose target]{#x}\n\nBody[{^1^}](#x){#rx .footnote-ref} tail.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1430",
+  "clauses": [
+   "C2-M-104"
+  ],
+  "why": "C2-M-104: the one whose classes include `footnote-ref` or `footnoteRef`, when only one does",
+  "summary": "word takes the marked anchor as the reference against document order",
+  "kind": "import",
+  "html": "<div id=\"note\"><p><a name=\"target\" href=\"#ref\">1</a> The note.</p></div><p>Body<a href=\"#target\" name=\"ref\" class=\"footnote-ref\"><sup>1</sup></a> tail.</p>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Body"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": " tail."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "The note."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Body[^1] tail.\n\n[^1]: The note.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1431",
+  "clauses": [
+   "C2-M-104"
+  ],
+  "why": "C2-M-104: A note that contains another note is no note, and its references are anchors again.",
+  "summary": "word reads a block that holds another note as content",
+  "kind": "import",
+  "html": "<p>x<a href=\"#a\" name=\"ra\"><sup>1</sup></a> y<a href=\"#b\" name=\"rb\"><sup>2</sup></a></p><div id=\"a\"><p>outer<a href=\"#ra\">back</a></p><div id=\"b\"><p>inner<a href=\"#rb\">back</a></p></div></div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "x"
+      },
+      {
+       "attrs": {
+        "keyValues": [
+         [
+          "name",
+          "ra"
+         ]
+        ]
+       },
+       "children": [
+        {
+         "children": [
+          {
+           "type": "text",
+           "value": "1"
+          }
+         ],
+         "type": "superscript"
+        }
+       ],
+       "href": "#a",
+       "type": "link"
+      },
+      {
+       "type": "text",
+       "value": " y"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "attrs": {
+      "id": "a"
+     },
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "outer"
+        },
+        {
+         "children": [
+          {
+           "type": "text",
+           "value": "back"
+          }
+         ],
+         "href": "#ra",
+         "type": "link"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "type": "div"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "inner"
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "x[{^1^}](#a){name=ra} y[^1]\n\n{#a}\n:::\nouter[back](#ra)\n:::\n\n[^1]: inner\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1432",
+  "clauses": [
+   "C2-M-104",
+   "C2-M-107"
+  ],
+  "why": "C2-M-104: Every other anchor outside the notes whose fragment is that of a reference of a note is a reference of the same note too.",
+  "summary": "word binds a second reference to the same note",
+  "kind": "import",
+  "html": "<p>A<sup><a href=\"#ftnt1\" id=\"ftnt_ref1\">[1]</a></sup> and B<sup><a href=\"#ftnt1\" id=\"ftnt_ref1b\">[1]</a></sup>.</p><div><p><a href=\"#ftnt_ref1\" id=\"ftnt1\">[1]</a> Shared.</p></div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "A"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": " and B"
+      },
+      {
+       "key": "1",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "Shared."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "A[^1] and B[^1].\n\n[^1]: Shared.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1433",
+  "clauses": [
+   "C2-M-107",
+   "C2-M-061"
+  ],
+  "why": "C2-M-107: A note that is an item of the first `<ol>` of a footnote section (C2-M-061) and has an `id` stays where it is, and its references name it.",
+  "summary": "word keeps a note of a footnote section with its key",
+  "kind": "import",
+  "html": "<p>Body<a href=\"#fn7\" class=\"footnote-ref\" id=\"fnref7\"><sup>7</sup></a>.</p><section class=\"footnotes\"><ol><li id=\"fn7\"><p>The note.<a href=\"#fnref7\">&#8617;</a></p></li></ol></section>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Body"
+      },
+      {
+       "key": "7",
+       "namespace": "footnote",
+       "type": "footnote_ref"
+      },
+      {
+       "type": "text",
+       "value": "."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "The note."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "7",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Body[^7].\n\n[^7]: The note.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1434",
+  "clauses": [
+   "C2-M-105"
+  ],
+  "why": "C2-M-105: when the reference is the only element of a `<sup>` and the rest of it is whitespace, in the place of that `<sup>`",
+  "summary": "word keeps a superscript that holds more than the reference",
+  "kind": "import",
+  "html": "<p>Body<sup><a href=\"#n1\" id=\"r1\">1</a>*</sup> t.</p><div><p><a href=\"#r1\" id=\"n1\">1</a> The note.</p></div>",
+  "options": {
+   "adapter": "word"
+  },
+  "expected": {
+   "children": [
+    {
+     "children": [
+      {
+       "type": "text",
+       "value": "Body"
+      },
+      {
+       "children": [
+        {
+         "key": "1",
+         "namespace": "footnote",
+         "type": "footnote_ref"
+        },
+        {
+         "type": "text",
+         "value": "*"
+        }
+       ],
+       "type": "superscript"
+      },
+      {
+       "type": "text",
+       "value": " t."
+      }
+     ],
+     "type": "paragraph"
+    },
+    {
+     "children": [
+      {
+       "children": [
+        {
+         "type": "text",
+         "value": "The note."
+        }
+       ],
+       "type": "paragraph"
+      }
+     ],
+     "key": "1",
+     "namespace": "footnote",
+     "type": "footnote"
+    }
+   ],
+   "carve": "Body{^[^1]*^} t.\n\n[^1]: The note.\n"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1435",
+  "clauses": [
+   "C2-M-102",
+   "C2-T-006"
+  ],
+  "why": "C2-M-102: Any other value is refused with an option error before the import starts",
+  "summary": "an import with an unknown adapter throws CarveOptionError",
+  "kind": "import",
+  "html": "<p>a</p>",
+  "options": {
+   "adapter": "notion"
+  },
+  "expected": {
+   "refusal": {
+    "error": "CarveOptionError",
+    "path": "/adapter"
+   }
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1436",
+  "clauses": [
+   "C2-M-102",
+   "C2-T-033"
+  ],
+  "why": "C2-M-102: `word` and `google-docs` run the note pass of C2-M-103 to C2-M-110 on the parsed tree before the mapping, the same pass for both",
+  "summary": "import with --adapter word writes a Word note as a footnote",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "--adapter",
+   "word",
+   "-"
+  ],
+  "stdin": "<p>a<a href=\"#n\" id=\"r\">1</a></p><div><p><a href=\"#r\" id=\"n\">1</a> N</p></div>",
+  "options": {},
+  "expected": {
+   "status": 0,
+   "stdout": "a[^1]\n\n[^1]: N\n",
+   "stderrCategory": null
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1437",
+  "clauses": [
+   "C2-M-102"
+  ],
+  "why": "C2-M-102: `--adapter` with any other value with the category `usage`",
+  "summary": "import with an unknown --adapter value is refused with usage",
+  "kind": "cli",
+  "args": [
+   "import",
+   "--from",
+   "html",
+   "--adapter",
+   "notion",
+   "-"
+  ],
+  "stdin": "<p>a</p>",
+  "options": {},
+  "expected": {
+   "status": 2,
+   "stderrCategory": "usage"
+  },
+  "from": []
  }
  ]
 }

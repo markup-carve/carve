@@ -43,7 +43,7 @@ const FILES = {
   'include-options': { options: ['name', 'rank'] },
   includes: { causes: ['name', 'rank'], conflicts: ['name', 'name'] },
   'inline-atoms': { atoms: ['name', 'name'] },
-  'import-html': { elements: ['name', 'name'], attributes: ['name', 'name'], conventions: ['name', 'name'], codes: ['id', 'id'], losses: ['name', 'name'] },
+  'import-html': { adapters: ['name', 'name'], elements: ['name', 'name'], attributes: ['name', 'name'], conventions: ['name', 'name'], codes: ['id', 'id'], losses: ['name', 'name'] },
   'inline-braces': { order: ['name', 'rank'] },
   'inline-brackets': { brackets: ['name', 'name'] },
   'inline-scan': { steps: ['name', 'rank'], fallbacks: ['name', 'name'] },
@@ -431,9 +431,9 @@ for (const [name, text] of Object.entries(texts)) {
     }
   }
 }
-const importCounts = /holds (\d+) element rows, (\d+) attribute rows, (\d+) conventions, (\d+) codes and (\d+) loss rows/.exec(texts['import-html'])
+const importCounts = /holds (\d+) element rows, (\d+) attribute rows, (\d+) conventions, (\d+) codes, (\d+) loss rows and (\d+) adapter rows/.exec(texts['import-html'])
 if (!importCounts) fail('import-html.md counts: the sentence on the rows of data/import-html.json is missing')
-else ['elements', 'attributes', 'conventions', 'codes', 'losses'].forEach((list, at) => {
+else ['elements', 'attributes', 'conventions', 'codes', 'losses', 'adapters'].forEach((list, at) => {
   if (Number(importCounts[at + 1]) !== (data['import-html']?.[list] ?? []).length) fail(`import-html.md counts: ${list} says ${importCounts[at + 1]}, the data file holds ${(data['import-html']?.[list] ?? []).length}`)
 })
 
@@ -478,7 +478,7 @@ if (optionRows.length !== options.length) fail(`html.md C2-H-137: ${optionRows.l
 for (const [option, kind] of optionRows) {
   const row = options.find(entry => entry.name === option)
   const readers = row && (Array.isArray(row.read_by) ? row.read_by : [row.read_by])
-  const kinds = row && [row.kind, ...readers.filter(reader => reader === 'import')]
+  const kinds = row && [...new Set([row.kind, ...readers.filter(reader => reader === 'import')])]
   if (!row) fail(`html.md C2-H-137: ${option} is not in options.json`)
   else if (kind !== kinds.join(', ')) fail(`html.md C2-H-137: ${option} is of the kind ${kind}, options.json says ${kinds.join(', ')}`)
 }

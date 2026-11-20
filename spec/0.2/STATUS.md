@@ -174,7 +174,7 @@ What stays unverified: the 328 unverified examples (written by hand from the cla
 - **O10.** Annotation ranges (C2-A-204) are anchored for an unchanged tree only; how their paths follow an edit is not part of 0.2.0.
 - **O12.** For the extension catalog work: a renderer returns an HTML string the host cannot inspect for the escaping and URL policy of C2-X-034; the slots of a supplied node of another extension are walked in the key order of its `slots` object, which can differ from the order of its declaration (C2-X-020); and the annotation ids of C2-A-203 need a reader that is given the range sidecar with the tree.
 - **O22.** Points the restore round of candidate 6 left for a ruling, each restored as narrowly as the ruling required: header rows inside a body take `scope="row"` (U-271, against T-053 and C2-A-092), and a pipe table with `body-rows` keeps its 0.2 head (C2-B-178, U-058); inside a code span a backslash and a trailing space stay (the ruling of 16 November, C2-I-002); and the writer half of F33 (C2-W-098) now writes a row attribute value with a pipe in quotes, which the maintainer should confirm.
-- **O24.** The editor adapters of the importer (`tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word`, `google-docs`) change the imported tree. They stay reference tooling (C2-T-003) until a ruling makes one an option of C2-M-100 with mapping rows in `data/import-html.json`; no row is written yet, since no engine implements one to measure against. `allowAbsolute` (C2-N-012) and `includedBy` (C2-T-020) have no clause case: the corpus resolver serves names, not paths, and `includedBy` is optional.
+- **O24.** The editor adapters of the importer are the import option `adapter` (C2-M-102 to C2-M-110, rows `adapters` of `data/import-html.json`, ruling of 20 November on #6235): `word` and `google-docs` run the note pass, the other values change nothing, as in 0.1. `allowAbsolute` (C2-N-012) and `includedBy` (C2-T-020) have no clause case: the corpus resolver serves names, not paths, and `includedBy` is optional.
 - **O25 resolved.** The 19 November rulings classify a caret line by shape before its host test (C2-B-146), write authored tabs wrapper attributes and give code groups their own id scheme (C2-X-047, C2-X-048), render every entry of a claimed references directive (C2-X-058), carry the three export targets with engine-defined output and loss codes (C2-T-003, C2-W-106), and merge renderer-generated style through the host helper (C2-X-033). See #6121 to #6125.
 
 The O25 cases on the 19 November `next2` engine heads have no readiness regression. CC-1371 passes all three engines. CC-1372 passes `carve-js` and differs in the `carve-php` and `carve-rs` HTML wrappers. CC-1373 passes `carve-rs`; the `carve.codeGroup` registration used by that case is refused by `carve-js` and `carve-php`.
@@ -188,6 +188,10 @@ The O25 cases on the 19 November `next2` engine heads have no readiness regressi
 ## Engine gaps from the tabs mode ruling of 19 November
 
 - All three engines, C2-X-043, C2-X-047, C2-X-048 and C2-X-056: the standard tabs renderer takes no host option `mode`, so the `aria` cases CC-1302 to CC-1306, CC-1308 and CC-1309 are unsupported in the readiness runners until an engine offers it. CC-1307 fails: the `css` wrapper drops an authored `role` and `aria-labelledby` of the `carve.tabs` node instead of writing them in place of the generated ones.
+
+## Engine gaps from the ruling of 20 November on the editor adapters
+
+The import option `adapter` (C2-M-102 to C2-M-110, #6235) adds Example 65 of `import-html.md` and the clause cases CC-1419 to CC-1437. No engine at the baseline heads offers it: `carve-js` implements it first, then `carve-php` and `carve-rs`.
 
 ## Engine gaps from the rulings of 19 November, 12:00
 

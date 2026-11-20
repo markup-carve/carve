@@ -10,7 +10,7 @@ This document defines what every engine offers a caller: the library calls and t
 
 **C2-T-002** The program is `carve`.
 
-**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import and the editor adapters of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification; those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
+**C2-T-003** Outside this specification are the Markdown, GFM and Djot importers of the reference engine (`--from markdown`, `gfm` and `djot`), its `upgrade` command, which is part of the JavaScript engine only and is described in `UPGRADING.md` ("Running the rewrite tool"), its `diff` command, which the calls of C2-T-043 to C2-T-046 serve on the command line, the directory import of its `import` command (C2-M-100), and its scanner and event helpers. Every engine also offers Markdown, plain-text and ANSI export renderers through its library API and `carve render --to markdown`, `--to plain` and `--to ansi`. Their output, options and export-only loss codes are engine behavior outside this specification; those codes are outside `data/lint-rules.json` (C2-W-106). An engine may offer further commands, flags, flag values and calls; none of them takes a name of `data/cli.json` with another meaning.
 
 **C2-T-004** `data/cli.json` holds the commands, flags, failure categories, calls and entry fields of this document. A row is normative together with the clauses it cites; where a row and its clause disagree, the clause wins.
 
@@ -30,7 +30,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `write` | a tree, optionally its sidecar, `alignTables`, `extensions` | Carve source | C2-W-001, C2-W-102 |
 | `writeWithDiagnostics` | as `write` | Carve source and the record | C2-W-134 |
 | `lint` | Carve source, `rules`, `platforms`, `includes`, `extensions`, `headingIds` | the record | C2-W-103, C2-W-109, C2-N-085, C2-T-042 |
-| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100 |
+| `importDocument` | HTML text, `from: "html"`, `rawHtml`, `strictLosses`, `labels`, `adapter` | the tree, its Carve source and the record | C2-M-001, C2-M-066, C2-M-082, C2-M-100, C2-M-102 |
 | `includeDependencies` | a tree | its dependencies | C2-N-083 |
 | `encodeTree` | a tree | its JSON text | C2-A-012, C2-A-217 |
 | `encodeEnvelope` | a tree | the JSON text of its envelope | C2-A-012 |
@@ -251,6 +251,7 @@ This document defines what every engine offers a caller: the library calls and t
 | Flag | Value | Meaning |
 |---|---|---|
 | `--from` | `html` | the input format; required |
+| `--adapter` | `generic`, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word`, `google-docs` | the option `adapter` of the importer (C2-M-102) |
 | `--raw-html` | switch | the option `rawHtml` of the importer (C2-M-065, C2-M-066) |
 | `--strict-losses` | switch | the option `strictLosses` of the importer (C2-M-082) |
 | `--report-losses` | path | writes the losses as a diagnostics report (C2-T-021) |

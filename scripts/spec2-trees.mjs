@@ -80,6 +80,7 @@ function importExamples() {
     const options = {}
     for (const flag of example.flags) {
       if (flag === 'import option rawHtml on') options.rawHtml = true
+      else if (/^import option adapter set to [\w-]+$/.test(flag)) options.adapter = flag.split(' ').at(-1)
       else fail(`${label}: unknown flag "${flag}"`)
     }
     const [html, json, carve] = example.fences
