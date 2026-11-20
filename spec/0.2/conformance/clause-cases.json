@@ -64223,8 +64223,8 @@
  },
  "from": []
 },
-{
- "id": "CC-1470",
+ {
+  "id": "CC-1470",
  "clauses": [
   "C2-I-047"
  ],
@@ -64238,7 +64238,53 @@
    "deprecated-bare-strike"
   ]
  },
- "from": []
-}
+  "from": []
+ },
+ {
+  "id": "CC-1471",
+  "clauses": [
+   "C2-B-019",
+   "C2-B-084",
+   "C2-B-200"
+  ],
+  "why": "C2-B-084: An abbreviation definition is one line: `*[label]:` Catalog block-opener-without-blank-line: a definition; once per candidate line, the range is the marker or attribute block on that line",
+  "summary": "abbreviation definition shaped paragraph line reports its marker",
+  "kind": "lint",
+  "input": "para\n*[x]: y\n",
+  "options": {},
+  "expected": {
+   "diagnostics": [
+    {
+     "code": "block-opener-without-blank-line",
+     "line": 2,
+     "column": 1,
+     "endLine": 2,
+     "endColumn": 6
+    }
+   ]
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1472",
+  "clauses": [
+   "C2-B-014",
+   "C2-B-015",
+   "C2-B-024",
+   "C2-B-111",
+   "C2-B-112"
+  ],
+  "why": "C2-B-024: a list marker that interrupter (b) does not take (C2-B-015) C2-B-014: a fence line, which is a run of three or more backticks, colons or percent signs that opens or closes a fence, a div or a comment block C2-B-111: An unclosed code fence, div or comment block ends with its container and never turns back into text C2-B-112: The body of a code fence is code and the body of a comment block is hidden: neither is read for blocks or inline content.",
+  "summary": "an HTML tag in an unclosed comment body is not linted",
+  "kind": "lint",
+  "input": "\t>:::\n## H\ni) i) %%%%\n       %%% \n>  a <b>\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "bare-html-tag"
+   ]
+  },
+  "from": []
+ }
  ]
 }
