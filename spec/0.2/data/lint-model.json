@@ -498,6 +498,248 @@
       ]
     }
   ],
+  "attribute_fields": [
+    {
+      "name": "end",
+      "type": "offset",
+      "means": "the end of the part: behind its name, behind the closing quote of a quoted value, or behind an unquoted value",
+      "clauses": [
+        "C2-I-029",
+        "C2-I-032",
+        "C2-I-033"
+      ]
+    },
+    {
+      "name": "entries",
+      "type": "number",
+      "means": "for a key: the number of comma-separated entries of its value, one more than its commas; 0 for an id, a class or a language",
+      "clauses": [
+        "C2-B-211",
+        "C2-B-212"
+      ]
+    },
+    {
+      "name": "entry_total",
+      "type": "number",
+      "means": "for a key: the exact sum of its comma-separated entries, spaces around an entry ignored, each read as a decimal number; 0 when an entry is no decimal number, and for an id, a class or a language",
+      "clauses": [
+        "C2-B-212"
+      ]
+    },
+    {
+      "name": "index",
+      "type": "number",
+      "means": "the place of the part among the attribute parts of its owner in source order, from 0",
+      "clauses": [
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "kept",
+      "type": "boolean",
+      "means": "the part is a key that the owner keeps in its `attrs` in the tree, so that no construct consumed it (C2-B-227)",
+      "clauses": [
+        "C2-B-227"
+      ]
+    },
+    {
+      "name": "key",
+      "type": "text",
+      "base": "start",
+      "means": "for a key: its name as written; empty for an id, a class or a language",
+      "clauses": [
+        "C2-I-031"
+      ]
+    },
+    {
+      "name": "key_end",
+      "type": "offset",
+      "means": "the end of the name of a key; for an id, a class or a language, the end of the part",
+      "clauses": [
+        "C2-I-031"
+      ]
+    },
+    {
+      "name": "kind",
+      "type": "name",
+      "means": "`id`, `class`, `lang` or `key`: which part of C2-I-029 this is",
+      "clauses": [
+        "C2-I-029"
+      ]
+    },
+    {
+      "name": "last_key",
+      "type": "boolean",
+      "means": "the part is a key and no later part of the same owner has that name, so its value is the one the owner keeps",
+      "clauses": [
+        "C2-I-039",
+        "C2-B-093",
+        "C2-B-102"
+      ]
+    },
+    {
+      "name": "owner",
+      "type": "owner",
+      "means": "the node that the attribute block attaches to, with the fields of `attribute_owner_fields`",
+      "clauses": [
+        "C2-B-091",
+        "C2-I-036"
+      ]
+    },
+    {
+      "name": "semantic",
+      "type": "boolean",
+      "means": "the part is a key whose name, in the letter case written, is a semantic span key: `abbr`, `time`, `kbd` or one a registered extension adds",
+      "clauses": [
+        "C2-H-075"
+      ]
+    },
+    {
+      "name": "semantic_value",
+      "type": "boolean",
+      "means": "the part is a semantic span key whose value the element carries (`abbr` as title, `time` as datetime)",
+      "clauses": [
+        "C2-H-075"
+      ]
+    },
+    {
+      "name": "start",
+      "type": "offset",
+      "means": "where the part starts in the source: its `#`, `.` or `:`, or the first character of its key",
+      "clauses": [
+        "C2-I-029"
+      ]
+    },
+    {
+      "name": "text",
+      "type": "text",
+      "base": "start",
+      "means": "the part as written, from start to end",
+      "clauses": [
+        "C2-I-029"
+      ]
+    },
+    {
+      "name": "value",
+      "type": "text",
+      "means": "the id, class or language name, or the value of a key with its quotes removed and its escapes read; empty for a bare key",
+      "clauses": [
+        "C2-I-032",
+        "C2-I-033",
+        "C2-W-049"
+      ]
+    }
+  ],
+  "attribute_owner_fields": [
+    {
+      "name": "align_overlap",
+      "type": "text",
+      "means": "for a table: the numbers of the columns, from 1 and joined by single spaces, where the column takes a horizontal alignment from `aligns` and the cell of the first head row carries a horizontal alignment mark",
+      "clauses": [
+        "C2-B-213",
+        "C2-A-089"
+      ]
+    },
+    {
+      "name": "body_rows",
+      "type": "number",
+      "means": "for a table: the number of rows of its body groups",
+      "clauses": [
+        "C2-B-187",
+        "C2-B-209",
+        "C2-A-088"
+      ]
+    },
+    {
+      "name": "columns",
+      "type": "number",
+      "means": "for a table: its number of columns, the cell count of its widest row",
+      "clauses": [
+        "C2-B-211",
+        "C2-A-089"
+      ]
+    },
+    {
+      "name": "end",
+      "type": "offset",
+      "means": "the end of the node",
+      "clauses": [
+        "C2-A-148"
+      ]
+    },
+    {
+      "name": "foot_rows",
+      "type": "number",
+      "means": "for a table: the number of rows of its foot",
+      "clauses": [
+        "C2-B-187",
+        "C2-B-209",
+        "C2-A-088"
+      ]
+    },
+    {
+      "name": "format",
+      "type": "name",
+      "means": "for a table: `pipe` for a pipe table, `csv` or `tsv` for a delimited table; empty otherwise",
+      "clauses": [
+        "C2-B-180",
+        "C2-B-186"
+      ]
+    },
+    {
+      "name": "head_rows",
+      "type": "number",
+      "means": "for a table: the number of rows of its head",
+      "clauses": [
+        "C2-B-187",
+        "C2-B-209",
+        "C2-A-088"
+      ]
+    },
+    {
+      "name": "node",
+      "type": "node",
+      "means": "the node of the tree, read as the `node` of a block or inline record (C2-W-140)",
+      "clauses": [
+        "C2-W-140",
+        "C2-A-001"
+      ]
+    },
+    {
+      "name": "opener_start",
+      "type": "offset",
+      "means": "for a block: where its own text starts behind its attribute lines, behind the indent and the quote marks of the quotes that hold it; for an inline node, its start",
+      "clauses": [
+        "C2-B-090",
+        "C2-A-148"
+      ]
+    },
+    {
+      "name": "start",
+      "type": "offset",
+      "means": "the start of the node, which for a block that took attribute lines is the first of them",
+      "clauses": [
+        "C2-A-148"
+      ]
+    },
+    {
+      "name": "type",
+      "type": "name",
+      "means": "the node type of the owner",
+      "clauses": [
+        "C2-A-021"
+      ]
+    },
+    {
+      "name": "valign_overlap",
+      "type": "text",
+      "means": "for a table: the numbers of the columns, as `align_overlap` writes them, where the column takes a vertical alignment from `valigns`, the cell of the first head row carries a vertical alignment mark, and the column is not in `align_overlap`",
+      "clauses": [
+        "C2-B-213",
+        "C2-A-089"
+      ]
+    }
+  ],
   "rules": [
     {
       "id": "a11y/image-alt",
@@ -1881,6 +2123,85 @@
       ]
     },
     {
+      "id": "consumed-key-near-miss",
+      "over": "attribute",
+      "types": [
+        "code_block"
+      ],
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "owner.node.syntax"
+              },
+              [
+                "csv",
+                "tsv"
+              ]
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "eq": [
+              {
+                "f": "value"
+              },
+              ""
+            ]
+          },
+          {
+            "ne": [
+              {
+                "f": "key"
+              },
+              "table"
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "key"
+              },
+              "^(?:able|tble|tale|tabe|tabl|.table|t.able|ta.ble|tab.le|tabl.e|table.|.able|t.ble|ta.le|tab.e|tabl.|atble|tbale|talbe|tabel)$",
+              "i"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "owner.opener_start"
+          },
+          "end": {
+            "f": "owner.end"
+          },
+          "values": {
+            "word": {
+              "f": "key"
+            },
+            "key": "table"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-180",
+        "C2-B-227",
+        "C2-B-066"
+      ]
+    },
+    {
       "id": "definition-in-container",
       "over": "line",
       "when": {
@@ -3001,6 +3322,57 @@
         "C2-B-027",
         "C2-B-058",
         "C2-B-160"
+      ]
+    },
+    {
+      "id": "deprecated-table-attribute",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "key"
+              },
+              "header-rows"
+            ]
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "eq": [
+              {
+                "f": "owner.format"
+              },
+              "pipe"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "owner.start"
+          },
+          "end": {
+            "f": "owner.end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-186"
       ]
     },
     {
@@ -6359,6 +6731,117 @@
       ]
     },
     {
+      "id": "semantic-attribute-outside-span",
+      "over": "attribute",
+      "when": {
+        "all": [
+          {
+            "ne": [
+              {
+                "f": "owner.type"
+              },
+              "span"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "f": "semantic"
+          },
+          {
+            "f": "last_key"
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "key_end"
+          },
+          "values": {
+            "name": {
+              "f": "key"
+            },
+            "type": {
+              "f": "owner.type"
+            },
+            "value": {
+              "f": "value"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-H-075"
+      ]
+    },
+    {
+      "id": "semantic-attribute-value-ignored",
+      "over": "attribute",
+      "types": [
+        "span"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "f": "semantic"
+          },
+          {
+            "not": {
+              "f": "semantic_value"
+            }
+          },
+          {
+            "ne": [
+              {
+                "f": "value"
+              },
+              ""
+            ]
+          },
+          {
+            "f": "last_key"
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "name": {
+              "f": "key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-H-075",
+        "C2-I-064"
+      ]
+    },
+    {
       "id": "setext-heading-underline",
       "over": "line",
       "when": {
@@ -6440,6 +6923,302 @@
         "C2-B-160",
         "C2-B-012",
         "C2-B-033"
+      ]
+    },
+    {
+      "id": "table-attribute-invalid",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "in": [
+              {
+                "f": "key"
+              },
+              [
+                "aligns",
+                "valigns",
+                "widths",
+                "header-rows",
+                "footer-rows",
+                "body-rows",
+                "body-header-rows",
+                "body-header-cols"
+              ]
+            ]
+          },
+          {
+            "f": "kept"
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "not": {
+              "all": [
+                {
+                  "eq": [
+                    {
+                      "f": "owner.format"
+                    },
+                    "pipe"
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "f": "key"
+                    },
+                    "header-rows"
+                  ]
+                },
+                {
+                  "matches": [
+                    {
+                      "f": "value"
+                    },
+                    "^[0-9]*$"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "key": {
+              "f": "key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-210",
+        "C2-B-211",
+        "C2-B-212",
+        "C2-B-227",
+        "C2-B-230"
+      ]
+    },
+    {
+      "id": "table-column-arity",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "in": [
+              {
+                "f": "key"
+              },
+              [
+                "aligns",
+                "valigns",
+                "widths"
+              ]
+            ]
+          },
+          {
+            "not": {
+              "f": "kept"
+            }
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "lt": [
+              {
+                "f": "entries"
+              },
+              {
+                "f": "owner.columns"
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "key_end"
+          },
+          "values": {
+            "key": {
+              "f": "key"
+            },
+            "count": {
+              "f": "entries"
+            },
+            "widest": {
+              "f": "owner.columns"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-211",
+        "C2-B-212"
+      ]
+    },
+    {
+      "id": "table-column-overlap",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "in": [
+              {
+                "f": "key"
+              },
+              [
+                "aligns",
+                "valigns"
+              ]
+            ]
+          },
+          {
+            "f": "last_key"
+          }
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "if": [
+              {
+                "eq": [
+                  {
+                    "f": "key"
+                  },
+                  "aligns"
+                ]
+              },
+              {
+                "f": "owner.align_overlap"
+              },
+              {
+                "if": [
+                  {
+                    "eq": [
+                      {
+                        "f": "key"
+                      },
+                      "valigns"
+                    ]
+                  },
+                  {
+                    "f": "owner.valign_overlap"
+                  },
+                  ""
+                ]
+              }
+            ]
+          },
+          "(?<n>[0-9]+)"
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "key_end"
+          },
+          "values": {
+            "n": {
+              "slice": [
+                {
+                  "if": [
+                    {
+                      "eq": [
+                        {
+                          "f": "key"
+                        },
+                        "aligns"
+                      ]
+                    },
+                    {
+                      "f": "owner.align_overlap"
+                    },
+                    {
+                      "if": [
+                        {
+                          "eq": [
+                            {
+                              "f": "key"
+                            },
+                            "valigns"
+                          ]
+                        },
+                        {
+                          "f": "owner.valign_overlap"
+                        },
+                        ""
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "match": "n"
+                },
+                {
+                  "match": "n",
+                  "at": "end"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-213",
+        "C2-B-182",
+        "C2-B-211"
       ]
     },
     {
@@ -6804,6 +7583,170 @@
       ]
     },
     {
+      "id": "table-row-count-clamped",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "let": {
+        "below": {
+          "add": [
+            {
+              "f": "owner.body_rows"
+            },
+            {
+              "f": "owner.foot_rows"
+            }
+          ]
+        },
+        "all_rows": {
+          "add": [
+            {
+              "f": "owner.head_rows"
+            },
+            {
+              "f": "owner.body_rows"
+            },
+            {
+              "f": "owner.foot_rows"
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "matches": [
+              {
+                "f": "value"
+              },
+              "^[0-9]+$"
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "key"
+                      },
+                      "footer-rows"
+                    ]
+                  },
+                  {
+                    "gt": [
+                      {
+                        "f": "value"
+                      },
+                      {
+                        "v": "below"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "key"
+                      },
+                      "header-rows"
+                    ]
+                  },
+                  {
+                    "ne": [
+                      {
+                        "f": "owner.format"
+                      },
+                      "pipe"
+                    ]
+                  },
+                  {
+                    "gt": [
+                      {
+                        "f": "value"
+                      },
+                      {
+                        "v": "all_rows"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "key"
+              },
+              "footer-rows"
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "key": {
+              "f": "key"
+            },
+            "count": {
+              "f": "value"
+            },
+            "effective": {
+              "v": "below"
+            }
+          }
+        },
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "key": {
+              "f": "key"
+            },
+            "count": {
+              "f": "value"
+            },
+            "effective": {
+              "v": "all_rows"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-187",
+        "C2-B-209",
+        "C2-B-227"
+      ]
+    },
+    {
       "id": "table-shaped-paragraph",
       "over": "line",
       "when": {
@@ -6895,6 +7838,62 @@
         "C2-B-168",
         "C2-B-166",
         "C2-B-167"
+      ]
+    },
+    {
+      "id": "table-width-total",
+      "over": "attribute",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "kind"
+              },
+              "key"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "key"
+              },
+              "widths"
+            ]
+          },
+          {
+            "f": "last_key"
+          },
+          {
+            "not": {
+              "f": "kept"
+            }
+          },
+          {
+            "gt": [
+              {
+                "f": "entry_total"
+              },
+              100
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "key_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-212"
       ]
     },
     {
