@@ -24,7 +24,7 @@ Conventions:
 
 **C2-A-002** Spelling that changes neither is not in the tree. It is recorded in the source-layout sidecar (`source-layout.md`).
 
-**C2-A-003** Source layout, node identity, annotation ranges and provenance are sidecars: each is returned only when the caller asks, validates against its own schema, addresses nodes by RFC 6901 pointers into the tree it came with, and is never placed inside the tree.
+**C2-A-003** Source layout and annotation ranges are sidecars: each validates against its own schema, addresses nodes by RFC 6901 pointers into the tree it came with, and is never placed inside the tree. `parseWithLayout` returns source layout when asked; a caller supplies annotation ranges to a tree reader when it wants their checks.
 
 **C2-A-004** Two documents that differ only in sidecar content are the same document.
 
@@ -711,7 +711,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 **C2-A-195** `carve.source` may stand on any node and records the foreign format, a locator with a part, element path or id, and the importer name and version.
 
-**C2-A-196** `carve.source` replaces the 1.x provenance sidecar's source-id graph and byte offsets with a local foreign locator; multi-source lineage and byte spans remain in a separate provenance sidecar.
+**C2-A-196** `carve.source` records a local foreign locator. The 1.x provenance sidecar's source-id graph and byte offsets have no 0.2 counterpart; multi-source lineage and byte spans are outside this contract.
 
 ```json
 {"type":"paragraph","children":[{"type":"text","value":"Hello"}],"data":{"carve.source":{"format":"docx","locator":{"part":"word/document.xml","path":"/document/body/p[1]"},"importer":{"name":"pandoc-carve","version":"2.0"}}}}

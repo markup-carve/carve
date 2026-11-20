@@ -37,7 +37,7 @@ The site serves each schema at its `$id`. The 0.2 tree schema is at `https://mar
 
 Authored attributes are in `attrs`. Generated heading ids and resolved destinations are result fields on the resolved tree. Positions use one-based lines and Unicode code point columns, with zero-based UTF-8 byte offsets and exclusive ends. A position can be absent where the source has no single contiguous span. See [resolution results](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#resolution-results) and [positions](https://github.com/markup-carve/carve/blob/next2/spec/0.2/ast.md#positions).
 
-The tree keeps meaning, while the [source-layout sidecar](./ast-source-layout.md) keeps author spelling. [Identity](./ast-node-identity.md), [annotation ranges](./ast-annotation-ranges.md), and [provenance](./ast-provenance.md) are also separate. They address one tree by JSON Pointer and need rebinding after edits.
+The tree keeps meaning, while the [source-layout sidecar](./ast-source-layout.md) keeps author spelling. [Annotation ranges](./ast-annotation-ranges.md) are also a sidecar. They address one tree by JSON Pointer and need rebinding after edits. Node identity and provenance have no 0.2 sidecar contract.
 
 ## Edit or exchange a tree
 

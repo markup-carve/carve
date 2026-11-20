@@ -144,6 +144,7 @@
         "tree": { "type": "object", "description": "A tree or an envelope as a JSON value: the input of a tree, migrate, render or write case." },
         "json": { "type": "string", "description": "The JSON text a tree case decodes, where the input is not a JSON value." },
         "layout": { "type": "object", "description": "The source-layout sidecar a write case gives the writer beside its tree." },
+        "annotations": { "type": "object", "description": "The annotation-range sidecar passed to a tree reader call." },
         "html": { "type": "string", "description": "The HTML an import case reads." },
         "args": { "type": "array", "items": { "type": "string" }, "description": "The arguments of a command line case, after the program name (C2-T-007)." },
         "stdin": { "type": "string", "description": "What a command line case reads on standard input; absent is empty." },

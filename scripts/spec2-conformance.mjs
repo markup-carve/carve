@@ -256,7 +256,7 @@ function refusalProblems(entry) {
   if (entry.tree && kind !== 'migrate') {
     const isEnvelope = entry.tree.type === undefined && entry.tree.document !== undefined
     const schemaAccepts = validateTree(entry.tree)
-    const found = schemaAccepts ? (isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree }) : readerProblems(entry.tree)) : []
+    const found = schemaAccepts ? (isEnvelope ? readerProblems(entry.tree.document, { envelope: entry.tree, annotations: entry.annotations }) : readerProblems(entry.tree, { annotations: entry.annotations })) : []
     const refused = !schemaAccepts || found.length > 0
     if (refusal?.error === 'CarveTreeError') {
       if (!refused) problems.push('expects a tree refusal, but neither the schema nor a reader check of the gate refuses the tree')
@@ -269,9 +269,12 @@ function refusalProblems(entry) {
 
 // A sidecar a case gives or expects passes the layout schema (a supplied one unless the case expects its
 // refusal); an expected one holds the input as its source, and its ranges lie inside it (C2-L-012).
+const validateAnnotations = new Ajv2020({ strict: true, allErrors: false }).compile(readJson(join(spec, 'data/annotation-ranges.schema.json')))
 const validateLayout = new Ajv2020({ strict: true, allErrors: false }).compile(readJson(join(spec, 'data/layout-schema.json')))
 function layoutProblems(entry) {
   const problems = []
+  if (entry.annotations && entry.kind !== 'tree') problems.push('gives annotation ranges to a call that reads none')
+  if (entry.annotations && entry.expected.refusal?.error !== 'CarveTreeError' && !validateAnnotations(entry.annotations)) problems.push(`gives annotation ranges the schema refuses at ${validateAnnotations.errors[0].instancePath || '/'}`)
   if (entry.layout && entry.expected.refusal?.error !== 'CarveLayoutError' && !validateLayout(entry.layout)) problems.push(`gives a sidecar the layout schema refuses at ${validateLayout.errors[0].instancePath || '/'}: ${validateLayout.errors[0].message}`)
   if (entry.layout && entry.kind !== 'write') problems.push('gives a sidecar to a call that reads none')
   const expected = entry.expected.layout
