@@ -3295,9 +3295,9 @@
       "id": "U-435",
       "kind": "rewrite",
       "group": "upgrade replay",
-      "from": "- a\n\n  :: t\n  :  d\n   > q\n",
-      "to": "- a\n\n  :: t\n  :  d\n\n  > q\n",
-      "meaning02": "<ul>\n  <li>a\n    <dl>\n      <dt>t</dt>\n      <dd>d\n&gt; q</dd>\n    </dl>\n  </li>\n</ul> C2-B-076 keeps a block indented past a description mark in the description; 0.1 ended the description where the block stood left of the description content. The block moves to the column of the list that holds it (C2-B-067), so it stays after the description list, inside a list item or note body too. U-199 and U-236 cover the same move for their own shapes. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "from": "[^n]: a\n\n   :: t\n   :  d\n    > q\n\nsee[^n]\n",
+      "to": "[^n]: a\n\n   :: t\n   :  d\n\n   > q\n\nsee[^n]\n",
+      "meaning02": "<p>see<a id=\"fnref1\" href=\"#fn1\" role=\"doc-noteref\"><sup>1</sup></a></p>\n<section role=\"doc-endnotes\" aria-label=\"Footnotes\">\n  <hr>\n  <ol>\n    <li id=\"fn1\">\n      <p>a</p>\n      <dl>\n        <dt>t</dt>\n        <dd>d\n&gt; q</dd>\n      </dl>\n      <p><a href=\"#fnref1\" role=\"doc-backlink\" aria-label=\"Back to reference\">↩</a></p>\n    </li>\n  </ol>\n</section> C2-B-076 keeps a block indented past a description mark in the description; 0.1 ended the description where the block stood left of the description content. The block moves to the column of the list that holds it (C2-B-067), so it stays after the description list, in a note body or a list item too. U-199 and U-236 cover the same move for their own shapes. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
       "toolEntry": "U-435",
       "silent": true
     },
