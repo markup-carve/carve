@@ -64222,6 +64222,23 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1470",
+ "clauses": [
+  "C2-I-047"
+ ],
+ "why": "Catalog deprecated-bare-strike: the opener can open by C2-I-047, stands next to no other `~`",
+ "summary": "a bare strike opener cannot be the second mark of a longer tilde run",
+ "kind": "lint",
+ "input": "~~a~\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-strike"
+  ]
+ },
+ "from": []
 }
  ]
 }
