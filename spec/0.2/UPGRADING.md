@@ -881,7 +881,7 @@ U-260 and U-261 are withdrawn: `{valigns="top,bottom"}` above a table and the ce
 | JavaScript | One large package API with parse, resolve, render, import, lint, and extension helpers. | Port to the functions of the package root. |
 | HTML | Existing section, list, table, footnote, and raw HTML conventions. | Compare rendered pages and update CSS and scripts. The source rewrite check hides some HTML changes. |
 | CLI | `dist/cli.js` offers render, fmt, lint, flatten, fix, diff, merge, portability, trace, and migrate. | [Tooling](tooling.md) specifies the 0.2 commands `render`, `ast`, `fmt`, `lint`, `diagnostics`, `import`, `migrate-ast`, `flatten` and `fix`. The reference engine ships them as `carve` and adds `upgrade`. |
-| Missing runtime features | Lint, extension pipeline, include expansion, importers, and other output formats work in 0.1. | 0.2 has lint, include expansion and the HTML importer. For Markdown, plain text and ANSI output keep the 0.1 path or postpone switching those callers. |
+| Missing runtime features | Lint, extension pipeline, include expansion, importers, and other output formats work in 0.1. | 0.2 has lint, include expansion, the HTML importer, and Markdown, plain-text and ANSI export renderers (C2-T-003). Export output and options are engine behavior outside the specification. |
 
 ### JavaScript API
 
@@ -899,11 +899,11 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | `fromAstJson`, `fromAstEnvelope` | `decodeTree`; it accepts a 2.0 bare tree or envelope and refuses 1.x. |
 | `parseWithSourceLayout`, `toSourceLayout` | `parseWithLayout`; use its `document`, `layout`, and `diagnostics`. |
 | `renderCarve`, `carveToCarve`, `renderCarveWithReport`, `carveToCarveWithReport` | `write` or `writeWithDiagnostics` for a 2.0 tree. |
-| `carveToCarvePatch`, `createSourcePatch`, `applySourcePatch` | No 0.2 patch API; keep a 0.1 caller or implement the edit outside the engine. |
-| `renderMarkdown`, `renderPlainText`, `renderAnsi` and each `carveTo*` or `*WithReport` variant | No 0.2 renderer for those targets. |
-| `carveToMarkdown`, `carveToPlainText`, `carveToAnsi` and report variants | No 0.2 counterpart. |
+| `carveToCarvePatch`, `createSourcePatch`, `applySourcePatch` | No 0.2 source patch counterpart. For tree changes, use `diffTree` and `applyPatch` with JSON Patch (C2-T-043 to C2-T-045); they do not edit source text. |
+| `renderMarkdown`, `renderPlainText`, `renderAnsi` and each `carveTo*` or `*WithReport` variant | Use the engine's library export renderer for the target (C2-T-003); the old entry point names and report shapes are not specified. |
+| `carveToMarkdown`, `carveToPlainText`, `carveToAnsi` and report variants | Use the engine's library export renderer or `carve render --to markdown`, `--to plain` or `--to ansi` (C2-T-003). |
 | `parseWithProvenance`, `createEditorSession`, `astNodePaths`, node identity, provenance and annotation-range helpers | No 0.2 counterpart. `parseWithLayout` covers source layout only. |
-| `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | No 0.2 counterpart. |
+| `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | Use `diffTree` and `applyPatch` for JSON Patch on 2.0 trees (C2-T-043 to C2-T-045). Reversible patches, three-way merge and the old change formats have no 0.2 counterpart. |
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
 | `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve import --from html`. |
 | `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode has no 0.2 importer. |
@@ -1114,7 +1114,7 @@ Not carried over:
 
 - `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
 
-The 0.2 engine lacks Markdown, plain text and ANSI renderers and patch and editor APIs. Do not switch a caller that depends on these features without another implementation.
+0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). The editor adapters are outside the specification (C2-T-003); callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows.
 
 ## Part 3. Tree consumers: AST 1.x to 2.0
 
@@ -1203,4 +1203,3 @@ Treat `data` as opaque JSON keyed by a declared qualified name. Preserve unknown
 - Finish the loss and include reports, the include diagnostics cap and the categories of [tooling](tooling.md) that `carve` lacks. The `lint` command is shipped.
 - Resolve the rewrite tool's `U-114` fifth-input `upgrade-mismatch` and classify remaining corpus mismatches.
 - Align the engine's tree fields and task-item style with the current 0.2 schema and HTML rulings.
-- Finish the non-HTML renderers before those callers switch.
