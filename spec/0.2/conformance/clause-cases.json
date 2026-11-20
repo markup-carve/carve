@@ -22067,8 +22067,8 @@
    "clauses": [
     "C2-L-051"
    ],
-   "why": "C2-L-051: A task box and the attribute blocks glued to a marker are not content of the item: `contentColumn` of `- [x] a` is the column of `a`.",
-   "summary": "the content column of a task item lies behind the box",
+   "why": "C2-L-051: A task box is item text and does not move the item’s content column: `contentColumn` of `- [x] a` is 2, the task mark’s column after the list marker (C2-B-027).",
+   "summary": "the content column of a task item lies after the bullet",
    "kind": "layout",
    "input": "- [x] a\n",
    "options": {},
@@ -22079,7 +22079,7 @@
        "path": "/children/0/children/0",
        "startByte": 0,
        "endByte": 7,
-       "contentColumn": 6
+       "contentColumn": 2
       }
      ]
     }
@@ -63275,6 +63275,106 @@
   "expected": {
    "status": 2,
    "stderrCategory": "usage"
+  },
+  "from": []
+ }
+,
+{
+  "id": "CC-1438",
+  "clauses": [
+   "C2-B-027"
+  ],
+  "why": "C2-B-027: In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.",
+  "summary": "a task item second block at the bullet content column is lint clean",
+  "kind": "lint",
+  "input": "- [ ] Another pending item\n\n  With additional content.\n",
+  "options": {},
+  "expected": {
+   "notReported": [
+    "list-item-body-below-content-column"
+   ]
+  },
+  "from": []
+ },
+{
+  "id": "CC-1439",
+  "clauses": [
+   "C2-B-027"
+  ],
+  "why": "C2-B-027: In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.",
+  "summary": "a task item second block stays at the bullet content column in canonical fmt",
+  "kind": "format",
+  "input": "- [ ] Another pending item\n\n  With additional content.\n",
+  "options": {},
+  "expected": {
+   "carve": "- [ ] Another pending item\n\n  With additional content.\n"
+  },
+  "from": []
+ }
+,
+{
+  "id": "CC-1440",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "authored alt and other image attributes",
+  "kind": "render",
+  "input": "{alt=\"A red box\" #pic .c}\n```img\n<svg><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"A red box\" id=\"pic\" class=\"c\">"
+  },
+  "from": []
+ },
+{
+  "id": "CC-1441",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "no authored alt writes an empty alt",
+  "kind": "render",
+  "input": "```img\n<svg><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+{
+  "id": "CC-1442",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "SVG title without authored alt still writes an empty alt",
+  "kind": "render",
+  "input": "```img\n<svg><title>T</title><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ctitle%3ET%3C%2Ftitle%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
   },
   "from": []
  }
