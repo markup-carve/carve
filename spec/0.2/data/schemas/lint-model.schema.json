@@ -76,7 +76,7 @@
       "required": ["name", "type", "means", "clauses"],
       "properties": {
         "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The field name, read with `f`." },
-        "type": { "enum": ["boolean", "number", "offset", "text", "name", "list", "line", "block"], "description": "An offset is a character offset in the source. A line or block field is a record whose own fields are read with a dotted path." },
+        "type": { "enum": ["boolean", "number", "offset", "text", "name", "list", "line", "block", "node"], "description": "An offset is a character offset in the source. A line or block field is a record whose own fields are read with a dotted path, and a node field is a node of the tree, read the same way." },
         "base": { "enum": ["start", "body_start", "opener_start"], "description": "For a text field: the field that gives the source offset of its first character." },
         "means": { "type": "string", "description": "What the field holds, as the clauses define it." },
         "clauses": { "$ref": "#/$defs/clauses" }
@@ -94,7 +94,7 @@
           "minProperties": 1,
           "propertyNames": {
             "enum": ["f", "v", "len", "add", "sub", "slice", "concat", "trim_end", "words", "if", "match", "at", "text_from", "extend_left", "skip_right",
-              "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some"]
+              "all", "any", "not", "has", "eq", "ne", "lt", "le", "gt", "ge", "in", "contains", "starts", "matches", "some", "count"]
           }
         }
       ]
