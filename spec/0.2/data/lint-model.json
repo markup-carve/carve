@@ -3892,6 +3892,49 @@
       ]
     },
     {
+      "id": "duplicate-reference-url",
+      "over": "block",
+      "types": [
+        "link_reference_definition"
+      ],
+      "when": {
+        "lt": [
+          {
+            "lookup": {
+              "over": "block",
+              "types": [
+                "link_reference_definition"
+              ],
+              "key": {
+                "f": "item.node.href"
+              },
+              "value": {
+                "f": "node.href"
+              },
+              "field": "start"
+            }
+          },
+          {
+            "f": "start"
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083",
+        "C2-I-079"
+      ]
+    },
+    {
       "id": "emphasis-as-heading",
       "over": "block",
       "types": [
@@ -4780,6 +4823,157 @@
       "clauses": [
         "C2-B-153",
         "C2-B-151"
+      ]
+    },
+    {
+      "id": "heading-level-skip",
+      "over": "block",
+      "types": [
+        "heading"
+      ],
+      "let": {
+        "previous": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "heading"
+            ],
+            "before": true,
+            "field": "node.level"
+          }
+        }
+      },
+      "when": {
+        "gt": [
+          {
+            "f": "node.level"
+          },
+          {
+            "add": [
+              {
+                "v": "previous"
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "previous": {
+              "v": "previous"
+            },
+            "level": {
+              "f": "node.level"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-151",
+        "C2-B-152"
+      ]
+    },
+    {
+      "id": "heading-marker-mixed",
+      "over": "block",
+      "types": [
+        "heading"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "lookup": {
+                  "over": "block",
+                  "types": [
+                    "heading"
+                  ],
+                  "key": {
+                    "matches": [
+                      {
+                        "f": "item.text"
+                      },
+                      "^\\s*[#=]"
+                    ]
+                  },
+                  "value": true,
+                  "field": "start"
+                }
+              },
+              {
+                "f": "start"
+              }
+            ]
+          },
+          {
+            "ge": [
+              {
+                "lookup": {
+                  "over": "block",
+                  "types": [
+                    "heading"
+                  ],
+                  "key": {
+                    "matches": [
+                      {
+                        "f": "item.text"
+                      },
+                      "^\\s*#"
+                    ]
+                  },
+                  "value": true,
+                  "field": "start"
+                }
+              },
+              0
+            ]
+          },
+          {
+            "ge": [
+              {
+                "lookup": {
+                  "over": "block",
+                  "types": [
+                    "heading"
+                  ],
+                  "key": {
+                    "matches": [
+                      {
+                        "f": "item.text"
+                      },
+                      "^\\s*="
+                    ]
+                  },
+                  "value": true,
+                  "field": "start"
+                }
+              },
+              0
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-155"
       ]
     },
     {
@@ -6445,6 +6639,154 @@
         "C2-I-087",
         "C2-I-088",
         "C2-I-079"
+      ]
+    },
+    {
+      "id": "unused-footnote-definition",
+      "over": "block",
+      "types": [
+        "footnote"
+      ],
+      "let": {
+        "at": {
+          "index_of": [
+            {
+              "f": "text"
+            },
+            {
+              "concat": [
+                "[^",
+                {
+                  "f": "node.key"
+                },
+                "]"
+              ]
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "inline",
+                    "types": [
+                      "footnote_ref"
+                    ],
+                    "key": {
+                      "f": "item.node.key"
+                    },
+                    "value": {
+                      "f": "node.key"
+                    },
+                    "field": "start"
+                  }
+                },
+                0
+              ]
+            }
+          },
+          {
+            "ge": [
+              {
+                "v": "at"
+              },
+              0
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "add": [
+              {
+                "f": "start"
+              },
+              {
+                "v": "at"
+              }
+            ]
+          },
+          "end": {
+            "add": [
+              {
+                "f": "start"
+              },
+              {
+                "v": "at"
+              },
+              {
+                "len": {
+                  "concat": [
+                    "[^",
+                    {
+                      "f": "node.key"
+                    },
+                    "]"
+                  ]
+                }
+              }
+            ]
+          },
+          "values": {
+            "label": {
+              "f": "node.key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-082",
+        "C2-H-194"
+      ]
+    },
+    {
+      "id": "unused-link-reference-definition",
+      "over": "block",
+      "types": [
+        "link_reference_definition"
+      ],
+      "when": {
+        "not": {
+          "ge": [
+            {
+              "lookup": {
+                "over": "inline",
+                "types": [
+                  "image",
+                  "link"
+                ],
+                "key": {
+                  "f": "item.node.key"
+                },
+                "value": {
+                  "f": "node.key"
+                },
+                "field": "start"
+              }
+            },
+            0
+          ]
+        }
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-083",
+        "C2-I-075",
+        "C2-H-193"
       ]
     }
   ]
