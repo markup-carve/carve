@@ -244,6 +244,28 @@ One blank line ends the first list; the attribute line of the second list then s
 
 **C2-W-034** A line comment that is a region marker of an include (`#region`, `#endregion`) keeps its line: the writer moves no marker and opens no new line beside one. As in 0.1 (CARVE-P11-073). Since the line ends a paragraph (C2-B-137), a marker among the inline children of a supplied paragraph has no spelling, and the writer reports `structure-unspellable`. A marker that follows another block is a sibling block, and one blank line stands before it (C2-W-017): `a` directly above `%% #endregion` is written with a blank line between, as the tree is the same with or without it.
 
+**Exception C2-W-144** A line comment that is a `carve-lint-disable-next-line` control comment (C2-B-215) and stands directly above a line that holds content in the source is written directly above the line written after it. No blank line stands between them where C2-W-017, C2-W-030 or C2-W-059 would put one, as long as the tree reads back the same without it (C2-W-002); where it does not, the blank line stays. The comment suppresses findings on the next line (C2-B-216), and a blank line there would leave the line it names unsuppressed. A control comment with a blank line below it in the source suppresses nothing and is written by the general rules, so `fmt` does not make it suppress a line either. A supplied tree with no source has each control comment written directly above the next block.
+
+Example 46 (unverified, C2-W-144, C2-W-059)
+
+Input:
+
+```carve
+- a
+
+%% carve-lint-disable-next-line
+- [b]()
+```
+
+Written:
+
+```carve
+- a
+
+  %% carve-lint-disable-next-line
+- [b]()
+```
+
 **C2-W-114** In a description list no blank line stands between a term and its description or between two entries. A later block of a description follows one blank line, at the content column.
 
 ## Canonical forms: blocks
@@ -1535,7 +1557,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 2 |
 | What the writer cannot spell | 10 | 0 | 0 | 2 |
-| Layout | 22 | 2 | 0 | 3 |
+| Layout | 23 | 3 | 0 | 4 |
 | Canonical forms: blocks | 24 | 0 | 0 | 22 |
 | Canonical forms: tables | 12 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
@@ -1543,6 +1565,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 13 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 13 | 0 | 0 | 2 |
-| **Total** | **130** | **5** | **6** | **39** |
+| **Total** | **131** | **6** | **6** | **40** |
 
-The document has 130 clauses, 5 of them marked with the word "Exception", and 45 examples, 6 generated and 39 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 131 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

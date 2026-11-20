@@ -61352,6 +61352,74 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1401",
+   "clauses": [
+    "C2-W-144",
+    "C2-W-017"
+   ],
+   "why": "C2-W-144: A line comment that is a `carve-lint-disable-next-line` control comment (C2-B-215) and stands directly above a line that holds content in the source is written directly above the line written after it.",
+   "summary": "a next-line control comment above a heading keeps its line",
+   "kind": "format",
+   "input": "para\n\n%% carve-lint-disable-next-line\n## See [a]()\n",
+   "options": {},
+   "expected": {
+    "carve": "para\n\n%% carve-lint-disable-next-line\n== See [a]()\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1402",
+   "clauses": [
+    "C2-W-144",
+    "C2-W-059",
+    "C2-W-030"
+   ],
+   "why": "C2-W-144: A line comment that is a `carve-lint-disable-next-line` control comment (C2-B-215) and stands directly above a line that holds content in the source is written directly above the line written after it.",
+   "summary": "a control comment that ends an item stands directly above the next item",
+   "kind": "format",
+   "input": "- a\n\n%% carve-lint-disable-next-line\n- [b]()\n",
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  %% carve-lint-disable-next-line\n- [b]()\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1403",
+   "clauses": [
+    "C2-W-144",
+    "C2-B-216"
+   ],
+   "why": "C2-W-144: A line comment that is a `carve-lint-disable-next-line` control comment (C2-B-215) and stands directly above a line that holds content in the source is written directly above the line written after it.",
+   "summary": "the formatted heading stays suppressed",
+   "kind": "lint",
+   "input": "para\n\n%% carve-lint-disable-next-line\n== See [a]()\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [],
+    "notReported": [
+     "empty-link-destination"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1404",
+   "clauses": [
+    "C2-W-144",
+    "C2-W-017"
+   ],
+   "why": "C2-W-144: A control comment with a blank line below it in the source suppresses nothing and is written by the general rules, so `fmt` does not make it suppress a line either.",
+   "summary": "a control comment with a blank line below it keeps the blank line",
+   "kind": "format",
+   "input": "para\n\n%% carve-lint-disable-next-line\n\n## See [a]()\n",
+   "options": {},
+   "expected": {
+    "carve": "para\n\n%% carve-lint-disable-next-line\n\n== See [a]()\n"
+   },
+   "from": []
   }
  ]
 }

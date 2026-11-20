@@ -77551,6 +77551,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -77715,6 +77716,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -77882,6 +77884,7 @@
     "C2-W-033",
     "C2-W-123",
     "C2-W-034",
+    "C2-W-144",
     "C2-W-114"
    ],
    "clauseScope": "section",
@@ -78030,6 +78033,157 @@
       "referenceResolution",
       "tableAlignment"
      ]
+    }
+   },
+   "status": "unverified",
+   "reason": "the written source was written by hand from the clauses (writer.md, conventions)"
+  },
+  {
+   "id": "writer-46",
+   "document": "writer.md",
+   "number": 46,
+   "section": "Layout",
+   "clauses": [
+    "C2-W-144",
+    "C2-W-059"
+   ],
+   "clauseScope": "example",
+   "kind": "write",
+   "input": "- a\n\n%% carve-lint-disable-next-line\n- [b]()",
+   "options": {},
+   "expected": {
+    "carve": "- a\n\n  %% carve-lint-disable-next-line\n- [b]()\n",
+    "tree": {
+     "astVersion": "2.0",
+     "children": [
+      {
+       "children": [
+        {
+         "children": [
+          {
+           "children": [
+            {
+             "pos": {
+              "endColumn": 4,
+              "endLine": 1,
+              "endOffset": 3,
+              "startColumn": 3,
+              "startLine": 1,
+              "startOffset": 2
+             },
+             "type": "text",
+             "value": "a"
+            }
+           ],
+           "pos": {
+            "endColumn": 4,
+            "endLine": 1,
+            "endOffset": 3,
+            "startColumn": 3,
+            "startLine": 1,
+            "startOffset": 2
+           },
+           "type": "paragraph"
+          },
+          {
+           "form": "line",
+           "pos": {
+            "endColumn": 32,
+            "endLine": 3,
+            "endOffset": 36,
+            "startColumn": 1,
+            "startLine": 3,
+            "startOffset": 5
+           },
+           "type": "comment",
+           "value": "carve-lint-disable-next-line"
+          }
+         ],
+         "pos": {
+          "endColumn": 32,
+          "endLine": 3,
+          "endOffset": 36,
+          "startColumn": 1,
+          "startLine": 1,
+          "startOffset": 0
+         },
+         "type": "list_item"
+        },
+        {
+         "children": [
+          {
+           "children": [
+            {
+             "children": [
+              {
+               "pos": {
+                "endColumn": 5,
+                "endLine": 4,
+                "endOffset": 41,
+                "startColumn": 4,
+                "startLine": 4,
+                "startOffset": 40
+               },
+               "type": "text",
+               "value": "b"
+              }
+             ],
+             "href": "",
+             "pos": {
+              "endColumn": 8,
+              "endLine": 4,
+              "endOffset": 44,
+              "startColumn": 3,
+              "startLine": 4,
+              "startOffset": 39
+             },
+             "type": "link"
+            }
+           ],
+           "pos": {
+            "endColumn": 8,
+            "endLine": 4,
+            "endOffset": 44,
+            "startColumn": 3,
+            "startLine": 4,
+            "startOffset": 39
+           },
+           "type": "paragraph"
+          }
+         ],
+         "pos": {
+          "endColumn": 8,
+          "endLine": 4,
+          "endOffset": 44,
+          "startColumn": 1,
+          "startLine": 4,
+          "startOffset": 37
+         },
+         "type": "list_item"
+        }
+       ],
+       "marker": {
+        "char": "-",
+        "kind": "bullet"
+       },
+       "pos": {
+        "endColumn": 8,
+        "endLine": 4,
+        "endOffset": 44,
+        "startColumn": 1,
+        "startLine": 1,
+        "startOffset": 0
+       },
+       "spacing": "loose",
+       "type": "list"
+      }
+     ],
+     "srcByteLength": 44,
+     "stages": [
+      "referenceResolution",
+      "tableAlignment"
+     ],
+     "type": "document"
     }
    },
    "status": "unverified",
