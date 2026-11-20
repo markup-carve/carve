@@ -1386,7 +1386,7 @@
         "With an attributed item the message starts \"This line uses the attributed item's former full-prefix column.\""
       ],
       "message_origin": "engine_0_1",
-      "reports": "a line owned by a list item, including a block opener inside a div in that item, or below an ended item across blank lines only, whose content behind the quote marks starts past the item's content column with a block opener: a heading marker, a quote mark, a code fence, a term mark, a div fence, a block image line, a thematic break, an attribute line or a table row; once per line, consecutive quote or table lines of one block once, and never a list marker, a comment line, a line of a verbatim body or an escaped opener (C2-B-025, C2-B-027)",
+      "reports": "a line owned by a list item, including a block opener inside a div in that item, or below an ended item across blank lines only, whose content behind the quote marks starts past the item's content column with a block opener: a heading marker, a quote mark, a code fence, a term mark, a div fence, a block image line, a thematic break, an attribute line or a table row; the list is exhaustive, so an include directive line is no block opener here; once per line, consecutive quote or table lines of one block once, and never a list marker, a comment line, a line of a verbatim body or an escaped opener (C2-B-025, C2-B-027)",
       "clauses": ["C2-B-025", "C2-B-027"]
     },
     {

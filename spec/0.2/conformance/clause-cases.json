@@ -61173,6 +61173,25 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1393",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-025",
+    "C2-B-027"
+   ],
+   "why": "Catalog list-item-block-overindented: the list is exhaustive, so an include directive line is no block opener here",
+   "summary": "an include directive line past an item's content column is not reported",
+   "kind": "lint",
+   "input": "- a\n\n      {{ x.crv }}\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-item-block-overindented"
+    ]
+   },
+   "from": []
   }
  ]
 }
