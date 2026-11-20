@@ -54,35 +54,6 @@ function optionsOf(array $case): array
         $options['extensions'] = Tabs::extensions($standard, $mode);
         unset($options['renderers']);
     }
-    // A standard renderer the name boundary does not offer, or one with host options, is registered as its bundle.
-    $bundles = [
-        'carve.details' => static fn (array $o) => Extension\Details::bundle(...$o),
-        'carve.spoiler' => static fn (array $o) => Extension\Spoiler::bundle(...$o),
-        'carve.spoilerBlock' => static fn (array $o) => Extension\Spoiler::bundle(...$o),
-        'carve.fencedRender.mermaid' => static fn (array $o) => Extension\FencedRender::mermaid(...$o),
-        'carve.mathBlock' => static fn (array $o) => Extension\MathBlock::bundle(...$o),
-        'carve.codeGroup' => static fn (array $o) => Extension\CodeGroup::bundle(...$o),
-    ];
-    foreach (array_keys($options['renderers'] ?? []) as $name) {
-        $renderer = $options['renderers'][$name] ?? null;
-        if ($renderer === null) {
-            continue;
-        }
-        $hostOptions = is_array($renderer) ? ($renderer['standard'] ?? null) : null;
-        $byName = $renderer === 'standard' && Extension\Standard::renderer($name, 'interactive') !== null;
-        if (!isset($bundles[$name]) || $byName || ($renderer !== 'standard' && $hostOptions === null)) {
-            continue;
-        }
-        $definitions = $bundles[$name]($hostOptions ?? [])->definitions();
-        $registered = array_map(static fn ($d) => $d->name, $definitions);
-        $options['extensions'] = [
-            ...array_values(array_filter($options['extensions'] ?? [], static fn ($e) => !is_string($e) || !in_array($e, $registered, true))),
-            ...$definitions,
-        ];
-        foreach ($registered as $covered) {
-            unset($options['renderers'][$covered]);
-        }
-    }
     // Standard extensions outside data/extensions.json, by the name an engine selects them with (see the JS runner).
     $named = [
         'carve.listTable' => static fn () => Extension\ListTable::bundle(),
