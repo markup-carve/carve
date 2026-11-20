@@ -498,6 +498,81 @@
       ]
     }
   ],
+  "table_fields": [
+    {
+      "name": "body_rows",
+      "type": "number",
+      "means": "on a table record: the number of rows of all its `table_body` groups",
+      "clauses": [
+        "C2-A-088",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "foot_rows",
+      "type": "number",
+      "means": "on a table record: the number of rows of its `table_foot`, 0 without one",
+      "clauses": [
+        "C2-A-088",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "group",
+      "type": "name",
+      "means": "on a table_row or table_cell record: the type of the group that holds the row, `table_head`, `table_body` or `table_foot`",
+      "clauses": [
+        "C2-A-086",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "head_rows",
+      "type": "number",
+      "means": "on a table record: the number of rows of its `table_head`, 0 without one",
+      "clauses": [
+        "C2-A-088",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "row_index",
+      "type": "number",
+      "means": "on a table_row or table_cell record: the position of the row among the rows of its group, from 0",
+      "clauses": [
+        "C2-A-086",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "source_format",
+      "type": "name",
+      "means": "on a table record: the source format of the table, `pipe` for a pipe table, `csv` or `tsv` for a delimited table; spelling that the tree does not hold",
+      "clauses": [
+        "C2-A-095",
+        "C2-B-180",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "table_above",
+      "type": "line",
+      "means": "on a line record of a line in the source of a pipe table, from its first line to its last: the nearest line above it in that source whose raw_body does not start with `%%`; absent where there is none and outside a pipe table",
+      "clauses": [
+        "C2-B-175",
+        "C2-W-148"
+      ]
+    },
+    {
+      "name": "table_below",
+      "type": "line",
+      "means": "as table_above, the nearest such line below it",
+      "clauses": [
+        "C2-B-175",
+        "C2-W-148"
+      ]
+    }
+  ],
   "rules": [
     {
       "id": "a11y/image-alt",
@@ -1881,6 +1956,154 @@
       ]
     },
     {
+      "id": "comment-splits-table-row",
+      "over": "line",
+      "when": {
+        "starts": [
+          {
+            "f": "table_below.raw_body"
+          },
+          "+"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "starts": [
+                  {
+                    "f": "raw_body"
+                  },
+                  "%%"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "starts": [
+                      {
+                        "f": "table_above.raw_body"
+                      },
+                      "|"
+                    ]
+                  },
+                  {
+                    "starts": [
+                      {
+                        "f": "table_above.raw_body"
+                      },
+                      "+"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "start": {
+            "f": "body_start"
+          },
+          "end": {
+            "f": "body_end"
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "starts": [
+                      {
+                        "f": "raw_body"
+                      },
+                      "|"
+                    ]
+                  },
+                  {
+                    "starts": [
+                      {
+                        "f": "raw_body"
+                      },
+                      "+"
+                    ]
+                  }
+                ]
+              },
+              {
+                "matches": [
+                  {
+                    "f": "raw_body"
+                  },
+                  "\\|(?<pre>(?:[^|%]|%[^|%])*)%%[^|]*$"
+                ]
+              },
+              {
+                "in": [
+                  {
+                    "slice": [
+                      {
+                        "f": "raw_body"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "sub": [
+                              {
+                                "match": "pre",
+                                "at": "end"
+                              },
+                              {
+                                "f": "body_start"
+                              }
+                            ]
+                          },
+                          1
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "pre",
+                            "at": "end"
+                          },
+                          {
+                            "f": "body_start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  [
+                    " ",
+                    "\t"
+                  ]
+                ]
+              }
+            ]
+          },
+          "start": {
+            "sub": [
+              {
+                "match": "pre",
+                "at": "end"
+              },
+              1
+            ]
+          },
+          "end": {
+            "f": "body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-A-086",
+        "C2-B-175",
+        "C2-W-137",
+        "C2-W-148"
+      ]
+    },
+    {
       "id": "definition-in-container",
       "over": "line",
       "when": {
@@ -2071,6 +2294,74 @@
         "C2-B-031",
         "C2-B-034",
         "C2-B-036"
+      ]
+    },
+    {
+      "id": "delimited-table-wide-row",
+      "over": "block",
+      "types": [
+        "table"
+      ],
+      "let": {
+        "width": {
+          "count": {
+            "in": "node.children.0.children.0.children",
+            "where": true
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "source_format"
+              },
+              [
+                "csv",
+                "tsv"
+              ]
+            ]
+          },
+          {
+            "some": {
+              "in": "node.children",
+              "where": {
+                "some": {
+                  "in": "item.children",
+                  "where": {
+                    "gt": [
+                      {
+                        "count": {
+                          "in": "item.children",
+                          "where": true
+                        }
+                      },
+                      {
+                        "v": "width"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-180",
+        "C2-B-226",
+        "C2-W-148"
       ]
     },
     {
@@ -2708,6 +2999,203 @@
       ]
     },
     {
+      "id": "deprecated-cell-alignment",
+      "over": "block",
+      "types": [
+        "table_cell"
+      ],
+      "when": {
+        "all": [
+          {
+            "any": [
+              {
+                "not": {
+                  "starts": [
+                    {
+                      "f": "text"
+                    },
+                    "="
+                  ]
+                }
+              },
+              {
+                "f": "node.header"
+              }
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^=?\\s*(?<prefix>(?<mark>[<>~][\\^v~]?|\\?[\\^v~])(?:\\{\\s*(?<block>[^{}]*?)\\s*\\})?)[ \\t]\\s*\\S"
+            ]
+          }
+        ]
+      },
+      "range": {
+        "start": {
+          "match": "prefix"
+        },
+        "end": {
+          "match": "prefix",
+          "at": "end"
+        }
+      },
+      "values": {
+        "prefix": {
+          "slice": [
+            {
+              "f": "text"
+            },
+            {
+              "sub": [
+                {
+                  "match": "prefix"
+                },
+                {
+                  "f": "start"
+                }
+              ]
+            },
+            {
+              "sub": [
+                {
+                  "match": "prefix",
+                  "at": "end"
+                },
+                {
+                  "f": "start"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "ne": [
+              {
+                "match": "block"
+              },
+              {
+                "match": "block",
+                "at": "end"
+              }
+            ]
+          },
+          "values": {
+            "braced": {
+              "concat": [
+                "{",
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "mark"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "mark",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                " ",
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "block"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "block",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "}"
+              ]
+            }
+          }
+        },
+        {
+          "values": {
+            "braced": {
+              "concat": [
+                "{",
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "mark"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "mark",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "}"
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-171",
+        "C2-B-182"
+      ]
+    },
+    {
       "id": "deprecated-continuation-marker",
       "over": "line",
       "when": {
@@ -3001,6 +3489,53 @@
         "C2-B-027",
         "C2-B-058",
         "C2-B-160"
+      ]
+    },
+    {
+      "id": "deprecated-table-attribute",
+      "over": "block",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "source_format"
+              },
+              "pipe"
+            ]
+          },
+          {
+            "some": {
+              "in": "node.attrs.keyValues",
+              "where": {
+                "eq": [
+                  {
+                    "f": "item.0"
+                  },
+                  "header-rows"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-186",
+        "C2-B-227",
+        "C2-W-148"
       ]
     },
     {
@@ -6664,6 +7199,45 @@
       ]
     },
     {
+      "id": "table-row-attribute-as-cell",
+      "over": "block",
+      "types": [
+        "table_row"
+      ],
+      "when": {
+        "all": [
+          {
+            "not": {
+              "has": "node.children.-1.attrs"
+            }
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "\\|\\s*\\{[^|]*\\}\\s*\\|[^|]*$"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-167",
+        "C2-B-171",
+        "C2-I-028"
+      ]
+    },
+    {
       "id": "table-row-cell-count",
       "over": "block",
       "types": [
@@ -6804,6 +7378,702 @@
       ]
     },
     {
+      "id": "table-row-count-clamped",
+      "over": "block",
+      "types": [
+        "table"
+      ],
+      "when": {
+        "matches": [
+          {
+            "text_from": {
+              "f": "start"
+            }
+          },
+          "^\\{.*\\}$"
+        ]
+      },
+      "each": {
+        "matches": [
+          {
+            "text_from": {
+              "f": "start"
+            }
+          },
+          "(?<key>header-rows|footer-rows)=(?<value>\"[0-9]+\"|[0-9]+)[ }]"
+        ]
+      },
+      "range": {
+        "start": {
+          "match": "key"
+        },
+        "end": {
+          "match": "value",
+          "at": "end"
+        }
+      },
+      "values": {
+        "key": {
+          "slice": [
+            {
+              "f": "text"
+            },
+            {
+              "sub": [
+                {
+                  "match": "key"
+                },
+                {
+                  "f": "start"
+                }
+              ]
+            },
+            {
+              "sub": [
+                {
+                  "match": "key",
+                  "at": "end"
+                },
+                {
+                  "f": "start"
+                }
+              ]
+            }
+          ]
+        },
+        "count": {
+          "if": [
+            {
+              "starts": [
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "\""
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                1,
+                {
+                  "sub": [
+                    {
+                      "len": {
+                        "slice": [
+                          {
+                            "f": "text"
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value",
+                                "at": "end"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    1
+                  ]
+                }
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "value"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "sub": [
+                    {
+                      "match": "value",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "header-rows"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "f": "source_format"
+                  },
+                  "pipe"
+                ]
+              },
+              {
+                "in": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "sub": [
+                              {
+                                "match": "key"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          1
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  [
+                    "{",
+                    " "
+                  ]
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "if": [
+                      {
+                        "starts": [
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "\""
+                        ]
+                      },
+                      {
+                        "slice": [
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          1,
+                          {
+                            "sub": [
+                              {
+                                "len": {
+                                  "slice": [
+                                    {
+                                      "f": "text"
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value",
+                                          "at": "end"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              },
+                              1
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "slice": [
+                          {
+                            "f": "text"
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value",
+                                "at": "end"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "add": [
+                      {
+                        "f": "head_rows"
+                      },
+                      {
+                        "f": "body_rows"
+                      },
+                      {
+                        "f": "foot_rows"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "values": {
+            "effective": {
+              "add": [
+                {
+                  "f": "head_rows"
+                },
+                {
+                  "f": "body_rows"
+                },
+                {
+                  "f": "foot_rows"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "footer-rows"
+                ]
+              },
+              {
+                "in": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "sub": [
+                              {
+                                "match": "key"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          1
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  [
+                    "{",
+                    " "
+                  ]
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "if": [
+                      {
+                        "starts": [
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "\""
+                        ]
+                      },
+                      {
+                        "slice": [
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          1,
+                          {
+                            "sub": [
+                              {
+                                "len": {
+                                  "slice": [
+                                    {
+                                      "f": "text"
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value",
+                                          "at": "end"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              },
+                              1
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "slice": [
+                          {
+                            "f": "text"
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "value",
+                                "at": "end"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "add": [
+                      {
+                        "f": "body_rows"
+                      },
+                      {
+                        "f": "foot_rows"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "values": {
+            "effective": {
+              "add": [
+                {
+                  "f": "body_rows"
+                },
+                {
+                  "f": "foot_rows"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-187",
+        "C2-B-209",
+        "C2-W-148"
+      ]
+    },
+    {
       "id": "table-shaped-paragraph",
       "over": "line",
       "when": {
@@ -6895,6 +8165,232 @@
         "C2-B-168",
         "C2-B-166",
         "C2-B-167"
+      ]
+    },
+    {
+      "id": "table-span-marker-attribute",
+      "over": "block",
+      "types": [
+        "table_cell"
+      ],
+      "when": {
+        "has": "node.span"
+      },
+      "range": {
+        "start": {
+          "f": "start"
+        },
+        "end": {
+          "f": "end"
+        }
+      },
+      "values": {
+        "marker": {
+          "if": [
+            {
+              "eq": [
+                {
+                  "f": "node.span"
+                },
+                "rowspan"
+              ]
+            },
+            "^",
+            "<"
+          ]
+        },
+        "direction": {
+          "if": [
+            {
+              "eq": [
+                {
+                  "f": "node.span"
+                },
+                "rowspan"
+              ]
+            },
+            "above it",
+            "to its left"
+          ]
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "any": [
+              {
+                "starts": [
+                  {
+                    "f": "text"
+                  },
+                  "{"
+                ]
+              },
+              {
+                "starts": [
+                  {
+                    "f": "text"
+                  },
+                  "={"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "starts": [
+                  {
+                    "f": "text"
+                  },
+                  "="
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "f": "group"
+                  },
+                  "table_head"
+                ]
+              }
+            ]
+          },
+          "message": 1
+        }
+      ],
+      "clauses": [
+        "C2-B-174",
+        "C2-W-148"
+      ]
+    },
+    {
+      "id": "table-span-marker-blocked",
+      "over": "block",
+      "types": [
+        "table_cell"
+      ],
+      "when": {
+        "all": [
+          {
+            "not": {
+              "has": "node.span"
+            }
+          },
+          {
+            "eq": [
+              {
+                "f": "node.children.0.type"
+              },
+              "cell_paragraph"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "count": {
+                  "in": "node.children.0.children",
+                  "where": true
+                }
+              },
+              1
+            ]
+          },
+          {
+            "eq": [
+              {
+                "f": "node.children.0.children.0.type"
+              },
+              "text"
+            ]
+          },
+          {
+            "in": [
+              {
+                "f": "node.children.0.children.0.value"
+              },
+              [
+                "<",
+                "^"
+              ]
+            ]
+          },
+          {
+            "not": {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "\\\\[<^]\\s*$"
+              ]
+            }
+          }
+        ]
+      },
+      "range": {
+        "start": {
+          "f": "start"
+        },
+        "end": {
+          "f": "end"
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "node.children.0.children.0.value"
+                  },
+                  "<"
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "f": "index"
+                  },
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "node.children.0.children.0.value"
+              },
+              "<"
+            ]
+          },
+          "message": 1
+        },
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "row_index"
+              },
+              0
+            ]
+          },
+          "message": 2
+        },
+        {
+          "message": 3
+        }
+      ],
+      "clauses": [
+        "C2-B-172",
+        "C2-B-173",
+        "C2-B-174",
+        "C2-W-148"
       ]
     },
     {
