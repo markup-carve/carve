@@ -24,6 +24,10 @@ Options:
 - `--cases file.json`: lint a JSON array of sources instead of generated inputs.
 - `--samples N`: how many inputs per signature to minimize (default 6). `--no-minimize` skips it.
 - `--out file.json`: write the full report.
+- `--engines js,php,rs`: the engines to compare. `js-data` is carve-js with its internal switch
+  `CARVE_LINT_RULES=data` on, so the rules of `spec/0.2/data/lint-model.json` run from data;
+  `--engines js,js-data` compares them with the hand-written carve-js rules.
+- `--rules id,id`: compare only these rules.
 
 ## What it compares
 

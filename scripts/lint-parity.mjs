@@ -160,16 +160,23 @@ export function generate(seed, count) {
 
 // ---------------------------------------------------------------- engines
 
-async function jsEngine() {
+// `data`: carve-js with its internal switch on, so the rules of spec/0.2/data/lint-model.json run from data.
+async function jsEngine(data = false) {
   const index = await import(pathToFileURL(resolve(jsDir, 'dist/index.js')))
   const ext = await import(pathToFileURL(resolve(jsDir, 'dist/extensions.js')))
   const extensions = [...ext.citations().extensions, ...ext.glossary().extensions]
   return (cases) => cases.map((c) => {
+    const saved = process.env.CARVE_LINT_RULES
+    if (data) process.env.CARVE_LINT_RULES = 'data'
+    else delete process.env.CARVE_LINT_RULES
     try {
       return index.lint(c.source, c.extensions ? { extensions } : {}).filter((d) => d.channel === 'lint')
         .map((d) => ({ code: d.code, start: d.range?.startOffset ?? null, end: d.range?.endOffset ?? null, message: d.message }))
     } catch (error) {
       return [{ code: 'ERROR:' + (error?.name ?? 'throw'), start: null, end: null, message: String(error?.message ?? error) }]
+    } finally {
+      if (saved === undefined) delete process.env.CARVE_LINT_RULES
+      else process.env.CARVE_LINT_RULES = saved
     }
   })
 }
@@ -194,7 +201,8 @@ function rsEngine() {
   return (cases) => JSON.parse(execFileSync(bin, { input: JSON.stringify(cases), maxBuffer: 1 << 30 }).toString())
 }
 
-const engineNames = ['js', 'php', 'rs']
+let engineNames = ['js', 'php', 'rs']
+let ruleFilter = null
 
 // ---------------------------------------------------------------- comparison
 
@@ -213,7 +221,7 @@ function pattern(values) {
 export function differences(results) {
   const out = []
   const tallies = results.map(tally)
-  const codes = new Set(results.flatMap((list) => list.map((d) => d.code)))
+  const codes = new Set(results.flatMap((list) => list.map((d) => d.code)).filter((code) => ruleFilter === null || ruleFilter.has(code) || code.startsWith('ERROR')))
   for (const code of [...codes].sort()) {
     const counts = tallies.map((t) => t.get(code) ?? 0)
     if (new Set(counts).size > 1) { out.push({ rule: code, kind: 'count', pattern: pattern(counts.map((n) => String(n).padStart(4, '0'))) }); continue }
@@ -284,6 +292,8 @@ async function main() {
       'no-minimize': { type: 'boolean', default: false },
       examples: { type: 'string', default: '2' },
       samples: { type: 'string', default: '6' },
+      engines: { type: 'string', default: 'js,php,rs' },
+      rules: { type: 'string' },
     },
   }).values
   const seed = Number(args.seed)
@@ -291,7 +301,11 @@ async function main() {
   const modes = args.modes.split(',')
   const sources = args.cases ? JSON.parse(readFileSync(args.cases, 'utf8')) : generate(seed, count)
   const cases = modes.flatMap((mode) => sources.map((source, index) => ({ source, extensions: mode === 'ext', mode, index })))
-  const engines = { js: await jsEngine(), php: phpEngine(), rs: rsEngine() }
+  engineNames = args.engines.split(',')
+  if (args.rules) ruleFilter = new Set(args.rules.split(','))
+  const makers = { js: () => jsEngine(), 'js-data': () => jsEngine(true), php: phpEngine, rs: rsEngine }
+  const engines = {}
+  for (const name of engineNames) engines[name] = await makers[name]()
   const results = await runAll(engines, cases.map(({ source, extensions }) => ({ source, extensions })))
   const items = []
   const perRule = {}
