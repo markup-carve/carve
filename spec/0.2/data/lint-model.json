@@ -519,6 +519,14 @@
       ]
     },
     {
+      "name": "entry_total",
+      "type": "number",
+      "means": "for a key: the exact sum of its comma-separated entries, spaces around an entry ignored, each read as a decimal number; 0 when an entry is no decimal number, and for an id, a class or a language",
+      "clauses": [
+        "C2-B-212"
+      ]
+    },
+    {
       "name": "index",
       "type": "number",
       "means": "the place of the part among the attribute parts of its owner in source order, from 0",
@@ -728,15 +736,6 @@
       "means": "for a table: the numbers of the columns, as `align_overlap` writes them, where the column takes a vertical alignment from `valigns`, the cell of the first head row carries a vertical alignment mark, and the column is not in `align_overlap`",
       "clauses": [
         "C2-B-213",
-        "C2-A-089"
-      ]
-    },
-    {
-      "name": "width_total",
-      "type": "number",
-      "means": "for a table: the sum of the widths its columns take from `widths`, as fractions of the table width (C2-A-089); 0 when no column has one",
-      "clauses": [
-        "C2-B-212",
         "C2-A-089"
       ]
     }
@@ -7869,11 +7868,16 @@
             "f": "last_key"
           },
           {
+            "not": {
+              "f": "kept"
+            }
+          },
+          {
             "gt": [
               {
-                "f": "owner.width_total"
+                "f": "entry_total"
               },
-              1
+              100
             ]
           }
         ]
