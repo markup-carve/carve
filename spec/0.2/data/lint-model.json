@@ -1247,6 +1247,315 @@
       ]
     },
     {
+      "id": "block-marker-as-text",
+      "over": "line",
+      "let": {
+        "candidate": {
+          "if": [
+            {
+              "all": [
+                {
+                  "ge": [
+                    {
+                      "f": "leaf_start"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "lt": [
+                    {
+                      "f": "leaf_start"
+                    },
+                    {
+                      "f": "end"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "text_from": {
+                "f": "leaf_start"
+              }
+            },
+            {
+              "if": [
+                {
+                  "matches": [
+                    {
+                      "f": "text"
+                    },
+                    "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+                  ]
+                },
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "c"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "c",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ""
+              ]
+            }
+          ]
+        },
+        "candidate_start": {
+          "if": [
+            {
+              "all": [
+                {
+                  "ge": [
+                    {
+                      "f": "leaf_start"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                },
+                {
+                  "lt": [
+                    {
+                      "f": "leaf_start"
+                    },
+                    {
+                      "f": "end"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "f": "leaf_start"
+            },
+            {
+              "if": [
+                {
+                  "matches": [
+                    {
+                      "f": "text"
+                    },
+                    "^[ \\t]*(?:> [ \\t]*)*(?<c>.*?)[ \\t]*$"
+                  ]
+                },
+                {
+                  "match": "c"
+                },
+                {
+                  "f": "start"
+                }
+              ]
+            }
+          ]
+        },
+        "span": {
+          "lookup": {
+            "over": "inline",
+            "key": {
+              "if": [
+                {
+                  "all": [
+                    {
+                      "eq": [
+                        {
+                          "f": "item.parent"
+                        },
+                        "paragraph"
+                      ]
+                    },
+                    {
+                      "not": {
+                        "eq": [
+                          {
+                            "f": "item.type"
+                          },
+                          "text"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "f": "item.start"
+                },
+                false
+              ]
+            },
+            "value": {
+              "v": "candidate_start"
+            },
+            "field": "start"
+          }
+        }
+      },
+      "when": {
+        "in": [
+          {
+            "f": "leaf"
+          },
+          [
+            "caption",
+            "definition_term",
+            "heading",
+            "line",
+            "paragraph"
+          ]
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "f": "leaf_first"
+              },
+              {
+                "starts": [
+                  {
+                    "v": "candidate"
+                  },
+                  "~~~"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "v": "candidate_start"
+          },
+          "end": {
+            "add": [
+              {
+                "v": "candidate_start"
+              },
+              {
+                "len": {
+                  "v": "candidate"
+                }
+              }
+            ]
+          },
+          "values": {
+            "what": "a tilde fence"
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "f": "leaf_first"
+              },
+              {
+                "matches": [
+                  {
+                    "v": "candidate"
+                  },
+                  "^:{3,}\\S"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "v": "candidate_start"
+          },
+          "end": {
+            "add": [
+              {
+                "v": "candidate_start"
+              },
+              {
+                "len": {
+                  "v": "candidate"
+                }
+              }
+            ]
+          },
+          "values": {
+            "what": "a colon fence"
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "matches": [
+                  {
+                    "v": "candidate"
+                  },
+                  "^\\{[.#_A-Za-z]"
+                ]
+              },
+              {
+                "not": {
+                  "attribute_line": {
+                    "v": "candidate"
+                  }
+                }
+              },
+              {
+                "not": {
+                  "ge": [
+                    {
+                      "v": "span"
+                    },
+                    0
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "v": "candidate_start"
+          },
+          "end": {
+            "add": [
+              {
+                "v": "candidate_start"
+              },
+              {
+                "len": {
+                  "v": "candidate"
+                }
+              }
+            ]
+          },
+          "values": {
+            "what": "an attribute line"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-108",
+        "C2-B-119",
+        "C2-B-090",
+        "C2-W-150"
+      ]
+    },
+    {
       "id": "block-opener-overindented",
       "over": "block",
       "types": [
