@@ -257,6 +257,22 @@
       ]
     },
     {
+      "name": "ancestor_ids",
+      "type": "list",
+      "means": "the identities of the blocks that hold the block, innermost first, the document last; the identity of a block is equal on two records exactly when they stand for one node",
+      "clauses": [
+        "C2-W-141"
+      ]
+    },
+    {
+      "name": "ancestors",
+      "type": "list",
+      "means": "the types of the blocks that hold the block, innermost first, the document last",
+      "clauses": [
+        "C2-B-025"
+      ]
+    },
+    {
       "name": "attributed",
       "type": "boolean",
       "means": "the block has an attached attribute block, so its source starts at the attribute line",
@@ -4447,6 +4463,46 @@
       ]
     },
     {
+      "id": "figure-group-nested",
+      "over": "block",
+      "types": [
+        "div"
+      ],
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "f": "opener_text"
+              },
+              "^[ \\t]*:{3,}[ \\t]*figure$"
+            ]
+          },
+          {
+            "contains": [
+              {
+                "f": "ancestors"
+              },
+              "figure_group"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-127"
+      ]
+    },
+    {
       "id": "figure-group-opener-metadata",
       "over": "block",
       "types": [
@@ -4542,6 +4598,187 @@
       "clauses": [
         "C2-B-127",
         "C2-A-084"
+      ]
+    },
+    {
+      "id": "footnote-labels-differ-only-in-whitespace",
+      "over": "block",
+      "types": [
+        "footnote"
+      ],
+      "let": {
+        "twin_start": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "footnote"
+            ],
+            "key": {
+              "if": [
+                {
+                  "matches": [
+                    {
+                      "f": "item.text"
+                    },
+                    "^\\[\\^[^\\]]*\\]"
+                  ]
+                },
+                {
+                  "f": "item.node.key"
+                },
+                ""
+              ]
+            },
+            "value": {
+              "f": "node.key"
+            },
+            "field": "start"
+          }
+        },
+        "twin_text": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "footnote"
+            ],
+            "key": {
+              "if": [
+                {
+                  "matches": [
+                    {
+                      "f": "item.text"
+                    },
+                    "^\\[\\^[^\\]]*\\]"
+                  ]
+                },
+                {
+                  "f": "item.node.key"
+                },
+                ""
+              ]
+            },
+            "value": {
+              "f": "node.key"
+            },
+            "field": "text"
+          }
+        },
+        "label": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "f": "text"
+                },
+                "^\\[\\^(?<label>[^\\]]*)\\]"
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "f": "text"
+                },
+                2,
+                {
+                  "sub": [
+                    {
+                      "match": "label",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
+                }
+              ]
+            },
+            ""
+          ]
+        },
+        "twin_label": {
+          "if": [
+            {
+              "matches": [
+                {
+                  "v": "twin_text"
+                },
+                "^\\[\\^(?<label>[^\\]]*)\\]"
+              ]
+            },
+            {
+              "slice": [
+                {
+                  "v": "twin_text"
+                },
+                2,
+                {
+                  "match": "label",
+                  "at": "end"
+                }
+              ]
+            },
+            ""
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^\\[\\^(?<label>[^\\]]*)\\]"
+            ]
+          },
+          {
+            "ne": [
+              {
+                "v": "twin_start"
+              },
+              {
+                "f": "start"
+              }
+            ]
+          },
+          {
+            "ne": [
+              {
+                "v": "twin_label"
+              },
+              {
+                "v": "label"
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "label": {
+              "v": "label"
+            },
+            "twin": {
+              "v": "twin_label"
+            },
+            "key": {
+              "json_escape": {
+                "f": "node.key"
+              }
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-079",
+        "C2-B-085"
       ]
     },
     {
@@ -5861,6 +6098,227 @@
       ]
     },
     {
+      "id": "ordered-list-kind-split",
+      "over": "block",
+      "types": [
+        "list"
+      ],
+      "let": {
+        "next_index": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "after": true,
+            "field": "index"
+          }
+        },
+        "next_style": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "after": true,
+            "field": "node.marker.style"
+          }
+        },
+        "next_line": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "after": true,
+            "field": "line.number"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "parent.type"
+              },
+              [
+                "admonition",
+                "block_quote",
+                "div",
+                "document",
+                "footnote",
+                "list_item"
+              ]
+            ]
+          },
+          {
+            "eq": [
+              {
+                "len": {
+                  "f": "node.children"
+                }
+              },
+              1
+            ]
+          },
+          {
+            "eq": [
+              {
+                "v": "next_index"
+              },
+              {
+                "add": [
+                  {
+                    "f": "index"
+                  },
+                  1
+                ]
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "node.marker.style"
+                      },
+                      "i"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      {
+                        "v": "next_style"
+                      },
+                      "a"
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "node.marker.style"
+                      },
+                      "a"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      {
+                        "v": "next_style"
+                      },
+                      "i"
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "node.marker.style"
+                      },
+                      "I"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      {
+                        "v": "next_style"
+                      },
+                      "A"
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "node.marker.style"
+                      },
+                      "A"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      {
+                        "v": "next_style"
+                      },
+                      "I"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^\\s*[ivxlcdmIVXLCDM][.)]"
+            ]
+          },
+          {
+            "lt": [
+              {
+                "sub": [
+                  {
+                    "v": "next_line"
+                  },
+                  {
+                    "f": "last_line.number"
+                  }
+                ]
+              },
+              4
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-044"
+      ]
+    },
+    {
       "id": "quote-fence-ends-the-quote-above",
       "over": "line",
       "when": {
@@ -6203,6 +6661,146 @@
       "clauses": [
         "C2-B-171",
         "C2-B-182"
+      ]
+    },
+    {
+      "id": "table-row-cell-count",
+      "over": "block",
+      "types": [
+        "table_row"
+      ],
+      "let": {
+        "head_start": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "table_row"
+            ],
+            "key": {
+              "if": [
+                {
+                  "in": [
+                    {
+                      "f": "item.parent.type"
+                    },
+                    [
+                      "table_body",
+                      "table_foot",
+                      "table_head"
+                    ]
+                  ]
+                },
+                {
+                  "f": "item.ancestor_ids.1"
+                },
+                ""
+              ]
+            },
+            "value": {
+              "f": "ancestor_ids.1"
+            },
+            "field": "start"
+          }
+        },
+        "head_cells": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "table_row"
+            ],
+            "key": {
+              "if": [
+                {
+                  "in": [
+                    {
+                      "f": "item.parent.type"
+                    },
+                    [
+                      "table_body",
+                      "table_foot",
+                      "table_head"
+                    ]
+                  ]
+                },
+                {
+                  "f": "item.ancestor_ids.1"
+                },
+                ""
+              ]
+            },
+            "value": {
+              "f": "ancestor_ids.1"
+            },
+            "field": "node.children"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "parent.type"
+              },
+              [
+                "table_body",
+                "table_foot",
+                "table_head"
+              ]
+            ]
+          },
+          {
+            "ne": [
+              {
+                "v": "head_start"
+              },
+              {
+                "f": "start"
+              }
+            ]
+          },
+          {
+            "ne": [
+              {
+                "len": {
+                  "f": "node.children"
+                }
+              },
+              {
+                "len": {
+                  "v": "head_cells"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "cells": {
+              "len": {
+                "f": "node.children"
+              }
+            },
+            "width": {
+              "len": {
+                "v": "head_cells"
+              }
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-166",
+        "C2-B-175",
+        "C2-B-176"
       ]
     },
     {
