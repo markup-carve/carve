@@ -64123,6 +64123,57 @@
   "diagnosticsComplete": true
  },
  "from": []
+},
+{
+ "id": "CC-1465",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-strike: a bare `~` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare ~ followed by a joining character opens no deprecated-bare-strike pair",
+ "kind": "lint",
+ "input": "x ~́a~ y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-strike"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1466",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-underline: a bare `_` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare _ followed by a joining character opens no deprecated-bare-underline pair",
+ "kind": "lint",
+ "input": "x _́a_ y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-underline"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1467",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-highlight: a bare `=` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare = followed by a joining character opens no deprecated-bare-highlight pair",
+ "kind": "lint",
+ "input": "x =‍a= y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-highlight"
+  ]
+ },
+ "from": []
 }
  ]
 }
