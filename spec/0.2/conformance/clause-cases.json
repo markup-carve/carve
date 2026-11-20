@@ -63377,6 +63377,72 @@
    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ctitle%3ET%3C%2Ftitle%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
   },
   "from": []
+ },
+ {
+  "id": "CC-1443",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
+  "summary": "a root emptied by sanitization self-closes",
+  "kind": "render",
+  "input": "```img\n<svg><script>bad</script></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1444",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
+  "summary": "an inner element emptied by sanitization self-closes",
+  "kind": "render",
+  "input": "```img\n<svg><g><script/></g></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+ {
+  "id": "CC-1445",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
+  "summary": "an authored empty root self-closes",
+  "kind": "render",
+  "input": "```img\n<svg></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
+  },
+  "from": []
  }
  ]
 }
