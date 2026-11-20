@@ -64174,6 +64174,29 @@
   ]
  },
  "from": []
+},
+{
+ "id": "CC-1468",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-strike: a bare `~` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a joined tilde takes no part as a closer, so the later tilde closes the whole pair",
+ "kind": "lint",
+ "input": "~a~‍b~\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "deprecated-bare-strike",
+    "line": 1,
+    "column": 1,
+    "severity": "warning",
+    "channel": "lint"
+   }
+  ]
+ },
+ "from": []
 }
  ]
 }
