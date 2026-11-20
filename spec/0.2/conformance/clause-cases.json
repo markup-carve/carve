@@ -61420,6 +61420,45 @@
     "carve": "para\n\n%% carve-lint-disable-next-line\n\n== See [a]()\n"
    },
    "from": []
+  },
+  {
+   "id": "CC-1405",
+   "clauses": ["C2-B-137", "C2-B-192"],
+   "why": "C2-B-137: Such a line is not seen by block structure: no rule that opens, continues, interrupts or closes a block sees it, and it counts neither as a content line nor as a blank line. C2-B-192: Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.",
+   "summary": "an attribute followed only by a comment reaches document end",
+   "kind": "lint",
+   "input": "{.c}\n%% x\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [{"code": "unattached-block-attribute", "line": 1, "column": 1, "endLine": 1, "endColumn": 5, "messageWhen": "the attribute line reaches the end of its container or document without a following blank line", "channel": "lint", "severity": "warning"}]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1406",
+   "clauses": ["C2-B-092", "C2-B-192"],
+   "why": "C2-B-192: Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.",
+   "summary": "an attribute in a nested list item does not attach to a later div",
+   "kind": "lint",
+   "input": "* * {#id}\n:::\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [{"code": "unattached-block-attribute", "line": 1, "column": 5, "endLine": 1, "endColumn": 10, "messageWhen": "the attribute line reaches the end of its container or document without a following blank line", "channel": "lint", "severity": "warning"}]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1407",
+   "clauses": ["C2-B-010", "C2-B-192"],
+   "why": "C2-B-010: A line ends at LF, a CR directly before that LF is not part of the line, and a lone CR is not a line end. C2-B-192: Consecutive attribute lines that no block takes, because a blank line or the end of their container follows, become one closed paragraph that holds every one of those lines as text.",
+   "summary": "a final line feed after an attribute is document end, not a blank line",
+   "kind": "lint",
+   "input": "{.c}\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [{"code": "unattached-block-attribute", "line": 1, "column": 1, "endLine": 1, "endColumn": 5, "messageWhen": "the attribute line reaches the end of its container or document without a following blank line", "channel": "lint", "severity": "warning"}]
+   },
+   "from": []
   }
  ]
 }
