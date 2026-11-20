@@ -13,6 +13,8 @@
     "line_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a line record, one record per source line." },
     "block_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a block record, one record per block of the tree." },
     "inline_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an inline record, one record per inline node of a type that an inline rule names." },
+    "attribute_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an attribute record, one record per part of each attribute block that a node took (C2-W-148)." },
+    "attribute_owner_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of the owner of an attribute record, the node that its attribute block attaches to (C2-W-148)." },
     "rules": {
       "type": "array",
       "items": {
@@ -21,8 +23,8 @@
         "required": ["id", "over", "report", "clauses"],
         "properties": {
           "id": { "type": "string", "description": "The id of the row of lint-rules.json that this rule states." },
-          "over": { "enum": ["line", "block", "inline"], "description": "The records the rule runs over." },
-          "types": { "$ref": "#/$defs/types", "description": "For a block rule: the node types it runs over; absent, every block. For an inline rule: the inline node types it runs over." },
+          "over": { "enum": ["line", "block", "inline", "attribute"], "description": "The records the rule runs over." },
+          "types": { "$ref": "#/$defs/types", "description": "For a block rule: the node types it runs over; absent, every block. For an inline rule: the inline node types it runs over. For an attribute rule: the node types of the owners whose attribute records it runs over; absent, every owner." },
           "verbatim": { "$ref": "#/$defs/types", "description": "For a line rule: the verbatim leaves whose lines it still reads, because its row names that place (C2-W-107)." },
           "let": { "type": "object", "additionalProperties": { "$ref": "#/$defs/expr" }, "description": "Named values computed first, read with `v`." },
           "each": {
@@ -76,7 +78,7 @@
       "required": ["name", "type", "means", "clauses"],
       "properties": {
         "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$", "description": "The field name, read with `f`." },
-        "type": { "enum": ["boolean", "number", "offset", "text", "name", "list", "line", "block", "node"], "description": "An offset is a character offset in the source. A line or block field is a record whose own fields are read with a dotted path, and a node field is a node of the tree, read the same way." },
+        "type": { "enum": ["boolean", "number", "offset", "text", "name", "list", "line", "block", "node", "owner"], "description": "An offset is a character offset in the source. A line or block field is a record whose own fields are read with a dotted path, and a node field is a node of the tree, read the same way, and so is an owner field, whose fields are those of attribute_owner_fields." },
         "base": { "enum": ["start", "body_start", "opener_start"], "description": "For a text field: the field that gives the source offset of its first character." },
         "means": { "type": "string", "description": "What the field holds, as the clauses define it." },
         "clauses": { "$ref": "#/$defs/clauses" }
