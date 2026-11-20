@@ -53,7 +53,7 @@ const FILES = {
   limits: { limits: ['name', 'name'] },
   'ordered-styles': { styles: ['name', 'name'], delimiters: ['name', 'char'] },
   'line-shapes': { shapes: ['name', 'first'], refs: ['name', 'name'] },
-  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], rules: ['id', 'id'] },
+  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], table_fields: ['name', 'name'], rules: ['id', 'id'] },
   'lint-rules': { rules: ['id', 'id'] },
   options: { options: ['name', 'name'] },
   'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
@@ -257,15 +257,17 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
 // writes its patterns in the subset of C2-W-142.
 {
   const model = data['lint-model'] ?? { line_fields: [], block_fields: [], inline_fields: [], rules: [] }
-  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2']))
-  const blockFields = new Set(model.block_fields.map(field => field.name))
+  // C2-W-149: the table fields are fields of the line and block records they apply to.
+  const tableFields = (model.table_fields ?? []).map(field => field.name)
+  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2'], tableFields))
+  const blockFields = new Set(model.block_fields.map(field => field.name).concat(tableFields))
   const inlineFields = new Set((model.inline_fields ?? []).map(field => field.name))
   const attributeFields = new Set((model.attribute_fields ?? []).map(field => field.name))
   const attributeOwnerFields = new Set((model.attribute_owner_fields ?? []).map(field => field.name))
   const containerFields = new Set(['type', 'content_column', 'marker_column'])
   const colonFields = new Set(['width', 'line', 'column', 'kind'])
   const sets = new Set(['text_leaves', 'verbatim_leaves', 'row_leaves'])
-  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line'])
+  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line', 'table_above', 'table_below'])
   const checkPath = (path, over, lets, where) => {
     const [head, ...rest] = path.split('.')
     if (head === 'item') return
