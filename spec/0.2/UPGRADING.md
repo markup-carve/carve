@@ -907,7 +907,7 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
 | `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve import --from html`. |
 | the import option `adapter` of carve-js, `importAdapter` of carve-php (`new HtmlToCarve(importAdapter: 'word')`), `adapter` of carve-rs | the import option `adapter` with the same seven values (C2-M-102), which every engine offers: `importDocument(html, { from: 'html', adapter: 'word' })`. `word` and `google-docs` read a word processor's notes as footnotes (C2-M-103 to C2-M-110); the other five give the tree of `generic`, as in 0.1. |
-| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode has no 0.2 importer. |
+| `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode is read by `importDocument(source, { from: 'bbcode' })` of `@markup-carve/carve/import`, also outside the specification. |
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. A 0.1 `LinkPolicy` maps to the options of the `linkPolicy()` navigation extension (see `profileBaseHost` below). |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
@@ -921,32 +921,32 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | 0.1 function | 0.2 action |
 | --- | --- |
 | `abc` | The `abc` fenced-render preset in `@markup-carve/carve/extensions`. |
-| `applyMigrationFixes` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `applyReversibleAstPatch` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `applyMigrationFixes` | `fix(source, { rules })` with the `djot-` rules turned on (C2-T-049); `fixEdits` returns the edits of one finding. The fixable `djot-` rules are `djot-emphasis-underscore`, `djot-intraword-underscore`, `djot-subscript-tilde`, `djot-superscript-caret` and `djot-plus-bullet`. |
+| `applyReversibleAstPatch` | Removed: "There is no reversible patch and no three-way merge" (C2-T-044). Keep the old tree to undo a change; `diffTree` and `applyPatch` give a JSON Patch (C2-T-043). |
 | `autolink` | The `autolink()` navigation extension in `@markup-carve/carve/extensions`. Links bare URLs and email addresses; `allowedSchemes` defaults to `https`, `http`, and `mailto`. |
-| `buildMarker` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `canonicalType` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `carveToAnsiWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `carveToMarkdownWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `carveToPlainTextWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `buildMarker` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `canonicalType` | Part of the 0.1 profile object API, which the `profile` string replaces (row `Profile` above). 0.2 has no aliased node types; `NODE_TYPES` lists the vocabulary. No replacement needed. |
+| `carveToAnsiWithReport` | `toAnsi` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `carveToMarkdownWithReport` | `toMarkdown` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `carveToPlainTextWithReport` | `toPlainText` of `@markup-carve/carve/export` on the tree of `parse(source)`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
 | `chart` | The `chart` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `citations` | The `citations` factory in `@markup-carve/carve/extensions`. |
 | `codeCallouts` | The `codeCallouts` factory in `@markup-carve/carve/extensions`. |
 | `codeGroup` | The `codeGroup` factory in `@markup-carve/carve/extensions`. |
 | `colorSwatch` | The `colorSwatch` factory in `@markup-carve/carve/extensions`. |
-| `compareSpecVersions` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `createReversibleAstPatch` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `compareSpecVersions` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `createReversibleAstPatch` | Removed: "There is no reversible patch and no three-way merge" (C2-T-044). Keep the old tree to undo a change; `diffTree` and `applyPatch` give a JSON Patch (C2-T-043). |
 | `d2` | The `d2` fenced-render preset in `@markup-carve/carve/extensions`. |
-| `decisionTraceJsonLines` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `decisionTraceJsonLines` | No 0.2 counterpart and no `trace` command; whether a trace returns is open in markup-carve/carve#6264. |
 | `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
 | `details` | The `details` factory in `@markup-carve/carve/extensions`. |
-| `djotMigrationWarnings` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `expandsForTarget` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `djotMigrationWarnings` | `lint(source, { rules })` with the `djot-` rules turned on by their ids, which are off by default (C2-W-109). The `markdown-` rules report the Markdown habits. |
+| `expandsForTarget` | Internal in 0.1: the command line's choice of which targets expand includes. No replacement needed; C2-N-004 and C2-T-018 state when the command line expands. |
 | `externalLinks` | The `externalLinks()` navigation extension in `@markup-carve/carve/extensions`. Sets `target` and `rel` on external HTTP links; options are `target`, `rel`, and `nofollow`. |
 | `fencedRender` | The `fencedRender` factory in `@markup-carve/carve/extensions`. |
-| `formatChanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `formatMigrationWarnings` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `formatProfileViolation` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `formatChanges` | Removed with the 0.1 change format: `diffTree` returns a JSON Patch instead (C2-T-043, C2-T-044). A host formats the operations itself. |
+| `formatMigrationWarnings` | The lines of `carve lint` (C2-T-019, C2-T-031); a host that calls `lint` formats its `diagnostics`. |
+| `formatProfileViolation` | A construct outside the profile is a diagnostic `profile-construct-degraded` of `renderWithDiagnostics`, with its catalog message (C2-H-129); `strictLosses` makes it an error. |
 | `glossary` | The `glossary` factory in `@markup-carve/carve/extensions`. |
 | `graphviz` | The `graphviz` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `headingLevelShift` | The `headingLevelShift()` navigation extension in `@markup-carve/carve/extensions`. Moves headings down; `shift` is 0 to 5 and defaults to 1. |
@@ -955,38 +955,38 @@ The table audits the remaining 0.1 function exports. Many moved to `@markup-carv
 | `headingReference` | The `headingReference()` navigation extension in `@markup-carve/carve/extensions`. Styles heading reference links; `cssClass` defaults to `heading-ref`. |
 | `imgFence` | The `imgFence` factory in `@markup-carve/carve/extensions`. |
 | `index` | The `index` factory in `@markup-carve/carve/extensions`. |
-| `inspectColonFences` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `isDirectiveShape` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `inspectColonFences` | The lint rule `colon-fence-length-mismatch`, on by default, reports what this helper found. |
+| `isDirectiveShape` | Parse the source: a directive the parser recognizes is an `include` node, made only by a block line (C2-N-002, C2-B-156). There is no inline include. |
 | `isSmartQuoteLocaleSupported` | The `isSmartQuoteLocaleSupported` helper in `@markup-carve/carve/extensions`. |
-| `migrateBbcode` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `migrateCaseOnlyReferences` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `migrateBbcode` | `importDocument(source, { from: 'bbcode' })` of `@markup-carve/carve/import`, or `carve import --from bbcode`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateCaseOnlyReferences` | `carve upgrade --migrate` (U-429), the upgrade tool's repair of a reference whose only target differs in case. The library `upgrade` does not run it. |
 | `migrateDjot` | Use `importDocument(source, { from: 'djot' })` or `carve import --from djot`. The importer is outside the 0.2 specification (C2-T-003). |
 | `migrateHtml` | Use `importDocument(source, { from: 'html' })` or `carve import --from html`. The importer is outside the 0.2 specification (C2-T-003). |
 | `migrateMarkdown` | Use `importDocument(source, { from: 'gfm' })` or `carve import --from gfm`. The importer is outside the 0.2 specification (C2-T-003). |
-| `needsReview` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `needsReview` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
 | `plantuml` | The `plantuml` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `presets` | The `presets` collection of fenced-render factories in `@markup-carve/carve/extensions`. |
-| `readAnnotationRanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `readNodeIdentity` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `readProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `readStamp` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `renderAnsiWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `renderCarveWithConversionReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `renderMarkdownWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `renderPlainTextWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `readAnnotationRanges` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `readNodeIdentity` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `readProvenance` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `readStamp` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `renderAnsiWithReport` | `toAnsi` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `renderCarveWithConversionReport` | `writeWithDiagnostics`: a structure or field with no Carve spelling is a `structure-unspellable` or `field-unspellable` diagnostic (C2-W-104, C2-W-134); `write` throws `CarveWriteError` instead. |
+| `renderMarkdownWithReport` | `toMarkdown` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
+| `renderPlainTextWithReport` | `toPlainText` of `@markup-carve/carve/export`. It returns `output` and `diagnostics`; `strictLosses` throws `CarveExportError` instead (C2-T-003). |
 | `sanitizeSvg` | The `sanitizeSvg` helper in `@markup-carve/carve/extensions`. |
-| `selectIncludeRegion` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `selectIncludeRegion` | `includeRegion(text, name, { code })` of the 0.2 core entry; `code: true` is the 0.1 mode `'code'`. It returns the text and the first and last line, or `ok: false` with the reason of `region_invalid` (C2-N-037 to C2-N-043). |
 | `semanticSpan` | The `semanticSpan` factory in `@markup-carve/carve/extensions`. |
 | `smartQuoteLocales` | The `smartQuoteLocales` helper in `@markup-carve/carve/extensions`. |
 | `sourceFingerprint` | The same-named function in the 0.2 core entry point; it returns a `sha256:` hash of source bytes. |
 | `spoiler` | The `spoiler` factory in `@markup-carve/carve/extensions`. |
-| `stripTrailingMarker` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `toAnnotationRanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `toAuthoredProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `toNodeIdentity` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `toProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `stripTrailingMarker` | No 0.2 counterpart; whether the 0.1 stamp returns is open in markup-carve/carve#6263. A 0.1 stamp stays a comment. The frontmatter key `carve` declares the version, which the lint rule `carve-version-unsupported` checks. |
+| `toAnnotationRanges` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `toAuthoredProvenance` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `toNodeIdentity` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
+| `toProvenance` | No 0.2 call. C2-A-003 names the node identity, annotation-range and provenance sidecars, and only annotation ranges have a schema (C2-A-214); whether 0.2.0 keeps them is open in markup-carve/carve#6262. A diagnostic names its node by an RFC 6901 `path`. |
 | `tocPlacement` | The `tocPlacement()` navigation extension in `@markup-carve/carve/extensions`. Places the table of contents at each `::: toc` directive; use `{depth=N}` or `{from=X to=Y}` on the directive. |
-| `tryRenderHtmlStreaming` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `tryRenderHtmlStreaming` | `render`, which returns the same HTML in one string. 0.1 wrote it in chunks only after the whole source was accepted; 0.2.0 defines no streaming renderer (C2-H-111). |
 | `vegaLite` | The `vegaLite` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `wavedrom` | The `wavedrom` fenced-render preset in `@markup-carve/carve/extensions`. |
 
