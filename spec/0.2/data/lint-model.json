@@ -472,6 +472,14 @@
       ]
     },
     {
+      "name": "raw_ref",
+      "type": "text",
+      "means": "for a link or an image with a key: its reference from the opening bracket to the bracket that closes its label, the image mark left out, read without the container prefixes of the lines it crosses; otherwise its text",
+      "clauses": [
+        "C2-L-022"
+      ]
+    },
+    {
       "name": "start",
       "type": "offset",
       "means": "the start of the node in the source",
@@ -739,6 +747,44 @@
       "clauses": [
         "C2-B-213",
         "C2-A-089"
+      ]
+    }
+  ],
+  "id_fields": [
+    {
+      "name": "id",
+      "type": "text",
+      "means": "the id: an authored id of any node, or the id generated for a heading",
+      "clauses": [
+        "C2-A-032",
+        "C2-A-134",
+        "C2-W-150"
+      ]
+    },
+    {
+      "name": "index",
+      "type": "number",
+      "means": "the position of the record among the id records, counted from 0",
+      "clauses": [
+        "C2-W-150"
+      ]
+    },
+    {
+      "name": "owner",
+      "type": "name",
+      "means": "the type of the first node in document order that carries the id, the one it anchors",
+      "clauses": [
+        "C2-A-039",
+        "C2-W-150"
+      ]
+    },
+    {
+      "name": "start",
+      "type": "offset",
+      "means": "the start in the source of the first node that carries the id, 0 when that node has no position",
+      "clauses": [
+        "C2-A-141",
+        "C2-W-150"
       ]
     }
   ],
@@ -1701,6 +1747,519 @@
       ],
       "clauses": [
         "C2-I-025"
+      ]
+    },
+    {
+      "id": "broken-crossref",
+      "over": "inline",
+      "types": [
+        "xref"
+      ],
+      "let": {
+        "exact_index": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "f": "item.id"
+            },
+            "value": {
+              "f": "node.key"
+            },
+            "field": "index"
+          }
+        },
+        "exact_owner": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "f": "item.id"
+            },
+            "value": {
+              "f": "node.key"
+            },
+            "field": "owner"
+          }
+        },
+        "case_ids": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "if": [
+                {
+                  "in": [
+                    {
+                      "f": "item.owner"
+                    },
+                    [
+                      "caption",
+                      "heading"
+                    ]
+                  ]
+                },
+                {
+                  "lower": {
+                    "f": "item.id"
+                  }
+                },
+                false
+              ]
+            },
+            "value": {
+              "lower": {
+                "f": "node.key"
+              }
+            },
+            "all": true,
+            "field": "id"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "node.namespace"
+              },
+              "heading"
+            ]
+          },
+          {
+            "not": {
+              "has": "node.href"
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "ge": [
+                  {
+                    "v": "exact_index"
+                  },
+                  0
+                ]
+              },
+              {
+                "not": {
+                  "in": [
+                    {
+                      "v": "exact_owner"
+                    },
+                    [
+                      "caption",
+                      "heading"
+                    ]
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "target": {
+              "f": "node.key"
+            },
+            "id": {
+              "f": "node.key"
+            },
+            "kind": {
+              "v": "exact_owner"
+            }
+          }
+        },
+        {
+          "when": {
+            "ge": [
+              {
+                "len": {
+                  "v": "case_ids"
+                }
+              },
+              1
+            ]
+          },
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "target": {
+              "f": "node.key"
+            },
+            "caseOnlyPhrase": {
+              "if": [
+                {
+                  "eq": [
+                    {
+                      "len": {
+                        "v": "case_ids"
+                      }
+                    },
+                    1
+                  ]
+                },
+                {
+                  "concat": [
+                    "the id ",
+                    {
+                      "join": [
+                        {
+                          "v": "case_ids"
+                        },
+                        ", "
+                      ]
+                    },
+                    " differs only in case"
+                  ]
+                },
+                {
+                  "concat": [
+                    "the ids ",
+                    {
+                      "join": [
+                        {
+                          "v": "case_ids"
+                        },
+                        ", "
+                      ]
+                    },
+                    " differ only in case"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "message": 2,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "target": {
+              "f": "node.key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-096",
+        "C2-I-097",
+        "C2-W-150"
+      ]
+    },
+    {
+      "id": "broken-fragment-link",
+      "over": "inline",
+      "types": [
+        "link"
+      ],
+      "let": {
+        "fragment": {
+          "slice": [
+            {
+              "f": "node.href"
+            },
+            1,
+            {
+              "if": [
+                {
+                  "ge": [
+                    {
+                      "index_of": [
+                        {
+                          "f": "node.href"
+                        },
+                        ":~:"
+                      ]
+                    },
+                    0
+                  ]
+                },
+                {
+                  "index_of": [
+                    {
+                      "f": "node.href"
+                    },
+                    ":~:"
+                  ]
+                },
+                {
+                  "len": {
+                    "f": "node.href"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "decoded": {
+          "percent_decode": {
+            "v": "fragment"
+          }
+        },
+        "as_written": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "lower": {
+                "f": "item.id"
+              }
+            },
+            "value": {
+              "lower": {
+                "v": "fragment"
+              }
+            },
+            "field": "index"
+          }
+        },
+        "as_decoded": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "lower": {
+                "f": "item.id"
+              }
+            },
+            "value": {
+              "lower": {
+                "v": "decoded"
+              }
+            },
+            "field": "index"
+          }
+        },
+        "case_only": {
+          "if": [
+            {
+              "all": [
+                {
+                  "ge": [
+                    {
+                      "v": "as_written"
+                    },
+                    0
+                  ]
+                },
+                {
+                  "any": [
+                    {
+                      "not": {
+                        "ge": [
+                          {
+                            "v": "as_decoded"
+                          },
+                          0
+                        ]
+                      }
+                    },
+                    {
+                      "le": [
+                        {
+                          "v": "as_written"
+                        },
+                        {
+                          "v": "as_decoded"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "lookup": {
+                "over": "id",
+                "key": {
+                  "lower": {
+                    "f": "item.id"
+                  }
+                },
+                "value": {
+                  "lower": {
+                    "v": "fragment"
+                  }
+                },
+                "field": "id"
+              }
+            },
+            {
+              "if": [
+                {
+                  "ge": [
+                    {
+                      "v": "as_decoded"
+                    },
+                    0
+                  ]
+                },
+                {
+                  "lookup": {
+                    "over": "id",
+                    "key": {
+                      "lower": {
+                        "f": "item.id"
+                      }
+                    },
+                    "value": {
+                      "lower": {
+                        "v": "decoded"
+                      }
+                    },
+                    "field": "id"
+                  }
+                },
+                ""
+              ]
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "starts": [
+              {
+                "f": "node.href"
+              },
+              "#"
+            ]
+          },
+          {
+            "eq": [
+              {
+                "len": {
+                  "run": "extensions"
+                }
+              },
+              0
+            ]
+          },
+          {
+            "not": {
+              "eq": [
+                {
+                  "v": "fragment"
+                },
+                ""
+              ]
+            }
+          },
+          {
+            "not": {
+              "eq": [
+                {
+                  "lower": {
+                    "v": "fragment"
+                  }
+                },
+                "top"
+              ]
+            }
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "id",
+                    "key": {
+                      "f": "item.id"
+                    },
+                    "value": {
+                      "v": "fragment"
+                    },
+                    "field": "index"
+                  }
+                },
+                0
+              ]
+            }
+          },
+          {
+            "not": {
+              "ge": [
+                {
+                  "lookup": {
+                    "over": "id",
+                    "key": {
+                      "f": "item.id"
+                    },
+                    "value": {
+                      "v": "decoded"
+                    },
+                    "field": "index"
+                  }
+                },
+                0
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "ge": [
+              {
+                "len": {
+                  "v": "case_only"
+                }
+              },
+              1
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "href": {
+              "f": "node.href"
+            },
+            "caseOnly": {
+              "v": "case_only"
+            }
+          }
+        },
+        {
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "href": {
+              "f": "node.href"
+            },
+            "caseOnly": ""
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-066",
+        "C2-H-022",
+        "C2-W-150"
       ]
     },
     {
@@ -9036,6 +9595,281 @@
         "C2-I-087",
         "C2-I-088",
         "C2-I-079"
+      ]
+    },
+    {
+      "id": "unresolved-reference-link",
+      "over": "inline",
+      "types": [
+        "image",
+        "link"
+      ],
+      "let": {
+        "labels": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "link_reference_definition"
+            ],
+            "key": {
+              "lower": {
+                "f": "item.node.key"
+              }
+            },
+            "value": {
+              "lower": {
+                "f": "node.key"
+              }
+            },
+            "all": true,
+            "field": "node.key"
+          }
+        },
+        "ids": {
+          "lookup": {
+            "over": "id",
+            "key": {
+              "lower": {
+                "f": "item.id"
+              }
+            },
+            "value": {
+              "lower": {
+                "f": "node.key"
+              }
+            },
+            "all": true,
+            "field": "id"
+          }
+        },
+        "label": {
+          "find": {
+            "in": {
+              "v": "labels"
+            },
+            "where": {
+              "not": {
+                "eq": [
+                  {
+                    "f": "item"
+                  },
+                  {
+                    "f": "node.key"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "id": {
+          "find": {
+            "in": {
+              "v": "ids"
+            },
+            "where": {
+              "not": {
+                "eq": [
+                  {
+                    "f": "item"
+                  },
+                  {
+                    "f": "node.key"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "case_only": {
+          "if": [
+            {
+              "ge": [
+                {
+                  "len": {
+                    "v": "label"
+                  }
+                },
+                1
+              ]
+            },
+            {
+              "v": "label"
+            },
+            {
+              "if": [
+                {
+                  "all": [
+                    {
+                      "eq": [
+                        {
+                          "f": "type"
+                        },
+                        "link"
+                      ]
+                    },
+                    {
+                      "ge": [
+                        {
+                          "len": {
+                            "v": "id"
+                          }
+                        },
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "v": "id"
+                },
+                ""
+              ]
+            }
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "has": "node.key"
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "type"
+                      },
+                      "link"
+                    ]
+                  },
+                  {
+                    "not": {
+                      "has": "node.href"
+                    }
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      {
+                        "f": "type"
+                      },
+                      "image"
+                    ]
+                  },
+                  {
+                    "not": {
+                      "has": "node.src"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "rawRef": {
+          "f": "raw_ref"
+        },
+        "caseOnlyPhrase": {
+          "concat": [
+            "the label ",
+            {
+              "v": "case_only"
+            },
+            " differs only in case"
+          ]
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "type"
+                  },
+                  "link"
+                ]
+              },
+              {
+                "ge": [
+                  {
+                    "len": {
+                      "v": "case_only"
+                    }
+                  },
+                  1
+                ]
+              }
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
+        {
+          "when": {
+            "eq": [
+              {
+                "f": "type"
+              },
+              "link"
+            ]
+          },
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
+        {
+          "when": {
+            "ge": [
+              {
+                "len": {
+                  "v": "case_only"
+                }
+              },
+              1
+            ]
+          },
+          "message": 2,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
+        {
+          "message": 3,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-081",
+        "C2-I-080",
+        "C2-I-084",
+        "C2-L-022",
+        "C2-W-150"
       ]
     },
     {
