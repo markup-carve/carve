@@ -708,7 +708,7 @@
     {
       "name": "opener_start",
       "type": "offset",
-      "means": "for a block: where its own text starts behind its attribute lines, behind the indent and the quote marks of the quotes that hold it; for an inline node, its start",
+      "means": "for a block: where its own text starts behind its attribute lines, behind the indent and the quote marks of the quotes that hold it; for an item, a cell or an inline node, its start",
       "clauses": [
         "C2-B-090",
         "C2-A-148"
