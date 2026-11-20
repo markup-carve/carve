@@ -9040,32 +9040,59 @@
           }
         ]
       },
+      "values": {
+        "cells": {
+          "len": {
+            "f": "node.children"
+          }
+        },
+        "width": {
+          "len": {
+            "v": "head_cells"
+          }
+        }
+      },
       "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "has": "node.pos"
+                }
+              },
+              {
+                "matches": [
+                  {
+                    "f": "last_line.body"
+                  },
+                  "^[ \\t]*(?<plus>\\+)"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "match": "plus"
+          },
+          "end": {
+            "f": "end"
+          }
+        },
         {
           "start": {
             "f": "start"
           },
           "end": {
             "f": "end"
-          },
-          "values": {
-            "cells": {
-              "len": {
-                "f": "node.children"
-              }
-            },
-            "width": {
-              "len": {
-                "v": "head_cells"
-              }
-            }
           }
         }
       ],
       "clauses": [
+        "C2-A-158",
         "C2-B-166",
         "C2-B-175",
-        "C2-B-176"
+        "C2-B-176",
+        "C2-W-150"
       ]
     },
     {
