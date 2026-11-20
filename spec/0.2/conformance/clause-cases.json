@@ -61329,6 +61329,29 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1400",
+   "clauses": [
+    "C2-X-065",
+    "C2-H-047"
+   ],
+   "why": "C2-H-047: The value is written as it is, its final line ending included, and nothing is added.",
+   "summary": "details fallback preserves every code value line",
+   "kind": "render",
+   "input": "::: details \"Req\"\n```php\nx\n  y\n```\n:::\n",
+   "options": {
+    "extensions": [
+     "carve.details"
+    ]
+   },
+   "expected": {
+    "html": "<p><strong>Req</strong></p>\n<pre><code class=\"language-php\">x\n  y\n</code></pre>",
+    "diagnostics": [
+     "extension-fallback-rendered"
+    ]
+   },
+   "from": []
   }
  ]
 }
