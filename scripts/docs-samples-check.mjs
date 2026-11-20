@@ -84,8 +84,10 @@ function checkSample(page, line, source, options = {}) {
       fail(page, line, `invalid lint report: ${error.message}`)
     }
   }
-  const fmt = run(['fmt', '--check'], source)
-  if (fmt.status !== 0) fail(page, line, `fmt --check: ${fmt.output.trim() || fmt.error.trim() || `exit ${fmt.status}`}`)
+  if (!options.fmtSkip) {
+    const fmt = run(['fmt', '--check'], source)
+    if (fmt.status !== 0) fail(page, line, `fmt --check: ${fmt.output.trim() || fmt.error.trim() || `exit ${fmt.status}`}`)
+  }
   if (options.html !== undefined) {
     const flags = Object.entries(options.render ?? {}).flatMap(([key, value]) => {
       const flag = `--${key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`)}`

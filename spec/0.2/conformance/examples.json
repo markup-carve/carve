@@ -80141,7 +80141,7 @@
    "input": "{{ a.crv @code @lines:1-2 }}",
    "options": {},
    "expected": {
-    "carve": "{{ a.crv @lines:1-2 @code }}\n",
+    "carve": "{{ a.crv @code @lines:1-2 }}\n",
     "tree": {
      "type": "document",
      "astVersion": "2.0",
