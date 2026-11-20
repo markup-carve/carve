@@ -99,7 +99,7 @@ jobs:
           cargo build --manifest-path engines/carve-rs/Cargo.toml --bin carve
           cargo build --manifest-path scripts/next2-readiness-rs/Cargo.toml
       - name: Baseline classifier tests
-        run: node --test tests/next2-readiness-classify.test.mjs
+        run: node --test tests/next2-readiness-classify.test.mjs tests/next2-readiness-extensions.test.mjs
       - name: Replay the 0.2 contract and check the baseline
         env:
           MODE: ${{ matrix.mode }}

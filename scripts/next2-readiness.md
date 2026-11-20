@@ -30,6 +30,10 @@ Aggregate counts, per-rule catalog percentages and lint agreement are reported i
 
 Catalog rows with status `obsolete` or `void` remain in the historical data but are excluded from the shared trigger denominator. The report counts them separately as "Excluded: obsolete/void". The job fails if an engine emits either kind on a clause case. A rule with status `engine-local`, such as the C2-W-133 `writer-refused` repair guard, is counted separately and verified by engine implementation tests rather than a shared clause case.
 
+## Extensions
+
+The report ends with a section "Extensions": the standard extension corpus `spec/0.2/conformance/extensions.json`, pass, fail and unsupported per engine and extension, and the cases each engine does not pass. It is reported only. It does not count toward Engine ready, it is not part of the baseline, and a failing extension case never fails the job. The JSON report keeps the HTML an engine wrote for each failing case. `--extensions-only` replays only that corpus, without the baseline comparison and the upgrade replay.
+
 ## Which engines are replayed
 
 - **Pull requests** (`baseline` mode) replay the engine commits named in `engineHeads` of the baseline, so a red run means this PR regressed spec data, a generator or the runner.
