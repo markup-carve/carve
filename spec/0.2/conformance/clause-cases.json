@@ -63311,5 +63311,72 @@
   },
   "from": []
  }
+,
+{
+  "id": "CC-1440",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "authored alt and other image attributes",
+  "kind": "render",
+  "input": "{alt=\"A red box\" #pic .c}\n```img\n<svg><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"A red box\" id=\"pic\" class=\"c\">"
+  },
+  "from": []
+ },
+{
+  "id": "CC-1441",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "no authored alt writes an empty alt",
+  "kind": "render",
+  "input": "```img\n<svg><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ },
+{
+  "id": "CC-1442",
+  "clauses": [
+   "C2-X-059"
+  ],
+  "why": "C2-X-059: The fence’s authored `alt` attribute supplies the image’s alt text; without it, the image writes `alt=\"\"`, even when the SVG has a `<title>`. The other authored attributes are written on the `<img>` under C2-H-009 to C2-H-014.",
+  "summary": "SVG title without authored alt still writes an empty alt",
+  "kind": "render",
+  "input": "```img\n<svg><title>T</title><rect/></svg>\n```\n",
+  "options": {
+   "extensions": [
+    "carve.imgFence.img"
+   ],
+   "renderers": {
+    "carve.imgFence.img": "standard"
+   }
+  },
+  "expected": {
+   "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ctitle%3ET%3C%2Ftitle%3E%3Crect%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
+  },
+  "from": []
+ }
  ]
 }
