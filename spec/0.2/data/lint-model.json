@@ -583,6 +583,8 @@
       "means": "the node that the attribute block attaches to, with the fields of `attribute_owner_fields`",
       "clauses": [
         "C2-B-091",
+        "C2-B-101",
+        "C2-B-171",
         "C2-I-036"
       ]
     },
