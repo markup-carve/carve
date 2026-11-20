@@ -53,7 +53,7 @@ const FILES = {
   limits: { limits: ['name', 'name'] },
   'ordered-styles': { styles: ['name', 'name'], delimiters: ['name', 'char'] },
   'line-shapes': { shapes: ['name', 'first'], refs: ['name', 'name'] },
-  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], rules: ['id', 'id'] },
+  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], table_fields: ['name', 'name'], rules: ['id', 'id'] },
   'lint-rules': { rules: ['id', 'id'] },
   options: { options: ['name', 'name'] },
   'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
@@ -127,7 +127,8 @@ for (const [file, lists] of Object.entries(FILES)) {
     counts.push(`${file}.json ${list}: ${rows.length}`)
     const seen = new Set()
     for (const row of rows) {
-      const id = row[idKey]
+      // C2-W-150: a lint row may be stated by one rule per record kind.
+      const id = file === 'lint-model' && list === 'rules' ? `${row.id} ${row.over}` : row[idKey]
       if (seen.has(id)) fail(`${file}.json ${list}: "${id}" stands twice`)
       seen.add(id)
     }
@@ -257,19 +258,30 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
 // writes its patterns in the subset of C2-W-142.
 {
   const model = data['lint-model'] ?? { line_fields: [], block_fields: [], inline_fields: [], rules: [] }
-  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2']))
-  const blockFields = new Set(model.block_fields.map(field => field.name))
+  // C2-W-149: the table fields are fields of the line and block records they apply to.
+  const tableFields = (model.table_fields ?? []).map(field => field.name)
+  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2'], tableFields))
+  const blockFields = new Set(model.block_fields.map(field => field.name).concat(tableFields))
   const inlineFields = new Set((model.inline_fields ?? []).map(field => field.name))
+  const attributeFields = new Set((model.attribute_fields ?? []).map(field => field.name))
+  const attributeOwnerFields = new Set((model.attribute_owner_fields ?? []).map(field => field.name))
+  const idFields = new Set((model.id_fields ?? []).map(field => field.name))
   const containerFields = new Set(['type', 'content_column', 'marker_column'])
   const colonFields = new Set(['width', 'line', 'column', 'kind'])
   const sets = new Set(['text_leaves', 'verbatim_leaves', 'row_leaves'])
-  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line'])
+  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line', 'table_above', 'table_below'])
   const checkPath = (path, over, lets, where) => {
     const [head, ...rest] = path.split('.')
     if (head === 'item') return
-    const own = over === 'block' ? blockFields : over === 'inline' ? inlineFields : lineFields
+    const own = over === 'block' ? blockFields : over === 'inline' ? inlineFields : over === 'attribute' ? attributeFields : lineFields
     if (!own.has(head)) return fail(`${where}: reads ${path}, which no field of a ${over} record names`)
     if (rest.length === 0) return
+    // An attribute record's owner is the only record field it has; the owner's node is read by name (C2-W-148).
+    if (over === 'attribute') {
+      if (head !== 'owner' || !attributeOwnerFields.has(rest[0])) fail(`${where}: reads ${path}, which no attribute owner field names`)
+      else if (rest.length > 1 && rest[0] !== 'node') fail(`${where}: reads ${path}, which no attribute owner field names`)
+      return
+    }
     if (lineRecord.has(head) && !lineFields.has(rest[0])) fail(`${where}: reads ${path}, which no line field names`)
     if ((head === 'owner' || head === 'parent' || head === 'item_owner') && !containerFields.has(rest[0])) fail(`${where}: reads ${path}, which no owner field names`)
     if (head === 'open_colon' && rest.length > 1 && !colonFields.has(rest[1])) fail(`${where}: reads ${path}, which no colon container field names`)
@@ -283,8 +295,10 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
       else if (key === 'in' && typeof value[1] === 'string' && !sets.has(value[1])) fail(`${where}: names the set ${value[1]}, which this file does not define`)
       else if (key === 'matches' && /\(\?<?[=!]|\\[1-9]|\\k</.test(String(value[1]))) fail(`${where}: the pattern ${value[1]} uses lookaround or a backreference (C2-W-142)`)
       else if (key === 'pairs' && value[2] !== undefined && value[2] !== 'strict') fail(`${where}: the pair scan option ${value[2]} is not strict (C2-W-147)`)
-      else if (key === 'some' || key === 'count') { checkPath(value.in, over, lets, where); walkExpr(value.where, over, lets, where) }
-      if (key !== 'some' && key !== 'count' && key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
+      else if (key === 'lookup' && value?.over === 'id' && !idFields.has(String(value.field).split('.')[0])) fail(`${where}: reads the id field ${value.field}, which id_fields does not name (C2-W-150)`)
+      // A message value may be named `count`, as in table-column-arity: only a list read with `in` is the operator.
+      else if ((key === 'some' || key === 'count') && typeof value?.in === 'string') { checkPath(value.in, over, lets, where); walkExpr(value.where, over, lets, where); continue }
+      if (key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
     }
   }
   for (const rule of model.rules) {
