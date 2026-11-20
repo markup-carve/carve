@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Carve 0.2 options",
-  "description": "The 24 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
+  "description": "The 25 options. There are no others (C2-H-137). An application may spell a name by the convention of its language. Sorted by name, by code point.",
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "options"],
@@ -20,7 +20,7 @@
             "description": "The name of the option as the documents write it."
           },
           "kind": {
-            "enum": ["parse", "resolution", "render", "format", "lint"],
+            "enum": ["parse", "resolution", "render", "format", "lint", "import"],
             "description": "The kind the option list gives the option."
           },
           "read_by": {
@@ -28,7 +28,7 @@
               { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree"] },
               { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "enum": ["parse", "resolve", "render", "format", "lint", "import", "tree"] } }
             ],
-            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066)."
+            "description": "The stage that reads the option, or the stages, sorted, when more than one does. `resolve` is the resolution stage, which `headingIds` steers: it decides whether and how `generatedId` is produced (C2-H-131). `import` is the HTML importer, which reads `rawHtml` (C2-M-066) and `adapter` (C2-M-102)."
           },
           "type": {
             "enum": ["boolean", "count", "enum", "list", "map", "structure"],
@@ -57,7 +57,7 @@
         }
       },
       "minItems": 24,
-      "maxItems": 24
+      "maxItems": 25
     }
   }
 }

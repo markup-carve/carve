@@ -91841,6 +91841,70 @@
    },
    "status": "verified",
    "reason": "the reference importer at carve-js next2 commit 0266e137 gives this tree and this source and reports the codes of the Reported line (import-html.md, conventions)"
+  },
+  {
+   "id": "import-html-65",
+   "document": "import-html.md",
+   "number": 65,
+   "section": "Editor adapters",
+   "clauses": [
+    "C2-M-102",
+    "C2-M-103",
+    "C2-M-104",
+    "C2-M-105",
+    "C2-M-106",
+    "C2-M-107",
+    "C2-M-108",
+    "C2-M-109",
+    "C2-M-110"
+   ],
+   "clauseScope": "section",
+   "kind": "import",
+   "html": "<p>Data<a href=\"#_ftn1\" name=\"_ftnref1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> centre.</p>\n<div><br clear=\"all\">\n<hr align=\"left\" size=\"1\" width=\"33%\">\n<div id=\"ftn1\">\n<p><a href=\"#_ftnref1\" name=\"_ftn1\" title=\"\"><span class=\"MsoFootnoteReference\">[1]</span></a> NCAS British Atmospheric Data Centre</p>\n</div>\n</div>",
+   "options": {
+    "adapter": "word"
+   },
+   "expected": {
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "Data"
+       },
+       {
+        "type": "footnote_ref",
+        "key": "1",
+        "namespace": "footnote"
+       },
+       {
+        "type": "text",
+        "value": " centre."
+       }
+      ]
+     },
+     {
+      "type": "footnote",
+      "key": "1",
+      "namespace": "footnote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "NCAS British Atmospheric Data Centre"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "carve": "Data[^1] centre.\n\n[^1]: NCAS British Atmospheric Data Centre\n"
+   },
+   "status": "unverified",
+   "reason": "the reference importer differs: the tree and the report were written by hand from the clauses, and the source was produced by the 0.2 writer from that tree (import-html.md, conventions)"
   }
  ]
 }

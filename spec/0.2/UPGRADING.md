@@ -906,6 +906,7 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | `diffAst`, `mergeAst`, `createAstPatch`, `applyAstPatch`, reversible patch and change-format helpers | Use `diffTree` and `applyPatch` for JSON Patch on 2.0 trees (C2-T-043 to C2-T-045). Reversible patches, three-way merge and the old change formats have no 0.2 counterpart. |
 | `lintCarve`, `lintIncludes`, `lintAccessibility`, `formatLintWarnings` | `lint(source, options)` with `rules`, `platforms` and `includes` (C2-W-103 to C2-W-109, C2-N-085); the command is `carve lint` (C2-T-031), and its lines replace `formatLintWarnings` (C2-T-019). `parseWithDiagnostics` reports parser and resolution findings. |
 | `htmlToAst`, `htmlToCarve` | The HTML importer is part of 0.2.0: it reads the roundtrip carriers (C2-H-120, C2-H-182 to C2-H-190) and maps every other element as `import-html.md` states. With the import option `rawHtml` off, the default, it drops comments, scripts, styles and embedded content (C2-M-066). The reference engine has it as `importDocument(html, { from: 'html', rawHtml })` in `import/src/index.ts`, outside the `v2/src` entry point, and as `carve import --from html`. |
+| the import option `adapter` of carve-js, `importAdapter` of carve-php (`new HtmlToCarve(importAdapter: 'word')`), `adapter` of carve-rs | the import option `adapter` with the same seven values (C2-M-102), which every engine offers: `importDocument(html, { from: 'html', adapter: 'word' })`. `word` and `google-docs` read a word processor's notes as footnotes (C2-M-103 to C2-M-110); the other five give the tree of `generic`, as in 0.1. |
 | `markdownToCarve`, `djotToCarve`, `bbcodeToCarve`, every `migrate*` helper | The reference engine imports Markdown, GFM and Djot with `importDocument` and `carve import --from markdown`, `gfm` or `djot`; these importers are outside the 0.2 specification (C2-T-003). The 0.1 `markdownToCarve` is `from: 'gfm'`, not `from: 'markdown'` (see [Markdown import is GFM import](#markdown-import-is-gfm-import)). BBCode has no 0.2 importer. |
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. |
@@ -1098,6 +1099,7 @@ The 0.1 flags map to the 0.2 command line as follows. A 0.1 flag that the table 
 | `--no-raw-html`, `--safe` | the default; `--raw-html` turns raw HTML on |
 | `--report-losses`, `--allow-loss`, `--max-render-losses`, `--report-includes` | the same names (C2-T-021 to C2-T-029); a loss report holds 0.2 diagnostic entries, and the include report the dependencies of C2-N-083 with `path`, `from`, `file` and `read` |
 | `migrate --from html` | `carve import --from html` |
+| `migrate --adapter NAME` | `carve import --adapter NAME` (C2-M-102) |
 | `migrate --from markdown` | `carve import --from gfm`; `--from markdown` reads CommonMark only and leaves tables as text |
 | `migrate --check-loss`, `migrate --report FILE` | `carve import --strict-losses`, `--report-losses FILE` (C2-T-034) |
 | `migrate --mode roundtrip` | `carve import --raw-html` keeps comments and raw elements (C2-M-065, C2-M-066); the carriers of a roundtrip render are read in every import |
@@ -1114,7 +1116,7 @@ Not carried over:
 
 - `migrate --from djot --djot-php`, the Djot-PHP import mode of the PHP engine (titles and labeled code fences of Djot-PHP). 0.2 specifies no Djot importer; the Markdown, GFM and Djot importers of the JavaScript engine are outside the 0.2 specification (C2-T-003).
 
-0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). The editor adapters are outside the specification (C2-T-003); callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows.
+0.2 offers Markdown, plain-text and ANSI export renderers through the library and command line (C2-T-003), plus `diffTree`, `applyPatch`, `sourceFingerprint` and `treeFingerprint` for tree patches (C2-T-043 to C2-T-046). Callers that need the old source patch, reversible patch or three-way merge helpers must replace those workflows; the editor adapters of the HTML importer are the import option `adapter` (C2-M-102).
 
 ## Part 3. Tree consumers: AST 1.x to 2.0
 

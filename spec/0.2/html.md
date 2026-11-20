@@ -2289,7 +2289,7 @@ Importing the output of Examples 23 and 42 to 46 gives the reference forms, the 
 
 ## Options
 
-**C2-H-121** Eighteen of the 24 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
+**C2-H-121** Eighteen of the 25 options affect rendering. No option of this section changes the tree, except that `headingIds` controls a resolution result.
 
 **C2-H-122** `mode` is `interactive`, the default, or `static`. Static output is self-contained: an extension renders through its static path, and a diagram without a build-time renderer falls back to its source as a code block. An unknown value is refused.
 
@@ -2650,7 +2650,7 @@ Reported: `profile-construct-degraded`.
 
 ## The option list
 
-**C2-H-137** These are the 24 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
+**C2-H-137** These are the 25 options, and there are no others. An application may spell a name by the convention of its language. An option that an engine does not offer is refused, not ignored.
 
 | Option | Kind | Type | Default | Defined in |
 |---|---|---|---|---|
@@ -2678,8 +2678,9 @@ Reported: `profile-construct-degraded`.
 | `normalize` | format | boolean | off | C2-W-127 |
 | `rules` | lint | map from rule id to on or off | the default state of each rule in the catalog | C2-W-109 |
 | `platforms` | lint | list of platform names | empty | C2-W-109 |
+| `adapter` | import | `generic`, `tiptap`, `prosemirror`, `ckeditor`, `tinymce`, `word` or `google-docs` | `generic` | C2-M-102 |
 
-Eighteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options and two are lint options. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), and `headingIds` by lint (C2-T-042). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
+Eighteen are render options, counting `headingIds`, which switches a resolution result that the renderer reads. Two are parse options, two are format options, two are lint options and one, `adapter`, is an option of the HTML importer alone. `rawHtml`, `strictLosses`, `allowLosses`, `maxLosses` and `labels` are read by the HTML importer as well (C2-M-066, C2-M-082, C2-H-204, C2-H-205, C2-M-101), and `headingIds` by lint (C2-T-042). `codeBlockRenderer`, like `extensions` and `renderers`, takes host code and has no flag (C2-T-010).
 
 ## The clauses of PART 10
 

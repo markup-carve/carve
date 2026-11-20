@@ -42,6 +42,7 @@ const FLAGS = [
   [/^sourceLines on$/, () => ({ sourceLines: true })],
   [/^with the depth limit lowered to (\d+)$/, (m) => ({ includes: { depth: Number(m[1]) } })],
   [/^import option rawHtml on$/, () => ({ rawHtml: true })],
+  [/^import option adapter set to ([\w-]+)$/, (m) => ({ adapter: m[1] })],
 ]
 function optionsOf(example) {
   const options = {}

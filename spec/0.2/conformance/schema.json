@@ -43,6 +43,7 @@
           "properties": { "file": { "type": "string" }, "depth": { "type": "integer" }, "bytes": { "type": "integer" } },
           "additionalProperties": false
         },
+        "adapter": { "type": "string" },
         "labels": { "type": "object", "additionalProperties": { "type": "string" } },
         "maxLosses": { "type": "number" },
         "mode": { "type": "string" },

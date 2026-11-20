@@ -2,6 +2,15 @@
   "$schema": "schemas/options.schema.json",
   "options": [
     {
+      "name": "adapter",
+      "kind": "import",
+      "read_by": "import",
+      "type": "enum",
+      "values": ["generic", "tiptap", "prosemirror", "ckeditor", "tinymce", "word", "google-docs"],
+      "default": "generic",
+      "clauses": ["C2-H-137", "C2-M-102"]
+    },
+    {
       "name": "alignTables",
       "kind": "format",
       "read_by": "format",
