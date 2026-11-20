@@ -32,6 +32,7 @@ The files are normative together with the clauses they cite. Every row has a `cl
 | `import-html.json` | what the HTML importer makes of each element and attribute without a carrier, the render conventions it reads, its codes, and what a render without `roundtrip` loses |
 | `options.json` | the 25 options |
 | `lint-rules.json` | every diagnostic code |
+| `lint-model.json` | the shared line model of lint, and the catalog rows that state their trigger, range and message as data over it (C2-W-139) |
 | `cli.json` | the commands, flags, failure categories, library calls and diagnostic entry fields of `tooling.md` |
 | `escape-contexts.json` | the cases the writer tests for an escape |
 | `extensions.json` | standard extension names, matchers, props, slots and the host options of standard renderers |

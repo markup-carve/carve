@@ -53,6 +53,7 @@ const FILES = {
   limits: { limits: ['name', 'name'] },
   'ordered-styles': { styles: ['name', 'name'], delimiters: ['name', 'char'] },
   'line-shapes': { shapes: ['name', 'first'], refs: ['name', 'name'] },
+  'lint-model': { line_fields: ['name', 'name'], block_fields: ['name', 'name'], inline_fields: ['name', 'name'], rules: ['id', 'id'] },
   'lint-rules': { rules: ['id', 'id'] },
   options: { options: ['name', 'name'] },
   'smart-punctuation': { runs: ['source', 'source'], quotes: ['kind', 'kind'], dashes: ['kind', 'kind'] },
@@ -252,6 +253,45 @@ for (const row of data['inline-braces']?.order ?? []) {
 }
 for (const row of data['table-marks']?.attributes ?? []) need(codes, row.report, `table-marks.json ${row.name}`, 'id of lint-rules.json')
 for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, `lint-rules.json ${row.id}`, 'id of lint-rules.json')
+// lint-model.json: every rule states a catalog row, reads only fields of the line model, names known sets and
+// writes its patterns in the subset of C2-W-142.
+{
+  const model = data['lint-model'] ?? { line_fields: [], block_fields: [], inline_fields: [], rules: [] }
+  const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2']))
+  const blockFields = new Set(model.block_fields.map(field => field.name))
+  const inlineFields = new Set((model.inline_fields ?? []).map(field => field.name))
+  const containerFields = new Set(['type', 'content_column', 'marker_column'])
+  const colonFields = new Set(['width', 'line', 'column', 'kind'])
+  const sets = new Set(['text_leaves', 'verbatim_leaves', 'row_leaves'])
+  const lineRecord = new Set(['prev', 'prev2', 'next', 'next2', 'leaf_next', 'leaf_head', 'line', 'last_line'])
+  const checkPath = (path, over, lets, where) => {
+    const [head, ...rest] = path.split('.')
+    if (head === 'item') return
+    const own = over === 'block' ? blockFields : over === 'inline' ? inlineFields : lineFields
+    if (!own.has(head)) return fail(`${where}: reads ${path}, which no field of a ${over} record names`)
+    if (rest.length === 0) return
+    if (lineRecord.has(head) && !lineFields.has(rest[0])) fail(`${where}: reads ${path}, which no line field names`)
+    if ((head === 'owner' || head === 'parent' || head === 'item_owner') && !containerFields.has(rest[0])) fail(`${where}: reads ${path}, which no owner field names`)
+    if (head === 'open_colon' && rest.length > 1 && !colonFields.has(rest[1])) fail(`${where}: reads ${path}, which no colon container field names`)
+  }
+  const walkExpr = (expr, over, lets, where) => {
+    if (Array.isArray(expr)) return expr.forEach(item => walkExpr(item, over, lets, where))
+    if (expr === null || typeof expr !== 'object') return
+    for (const [key, value] of Object.entries(expr)) {
+      if (key === 'f' || key === 'has') checkPath(String(value), over, lets, where)
+      else if (key === 'v' && !lets.has(value)) fail(`${where}: reads ${value}, which no let names`)
+      else if (key === 'in' && typeof value[1] === 'string' && !sets.has(value[1])) fail(`${where}: names the set ${value[1]}, which this file does not define`)
+      else if (key === 'matches' && /\(\?<?[=!]|\\[1-9]|\\k</.test(String(value[1]))) fail(`${where}: the pattern ${value[1]} uses lookaround or a backreference (C2-W-142)`)
+      else if (key === 'some') { checkPath(value.in, over, lets, where); walkExpr(value.where, over, lets, where) }
+      if (key !== 'some' && key !== 'f' && key !== 'has' && key !== 'v') walkExpr(value, over, lets, where)
+    }
+  }
+  for (const rule of model.rules) {
+    need(codes, rule.id, `lint-model.json ${rule.id}`, 'id of lint-rules.json')
+    const lets = new Set(Object.keys(rule.let ?? {}))
+    walkExpr([rule.let, rule.when, rule.each, rule.report, rule.range, rule.values], rule.over, lets, `lint-model.json ${rule.id}`)
+  }
+}
 const includeOptions = names('include-options', 'options')
 for (const row of [...(data.includes?.causes ?? []), ...(data.includes?.conflicts ?? [])]) {
   need(codes, row.code, `includes.json ${row.name}`, 'id of lint-rules.json')

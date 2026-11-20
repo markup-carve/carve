@@ -1475,6 +1475,16 @@ Reported: `comment-splits-table-row`, severity hint, on line 2, offsets 6 to 10.
 
 **C2-W-143** For lint, a line is blank for the rules inside its containers when it holds only spaces and tabs after the prefixes of those containers (C2-B-027). Every rule that tests for a blank line tests this. A line `>` inside a quote is blank for the rules inside the quote, although the parse does not read it as a blank line that ends the quote (C2-B-009, C2-B-032). A mark that is no container prefix is not blank: `>>` at column 1 is text (C2-B-031). The term *blank line* keeps its meaning for the parse.
 
+### Rules stated as data
+
+**C2-W-139** A row of `data/lint-rules.json` that `data/lint-model.json` lists states its trigger, its range and the choice of its message as data over one shared line model, and an engine runs it from that file, by an interpreter or by code generated from it. The data row and the catalog row say the same. Where they give different results for an input, the catalog row and the clauses it cites decide (C2-W-106, C2-W-107), and the data row is a defect. A row the file does not list keeps its engine code.
+
+**C2-W-140** The line model has one record for each source line, one for each block of the tree, and one for each inline node of a type that an inline rule names. The fields of a line record are those of `line_fields`, those of a block record are those of `block_fields`, and those of an inline record are those of `inline_fields`; each field states what it holds and the clauses that define it. Among them are where the text of a line starts behind its container prefixes (C2-B-027), the leaf block that holds the line, the line shape of `data/line-shapes.json` its text has, the containers open at the line, and whether it is a lazy line (C2-B-024). The empty rest after the last line terminator is no line (C2-B-010). The field `blank` follows C2-W-143. An engine computes the fields from its parse; the clause cases pin them.
+
+**C2-W-141** A data rule runs over the line, block or inline records that its `over` and `types` name. A line rule does not see a line of a leaf of `verbatim_leaves` unless its `verbatim` names that leaf (C2-W-107). On each record the rule tests its `when`, then the entries of its `report` in order: the first entry whose `when` holds gives the one finding of the rule on that record, with the message of the catalog row that its `message` names, the range from `start` to `end` as character offsets of the source, and the values its message fills in. A rule reports at most once per record. A rule with `each` runs its `report` entries once per match of its pattern in its text instead, left to right and without overlap, each with the named groups of that match, and reports at most once per match.
+
+**C2-W-142** A pattern of the test `matches` uses the part of regular expression syntax that JavaScript, PCRE and the Rust `regex` crate read alike: no lookaround and no backreference, named groups written `(?<name>...)`, and no flag but `i`. A named group gives offsets in the text it matched; the offset of that text in the source is `body_start` for `body` and `raw_body`, `start` for `text`, `opener_start` for `opener_text`, and the given offset for `text_from`.
+
 ## Out of scope
 
 The Markdown, plain-text and ANSI writers are not part of 0.2.0, and neither are the importers other than the HTML importer, which the HTML document defines (C2-H-120). These 0.1 clauses define only those targets and are not ported. Nobody should port them into the canonical writer.
@@ -1568,7 +1578,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | The sidecar | 6 | 0 | 0 | 1 |
 | Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 13 | 0 | 0 | 2 |
-| **Total** | **133** | **6** | **6** | **40** |
+| Diagnostics and lint | 17 | 0 | 0 | 2 |
+| **Total** | **137** | **6** | **6** | **40** |
 
-The document has 133 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 137 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
