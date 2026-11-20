@@ -457,9 +457,10 @@
     {
       "name": "type",
       "type": "text",
-      "means": "the node type",
+      "means": "the node type, or `text_run` for a text run (C2-W-140)",
       "clauses": [
-        "C2-A-001"
+        "C2-A-001",
+        "C2-W-140"
       ]
     }
   ],
@@ -2039,6 +2040,640 @@
       ]
     },
     {
+      "id": "deprecated-bare-highlight",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "="
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "=",
+          "strict"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^=|=$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-047",
+        "C2-I-048",
+        "C2-I-050",
+        "C2-I-053",
+        "C2-I-117"
+      ]
+    },
+    {
+      "id": "deprecated-bare-strike",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "~"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "~",
+          "strict"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^\\~|\\~$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-047",
+        "C2-I-048",
+        "C2-I-050",
+        "C2-I-053"
+      ]
+    },
+    {
+      "id": "deprecated-bare-underline",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "_"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "_",
+          "strict"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^_|_$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-047",
+        "C2-I-048",
+        "C2-I-050",
+        "C2-I-053"
+      ]
+    },
+    {
       "id": "deprecated-continuation-marker",
       "over": "line",
       "when": {
@@ -2386,6 +3021,213 @@
       ]
     },
     {
+      "id": "djot-emphasis-underscore",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "_"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "_"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^_|_$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "before",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "after",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{L}\\p{N}]"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-047"
+      ]
+    },
+    {
       "id": "djot-heading-continuation",
       "over": "line",
       "when": {
@@ -2531,6 +3373,241 @@
       ]
     },
     {
+      "id": "djot-subscript-tilde",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "~"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "~"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^\\~|\\~$"
+                  ]
+                }
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "{"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "after"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "after",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "}"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "~"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046"
+      ]
+    },
+    {
       "id": "djot-subscript-tilde-braced",
       "over": "inline",
       "types": [
@@ -2559,6 +3636,241 @@
         "C2-I-062",
         "C2-I-059",
         "C2-I-060"
+      ]
+    },
+    {
+      "id": "djot-superscript-caret",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "^"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "^"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^\\^|\\^$"
+                  ]
+                }
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "{"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "after"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "after",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "}"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "before",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "^"
+                ]
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046"
       ]
     },
     {
@@ -3733,6 +5045,314 @@
         "C2-B-022",
         "C2-B-034",
         "C2-B-036"
+      ]
+    },
+    {
+      "id": "markdown-strikethrough-double-tilde",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "~~"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "~~"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^\\~|\\~$"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046",
+        "C2-I-062"
+      ]
+    },
+    {
+      "id": "markdown-strong-double-star",
+      "over": "inline",
+      "types": [
+        "text_run"
+      ],
+      "when": {
+        "contains": [
+          {
+            "f": "text"
+          },
+          "**"
+        ]
+      },
+      "each": {
+        "pairs": [
+          {
+            "f": "text"
+          },
+          "**"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "open"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])(?:\\\\\\\\)*\\\\$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^[\\p{Zs}\\t\\n\\r\\f\\v]|[\\p{Zs}\\t\\n\\r\\f\\v]$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "^\\*|\\*$"
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "contains": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "inner",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "*"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "open"
+          },
+          "end": {
+            "match": "close",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-049"
       ]
     },
     {

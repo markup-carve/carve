@@ -28,9 +28,13 @@
           "each": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["matches"],
-            "properties": { "matches": { "type": "array", "minItems": 2, "maxItems": 2, "description": "A text value and a pattern of C2-W-142." } },
-            "description": "After `when` holds, the entries of `report` run once per match of the pattern in the text, left to right and without overlap, each with the named groups of its match (C2-W-141)."
+            "minProperties": 1,
+            "maxProperties": 1,
+            "properties": {
+              "matches": { "type": "array", "minItems": 2, "maxItems": 2, "description": "A text value and a pattern of C2-W-142." },
+              "pairs": { "type": "array", "minItems": 2, "maxItems": 3, "description": "A text value, a mark and optionally `strict`: the pair scan of C2-W-147." }
+            },
+            "description": "After `when` holds, the entries of `report` run once per match of the pattern in the text, left to right and without overlap, each with the named groups of its match, or once per pair of the pair scan (C2-W-141, C2-W-147)."
           },
           "when": { "$ref": "#/$defs/expr", "description": "The trigger. The rule reports nothing on a record where it does not hold." },
           "report": {
