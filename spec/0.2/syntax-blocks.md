@@ -492,7 +492,7 @@ Example 16 (generated)
 
 **C2-B-026** A container that does not own the line closes, with every container inside it.
 
-**C2-B-027** The content of an item, a description or a footnote body is stripped by at most its content column.
+**C2-B-027** The content of an item, a description or a footnote body is stripped by at most its content column. In a task item, the task mark is item text, and the content column is the task mark’s column after the list marker and any spaces before it, regardless of the task state.
 
 **C2-B-028** The first line of a nested block sets that block's base column.
 
