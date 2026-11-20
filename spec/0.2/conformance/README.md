@@ -1,6 +1,6 @@
 # Conformance corpus of Carve 0.2
 
-One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list. A fourth file, `extensions.json`, holds the standard extension corpus (see "Extensions"); it is outside the schema and does not gate an engine.
+One corpus for every engine. Three plain JSON files, one schema (`schema.json`, JSON Schema 2020-12). Each file has `$schema`, `kind` and `description`, and one list. A fourth file, `extensions.json`, holds the standard extension corpus (see "Extensions"); it is outside the schema and is part of the readiness gate.
 
 | File | `kind` | List | Made by |
 |---|---|---|---|
@@ -179,7 +179,7 @@ The check fails an error that no category of `data/cli.json` names or that the c
 
 `options.extensions` names extensions of `data/extensions.json` as above, and also standard extensions outside that table by the name an engine selects them with, such as `carve.listTable` or `carve.fencedRender.dot`. The runner registers such an extension as its whole standard bundle, with its document transforms, and with its renderers where `renderers` maps the name to `"standard"`. A renderer with host options, as `{ "carve.codeGroup": { "standard": { "mode": "aria" } } }`, takes the options of the clause the case cites.
 
-`scripts/next2-readiness.mjs` replays the file in the section "Extensions" of its report, with pass, fail and unsupported per engine and extension. It does not count toward Engine ready and is not part of the baseline. `node scripts/next2-readiness.mjs --extensions-only` replays only this file.
+`scripts/next2-readiness.mjs` replays the file in the section "Extensions" of its report, with pass, fail and unsupported per engine and extension. It counts toward Engine ready and is part of the per-case baseline. Any failing or unsupported extension case fails readiness. `node scripts/next2-readiness.mjs --extensions-only` replays only this file and fails on those cases too.
 
 ## Refused trees
 

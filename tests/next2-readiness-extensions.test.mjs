@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { extensionReport } from '../scripts/next2-readiness-extensions.mjs'
+import { extensionFailures, extensionReport } from '../scripts/next2-readiness-extensions.mjs'
 
 const read = path => JSON.parse(readFileSync(new URL(`../spec/0.2/${path}`, import.meta.url), 'utf8'))
 const corpus = read('conformance/extensions.json')
@@ -20,6 +20,19 @@ test('the extension report tallies each engine per extension and lists what does
   assert.ok(lines.includes('| **Total** | 3 | 3 | 0 | 0 | 1 | 1 | 1 |'))
   assert.ok(lines.includes('rs extension cases not passing: `EXT-001` (fail: html), `EXT-003` (unsupported: not offered).'))
   assert.ok(!lines.some(line => line.startsWith('js extension cases not passing')))
+})
+
+test('extension failures and unsupported cases gate every engine', () => {
+  const results = {
+    js: [{ kind: 'render', id: 'EXT-001', status: 'pass' }],
+    php: [{ kind: 'render', id: 'EXT-001', status: 'fail' }],
+    rs: [{ kind: 'render', id: 'EXT-001', status: 'unsupported' }],
+  }
+  assert.deepEqual(extensionFailures(results), [
+    'php/extensions/render/EXT-001: fail',
+    'rs/extensions/render/EXT-001: unsupported',
+  ])
+  assert.deepEqual(extensionFailures({ js: results.js }), [])
 })
 
 test('every extension case names its extension, its source and an expectation it can check', () => {
