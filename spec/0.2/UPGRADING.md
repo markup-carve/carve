@@ -911,61 +911,61 @@ The 0.2 entry point is the `carve-js` package root. These are the function repla
 | `expandIncludes`, `findDirectiveSites`, `parseDirective`, include helpers | Pass the `includes` option with a resolver to `parse` or `render` (C2-N-003); `includeDependencies(tree)` lists the files (C2-N-083). The command line expands by default (C2-N-004, C2-T-018). |
 | `Profile`, `LinkPolicy`, `applyProfile` | Use the 0.2 `profile` option; no public mutable profile object API. A 0.1 `LinkPolicy` maps to the options of the `linkPolicy()` navigation extension (see `profileBaseHost` below). |
 | `checkPortability`, `normalizeHtml`, `assessTablePreservation`, `carveToPreservationReport` | No 0.2 counterpart. |
-| `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | No 0.2 counterpart. |
-| Extension factories such as `smartQuotes`, `tableOfContents`, `tabs`, `mermaid`, `mathBlock`, `wikilinks`, and `listTable` | The 0.2 extension interface is specified and provisional (`extensions.md`). The reference engine takes the `extensions` and `renderers` options and ships one family, the `tab` and `tabs` definitions with their renderer (`tabsExtensions`, `tabsRenderer`); the other factories have no 0.2 counterpart yet. |
+| `stampCarve`, stamp/read/version helpers, `decisionTrace`, `tabNormalize` | The stamp and trace helpers have no 0.2 counterpart. `tabNormalize()` moved to `@markup-carve/carve/extensions`. |
+| Extension factories such as `smartQuotes`, `tableOfContents`, `tabs`, `mermaid`, `mathBlock`, `wikilinks`, and `listTable` | The 0.2 extension interface is specified and provisional (`extensions.md`). The engines take the `extensions` and `renderers` options. The reference engine ships the `tab` and `tabs` definitions with their renderer (`tabsExtensions`, `tabsRenderer`) and provisional factories for other standard extensions from `@markup-carve/carve/extensions`. Check each factory below for its 0.2 spelling and options. |
 
 The 0.2 entry point also exposes `format`, `formatWithDiagnostics`, `writeWithDiagnostics`, `validateTree`, `validateLayout`, and low-level scanner and event helpers. Those are new APIs, not drop-in replacements for the 0.1 helpers with similar names.
 
-The remaining 0.1 function exports have no 0.2 counterpart in the current entry point. Review each call before switching.
+The table audits the remaining 0.1 function exports. Many moved to `@markup-carve/carve/extensions`, some have a counterpart in the 0.2 core or importer entry points, and others are gone. Review each call before switching.
 
 | 0.1 function | 0.2 action |
 | --- | --- |
-| `abc` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `abc` | The `abc` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `applyMigrationFixes` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `applyReversibleAstPatch` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `autolink` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `autolink` | The `autolink()` navigation extension in `@markup-carve/carve/extensions`. Links bare URLs and email addresses; `allowedSchemes` defaults to `https`, `http`, and `mailto`. |
 | `buildMarker` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `canonicalType` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `carveToAnsiWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `carveToMarkdownWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `carveToPlainTextWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `chart` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `citations` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `codeCallouts` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `codeGroup` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `colorSwatch` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `chart` | The `chart` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `citations` | The `citations` factory in `@markup-carve/carve/extensions`. |
+| `codeCallouts` | The `codeCallouts` factory in `@markup-carve/carve/extensions`. |
+| `codeGroup` | The `codeGroup` factory in `@markup-carve/carve/extensions`. |
+| `colorSwatch` | The `colorSwatch` factory in `@markup-carve/carve/extensions`. |
 | `compareSpecVersions` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `createReversibleAstPatch` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `d2` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `d2` | The `d2` fenced-render preset in `@markup-carve/carve/extensions`. |
 | `decisionTraceJsonLines` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `defaultAttributes` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `details` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `defaultAttributes` | The `defaultAttributes` factory in `@markup-carve/carve/extensions`. |
+| `details` | The `details` factory in `@markup-carve/carve/extensions`. |
 | `djotMigrationWarnings` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `expandsForTarget` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `externalLinks` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `fencedRender` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `externalLinks` | The `externalLinks()` navigation extension in `@markup-carve/carve/extensions`. Sets `target` and `rel` on external HTTP links; options are `target`, `rel`, and `nofollow`. |
+| `fencedRender` | The `fencedRender` factory in `@markup-carve/carve/extensions`. |
 | `formatChanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `formatMigrationWarnings` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `formatProfileViolation` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `glossary` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `graphviz` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `headingLevelShift` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `headingNumbers` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `headingPermalinks` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `headingReference` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `imgFence` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `index` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `glossary` | The `glossary` factory in `@markup-carve/carve/extensions`. |
+| `graphviz` | The `graphviz` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `headingLevelShift` | The `headingLevelShift()` navigation extension in `@markup-carve/carve/extensions`. Moves headings down; `shift` is 0 to 5 and defaults to 1. |
+| `headingNumbers` | The `headingNumbers()` navigation extension in `@markup-carve/carve/extensions`. Numbers headings; options are `minLevel`, `label`, and `crossref` (`number`, `number-title`, or `title`). |
+| `headingPermalinks` | The `headingPermalinks()` navigation extension in `@markup-carve/carve/extensions`. Adds heading anchors; options are `symbol`, `cssClass`, `ariaLabel`, `levels`, `prepend`, `showOnHover`, and `copyToClipboard`. |
+| `headingReference` | The `headingReference()` navigation extension in `@markup-carve/carve/extensions`. Styles heading reference links; `cssClass` defaults to `heading-ref`. |
+| `imgFence` | The `imgFence` factory in `@markup-carve/carve/extensions`. |
+| `index` | The `index` factory in `@markup-carve/carve/extensions`. |
 | `inspectColonFences` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `isDirectiveShape` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `isSmartQuoteLocaleSupported` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `isSmartQuoteLocaleSupported` | The `isSmartQuoteLocaleSupported` helper in `@markup-carve/carve/extensions`. |
 | `migrateBbcode` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `migrateCaseOnlyReferences` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `migrateDjot` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `migrateHtml` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `migrateMarkdown` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `migrateDjot` | Use `importDocument(source, { from: 'djot' })` or `carve import --from djot`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateHtml` | Use `importDocument(source, { from: 'html' })` or `carve import --from html`. The importer is outside the 0.2 specification (C2-T-003). |
+| `migrateMarkdown` | Use `importDocument(source, { from: 'gfm' })` or `carve import --from gfm`. The importer is outside the 0.2 specification (C2-T-003). |
 | `needsReview` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `plantuml` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `presets` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `plantuml` | The `plantuml` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `presets` | The `presets` collection of fenced-render factories in `@markup-carve/carve/extensions`. |
 | `readAnnotationRanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `readNodeIdentity` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `readProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
@@ -974,21 +974,21 @@ The remaining 0.1 function exports have no 0.2 counterpart in the current entry 
 | `renderCarveWithConversionReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `renderMarkdownWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `renderPlainTextWithReport` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `sanitizeSvg` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `sanitizeSvg` | The `sanitizeSvg` helper in `@markup-carve/carve/extensions`. |
 | `selectIncludeRegion` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `semanticSpan` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `smartQuoteLocales` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `sourceFingerprint` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `spoiler` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `semanticSpan` | The `semanticSpan` factory in `@markup-carve/carve/extensions`. |
+| `smartQuoteLocales` | The `smartQuoteLocales` helper in `@markup-carve/carve/extensions`. |
+| `sourceFingerprint` | The same-named function in the 0.2 core entry point; it returns a `sha256:` hash of source bytes. |
+| `spoiler` | The `spoiler` factory in `@markup-carve/carve/extensions`. |
 | `stripTrailingMarker` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `toAnnotationRanges` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `toAuthoredProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `toNodeIdentity` | No counterpart; retain the 0.1 path or implement this operation in the host. |
 | `toProvenance` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `tocPlacement` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `tocPlacement` | The `tocPlacement()` navigation extension in `@markup-carve/carve/extensions`. Places the table of contents at each `::: toc` directive; use `{depth=N}` or `{from=X to=Y}` on the directive. |
 | `tryRenderHtmlStreaming` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `vegaLite` | No counterpart; retain the 0.1 path or implement this operation in the host. |
-| `wavedrom` | No counterpart; retain the 0.1 path or implement this operation in the host. |
+| `vegaLite` | The `vegaLite` fenced-render preset in `@markup-carve/carve/extensions`. |
+| `wavedrom` | The `wavedrom` fenced-render preset in `@markup-carve/carve/extensions`. |
 
 | 0.1 option or behavior | 0.2 option or behavior |
 | --- | --- |
