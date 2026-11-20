@@ -211,7 +211,7 @@ server.listen(3000)
 // #endregion start
 ```
 
-<!-- carve-sample {"skip":"the pinned engine predates the C2-W-058 order; check after its pin moves"} -->
+<!-- carve-sample {"fmtSkip":"the pinned engine predates the C2-W-058 order"} -->
 ```carve
 {{ src/server.js @code:js @region:start }}
 ```
