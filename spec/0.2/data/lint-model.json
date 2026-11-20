@@ -332,6 +332,15 @@
       ]
     },
     {
+      "name": "node",
+      "type": "node",
+      "means": "the node of the tree that the record stands for, whose fields are those of the AST document and are read by name with a dotted path; a field the node does not have is absent",
+      "clauses": [
+        "C2-A-001",
+        "C2-W-140"
+      ]
+    },
+    {
       "name": "opener_column",
       "type": "number",
       "means": "the marker column of the block where it has a marker and no attached attribute block, otherwise column",
@@ -427,6 +436,15 @@
       "means": "the type of the leaf block whose inline content holds the node",
       "clauses": [
         "C2-I-001"
+      ]
+    },
+    {
+      "name": "node",
+      "type": "node",
+      "means": "the node of the tree that the record stands for, whose fields are those of the AST document and are read by name with a dotted path; a field the node does not have is absent, and a text run has no node",
+      "clauses": [
+        "C2-A-001",
+        "C2-W-140"
       ]
     },
     {
@@ -3874,6 +3892,90 @@
       ]
     },
     {
+      "id": "emphasis-as-heading",
+      "over": "block",
+      "types": [
+        "paragraph"
+      ],
+      "when": {
+        "all": [
+          {
+            "some": {
+              "in": "node.children",
+              "where": {
+                "in": [
+                  {
+                    "f": "item.type"
+                  },
+                  [
+                    "emphasis",
+                    "strong"
+                  ]
+                ]
+              }
+            }
+          },
+          {
+            "eq": [
+              {
+                "count": {
+                  "in": "node.children",
+                  "where": {
+                    "all": [
+                      {
+                        "ne": [
+                          {
+                            "f": "item.type"
+                          },
+                          "comment"
+                        ]
+                      },
+                      {
+                        "not": {
+                          "all": [
+                            {
+                              "eq": [
+                                {
+                                  "f": "item.type"
+                                },
+                                "text"
+                              ]
+                            },
+                            {
+                              "matches": [
+                                {
+                                  "f": "item.value"
+                                },
+                                "^\\s*$"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-046"
+      ]
+    },
+    {
       "id": "empty-include-path",
       "over": "line",
       "when": {
@@ -4244,6 +4346,64 @@
       ]
     },
     {
+      "id": "figure-group-empty",
+      "over": "block",
+      "types": [
+        "figure_group"
+      ],
+      "when": {
+        "eq": [
+          {
+            "count": {
+              "in": "node.children",
+              "where": {
+                "any": [
+                  {
+                    "eq": [
+                      {
+                        "f": "item.type"
+                      },
+                      "table"
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "ne": [
+                          {
+                            "f": "item.type"
+                          },
+                          "figure_group"
+                        ]
+                      },
+                      {
+                        "has": "item.caption"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          0
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-127",
+        "C2-A-084"
+      ]
+    },
+    {
       "id": "figure-group-opener-metadata",
       "over": "block",
       "types": [
@@ -4281,6 +4441,64 @@
       ],
       "clauses": [
         "C2-B-127"
+      ]
+    },
+    {
+      "id": "figure-group-single-panel",
+      "over": "block",
+      "types": [
+        "figure_group"
+      ],
+      "when": {
+        "eq": [
+          {
+            "count": {
+              "in": "node.children",
+              "where": {
+                "any": [
+                  {
+                    "eq": [
+                      {
+                        "f": "item.type"
+                      },
+                      "table"
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "ne": [
+                          {
+                            "f": "item.type"
+                          },
+                          "figure_group"
+                        ]
+                      },
+                      {
+                        "has": "item.caption"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          1
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-127",
+        "C2-A-084"
       ]
     },
     {
@@ -4622,6 +4840,99 @@
       "clauses": [
         "C2-B-153",
         "C2-I-036"
+      ]
+    },
+    {
+      "id": "include-attributes-unused",
+      "over": "block",
+      "types": [
+        "include"
+      ],
+      "when": {
+        "all": [
+          {
+            "has": "node.attrs"
+          },
+          {
+            "not": {
+              "has": "node.options.code"
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-N-071",
+        "C2-N-072"
+      ]
+    },
+    {
+      "id": "include-lines-table-rows-hint",
+      "over": "block",
+      "types": [
+        "include"
+      ],
+      "when": {
+        "all": [
+          {
+            "has": "node.options.lines"
+          },
+          {
+            "in": [
+              {
+                "f": "node.options.code"
+              },
+              [
+                "csv",
+                "tsv"
+              ]
+            ]
+          },
+          {
+            "some": {
+              "in": "node.attrs.keyValues",
+              "where": {
+                "eq": [
+                  {
+                    "f": "item.0"
+                  },
+                  "table"
+                ]
+              }
+            }
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "(?<lines>@lines:[^\\s}]*)"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "match": "lines"
+          },
+          "end": {
+            "match": "lines",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-N-088"
       ]
     },
     {
@@ -6102,6 +6413,38 @@
       "clauses": [
         "C2-B-149",
         "C2-N-073"
+      ]
+    },
+    {
+      "id": "unresolved-footnote",
+      "over": "inline",
+      "types": [
+        "footnote_ref"
+      ],
+      "when": {
+        "not": {
+          "has": "node.number"
+        }
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "id": {
+              "f": "node.key"
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-087",
+        "C2-I-088",
+        "C2-I-079"
       ]
     }
   ]
