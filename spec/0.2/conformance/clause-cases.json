@@ -53013,21 +53013,17 @@
   {
    "id": "CC-1069",
    "clauses": [
-    "C2-W-106"
+    "C2-H-166"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "a nesting limit degrades an allowed code span",
+   "why": "C2-H-166: Paragraphs, other non-container blocks and inline nodes add no level.",
+   "summary": "a code span inside the fourth comment quote stays",
    "kind": "render",
    "input": "> > > > `x`\n",
    "options": {
     "profile": "comment"
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "profile-construct-degraded"
-     }
-    ]
+    "diagnostics": []
    },
    "from": []
   },
@@ -53634,21 +53630,17 @@
   {
    "id": "CC-1100",
    "clauses": [
-    "C2-W-106"
+    "C2-H-166"
    ],
-   "why": "C2-W-106: Every code is an entry of one catalog, `data/lint-rules.json`.",
-   "summary": "nesting limit can degrade a type otherwise allowed by the profile",
+   "why": "C2-H-166: Paragraphs, other non-container blocks and inline nodes add no level.",
+   "summary": "a code span within the container bound has no profile loss",
    "kind": "render",
    "input": "> > > > `x`\n",
    "options": {
     "profile": "comment"
    },
    "expected": {
-    "diagnostics": [
-     {
-      "code": "profile-construct-degraded"
-     }
-    ]
+    "diagnostics": []
    },
    "from": []
   },
