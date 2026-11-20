@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const args = process.argv.slice(2)
 const prepared = args.includes('--prepared')
-const forwarded = args.filter(arg => arg !== '--prepared')
+const forwarded = args
 const pinned = args.includes('--baseline-heads')
 const baselineHeads = JSON.parse(readFileSync(resolve(root, 'scripts/next2-readiness-baseline.json'), 'utf8')).engineHeads
 const engines = [
