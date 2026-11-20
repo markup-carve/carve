@@ -63443,6 +63443,23 @@
    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
   },
   "from": []
- }
+ },
+{
+ "id": "CC-1446",
+ "clauses": [
+  "C2-M-005"
+ ],
+ "why": "C2-M-005: `<head>` and everything in it are dropped and reported once with `import-element-dropped`:",
+ "summary": "a full document without an authored head reports no dropped head",
+ "kind": "import",
+ "html": "<html><body><p>x</p></body></html>",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "import-element-dropped"
+  ]
+ },
+ "from": []
+}
  ]
 }
