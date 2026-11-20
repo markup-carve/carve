@@ -298,6 +298,14 @@
       ]
     },
     {
+      "name": "identity",
+      "type": "text",
+      "means": "the identity of the block, equal to the entry that ancestor_ids gives for it in the records of the blocks it holds",
+      "clauses": [
+        "C2-W-150"
+      ]
+    },
+    {
       "name": "image_line",
       "type": "boolean",
       "means": "the block is a paragraph that holds a single image, a block image line",
@@ -328,6 +336,16 @@
       "means": "the line record of the last line of the block",
       "clauses": [
         "C2-B-001"
+      ]
+    },
+    {
+      "name": "layout",
+      "type": "node",
+      "means": "the entry of the block in the source layout, whose facts are read by name with a dotted path (layout.markerColumn); a fact the entry does not have, or a block with no entry, is absent",
+      "clauses": [
+        "C2-L-009",
+        "C2-L-014",
+        "C2-W-150"
       ]
     },
     {
@@ -7111,6 +7129,270 @@
       ]
     },
     {
+      "id": "list-marker-below-content-column",
+      "over": "block",
+      "types": [
+        "list_item"
+      ],
+      "let": {
+        "previous": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "before": true,
+            "field": "layout.markerColumn"
+          }
+        },
+        "outer": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.1"
+            },
+            "field": "layout.markerColumn"
+          }
+        },
+        "list_index": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "index"
+          }
+        },
+        "list_prev": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "prev_type"
+          }
+        },
+        "prev_list": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.1"
+            },
+            "value": {
+              "f": "ancestor_ids.1"
+            },
+            "before": true,
+            "field": "ancestor_ids.0"
+          }
+        },
+        "deeper": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "v": "prev_list"
+            },
+            "field": "layout.markerColumn"
+          }
+        }
+      },
+      "when": {
+        "ge": [
+          {
+            "v": "outer"
+          },
+          0
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "ge": [
+                  {
+                    "f": "index"
+                  },
+                  1
+                ]
+              },
+              {
+                "lt": [
+                  {
+                    "f": "layout.markerColumn"
+                  },
+                  {
+                    "v": "previous"
+                  }
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "f": "layout.markerColumn"
+                  },
+                  {
+                    "v": "outer"
+                  }
+                ]
+              }
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "column": {
+              "add": [
+                {
+                  "f": "layout.markerColumn"
+                },
+                1
+              ]
+            },
+            "contentColumn": {
+              "add": [
+                {
+                  "v": "previous"
+                },
+                1
+              ]
+            },
+            "baseColumn": {
+              "add": [
+                {
+                  "v": "outer"
+                },
+                1
+              ]
+            }
+          }
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "f": "index"
+                  },
+                  0
+                ]
+              },
+              {
+                "ge": [
+                  {
+                    "v": "list_index"
+                  },
+                  1
+                ]
+              },
+              {
+                "eq": [
+                  {
+                    "v": "list_prev"
+                  },
+                  "list"
+                ]
+              },
+              {
+                "lt": [
+                  {
+                    "v": "outer"
+                  },
+                  {
+                    "f": "layout.markerColumn"
+                  }
+                ]
+              },
+              {
+                "lt": [
+                  {
+                    "f": "layout.markerColumn"
+                  },
+                  {
+                    "v": "deeper"
+                  }
+                ]
+              }
+            ]
+          },
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          },
+          "values": {
+            "column": {
+              "add": [
+                {
+                  "f": "layout.markerColumn"
+                },
+                1
+              ]
+            },
+            "contentColumn": {
+              "add": [
+                {
+                  "v": "deeper"
+                },
+                1
+              ]
+            },
+            "baseColumn": {
+              "add": [
+                {
+                  "v": "outer"
+                },
+                1
+              ]
+            }
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-055",
+        "C2-L-009",
+        "C2-W-150"
+      ]
+    },
+    {
       "id": "list-marker-without-blank-line",
       "over": "line",
       "when": {
@@ -7736,6 +8018,115 @@
       ],
       "clauses": [
         "C2-B-044"
+      ]
+    },
+    {
+      "id": "ordered-marker-right-aligned",
+      "over": "block",
+      "types": [
+        "list_item"
+      ],
+      "let": {
+        "kind": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "node.marker.kind"
+          }
+        },
+        "first_marker": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "layout.markerColumn"
+          }
+        },
+        "first_content": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "layout.contentColumn"
+          }
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "index"
+              },
+              1
+            ]
+          },
+          {
+            "eq": [
+              {
+                "v": "kind"
+              },
+              "ordered"
+            ]
+          },
+          {
+            "gt": [
+              {
+                "v": "first_marker"
+              },
+              {
+                "f": "layout.markerColumn"
+              }
+            ]
+          },
+          {
+            "eq": [
+              {
+                "v": "first_content"
+              },
+              {
+                "f": "layout.contentColumn"
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-030",
+        "C2-L-009",
+        "C2-W-150"
       ]
     },
     {
@@ -9563,6 +9954,141 @@
       "clauses": [
         "C2-B-149",
         "C2-N-073"
+      ]
+    },
+    {
+      "id": "uneven-list-indent",
+      "over": "block",
+      "types": [
+        "list_item"
+      ],
+      "let": {
+        "previous": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "before": true,
+            "field": "layout.markerColumn"
+          }
+        },
+        "outer": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.1"
+            },
+            "field": "layout.markerColumn"
+          }
+        },
+        "footnote": {
+          "if": [
+            {
+              "contains": [
+                {
+                  "f": "ancestors"
+                },
+                "footnote"
+              ]
+            },
+            {
+              "lookup": {
+                "over": "block",
+                "types": [
+                  "footnote"
+                ],
+                "before": true,
+                "field": "layout.contentColumn"
+              }
+            },
+            0
+          ]
+        }
+      },
+      "when": {
+        "all": [
+          {
+            "ge": [
+              {
+                "f": "index"
+              },
+              1
+            ]
+          },
+          {
+            "lt": [
+              {
+                "f": "layout.markerColumn"
+              },
+              {
+                "v": "previous"
+              }
+            ]
+          },
+          {
+            "gt": [
+              {
+                "v": "previous"
+              },
+              {
+                "v": "footnote"
+              }
+            ]
+          },
+          {
+            "any": [
+              {
+                "not": {
+                  "ge": [
+                    {
+                      "v": "outer"
+                    },
+                    0
+                  ]
+                }
+              },
+              {
+                "le": [
+                  {
+                    "f": "layout.markerColumn"
+                  },
+                  {
+                    "v": "outer"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-054",
+        "C2-B-030",
+        "C2-L-009",
+        "C2-W-150"
       ]
     },
     {
