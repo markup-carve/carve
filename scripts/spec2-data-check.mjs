@@ -127,7 +127,8 @@ for (const [file, lists] of Object.entries(FILES)) {
     counts.push(`${file}.json ${list}: ${rows.length}`)
     const seen = new Set()
     for (const row of rows) {
-      const id = row[idKey]
+      // C2-W-150: a lint row may be stated by one rule per record kind.
+      const id = file === 'lint-model' && list === 'rules' ? `${row.id} ${row.over}` : row[idKey]
       if (seen.has(id)) fail(`${file}.json ${list}: "${id}" stands twice`)
       seen.add(id)
     }

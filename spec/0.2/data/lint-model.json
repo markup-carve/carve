@@ -6712,6 +6712,218 @@
       ]
     },
     {
+      "id": "html-comment-renders-as-text",
+      "over": "block",
+      "types": [
+        "caption",
+        "paragraph"
+      ],
+      "each": {
+        "matches": [
+          {
+            "f": "text"
+          },
+          "(?<o><!--)"
+        ]
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "ge": [
+                  {
+                    "index_of": [
+                      {
+                        "slice": [
+                          {
+                            "f": "text"
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "o",
+                                "at": "end"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "-->"
+                    ]
+                  },
+                  0
+                ]
+              },
+              {
+                "contains": [
+                  {
+                    "slice": [
+                      {
+                        "slice": [
+                          {
+                            "f": "text"
+                          },
+                          {
+                            "sub": [
+                              {
+                                "match": "o",
+                                "at": "end"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      0,
+                      {
+                        "index_of": [
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "o",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          "-->"
+                        ]
+                      }
+                    ]
+                  },
+                  "\n"
+                ]
+              },
+              {
+                "not": {
+                  "matches": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        0,
+                        {
+                          "sub": [
+                            {
+                              "match": "o"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "(?:^|[^\\\\])\\\\(?:\\\\\\\\)*$"
+                  ]
+                }
+              }
+            ]
+          },
+          "start": {
+            "match": "o"
+          },
+          "end": {
+            "add": [
+              {
+                "match": "o",
+                "at": "end"
+              },
+              {
+                "index_of": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "o",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "-->"
+                ]
+              },
+              3
+            ]
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-124",
+        "C2-W-150"
+      ]
+    },
+    {
+      "id": "html-comment-renders-as-text",
+      "over": "line",
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "leaf"
+              },
+              [
+                "caption",
+                "definition_term",
+                "heading",
+                "line",
+                "paragraph"
+              ]
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "(?<c><!--.*?-->)"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "match": "c"
+          },
+          "end": {
+            "match": "c",
+            "at": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-I-124",
+        "C2-W-150"
+      ]
+    },
+    {
       "id": "include-attributes-unused",
       "over": "block",
       "types": [
@@ -8167,6 +8379,160 @@
         "C2-B-196",
         "C2-B-032",
         "C2-B-014"
+      ]
+    },
+    {
+      "id": "region-marker-renders-as-text",
+      "over": "block",
+      "types": [
+        "comment"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "node.form"
+              },
+              "line"
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "node.value"
+              },
+              "^#(?:end)?region(?:[^A-Za-z0-9_]|$)",
+              "i"
+            ]
+          },
+          {
+            "not": {
+              "matches": [
+                {
+                  "f": "node.value"
+                },
+                "^#(?:end)?region(?:[^A-Za-z0-9_]|$)"
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-217",
+        "C2-N-038",
+        "C2-W-150"
+      ]
+    },
+    {
+      "id": "region-marker-renders-as-text",
+      "over": "inline",
+      "types": [
+        "comment"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "node.form"
+              },
+              "line"
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "node.value"
+              },
+              "^#(?:end)?region(?:[^A-Za-z0-9_]|$)",
+              "i"
+            ]
+          },
+          {
+            "not": {
+              "matches": [
+                {
+                  "f": "node.value"
+                },
+                "^#(?:end)?region(?:[^A-Za-z0-9_]|$)"
+              ]
+            }
+          }
+        ]
+      },
+      "report": [
+        {
+          "message": 1,
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-217",
+        "C2-N-038",
+        "C2-W-150"
+      ]
+    },
+    {
+      "id": "region-marker-renders-as-text",
+      "over": "line",
+      "when": {
+        "all": [
+          {
+            "in": [
+              {
+                "f": "leaf"
+              },
+              [
+                "caption",
+                "definition_term",
+                "heading",
+                "line",
+                "paragraph"
+              ]
+            ]
+          },
+          {
+            "matches": [
+              {
+                "f": "text"
+              },
+              "^[ \\t]*(?<m>(?:(?://|--|/\\*|<!--)[ \\t]*)?#(?:end)?region(?:[^A-Za-z0-9_]|$))",
+              "i"
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "match": "m"
+          },
+          "end": {
+            "f": "body_end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-217",
+        "C2-N-038",
+        "C2-W-150"
       ]
     },
     {

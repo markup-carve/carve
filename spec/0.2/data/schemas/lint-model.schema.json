@@ -68,7 +68,7 @@
           "clauses": { "$ref": "#/$defs/clauses" }
         }
       },
-      "description": "The rules stated as data, ordered by id."
+      "description": "The rules stated as data, ordered by id. A row may be stated by several rules, at most one per value of over (C2-W-150)."
     }
   },
   "$defs": {
