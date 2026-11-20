@@ -9,7 +9,7 @@ import { isDeepStrictEqual } from 'node:util'
 import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeOrigins, upgradeClasses, upgradeClassCounts, upgradeBarFail } from './next2-readiness-classify.mjs'
 import { catalogRole, forbiddenCatalogReports } from './next2-readiness-catalog.mjs'
 import { verifyPreparedHeads } from './next2-readiness-heads.mjs'
-import { extensionReport } from './next2-readiness-extensions.mjs'
+import { extensionFailures, extensionReport } from './next2-readiness-extensions.mjs'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const spec = resolve(root, 'spec/0.2')
@@ -33,7 +33,7 @@ const cases = [
   ...read('trees/refused.json').trees.map(c => ({ ...c, area: 'trees', kind: 'refused-tree', expected: { accepted: false } })),
   ...read('trees/layouts.json').layouts.map(c => ({ ...c, area: 'trees', kind: 'layout-fixture', expected: c.refused ? { accepted: false } : { layout: c.layout, accepted: true } })),
 ]
-// The extension corpus is reported in its own section and never gates (conformance/README.md, "Extensions").
+// Extension cases share the core readiness gate and have their own report section.
 const extensionCases = read('conformance/extensions.json').cases.map(c => ({ ...c, area: 'extensions', kind: c.kind ?? 'render' }))
 const extensionsOnly = args.has('--extensions-only')
 const isExtension = c => c.area === 'extensions'
@@ -399,11 +399,16 @@ for (const [engine, output] of Object.entries(outputs)) {
     : [row.status === 'fail' ? { ...row, html: output[i]?.html, error: output[i]?.error, message: output[i]?.message } : row])
 }
 const extensionLines = extensionReport(extensionCases, extensionResults)
+const failedExtensions = extensionFailures(extensionResults)
 if (extensionsOnly) {
   console.log(extensionLines.join('\n'))
   writeFileSync(mdPath, extensionLines.join('\n') + '\n')
   writeFileSync(jsonPath, JSON.stringify({ engineHeads, extensions: extensionResults }, null, 2) + '\n')
-  process.exit(0)
+  if (failedExtensions.length) {
+    console.error(`Readiness extension failures:\n${failedExtensions.join('\n')}`)
+    process.exitCode = 1
+  }
+  process.exit()
 }
 
 // Every catalog row is accounted for. Cases with no stated trigger are unsupported evidence, not a silent pass.
@@ -504,11 +509,12 @@ const counts = {}
 for (const engine of ['js', 'php', 'rs']) {
   counts[engine] = {}
   for (const area of ['clauses', 'examples', 'trees']) counts[engine][area] = tally(results[engine].filter(r => r.area === area))
+  counts[engine].extensions = tally(extensionResults[engine])
   counts[engine].catalog = tally(catalog[engine])
 }
 const upgradeFail = upgradeBarFail(upgrade.originClasses)
 counts.js.upgrade = { pass: upgrade.originTotals.example - upgradeFail, fail: upgradeFail, unsupported: 0, excluded: 0, engineLocal: 0 }
-const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries(rows.filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
+const caseFailures = Object.fromEntries(Object.entries(results).map(([engine, rows]) => [engine, Object.fromEntries([...rows, ...extensionResults[engine]].filter(row => row.status !== 'pass').map(row => [`${row.area}/${row.kind}/${row.id}`, row.status]))]))
 const catalogRules = Object.fromEntries(Object.entries(catalog).map(([engine, rows]) => [engine, Object.fromEntries(rows.map(row => [row.id, { status: row.status, idPercent: row.idPercent, rangePercent: row.rangePercent, messagePercent: row.messagePercent }]))]))
 const report = { schema: 1, generatedAt: new Date().toISOString(), durationSeconds: Math.round((Date.now() - started) / 1000), engineHeads, counts, lintAgreement, upgrade, failures: Object.fromEntries(Object.entries(results).map(([k,v]) => [k, v.filter(r => r.status !== 'pass')])), catalog }
 const ready = (engine, areas) => Object.values(areas).every(row => row.fail + row.unsupported === 0) && !forbiddenReports.some(item => item.startsWith(`${engine}/`))
@@ -531,13 +537,13 @@ lines.push('', `Runner wall time: ${report.durationSeconds} seconds.`)
 lines.push('', '| Engine | Lint ID | Range | Message |', '|---|---:|---:|---:|')
 for (const [engine, item] of Object.entries(lintAgreement)) lines.push(`| ${engine} | ${item.idPercent}% | ${item.rangePercent}% | ${item.messagePercent}% |`)
 
-// Gate: compare per case against the baseline. Counts, rule percentages and lint agreement are reported only.
+// Gate: compare every conformance case against the baseline. Rule percentages and lint agreement are reported only.
 const sampled = Number.isFinite(limit)
 const stored = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, 'utf8')) : null
 if (stored && !stored.cases && !args.has('--write-baseline')) throw new Error('The readiness baseline has no per-case fingerprints (schema 1); regenerate it with --write-baseline')
 const baseline = stored?.cases ? stored : null
-const currentCases = Object.fromEntries(core.map(c => [caseKey(c), caseFingerprint(c, ruleById)]))
-const caseByKey = new Map(core.map(c => [caseKey(c), c]))
+const currentCases = Object.fromEntries(work.map(c => [caseKey(c), caseFingerprint(c, ruleById)]))
+const caseByKey = new Map(work.map(c => [caseKey(c), c]))
 const statusIds = listedGaps(readFileSync(resolve(spec, 'STATUS.md'), 'utf8'))
 const verdicts = {}
 if (baseline) for (const engine of ['js', 'php', 'rs']) {
@@ -549,6 +555,7 @@ const upgradeVerdict = baseline && !sampled
   : { regressions: [], gaps: [] }
 const headMismatch = args.has('--baseline-heads') && baseline ? Object.keys(engineHeads).filter(engine => engineHeads[engine] !== baseline.engineHeads[engine]) : []
 const regressions = [
+  ...failedExtensions,
   ...forbiddenReports.map(report => `excluded catalog diagnostic on clause case: ${report}`),
   ...headMismatch.map(engine => `${engine}: checked out ${engineHeads[engine]}, the baseline names ${baseline.engineHeads[engine]}`),
   ...Object.entries(verdicts).flatMap(([engine, v]) => v.regressions.map(r => `${engine}/${r.key}: ${r.old} became ${r.now}`)),

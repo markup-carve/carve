@@ -1,10 +1,16 @@
 // The "Extensions" section of the readiness report: the standard extension corpus per engine and extension.
-// It is reported only; Engine ready does not read it.
+// Extension outcomes use the same readiness gate as the core conformance areas.
+export function extensionFailures(results) {
+  return Object.entries(results).flatMap(([engine, rows]) => rows
+    .filter(row => row.status !== 'pass')
+    .map(row => `${engine}/extensions/${row.kind}/${row.id}: ${row.status}`))
+}
+
 export function extensionReport(cases, results) {
   const names = [...new Set(cases.map(c => c.extension))].sort()
   const engines = Object.keys(results)
   const lines = ['## Extensions', '',
-    `The standard extension corpus (\`spec/0.2/conformance/extensions.json\`, ${cases.length} cases) is reported per engine and extension. It does not count toward Engine ready.`, '',
+    `The standard extension corpus (\`spec/0.2/conformance/extensions.json\`, ${cases.length} cases) counts toward Engine ready. A failed or unsupported case fails readiness.`, '',
     `| Extension | Cases | ${engines.map(e => `${e} pass | ${e} fail | ${e} unsupported`).join(' | ')} |`,
     `|---|---:|${engines.map(() => '---:|---:|---:').join('|')}|`]
   const tally = (engine, name) => {

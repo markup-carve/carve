@@ -1,9 +1,9 @@
 {
   "schema": 2,
   "engineHeads": {
-    "js": "ec0073ad2eda66e768ee2e77f9cd2624b69dc93a",
-    "php": "53a3428795459dcadde26e07fc9efd583d2beeb1",
-    "rs": "e2aaf1d212efecb2940703a59055a54c2e28f591"
+    "js": "1acf5564d672bf8525ed804c268d1027fdcd77fe",
+    "php": "9766b86759c2756ff22fff28ff792728c9ae1c1c",
+    "rs": "19f0453d02b7826bb6acd909ef14285ce76db8f2"
   },
   "cases": {
     "clauses/render/CC-001": "9472afcc6dd08244",
@@ -659,7 +659,7 @@
     "clauses/lint/CC-702": "53faa3b2b27befc9",
     "clauses/lint/CC-703": "a149719330c81fe6",
     "clauses/lint/CC-704": "0d390817e723ee00",
-    "clauses/lint/CC-705": "5831bf943d188180",
+    "clauses/lint/CC-705": "49d244256cd8a9e2",
     "clauses/lint/CC-706": "d686adceacb233e5",
     "clauses/lint/CC-707": "51628995a938d025",
     "clauses/lint/CC-708": "5d7a70f36c0fe0a7",
@@ -1108,7 +1108,7 @@
     "clauses/lint/CC-1157": "df1f4f94a886ae1e",
     "clauses/lint/CC-1158": "f170b48afefeb36f",
     "clauses/lint/CC-1159": "da791699d3b1cddf",
-    "clauses/lint/CC-1160": "c7461ff843c896ef",
+    "clauses/lint/CC-1160": "43e99021bffdf83f",
     "clauses/render/CC-1161": "955c40fc7c3881b8",
     "clauses/lint/CC-1162": "eab14650a0dca56a",
     "clauses/lint/CC-1163": "5f93a4bb0f613e25",
@@ -1337,6 +1337,22 @@
     "clauses/lint/CC-1386": "2d2cdf46528f165d",
     "clauses/lint/CC-1387": "ca336e0627e17582",
     "clauses/lint/CC-1388": "b71c056a2b2dc923",
+    "clauses/lint/CC-1389": "c501bbfe0a2024b8",
+    "clauses/lint/CC-1390": "bd1a75aca8dfeea9",
+    "clauses/lint/CC-1391": "2355f0e6c96d7ec5",
+    "clauses/lint/CC-1392": "c968a0804737bc47",
+    "clauses/lint/CC-1393": "4a17bd9c6d6adc86",
+    "clauses/lint/CC-1394": "9f600c36214040f3",
+    "clauses/lint/CC-1395": "ce934c7d8a0a635a",
+    "clauses/lint/CC-1396": "865e16fe10ed3400",
+    "clauses/lint/CC-1397": "acd7e53845734631",
+    "clauses/lint/CC-1398": "3ac565dd2f0fa198",
+    "clauses/lint/CC-1399": "ffb045bc33539632",
+    "clauses/render/CC-1400": "98d7b9a22602855c",
+    "clauses/format/CC-1401": "b90a73d11a095e48",
+    "clauses/format/CC-1402": "fc602ef1a1ea4fa3",
+    "clauses/lint/CC-1403": "e946965088ea9de0",
+    "clauses/format/CC-1404": "da31d6659d45669c",
     "examples/render/syntax-blocks-1": "e8fa59723ee6544d",
     "examples/render/syntax-blocks-2": "6786111604464735",
     "examples/render/syntax-blocks-3": "4517290d2293a0fa",
@@ -1850,6 +1866,7 @@
     "examples/write-example/writer-17": "a1f2882da3e5a46f",
     "examples/write-example/writer-14": "ffe40074c41c3ac7",
     "examples/write-example/writer-12": "3ef6c4d061481e53",
+    "examples/write-example/writer-46": "b265717c065f62d3",
     "examples/write-example/writer-26": "70d58ec3111c1bb4",
     "examples/write-example/writer-27": "6b4c728b411aaf9d",
     "examples/write-example/writer-9": "a5c9d74d4df26168",
@@ -2546,6 +2563,7 @@
     "trees/tree-fixture/writer-17": "0681c2d9f687733a",
     "trees/tree-fixture/writer-14": "de678ae3dadd2675",
     "trees/tree-fixture/writer-12": "170b16c0cc079856",
+    "trees/tree-fixture/writer-46": "efdb13177955cba1",
     "trees/tree-fixture/writer-26": "6bb650a6429431f7",
     "trees/tree-fixture/writer-27": "2a97e76c2fac673c",
     "trees/tree-fixture/writer-9": "bdcf549e2e4aeedd",
@@ -2696,46 +2714,140 @@
     "trees/layout-fixture/unsorted-layout-wraps": "c88ce77d64d15f6b",
     "trees/layout-fixture/minimal-layout-entry": "de4ad84f0c02a55f",
     "trees/layout-fixture/forbidden-leading-pipe-fact": "d0e11ffa597f3354",
-    "trees/layout-fixture/include-option-spelling-unknown-key": "46e6d172637d9f72"
+    "trees/layout-fixture/include-option-spelling-unknown-key": "46e6d172637d9f72",
+    "extensions/render/EXT-001": "a825a3d623812163",
+    "extensions/render/EXT-002": "cf1a73b3c861be04",
+    "extensions/render/EXT-003": "a78a5fd93f76f777",
+    "extensions/render/EXT-004": "52d43243845ad0b5",
+    "extensions/render/EXT-005": "6647f0efb5a6e3bf",
+    "extensions/render/EXT-006": "9b2b887fe579dba9",
+    "extensions/render/EXT-007": "cf8c0eafbaeb6756",
+    "extensions/render/EXT-008": "be31170475481928",
+    "extensions/render/EXT-009": "3a7ebbb22cd615c6",
+    "extensions/render/EXT-010": "8e5942c08a0c886e",
+    "extensions/render/EXT-011": "00bd8c3ab395e120",
+    "extensions/render/EXT-012": "519dc9760a844b8b",
+    "extensions/render/EXT-013": "55c9c2943ebf7ee3",
+    "extensions/render/EXT-014": "204691454905bdcc",
+    "extensions/render/EXT-015": "2932ab6e798773d4",
+    "extensions/render/EXT-016": "9b9dc7e7872142de",
+    "extensions/render/EXT-017": "0768402bde6d5454",
+    "extensions/render/EXT-018": "a8c79034ca4753b2",
+    "extensions/render/EXT-019": "3298d7fae92c25d7",
+    "extensions/render/EXT-020": "1ba9b8f4e6bb0d65",
+    "extensions/render/EXT-021": "ab6b2606f97d56dd",
+    "extensions/render/EXT-022": "77594a51cc7d4df7",
+    "extensions/render/EXT-023": "e5b130eb9cc33df8",
+    "extensions/render/EXT-024": "8f6beee7bf38abb4",
+    "extensions/render/EXT-025": "91d533a5c4f97d41",
+    "extensions/render/EXT-026": "a26662c40eb343bb",
+    "extensions/render/EXT-027": "5d9b49581943ee0a",
+    "extensions/render/EXT-028": "6956dc3aaee06e62",
+    "extensions/render/EXT-029": "ba87802a724e1230",
+    "extensions/render/EXT-030": "0360580e5a44debd",
+    "extensions/render/EXT-031": "57057989f53a2e12",
+    "extensions/render/EXT-032": "c967fff2d23aeec5",
+    "extensions/render/EXT-033": "25a30a9d59632c55",
+    "extensions/render/EXT-034": "5b9da0dd6a731484",
+    "extensions/render/EXT-035": "826c25fa7ea4301e",
+    "extensions/render/EXT-036": "4b3e85741f1e6b8b",
+    "extensions/render/EXT-037": "91fec044edea3bce",
+    "extensions/render/EXT-038": "5950467f353c0ce7",
+    "extensions/render/EXT-039": "b852d0e6c29fed85",
+    "extensions/render/EXT-040": "a7f359d3554b578b",
+    "extensions/render/EXT-041": "b444af4dd4a4bbfe",
+    "extensions/render/EXT-042": "35972bc6623551d9",
+    "extensions/render/EXT-043": "665077f134eef245",
+    "extensions/render/EXT-044": "9e498434644e3abc",
+    "extensions/render/EXT-045": "ec77b032abfd46f2",
+    "extensions/render/EXT-046": "79f59bcb78c6fa30",
+    "extensions/render/EXT-047": "635906dbd1f24d99",
+    "extensions/render/EXT-048": "231bde57c1f3aa23",
+    "extensions/render/EXT-049": "a48dc79a2d9272ba",
+    "extensions/render/EXT-050": "597fc666ef01fede",
+    "extensions/render/EXT-051": "877cc7d9826d5993",
+    "extensions/render/EXT-052": "f21da1a0501a66ae",
+    "extensions/render/EXT-053": "a9a02c251e2d94c7",
+    "extensions/render/EXT-054": "a48ad1efa991de33",
+    "extensions/render/EXT-055": "dd88071a4fa301a3",
+    "extensions/render/EXT-056": "716e835794b531f2",
+    "extensions/render/EXT-057": "167fb15d565e1a4a",
+    "extensions/render/EXT-058": "9d1c34ec404ed769",
+    "extensions/render/EXT-059": "0553ef9d04618c3a",
+    "extensions/render/EXT-060": "3f16e4a211e7873a",
+    "extensions/render/EXT-061": "19f9c618a751df4c",
+    "extensions/render/EXT-062": "aee0820b10e741cd",
+    "extensions/render/EXT-063": "e73927b99abd8a1c",
+    "extensions/render/EXT-064": "cfe2ecc400ef94bd",
+    "extensions/render/EXT-065": "5ff1f85fc397ed2f",
+    "extensions/render/EXT-066": "ed90437690d8d8a0",
+    "extensions/render/EXT-067": "aead5db9a9bca275",
+    "extensions/render/EXT-068": "b70842d0715e55cc",
+    "extensions/render/EXT-069": "0d39b7373dadd854",
+    "extensions/render/EXT-070": "13583558fc75a5dd",
+    "extensions/render/EXT-071": "ba13d355bbd1679d",
+    "extensions/render/EXT-072": "946156a5bb0122ca",
+    "extensions/render/EXT-073": "edfe2413d7b6cf33",
+    "extensions/render/EXT-074": "b8459c37d613ad3b",
+    "extensions/render/EXT-075": "c6469eed78f5f7eb",
+    "extensions/render/EXT-076": "0e90a374844c4184",
+    "extensions/render/EXT-077": "fb38e7ecbd53b883",
+    "extensions/render/EXT-078": "f47f8f18eacf86a2",
+    "extensions/render/EXT-079": "cc675c85d69655cb",
+    "extensions/render/EXT-080": "1d29e7106764aecc",
+    "extensions/render/EXT-081": "78b1be07e544c58e",
+    "extensions/render/EXT-082": "c0748af85ba977a0",
+    "extensions/render/EXT-083": "e3e3867e6125a2b0",
+    "extensions/render/EXT-084": "39b7cc527d592e0d",
+    "extensions/render/EXT-085": "820d5968c1e15532",
+    "extensions/render/EXT-086": "b823000f76d2d44a",
+    "extensions/render/EXT-087": "e7992e773bf1e2a1",
+    "extensions/render/EXT-088": "9f8370b19de56a4a",
+    "extensions/render/EXT-089": "bf698371e1ead8f9",
+    "extensions/render/EXT-090": "a2cef8ef3ff1dcb9",
+    "extensions/render/EXT-091": "eb1645901d6bb3d1",
+    "extensions/render/EXT-092": "2739539f3ad7f795",
+    "extensions/render/EXT-093": "156f3978fb45f460",
+    "extensions/render/EXT-094": "4e42c7a3cabedca9"
   },
   "caseFailures": {
-    "js": {
-      "clauses/lint/CC-1387": "fail",
-      "clauses/lint/CC-1388": "fail"
-    },
-    "php": {
-      "clauses/lint/CC-1388": "fail"
-    },
-    "rs": {
-      "clauses/lint/CC-1388": "fail"
-    }
+    "js": {},
+    "php": {},
+    "rs": {}
   },
   "counts": {
     "js": {
       "clauses": {
-        "pass": 1329,
-        "fail": 2,
+        "pass": 1347,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "examples": {
-        "pass": 656,
+        "pass": 657,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "trees": {
-        "pass": 704,
+        "pass": 705,
+        "fail": 0,
+        "unsupported": 0,
+        "excluded": 0,
+        "engineLocal": 0
+      },
+      "extensions": {
+        "pass": 94,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "catalog": {
-        "pass": 158,
-        "fail": 1,
+        "pass": 159,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 17,
         "engineLocal": 1
@@ -2750,29 +2862,36 @@
     },
     "php": {
       "clauses": {
-        "pass": 1330,
-        "fail": 1,
+        "pass": 1347,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "examples": {
-        "pass": 656,
+        "pass": 657,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "trees": {
-        "pass": 704,
+        "pass": 705,
+        "fail": 0,
+        "unsupported": 0,
+        "excluded": 0,
+        "engineLocal": 0
+      },
+      "extensions": {
+        "pass": 94,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "catalog": {
-        "pass": 158,
-        "fail": 1,
+        "pass": 159,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 17,
         "engineLocal": 1
@@ -2780,29 +2899,36 @@
     },
     "rs": {
       "clauses": {
-        "pass": 1330,
-        "fail": 1,
+        "pass": 1347,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "examples": {
-        "pass": 656,
+        "pass": 657,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "trees": {
-        "pass": 704,
+        "pass": 705,
+        "fail": 0,
+        "unsupported": 0,
+        "excluded": 0,
+        "engineLocal": 0
+      },
+      "extensions": {
+        "pass": 94,
         "fail": 0,
         "unsupported": 0,
         "excluded": 0,
         "engineLocal": 0
       },
       "catalog": {
-        "pass": 158,
-        "fail": 1,
+        "pass": 159,
+        "fail": 0,
         "unsupported": 0,
         "excluded": 17,
         "engineLocal": 1
@@ -2811,28 +2937,28 @@
   },
   "lintAgreement": {
     "js": {
-      "idPercent": 99.76,
-      "rangePercent": 99.65,
-      "messagePercent": 99.75,
-      "probes": 424,
-      "rangeProbes": 283,
-      "messageProbes": 399
+      "idPercent": 100,
+      "rangePercent": 100,
+      "messagePercent": 100,
+      "probes": 432,
+      "rangeProbes": 290,
+      "messageProbes": 407
     },
     "php": {
-      "idPercent": 99.76,
-      "rangePercent": 99.65,
-      "messagePercent": 99.75,
-      "probes": 424,
-      "rangeProbes": 283,
-      "messageProbes": 399
+      "idPercent": 100,
+      "rangePercent": 100,
+      "messagePercent": 100,
+      "probes": 432,
+      "rangeProbes": 290,
+      "messageProbes": 407
     },
     "rs": {
-      "idPercent": 99.76,
-      "rangePercent": 99.65,
-      "messagePercent": 99.75,
-      "probes": 424,
-      "rangeProbes": 283,
-      "messageProbes": 399
+      "idPercent": 100,
+      "rangePercent": 100,
+      "messagePercent": 100,
+      "probes": 432,
+      "rangeProbes": 290,
+      "messageProbes": 407
     }
   },
   "catalogRules": {
@@ -3564,10 +3690,10 @@
         "messagePercent": 100
       },
       "list-item-block-overindented": {
-        "status": "fail",
-        "idPercent": 50,
-        "rangePercent": 50,
-        "messagePercent": 50
+        "status": "pass",
+        "idPercent": 100,
+        "rangePercent": 100,
+        "messagePercent": 100
       },
       "list-item-body-below-content-column": {
         "status": "pass",
@@ -4628,10 +4754,10 @@
         "messagePercent": 100
       },
       "list-item-block-overindented": {
-        "status": "fail",
-        "idPercent": 50,
-        "rangePercent": 50,
-        "messagePercent": 50
+        "status": "pass",
+        "idPercent": 100,
+        "rangePercent": 100,
+        "messagePercent": 100
       },
       "list-item-body-below-content-column": {
         "status": "pass",
@@ -5692,10 +5818,10 @@
         "messagePercent": 100
       },
       "list-item-block-overindented": {
-        "status": "fail",
-        "idPercent": 50,
-        "rangePercent": 50,
-        "messagePercent": 50
+        "status": "pass",
+        "idPercent": 100,
+        "rangePercent": 100,
+        "messagePercent": 100
       },
       "list-item-body-below-content-column": {
         "status": "pass",

@@ -95,6 +95,16 @@ Retired clause ids, deleted in candidate 4 because a general rule gives the same
 
 The gates check the text against itself. No engine runs in them; an engine runs the corpus in its own repository.
 
+## Engine readiness, 20 November 2026
+
+Measured at 08:44 UTC with `npm --prefix scripts run readiness:next2 -- --write-baseline` on the engine `next2` heads below. Each cell is passing cases over total cases; none failed or was unsupported. The 94 extension cases now count toward the readiness gate and its baseline.
+
+| Engine | Commit | Clause cases | Examples | Trees | Extensions |
+|---|---|---:|---:|---:|---:|
+| carve-js | `1acf5564d672bf8525ed804c268d1027fdcd77fe` | 1347/1347 | 657/657 | 705/705 | 94/94 |
+| carve-php | `9766b86759c2756ff22fff28ff792728c9ae1c1c` | 1347/1347 | 657/657 | 705/705 | 94/94 |
+| carve-rs | `19f0453d02b7826bb6acd909ef14285ce76db8f2` | 1347/1347 | 657/657 | 705/705 | 94/94 |
+
 ## What is frozen
 
 - The syntax: `syntax-blocks.md` and `syntax-inline.md`.
