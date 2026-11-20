@@ -218,3 +218,9 @@ The maintainer rulings on #6191 to #6196: `blockquote-marker-without-space` and 
 - `carve-js`: the overindented div opener is reported on three colons (CC-1391); an include directive line past an item's content column is reported (CC-1393); a colon run in a quote or item inside a div is compared with the div (CC-1395, CC-1396).
 - `carve-php`: CC-1391 and CC-1393 as `carve-js`; the colon run range takes the trailing spaces (CC-1394); an attribute-shaped paragraph line also gets `unattached-block-attribute` (CC-1397); a `>` line in a quote is not blank (CC-1398).
 - `carve-rs`: the line range of `blockquote-marker-without-space` is the `>` alone (CC-1389); CC-1395 and CC-1396 as `carve-js`; CC-1397 as `carve-php`; a `>` line in a quote gets the other message of `unattached-block-attribute` (CC-1398).
+
+## Engine gaps from the writer fixes of 20 November
+
+C2-W-145 writes a span count that no mark cell gives with span marks, and C2-W-146 escapes the opening run of a bare mark pair that a pair rule of lint would report (#6269, #6270). Clause cases CC-1450 to CC-1464. Measured on the engine `next2` heads of 20 November.
+
+- All three engines: an imported or supplied span count is written short and reported as `field-unspellable` (CC-1450 to CC-1457); a bare mark pair is written bare, and lint reports the output (CC-1458 to CC-1463). CC-1464 passes.
