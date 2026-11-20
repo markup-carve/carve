@@ -8076,7 +8076,7 @@
       "when": {
         "all": [
           {
-            "eq": [
+            "ge": [
               {
                 "f": "index"
               },
@@ -9769,6 +9769,148 @@
       ]
     },
     {
+      "id": "tight-list-item-with-blank-line",
+      "over": "block",
+      "types": [
+        "list"
+      ],
+      "when": {
+        "all": [
+          {
+            "eq": [
+              {
+                "f": "node.spacing"
+              },
+              "tight"
+            ]
+          },
+          {
+            "ge": [
+              {
+                "lookup": {
+                  "over": "block",
+                  "key": {
+                    "if": [
+                      {
+                        "all": [
+                          {
+                            "eq": [
+                              {
+                                "f": "item.ancestors.0"
+                              },
+                              "list_item"
+                            ]
+                          },
+                          {
+                            "gt": [
+                              {
+                                "f": "item.layout.blankLinesAfter"
+                              },
+                              0
+                            ]
+                          },
+                          {
+                            "ge": [
+                              {
+                                "lookup": {
+                                  "over": "block",
+                                  "key": {
+                                    "if": [
+                                      {
+                                        "not": {
+                                          "in": [
+                                            {
+                                              "f": "item.type"
+                                            },
+                                            [
+                                              "comment",
+                                              "comment_block"
+                                            ]
+                                          ]
+                                        }
+                                      },
+                                      {
+                                        "f": "item.ancestor_ids.0"
+                                      },
+                                      false
+                                    ]
+                                  },
+                                  "value": {
+                                    "f": "item.ancestor_ids.0"
+                                  },
+                                  "after": true,
+                                  "from": {
+                                    "f": "item.start"
+                                  },
+                                  "field": "start"
+                                }
+                              },
+                              0
+                            ]
+                          },
+                          {
+                            "some": {
+                              "in": {
+                                "lookup": {
+                                  "over": "block",
+                                  "types": [
+                                    "list_item"
+                                  ],
+                                  "key": {
+                                    "f": "item.identity"
+                                  },
+                                  "value": {
+                                    "f": "item.ancestor_ids.0"
+                                  },
+                                  "field": "node.children"
+                                }
+                              },
+                              "where": {
+                                "eq": [
+                                  {
+                                    "f": "item.type"
+                                  },
+                                  "paragraph"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "f": "item.ancestor_ids.1"
+                      },
+                      false
+                    ]
+                  },
+                  "value": {
+                    "f": "identity"
+                  },
+                  "field": "start"
+                }
+              },
+              0
+            ]
+          }
+        ]
+      },
+      "report": [
+        {
+          "start": {
+            "f": "start"
+          },
+          "end": {
+            "f": "end"
+          }
+        }
+      ],
+      "clauses": [
+        "C2-B-062",
+        "C2-L-047",
+        "C2-W-150"
+      ]
+    },
+    {
       "id": "unattached-block-attribute",
       "over": "line",
       "when": {
@@ -10043,6 +10185,51 @@
             },
             0
           ]
+        },
+        "kind": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list"
+            ],
+            "key": {
+              "f": "item.identity"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "node.marker.kind"
+          }
+        },
+        "first_marker": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "layout.markerColumn"
+          }
+        },
+        "first_content": {
+          "lookup": {
+            "over": "block",
+            "types": [
+              "list_item"
+            ],
+            "key": {
+              "f": "item.ancestor_ids.0"
+            },
+            "value": {
+              "f": "ancestor_ids.0"
+            },
+            "field": "layout.contentColumn"
+          }
         }
       },
       "when": {
@@ -10098,6 +10285,48 @@
                 ]
               }
             ]
+          },
+          {
+            "not": {
+              "all": [
+                {
+                  "ge": [
+                    {
+                      "f": "index"
+                    },
+                    1
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "v": "kind"
+                    },
+                    "ordered"
+                  ]
+                },
+                {
+                  "gt": [
+                    {
+                      "v": "first_marker"
+                    },
+                    {
+                      "f": "layout.markerColumn"
+                    }
+                  ]
+                },
+                {
+                  "eq": [
+                    {
+                      "v": "first_content"
+                    },
+                    {
+                      "f": "layout.contentColumn"
+                    }
+                  ]
+                }
+              ]
+            }
           }
         ]
       },
@@ -10112,8 +10341,8 @@
         }
       ],
       "clauses": [
-        "C2-B-054",
         "C2-B-030",
+        "C2-B-054",
         "C2-L-009",
         "C2-W-150"
       ]
