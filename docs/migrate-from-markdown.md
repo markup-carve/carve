@@ -20,6 +20,16 @@ Carve is a separate language. A Markdown file needs conversion and review before
 
 A blank line before a new heading or quote avoids a lazy paragraph line. List markers do not always interrupt an open paragraph. The exact rules are in [block structure](https://github.com/markup-carve/carve/blob/next2/spec/0.2/syntax-blocks.md#paragraphs-and-interrupters).
 
+## Import with the reference engine
+
+The reference engine also imports Markdown directly, outside the 0.2 specification. Use `gfm` for ordinary Markdown:
+
+```sh
+node dist/cli.js import --from gfm page.md
+```
+
+`--from gfm` converts tables, task lists, strikethrough, bare URLs and footnotes. `--from markdown` reads strict CommonMark and keeps a GFM table as escaped paragraph text. The 0.1 Markdown importer read GFM, so a 0.1 `migrate --from markdown` becomes `import --from gfm`. The library call is `importDocument(source, { from: 'gfm' })`; see [Markdown import is GFM import](https://github.com/markup-carve/carve/blob/next2/spec/0.2/UPGRADING.md#markdown-import-is-gfm-import).
+
 ## Convert through HTML
 
 Render the Markdown with a trusted Markdown renderer, save the HTML, then run the reference engine:
