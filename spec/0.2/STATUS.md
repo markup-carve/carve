@@ -195,3 +195,12 @@ Measured with the readiness runner on the engine heads of `scripts/next2-readine
 - `carve-js`: the engine at the baseline head has none of the commands of C2-T-047 to C2-T-053; `next2` `7589dbc` passes CC-1352 to CC-1366 but CC-1359, where it writes the include entries before the category line that C2-T-039 puts first. C2-B-109: a `> %%%` line under a comment block opened in `> >` closes it (CC-1369). The upgrade tool has no entry for U-426 to U-429 and still treats U-393 as no change.
 - `carve-php`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1364); `djot-plus-bullet` after a quote marker (CC-1367); the comment closer of C2-B-109 (CC-1369); the `destination-denied` column of CC-1271.
 - `carve-rs`: the commands and flags of C2-T-047 to C2-T-053 (CC-1352 to CC-1365); `djot-plus-bullet` after a quote marker (CC-1367).
+
+## Engine gaps from the lint rulings of 20 November
+
+The maintainer rulings on #6191 to #6196: `blockquote-marker-without-space` and `colon-fence-length-mismatch` state their range, `block-opener-overindented` reports the whole opening mark, an include directive is no block opener for `list-item-block-overindented`, a colon run in a quote or item inside a div is not compared with the div, an attribute-shaped paragraph line gets only `block-opener-without-blank-line`, and C2-W-143 says which lines are blank for lint. Clause cases CC-1389 to CC-1399. Measured on the engine `next2` heads of 20 November.
+
+- All three engines: the frontmatter message is reported on the `>` alone (CC-1390); an overindented code fence is reported on its first backtick (CC-1392).
+- `carve-js`: the overindented div opener is reported on three colons (CC-1391); an include directive line past an item's content column is reported (CC-1393); a colon run in a quote or item inside a div is compared with the div (CC-1395, CC-1396).
+- `carve-php`: CC-1391 and CC-1393 as `carve-js`; the colon run range takes the trailing spaces (CC-1394); an attribute-shaped paragraph line also gets `unattached-block-attribute` (CC-1397); a `>` line in a quote is not blank (CC-1398).
+- `carve-rs`: the line range of `blockquote-marker-without-space` is the `>` alone (CC-1389); CC-1395 and CC-1396 as `carve-js`; CC-1397 as `carve-php`; a `>` line in a quote gets the other message of `unattached-block-attribute` (CC-1398).
