@@ -25,6 +25,19 @@ test('prepared replay accepts baseline and descendant commits in every engine', 
   assert.doesNotThrow(() => verifyPreparedHeads(dirs, baseline, baseline))
 })
 
+test('prepared replay deepens a shallow descendant checkout before comparison', () => {
+  const js = fixture(), php = fixture(), rs = fixture()
+  const shallow = mkdtempSync(join(tmpdir(), 'carve-readiness-shallow-'))
+  execFileSync('git', ['clone', '-q', '--depth', '1', `file://${js.dir}`, shallow])
+  assert.equal(git(shallow, 'rev-parse', '--is-shallow-repository'), 'true')
+  verifyPreparedHeads(
+    { js: shallow, php: php.dir, rs: rs.dir },
+    { js: js.later, php: php.later, rs: rs.later },
+    { js: js.baseline, php: php.baseline, rs: rs.baseline },
+  )
+  assert.equal(git(shallow, 'rev-parse', '--is-shallow-repository'), 'false')
+})
+
 test('prepared replay rejects a stale checkout before comparing cases', () => {
   const js = fixture(), php = fixture(), rs = fixture()
   const dirs = { js: js.dir, php: php.dir, rs: rs.dir }

@@ -39,7 +39,7 @@ Catalog rows with status `obsolete` or `void` remain in the historical data but 
 Every run uploads `_readiness-baseline.json`, the baseline it would write.
 The report header names the exact JavaScript, PHP and Rust commits used for replay.
 
-For a locally prepared run, use `npm --prefix scripts run readiness:next2 -- --prepared` after building the engines. The runner checks that each engine HEAD contains the commit recorded in the baseline before replay. It stops with the engine and both commits if a checkout is older or its history cannot prove ancestry, including a shallow checkout missing the baseline commit. Check out `next2` or run without `--prepared` to fetch and build fresh engines. The same check applies when running `node scripts/next2-readiness.mjs --prepared` directly.
+For a locally prepared run, use `npm --prefix scripts run readiness:next2 -- --prepared` after building the engines. The runner checks that each engine HEAD contains the commit recorded in the baseline before replay. It deepens a shallow checkout when needed, then stops with the engine and both commits if the checkout is older or its history still cannot prove ancestry. Check out `next2` or run without `--prepared` to fetch and build fresh engines. The same check applies when running `node scripts/next2-readiness.mjs --prepared` directly.
 
 ## Advancing the baseline
 
