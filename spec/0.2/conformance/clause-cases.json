@@ -61192,6 +61192,68 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1394",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-108"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog colon-fence-length-mismatch: the colon run, without indentation and without the spaces and tabs after it",
+   "summary": "a mismatched bare colon run is reported without its trailing spaces",
+   "kind": "lint",
+   "input": ":::: x\n:::::  \n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "colon-fence-length-mismatch",
+      "line": 2,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 2,
+      "endColumn": 6
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1395",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: the container counts only where it is open inside the run's own innermost container",
+   "summary": "a colon run in a quote inside a div is not compared with the div",
+   "kind": "lint",
+   "input": "::::\n> :::\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "colon-fence-length-mismatch"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1396",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-109"
+   ],
+   "why": "Catalog colon-fence-length-mismatch: the container counts only where it is open inside the run's own innermost container",
+   "summary": "a colon run in a list item inside a div is not compared with the div",
+   "kind": "lint",
+   "input": "::::\n- a\n\n  :::  \n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "colon-fence-length-mismatch"
+    ]
+   },
+   "from": []
   }
  ]
 }

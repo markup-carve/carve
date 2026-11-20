@@ -210,7 +210,8 @@
       ],
       "message_notes": ["`${kind}` names the innermost open colon container: `div`, `admonition`, `figure group`, `line block` or `hard-break block` (C2-B-119, C2-B-125)."],
       "message_origin": "engine_0_1",
-      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length; the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
+      "range": "the colon run, without indentation and without the spaces and tabs after it",
+      "reports": "a bare colon run, three or more colons and nothing after them but spaces and tabs, inside an open colon container (a div of any name, a line block or a hard-break block) whose innermost opener run has another length; the container counts only where it is open inside the run's own innermost container, so a run in a quote or list item that sits in a div, with no colon container open inside that quote or item, is not reported, since it cannot close the outer div (C2-B-109); the run closes the innermost open container it is long enough for and every one inside it, or opens an anonymous div when it is long enough for none, and the message names that outcome; once per run (C2-B-108, C2-B-109, C2-B-125)",
       "clauses": ["C2-B-108", "C2-B-109", "C2-B-125"]
     },
     {
