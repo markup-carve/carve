@@ -13,7 +13,7 @@
     "line_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a line record, one record per source line." },
     "block_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of a block record, one record per block of the tree." },
     "inline_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The fields of an inline record, one record per inline node of a type that an inline rule names." },
-    "table_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The table fields of C2-W-148: layout facts of a table that the tree does not hold, which the line and block records they name carry beside their own fields." },
+    "table_fields": { "type": "array", "items": { "$ref": "#/$defs/field" }, "description": "The table fields of C2-W-149: layout facts of a table that the tree does not hold, which the line and block records they name carry beside their own fields." },
     "rules": {
       "type": "array",
       "items": {

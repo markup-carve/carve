@@ -505,7 +505,7 @@
       "means": "on a table record: the number of rows of all its `table_body` groups",
       "clauses": [
         "C2-A-088",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -514,7 +514,7 @@
       "means": "on a table record: the number of rows of its `table_foot`, 0 without one",
       "clauses": [
         "C2-A-088",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -523,7 +523,7 @@
       "means": "on a table_row or table_cell record: the type of the group that holds the row, `table_head`, `table_body` or `table_foot`",
       "clauses": [
         "C2-A-086",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -532,7 +532,7 @@
       "means": "on a table record: the number of rows of its `table_head`, 0 without one",
       "clauses": [
         "C2-A-088",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -541,7 +541,7 @@
       "means": "on a table_row or table_cell record: the position of the row among the rows of its group, from 0",
       "clauses": [
         "C2-A-086",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -551,7 +551,7 @@
       "clauses": [
         "C2-A-095",
         "C2-B-180",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -560,7 +560,7 @@
       "means": "on a line record of a line in the source of a pipe table, from its first line to its last: the nearest line above it in that source whose raw_body does not start with `%%`; absent where there is none and outside a pipe table",
       "clauses": [
         "C2-B-175",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -569,7 +569,7 @@
       "means": "as table_above, the nearest such line below it",
       "clauses": [
         "C2-B-175",
-        "C2-W-148"
+        "C2-W-149"
       ]
     }
   ],
@@ -2004,7 +2004,16 @@
             "f": "body_start"
           },
           "end": {
-            "f": "body_end"
+            "add": [
+              {
+                "f": "body_start"
+              },
+              {
+                "len": {
+                  "f": "raw_body"
+                }
+              }
+            ]
           }
         },
         {
@@ -2092,7 +2101,16 @@
             ]
           },
           "end": {
-            "f": "body_end"
+            "add": [
+              {
+                "f": "body_start"
+              },
+              {
+                "len": {
+                  "f": "raw_body"
+                }
+              }
+            ]
           }
         }
       ],
@@ -2100,7 +2118,7 @@
         "C2-A-086",
         "C2-B-175",
         "C2-W-137",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -2361,7 +2379,7 @@
       "clauses": [
         "C2-B-180",
         "C2-B-226",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -3535,7 +3553,7 @@
       "clauses": [
         "C2-B-186",
         "C2-B-227",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -7400,7 +7418,7 @@
               "f": "start"
             }
           },
-          "(?<key>header-rows|footer-rows)=(?<value>\"[0-9]+\"|[0-9]+)[ }]"
+          "(?<key>header-rows|footer-rows)=?(?<value>\"[0-9]*\"|[0-9]*)[ }]"
         ]
       },
       "range": {
@@ -7444,225 +7462,9 @@
         "count": {
           "if": [
             {
-              "starts": [
+              "eq": [
                 {
-                  "slice": [
-                    {
-                      "f": "text"
-                    },
-                    {
-                      "sub": [
-                        {
-                          "match": "value"
-                        },
-                        {
-                          "f": "start"
-                        }
-                      ]
-                    },
-                    {
-                      "sub": [
-                        {
-                          "match": "value",
-                          "at": "end"
-                        },
-                        {
-                          "f": "start"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "\""
-              ]
-            },
-            {
-              "slice": [
-                {
-                  "slice": [
-                    {
-                      "f": "text"
-                    },
-                    {
-                      "sub": [
-                        {
-                          "match": "value"
-                        },
-                        {
-                          "f": "start"
-                        }
-                      ]
-                    },
-                    {
-                      "sub": [
-                        {
-                          "match": "value",
-                          "at": "end"
-                        },
-                        {
-                          "f": "start"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                1,
-                {
-                  "sub": [
-                    {
-                      "len": {
-                        "slice": [
-                          {
-                            "f": "text"
-                          },
-                          {
-                            "sub": [
-                              {
-                                "match": "value"
-                              },
-                              {
-                                "f": "start"
-                              }
-                            ]
-                          },
-                          {
-                            "sub": [
-                              {
-                                "match": "value",
-                                "at": "end"
-                              },
-                              {
-                                "f": "start"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    1
-                  ]
-                }
-              ]
-            },
-            {
-              "slice": [
-                {
-                  "f": "text"
-                },
-                {
-                  "sub": [
-                    {
-                      "match": "value"
-                    },
-                    {
-                      "f": "start"
-                    }
-                  ]
-                },
-                {
-                  "sub": [
-                    {
-                      "match": "value",
-                      "at": "end"
-                    },
-                    {
-                      "f": "start"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "report": [
-        {
-          "when": {
-            "all": [
-              {
-                "eq": [
-                  {
-                    "slice": [
-                      {
-                        "f": "text"
-                      },
-                      {
-                        "sub": [
-                          {
-                            "match": "key"
-                          },
-                          {
-                            "f": "start"
-                          }
-                        ]
-                      },
-                      {
-                        "sub": [
-                          {
-                            "match": "key",
-                            "at": "end"
-                          },
-                          {
-                            "f": "start"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "header-rows"
-                ]
-              },
-              {
-                "ne": [
-                  {
-                    "f": "source_format"
-                  },
-                  "pipe"
-                ]
-              },
-              {
-                "in": [
-                  {
-                    "slice": [
-                      {
-                        "f": "text"
-                      },
-                      {
-                        "sub": [
-                          {
-                            "sub": [
-                              {
-                                "match": "key"
-                              },
-                              {
-                                "f": "start"
-                              }
-                            ]
-                          },
-                          1
-                        ]
-                      },
-                      {
-                        "sub": [
-                          {
-                            "match": "key"
-                          },
-                          {
-                            "f": "start"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  [
-                    "{",
-                    " "
-                  ]
-                ]
-              },
-              {
-                "gt": [
-                  {
+                  "len": {
                     "if": [
                       {
                         "starts": [
@@ -7788,6 +7590,512 @@
                               },
                               {
                                 "f": "start"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                0
+              ]
+            },
+            "1",
+            {
+              "if": [
+                {
+                  "starts": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "value"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "value",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "\""
+                  ]
+                },
+                {
+                  "slice": [
+                    {
+                      "slice": [
+                        {
+                          "f": "text"
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "value"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        },
+                        {
+                          "sub": [
+                            {
+                              "match": "value",
+                              "at": "end"
+                            },
+                            {
+                              "f": "start"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    1,
+                    {
+                      "sub": [
+                        {
+                          "len": {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        1
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "slice": [
+                    {
+                      "f": "text"
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    },
+                    {
+                      "sub": [
+                        {
+                          "match": "value",
+                          "at": "end"
+                        },
+                        {
+                          "f": "start"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "report": [
+        {
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key",
+                            "at": "end"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "header-rows"
+                ]
+              },
+              {
+                "ne": [
+                  {
+                    "f": "source_format"
+                  },
+                  "pipe"
+                ]
+              },
+              {
+                "in": [
+                  {
+                    "slice": [
+                      {
+                        "f": "text"
+                      },
+                      {
+                        "sub": [
+                          {
+                            "sub": [
+                              {
+                                "match": "key"
+                              },
+                              {
+                                "f": "start"
+                              }
+                            ]
+                          },
+                          1
+                        ]
+                      },
+                      {
+                        "sub": [
+                          {
+                            "match": "key"
+                          },
+                          {
+                            "f": "start"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  [
+                    "{",
+                    " "
+                  ]
+                ]
+              },
+              {
+                "gt": [
+                  {
+                    "if": [
+                      {
+                        "eq": [
+                          {
+                            "len": {
+                              "if": [
+                                {
+                                  "starts": [
+                                    {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    "\""
+                                  ]
+                                },
+                                {
+                                  "slice": [
+                                    {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    1,
+                                    {
+                                      "sub": [
+                                        {
+                                          "len": {
+                                            "slice": [
+                                              {
+                                                "f": "text"
+                                              },
+                                              {
+                                                "sub": [
+                                                  {
+                                                    "match": "value"
+                                                  },
+                                                  {
+                                                    "f": "start"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "sub": [
+                                                  {
+                                                    "match": "value",
+                                                    "at": "end"
+                                                  },
+                                                  {
+                                                    "f": "start"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        1
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "slice": [
+                                    {
+                                      "f": "text"
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "sub": [
+                                        {
+                                          "match": "value",
+                                          "at": "end"
+                                        },
+                                        {
+                                          "f": "start"
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          },
+                          0
+                        ]
+                      },
+                      "1",
+                      {
+                        "if": [
+                          {
+                            "starts": [
+                              {
+                                "slice": [
+                                  {
+                                    "f": "text"
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value",
+                                        "at": "end"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "\""
+                            ]
+                          },
+                          {
+                            "slice": [
+                              {
+                                "slice": [
+                                  {
+                                    "f": "text"
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value",
+                                        "at": "end"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              1,
+                              {
+                                "sub": [
+                                  {
+                                    "len": {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  1
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "slice": [
+                              {
+                                "f": "text"
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
                               }
                             ]
                           }
@@ -7909,73 +8217,112 @@
                   {
                     "if": [
                       {
-                        "starts": [
+                        "eq": [
                           {
-                            "slice": [
-                              {
-                                "f": "text"
-                              },
-                              {
-                                "sub": [
-                                  {
-                                    "match": "value"
-                                  },
-                                  {
-                                    "f": "start"
-                                  }
-                                ]
-                              },
-                              {
-                                "sub": [
-                                  {
-                                    "match": "value",
-                                    "at": "end"
-                                  },
-                                  {
-                                    "f": "start"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          "\""
-                        ]
-                      },
-                      {
-                        "slice": [
-                          {
-                            "slice": [
-                              {
-                                "f": "text"
-                              },
-                              {
-                                "sub": [
-                                  {
-                                    "match": "value"
-                                  },
-                                  {
-                                    "f": "start"
-                                  }
-                                ]
-                              },
-                              {
-                                "sub": [
-                                  {
-                                    "match": "value",
-                                    "at": "end"
-                                  },
-                                  {
-                                    "f": "start"
-                                  }
-                                ]
-                              }
-                            ]
-                          },
-                          1,
-                          {
-                            "sub": [
-                              {
-                                "len": {
+                            "len": {
+                              "if": [
+                                {
+                                  "starts": [
+                                    {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    "\""
+                                  ]
+                                },
+                                {
+                                  "slice": [
+                                    {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    1,
+                                    {
+                                      "sub": [
+                                        {
+                                          "len": {
+                                            "slice": [
+                                              {
+                                                "f": "text"
+                                              },
+                                              {
+                                                "sub": [
+                                                  {
+                                                    "match": "value"
+                                                  },
+                                                  {
+                                                    "f": "start"
+                                                  }
+                                                ]
+                                              },
+                                              {
+                                                "sub": [
+                                                  {
+                                                    "match": "value",
+                                                    "at": "end"
+                                                  },
+                                                  {
+                                                    "f": "start"
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        1
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
                                   "slice": [
                                     {
                                       "f": "text"
@@ -8003,35 +8350,141 @@
                                     }
                                   ]
                                 }
-                              },
-                              1
-                            ]
-                          }
+                              ]
+                            }
+                          },
+                          0
                         ]
                       },
+                      "1",
                       {
-                        "slice": [
+                        "if": [
                           {
-                            "f": "text"
+                            "starts": [
+                              {
+                                "slice": [
+                                  {
+                                    "f": "text"
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value",
+                                        "at": "end"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "\""
+                            ]
                           },
                           {
-                            "sub": [
+                            "slice": [
                               {
-                                "match": "value"
+                                "slice": [
+                                  {
+                                    "f": "text"
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "sub": [
+                                      {
+                                        "match": "value",
+                                        "at": "end"
+                                      },
+                                      {
+                                        "f": "start"
+                                      }
+                                    ]
+                                  }
+                                ]
                               },
+                              1,
                               {
-                                "f": "start"
+                                "sub": [
+                                  {
+                                    "len": {
+                                      "slice": [
+                                        {
+                                          "f": "text"
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "sub": [
+                                            {
+                                              "match": "value",
+                                              "at": "end"
+                                            },
+                                            {
+                                              "f": "start"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  1
+                                ]
                               }
                             ]
                           },
                           {
-                            "sub": [
+                            "slice": [
                               {
-                                "match": "value",
-                                "at": "end"
+                                "f": "text"
                               },
                               {
-                                "f": "start"
+                                "sub": [
+                                  {
+                                    "match": "value"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
+                              },
+                              {
+                                "sub": [
+                                  {
+                                    "match": "value",
+                                    "at": "end"
+                                  },
+                                  {
+                                    "f": "start"
+                                  }
+                                ]
                               }
                             ]
                           }
@@ -8070,7 +8523,7 @@
       "clauses": [
         "C2-B-187",
         "C2-B-209",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -8263,7 +8716,7 @@
       ],
       "clauses": [
         "C2-B-174",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {
@@ -8390,7 +8843,7 @@
         "C2-B-172",
         "C2-B-173",
         "C2-B-174",
-        "C2-W-148"
+        "C2-W-149"
       ]
     },
     {

@@ -257,7 +257,7 @@ for (const row of data['lint-rules']?.rules ?? []) need(codes, row.replaced_by, 
 // writes its patterns in the subset of C2-W-142.
 {
   const model = data['lint-model'] ?? { line_fields: [], block_fields: [], inline_fields: [], rules: [] }
-  // C2-W-148: the table fields are fields of the line and block records they apply to.
+  // C2-W-149: the table fields are fields of the line and block records they apply to.
   const tableFields = (model.table_fields ?? []).map(field => field.name)
   const lineFields = new Set(model.line_fields.map(field => field.name).concat(['prev2', 'next2'], tableFields))
   const blockFields = new Set(model.block_fields.map(field => field.name).concat(tableFields))
