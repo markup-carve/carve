@@ -63381,7 +63381,6 @@
  {
   "id": "CC-1443",
   "clauses": [
-<<<<<<< HEAD
    "C2-X-059"
   ],
   "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
@@ -63398,69 +63397,12 @@
   },
   "expected": {
    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E\" alt=\"\">"
-=======
-   "C2-T-005",
-   "C2-A-203"
-  ],
-  "why": "C2-T-005: Each also takes an optional annotation-range sidecar. C2-A-203: With the annotation-range sidecar, a reader also checks that each id identifies one range whose start or end path is that node or a descendant.",
-  "summary": "a tree reader accepts a matching annotation range",
-  "kind": "tree",
-  "tree": {
-   "type": "document",
-   "astVersion": "2.0",
-   "extensions": [
-    {
-     "name": "carve.annotation",
-     "version": "1",
-     "required": false,
-     "slots": []
-    }
-   ],
-   "children": [
-    {
-     "type": "paragraph",
-     "children": [
-      {
-       "type": "text",
-       "value": "a"
-      }
-     ],
-     "data": {
-      "carve.annotation": {
-       "ids": [
-        "note"
-       ]
-      }
-     }
-    }
-   ]
-  },
-  "annotations": {
-   "ranges": [
-    {
-     "id": "note",
-     "start": {
-      "path": "/children/0",
-      "offset": 0
-     },
-     "end": {
-      "path": "/children/0",
-      "offset": 1
-     }
-    }
-   ]
-  },
-  "options": {},
-  "expected": {
-   "accepted": true
->>>>>>> abc37e94a (Spec 0.2: expose annotation ranges to tree readers (#6262))
   },
   "from": []
  },
  {
   "id": "CC-1444",
   "clauses": [
-<<<<<<< HEAD
    "C2-X-059"
   ],
   "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
@@ -63477,57 +63419,12 @@
   },
   "expected": {
    "html": "<img src=\"data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%2F%3E%3C%2Fsvg%3E\" alt=\"\">"
-=======
-   "C2-A-203"
-  ],
-  "why": "C2-A-203: With the annotation-range sidecar, a reader also checks that each id identifies one range whose start or end path is that node or a descendant.",
-  "summary": "a tree reader refuses a duplicate range id",
-  "kind": "tree",
-  "tree": {
-   "type": "document",
-   "astVersion": "2.0",
-   "children": []
-  },
-  "annotations": {
-   "ranges": [
-    {
-     "id": "note",
-     "start": {
-      "path": "",
-      "offset": 0
-     },
-     "end": {
-      "path": "",
-      "offset": 0
-     }
-    },
-    {
-     "id": "note",
-     "start": {
-      "path": "",
-      "offset": 0
-     },
-     "end": {
-      "path": "",
-      "offset": 0
-     }
-    }
-   ]
-  },
-  "options": {},
-  "expected": {
-   "refusal": {
-    "error": "CarveTreeError",
-    "path": "/ranges/1/id"
-   }
->>>>>>> abc37e94a (Spec 0.2: expose annotation ranges to tree readers (#6262))
   },
   "from": []
  },
  {
   "id": "CC-1445",
   "clauses": [
-<<<<<<< HEAD
    "C2-X-059"
   ],
   "why": "C2-X-059: Every childless element of the sanitized SVG tree serializes self-closing, including an element emptied by sanitization.",
@@ -63563,49 +63460,158 @@
   ]
  },
  "from": []
-}
-=======
-   "C2-A-203"
+},
+{
+ "id": "CC-1447",
+ "clauses": [
+  "C2-T-005",
+  "C2-A-203"
+ ],
+ "why": "C2-T-005: Each also takes an optional annotation-range sidecar. C2-A-203: With the annotation-range sidecar, a reader also checks that each id identifies one range whose start or end path is that node or a descendant.",
+ "summary": "a tree reader accepts a matching annotation range",
+ "kind": "tree",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "extensions": [
+   {
+    "name": "carve.annotation",
+    "version": "1",
+    "required": false,
+    "slots": []
+   }
   ],
-  "why": "C2-A-203: A tree-only reader checks the shape of each `carve.annotation` value and refuses duplicate ids in a value or across the tree.",
-  "summary": "a tree reader accepts an annotation id without a supplied range sidecar",
-  "kind": "tree",
-  "tree": {
-   "type": "document",
-   "astVersion": "2.0",
-   "extensions": [
-    {
-     "name": "carve.annotation",
-     "version": "1",
-     "required": false,
-     "slots": []
-    }
-   ],
-   "children": [
-    {
-     "type": "paragraph",
-     "children": [
-      {
-       "type": "text",
-       "value": "a"
-      }
-     ],
-     "data": {
-      "carve.annotation": {
-       "ids": [
-        "note"
-       ]
-      }
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "a"
+     }
+    ],
+    "data": {
+     "carve.annotation": {
+      "ids": [
+       "note"
+      ]
      }
     }
-   ]
-  },
-  "options": {},
-  "expected": {
-   "accepted": true
-  },
-  "from": []
- }
->>>>>>> abc37e94a (Spec 0.2: expose annotation ranges to tree readers (#6262))
+   }
+  ]
+ },
+ "annotations": {
+  "ranges": [
+   {
+    "id": "note",
+    "start": {
+     "path": "/children/0",
+     "offset": 0
+    },
+    "end": {
+     "path": "/children/0",
+     "offset": 1
+    }
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "accepted": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1448",
+ "clauses": [
+  "C2-A-203"
+ ],
+ "why": "C2-A-203: With the annotation-range sidecar, a reader also checks that each id identifies one range whose start or end path is that node or a descendant.",
+ "summary": "a tree reader refuses a duplicate range id",
+ "kind": "tree",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": []
+ },
+ "annotations": {
+  "ranges": [
+   {
+    "id": "note",
+    "start": {
+     "path": "",
+     "offset": 0
+    },
+    "end": {
+     "path": "",
+     "offset": 0
+    }
+   },
+   {
+    "id": "note",
+    "start": {
+     "path": "",
+     "offset": 0
+    },
+    "end": {
+     "path": "",
+     "offset": 0
+    }
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "refusal": {
+   "error": "CarveTreeError",
+   "path": "/ranges/1/id"
+  }
+ },
+ "from": []
+},
+{
+ "id": "CC-1449",
+ "clauses": [
+  "C2-A-203"
+ ],
+ "why": "C2-A-203: A tree-only reader checks the shape of each `carve.annotation` value and refuses duplicate ids in a value or across the tree.",
+ "summary": "a tree reader accepts an annotation id without a supplied range sidecar",
+ "kind": "tree",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "extensions": [
+   {
+    "name": "carve.annotation",
+    "version": "1",
+    "required": false,
+    "slots": []
+   }
+  ],
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "a"
+     }
+    ],
+    "data": {
+     "carve.annotation": {
+      "ids": [
+       "note"
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "accepted": true
+ },
+ "from": []
+}
  ]
 }
