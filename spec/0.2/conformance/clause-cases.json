@@ -61067,6 +61067,60 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1389",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-031"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages",
+   "summary": "a quote mark glued to text is reported on the line without its trailing spaces",
+   "kind": "lint",
+   "input": ">a  \n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 3
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1390",
+   "clauses": [
+    "C2-W-138",
+    "C2-B-031",
+    "C2-B-161"
+   ],
+   "why": "C2-W-138: A stated catalog range takes precedence over the general extents below. Catalog blockquote-marker-without-space: the line from its `>` to its last character that is not a space or a tab, for both messages",
+   "summary": "the frontmatter message has the same line range",
+   "kind": "lint",
+   "input": "---\ntitle: x\n>a  \n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 3,
+      "column": 1,
+      "messageWhen": "the line is inside frontmatter",
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 3,
+      "endColumn": 3
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }

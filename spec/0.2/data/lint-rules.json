@@ -99,6 +99,7 @@
       "default": "on",
       "messages": [{"when": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter", "text": "A blockquote marker must be bare `>` or followed by a space. This line is literal text; write `> ${text}` to quote it."}, {"when": "the line is inside frontmatter", "text": "This line is frontmatter content, not a blockquote. Close frontmatter before a quote and write `> ${text}`."}],
       "message_origin": "data_file",
+      "range": "the line from its `>` to its last character that is not a space or a tab, for both messages",
       "reports": "a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text; a bare `>` is not reported; once per line (C2-B-031)",
       "clauses": ["C2-B-031"]
     },
