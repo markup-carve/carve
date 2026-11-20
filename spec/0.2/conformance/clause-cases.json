@@ -61486,5 +61486,119 @@
    },
    "from": []
   }
+,
+ {
+ "id": "CC-1410",
+ "clauses": [
+  "C2-B-019",
+  "C2-B-024",
+  "C2-B-031"
+ ],
+ "why": "Catalog block-opener-without-blank-line: a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included",
+ "summary": "a lazy quote marker before a comment fence is reported",
+ "kind": "lint",
+ "input": "  c\n  > %%%\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "block-opener-without-blank-line",
+    "line": 2,
+    "column": 3,
+    "endLine": 2,
+    "endColumn": 4
+   }
+  ]
+ },
+ "from": []
+},
+ {
+ "id": "CC-1411",
+ "clauses": [
+  "C2-B-003",
+  "C2-B-025"
+ ],
+ "why": "C2-B-003: Columns count code points from 0, starting after the quote marks of the open quotes",
+ "summary": "indent before a quote mark does not overindent its item block",
+ "kind": "lint",
+ "input": "> - a\n>\n  >   # H\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "list-item-block-overindented"
+  ]
+ },
+ "from": []
+},
+ {
+ "id": "CC-1412",
+ "clauses": [
+  "C2-B-154"
+ ],
+ "why": "C2-B-154: A heading holds its marker line and every line directly below it that is indented past the column of its marker",
+ "summary": "a heading below its attribute line is not a heading continuation",
+ "kind": "lint",
+ "input": "   {.x}\n   ### H\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-indented-line-under-heading"
+  ]
+ },
+ "from": []
+},
+ {
+ "id": "CC-1413",
+ "clauses": [
+  "C2-B-111",
+  "C2-W-138"
+ ],
+ "why": "Catalog unclosed-container-fence: the range is the div",
+ "summary": "an unclosed div finding covers the div rather than its opening mark",
+ "kind": "parse",
+ "input": "abc\n::: note\nbody\n",
+ "options": {},
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "unclosed-container-fence",
+    "line": 2,
+    "column": 1,
+    "endLine": 3,
+    "endColumn": 5
+   }
+  ]
+ },
+ "from": []
+},
+ {
+ "id": "CC-1414",
+ "clauses": [
+  "C2-H-129",
+  "C2-W-138"
+ ],
+ "why": "C2-H-129: A construct outside the profile renders in its degraded form and is reported. The report has the code `profile-construct-degraded`. C2-W-138: An entry of a run on source carries that range, in the render-loss channel too",
+ "summary": "two degraded constructs retain their own positions",
+ "kind": "render",
+ "input": "a\n\n{{ m.crv }}\n\nb\n\n> q\n",
+ "options": {
+  "profile": "minimal"
+ },
+ "expected": {
+  "diagnostics": [
+   {
+    "code": "profile-construct-degraded",
+    "line": 3,
+    "column": 1
+   },
+   {
+    "code": "profile-construct-degraded",
+    "line": 7,
+    "column": 1
+   }
+  ]
+ },
+ "from": []
+}
  ]
 }
