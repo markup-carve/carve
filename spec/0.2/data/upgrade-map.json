@@ -3280,6 +3280,46 @@
       "meaning02": "<dl>\n  <dt>t\nmore</dt>\n</dl> 0.2 skips a comment-only line (C2-B-137), so the line under it continues the paragraph or term above; 0.1 ended that block at the comment line. A blank line above the comment line keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-379 reports the rest.",
       "toolEntry": "U-433",
       "silent": true
+    },
+    {
+      "id": "U-434",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "-   [ ] a\n",
+      "to": "- [ ] a\n",
+      "meaning02": "<ul>\n  <li>[ ] a</li>\n</ul> C2-B-046 reads a task box only directly after the one space a bullet requires; 0.1 also read it after more spaces. One space keeps the box. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal; U-163 reports the shapes it does not verify.",
+      "toolEntry": "U-434",
+      "silent": true
+    },
+    {
+      "id": "U-435",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "- a\n\n  :: t\n  :  d\n   > q\n",
+      "to": "- a\n\n  :: t\n  :  d\n\n  > q\n",
+      "meaning02": "<ul>\n  <li>a\n    <dl>\n      <dt>t</dt>\n      <dd>d\n&gt; q</dd>\n    </dl>\n  </li>\n</ul> C2-B-076 keeps a block indented past a description mark in the description; 0.1 ended the description where the block stood left of the description content. The block moves to the column of the list that holds it (C2-B-067), so it stays after the description list, inside a list item or note body too. U-199 and U-236 cover the same move for their own shapes. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-435",
+      "silent": true
+    },
+    {
+      "id": "U-436",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "- +\n  %% c\nafter\n",
+      "to": "- %% c\n  after\n",
+      "meaning02": "<ul>\n  <li>+\nafter</li>\n</ul> With U-017 the comment moves to the marker line. Only an open paragraph takes lazy lines (C2-B-012), so a line that 0.1 read into the item left of the item column then starts a paragraph after the list. Indented to the item column it stays in the item (C2-B-025). The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-436",
+      "silent": true
+    },
+    {
+      "id": "U-437",
+      "kind": "rewrite",
+      "group": "upgrade replay",
+      "from": "> a\n+\n- b\n> c\n",
+      "to": "> a\n>\n> - b\n>\n> c\n",
+      "meaning02": "<blockquote><p>a\n+\n- b\nc</p></blockquote> With U-016 the item takes the quote mark, and a quote line that 0.1 read as a new paragraph below the item text is then a lazy line of the item (C2-B-012, C2-B-024). A blank line with the shared quote marks keeps the 0.1 blocks. The tool writes it only when the complete 0.1 and 0.2 HTML compare equal.",
+      "toolEntry": "U-437",
+      "silent": true
     }
   ],
   "tree": [
