@@ -476,7 +476,7 @@
       "status": "new",
       "default": "on",
       "messages": [
-        "(key) does not apply to a pipe table in 0.2. Mark header cells with the header mark and write alignment on the cells."
+        "`header-rows` does not apply to a pipe table in 0.2. Mark header cells with the header mark and write alignment on the cells."
       ],
       "message_origin": "design",
       "reports": "`header-rows` on a pipe table",
