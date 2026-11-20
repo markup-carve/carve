@@ -61023,6 +61023,50 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1387",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-054",
+    "C2-B-055"
+   ],
+   "why": "Catalog list-marker-below-content-column: the marker column of the open bullet or ordered list nested in that item",
+   "summary": "a description list does not count as the deeper list for the marker warning",
+   "kind": "lint",
+   "input": "* - %%\n      :: term\n\n    - -\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "list-marker-below-content-column"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1388",
+   "clauses": [
+    "C2-W-106",
+    "C2-B-025",
+    "C2-B-027"
+   ],
+   "why": "Catalog list-item-block-overindented: including a block opener inside a div in that item",
+   "summary": "an overindented quote opener inside a div inside a list item is reported",
+   "kind": "lint",
+   "input": "1. ::::\n    >\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "list-item-block-overindented",
+      "line": 2,
+      "column": 5,
+      "channel": "lint",
+      "severity": "warning"
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
