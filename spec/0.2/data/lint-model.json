@@ -4473,9 +4473,9 @@
           {
             "matches": [
               {
-                "f": "text"
+                "f": "opener_text"
               },
-              "^[ \\t\\r]*:{3,}[ \\t\\r]*figure[ \\t\\r]*(?:\\n|$)"
+              "^[ \\t]*:{3,}[ \\t]*figure$"
             ]
           },
           {
@@ -4664,22 +4664,35 @@
           }
         },
         "label": {
-          "slice": [
+          "if": [
             {
-              "f": "text"
-            },
-            2,
-            {
-              "sub": [
+              "matches": [
                 {
-                  "match": "label",
-                  "at": "end"
+                  "f": "text"
                 },
+                "^\\[\\^(?<label>[^\\]]*)\\]"
+              ]
+            },
+            {
+              "slice": [
                 {
-                  "f": "start"
+                  "f": "text"
+                },
+                2,
+                {
+                  "sub": [
+                    {
+                      "match": "label",
+                      "at": "end"
+                    },
+                    {
+                      "f": "start"
+                    }
+                  ]
                 }
               ]
-            }
+            },
+            ""
           ]
         },
         "twin_label": {
