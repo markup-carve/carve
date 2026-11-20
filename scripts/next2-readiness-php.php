@@ -237,12 +237,12 @@ function runCase(array $case): array
                     if (!method_exists(Carve2::class, 'renderWithDocumentTransforms')) {
                         return ['unsupported' => 'renderWithDocumentTransforms is not offered'];
                     }
-                    $result = Carve2::renderWithDocumentTransforms($case['tree'] ?? $source, hostTransforms($case['host']), $options);
+                    $result = Carve2::renderWithDocumentTransforms($case['tree'] ?? $source, [...$transforms, ...hostTransforms($case['host'])], $options);
                     return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
                 }
                 if (isset($case['tree']) && !isset($case['source']) && !isset($case['input'])) {
                     $doc = \MarkupCarve\Carve2\Json\TreeReader::read(json_encode($case['tree'], JSON_THROW_ON_ERROR), $options);
-                    $result = Carve2::renderWithDiagnostics($doc, $options);
+                    $result = $transforms !== [] ? Carve2::renderWithDocumentTransforms($doc, $transforms, $options) : Carve2::renderWithDiagnostics($doc, $options);
                     return ['html' => $result->html, 'diagnostics' => findings($result->diagnostics), 'suppressed' => suppressedOf($result)];
                 }
                 if ($transforms !== []) {
