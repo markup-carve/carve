@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. The source form of an extension that a writer without the extension writes is the other exception (C2-X-023). This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. The source form of an extension that a writer without the extension writes is another exception (C2-X-023). A span count that no mark cell gives is the third: the tree that reads back holds the mark cells the writer adds for it (C2-W-145). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
@@ -845,6 +845,8 @@ Written:
 
 **C2-W-136** A key `aligns`, `valigns`, `widths`, `header-rows`, `footer-rows`, `body-rows`, `body-header-rows` or `body-header-cols` that a table keeps in `attrs` (C2-B-227) is written once, from `attrs`, at its place among the keys (C2-W-048). The writer makes one of these keys from the table fields, as it makes `header-rows` from the groups (C2-W-066), only where `attrs` holds no key of that name. A table of more than one body, or with an empty body, a body that starts with rows of header cells or a `rowHeadColumns`, is written with `body-rows`, the data rows of each body; with `body-header-rows`, the leading rows of header cells of each body, where a body has them; and with `body-header-cols` where a body has `rowHeadColumns`. A body that lacks one of these takes the entry `0` in `body-header-rows` and an empty entry in `body-header-cols` (C2-B-230). The cells of those leading rows are written without header marks: the key makes them header cells, and a leading row of header marks would read as the head (C2-B-178). Where a supplied tree holds both, such as `aligns=x` in `attrs` and an `align` on a column, the two cannot be spelled as two keys of one name (C2-A-035): the writer writes the key from the table fields and reports the key in `attrs` as `field-unspellable` (C2-W-117).
 
+**C2-W-145** A `colspan` or `rowspan` above 1 on a cell that no mark cell of the tree covers, as an import gives it (C2-A-093), is written with the span marks that a parse reads back as that count. A `colspan` of n adds n - 1 cells `| < |` directly behind the cell. A `rowspan` of n adds one cell `| ^ |` in each of the next n - 1 rows of the cell's group, at the place that puts it in the cell's column, counted as a parse counts the columns of a row with spans (C2-B-172). The added cells are written as C2-W-063 writes a mark, and the writer reports no loss for the count. A cell with both counts above 1 has no spelling of its row span, since a `^` below a cell of more than one column joins nothing (C2-B-172): its `colspan` is written with marks, and the writer reports `field-unspellable` for `rowspan` (C2-W-117).
+
 ## Canonical forms: inline
 
 **C2-W-069** Emphasis is written with `/` and strong with `*`. Where the bare delimiter would not open or close at that position (C2-I-047, C2-I-048), or the content holds the same delimiter in a position that would pair, the braced form is written: `{/usr/local/}`.
@@ -954,7 +956,7 @@ Written:
 
 ## Escaping
 
-**C2-W-088** The escapes of a text written from the tree rather than from verbatim reference text (C2-W-075) are found by one procedure. The text is written bare and parsed in its context, including the link definitions of the whole document. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A bare `[text]` that would form a shortcut because of a definition receives a backslash when the tree holds that bracket pair as text. In text written by this procedure, a backslash it does not place is a defect, and so is a missing one; C2-W-125 names the few it adds.
+**C2-W-088** The escapes of a text written from the tree rather than from verbatim reference text (C2-W-075) are found by one procedure. The text is written bare and parsed in its context, including the link definitions of the whole document. While the parse holds a construct that the tree does not hold, the opener of the leftmost such construct gets a backslash (C2-W-090), and the text is parsed again. Leftmost is by the offset at which the construct starts, and of two that start at one offset the outer one. A bare `[text]` that would form a shortcut because of a definition receives a backslash when the tree holds that bracket pair as text. In text written by this procedure, a backslash it does not place is a defect, and so is a missing one; C2-W-125 and C2-W-146 name the few it adds.
 
 **C2-W-089** An escape is decided by reparsing the candidate line in its context, with the 0.2 parser, and not from a list of characters. The reparse defines the bytes; a writer that reaches the same bytes another way, as from tables, follows this clause (C2-W-010). The lists below name the cases the test has to cover. They are not the rule. This is requirement W2.
 
@@ -1029,6 +1031,8 @@ A line.
 
 \- not a list
 ```
+
+**C2-W-146** Canonical output passes the lint rules that report a pair of bare marks that stays text. After the test of C2-W-088, the text the procedure writes is tested with the rules `deprecated-bare-underline`, `deprecated-bare-strike`, `deprecated-bare-highlight`, `markdown-strikethrough-double-tilde` and `markdown-strong-double-star`, as lint runs them on the written source (C2-W-107). Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again. Where the backslashes of a round keep the tree from reading back, the round is taken back and the text keeps its form before it. The test holds for `fmt` as for `write`, and it reads neither the option `rules` nor a control comment, so lint still changes no output of `fmt` (C2-W-108). The text `~s~` is written `\~s~`, `_u_` is written `\_u_`, `=x=` is written `\=x=`, `~~s~~` is written `\~\~s~~` and `**b**` is written `\*\*b**`. A form with these backslashes is the canonical one, and C2-W-088 does not call them defects.
 
 ## `carve fmt`
 
@@ -1559,12 +1563,12 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | What the writer cannot spell | 10 | 0 | 0 | 2 |
 | Layout | 23 | 3 | 0 | 4 |
 | Canonical forms: blocks | 24 | 0 | 0 | 22 |
-| Canonical forms: tables | 12 | 0 | 2 | 2 |
+| Canonical forms: tables | 13 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
 | The sidecar | 6 | 0 | 0 | 1 |
-| Escaping | 13 | 0 | 1 | 1 |
+| Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 13 | 0 | 0 | 2 |
-| **Total** | **131** | **6** | **6** | **40** |
+| **Total** | **133** | **6** | **6** | **40** |
 
-The document has 131 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 133 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.

@@ -63612,6 +63612,568 @@
   "accepted": true
  },
  "from": []
+},
+{
+ "id": "CC-1450",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `colspan` or `rowspan` above 1 on a cell that no mark cell of the tree covers, as an import gives it (C2-A-093), is written with the span marks that a parse reads back as that count. C2-W-145: A `colspan` of n adds n - 1 cells `| < |` directly behind the cell.",
+ "summary": "an imported colspan in a body row is written with a < mark",
+ "kind": "import",
+ "html": "<table><tr><th>A</th><th>B</th></tr><tr><td colspan=\"2\">m</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "{body-rows=1 body-header-rows=1}\n| A | B |\n| m | < |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1451",
+ "clauses": [
+  "C2-W-145",
+  "C2-W-063"
+ ],
+ "why": "C2-W-145: A `colspan` of n adds n - 1 cells `| < |` directly behind the cell. C2-W-063: In the head it carries the header mark, `|= ^ |`, so that a row of span marks stays a head row (C2-B-174).",
+ "summary": "an imported colspan in the head row is written with a header-marked < mark",
+ "kind": "import",
+ "html": "<table><thead><tr><th colspan=\"2\">H</th></tr></thead><tbody><tr><td>a</td><td>b</td></tr></tbody></table>",
+ "options": {},
+ "expected": {
+  "carve": "|= H |= < |\n| a | b |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1452",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `colspan` of n adds n - 1 cells `| < |` directly behind the cell.",
+ "summary": "an imported colspan that reaches the end of its row is written with one < per covered column",
+ "kind": "import",
+ "html": "<table><tr><td>a</td><td colspan=\"3\">b</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "| a | b | < | < |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1453",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `rowspan` of n adds one cell `| ^ |` in each of the next n - 1 rows of the cell's group, at the place that puts it in the cell's column, counted as a parse counts the columns of a row with spans (C2-B-172).",
+ "summary": "an imported rowspan in the first column is written with a ^ mark in the row below",
+ "kind": "import",
+ "html": "<table><tr><td rowspan=\"2\">a</td><td>b</td></tr><tr><td>c</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "| a | b |\n| ^ | c |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1454",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `rowspan` of n adds one cell `| ^ |` in each of the next n - 1 rows of the cell's group, at the place that puts it in the cell's column, counted as a parse counts the columns of a row with spans (C2-B-172).",
+ "summary": "an imported rowspan in the last column puts its ^ mark behind the cells of the row below",
+ "kind": "import",
+ "html": "<table><tr><td>x</td><td rowspan=\"2\">a</td></tr><tr><td>c</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "| x | a |\n| c | ^ |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1455",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `rowspan` of n adds one cell `| ^ |` in each of the next n - 1 rows of the cell's group, at the place that puts it in the cell's column, counted as a parse counts the columns of a row with spans (C2-B-172).",
+ "summary": "two imported rowspans side by side each take a ^ mark at their column",
+ "kind": "import",
+ "html": "<table><tr><td rowspan=\"3\">a</td><td>b</td><td rowspan=\"2\">c</td></tr><tr><td>d</td></tr><tr><td>e</td><td>f</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "| a | b | c |\n| ^ | d | ^ |\n| ^ | e | f |\n",
+  "notReported": [
+   "field-unspellable",
+   "structure-unspellable"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1456",
+ "clauses": [
+  "C2-W-145",
+  "C2-W-117"
+ ],
+ "why": "C2-W-145: A cell with both counts above 1 has no spelling of its row span, since a `^` below a cell of more than one column joins nothing (C2-B-172): its `colspan` is written with marks, and the writer reports `field-unspellable` for `rowspan` (C2-W-117).",
+ "summary": "an imported cell with both counts writes its colspan and reports its rowspan",
+ "kind": "import",
+ "html": "<table><tr><td rowspan=\"2\" colspan=\"2\">a</td><td>b</td></tr><tr><td>c</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table>",
+ "options": {},
+ "expected": {
+  "carve": "| a | < | b |\n| c |\n| 1 | 2 | 3 |\n",
+  "diagnostics": [
+   {
+    "code": "field-unspellable",
+    "path": "/children/0/children/0/children/0/children/0/rowspan"
+   }
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1457",
+ "clauses": [
+  "C2-W-145"
+ ],
+ "why": "C2-W-145: A `colspan` or `rowspan` above 1 on a cell that no mark cell of the tree covers, as an import gives it (C2-A-093), is written with the span marks that a parse reads back as that count.",
+ "summary": "a supplied tree with counts and no mark cells is written with span marks and no loss",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "table",
+    "columns": [
+     {
+      "type": "table_column"
+     },
+     {
+      "type": "table_column"
+     }
+    ],
+    "children": [
+     {
+      "type": "table_head",
+      "children": [
+       {
+        "type": "table_row",
+        "children": [
+         {
+          "type": "table_cell",
+          "header": true,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "A"
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "type": "table_cell",
+          "header": true,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "B"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "table_body",
+      "children": [
+       {
+        "type": "table_row",
+        "children": [
+         {
+          "type": "table_cell",
+          "header": false,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "m"
+             }
+            ]
+           }
+          ],
+          "colspan": 2
+         }
+        ]
+       },
+       {
+        "type": "table_row",
+        "children": [
+         {
+          "type": "table_cell",
+          "header": false,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "a"
+             }
+            ]
+           }
+          ],
+          "rowspan": 2
+         },
+         {
+          "type": "table_cell",
+          "header": false,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "b"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "table_row",
+        "children": [
+         {
+          "type": "table_cell",
+          "header": false,
+          "children": [
+           {
+            "type": "cell_paragraph",
+            "children": [
+             {
+              "type": "text",
+              "value": "c"
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "|= A |= B |\n| m | < |\n| a | b |\n| ^ | c |\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1458",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that deprecated-bare-strike would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "~s~"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "\\~s~\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1459",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that deprecated-bare-underline would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "_u_"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "\\_u_\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1460",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that deprecated-bare-highlight would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "=x="
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "\\=x=\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1461",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that markdown-strikethrough-double-tilde would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "~~s~~"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "\\~\\~s~~\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1462",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that markdown-strong-double-star would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "**b**"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "\\*\\*b**\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1463",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "text that deprecated-bare-underline would report is written with its opening run escaped",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "a _u_ and =x= b"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "a \\_u_ and \\=x= b\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1464",
+ "clauses": [
+  "C2-W-146"
+ ],
+ "why": "C2-W-146: Where one of them reports a pair whose opening run is text the procedure wrote, each mark of that opening run takes a backslash, and both tests run again.",
+ "summary": "an underscore pair inside a word is reported by no pair rule and stays bare",
+ "kind": "write",
+ "tree": {
+  "type": "document",
+  "astVersion": "2.0",
+  "children": [
+   {
+    "type": "paragraph",
+    "children": [
+     {
+      "type": "text",
+      "value": "a_b_c"
+     }
+    ]
+   }
+  ]
+ },
+ "options": {},
+ "expected": {
+  "carve": "a_b_c\n",
+  "diagnostics": [],
+  "diagnosticsComplete": true
+ },
+ "from": []
+},
+{
+ "id": "CC-1465",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-strike: a bare `~` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare ~ followed by a joining character opens no deprecated-bare-strike pair",
+ "kind": "lint",
+ "input": "x ~́a~ y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-strike"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1466",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-underline: a bare `_` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare _ followed by a joining character opens no deprecated-bare-underline pair",
+ "kind": "lint",
+ "input": "x _́a_ y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-underline"
+  ]
+ },
+ "from": []
+},
+{
+ "id": "CC-1467",
+ "clauses": [
+  "C2-I-050"
+ ],
+ "why": "Catalog deprecated-bare-highlight: a bare `=` followed by a combining mark, a variation selector or a zero-width joiner (C2-I-050) takes no part",
+ "summary": "a bare = followed by a joining character opens no deprecated-bare-highlight pair",
+ "kind": "lint",
+ "input": "x =‍a= y\n",
+ "options": {},
+ "expected": {
+  "notReported": [
+   "deprecated-bare-highlight"
+  ]
+ },
+ "from": []
 }
  ]
 }
