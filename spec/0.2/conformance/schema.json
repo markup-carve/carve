@@ -199,7 +199,8 @@
           "minProperties": 1
         },
         "from": { "type": "array", "items": { "type": "string", "pattern": "^(js|php|rs):.+$" } },
-        "corrected": { "type": "string" }
+        "corrected": { "type": "string" },
+        "engineLocal": { "type": "string", "description": "The implementation choice a clause leaves open that the expectation depends on (README.md, Clause cases)." }
       },
       "allOf": [
         { "if": { "not": { "required": ["kind"], "properties": { "kind": true } } }, "then": { "required": ["input"], "properties": { "input": true, "expected": { "type": "object", "required": ["html", "children"], "properties": { "html": true, "children": true } } } } },

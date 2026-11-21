@@ -245,13 +245,15 @@ C2-W-005 with C2-B-024: where the second of two adjacent lists that C2-W-028 wri
 
 The `bare-html-tag`, `empty-reference-definition` and pair rows of `data/lint-model.json` state patterns a backtracking engine runs in linear time, and the pair scan gives the group `backslashes` (#6305). Clause cases CC-1485 to CC-1491. Measured on the engine heads of `scripts/next2-readiness-baseline.json`.
 
-- `carve-rs`: `djot-emphasis-underscore` reports an opener that follows a letter, as in `x_a_` (CC-1491, markup-carve/carve-rs#4549).
+CC-1491 holds 10,000 copies of `x_a_ ` again (#6314); the three engines pass it in linear time since markup-carve/carve-rs#4549 and markup-carve/carve-php#5525 were fixed.
 
 ## Engine gaps from the writer budget ruling of 21 November
 
 C2-W-133 gives the writer one repair budget per document, 24,000,000 characters or 1,000 times the document where that is more, summed over all groups; once it is spent, every later group that needs a repair parse is refused, and C2-W-010 calls the limit linear in the document (#6304). Clause cases CC-1492 and CC-1493.
 
-- All three engines: the repair limit is per group, so the second and third quote of CC-1493 are written without `writer-refused` (markup-carve/carve-js#5283, markup-carve/carve-rs#4538). CC-1492 passes.
+CC-1493 is engine-local (`engineLocal`): its refusals hold for a writer that repairs those quotes by parsing, and carve-php decides their escapes from tables with no repair parse, which C2-W-089 allows. CC-1492 passes.
+
+- `carve-rs`: the repair limit is per group, so the second and third quote of CC-1493 are written without `writer-refused` (markup-carve/carve-rs#4538).
 
 ## Engine gaps from the trailing-space ruling of 21 November
 

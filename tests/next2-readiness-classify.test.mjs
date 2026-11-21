@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { caseKey, caseFingerprint, classify, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeClassCounts, upgradeBarFail } from '../scripts/next2-readiness-classify.mjs'
+import { caseKey, caseFingerprint, classify, settle, classifyUpgrade, groupDigests, listedGaps, isListed, upgradeClass, upgradeClassCounts, upgradeBarFail } from '../scripts/next2-readiness-classify.mjs'
 
 const base = { area: 'clauses', kind: 'render', id: 'CC-010', clauses: ['C2-B-001'], why: 'w', input: 'a\n', expected: { html: '<p>a</p>\n' } }
 const fp = c => caseFingerprint(c)
@@ -177,4 +177,12 @@ test('a generated-pack class worsening remains a regression outside the bar', ()
     baselineClasses: { [id]: 'a' }, currentClasses: { [id]: 'b' } })
   assert.deepEqual(verdict.regressions, [id])
   assert.equal(upgradeBarFail(upgradeClassCounts({ [id]: 'b' })), 0)
+})
+
+test('an engineLocal case that does not pass counts as engine-local, and a pass stays a pass', () => {
+  const local = { ...base, engineLocal: 'a writer that repairs by parsing' }
+  assert.equal(settle(local, { status: 'fail', fields: ['diagnostic:writer-refused'] }).status, 'engine-local')
+  assert.equal(settle(local, { status: 'unsupported', fields: [] }).status, 'engine-local')
+  assert.equal(settle(local, { status: 'pass', fields: [] }).status, 'pass')
+  assert.equal(settle(base, { status: 'fail', fields: [] }).status, 'fail')
 })
