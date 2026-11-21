@@ -23,22 +23,35 @@ export function fenceAt(lines, line) {
   const open = FENCE.exec(lines[line] ?? '')
   if (!open) return null
   let end = line + 1
-  while (end < lines.length && lines[end] !== open[1]) end++
+  while (end < lines.length && !closesFence(lines[end], open[1])) end++
   return { lang: open[2], body: lines.slice(line + 1, end).join('\n'), next: end + 1 }
 }
 
-/** The clause ids of the section around `line`: from the heading before it to the next heading. */
-function sectionClauses(lines, line) {
-  let start = line
-  while (start > 0 && !/^#/.test(lines[start])) start--
-  let end = line + 1
-  while (end < lines.length && !/^#/.test(lines[end])) end++
-  const ids = []
-  for (let at = start; at < end; at++) {
-    const clause = CLAUSE.exec(lines[at])
-    if (clause) ids.push(clause[1])
+function closesFence(line, opener) {
+  const run = /^(`+|~+)\s*$/.exec(line)?.[1]
+  return run?.[0] === opener[0] && run.length >= opener.length
+}
+
+/** The section at each line, ignoring headings and clauses inside sample fences. */
+function sectionsOf(lines) {
+  const sections = []
+  let section = { heading: '', clauses: [] }
+  let fence = null
+  for (const line of lines) {
+    if (fence) {
+      if (closesFence(line, fence)) fence = null
+    } else {
+      const open = FENCE.exec(line)
+      if (open) fence = open[1]
+      else if (/^#/.test(line)) section = { heading: line.replace(/^#+\s*/, ''), clauses: [] }
+      else {
+        const clause = CLAUSE.exec(line)
+        if (clause) section.clauses.push(clause[1])
+      }
+    }
+    sections.push(section)
   }
-  return { heading: lines[start].replace(/^#+\s*/, ''), clauses: ids }
+  return sections
 }
 
 /**
@@ -49,6 +62,7 @@ function sectionClauses(lines, line) {
  */
 export function examplesOf(spec, document) {
   const lines = readFileSync(join(spec, `${document}.md`), 'utf8').split('\n')
+  const sections = sectionsOf(lines)
   const out = []
   for (let at = 0; at < lines.length; at++) {
     const header = HEADER.exec(lines[at])
@@ -84,7 +98,7 @@ export function examplesOf(spec, document) {
       }
       line++
     }
-    const { heading, clauses } = sectionClauses(lines, at)
+    const { heading, clauses } = sections[at]
     const named = flagsOf(header[3]).filter(flag => NAMED.test(flag))
     out.push({
       document,
