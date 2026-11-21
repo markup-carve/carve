@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url'
 import { execFileSync } from 'node:child_process'
 
 // Ahead of the package pin: upgrade, fix and the import and export entries landed on carve-js next2 after it.
-const ENGINE_REVISION = '62638cf5a21f3f43cf95c5be16d6c92f0aba8773'
+const ENGINE_REVISION = 'f31337e680523135584ae7f3e56a5a864473f002'
 
 const checkout = resolve(process.argv[2] ?? '../carve-js')
 const actual = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: checkout, encoding: 'utf8' }).trim()

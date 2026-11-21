@@ -26,9 +26,10 @@ type HeadingIds = 'off' | 'keep-case' | 'lower' | 'ascii' | 'ascii-lower' | 'asc
 type Output = 'html' | 'tree' | 'lint' | 'fmt' | 'markdown' | 'plain' | 'ansi'
 type ExportTarget = 'markdown' | 'plain' | 'ansi'
 const exportTargets: ExportTarget[] = ['markdown', 'plain', 'ansi']
-type SharedOptions = { profile: Profile; headingIds: HeadingIds; sections: boolean; smartTypography: boolean; rawHtml: boolean }
+type SharedOptions = { profile: Profile; headingIds: HeadingIds; headingShift: number; sections: boolean; smartTypography: boolean; rawHtml: boolean }
 const profileValues: Profile[] = ['full', 'article', 'comment', 'minimal']
 const headingValues: HeadingIds[] = ['off', 'keep-case', 'lower', 'ascii', 'ascii-lower', 'ascii-strict', 'ascii-strict-lower']
+const headingShiftValues = [0, 1, 2, 3, 4, 5]
 const PHP_SANDBOX_URL = 'https://sandbox.dereuromark.de/sandbox/carve'
 const source = ref(DEFAULT_SOURCE)
 const fullscreen = ref(false)
@@ -39,6 +40,7 @@ const formatNote = ref('')
 const fromSharedLink = ref(false)
 const profile = ref<Profile>('full')
 const headingIds = ref<HeadingIds>('keep-case')
+const headingShift = ref(0)
 const sections = ref(true)
 const smartTypography = ref(true)
 const rawHtmlEnabled = ref(false)
@@ -54,7 +56,7 @@ const outputTabs: { id: Output; label: string }[] = [
   { id: 'ansi', label: 'ANSI' },
 ]
 const options = computed<SharedOptions>(() => ({
-  profile: profile.value, headingIds: headingIds.value, sections: sections.value,
+  profile: profile.value, headingIds: headingIds.value, headingShift: headingShift.value, sections: sections.value,
   smartTypography: smartTypography.value, rawHtml: rawHtmlEnabled.value && !fromSharedLink.value,
 }))
 function safeValue<T extends string>(value: unknown, allowed: T[], fallback: T): T {
@@ -127,6 +129,7 @@ async function applyShareLink(): Promise<boolean> {
   const saved = state.options ?? {}
   profile.value = safeValue(saved.profile, profileValues, 'full')
   headingIds.value = safeValue(saved.headingIds, headingValues, 'keep-case')
+  headingShift.value = typeof saved.headingShift === 'number' && headingShiftValues.includes(saved.headingShift) ? saved.headingShift : 0
   sections.value = saved.sections === undefined ? true : saved.sections === true
   smartTypography.value = saved.smartTypography === undefined ? true : saved.smartTypography === true
   rawHtmlEnabled.value = false
@@ -544,7 +547,9 @@ const exported = computed<{ text: string; losses: number } | null>(() => {
     return { text: 'Loading the export entry...', losses: 0 }
   }
   try {
-    const result = entry.exportDocument(target, parse(source.value, { headingIds: headingIds.value }))
+    // Plain text and ANSI refuse headingShift (C2-T-005).
+    const exportOptions = target === 'markdown' ? { headingShift: headingShift.value } : undefined
+    const result = entry.exportDocument(target, parse(source.value, { headingIds: headingIds.value }), exportOptions)
     return { text: result.output, losses: result.diagnostics?.length ?? 0 }
   } catch (error) {
     return { text: error instanceof Error ? error.message : String(error), losses: 0 }
@@ -1177,6 +1182,7 @@ void mermaidInit
       <legend>Render options</legend>
       <label>Profile <select v-model="profile"><option v-for="value in profileValues" :key="value" :value="value">{{ value }}</option></select></label>
       <label>Heading IDs <select v-model="headingIds"><option v-for="value in headingValues" :key="value" :value="value">{{ value }}</option></select></label>
+      <label title="Moves every heading down, for a page that writes its own title">Heading shift <select v-model.number="headingShift"><option v-for="value in headingShiftValues" :key="value" :value="value">{{ value }}</option></select></label>
       <label><input v-model="sections" type="checkbox"> Sections</label>
       <label><input v-model="smartTypography" type="checkbox"> Smart typography</label>
       <label title="Shared documents always keep raw HTML off"><input v-model="rawHtmlEnabled" type="checkbox" :disabled="fromSharedLink"> Raw HTML</label>

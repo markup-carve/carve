@@ -28,6 +28,16 @@ A host passes `codeBlockRenderer(node, defaultHtml)` to the render call. It runs
 
 `softBreak` writes a line break inside a paragraph as a line break (`newline`, the default), one space (`space`), or `<br>` (`br`) for output that shows source line breaks. The command line flag is `--soft-break`. See [render options](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
 
+## Headings under a page title
+
+When the page template writes the document title as the `<h1>`, `headingShift` moves every heading down by 0 to 5 levels (default 0). With `headingShift: 1`, `=` renders as `<h2>` and `==` as `<h3>`, inside quotes, divs, list items and expanded includes too. The command line flag is `--heading-shift`:
+
+```sh
+carve render --heading-shift=1 document.crv > document.html
+```
+
+The shift runs after includes and before any extension transform, so `tableOfContents`, `headingPermalinks` and `headingNumbers` see the shifted levels, and their level options name them: with a shift of 1, `headingPermalinks({ levels: [1] })` matches no heading. Ids and cross-references do not change. A level above 6 renders as `<div role="heading" aria-level="7">` and reports `heading-shift-above-6` once. Under `roundtrip` each heading carries `data-carve-source-level`, so an HTML import gives back the authored level. The Markdown export (`carve render --to markdown`) reads the option too and clamps a level above 6 to 6; the plain text and ANSI exports refuse it. The option replaces the 0.1 `headingLevelShift()` extension. See [C2-H-208](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
+
 ## Core math
 
 Core math stays TeX-delimited HTML in static mode. A site that needs server-rendered math applies a separate postprocess or host integration. See [C2-H-168](https://github.com/markup-carve/carve/blob/next2/spec/0.2/html.md#options).
