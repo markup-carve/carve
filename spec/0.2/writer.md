@@ -1010,8 +1010,6 @@ Written:
 |{title="a\|b"} x |
 ```
 
-**C2-W-153** A cross-reference to an id carried by frontmatter reports `frontmatter-crossref` with severity error, at that reference. It renders as literal text because the id creates no HTML target (C2-A-218, C2-H-070); `broken-crossref` does not also report it.
-
 **C2-W-152** A text run that would open a later typed metadata block is repaired under C2-W-088 and C2-W-092. For a literal `---yaml` in that position the canonical repaired spelling is `-\--yaml`, as C2-W-091 keeps the repair after reparsing.
 
 **C2-W-099** A text line that holds only underscores, or one hyphen, is written as it is and needs no escape: it is not a thematic break (C2-B-159). A text run of two or more hyphens that would read as dashes is written with every second hyphen escaped, starting with the second, on any line, as in `-\-` and `-\--` (C2-I-111, C2-W-095): that leaves no two bare hyphens side by side and adds no escape that is not needed (C2-W-088). The escape also keeps three hyphens on line 1 from opening frontmatter (C2-B-161). Where the first block of the document would read as another tree on line 1 and reads as itself below a blank line, as a paragraph that holds only an em dash node with the source `---` does (C2-B-161), the output starts with one blank line. Formatting that output again gives the same bytes.
@@ -1181,6 +1179,8 @@ Written:
 **C2-W-106** Every code is an entry of one catalog, `data/lint-rules.json`. This covers the specified parse, HTML render, write, import and lint operations; export-only loss codes of the renderers of C2-T-003 are engine codes outside that catalog. A catalog code is a contract: it is not renamed and not reused. A single plain message applies to every finding of its code. A row may express that same message as one variant whose `when` is `every finding of this code`; it applies to every finding. When a row has several messages, every variant states a `when` condition, and at least one condition must match every finding; if conditions overlap, the first matching variant in `messages` applies. The `reports` text of a row states what the code reports and the clauses it rests on; for a rule kept from 0.1 it is the trigger of the 0.1 engine with the row's `change`, stated on the 0.2 tokens and tree.
 
 **C2-W-107** Lint is computed by a lint call from the parsed document: its tokens, tree and source ranges assigned by the parse. A render call does not run lint or return lint-channel entries; `unresolved-reference-link` belongs to a lint call, even when C2-H-085 writes the same unresolved reference as text. A source shape counts only where the parse reads it as the construct a catalog row names. A mark that C2-I-010 reads as an escaped character is not the start or end of a source shape that any catalog row reports. Where a rule reports a shape because it stays text, the shape counts only where the parse reads it as text of a paragraph, heading, cell, term, caption or line of a line block. Lint does not search the body of a comment block, a line or braced comment, a code span or block, raw content, an attribute key or value, a link destination or title, frontmatter, math content, or the marks of a braced opener or closer that formed or that C2-I-060 leaves as text, unless the row expressly names that place. The `reports` text cannot extend a trigger beyond a clause it cites: where they give different results for an input, the clause decides and the row must agree.
+
+**C2-W-153** A cross-reference to an id carried by frontmatter reports `frontmatter-crossref` with severity error, at that reference. It renders as literal text because the id creates no HTML target (C2-A-218, C2-H-070); `broken-crossref` does not also report it.
 
 **C2-W-108** Lint never changes the tree and never changes the output of `fmt`.
 
@@ -1590,9 +1590,9 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Canonical forms: tables | 13 | 0 | 2 | 2 |
 | Canonical forms: inline | 14 | 1 | 0 | 2 |
 | The sidecar | 6 | 0 | 0 | 1 |
-| Escaping | 16 | 0 | 1 | 1 |
+| Escaping | 15 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
-| Diagnostics and lint | 21 | 0 | 0 | 2 |
+| Diagnostics and lint | 22 | 0 | 0 | 2 |
 | **Total** | **144** | **6** | **6** | **40** |
 
 The document has 144 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
