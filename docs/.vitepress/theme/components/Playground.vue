@@ -83,13 +83,21 @@ function readDraft(): { source: string; shared: boolean } | null {
     return null
   }
 }
+function writeDraft(): void {
+  clearTimeout(draftTimer)
+  draftTimer = undefined
+  if (!draftReady) return
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, source: source.value, shared: fromSharedLink.value })) }
+  catch { /* Storage blocked or full: the draft is not kept. */ }
+}
 function saveDraft(): void {
   if (!draftReady) return
   clearTimeout(draftTimer)
-  draftTimer = setTimeout(() => {
-    try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, source: source.value, shared: fromSharedLink.value })) }
-    catch { /* Storage blocked or full: the draft is not kept. */ }
-  }, 400)
+  draftTimer = setTimeout(writeDraft, 400)
+}
+// Leaving the page or the playground inside the save delay still keeps the last edit.
+function flushDraft(): void {
+  if (draftTimer !== undefined) writeDraft()
 }
 watch([source, fromSharedLink], saveDraft)
 // A share link in the URL wins over the saved draft.
@@ -893,6 +901,7 @@ onMounted(() => {
   })
   window.addEventListener('keydown', onKeydown)
   document.addEventListener('pointerdown', onDocumentPointer)
+  window.addEventListener('pagehide', flushDraft)
   try {
     wrapLines.value = localStorage.getItem(WRAP_KEY) === '1'
   } catch {
@@ -901,7 +910,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   clearTimeout(shareStatusTimer)
-  clearTimeout(draftTimer)
+  flushDraft()
+  window.removeEventListener('pagehide', flushDraft)
   window.removeEventListener('keydown', onKeydown)
   document.removeEventListener('pointerdown', onDocumentPointer)
   clearTimeout(debounce)
