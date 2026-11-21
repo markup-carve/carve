@@ -285,7 +285,7 @@ function jsRun(c) {
   try { options = jsOptions(c) } catch (e) { return { accepted: false, error: e.name, message: e.message } }
   try {
     if (kind === 'refused-tree' || kind === 'supplied-tree' || kind === 'tree') {
-      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions)
+      const tree = js.decodeTree(c.json ?? JSON.stringify(c.tree), undefined, options.extensions, c.annotations)
       return { accepted: true, tree }
     }
     if (kind === 'layout-fixture') {
@@ -354,7 +354,10 @@ function cliRun(c, engine) {
   }
   const [file, ...prefix] = commands[engine]
   if (!existsSync(file) && file !== 'php') return { unsupported: `${engine} 0.2 CLI is not built` }
-  const run = spawnSync(file, [...prefix, ...(c.args ?? [])], { cwd: dir, input: c.stdin ?? '', encoding: 'utf8', timeout: 15_000, maxBuffer: 20_000_000 })
+  const invoke = input => spawnSync(file, [...prefix, ...(c.args ?? [])], { cwd: dir, input, encoding: 'utf8', timeout: 15_000, maxBuffer: 20_000_000 })
+  let run = invoke(c.stdin ?? '')
+  // A refusing command can exit before Node finishes writing input it will never read.
+  if (run.error?.code === 'EPIPE') run = invoke('')
   if (run.error) return { error: String(run.error) }
   const diagnostics = stream => stream.split('\n').flatMap(line => {
     const match = /^(.+):(\d+):(\d+): (error|warning|hint) ([\w/-]+) /.exec(line)

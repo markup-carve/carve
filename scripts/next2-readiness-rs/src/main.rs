@@ -382,6 +382,15 @@ fn run(c: &Value) -> Value {
         }
         "tree-fixture" => json!({"accepted":true,"tree":decode_unbounded(&carve::tree_json(input, &o))}),
         "tree" | "refused-tree" | "supplied-tree" => {
+            if let Some(annotations) = c.get("annotations") {
+                let source = c["json"].as_str().map(str::to_owned)
+                    .unwrap_or_else(|| c["tree"].to_string());
+                if let Err(error) = carve::api::decode_tree_with(&source, carve::api::TreeReadOptions {
+                    annotations: Some(annotations),
+                }) {
+                    return json!({"accepted":false,"error":error.spec_name(),"path":error.path()});
+                }
+            }
             let result = if let Some(source) = c["json"].as_str() { carve::reader::read_tree_json(source) }
                 else { carve::reader::read_tree_value(c["tree"].clone()) };
             match result {
