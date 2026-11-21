@@ -513,6 +513,16 @@ defineExpose({
       userEvent: 'input.format',
     })
   },
+  // Select a UTF-16 range, scroll it into view and focus the editor.
+  select(from: number, to: number): void {
+    const v = view.value
+    if (!v) return
+    const length = v.state.doc.length
+    const anchor = Math.max(0, Math.min(from, length))
+    const head = Math.max(anchor, Math.min(to, length))
+    v.dispatch({ selection: { anchor, head }, effects: EditorView.scrollIntoView(anchor, { y: 'center' }) })
+    v.focus()
+  },
   scroller: () => view.value?.scrollDOM ?? null,
   // Fractional 1-based source line at the top of the visible area.
   topLine(): number {

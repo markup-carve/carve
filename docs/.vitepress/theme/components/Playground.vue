@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
+import { ref, shallowRef, computed, watch, onMounted, onBeforeUnmount, nextTick, defineAsyncComponent } from 'vue'
 import { withBase } from 'vitepress'
 import { diffCodeTransformer } from '../../diff-transformer.js'
 // @ts-expect-error - local ESM helper without TS resolution context
@@ -8,13 +8,24 @@ import { PLAYGROUND_CODE_LANGUAGES, playgroundDataGrammars } from '../../playgro
 import { renderMathIn } from '../../render-math.js'
 // @ts-expect-error - local ESM helper without TS resolution context
 import { encodeShare, decodeShare } from '../../share-link.js'
-import { render, parse, lint, format } from '../../engine.js'
+import { render, parse, lint, format, fix, fixEdits } from '../../engine.js'
+import { applyByteEdits, byteToUtf16, type ByteEdit } from '../editor/offsets'
 import { isDiffPre } from '../../diff-fences.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { ansiToHtml } from '../../ansi-html.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { diffLines, foldDiff } from '../../line-diff.js'
 import { source as DEFAULT_SOURCE } from '../../examples/demo.crv'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { upgradeVerdict } from '../../upgrade-check.js'
+// @ts-expect-error - local ESM helper without TS resolution context
+import { SNIPPETS } from '../../examples/snippets.js'
 
 type Profile = 'full' | 'article' | 'comment' | 'minimal'
 type HeadingIds = 'off' | 'keep-case' | 'lower' | 'ascii' | 'ascii-lower' | 'ascii-strict' | 'ascii-strict-lower'
-type Output = 'html' | 'tree' | 'lint' | 'fmt'
+type Output = 'html' | 'tree' | 'lint' | 'fmt' | 'markdown' | 'plain' | 'ansi'
+type ExportTarget = 'markdown' | 'plain' | 'ansi'
+const exportTargets: ExportTarget[] = ['markdown', 'plain', 'ansi']
 type SharedOptions = { profile: Profile; headingIds: HeadingIds; sections: boolean; smartTypography: boolean; rawHtml: boolean }
 const profileValues: Profile[] = ['full', 'article', 'comment', 'minimal']
 const headingValues: HeadingIds[] = ['off', 'keep-case', 'lower', 'ascii', 'ascii-lower', 'ascii-strict', 'ascii-strict-lower']
@@ -38,6 +49,9 @@ const outputTabs: { id: Output; label: string }[] = [
   { id: 'tree', label: 'Tree JSON' },
   { id: 'lint', label: 'Lint' },
   { id: 'fmt', label: 'Formatted source' },
+  { id: 'markdown', label: 'Markdown' },
+  { id: 'plain', label: 'Plain text' },
+  { id: 'ansi', label: 'ANSI' },
 ]
 const options = computed<SharedOptions>(() => ({
   profile: profile.value, headingIds: headingIds.value, sections: sections.value,
@@ -56,10 +70,58 @@ function flashShareStatus(state: 'copied' | 'error', message: string): void {
   clearTimeout(shareStatusTimer)
   shareStatusTimer = setTimeout(() => { shareState.value = 'idle'; shareMessage.value = '' }, 2500)
 }
-async function applyShareLink(): Promise<void> {
-  if (typeof window === 'undefined') return
+// The draft keeps the shared flag, so a document that came from a link keeps raw HTML off after a reload.
+const DRAFT_KEY = 'carve-playground-draft'
+let draftReady = false
+let draftTimer: ReturnType<typeof setTimeout> | undefined
+function readDraft(): { source: string; shared: boolean } | null {
+  try {
+    const draft = JSON.parse(localStorage.getItem(DRAFT_KEY) ?? 'null')
+    if (!draft || typeof draft !== 'object' || typeof draft.source !== 'string') return null
+    return { source: draft.source, shared: draft.shared !== false }
+  } catch {
+    return null
+  }
+}
+function writeDraft(): void {
+  clearTimeout(draftTimer)
+  draftTimer = undefined
+  if (!draftReady) return
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify({ v: 1, source: source.value, shared: fromSharedLink.value })) }
+  catch { /* Storage blocked or full: the draft is not kept. */ }
+}
+function saveDraft(): void {
+  if (!draftReady) return
+  clearTimeout(draftTimer)
+  draftTimer = setTimeout(writeDraft, 400)
+}
+// Leaving the page or the playground inside the save delay still keeps the last edit.
+function flushDraft(): void {
+  if (draftTimer !== undefined) writeDraft()
+}
+watch([source, fromSharedLink], saveDraft)
+// A share link in the URL wins over the saved draft.
+async function restoreState(): Promise<void> {
+  if (await applyShareLink()) return
+  const draft = readDraft()
+  if (!draft || draft.source === source.value) return
+  fromSharedLink.value = draft.shared
+  rawHtmlEnabled.value = false
+  formattedText = draft.source
+  source.value = draft.source
+  formatNote.value = 'draft restored'
+}
+function resetToDemo(): void {
+  clearTimeout(draftTimer)
+  draftReady = false
+  try { localStorage.removeItem(DRAFT_KEY) } catch { /* nothing stored */ }
+  // A reload, not an edit: undo could otherwise bring a shared document back into an untainted session.
+  window.location.replace(`${window.location.pathname}${window.location.search}`)
+}
+async function applyShareLink(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
   const state = await decodeShare(window.location.hash)
-  if (!state) return
+  if (!state) return false
   fromSharedLink.value = true
   source.value = state.source
   const saved = state.options ?? {}
@@ -68,9 +130,11 @@ async function applyShareLink(): Promise<void> {
   sections.value = saved.sections === undefined ? true : saved.sections === true
   smartTypography.value = saved.smartTypography === undefined ? true : saved.smartTypography === true
   rawHtmlEnabled.value = false
+  output.value = safeValue(state.output, outputTabs.map(tab => tab.id), 'html')
+  return true
 }
 async function copyShareLink(): Promise<void> {
-  const encoded = await encodeShare({ source: source.value, options: options.value })
+  const encoded = await encodeShare({ source: source.value, options: options.value, output: output.value })
   if (!encoded) { flashShareStatus('error', 'Too long to share as a link'); return }
   const url = `${window.location.origin}${window.location.pathname}${window.location.search}#${encoded}`
   window.history.replaceState(null, '', url)
@@ -91,6 +155,136 @@ function formatSource(): void {
   }
 }
 watch(source, value => { if (value !== formattedText) formatNote.value = '' })
+// The upgrade, import and export entries hold the 0.1 reader and the Markdown and Djot libraries, so they load on first use.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Tools = any
+const tools = shallowRef<Tools | null>(null)
+let toolsLoading: Promise<Tools> | null = null
+const toolsError = ref('')
+function loadTools(): Promise<Tools> {
+  toolsLoading ??= import('../../engine-tools.js').then((module) => {
+    toolsError.value = ''
+    return (tools.value = module)
+  }, (error) => {
+    // Forget the failure so a later action can retry.
+    toolsLoading = null
+    toolsError.value = error instanceof Error ? error.message : String(error)
+    throw error
+  })
+  return toolsLoading
+}
+// A second click on the same source upgrades it even when it reads as 0.2 already.
+let upgradeAnyway: string | null = null
+async function upgradeSource(): Promise<void> {
+  const before = source.value
+  const force = upgradeAnyway === before
+  upgradeAnyway = null
+  formatNote.value = 'upgrading...'
+  try {
+    const { upgrade } = await loadTools()
+    // The first click waits for the tools entry; edits typed meanwhile win over the upgrade.
+    if (source.value !== before) { formatNote.value = 'source changed, upgrade again'; return }
+    const result = upgrade(before, { edits: true })
+    const verdict = upgradeVerdict(before, result)
+    if (verdict === 'unchanged') { formatNote.value = 'nothing to upgrade'; return }
+    if (verdict === 'already-0.2' && !force) {
+      upgradeAnyway = before
+      formatNote.value = 'looks like 0.2 already, nothing to upgrade (click again to force)'
+      return
+    }
+    formattedText = result.output
+    editorRef.value?.replaceAll(result.output)
+    source.value = result.output
+    const count = result.edits?.length ?? 1
+    const changes = `${count} ${count === 1 ? 'change' : 'changes'}`
+    formatNote.value = result.check === 'mismatch' ? `upgraded: ${changes}, renders differently, review it` : `upgraded: ${changes}`
+  } catch (error) {
+    formatNote.value = `upgrade failed: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+type ImportFormat = 'markdown' | 'gfm' | 'djot' | 'bbcode' | 'html'
+const importFormats: { id: ImportFormat; label: string }[] = [
+  { id: 'markdown', label: 'Markdown (CommonMark)' },
+  { id: 'gfm', label: 'GitHub Flavored Markdown' },
+  { id: 'djot', label: 'Djot' },
+  { id: 'bbcode', label: 'BBCode' },
+  { id: 'html', label: 'HTML' },
+]
+type ImportDiagnostic = { code: string; severity: string; message: string }
+const importOpen = ref(false)
+const importText = ref('')
+const importFormat = ref<ImportFormat>('gfm')
+const importResult = ref<{ source: string; diagnostics: ImportDiagnostic[] } | null>(null)
+const importError = ref('')
+const importConfirm = ref(false)
+const importInput = ref<HTMLTextAreaElement | null>(null)
+const importButton = ref<HTMLButtonElement | null>(null)
+function openImport(): void {
+  importOpen.value = true
+  importConfirm.value = false
+  void loadTools()
+  void nextTick(() => importInput.value?.focus())
+}
+function closeImport(): void {
+  importOpen.value = false
+  importConfirm.value = false
+  void nextTick(() => (importButton.value?.offsetParent ? importButton.value : moreButton.value)?.focus())
+}
+watch([importText, importFormat], () => { importResult.value = null; importError.value = ''; importConfirm.value = false })
+async function convertImport(): Promise<void> {
+  importError.value = ''
+  importConfirm.value = false
+  const input = importText.value
+  const from = importFormat.value
+  try {
+    const { importDocument } = await loadTools()
+    if (input !== importText.value || from !== importFormat.value) return
+    const result = importDocument(input, { from })
+    importResult.value = { source: result.source, diagnostics: [...(result.diagnostics ?? [])] }
+  } catch (error) {
+    importResult.value = null
+    importError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+function applyImport(): void {
+  if (!importResult.value) return
+  replaceSource(importResult.value.source)
+  const label = importFormats.find(f => f.id === importFormat.value)?.label ?? importFormat.value
+  formatNote.value = `imported from ${label} (Ctrl+Z restores)`
+  closeImport()
+}
+const exampleChoice = ref('')
+function loadExample(id: string): void {
+  exampleChoice.value = ''
+  const snippet = (SNIPPETS as { id: string; label: string; source: string }[]).find(s => s.id === id)
+  if (!snippet) return
+  replaceSource(snippet.source)
+  formatNote.value = `example: ${snippet.label} (Ctrl+Z restores)`
+}
+// Narrow screens move the secondary actions into this menu.
+const moreOpen = ref(false)
+const moreEl = ref<HTMLElement | null>(null)
+const moreButton = ref<HTMLButtonElement | null>(null)
+function closeMore(refocus = false): void {
+  moreOpen.value = false
+  if (refocus) moreButton.value?.focus()
+}
+function onDocumentPointer(event: PointerEvent): void {
+  if (moreOpen.value && moreEl.value && !moreEl.value.contains(event.target as Node)) moreOpen.value = false
+}
+// One undo step; the fragment goes too, so the address bar no longer offers the old document.
+function clearSource(): void {
+  editorRef.value?.replaceAll('')
+  source.value = ''
+  formattedText = ''
+  if (typeof window !== 'undefined' && window.location.hash) {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+  shareState.value = 'idle'
+  shareMessage.value = ''
+  formatNote.value = 'cleared (Ctrl+Z restores)'
+  editorRef.value?.focus()
+}
 
 const outputEl = ref<HTMLElement | null>(null)
 // Async so CodeMirror (~100 KB gzip) loads only on the playground page, not with
@@ -101,6 +295,7 @@ const previewSource = ref<string | null>(null)
 const editorRef = ref<{
   focus: () => void
   replaceAll: (text: string) => void
+  select: (from: number, to: number) => void
   scroller: () => HTMLElement | null
   topLine: () => number
   lineOffset: (line: number) => number
@@ -270,15 +465,140 @@ const tree = computed(() => {
   try { return JSON.stringify(parse(source.value, { headingIds: headingIds.value }), null, 2) }
   catch (error) { return error instanceof Error ? error.message : String(error) }
 })
-const findings = computed(() => {
-  try { const entries = lint(source.value); return entries.length ? JSON.stringify(entries, null, 2) : 'No lint findings.' }
-  catch (error) { return error instanceof Error ? error.message : String(error) }
+type LintDiagnostic = { code: string; severity: string; message: string; range: { startOffset: number; endOffset: number } }
+type Finding = { diagnostic: LintDiagnostic; from: number; to: number; line: number; column: number; edits: ByteEdit[] | null }
+const lintResult = computed<{ findings: Finding[]; error: string | null }>(() => {
+  const text = source.value
+  try {
+    const toUtf16 = byteToUtf16(text)
+    const findings = (lint(text) as LintDiagnostic[]).map((diagnostic): Finding => {
+      const from = toUtf16(diagnostic.range.startOffset)
+      const to = Math.max(from, toUtf16(diagnostic.range.endOffset))
+      const lineStart = text.lastIndexOf('\n', from - 1) + 1
+      const line = text.slice(0, lineStart).split('\n').length
+      // Columns count characters, so an emoji is one column as a reader sees it.
+      const column = Array.from(text.slice(lineStart, from)).length + 1
+      let edits: ByteEdit[] | null = null
+      try { edits = fixEdits(text, diagnostic) } catch { edits = null }
+      return { diagnostic, from, to, line, column, edits }
+    })
+    return { findings, error: null }
+  } catch (error) {
+    return { findings: [], error: error instanceof Error ? error.message : String(error) }
+  }
 })
-const formatted = computed(() => {
-  try { return format(source.value, { alignTables: alignTables.value }) }
-  catch (error) { return error instanceof Error ? error.message : String(error) }
+const fixableCount = computed(() => lintResult.value.findings.filter(f => f.edits?.length).length)
+const findingsJson = computed(() => lintResult.value.error ?? JSON.stringify(lintResult.value.findings.map(f => f.diagnostic), null, 2))
+const lintNote = ref('')
+function selectFinding(finding: Finding): void {
+  editorRef.value?.select(finding.from, finding.to)
+}
+function replaceSource(next: string): void {
+  formattedText = next
+  editorRef.value?.replaceAll(next)
+  source.value = next
+}
+function fixFinding(finding: Finding): void {
+  if (!finding.edits?.length) return
+  replaceSource(applyByteEdits(source.value, finding.edits).text)
+  lintNote.value = `fixed ${finding.diagnostic.code}`
+}
+// fix() applies what it can prove; findings it leaves get their own quick-fix edits, one undo step in all.
+function fixAll(): void {
+  const before = source.value
+  try {
+    let next = fix(before).output as string
+    const leftover = (lint(next) as LintDiagnostic[]).flatMap((diagnostic) => {
+      try { return fixEdits(next, diagnostic) ?? [] } catch { return [] }
+    })
+    if (leftover.length) next = applyByteEdits(next, leftover).text
+    if (next === before) { lintNote.value = 'nothing to fix'; return }
+    const remaining = lint(next).length
+    replaceSource(next)
+    lintNote.value = remaining ? `fixed, ${remaining} left` : 'fixed all'
+  } catch (error) {
+    lintNote.value = `fix failed: ${error instanceof Error ? error.message : String(error)}`
+  }
+}
+watch(source, value => { if (value !== formattedText) lintNote.value = '' })
+const formatResult = computed<{ text: string; error: boolean }>(() => {
+  try { return { text: format(source.value, { alignTables: alignTables.value }), error: false } }
+  catch (error) { return { text: error instanceof Error ? error.message : String(error), error: true } }
 })
-const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findings.value : formatted.value)
+const formatted = computed(() => formatResult.value.text)
+type DiffEntry = { kind: 'same' | 'add' | 'del'; text: string } | { kind: 'skip'; count: number }
+const formatDiff = computed<{ entries: DiffEntry[]; added: number; removed: number } | null>(() => {
+  if (output.value !== 'fmt' || formatResult.value.error) return null
+  const entries = diffLines(source.value, formatResult.value.text) as DiffEntry[]
+  const added = entries.filter(e => e.kind === 'add').length
+  const removed = entries.filter(e => e.kind === 'del').length
+  return { entries: foldDiff(entries, 3), added, removed }
+})
+const exported = computed<{ text: string; losses: number } | null>(() => {
+  const target = output.value as ExportTarget
+  if (!exportTargets.includes(target)) return null
+  const entry = tools.value
+  if (!entry) {
+    if (toolsError.value) return { text: `Could not load the export entry: ${toolsError.value}`, losses: 0 }
+    loadTools().catch(() => {})
+    return { text: 'Loading the export entry...', losses: 0 }
+  }
+  try {
+    const result = entry.exportDocument(target, parse(source.value, { headingIds: headingIds.value }))
+    return { text: result.output, losses: result.diagnostics?.length ?? 0 }
+  } catch (error) {
+    return { text: error instanceof Error ? error.message : String(error), losses: 0 }
+  }
+})
+const OUTPUT_FILES: Record<Output, { name: string; type: string }> = {
+  html: { name: 'document.html', type: 'text/html' },
+  tree: { name: 'document.json', type: 'application/json' },
+  lint: { name: 'lint.json', type: 'application/json' },
+  fmt: { name: 'formatted.crv', type: 'text/plain' },
+  markdown: { name: 'document.md', type: 'text/markdown' },
+  plain: { name: 'document.txt', type: 'text/plain' },
+  ansi: { name: 'document.ansi.txt', type: 'text/plain' },
+}
+const copied = ref<'source' | 'output' | null>(null)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+// An export tab reads the tools entry, which may still be loading.
+// Null when the tab changed while the entry loaded, so a file never gets another tab's content.
+async function settledOutput(tab: Output): Promise<string | null> {
+  if (exportTargets.includes(tab as ExportTarget)) {
+    await loadTools()
+    await nextTick()
+  }
+  return output.value === tab ? activeOutput.value : null
+}
+async function copyText(which: 'source' | 'output'): Promise<void> {
+  try {
+    const text = which === 'source' ? source.value : await settledOutput(output.value)
+    if (text === null) return
+    await navigator.clipboard.writeText(text)
+    copied.value = which
+    clearTimeout(copiedTimer)
+    copiedTimer = setTimeout(() => { copied.value = null }, 1500)
+  } catch {
+    copied.value = null
+  }
+}
+async function download(which: 'source' | 'output'): Promise<void> {
+  const tab = output.value
+  const file = which === 'source' ? { name: 'document.crv', type: 'text/plain' } : OUTPUT_FILES[tab]
+  const text = which === 'source' ? source.value : await settledOutput(tab).catch(() => null)
+  if (text === null) return
+  const blob = new Blob([text], { type: `${file.type};charset=utf-8` })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = file.name
+  link.click()
+  setTimeout(() => URL.revokeObjectURL(url), 0)
+}
+// Choosing a tab again retries a failed load.
+watch(output, () => { if (!tools.value) toolsError.value = '' })
+const ansiHtml = computed(() => output.value === 'ansi' && exported.value ? ansiToHtml(exported.value.text) : '')
+const activeOutput = computed(() => output.value === 'html' ? rawHtml.value : output.value === 'tree' ? tree.value : output.value === 'lint' ? findingsJson.value : exported.value ? exported.value.text : formatted.value)
 const mounted = ref(false)
 const renderStatus = computed(() => {
   const ms = mounted.value ? rendered.value.ms : null
@@ -574,8 +894,14 @@ onMounted(() => {
   mounted.value = true
   // Before the first post-process, so a shared document is what gets
   // highlighted, mermaid-rendered and math-rendered.
-  void applyShareLink().then(() => nextTick(postProcessOutput))
+  void restoreState().then(() => {
+    draftReady = true
+    saveDraft()
+    return nextTick(postProcessOutput)
+  })
   window.addEventListener('keydown', onKeydown)
+  document.addEventListener('pointerdown', onDocumentPointer)
+  window.addEventListener('pagehide', flushDraft)
   try {
     wrapLines.value = localStorage.getItem(WRAP_KEY) === '1'
   } catch {
@@ -584,7 +910,10 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   clearTimeout(shareStatusTimer)
+  flushDraft()
+  window.removeEventListener('pagehide', flushDraft)
   window.removeEventListener('keydown', onKeydown)
+  document.removeEventListener('pointerdown', onDocumentPointer)
   clearTimeout(debounce)
 })
 
@@ -604,6 +933,7 @@ function toggleFullscreen(): void {
 function onKeydown(e: KeyboardEvent): void {
   // The editor handled it already (closing a completion list or a lint tooltip).
   if (e.key !== 'Escape' || e.defaultPrevented) return
+  if (importOpen.value) { closeImport(); return }
   if (fullscreen.value) fullscreen.value = false
 }
 // Avoid an "unused" warning while keeping the flag meaningful to tooling.
@@ -616,7 +946,6 @@ void mermaidInit
       <div class="pg-engines" role="group" aria-label="Rendering engine">
         <span class="pg-engines-label">Engine</span>
         <button class="pg-engine active" type="button" aria-pressed="true" title="Carve 0.2 JavaScript engine">JS</button>
-        <button class="pg-engine" type="button" disabled title="Rust WASM is 0.1 only">Rust (WASM, 0.1 only)</button>
         <a
           class="pg-engine pg-engine-link"
           :href="PHP_SANDBOX_URL"
@@ -710,7 +1039,88 @@ void mermaidInit
             </svg>
           </button>
         </div>
-        <button class="pg-btn" type="button" :aria-expanded="optionsOpen" @click="optionsOpen = !optionsOpen">Options</button>
+        <div class="pg-secondary">
+          <select
+            class="pg-btn pg-select"
+            :value="exampleChoice"
+            aria-label="Load an example"
+            title="Replace the source with a short example (Ctrl+Z restores)"
+            @change="loadExample(($event.target as HTMLSelectElement).value)"
+          >
+            <option value="" disabled>Examples</option>
+            <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+          </select>
+          <button
+            ref="importButton"
+            class="pg-btn"
+            type="button"
+            title="Import Markdown, GFM, Djot, BBCode or HTML as Carve"
+            aria-label="Import a document from another format"
+            aria-haspopup="dialog"
+            @click="openImport"
+          >
+            Import
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
+            aria-label="Upgrade 0.1 source to 0.2"
+            @click="upgradeSource"
+          >
+            Upgrade 0.1
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Empty the editor (Ctrl+Z restores)"
+            aria-label="Clear the source"
+            @click="clearSource"
+          >
+            Clear
+          </button>
+          <button
+            class="pg-btn"
+            type="button"
+            title="Discard the saved draft and reload the demo document"
+            aria-label="Reset to the demo document"
+            @click="resetToDemo"
+          >
+            Reset to demo
+          </button>
+        </div>
+        <div ref="moreEl" class="pg-more" @keydown.esc.stop="closeMore(true)">
+          <button
+            ref="moreButton"
+            class="pg-btn"
+            type="button"
+            :aria-expanded="moreOpen"
+            aria-controls="pg-more-menu"
+            aria-label="More actions"
+            title="Examples, import, upgrade, clear and reset"
+            @click="moreOpen = !moreOpen"
+          >
+            More
+          </button>
+          <div v-if="moreOpen" id="pg-more-menu" class="pg-more-menu" role="group" aria-label="More actions">
+            <select
+              class="pg-btn pg-select"
+              :value="exampleChoice"
+              aria-label="Load an example"
+              title="Replace the source with a short example (Ctrl+Z restores)"
+              @change="closeMore(); loadExample(($event.target as HTMLSelectElement).value)"
+            >
+              <option value="" disabled>Examples</option>
+              <option v-for="snippet in SNIPPETS" :key="snippet.id" :value="snippet.id">{{ snippet.label }}</option>
+            </select>
+            <button class="pg-btn" type="button" aria-label="Import a document from another format" aria-haspopup="dialog" @click="closeMore(); openImport()">Import</button>
+            <button class="pg-btn" type="button" aria-label="Upgrade 0.1 source to 0.2" @click="closeMore(); upgradeSource()">Upgrade 0.1</button>
+            <button class="pg-btn" type="button" aria-label="Clear the source" @click="closeMore(); clearSource()">Clear</button>
+            <button class="pg-btn" type="button" aria-label="Reset to the demo document" @click="resetToDemo">Reset to demo</button>
+            <button class="pg-btn pg-more-narrow" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" @click="closeMore(); optionsOpen = !optionsOpen">Options</button>
+          </div>
+        </div>
+        <button class="pg-btn pg-options-btn" type="button" :aria-expanded="optionsOpen" aria-controls="pg-options" title="Render options" @click="optionsOpen = !optionsOpen">Options</button>
         <button
           class="pg-btn pg-icon-btn"
           type="button"
@@ -763,7 +1173,7 @@ void mermaidInit
         </button>
       </div>
     </div>
-    <fieldset v-if="optionsOpen" class="pg-options">
+    <fieldset v-if="optionsOpen" id="pg-options" class="pg-options">
       <legend>Render options</legend>
       <label>Profile <select v-model="profile"><option v-for="value in profileValues" :key="value" :value="value">{{ value }}</option></select></label>
       <label>Heading IDs <select v-model="headingIds"><option v-for="value in headingValues" :key="value" :value="value">{{ value }}</option></select></label>
@@ -771,11 +1181,63 @@ void mermaidInit
       <label><input v-model="smartTypography" type="checkbox"> Smart typography</label>
       <label title="Shared documents always keep raw HTML off"><input v-model="rawHtmlEnabled" type="checkbox" :disabled="fromSharedLink"> Raw HTML</label>
     </fieldset>
+    <div v-if="importOpen" class="pg-modal-backdrop" @click.self="closeImport">
+      <div class="pg-modal" role="dialog" aria-modal="true" aria-labelledby="pg-import-title">
+        <h2 id="pg-import-title" class="pg-modal-title">Import a document</h2>
+        <label class="pg-modal-row">Format
+          <select v-model="importFormat" aria-label="Input format">
+            <option v-for="f in importFormats" :key="f.id" :value="f.id">{{ f.label }}</option>
+          </select>
+        </label>
+        <label for="pg-import-text">Input</label>
+        <textarea id="pg-import-text" ref="importInput" v-model="importText" spellcheck="false" placeholder="Paste the document here" />
+        <p v-if="importError" class="pg-import-error" role="alert">{{ importError }}</p>
+        <template v-if="importResult">
+          <label for="pg-import-out">Carve result</label>
+          <pre id="pg-import-out" class="pg-import-out" tabindex="0">{{ importResult.source || '(empty)' }}</pre>
+          <ul v-if="importResult.diagnostics.length" class="pg-import-diags" aria-label="Import diagnostics">
+            <li v-for="(d, i) in importResult.diagnostics" :key="i"><span class="pg-lint-sev">{{ d.severity }}</span> <code>{{ d.code }}</code> {{ d.message }}</li>
+          </ul>
+          <p v-else class="pg-import-clean">No import diagnostics.</p>
+        </template>
+        <div class="pg-modal-actions">
+          <template v-if="importConfirm">
+            <span class="pg-confirm-text" role="alert">Replace the current document? Ctrl+Z restores it.</span>
+            <button class="pg-btn" type="button" @click="importConfirm = false">Back</button>
+            <button class="pg-btn pg-btn-primary" type="button" @click="applyImport">Yes, replace</button>
+          </template>
+          <template v-else>
+            <button class="pg-btn" type="button" @click="closeImport">Cancel</button>
+            <button class="pg-btn" type="button" :disabled="!importText" @click="convertImport">Convert</button>
+            <button class="pg-btn pg-btn-primary" type="button" :disabled="!importResult" @click="importConfirm = true">Replace document</button>
+          </template>
+        </div>
+      </div>
+    </div>
     <div class="pg-grid">
       <div class="pane">
         <div class="pane-label-row">
           <label>Carve source</label>
           <span v-if="formatNote" class="pg-shared-note" role="status">{{ formatNote }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'source' ? 'Copied' : 'Copy the source'"
+            :title="copied === 'source' ? 'Copied' : 'Copy the source'"
+            @click="copyText('source')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'source'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="'Download the source as document.crv'" :title="'Download the source as document.crv'" @click="download('source')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
         <div
           class="carve-editor-wrap"
@@ -825,9 +1287,104 @@ void mermaidInit
           <div class="pg-output-tabs" role="group" aria-label="Output type">
             <button v-for="tab in outputTabs" :key="tab.id" class="pg-output-tab" type="button" :aria-pressed="output === tab.id" @click="output = tab.id">{{ tab.label }}</button>
           </div>
+          <span v-if="output === 'ansi'" class="pg-shared-note">escape codes shown as styles</span>
+          <span v-if="exported?.losses" class="pg-shared-note" :title="`The ${output} export cannot spell ${exported.losses} construct(s)`">{{ exported.losses }} {{ exported.losses === 1 ? 'loss' : 'losses' }}</span>
           <span class="pg-status" aria-live="polite">{{ renderStatus }}</span>
+          <span class="pg-pane-actions">
+          <button
+            class="pg-pane-btn"
+            type="button"
+            :aria-label="copied === 'output' ? 'Copied' : 'Copy this output'"
+            :title="copied === 'output' ? 'Copied' : 'Copy this output'"
+            @click="copyText('output')"
+          >
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline v-if="copied === 'output'" points="20 6 9 17 4 12" />
+              <template v-else><rect x="8" y="8" width="12" height="12" rx="2" /><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" /></template>
+            </svg>
+          </button>
+          <button class="pg-pane-btn" type="button" :aria-label="`Download as ${OUTPUT_FILES[output].name}`" :title="`Download as ${OUTPUT_FILES[output].name}`" @click="download('output')">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 4v11" /><polyline points="7 10 12 15 17 10" /><path d="M5 20h14" />
+            </svg>
+          </button>
+          </span>
         </div>
-        <pre class="raw" aria-live="polite">{{ activeOutput }}</pre>
+        <div v-if="output === 'lint'" class="raw pg-lint">
+          <p v-if="lintResult.error" class="pg-lint-empty">{{ lintResult.error }}</p>
+          <p v-else-if="!lintResult.findings.length" class="pg-lint-empty">No lint findings.</p>
+          <template v-else>
+            <div class="pg-lint-head">
+              <span>{{ lintResult.findings.length }} {{ lintResult.findings.length === 1 ? 'finding' : 'findings' }}</span>
+              <span v-if="lintNote" role="status">{{ lintNote }}</span>
+              <button
+                v-if="fixableCount"
+                class="pg-btn pg-btn-small"
+                type="button"
+                :title="`Apply every available fix (${fixableCount}); Ctrl+Z undoes it`"
+                aria-label="Fix all lint findings"
+                @click="fixAll"
+              >
+                Fix all ({{ fixableCount }})
+              </button>
+            </div>
+            <ul class="pg-lint-list">
+              <li v-for="(finding, index) in lintResult.findings" :key="index" :class="`pg-sev-${finding.diagnostic.severity}`">
+                <button
+                  class="pg-lint-item"
+                  type="button"
+                  :title="`Select line ${finding.line}, column ${finding.column} in the editor`"
+                  @click="selectFinding(finding)"
+                >
+                  <span class="pg-lint-sev">{{ finding.diagnostic.severity }}</span>
+                  <code class="pg-lint-code">{{ finding.diagnostic.code }}</code>
+                  <span class="pg-lint-msg">{{ finding.diagnostic.message }}</span>
+                  <span class="pg-lint-pos">{{ finding.line }}:{{ finding.column }}</span>
+                </button>
+                <button
+                  v-if="finding.edits?.length"
+                  class="pg-btn pg-btn-small"
+                  type="button"
+                  :aria-label="`Fix ${finding.diagnostic.code} at ${finding.line}:${finding.column}`"
+                  title="Apply this fix (Ctrl+Z undoes it)"
+                  @click="fixFinding(finding)"
+                >
+                  Fix
+                </button>
+              </li>
+            </ul>
+          </template>
+        </div>
+        <div v-else-if="output === 'fmt' && formatDiff" class="raw pg-diff">
+          <div class="pg-lint-head">
+            <span v-if="formatDiff.added || formatDiff.removed">
+              <span class="pg-diff-count-add">+{{ formatDiff.added }}</span> <span class="pg-diff-count-del">-{{ formatDiff.removed }}</span> lines against the current source
+            </span>
+            <span v-else-if="source === formatted">Already formatted.</span>
+            <span v-else>Only the final newline differs.</span>
+            <button
+              v-if="source !== formatted"
+              class="pg-btn pg-btn-small"
+              type="button"
+              title="Replace the source with the formatted source (Ctrl+Z undoes it)"
+              aria-label="Apply the formatted source"
+              @click="formatSource"
+            >
+              Apply
+            </button>
+          </div>
+          <div v-if="formatDiff.added || formatDiff.removed" class="pg-diff-lines" role="table" aria-label="Changes the formatter makes">
+            <template v-for="(entry, index) in formatDiff.entries" :key="index">
+              <div v-if="entry.kind === 'skip'" class="pg-diff-skip" role="row"><span role="cell">... {{ entry.count }} unchanged {{ entry.count === 1 ? 'line' : 'lines' }}</span></div>
+              <div v-else :class="`pg-diff-${entry.kind}`" role="row">
+                <span class="pg-diff-sign" role="cell" :aria-label="entry.kind === 'add' ? 'added' : entry.kind === 'del' ? 'removed' : 'unchanged'">{{ entry.kind === 'add' ? '+' : entry.kind === 'del' ? '-' : ' ' }}</span>
+                <span role="cell">{{ entry.text || ' ' }}</span>
+              </div>
+            </template>
+          </div>
+        </div>
+        <pre v-else-if="output === 'ansi'" class="raw pg-ansi" aria-label="ANSI output, escape codes shown as styles" v-html="ansiHtml" />
+        <pre v-else class="raw" aria-live="polite">{{ activeOutput }}</pre>
       </div>
     </div>
 
@@ -1185,6 +1742,80 @@ textarea:focus {
 .pg-options label { display: inline-flex; align-items: center; gap: .25rem; font-size: .8rem; }
 .pg-options select { max-width: 10rem; border: 1px solid var(--vp-c-divider); border-radius: 4px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); }
 .pg-options input { margin: 0; }
+.pg-modal-title { margin: 0; padding: 0; border: 0; font-size: 1.05rem; }
+.pg-modal-row { display: flex; align-items: center; gap: .5rem; }
+.pg-modal select { border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); padding: .2rem .4rem; }
+.pg-modal textarea { min-height: 180px; }
+.pg-import-out { max-height: 200px; overflow: auto; margin: 0; padding: .6rem; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); font-size: .78rem; white-space: pre-wrap; }
+.pg-import-diags { max-height: 120px; overflow: auto; margin: 0; padding-left: 1rem; font-size: .78rem; }
+.pg-import-clean, .pg-import-error { margin: 0; font-size: .8rem; color: var(--vp-c-text-2); }
+.pg-import-error { color: var(--vp-c-danger-1, #d64550); }
+.pg-confirm-text { margin-right: auto; align-self: center; font-size: .8rem; font-weight: 600; }
+.pg-btn:disabled { opacity: .5; cursor: not-allowed; }
+.pg-modal { max-height: calc(100vh - 2rem); overflow: auto; }
+.pg-ansi { color: var(--vp-c-text-1); }
+.pg-ansi :deep(.ansi-bold) { font-weight: 700; }
+.pg-ansi :deep(.ansi-dim) { opacity: .7; }
+.pg-ansi :deep(.ansi-italic) { font-style: italic; }
+.pg-ansi :deep(.ansi-underline) { text-decoration: underline; }
+.pg-ansi :deep(.ansi-strike) { text-decoration: line-through; }
+.pg-ansi :deep(.ansi-inverse) { background: var(--vp-c-text-1); color: var(--vp-c-bg); }
+.pg-ansi :deep(.ansi-fg-black) { color: #555; }
+.pg-ansi :deep(.ansi-fg-red), .pg-ansi :deep(.ansi-fg-bright-red) { color: #d64550; }
+.pg-ansi :deep(.ansi-fg-green), .pg-ansi :deep(.ansi-fg-bright-green) { color: #2f9e44; }
+.pg-ansi :deep(.ansi-fg-yellow), .pg-ansi :deep(.ansi-fg-bright-yellow) { color: #b8860b; }
+.pg-ansi :deep(.ansi-fg-blue), .pg-ansi :deep(.ansi-fg-bright-blue) { color: #3b6fd8; }
+.pg-ansi :deep(.ansi-fg-magenta), .pg-ansi :deep(.ansi-fg-bright-magenta) { color: #b04ec9; }
+.pg-ansi :deep(.ansi-fg-cyan), .pg-ansi :deep(.ansi-fg-bright-cyan) { color: #138a9e; }
+.pg-ansi :deep(.ansi-fg-white), .pg-ansi :deep(.ansi-fg-bright-white), .pg-ansi :deep(.ansi-fg-bright-black) { color: var(--vp-c-text-2); }
+.pg-ansi :deep([class*="ansi-bg-"]) { background: var(--vp-c-default-soft); }
+.pg-select { appearance: auto; width: 8.5rem; padding-right: .4rem; }
+.pg-secondary { display: contents; }
+.pg-more { position: relative; display: none; }
+.pg-more-menu { position: absolute; right: 0; top: calc(100% + .3rem); z-index: 20; display: flex; flex-direction: column; gap: .3rem; min-width: 11rem; padding: .4rem; border: 1px solid var(--vp-c-divider); border-radius: 10px; background: var(--vp-c-bg); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.pg-more-menu > * { width: 100%; justify-content: flex-start; }
+@media (max-width: 900px) {
+  .pg-secondary { display: none; }
+  .pg-more { display: inline-block; }
+}
+.pg-more-narrow { display: none; }
+@media (max-width: 480px) {
+  .pg-options-btn { display: none; }
+  .pg-more-menu > .pg-more-narrow { display: inline-flex; }
+}
+.pg-pane-actions { display: inline-flex; gap: .2rem; margin-left: auto; }
+.pg-status + .pg-pane-actions { margin-left: 0; }
+.pg-pane-btn { display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); cursor: pointer; }
+.pg-pane-btn:hover, .pg-pane-btn:focus-visible { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
+.pg-diff { display: flex; flex-direction: column; gap: .4rem; }
+.pg-diff-lines { display: flex; flex-direction: column; }
+.pg-diff-lines > div { display: flex; gap: .5rem; white-space: pre-wrap; padding: 0 .3rem; }
+.pg-diff-sign { flex: none; width: 1ch; user-select: none; }
+.pg-diff-add { background: rgba(46, 160, 67, .16); color: var(--vp-c-text-1); }
+.pg-diff-del { background: rgba(248, 81, 73, .16); color: var(--vp-c-text-1); }
+.pg-diff-skip { color: var(--vp-c-text-3); font-style: italic; }
+.pg-diff-count-add { color: #2f9e44; }
+.pg-diff-count-del { color: #d64550; }
+.pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
+.pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
+.pg-lint-empty { margin: 0; }
+.pg-lint-head { display: flex; align-items: center; gap: .75rem; font-family: var(--vp-font-family-base); font-weight: 600; }
+.pg-lint-head > button { margin-left: auto; }
+.pg-lint-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .2rem; }
+.pg-lint-list li { display: flex; align-items: center; gap: .4rem; }
+.pg-lint-item { flex: 1; display: grid; grid-template-columns: 4.5rem minmax(8rem, max-content) 1fr auto; gap: .6rem; align-items: baseline; min-width: 0; padding: .3rem .45rem; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--vp-c-text-1); font: inherit; text-align: left; cursor: pointer; }
+.pg-lint-item:hover, .pg-lint-item:focus-visible { border-color: var(--vp-c-brand-1); background: var(--vp-c-bg); }
+.pg-lint-sev { font-weight: 700; text-transform: uppercase; font-size: .68rem; }
+.pg-sev-error .pg-lint-sev { color: var(--vp-c-danger-1, #d64550); }
+.pg-sev-warning .pg-lint-sev { color: var(--vp-c-warning-1, #b8860b); }
+.pg-sev-hint .pg-lint-sev, .pg-sev-info .pg-lint-sev { color: var(--vp-c-text-2); }
+.pg-lint-code { font-size: .72rem; overflow-wrap: anywhere; }
+.pg-lint-msg { min-width: 0; overflow-wrap: anywhere; }
+.pg-lint-pos { font-variant-numeric: tabular-nums; color: var(--vp-c-text-2); }
+@media (max-width: 640px) {
+  .pg-lint-item { grid-template-columns: auto 1fr auto; }
+  .pg-lint-msg { grid-column: 1 / -1; }
+}
 .pg-output-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .pg-output-tab { padding: .18rem .4rem; border: 1px solid transparent; border-radius: 5px; background: transparent; color: var(--vp-c-text-2); font: 600 .72rem/1.2 var(--vp-font-family-base); cursor: pointer; }
 .pg-output-tab[aria-pressed="true"] { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); background: var(--vp-c-brand-soft); }

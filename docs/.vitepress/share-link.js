@@ -109,6 +109,8 @@ export async function decodeShare(fragment) {
         ? state.options
         : {}
     }
+    // The caller checks the tab name against its own list.
+    if (typeof state.output === 'string') result.output = state.output
     return result
   } catch {
     return null

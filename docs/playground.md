@@ -17,13 +17,17 @@ The playground uses the pinned [Carve 0.2 JavaScript engine](https://github.com/
 <div class="playground-notes">
 
 ::: details Formatting the source
-**Format** rewrites the source with the 0.2 canonical writer. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The **Formatted source** tab lets you inspect the result first.
+**Format** rewrites the source with the 0.2 canonical writer. With **Align tables** on, table columns are padded so their pipes line up. One undo (Ctrl+Z) restores the previous text. The **Formatted source** tab shows the lines the writer would add and remove, with an **Apply** button.
 :::
 
 ::: details Sharing a document as a link
 The **share button** puts the document and render options in the URL fragment, so you can bookmark or send the current view. The fragment is compressed in the browser and is not sent to the site server. Very large documents are refused rather than truncated.
 
-A received link always opens with **raw HTML off**, even when its sender enabled it. Other render options are restored. Reload the playground without the fragment to start a new local session.
+A link also keeps the active output tab. A received link always opens with **raw HTML off**, even when its sender enabled it. Other render options are restored.
+:::
+
+::: details Drafts
+The playground saves the document in your browser and restores it on the next visit. A share link in the URL always wins over the saved draft. A draft that came from a link keeps raw HTML off after a reload. **Reset to demo** discards the draft and reloads the demo document.
 :::
 
 </div>
@@ -34,13 +38,27 @@ A received link always opens with **raw HTML off**, even when its sender enabled
 
 ## Render options
 
-The **Options** button opens the 0.2 profile, heading ID, section, smart typography, and raw HTML controls. Raw HTML starts off. Turn it on only for source you trust. The **Tree JSON** and **Lint** tabs show the 0.2 parser and linter results.
+The **Options** button opens the 0.2 profile, heading ID, section, smart typography, and raw HTML controls. Raw HTML starts off. Turn it on only for source you trust. The **Tree JSON** tab shows the 0.2 parser result.
 
-## Engines and import
+## Output tabs
 
-The in-page engine is Carve 0.2 JavaScript. The Rust WASM button is disabled because the bundled Rust build implements 0.1. The PHP sandbox link remains available for external experiments; it is not the engine behind this preview.
+- **Lint** lists each finding with its severity, rule, message, and line and column. Click a finding to select it in the editor. **Fix** applies one quick fix; **Fix all** applies every available fix as one undo step.
+- **Markdown**, **Plain text**, and **ANSI** export the document. The pane header shows how many constructs an export cannot spell. ANSI escape codes are shown as styles.
 
-The 0.2 browser bundle does not expose HTML import, so this playground has no Import button. The 0.2 CLI supports `carve import --from=html`. To import Markdown, convert it to HTML first, then import that HTML. See the [0.2 tooling specification](https://github.com/markup-carve/carve/blob/next2/spec/0.2/tooling.md).
+The copy and download buttons in each pane header copy or save the source (`.crv`) or the active output.
+
+## Tools
+
+- **Examples** loads a short 0.2 document. One undo restores the previous text.
+- **Import** converts Markdown, GitHub Flavored Markdown, Djot, BBCode, or HTML to Carve. The dialog shows the result and the import diagnostics before you replace the document.
+- **Upgrade 0.1** rewrites Carve 0.1 source as 0.2 and reports the number of changes. When the only changes would escape text that 0.2 reads as syntax, such as an `=` heading, the source is taken as 0.2 already and left alone; click again to upgrade it anyway.
+- **Clear** empties the editor. One undo restores it.
+
+On narrow screens these tools sit in the **More** menu.
+
+## Engines
+
+The in-page engine is Carve 0.2 JavaScript. The PHP sandbox link remains available for external experiments; it is not the engine behind this preview.
 
 ## Visual editor
 
@@ -54,4 +72,4 @@ This example is read from a `.crv` file and rendered by the pinned 0.2 JavaScrip
 
 ## Engine revision
 
-The exact Carve 0.2 JavaScript revision is pinned in `package.json`. The browser bundle used here is built from that revision.
+The browser bundles used here are built from the carve-js revision named in `docs/.vitepress/build-engine.mjs`. The import, export, and upgrade tools load on first use.
