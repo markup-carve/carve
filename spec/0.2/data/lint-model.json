@@ -3505,7 +3505,17 @@
       "let": {
         "width": {
           "count": {
-            "in": "node.children.0.children.0.children",
+            "in": {
+              "find": {
+                "in": {
+                  "f": "node.children"
+                },
+                "where": {
+                  "has": "item.children.0"
+                },
+                "field": "children.0.children"
+              }
+            },
             "where": true
           }
         }
