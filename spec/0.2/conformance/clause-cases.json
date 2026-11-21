@@ -66561,6 +66561,166 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1550",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "an alert mark after a `>` glued to a bracket that is no alert tag is not reported",
+   "kind": "lint",
+   "input": ">[!x]: > [!NOTE]\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "github-alert-marker"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1551",
+   "clauses": [
+    "C2-B-031",
+    "C2-I-072"
+   ],
+   "why": "C2-B-031: The quote mark is `>` followed by a space or by the end of the line, so `>a` is text. Catalog github-alert-marker: on a line whose first non-space character is a quote mark",
+   "summary": "a glued alert tag is reported on the first tag of the line",
+   "kind": "lint",
+   "input": ">[!NOTE] > [!TIP]\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "github-alert-marker",
+      "line": 1,
+      "column": 2,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 9
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1552",
+   "clauses": [
+    "C2-B-180",
+    "C2-B-226",
+    "C2-B-230"
+   ],
+   "why": "Catalog delimited-table-wide-row: a delimited table, a `csv` or `tsv` fence that the `table` attribute marks, in which any record has more fields than the first record",
+   "summary": "records of equal width behind an empty first body are not wide",
+   "kind": "lint",
+   "input": "{table header-rows=0 body-rows=0,2}\n```csv\na,b\nc,d\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "delimited-table-wide-row"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1553",
+   "clauses": [
+    "C2-B-180",
+    "C2-B-226",
+    "C2-B-230"
+   ],
+   "why": "Catalog delimited-table-wide-row: a delimited table, a `csv` or `tsv` fence that the `table` attribute marks, in which any record has more fields than the first record",
+   "summary": "the first record behind an empty first body sets the width",
+   "kind": "lint",
+   "input": "{table header-rows=0 body-rows=0,2}\n```csv\na,b\nc,d,e\n```\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "delimited-table-wide-row",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 5,
+      "endColumn": 4
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1554",
+   "clauses": [
+    "C2-B-180",
+    "C2-B-226",
+    "C2-B-230"
+   ],
+   "why": "Catalog delimited-table-wide-row: a delimited table, a `csv` or `tsv` fence that the `table` attribute marks, in which any record has more fields than the first record",
+   "summary": "records of equal width behind two empty bodies are not wide",
+   "kind": "lint",
+   "input": "{table header-rows=0 body-rows=0,0,1,1}\n```tsv\na\tb\nc\td\n```\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "delimited-table-wide-row"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1555",
+   "clauses": [
+    "C2-B-031"
+   ],
+   "why": "Catalog blockquote-marker-without-space: a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text",
+   "summary": "a `>` followed by a tab and text is reported to the end of the text",
+   "kind": "lint",
+   "input": ">\tx\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 4,
+      "messageWhen": "the line is paragraph, heading, cell, term, caption or line-block text outside frontmatter"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1556",
+   "clauses": [
+    "C2-B-031"
+   ],
+   "why": "Catalog blockquote-marker-without-space: a line of paragraph, heading, cell, term, caption or line of a line block text, or expressly a frontmatter line, whose first character, at column 1 with no indent and no container prefix before it, is `>` followed by a character that is not a space, so `>a`, `>>a` and `>` followed by a tab, which are text",
+   "summary": "a `>` followed by a tab and a `>` is reported",
+   "kind": "lint",
+   "input": ">\t>\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "blockquote-marker-without-space",
+      "line": 1,
+      "column": 1,
+      "channel": "lint",
+      "severity": "warning",
+      "endLine": 1,
+      "endColumn": 4
+     }
+    ]
+   },
+   "from": []
   }
  ]
 }
