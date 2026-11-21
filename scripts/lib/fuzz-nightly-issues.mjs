@@ -48,7 +48,7 @@ export function issueBody(f, run) {
     outputs,
     '',
     `From \`${f.origin ?? 'import'}\`, ${f.hits} hit(s) in this run.`,
-    `Reproduce: \`node scripts/fuzz-nightly.mjs --seed=${run.seed}\` (${run.engines}).`,
+    `Reproduce: \`node scripts/fuzz-nightly.mjs --seed=${run.seed}${f.target === 'superlinear' ? ` --timing --timing-only${run.timingSizes ? ` --timing-sizes=${run.timingSizes}` : ''}` : ''}\` (${run.engines}).`,
     '',
     `${SIGNATURE_MARKER} \`${f.signature}\``,
     ...(f.variants ?? []).map(v => `${SIGNATURE_MARKER} \`${v}\``),

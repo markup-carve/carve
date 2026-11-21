@@ -27,7 +27,7 @@ if (!reportPath || !repo) {
   process.exit(2)
 }
 const report = JSON.parse(readFileSync(reportPath, 'utf8'))
-const run = { seed: report.seed, engines: report.enginesLine }
+const run = { seed: report.seed, engines: report.enginesLine, timingSizes: report.timingSizes }
 const gh = (args, input) => execFileSync('gh', args, { encoding: 'utf8', input, stdio: ['pipe', 'pipe', 'inherit'] })
 
 let existing

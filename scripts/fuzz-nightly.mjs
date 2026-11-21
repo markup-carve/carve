@@ -119,10 +119,16 @@ const sortKeys = value => {
   return value
 }
 // C2-A-161, C2-A-162: tree equality skips positions and srcByteLength.
-const positionless = value => {
-  if (Array.isArray(value)) return value.map(positionless)
-  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([k]) => !['pos', 'segments', 'srcByteLength'].includes(k)).map(([k, v]) => [k, positionless(v)]))
-  return value
+// C2-A-161, C2-A-162: tree equality skips source geometry and the resolution fields of data/ast-results.json.
+const RESULT_FIELDS = new Map(Object.entries(JSON.parse(readFileSync(resolve(root, 'spec/0.2/data/ast-results.json'), 'utf8')).nodes)
+  .map(([type, fields]) => [type, new Set(fields.map(f => f.field))]))
+const semantic = value => {
+  if (Array.isArray(value)) return value.map(semantic)
+  if (!value || typeof value !== 'object') return value
+  const skipped = RESULT_FIELDS.get(value.type)
+  return Object.fromEntries(Object.entries(value)
+    .filter(([k]) => !['pos', 'segments', 'srcByteLength'].includes(k) && !skipped?.has(k))
+    .map(([k, v]) => [k, semantic(v)]))
 }
 const lineOf = (source, offset) => {
   const prefix = Buffer.from(source, 'utf8').subarray(0, offset).toString('utf8')
@@ -180,7 +186,14 @@ function selfChecks(inputs, views) {
       const second = again[k][engine]
       const stable = second.fmt === view.fmt
       // Frontmatter fields are the C2-W-002 exception; the raw node is compared.
-      const strip = text => { try { const t = positionless(JSON.parse(text)); delete t.metadata; return JSON.stringify(t) } catch { return text } }
+      // C2-W-002: root `metadata.fields` is the frontmatter exception.
+      const strip = text => {
+        try {
+          const t = semantic(JSON.parse(text))
+          if (t.metadata) delete t.metadata.fields
+          return JSON.stringify(sortKeys(t))
+        } catch { return text }
+      }
       const roundtrip = strip(second.tree) === strip(view.tree)
       results[i][engine] = { stable, roundtrip, fmt2: second.fmt, tree2: second.tree }
     })
@@ -269,10 +282,10 @@ function firstKeeping(target, pattern, candidates) {
   }
   return -1
 }
-function firstCrashing(engine, kind, candidates) {
+function firstCrashing(engine, kind, call, candidates) {
   for (const [i, source] of candidates.entries()) {
     const before = crashes.length
-    runEngine(engine, casesOf([source]))
+    runEngine(engine, [{ kind: call, input: source }])
     const found = crashes.slice(before).some(c => c.kind === kind)
     crashes.length = before
     if (found) return i
@@ -357,7 +370,7 @@ while (Date.now() - started < budgetMs && !flag('timing-only')) {
     c.origin = input.origin
     // A hang costs the full timeout per candidate, so only crashes are reduced.
     const reducedSource = c.kind === 'hang' ? input.source
-      : reduce(input.source, cands => firstCrashing(c.engine, c.kind, cands), { budget: 150, chunk: 1 }).source
+      : reduce(input.source, cands => firstCrashing(c.engine, c.kind, c.case.kind, cands), { budget: 150, chunk: 1 }).source
     c.reduced = reducedSource
     console.log(`fuzz-nightly: ${c.kind} in ${c.engine} (${c.case.kind}) from ${input.origin}: ${JSON.stringify(reducedSource.slice(0, 200))}`)
   }
@@ -419,6 +432,7 @@ const report = {
   schema: 2, seed, budgetMinutes: budgetMs / 60_000, elapsedSeconds: Math.round((Date.now() - started) / 1000),
   engines, enginesLine, stats, groups: [...groups.values()].sort((a, b) => b.hits - a.hits),
   crashes: [...crashGroups.values()], timing: timingRows,
+  ...(timingRows ? { timingSizes: option('timing-sizes', '2000,8000,32000,128000') } : {}),
 }
 return report
 }
