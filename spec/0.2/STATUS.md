@@ -275,3 +275,10 @@ The `definition-term-block-folded` row of `data/lint-model.json` reports the quo
 - `carve-js`: CC-1543, CC-1544, CC-1548 and CC-1549 pass once it pins these rows; its rules read them from the data.
 - `carve-php`: CC-1542 (`bare-html-tag` on `<x]>`), CC-1544 (only the `1` of `12.`), CC-1546 and CC-1547 (`caption-looking-paragraph` on term text).
 - `carve-rs`: CC-1542, CC-1546, CC-1547 and CC-1549 (`github-alert-marker` behind `>[x]:`).
+
+## Engine gaps from the lint row fixes of 21 November (second round)
+
+The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` that opens no alert tag (#6338), `delimited-table-wide-row` takes its width from the first record of the table behind empty groups, read with the new `field` of `find` (C2-W-150, #6337), and `blockquote-marker-without-space` reports a `>` followed by a tab and text (C2-B-031, #6344). Clause cases CC-1550 to CC-1556.
+
+- `carve-js`: CC-1550, CC-1555 and CC-1556 pass once it pins these rows; CC-1552 to CC-1554 also need `field` of `find` in `lint/generate-data-tables.ts`.
+- `carve-php` and `carve-rs`: data mode follows the pin once their interpreters read `field` of `find`; hand-written rules need the same three readings.
