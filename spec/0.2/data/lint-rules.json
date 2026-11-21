@@ -86,11 +86,11 @@
       "messages": [
         "This line looks like ${opener} but directly follows text, so it is part of the paragraph or caption above it. Add a blank line before it."
       ],
-      "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition."],
+      "message_notes": ["`${opener}` is `a heading` for a heading, `a quote` for a quote line, `an attribute line` for an attribute line, `a term` for a term mark, `a description` for a description mark and `a definition` for a definition, including an abbreviation definition (C2-B-084)."],
       "message_origin": "design",
       "reports": "each line inside a paragraph or a caption that would open a block after a blank line: a heading, a quote line, an attribute line, a term or description mark, or a definition; once per candidate line, the range is the marker or attribute block on that line (C2-B-019, C2-B-200); a line that no open container owns is a lazy line of the paragraph and its candidate is its first marker, a quote mark included (C2-B-024, C2-B-025); a blank line is one as C2-W-143 reads it",
       "change": "a table row and a thematic break are no triggers, because they interrupt (C2-B-019, C2-B-200)",
-      "clauses": ["C2-B-019", "C2-B-200", "C2-W-143"]
+      "clauses": ["C2-B-019", "C2-B-084", "C2-B-200", "C2-W-143"]
     },
     {
       "id": "blockquote-marker-without-space",
