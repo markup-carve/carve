@@ -118,6 +118,54 @@ async function upgradeSource(): Promise<void> {
     formatNote.value = `upgrade failed: ${error instanceof Error ? error.message : String(error)}`
   }
 }
+type ImportFormat = 'markdown' | 'gfm' | 'djot' | 'bbcode' | 'html'
+const importFormats: { id: ImportFormat; label: string }[] = [
+  { id: 'markdown', label: 'Markdown (CommonMark)' },
+  { id: 'gfm', label: 'GitHub Flavored Markdown' },
+  { id: 'djot', label: 'Djot' },
+  { id: 'bbcode', label: 'BBCode' },
+  { id: 'html', label: 'HTML' },
+]
+type ImportDiagnostic = { code: string; severity: string; message: string }
+const importOpen = ref(false)
+const importText = ref('')
+const importFormat = ref<ImportFormat>('gfm')
+const importResult = ref<{ source: string; diagnostics: ImportDiagnostic[] } | null>(null)
+const importError = ref('')
+const importConfirm = ref(false)
+const importInput = ref<HTMLTextAreaElement | null>(null)
+const importButton = ref<HTMLButtonElement | null>(null)
+function openImport(): void {
+  importOpen.value = true
+  importConfirm.value = false
+  void loadTools()
+  void nextTick(() => importInput.value?.focus())
+}
+function closeImport(): void {
+  importOpen.value = false
+  importConfirm.value = false
+  void nextTick(() => importButton.value?.focus())
+}
+watch([importText, importFormat], () => { importResult.value = null; importError.value = ''; importConfirm.value = false })
+async function convertImport(): Promise<void> {
+  importError.value = ''
+  importConfirm.value = false
+  try {
+    const { importDocument } = await loadTools()
+    const result = importDocument(importText.value, { from: importFormat.value })
+    importResult.value = { source: result.source, diagnostics: [...(result.diagnostics ?? [])] }
+  } catch (error) {
+    importResult.value = null
+    importError.value = error instanceof Error ? error.message : String(error)
+  }
+}
+function applyImport(): void {
+  if (!importResult.value) return
+  replaceSource(importResult.value.source)
+  const label = importFormats.find(f => f.id === importFormat.value)?.label ?? importFormat.value
+  formatNote.value = `imported from ${label} (Ctrl+Z restores)`
+  closeImport()
+}
 // One undo step; the fragment goes too, so the address bar no longer offers the old document.
 function clearSource(): void {
   editorRef.value?.replaceAll('')
@@ -697,6 +745,7 @@ function toggleFullscreen(): void {
 function onKeydown(e: KeyboardEvent): void {
   // The editor handled it already (closing a completion list or a lint tooltip).
   if (e.key !== 'Escape' || e.defaultPrevented) return
+  if (importOpen.value) { closeImport(); return }
   if (fullscreen.value) fullscreen.value = false
 }
 // Avoid an "unused" warning while keeping the flag meaningful to tooling.
@@ -804,6 +853,17 @@ void mermaidInit
           </button>
         </div>
         <button
+          ref="importButton"
+          class="pg-btn"
+          type="button"
+          title="Import Markdown, GFM, Djot, BBCode or HTML as Carve"
+          aria-label="Import a document from another format"
+          aria-haspopup="dialog"
+          @click="openImport"
+        >
+          Import
+        </button>
+        <button
           class="pg-btn"
           type="button"
           title="Rewrite Carve 0.1 source as Carve 0.2 (Ctrl+Z undoes it)"
@@ -882,6 +942,39 @@ void mermaidInit
       <label><input v-model="smartTypography" type="checkbox"> Smart typography</label>
       <label title="Shared documents always keep raw HTML off"><input v-model="rawHtmlEnabled" type="checkbox" :disabled="fromSharedLink"> Raw HTML</label>
     </fieldset>
+    <div v-if="importOpen" class="pg-modal-backdrop" @click.self="closeImport">
+      <div class="pg-modal" role="dialog" aria-modal="true" aria-labelledby="pg-import-title">
+        <h2 id="pg-import-title" class="pg-modal-title">Import a document</h2>
+        <label class="pg-modal-row">Format
+          <select v-model="importFormat" aria-label="Input format">
+            <option v-for="f in importFormats" :key="f.id" :value="f.id">{{ f.label }}</option>
+          </select>
+        </label>
+        <label for="pg-import-text">Input</label>
+        <textarea id="pg-import-text" ref="importInput" v-model="importText" spellcheck="false" placeholder="Paste the document here" />
+        <p v-if="importError" class="pg-import-error" role="alert">{{ importError }}</p>
+        <template v-if="importResult">
+          <label for="pg-import-out">Carve result</label>
+          <pre id="pg-import-out" class="pg-import-out" tabindex="0">{{ importResult.source || '(empty)' }}</pre>
+          <ul v-if="importResult.diagnostics.length" class="pg-import-diags" aria-label="Import diagnostics">
+            <li v-for="(d, i) in importResult.diagnostics" :key="i"><span class="pg-lint-sev">{{ d.severity }}</span> <code>{{ d.code }}</code> {{ d.message }}</li>
+          </ul>
+          <p v-else class="pg-import-clean">No import diagnostics.</p>
+        </template>
+        <div class="pg-modal-actions">
+          <template v-if="importConfirm">
+            <span class="pg-confirm-text" role="alert">Replace the current document? Ctrl+Z restores it.</span>
+            <button class="pg-btn" type="button" @click="importConfirm = false">Back</button>
+            <button class="pg-btn pg-btn-primary" type="button" @click="applyImport">Yes, replace</button>
+          </template>
+          <template v-else>
+            <button class="pg-btn" type="button" @click="closeImport">Cancel</button>
+            <button class="pg-btn" type="button" :disabled="!importText" @click="convertImport">Convert</button>
+            <button class="pg-btn pg-btn-primary" type="button" :disabled="!importResult" @click="importConfirm = true">Replace document</button>
+          </template>
+        </div>
+      </div>
+    </div>
     <div class="pg-grid">
       <div class="pane">
         <div class="pane-label-row">
@@ -1341,6 +1434,17 @@ textarea:focus {
 .pg-options label { display: inline-flex; align-items: center; gap: .25rem; font-size: .8rem; }
 .pg-options select { max-width: 10rem; border: 1px solid var(--vp-c-divider); border-radius: 4px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); }
 .pg-options input { margin: 0; }
+.pg-modal-title { margin: 0; padding: 0; border: 0; font-size: 1.05rem; }
+.pg-modal-row { display: flex; align-items: center; gap: .5rem; }
+.pg-modal select { border: 1px solid var(--vp-c-divider); border-radius: 6px; background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); padding: .2rem .4rem; }
+.pg-modal textarea { min-height: 180px; }
+.pg-import-out { max-height: 200px; overflow: auto; margin: 0; padding: .6rem; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg-soft); font-size: .78rem; white-space: pre-wrap; }
+.pg-import-diags { max-height: 120px; overflow: auto; margin: 0; padding-left: 1rem; font-size: .78rem; }
+.pg-import-clean, .pg-import-error { margin: 0; font-size: .8rem; color: var(--vp-c-text-2); }
+.pg-import-error { color: var(--vp-c-danger-1, #d64550); }
+.pg-confirm-text { margin-right: auto; align-self: center; font-size: .8rem; font-weight: 600; }
+.pg-btn:disabled { opacity: .5; cursor: not-allowed; }
+.pg-modal { max-height: calc(100vh - 2rem); overflow: auto; }
 .pg-btn-small { height: 1.6rem; padding: 0 .55rem; font-size: .72rem; }
 .pg-lint { display: flex; flex-direction: column; gap: .4rem; white-space: normal; }
 .pg-lint-empty { margin: 0; }
