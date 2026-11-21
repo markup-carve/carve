@@ -77409,7 +77409,8 @@
     "C2-W-015",
     "C2-W-016",
     "C2-W-112",
-    "C2-W-115"
+    "C2-W-115",
+    "C2-W-151"
    ],
    "clauseScope": "section",
    "kind": "write",
@@ -77474,7 +77475,8 @@
     "C2-W-015",
     "C2-W-016",
     "C2-W-112",
-    "C2-W-115"
+    "C2-W-115",
+    "C2-W-151"
    ],
    "clauseScope": "section",
    "kind": "write",

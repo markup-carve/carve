@@ -15,7 +15,7 @@ Conventions:
 
 **C2-W-001** The writer takes a tree and, optionally, the sidecar that was returned with that tree (C2-L-004). It returns Carve source. `carve fmt` parses its input with the sidecar and writes the result.
 
-**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. The source form of an extension that a writer without the extension writes is another exception (C2-X-023). A span count that no mark cell gives is the third: the tree that reads back holds the mark cells the writer adds for it (C2-W-145). This is a gate on every pull request.
+**C2-W-002** For every document `x` that the writer does not refuse (C2-W-016, C2-W-133), `parse(fmt(x)) == parse(x)` under the tree equality of the AST document (C2-A-161, C2-A-162). For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011), where spaces and tabs at the end of a line of text count as absent on both sides (C2-W-151). Root `metadata.fields` with a frontmatter node is an exception: the writer preserves that raw node and does not report `fields`, although a new parse omits them. The source form of an extension that a writer without the extension writes is another exception (C2-X-023). A span count that no mark cell gives is the third: the tree that reads back holds the mark cells the writer adds for it (C2-W-145). This is a gate on every pull request.
 
 **C2-W-003** For every document `x`, `fmt(fmt(x)) == fmt(x)`, byte for byte. This is a gate on every pull request.
 
@@ -136,6 +136,8 @@ Written:
 $$`x`
 ```
 
+
+**C2-W-151** Spaces and tabs at the end of a line of text are insignificant, as in a parse, which never gives them (C2-I-002, C2-I-103). Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss, and a text node that holds only them is dropped with them. For the round-trip comparison of C2-W-002 two trees that differ only in such spaces and tabs are equal, after text coalescing (C2-A-040); this is no structural difference under C2-W-014, and C2-W-117 does not report it. What the dropping changes beyond them is still reported, such as a line that holds only them and is written empty (C2-W-021). The rule is about text alone: the value of a code span, a raw span, a literal-text span, a math span, a comment or any other verbatim content keeps its spaces and tabs as data, and where a line end of the source would remove them, the writer reports `field-unspellable` (C2-W-016, C2-W-117).
 
 ## Layout
 
@@ -1578,7 +1580,7 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Section | Clauses | Exceptions | Examples generated | Examples unverified |
 |---|---|---|---|---|
 | The writer and its two gates | 13 | 2 | 0 | 2 |
-| What the writer cannot spell | 10 | 0 | 0 | 2 |
+| What the writer cannot spell | 11 | 0 | 0 | 2 |
 | Layout | 23 | 3 | 0 | 4 |
 | Canonical forms: blocks | 24 | 0 | 0 | 22 |
 | Canonical forms: tables | 13 | 0 | 2 | 2 |
@@ -1587,6 +1589,6 @@ Totals over the 82 clauses: 28 ported, 8 simplified, 6 removed, 40 out of scope.
 | Escaping | 14 | 0 | 1 | 1 |
 | `carve fmt` | 3 | 0 | 3 | 2 |
 | Diagnostics and lint | 21 | 0 | 0 | 2 |
-| **Total** | **141** | **6** | **6** | **40** |
+| **Total** | **142** | **6** | **6** | **40** |
 
-The document has 141 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
+The document has 142 clauses, 6 of them marked with the word "Exception", and 46 examples, 6 generated and 40 unverified. The clause count includes the exceptions. Clauses added after the first draft carry the next free number and stand at the end of their section, so the ids are not in document order everywhere. Freeze candidate 5 deleted Exception C2-W-019, C2-W-042, C2-W-043, C2-W-054, C2-W-072, C2-W-121 and Exception C2-W-132, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-W-126, whose rule other clauses state or give; its id is not reused.
