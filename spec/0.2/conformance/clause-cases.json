@@ -64949,6 +64949,531 @@
     ]
    },
    "from": []
+  },
+  {
+   "id": "CC-1494",
+   "clauses": [
+    "C2-W-151",
+    "C2-W-002"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss C2-W-002: For a supplied tree `t`, `parse(write(t)) == t` holds when the writer reports no loss (C2-W-011), where spaces and tabs at the end of a line of text count as absent on both sides (C2-W-151).",
+   "summary": "a trailing space of supplied text at the end of a paragraph is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x "
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "x\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1495",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "trailing spaces of the last text after an emphasis are dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "b"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "value": " c "
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a /b/ c\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1496",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a space and a tab of supplied text before a soft break are dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a \t"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\nb\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1497",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of text after a multi-line code span is no loss of the span",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a "
+       },
+       {
+        "type": "code",
+        "value": "x\n|"
+       },
+       {
+        "type": "text",
+        "value": "|a "
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a `x\n|`|a\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1498",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of a heading's text is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "heading",
+      "level": 1,
+      "children": [
+       {
+        "type": "text",
+        "value": "T "
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "= T\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1499",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of a line of a line block is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "line_block",
+      "children": [
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "x "
+         }
+        ]
+       },
+       {
+        "type": "line",
+        "children": [
+         {
+          "type": "text",
+          "value": "y"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "::: |\nx\ny\n:::\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1500",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of a caption's text is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "role": "image",
+      "children": [
+       {
+        "type": "image",
+        "src": "u",
+        "alt": "a"
+       }
+      ],
+      "caption": {
+       "type": "caption",
+       "children": [
+        {
+         "type": "paragraph",
+         "children": [
+          {
+           "type": "text",
+           "value": "cap "
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "![a](u)\n^ cap\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1501",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of text inside an emphasis before a soft break is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "emphasis",
+        "children": [
+         {
+          "type": "text",
+          "value": "b "
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "c"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "/b\nc/\n",
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1502",
+   "clauses": [
+    "C2-W-151"
+   ],
+   "why": "C2-W-151: Where a `text` node of a supplied tree ends with spaces or tabs that the writer would leave at the end of a source line, before a soft break or at the end of the content of a paragraph, a heading, a line of a line block, a cell of a pipe table, a caption or a term, the writer drops them and reports no loss",
+   "summary": "a trailing space of the text of a pipe table cell is dropped without a report",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "table",
+      "columns": [
+       {
+        "type": "table_column"
+       },
+       {
+        "type": "table_column"
+       }
+      ],
+      "children": [
+       {
+        "type": "table_body",
+        "children": [
+         {
+          "type": "table_row",
+          "children": [
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "emphasis",
+                "children": [
+                 {
+                  "type": "text",
+                  "value": "a"
+                 }
+                ]
+               },
+               {
+                "type": "text",
+                "value": " x "
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "type": "table_cell",
+            "header": false,
+            "children": [
+             {
+              "type": "cell_paragraph",
+              "children": [
+               {
+                "type": "text",
+                "value": "y"
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [],
+    "diagnosticsComplete": true,
+    "notReported": [
+     "structure-unspellable",
+     "field-unspellable"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1503",
+   "clauses": [
+    "C2-W-151",
+    "C2-W-117"
+   ],
+   "why": "C2-W-151: The rule is about text alone: the value of a code span, a raw span, a literal-text span, a math span, a comment or any other verbatim content keeps its spaces and tabs as data, and where a line end of the source would remove them, the writer reports `field-unspellable` (C2-W-016, C2-W-117).",
+   "summary": "a code span value with a space before its line break still reports its value",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "code",
+        "value": "x \ny"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "field-unspellable",
+      "path": "/children/0/children/1/value",
+      "channel": "render-loss"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1504",
+   "clauses": [
+    "C2-W-151",
+    "C2-W-021"
+   ],
+   "why": "C2-W-151: What the dropping changes beyond them is still reported, such as a line that holds only them and is written empty (C2-W-021).",
+   "summary": "a text of only spaces between two soft breaks still reports the paragraph it splits",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "  "
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     "structure-unspellable"
+    ]
+   },
+   "from": []
   }
  ]
 }
