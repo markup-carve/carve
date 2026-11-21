@@ -185,7 +185,7 @@
       "message_origin": "engine_0_1",
       "message_notes": ["A quote or a backslash in `${version}` of the second message is escaped as in a JSON string."],
       "change": "it reads the frontmatter key `carve-version` of 0.1 and the key `carve`",
-      "reports": "a frontmatter line `carve-version:` (and, by the row's change, `carve:`), with only spaces and tabs around the key and a single value token, whose value is not dot-separated decimal digits, or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0, so `9.9`, `0.2.1` and `next` are reported and `0.1`, `0.2` and `0.2.0` are not; with no such frontmatter line, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document; if more than one declaration meets this test, the first in source order supplies the report, `${version}` and the message condition; the range is that declaration's value token; once per document means one finding, not a document-wide range (C2-B-161)",
+      "reports": "a line `carve-version:` (and, by the row's change, `carve:`) in the line-1 frontmatter block, with only spaces and tabs around the key and a single value token, whose value is not dot-separated decimal digits, or is such a version greater than 0.2 compared part by part as numbers with missing parts as 0, so `9.9`, `0.2.1` and `next` are reported and `0.1`, `0.2` and `0.2.0` are not; with no such line in the line-1 block, the same test on the `carve-version:` value of a `%%` stamp comment that ends the document; if more than one declaration meets this test, the first in source order supplies the report, `${version}` and the message condition; the range is that declaration's value token; once per document means one finding, not a document-wide range (C2-B-161, C2-B-231)",
       "clauses": ["C2-B-161"]
     },
     {
@@ -909,6 +909,17 @@
       "message_origin": "engine_0_1",
       "reports": "each `footnotes` directive that is not a top-level block of the document, such as one inside a quote, a list item or a div, where it places nothing; once per directive (C2-B-127, C2-H-158)",
       "clauses": ["C2-B-127", "C2-H-158"]
+    },
+    {
+      "id": "frontmatter-crossref",
+      "severity": "error",
+      "channel": "lint",
+      "status": "new",
+      "default": "on",
+      "messages": ["Cross-reference </#${target}> names a metadata key, which has no HTML target. Read the block through the tree instead."],
+      "message_origin": "design",
+      "reports": "a cross-reference whose id belongs to a frontmatter node, once per reference, at the reference (C2-A-218, C2-W-153)",
+      "clauses": ["C2-A-218", "C2-W-153"]
     },
     {
       "id": "frontmatter-shaped-thematic-break",
@@ -1858,8 +1869,8 @@
       "messages": ["This line of \"${raw}\" is text in Carve 0.2. Write \"***\" for a thematic break."],
       "message_origin": "engine_0_1",
       "change": "new trigger: a run of hyphens or underscores alone on a line, which is text in 0.2",
-      "reports": "a line of text that after its container prefixes and indent holds only a run of three or more hyphens or of three or more underscores and trailing spaces and tabs, which is no thematic break in 0.2, once per line; a hyphen run directly below a line of paragraph text is reported by `setext-heading-underline` instead, and three hyphens on line 1 open frontmatter; the range is the run (C2-B-160, C2-B-161)",
-      "clauses": ["C2-B-160", "C2-B-161"]
+      "reports": "a line of text that after its container prefixes and indent holds only a run of three or more hyphens or of three or more underscores and trailing spaces and tabs, which is no thematic break in 0.2, once per line; a hyphen run directly below a line of paragraph text is reported by `setext-heading-underline` instead, and three hyphens on line 1 open frontmatter; a typed opener that forms a later block is not text; the range is the run (C2-B-160, C2-B-161, C2-B-232)",
+      "clauses": ["C2-B-160", "C2-B-161", "C2-B-232"]
     },
     {
       "id": "tight-list-item-with-blank-line",
@@ -1972,7 +1983,7 @@
       "severity": "error",
       "channel": "parse",
       "status": "new",
-      "messages": ["The frontmatter opened on line 1 has no closing line, so the whole document is frontmatter."],
+      "messages": ["This frontmatter block has no closing line, so it runs to the end of the document."],
       "message_origin": "design",
       "reports": "frontmatter with no closer",
       "channel_reports": "frontmatter with no closer (C2-B-163)",

@@ -410,6 +410,9 @@ for (const entry of layouts.layouts) {
   if (entry.input !== undefined && !Buffer.from(entry.input.replaceAll(' ', ''), 'hex').equals(bytes)) fail(`${label}: source is not the input bytes`)
 }
 
+const metadataBlocks = existsSync(join(dir, 'metadata-blocks.json')) ? read('metadata-blocks.json').trees : (fail('metadata-blocks.json: missing'), [])
+for (const entry of metadataBlocks) { checkPositive(entry, 'metadata-blocks.json'); positive++ }
+
 const nodes = existsSync(join(dir, 'nodes.json')) ? read('nodes.json').trees : (fail('nodes.json: missing'), [])
 for (const entry of nodes) { checkPositive(entry, 'nodes.json'); positive++ }
 

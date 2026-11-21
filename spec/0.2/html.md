@@ -1238,7 +1238,7 @@ Example 38 (unverified)
 
 **C2-H-069** A comment renders nothing in every form: line, block and braced. The whitespace around a braced comment stays as written. A *comment line* of a paragraph or another leaf, a line that holds nothing but comments of any form and spaces, takes one of the two line breaks around it with it: the break behind it is not written, or the break before it when the content ends with the comment. The test is made in each list of inline children on its own, also in the children of an inline node such as a strong span: a line of that list is what stands between two of its breaks, and the end of the list counts as the end of the content. The tree keeps both breaks.
 
-**C2-H-070** Frontmatter renders nothing.
+**C2-H-070** Every frontmatter node, leading or later and whether keyed or unkeyed, renders nothing. Its attributes create no HTML element or id; an id on it is no link or cross-reference target (C2-A-218).
 
 **C2-H-071** A link definition and an abbreviation definition render nothing, except that with `roundtrip` on a run of abbreviation definitions writes a template (C2-H-178). A footnote definition renders only through the footnote section (C2-H-089).
 

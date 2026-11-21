@@ -115,9 +115,9 @@ export function readerChecks (spec) {
       if (isObject(node.metadata)) {
         for (const [name, value] of Object.entries(node.metadata.fields ?? {})) { metadataFields++; metadataDepth(value, 1, `${path}/metadata/fields/${name}`) }
       }
-      // C2-A-049: frontmatter is the first child of the document or of an include.
-      if (type === 'frontmatter' && !(key === 'children' && (parent?.type === 'document' || parent?.type === 'include') && parent.children[0] === node)) {
-        add(path, 'C2-A-049', 'frontmatter that is not the first child of the document or of an include')
+      // C2-A-049: frontmatter is a direct child of the document or an include.
+      if (type === 'frontmatter' && !(key === 'children' && (parent?.type === 'document' || parent?.type === 'include') )) {
+        add(path, 'C2-A-049', 'frontmatter nested below the document or an include')
       }
       // C2-A-052: a definition stands only in the children of the document or of an expanded include.
       if (DEFINITIONS.has(type) && !(key === 'children' && (parent?.type === 'document' || parent?.type === 'include'))) {

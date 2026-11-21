@@ -23,7 +23,7 @@ Terms:
 - The *indent* of a line is the column of its first character that is not a space or a tab. Indent that remains after the prefixes of the open containers is skipped before the shape of a line is tested, so a heading, a quote, a table row or a list marker may stand at any indent. The clauses that pin a column say so: a definition and a frontmatter opener stand at column 0 (C2-B-081, C2-B-161).
 - A marker, a mark or an opener that needs *content* needs at least one character that is not a space or a tab behind it on its line. Spaces and tabs alone are no content, since they are dropped at the end of a line (C2-I-002).
 
-**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). A pending attribute line waits for the next line (C2-B-092); no other block fact waits for a later line.
+**C2-B-001** The role of a line depends only on that line, the stack of open blocks and five facts the scanner keeps about the lines directly above. The stack of open blocks is the open containers and, innermost, the open leaf with what its opener set: the kind of the leaf, the first line and the line count of a text leaf (C2-B-017, C2-B-157), the marker column of a heading (C2-B-154), the closer and the opener column of a fence (C2-B-109, C2-B-110), and the rows and head of a table (C2-B-178, C2-B-187). The five facts are: whether the line is line 1 of the document (C2-B-161), the pending attribute lines (C2-B-090), the number of blank lines directly above (C2-B-052), the block that closed directly above, for a caption (C2-B-146), and the blank lines held back at the end of an opaque body (C2-B-113). The blank-line count and pending attribute lines also decide a typed metadata opener after line 1 (C2-B-232, C2-B-233). A pending attribute line waits for the next line (C2-B-092); no other block fact waits for a later line.
 
 **C2-B-003** Columns count code points from 0, starting after the quote marks of the open quotes: column 0 of quoted content is the column directly behind the innermost quote mark and its one space.
 
@@ -5314,13 +5314,13 @@ b
 
 ## Frontmatter
 
-**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces and tabs.
+**C2-B-161** Line 1 opens frontmatter when it is exactly three hyphens at column 0, optionally followed by a format name, glued or after one space, and then by trailing spaces and tabs. A typed opener directly after top-level attribute lines starting on line 1 also opens the document frontmatter (C2-B-233). A bare `---` after line 1 is text (C2-B-160).
 
 **C2-B-162** The closer is a line that is exactly `---` plus trailing spaces and tabs.
 
-**C2-B-163** An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.
+**C2-B-163** An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. The opener does not look ahead for a closer (C2-B-001).
 
-**C2-B-164** The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, another character or two spaces leave the line text. The name is kept as written, so `---JSON` has the format `JSON`, which is not `json`. Without a name the format is YAML, for which the bare opener is the canonical form. As in 0.1.
+**C2-B-164** The format name is one word of one or more ASCII letters and digits, in any case and in any order: `toml`, `JSON`, `Yaml` and `1` are format names, and `x-y`, `x_y` and `é` are none. It stands glued to the hyphens, as in `---toml`, or after one space, as in `--- toml`, like the language of a code fence (C2-B-117); the glued form is canonical. Any word of that shape is a format name; `yaml`, `toml` and `json` are the usual ones, and the parser does not read the body for any of them. The word is the only thing on the line: a second word, another character or two spaces leave the line text. The name is kept as written, so `---JSON` has the format `JSON`, which is not `json`. Without a name the format is YAML; only leading frontmatter without attributes uses the bare canonical opener (C2-W-052).
 
 `JSON` is a format name, letters in any case, so the lines are frontmatter (C2-B-164).
 
@@ -5342,7 +5342,13 @@ text
 
 :::
 
-**C2-B-165** Only a byte-order mark may come before the opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141). It is no code point of line 1, so the first character behind it has the column it would have without the mark.
+**C2-B-232** After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it. It does not interrupt a paragraph without that separation. Indent or an enclosing quote, list item, description, footnote or div leaves it as text. A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines. The block is frontmatter (C2-A-049) and its payload is opaque.
+
+**C2-B-233** Pending top-level attribute lines immediately above a typed opener attach to the frontmatter node (C2-B-090). When those lines start on line 1, the opener is document frontmatter even though it stands on a later line; no preceding blank line is needed. Without pending attributes, C2-B-232 requires a preceding blank line. A key on the block is for lookup, not a link or cross-reference target (C2-A-218).
+
+**C2-B-231** The keys `carve` and `carve-version` declare the document version only when read from the line-1 frontmatter block. Later blocks do not set or override that version.
+
+**C2-B-165** Only a byte-order mark may come before a line-1 opener, and a longer run of hyphens on line 1 is text. A byte-order mark at the start of the source is not content: it is skipped before line 1 is read, whatever line 1 holds, and offsets count its bytes (C2-A-141). It is no code point of line 1, so the first character behind it has the column it would have without the mark.
 
 The opener is taken without a scan for the closer (C2-B-189). A document that starts with a thematic break writes `***`.
 
@@ -6835,13 +6841,13 @@ Budget: at most 25 exceptions. Every normative statement of the chapter has a cl
 | Headings | 5 | 0 | 3 | 6 |
 | One-line constructs | 11 | 0 | 8 | 5 |
 | Thematic break | 2 | 0 | 4 | 1 |
-| Frontmatter | 5 | 0 | 5 | 2 |
+| Frontmatter | 8 | 0 | 5 | 2 |
 | Tables | 35 | 0 | 22 | 21 |
 | The fallback rule | 2 | 0 | 3 | 1 |
 | Facts set at close | 1 | 0 | 2 | 0 |
-| **Total** | **209** | **8** | **170** | **119** |
+| **Total** | **212** | **8** | **170** | **119** |
 
-The chapter has 209 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
+The chapter has 212 clauses, and 8 exceptions against a budget of 25. The clause count includes the exceptions. Clause ids are stable: a clause added after id 191 takes the next free number and stands at the end of its section, so ids are not in document order from there on. Freeze candidate 4 deleted C2-B-006, C2-B-023, C2-B-047, C2-B-056, C2-B-134, C2-B-139, C2-B-142, C2-B-143 and C2-B-177, and freeze candidate 5 deleted C2-B-086, whose general rules give the same result; their ids are not reused. The reduction of 17 November 2026 deleted C2-B-002, C2-B-063, C2-B-064, C2-B-094, C2-B-099, C2-B-103, C2-B-114, C2-B-129, C2-B-144 and C2-B-150, whose rule other clauses state or give; their ids are not reused.
 
 ## Not covered
 

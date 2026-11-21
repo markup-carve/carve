@@ -232,7 +232,7 @@ This document defines what every engine offers a caller: the library calls and t
 | `--include-root` | path | the containment root of includes (C2-N-004) |
 | `--output` | path | writes the product to a file (C2-T-053); `-o` is the same |
 
-**C2-T-047** `flatten` writes each file as one Carve document: it expands includes as `render` does (C2-T-018) and writes the expanded tree through the canonical writer (C2-W-100), so every include directive is replaced by the blocks it expanded to. It is the one command with Carve source as its product that expands (C2-N-005). The frontmatter of an included file is not written, since it renders nothing.
+**C2-T-047** `flatten` writes each file as one Carve document: it expands includes as `render` does (C2-T-018) and writes the expanded tree through the canonical writer (C2-W-100), so every include directive is replaced by the blocks it expanded to. It is the one command with Carve source as its product that expands (C2-N-005). A leading frontmatter block of an included file is not written. Later typed metadata blocks of that file are written in source order, including their attributes (C2-B-232, C2-W-052), though they render nothing.
 
 **C2-T-048** A file of `flatten` writes no source and ends with status 1 in three cases: with the category `include-unresolved` when an include did not expand, and the entries of its causes follow as lines on standard error; with `flatten-changed` when the HTML of the flattened source with the default options differs from that of the expanded tree, as when two included files each define one footnote, link reference or abbreviation key, which are looked up per file (C2-N-054, C2-N-055); and with `writer-refused` for a writer loss of C2-W-134.
 
