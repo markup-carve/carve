@@ -99,7 +99,8 @@
                 "below_table_row_or_continuation_row",
                 "term_above",
                 "directly_below_caption_target",
-                "only_byte_order_mark_before"
+                "only_byte_order_mark_before",
+                "blank_above_or_top_level_attributes"
               ]
             },
             "uniqueItems": true,

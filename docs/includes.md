@@ -326,9 +326,10 @@ shifted twice (`C2-N-050`).
   own frontmatter, and a construct open at its end closes there. An unclosed
   fence in a child ends at the end of the child and reports
   `unclosed-code-fence` there; it never swallows the parent (`C2-N-015`).
-- **Frontmatter** of an included file is that file's: the first child of the
-  include, rendering nothing, never the metadata of the top-level document
-  (`C2-N-021`).
+- **Metadata blocks** of an included file stay in source order among the
+  include children and render nothing. A leading frontmatter block is the first
+  child; later typed blocks remain in their positions. None becomes metadata of
+  the top-level document (`C2-N-021`).
 - **Recursive, in tree order.** Includes in an included file expand the same
   way, each path relative to its own including file. The resolver is called and
   the size cap is charged in tree order (`C2-N-018`).

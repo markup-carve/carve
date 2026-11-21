@@ -152,7 +152,9 @@ Conventions:
 
 **C2-A-048** `raw_block.value` follows the same rules as `code_block.value`.
 
-**C2-A-049** `frontmatter` is the first child when present, of the document or of an include whose selection takes the frontmatter of its file (C2-N-021). It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place.
+**C2-A-049** A leading `frontmatter` is the first child of the document or of an include whose selection takes it; later metadata blocks are `frontmatter` nodes at their source positions among top-level document or include children (C2-B-232, C2-N-021). It carries `format`, which is the word on its opener or `"yaml"` when there is none, and `value`, the text between the delimiters as written, which ends with a line break after its last line also where the block is unclosed and the source ends there without one (C2-A-046). A producer does not publish parsed keys in its place. It may carry `attrs` from directly preceding attribute lines, and its `pos` begins at the first such line (C2-A-148). A reader accepts it at any position among top-level document or include children, but refuses it inside another block.
+
+**C2-A-218** An id in `frontmatter.attrs` participates in the duplicate-id check, but is a lookup key only. It is no rendered link or cross-reference target (C2-H-070, C2-I-096).
 
 ## Node types
 
@@ -191,7 +193,7 @@ The table is written from the schema. "blocks" and "inlines" mean any block node
 | `figure_group` | block | blocks | `caption`? |
 | `footnote` | top level | blocks | `key`, `namespace` |
 | `footnote_ref` | inline | none | `number`?, `key`, `namespace` |
-| `frontmatter` | top level, first child; first child of an `include` | none | `format`, `value` |
+| `frontmatter` | top level, among children of a document or an `include` | none | `format`, `value` |
 | `hard_break` | inline | none | none |
 | `heading` | block | inlines | `level`, `generatedId`? |
 | `highlight` | inline | inlines | none |
@@ -691,7 +693,7 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 }
 ```
 
-**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter that is not the first child (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-X-022), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018). A schema pass alone does not establish validity.
+**C2-A-188** A valid tree passes the schema and the reader checks, which are every refusal of this document that the schema does not express. Among them are nesting depth, position ordering and source agreement when source is available, manifest and header-cell id references, the order of the two numbers of an include range (C2-A-181), the order of table groups (C2-A-086), the children of a table cell (C2-A-091), keys that occur once in `keyValues` (C2-A-035), an autolink `text` that differs from its `href` (C2-A-058), the glyph and the source of a smart punctuation node (C2-A-098), names that occur once in a list of extension declarations (C2-A-017), declared `data` keys, envelope version agreement, extension slot names against the declaration, extension fallback depth, metadata field count, annotation ids against a supplied range sidecar, frontmatter nested below a node other than the document or an include (C2-A-049), a span count against its mark (C2-A-093), an extension node inside a qualified fallback (C2-X-022), a qualified extension node without its declaration (C2-A-123) or with another version than its declaration (C2-X-018), and an unknown required extension (C2-A-018). A schema pass alone does not establish validity.
 
 **C2-A-189** A reader refuses a node-shaped object inside opaque `data` or `props`, even when it is nested in a list or object. A node-shaped object is an object whose `type` is the name of a core node type; the rest of the object is not validated. The core walker ignores that data.
 
@@ -765,17 +767,17 @@ The five facts that C2-B-191 sets when a block closes are tree fields, compared 
 
 ## The tree gate
 
-The fixtures of `spec/0.2/trees/` are the gate of this document. Each tree of a Carve example of the block, inline, HTML and writer chapters, the expanded tree of each example of the Includes document, the imported tree of each example of the HTML import document, and each supplied tree that holds a node type or a field no example tree holds, passes `data/ast-schema.json`; each tree that has its source passes the position invariants C2-A-139 to C2-A-159 against it, an expanded tree against the source of the file that each `pos` names (C2-A-142). Every node type and every field of the schema occurs in at least one of them. Each of them passes the reader checks of C2-A-188 that the gate states (`scripts/lib/spec2-reader.mjs`). Each refused tree names the clause that refuses it and whether the schema refuses it or only a reader check beyond the schema, and a tree refused by a reader check breaks one of those checks. `npm run spec2:data` checks all of this, and no fixture is waived. An engine meets the gate when its parse of each example equals the fixture under C2-A-161 with every `pos` equal too, an include example parsed with a resolver that serves the example's files under their names, and its reader accepts every positive tree and refuses every refused one.
+The fixtures of `spec/0.2/trees/`, including the typed metadata block trees of `metadata-blocks.json`, are the gate of this document. Each tree of a Carve example of the block, inline, HTML and writer chapters, the expanded tree of each example of the Includes document, the imported tree of each example of the HTML import document, and each supplied tree that holds a node type or a field no example tree holds, passes `data/ast-schema.json`; each tree that has its source passes the position invariants C2-A-139 to C2-A-159 against it, an expanded tree against the source of the file that each `pos` names (C2-A-142). Every node type and every field of the schema occurs in at least one of them. Each of them passes the reader checks of C2-A-188 that the gate states (`scripts/lib/spec2-reader.mjs`). Each refused tree names the clause that refuses it and whether the schema refuses it or only a reader check beyond the schema, and a tree refused by a reader check breaks one of those checks. `npm run spec2:data` checks all of this, and no fixture is waived. An engine meets the gate when its parse of each example equals the fixture under C2-A-161 with every `pos` equal too, an include example parsed with a resolver that serves the example's files under their names, and its reader accepts every positive tree and refuses every refused one.
 
 ## Counts
 
 | Section | Clauses | Exceptions |
 | --- | ---: | ---: |
-| Existing AST contract | 164 | 2 |
+| Existing AST contract | 165 | 2 |
 | Further clauses and standard data namespaces | 35 | 1 |
-| **Total** | **199** | **3** |
+| **Total** | **200** | **3** |
 
-The clause count includes the exceptions. Ids run to C2-A-217; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
+The clause count includes the exceptions. Ids run to C2-A-218; C2-A-020, C2-A-055, C2-A-057, C2-A-075, C2-A-076, C2-A-083, C2-A-085, C2-A-087, C2-A-090, C2-A-126, C2-A-127, C2-A-137, C2-A-147, C2-A-163, C2-A-164, C2-A-166, C2-A-169 and C2-A-185 are deleted.
 
 ## Schema
 

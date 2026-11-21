@@ -1,5 +1,7 @@
 # Carve 0.2: status
 
+**Freeze candidate 18.** The 21 November ruling on typed metadata blocks after line 1 (#6324) reopens the 0.2.0 syntax and tree contract before the tag. C2-B-231 to C2-B-233, C2-A-218 and C2-W-152 state the added rules; the conformance rows CC-1581 to CC-1613 pin the cases. The JavaScript prototype is held while the engines port the final contract.
+
 **Freeze candidate 17.** The candidate is the text of `spec/0.2/` on the branch `next2` of `markup-carve/carve`. It is not released and carries no tag. A frozen text changes only by a ruling recorded with its reason; a ruling on a frozen clause makes a new revision of the candidate, and a round of such rulings a new candidate.
 
 Freeze candidate 17 content commit: `f22c19b9f`, the maintainer rulings of 19 November 2026, 12:00 (#6114), with the tabs `mode` ruling of 12:10 (`821d5d274`, #6113). This status-only commit follows it. Freeze candidate 16 content commit: `9f9aff4c7`, the option rulings of 19 November 2026 (`softBreak`, `allowLosses`, `maxLosses`, `codeBlockRenderer`, `positionOf`; #6091) and the clause case fixes CC-1223 (#6082) and CC-1227 (#6088), with the release names of #6086. Freeze candidate 15 content commit: `4304a0c97`, the rulings D1 to D8 of 18 November 2026 (#6074, #6070). Freeze candidate 14 content commit: `f2be82f57`. Freeze candidate 13 content commit: `786e2821c`.
@@ -282,3 +284,9 @@ The `github-alert-marker` row skips a line whose first `>` is glued to a `[!` th
 
 - `carve-js`: CC-1550, CC-1555 and CC-1556 pass once it pins these rows; CC-1552 to CC-1554 also need `field` of `find` in `lint/generate-data-tables.ts`.
 - `carve-php` and `carve-rs`: data mode follows the pin once their interpreters read `field` of `find`; hand-written rules need the same three readings.
+
+## Engine gaps from typed metadata blocks, 21 November
+
+- `carve-js`: the prototype in carve-js#5302 covers top-level openers, containers, attributes, unclosed blocks and writer round-trips, but needs the final lint, include and flatten rules and the spec pin. CC-1613 also closes a list before a column-zero typed opener with no blank line; the prototype keeps that line in the list.
+- `carve-php`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.
+- `carve-rs`: later typed blocks, their tree positions, lint, includes, flatten and writer are pending.

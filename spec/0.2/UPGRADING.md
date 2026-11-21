@@ -2,6 +2,10 @@
 
 This is a non-normative guide. Carve 0.2 is a freeze candidate and not yet released ([status](STATUS.md)). The [0.2 specification](README.md) defines behavior. The [upgrade map](data/upgrade-map.json) holds the source and tree changes in these tables. Its source examples are literal strings with line breaks. `SILENT` means unchanged 0.1 source still parses in 0.2 but produces different HTML. Review those entries even when a document has no syntax error.
 
+## New in 0.2.0: typed metadata blocks after line 1
+
+A typed `---yaml`, `---toml` or `---json` opener at column 0 may now introduce an opaque metadata block after a blank line or top-level attribute lines. A bare `---` after line 1 stays text. Later blocks appear as top-level `frontmatter` nodes in source order, may carry an `id` for lookup, and render nothing. An unclosed block consumes the rest of the document and reports `unclosed-frontmatter`. The `carve` and `carve-version` keys still declare a version only in the line-1 block. Hosts that assumed at most one frontmatter node should filter the document's children and use `attrs.id` where needed (C2-B-231 to C2-B-233, C2-A-049).
+
 ## Part 1. Authors: your documents
 
 | Check first | 0.1 habit | 0.2 result | Action |

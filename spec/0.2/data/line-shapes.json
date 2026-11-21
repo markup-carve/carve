@@ -186,6 +186,21 @@
       "clauses": ["C2-B-161", "C2-B-164", "C2-B-165", "C2-B-189"]
     },
     {
+      "name": "typed_metadata_opener",
+      "first": ["-"],
+      "role": "opener",
+      "at": { "column": 0, "container": "none" },
+      "sequence": [
+        { "part": "literal", "text": "---" },
+        { "part": "optional", "sequence": [{ "part": "space", "min": 1, "max": 1 }] },
+        { "part": "ref", "ref": "format_name" },
+        { "part": "trailing_whitespace" },
+        { "part": "end" }
+      ],
+      "requires": ["blank_above_or_top_level_attributes"],
+      "clauses": ["C2-B-164", "C2-B-232", "C2-B-233"]
+    },
+    {
       "name": "ordered",
       "first": [".", "0-9", "A-Z", "a-z"],
       "role": "container",

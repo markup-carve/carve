@@ -125,9 +125,9 @@
       "name": "frontmatter_opener",
       "group": "block",
       "triggers": ["---"],
-      "positions": ["document_line_1"],
-      "shapes": ["frontmatter_opener"],
-      "clauses": ["C2-W-092", "C2-B-161"]
+      "positions": ["document_line_1", "top_level_after_blank_or_attributes"],
+      "shapes": ["frontmatter_opener", "typed_metadata_opener"],
+      "clauses": ["C2-W-092", "C2-B-161", "C2-B-232", "C2-W-152"]
     },
     {
       "name": "heading_marker",

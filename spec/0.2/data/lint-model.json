@@ -2133,6 +2133,7 @@
       },
       "when": {
         "all": [
+          { "not": { "eq": [{ "v": "exact_owner" }, "frontmatter"] } },
           {
             "eq": [
               {
@@ -6997,6 +6998,17 @@
         "C2-B-127",
         "C2-H-158"
       ]
+    },
+    {
+      "id": "frontmatter-crossref",
+      "over": "inline",
+      "types": ["xref"],
+      "let": {
+        "owner": { "lookup": { "over": "id", "key": { "f": "item.id" }, "value": { "f": "node.key" }, "field": "owner" } }
+      },
+      "when": { "eq": [{ "v": "owner" }, "frontmatter"] },
+      "report": [{ "start": { "f": "start" }, "end": { "f": "end" }, "values": { "target": { "f": "node.key" } } }],
+      "clauses": ["C2-A-218", "C2-W-153"]
     },
     {
       "id": "frontmatter-shaped-thematic-break",

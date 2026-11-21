@@ -28128,7 +28128,7 @@
     "C2-A-193",
     "C2-W-011"
    ],
-   "why": "C2-A-193: It handles `fields` under the frontmatter rule of C2-W-011. C2-W-011: When a document has a frontmatter node, the writer writes that node unchanged and reports no separate loss for `fields`",
+   "why": "C2-A-193: It handles `fields` under the frontmatter rule of C2-W-011. C2-W-011: When a document has a leading frontmatter node, the writer writes that node unchanged and reports no separate loss for `fields`",
    "summary": "root metadata fields beside a frontmatter node are no loss",
    "kind": "write",
    "tree": {
@@ -42178,7 +42178,7 @@
     "C2-B-163",
     "C2-B-162"
    ],
-   "why": "C2-B-163: An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
+   "why": "C2-B-163: An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
    "summary": "frontmatter with no closer is reported",
    "kind": "parse",
    "input": "---\na: 1",
@@ -42202,7 +42202,7 @@
     "C2-B-163",
     "C2-B-162"
    ],
-   "why": "C2-B-163: An unclosed frontmatter block runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
+   "why": "C2-B-163: An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error. C2-B-162: The closer is a line that is exactly `---` plus trailing spaces and tabs.",
    "summary": "frontmatter with a closer is not reported",
    "kind": "parse",
    "input": "---\na: 1\n---",
@@ -67161,6 +67161,1292 @@
    "options": {},
    "expected": {
     "carve": "{^^\\{^\\\\\\{^\\{^^^\\{^\\{^\\{^\\{^^\\{^{\\{^\\{\\^^}{^{^{^{^{^{^{^{^{^{^{^{^{\\^\\^}^}^}^}^}^}^}^}^}^}^}^}\\^^}\\^\\}^}^}^}^}}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}^}\n"
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1581",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it.",
+   "summary": "typed metadata: later yaml",
+   "input": "a\n\n---yaml\nk: v\n---\n\nb\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>b</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "k: v\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "b"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1582",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it.",
+   "summary": "typed metadata: later space toml",
+   "input": "a\n\n--- toml\nk = 1\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "toml",
+      "value": "k = 1\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1583",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: After line 1, a typed opener of C2-B-164 at column 0 opens a top-level metadata block when a blank line stands directly above it, or when one or more pending top-level attribute lines stand directly above it.",
+   "summary": "typed metadata: first and later",
+   "input": "---\nt: 1\n---\n\nbody\n\n---json\n{}\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>body</p>",
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "t: 1\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "body"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "json",
+      "value": "{}\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1584",
+   "clauses": [
+    "C2-B-161"
+   ],
+   "why": "C2-B-161: A bare `---` after line 1 is text (C2-B-160).",
+   "summary": "typed metadata: bare later",
+   "input": "a\n\n---\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>—\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1585",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+   "summary": "typed metadata: indented",
+   "input": "a\n\n ---yaml\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>—yaml\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1586",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: It does not interrupt a paragraph without that separation.",
+   "summary": "typed metadata: no blank",
+   "input": "a\n---yaml\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a\n—yaml\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1587",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+   "summary": "typed metadata: div",
+   "input": "::: note\n\n---yaml\nk: v\n---\n\n:::\n",
+   "options": {},
+   "expected": {
+    "html": "<aside class=\"admonition note\" aria-label=\"Note\">\n  <p>—yaml\nk: v\n—</p>\n</aside>",
+    "children": [
+     {
+      "type": "admonition",
+      "kind": "note",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "smart_punctuation",
+          "kind": "em_dash",
+          "glyph": "—",
+          "source": "---"
+         },
+         {
+          "type": "text",
+          "value": "yaml"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "k: v"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "smart_punctuation",
+          "kind": "em_dash",
+          "glyph": "—",
+          "source": "---"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1588",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+   "summary": "typed metadata: quote",
+   "input": "> a\n>\n> ---yaml\n> k: v\n> ---\n",
+   "options": {},
+   "expected": {
+    "html": "<blockquote>\n  <p>a</p>\n  <p>—yaml\nk: v\n—</p>\n</blockquote>",
+    "children": [
+     {
+      "type": "block_quote",
+      "children": [
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "a"
+         }
+        ]
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "smart_punctuation",
+          "kind": "em_dash",
+          "glyph": "—",
+          "source": "---"
+         },
+         {
+          "type": "text",
+          "value": "yaml"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "text",
+          "value": "k: v"
+         },
+         {
+          "type": "soft_break"
+         },
+         {
+          "type": "smart_punctuation",
+          "kind": "em_dash",
+          "glyph": "—",
+          "source": "---"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1589",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: Indent or an enclosing quote, list item, description, footnote or div leaves it as text.",
+   "summary": "typed metadata: list item",
+   "input": "- a\n\n  ---yaml\n  k: v\n  ---\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a\n    <p>—yaml\nk: v\n—</p>\n  </li>\n</ul>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         },
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "smart_punctuation",
+            "kind": "em_dash",
+            "glyph": "—",
+            "source": "---"
+           },
+           {
+            "type": "text",
+            "value": "yaml"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "text",
+            "value": "k: v"
+           },
+           {
+            "type": "soft_break"
+           },
+           {
+            "type": "smart_punctuation",
+            "kind": "em_dash",
+            "glyph": "—",
+            "source": "---"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1590",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines.",
+   "summary": "typed metadata: list closes",
+   "input": "- a\n- b\n\n---toml\nk = 1\n---\n\nx\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>\n<p>x</p>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "b"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "toml",
+      "value": "k = 1\n"
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "x"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1591",
+   "clauses": [
+    "C2-B-233"
+   ],
+   "why": "C2-B-233: Pending top-level attribute lines immediately above a typed opener attach to the frontmatter node (C2-B-090).",
+   "summary": "typed metadata: key",
+   "input": "## Ch\n\n{#ch1 scope=section}\n---yaml\nauthor: A\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<section id=\"Ch\">\n  <h2>Ch</h2>\n</section>",
+    "children": [
+     {
+      "type": "heading",
+      "level": 2,
+      "children": [
+       {
+        "type": "text",
+        "value": "Ch"
+       }
+      ],
+      "generatedId": "Ch"
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "author: A\n",
+      "attrs": {
+       "id": "ch1",
+       "keyValues": [
+        [
+         "scope",
+         "section"
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1592",
+   "clauses": [
+    "C2-B-163"
+   ],
+   "why": "C2-B-163: An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.",
+   "summary": "typed metadata: unclosed",
+   "input": "a\n\n---yaml\nk: v\n\n# Lost\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "k: v\n\n# Lost\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1593",
+   "clauses": [
+    "C2-B-233"
+   ],
+   "why": "C2-B-233: When those lines start on line 1, the opener is document frontmatter even though it stands on a later line; no preceding blank line is needed.",
+   "summary": "typed metadata: attr first",
+   "input": "{#only}\n---json\n{}\n---\n\nbody\n",
+   "options": {},
+   "expected": {
+    "html": "<p>body</p>",
+    "children": [
+     {
+      "type": "frontmatter",
+      "format": "json",
+      "value": "{}\n",
+      "attrs": {
+       "id": "only"
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "body"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1594",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: It does not interrupt a paragraph without that separation.",
+   "summary": "typed metadata: attr no blank",
+   "input": "a\n{#m}\n---yaml\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a\n{#m}\n—yaml\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "{#m}"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1595",
+   "clauses": [
+    "C2-H-070"
+   ],
+   "why": "C2-H-070: Every frontmatter node, leading or later and whether keyed or unkeyed, renders nothing.",
+   "summary": "typed metadata: xref key",
+   "input": "a\n\n{#m}\n---yaml\nk: v\n---\n\nSee </#m>.\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>See &lt;/#m&gt;.</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "k: v\n",
+      "attrs": {
+       "id": "m"
+      }
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "See "
+       },
+       {
+        "type": "xref",
+        "key": "m",
+        "namespace": "heading"
+       },
+       {
+        "type": "text",
+        "value": "."
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1596",
+   "clauses": [
+    "C2-A-218"
+   ],
+   "why": "C2-A-218: An id in `frontmatter.attrs` participates in the duplicate-id check, but is a lookup key only.",
+   "summary": "typed metadata: duplicate key",
+   "input": "a\n\n{#m}\n---yaml\nk: v\n---\n\n{#m}\n---toml\nk = 1\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "k: v\n",
+      "attrs": {
+       "id": "m"
+      }
+     },
+     {
+      "type": "frontmatter",
+      "format": "toml",
+      "value": "k = 1\n",
+      "attrs": {
+       "id": "m"
+      }
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1597",
+   "clauses": [
+    "C2-B-231"
+   ],
+   "why": "C2-B-231: The keys `carve` and `carve-version` declare the document version only when read from the line-1 frontmatter block.",
+   "summary": "typed metadata: version later",
+   "input": "a\n\n---yaml\ncarve: 9.9\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "yaml",
+      "value": "carve: 9.9\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1598",
+   "clauses": [
+    "C2-W-152"
+   ],
+   "why": "C2-W-152: A text run that would open a later typed metadata block is repaired under C2-W-088 and C2-W-092.",
+   "summary": "typed metadata: literal escaped",
+   "input": "a\n\n\\---yaml\nk: v\n\\---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>\n<p>-–yaml\nk: v\n-–</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "-"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "en_dash",
+        "glyph": "–",
+        "source": "--"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "-"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "en_dash",
+        "glyph": "–",
+        "source": "--"
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1599",
+   "clauses": [
+    "C2-B-164"
+   ],
+   "why": "C2-B-164: The name is kept as written, so `---JSON` has the format `JSON`, which is not `json`.",
+   "summary": "typed metadata: later uppercase",
+   "input": "a\n\n---JSON\n{}\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "JSON",
+      "value": "{}\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1600",
+   "clauses": [
+    "C2-B-163"
+   ],
+   "why": "C2-B-163: An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.",
+   "summary": "typed metadata: later unclosed toml",
+   "input": "a\n\n---toml\nk = 1",
+   "options": {},
+   "expected": {
+    "html": "<p>a</p>",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "frontmatter",
+      "format": "toml",
+      "value": "k = 1\n"
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1601",
+   "clauses": [
+    "C2-B-163"
+   ],
+   "why": "C2-B-163: An unclosed frontmatter block, whether leading or later, runs to the end of the document, and `unclosed-frontmatter` reports it with severity error.",
+   "summary": "typed metadata: unclosed frontmatter lint",
+   "kind": "parse",
+   "input": "a\n\n---yaml\nk: v\n\n# Lost\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "unclosed-frontmatter",
+      "channel": "parse",
+      "severity": "error",
+      "line": 3,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1602",
+   "clauses": [
+    "C2-W-153"
+   ],
+   "why": "C2-W-153: A cross-reference to an id carried by frontmatter reports `frontmatter-crossref` with severity error, at that reference.",
+   "summary": "typed metadata: metadata key crossref",
+   "kind": "lint",
+   "input": "a\n\n{#m}\n---yaml\nk: v\n---\n\nSee </#m>.\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "frontmatter-crossref",
+      "channel": "lint",
+      "severity": "error",
+      "line": 8,
+      "column": 5
+     }
+    ],
+    "notReported": [
+     "broken-crossref"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1603",
+   "clauses": [
+    "C2-A-218"
+   ],
+   "why": "C2-A-218: An id in `frontmatter.attrs` participates in the duplicate-id check, but is a lookup key only.",
+   "summary": "typed metadata: metadata key duplicate",
+   "kind": "parse",
+   "input": "a\n\n{#m}\n---yaml\nk: v\n---\n\n{#m}\n---toml\nk = 1\n---\n",
+   "options": {},
+   "expected": {
+    "diagnostics": [
+     {
+      "code": "duplicate-id",
+      "channel": "parse",
+      "severity": "warning",
+      "line": 8,
+      "column": 1
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1604",
+   "clauses": [
+    "C2-B-231"
+   ],
+   "why": "C2-B-231: The keys `carve` and `carve-version` declare the document version only when read from the line-1 frontmatter block.",
+   "summary": "typed metadata: later version ignored",
+   "kind": "lint",
+   "input": "a\n\n---yaml\ncarve: 9.9\n---\n",
+   "options": {},
+   "expected": {
+    "notReported": [
+     "carve-version-unsupported"
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1605",
+   "clauses": [
+    "C2-W-052"
+   ],
+   "why": "C2-W-052: Only leading frontmatter without attributes and with format `yaml` is written with the bare opener `---`, also when the source named the format.",
+   "summary": "typed metadata: writer later yaml",
+   "kind": "format",
+   "input": "a\n\n---yaml\nk: v\n---\n\nb\n",
+   "options": {},
+   "expected": {
+    "carve": "a\n\n---yaml\nk: v\n---\n\nb\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1606",
+   "clauses": [
+    "C2-W-052"
+   ],
+   "why": "C2-W-052: Only leading frontmatter without attributes and with format `yaml` is written with the bare opener `---`, also when the source named the format.",
+   "summary": "typed metadata: writer leading yaml",
+   "kind": "format",
+   "input": "---\nt: 1\n---\n\nbody\n\n---json\n{}\n---\n",
+   "options": {},
+   "expected": {
+    "carve": "---\nt: 1\n---\n\nbody\n\n---json\n{}\n---\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1607",
+   "clauses": [
+    "C2-W-052"
+   ],
+   "why": "C2-W-052: Only leading frontmatter without attributes and with format `yaml` is written with the bare opener `---`, also when the source named the format.",
+   "summary": "typed metadata: writer keyed",
+   "kind": "format",
+   "input": "## Ch\n\n{#ch1 scope=section}\n---yaml\nauthor: A\n---\n",
+   "options": {},
+   "expected": {
+    "carve": "== Ch\n\n{#ch1 scope=section}\n---yaml\nauthor: A\n---\n"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1608",
+   "clauses": [
+    "C2-W-152"
+   ],
+   "why": "C2-W-152: A text run that would open a later typed metadata block is repaired under C2-W-088 and C2-W-092.",
+   "summary": "typed metadata: formatter preserves authored first-hyphen escape",
+   "kind": "format",
+   "input": "a\n\n\\---yaml\nk: v\n\\---\n",
+   "options": {},
+   "expected": {
+    "carve": "a\n\n\\---yaml\nk: v\n\\---\n"
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1609",
+   "clauses": [
+    "C2-N-020",
+    "C2-B-232"
+   ],
+   "why": "C2-N-020: A selection starting at line 1 may open leading frontmatter (C2-B-161); a selection starting later may open typed metadata blocks under C2-B-232, using the selected lines as its document and their original file coordinates for `pos`.",
+   "summary": "selected later lines retain a typed metadata block",
+   "kind": "parse",
+   "input": "{{ a.crv @lines:2-7 }}",
+   "files": {
+    "a.crv": {
+     "text": "intro\n\n---yaml\nk: v\n---\n\nend\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "children": [
+     {
+      "type": "include",
+      "path": "a.crv",
+      "file": "a.crv",
+      "children": [
+       {
+        "type": "frontmatter",
+        "format": "yaml",
+        "value": "k: v\n"
+       },
+       {
+        "type": "paragraph",
+        "children": [
+         {
+          "type": "text",
+          "value": "end"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1610",
+   "clauses": [
+    "C2-N-021",
+    "C2-H-070"
+   ],
+   "why": "C2-N-021: Later typed metadata blocks taken by the selection remain among the include children in source order.",
+   "summary": "included later metadata renders nothing",
+   "kind": "render",
+   "input": "{{ a.crv @lines:2-7 }}",
+   "files": {
+    "a.crv": {
+     "text": "intro\n\n---yaml\nk: v\n---\n\nend\n"
+    }
+   },
+   "options": {},
+   "expected": {
+    "html": "<p>end</p>"
+   },
+   "from": []
+  },
+  {
+   "id": "CC-1611",
+   "clauses": [
+    "C2-T-047",
+    "C2-W-052"
+   ],
+   "why": "C2-T-047: Later typed metadata blocks of that file are written in source order, including their attributes (C2-B-232, C2-W-052), though they render nothing.",
+   "summary": "flatten drops an included line-1 block but keeps its later block",
+   "kind": "cli",
+   "files": {
+    "a.crv": {
+     "text": "{{ b.crv }}\n"
+    },
+    "b.crv": {
+     "text": "---\ntitle: B\n---\n\nx\n\n---yaml\nk: v\n---\n"
+    }
+   },
+   "args": [
+    "flatten",
+    "a.crv"
+   ],
+   "options": {},
+   "expected": {
+    "status": 0,
+    "stdout": "x\n\n---yaml\nk: v\n---\n",
+    "stderrCategory": null
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1612",
+   "clauses": [
+    "C2-W-152",
+    "C2-W-091"
+   ],
+   "why": "C2-W-152: For a literal `---yaml` in that position the canonical repaired spelling is `-\\--yaml`, as C2-W-091 keeps the repair after reparsing.",
+   "summary": "writer escapes a supplied plain-text typed opener canonically",
+   "kind": "write",
+   "tree": {
+    "type": "document",
+    "astVersion": "2.0",
+    "children": [
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "a"
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "text",
+        "value": "---yaml"
+       }
+      ]
+     }
+    ]
+   },
+   "options": {},
+   "expected": {
+    "carve": "a\n\n-\\--yaml\n"
+   },
+   "from": []
+  }
+,
+  {
+   "id": "CC-1613",
+   "clauses": [
+    "C2-B-232"
+   ],
+   "why": "C2-B-232: A column-0 opener after a list closes the list before this test; the blank line still has to stand above the opener or its attribute lines.",
+   "summary": "column-zero typed opener closes a list even without blank separation",
+   "input": "- a\n---yaml\nk: v\n---\n",
+   "options": {},
+   "expected": {
+    "html": "<ul>\n  <li>a</li>\n</ul>\n<p>—yaml\nk: v\n—</p>",
+    "children": [
+     {
+      "type": "list",
+      "marker": {
+       "kind": "bullet",
+       "char": "-"
+      },
+      "spacing": "tight",
+      "children": [
+       {
+        "type": "list_item",
+        "children": [
+         {
+          "type": "paragraph",
+          "children": [
+           {
+            "type": "text",
+            "value": "a"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "type": "paragraph",
+      "children": [
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       },
+       {
+        "type": "text",
+        "value": "yaml"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "text",
+        "value": "k: v"
+       },
+       {
+        "type": "soft_break"
+       },
+       {
+        "type": "smart_punctuation",
+        "kind": "em_dash",
+        "glyph": "—",
+        "source": "---"
+       }
+      ]
+     }
+    ]
    },
    "from": []
   }

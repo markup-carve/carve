@@ -90,13 +90,13 @@
     {
       "name": "frontmatter",
       "kind": "leaf",
-      "opened_by": ["frontmatter_opener"],
+      "opened_by": ["frontmatter_opener", "typed_metadata_opener"],
       "continues": "until_closer",
       "closed_by": "frontmatter_closer",
       "closes_on": ["closer", "document_end"],
       "body": "opaque",
       "unclosed_report": "unclosed-frontmatter",
-      "clauses": ["C2-B-161", "C2-B-162", "C2-B-163"]
+      "clauses": ["C2-B-161", "C2-B-162", "C2-B-163", "C2-B-232"]
     },
     {
       "name": "hardbreak_block",
